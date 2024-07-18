@@ -19,7 +19,13 @@ import {
   ChartWrapper
 } from '@/views/chart/components/js/panel/types'
 import { getEngine } from '@antv/g2/esm/core'
-import { handleEmptyDataStrategy } from '../../../util'
+import {
+  getColor,
+  getGroupColor,
+  getStackColor,
+  handleEmptyDataStrategy,
+  setupSeriesColor
+} from '../../../util'
 
 export interface G2PlotDrawOptions<O> extends AntVDrawOptions<O> {
   /**
@@ -69,8 +75,8 @@ export class G2PlotWrapper<O extends PickOptions, P extends Plot<O>> extends Cha
  * G2Plot 的图表抽象类
  */
 export abstract class G2PlotChartView<
-  O extends PickOptions,
-  P extends Plot<O>
+  O extends PickOptions = PickOptions,
+  P extends Plot<O> = Plot<O>
 > extends AntVAbstractChartView {
   protected static engine = getEngine('canvas')
 
@@ -132,6 +138,25 @@ export abstract class G2PlotChartView<
 
   protected configEmptyDataStrategy(chart: Chart, options: O): O {
     return handleEmptyDataStrategy(chart, options)
+  }
+
+  protected configColor(chart: Chart, options: O): O {
+    const color = getColor(chart)
+    return { ...options, color }
+  }
+
+  protected configGroupColor(chart: Chart, options: O): O {
+    const color = getGroupColor(chart, options)
+    return { ...options, color }
+  }
+
+  protected configStackColor(chart: Chart, options: O): O {
+    const color = getStackColor(chart, options)
+    return { ...options, color }
+  }
+
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setupSeriesColor(chart, data)
   }
 
   /**

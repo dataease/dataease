@@ -177,6 +177,7 @@ const calcData = async (view, callback) => {
             }
           }
           dvMainStore.setViewDataDetails(view.id, chartData.value)
+          emitter.emit('chart-data-change')
           await renderChart(res, callback)
         }
       })

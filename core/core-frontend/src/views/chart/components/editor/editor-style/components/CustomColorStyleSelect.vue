@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { ElColorPicker, ElPopover } from 'element-plus-secondary'
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_CASES, COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import GradientColorSelector from '@/views/chart/components/editor/editor-style/components/GradientColorSelector.vue'
 import { getMapColorCases, stepsColor } from '@/views/chart/components/js/util'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import chartViewManager from '../../../js/panel'
+import { G2PlotChartView } from '../../../js/panel/types/impl/g2plot'
+import { cloneDeep } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -18,12 +23,15 @@ const props = withDefaults(
       colorIndex: number
     }
     propertyInner: Array<string>
+    chart: ChartObj
   }>(),
   {
     themes: 'light'
   }
 )
-
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
+const { chart } = toRefs(props)
 const emits = defineEmits(['update:modelValue', 'changeBasicStyle'])
 const changeChartType = () => {
   if (isColorGradient.value) {
@@ -31,8 +39,89 @@ const changeChartType = () => {
     changeColorOption({ value: 'default' })
   }
 }
+
+const seriesColorPickerRef = ref<InstanceType<typeof ElColorPicker>>()
+const seriesColorState = reactive({
+  curSeriesColor: {
+    id: '',
+    name: '',
+    color: '#000'
+  } as any,
+  curColorIndex: 0,
+  seriesColorPickerId: 'body'
+})
+const setupSeriesColor = () => {
+  if (batchOptStatus.value || !chart.value) {
+    return
+  }
+  const instance = chartViewManager.getChartView(
+    chart.value.render,
+    chart.value.type
+  ) as G2PlotChartView
+  if (!instance?.propertyInner?.['basic-style-selector'].includes('seriesColor')) {
+    return
+  }
+
+  const viewData = dvMainStore.getViewDataDetails(chart.value.id)
+  if (!viewData) {
+    return
+  }
+  const newSeriesColor = instance.setupSeriesColor(chart.value, viewData.data)
+  const oldSeriesColor =
+    state.value.basicStyleForm.seriesColor?.reduce((p, n) => {
+      p[n.id] = n
+      return p
+    }, {}) || {}
+  newSeriesColor?.forEach(item => {
+    const oldColorItem = oldSeriesColor[item.id]
+    if (oldColorItem) {
+      item.color = oldColorItem.color
+    }
+  })
+  const seriesColor = state.value.basicStyleForm.seriesColor
+  seriesColor.splice(0, seriesColor.length, ...newSeriesColor)
+  if (seriesColor.length) {
+    if (seriesColorState.curColorIndex > seriesColor.length - 1) {
+      seriesColorState.curColorIndex = 0
+    }
+    seriesColorState.curSeriesColor = seriesColor[seriesColorState.curColorIndex]
+    const targetId = 'series-color-picker-' + seriesColorState.curColorIndex
+    const target = document.getElementById(targetId)
+    if (target) {
+      seriesColorState.seriesColorPickerId = `#${targetId}`
+    }
+  }
+}
+
+const switchSeriesColor = (seriesColor, index) => {
+  seriesColorPickerRef.value?.hide()
+  seriesColorState.curSeriesColor = cloneDeep(seriesColor)
+  seriesColorState.curColorIndex = index
+  seriesColorState.seriesColorPickerId = '#series-color-picker-' + index
+  nextTick(() => {
+    seriesColorPickerRef.value?.show()
+  })
+}
+
+const changeSeriesColor = () => {
+  let changed = false
+  state.value.basicStyleForm.seriesColor.forEach(c => {
+    if (
+      c.id === seriesColorState.curSeriesColor.id &&
+      c.color !== seriesColorState.curSeriesColor.color
+    ) {
+      changed = true
+      c.color = seriesColorState.curSeriesColor.color
+    }
+  })
+  changed && changeBasicStyle('seriesColor')
+}
+watch([chart, chart.value?.type], setupSeriesColor, {
+  deep: false
+})
 onMounted(() => {
   useEmitt({ name: 'chart-type-change', callback: changeChartType })
+  useEmitt({ name: 'chart-data-change', callback: setupSeriesColor })
 })
 const state = computed({
   get() {
@@ -66,6 +155,10 @@ const changeColorOption = (option?) => {
     state.value.basicStyleForm.colors = [...items[0].colors]
     state.value.customColor = state.value.basicStyleForm.colors[0]
     state.value.colorIndex = 0
+    state.value.basicStyleForm.seriesColor?.forEach((c, i) => {
+      const length = items[0].colors.length
+      c.color = items[0].colors[i % length]
+    })
     changeBasicStyle()
   }
 }
@@ -101,8 +194,8 @@ const switchColor = (index, c) => {
   customColorPickerRef.value?.show()
 }
 
-function changeBasicStyle() {
-  emits('changeBasicStyle')
+function changeBasicStyle(prop = 'colors') {
+  emits('changeBasicStyle', prop)
 }
 
 const _popoverShow = ref(false)
@@ -245,15 +338,15 @@ const colorItemBorderColor = (index, state) => {
         <div
           v-for="(c, index) in state.basicStyleForm.colors"
           :key="index"
-          @click="switchColor(index, c)"
-          class="color-item"
           :class="{
             active: state.colorIndex === index,
             hover: isColorGradient ? showColorGradientIndex(index) : true
           }"
+          class="color-item"
           :style="{
             'border-color': colorItemBorderColor(index, state)
           }"
+          @click="switchColor(index, c)"
         >
           <div
             class="color-item__inner"
@@ -286,7 +379,45 @@ const colorItemBorderColor = (index, state) => {
           />
         </div>
       </div>
+      <div
+        v-if="showProperty('seriesColor') && !batchOptStatus"
+        class="series-color-setting colors"
+      >
+        <div
+          v-for="(item, index) in state.basicStyleForm.seriesColor"
+          :key="item.id"
+          class="color-list-item"
+        >
+          <div
+            :class="{
+              active: item.id === seriesColorState.curSeriesColor?.id
+            }"
+            class="color-item"
+            @click="switchSeriesColor(item, index)"
+          >
+            <div
+              class="color-item__inner"
+              :style="{
+                backgroundColor: item.color
+              }"
+            ></div>
+          </div>
+          <span :title="item.name" class="color-item-name">{{ item.name }}</span>
+          <div :id="'series-color-picker-' + index"></div>
+        </div>
+      </div>
     </template>
+    <teleport :to="seriesColorState.seriesColorPickerId">
+      <div style="position: absolute; width: 0; height: 0; overflow: hidden">
+        <el-color-picker
+          ref="seriesColorPickerRef"
+          v-model="seriesColorState.curSeriesColor.color"
+          size="small"
+          :predefine="predefineColors"
+          @change="changeSeriesColor"
+        />
+      </div>
+    </teleport>
   </div>
 </template>
 
@@ -395,6 +526,63 @@ const colorItemBorderColor = (index, state) => {
       height: 0;
       left: 50%;
       overflow: hidden;
+    }
+  }
+}
+.series-color-setting {
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  color: @canvas-main-font-color;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  &.dark {
+    color: @canvas-main-font-color-dark;
+  }
+
+  &.colors {
+    margin-top: 8px;
+    justify-content: flex-start;
+
+    .color-list-item {
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: flex-start;
+      .color-item-name {
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .color-item {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      margin-right: 4px;
+      cursor: pointer;
+      padding: 2px;
+      border: solid 1px transparent;
+
+      .color-item__inner {
+        width: 14px;
+        height: 14px;
+        border-radius: 1px;
+      }
+      &:hover {
+        border-color: var(--ed-color-primary-99, rgba(51, 112, 255, 0.6));
+      }
+      &.active {
+        border-color: var(--ed-color-primary);
+      }
     }
   }
 }

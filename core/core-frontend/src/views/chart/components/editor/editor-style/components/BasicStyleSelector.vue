@@ -247,9 +247,10 @@ onMounted(() => {
     <template v-if="showProperty('colors')">
       <custom-color-style-select
         v-model="state"
+        :chart="chart"
         :themes="themes"
         :property-inner="propertyInner"
-        @change-basic-style="changeBasicStyle('colors')"
+        @change-basic-style="prop => changeBasicStyle(prop)"
       />
     </template>
 

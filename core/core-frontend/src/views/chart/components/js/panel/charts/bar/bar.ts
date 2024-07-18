@@ -4,7 +4,13 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  hexColorToRGBA,
+  parseJson,
+  setUpGroupSeriesColor,
+  setUpStackSeriesColor
+} from '@/views/chart/components/js/util'
 import { Datum } from '@antv/g2plot'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
@@ -25,6 +31,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': [...BAR_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'axisLabelFormatter']
@@ -221,6 +228,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configColor,
       this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
@@ -228,9 +237,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse,
-      this.configEmptyDataStrategy
-    )(chart, options)
+      this.configAnalyse
+    )(chart, options, {}, this)
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
@@ -293,6 +301,15 @@ export class StackBar extends Bar {
       tooltip
     }
   }
+
+  protected configColor(chart: Chart, options: ColumnOptions): ColumnOptions {
+    return this.configStackColor(chart, options)
+  }
+
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpStackSeriesColor(chart, data)
+  }
+
   constructor(name = 'bar-stack') {
     super(name)
     this.baseOptions = {
@@ -315,6 +332,14 @@ export class GroupBar extends StackBar {
       type: 'q',
       limit: 1
     }
+  }
+
+  protected configColor(chart: Chart, options: ColumnOptions): ColumnOptions {
+    return this.configGroupColor(chart, options)
+  }
+
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpGroupSeriesColor(chart, data)
   }
 
   constructor(name = 'bar-group') {
@@ -437,15 +462,16 @@ export class PercentageStackBar extends GroupStackBar {
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configColor,
       this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configSlider,
-      this.configEmptyDataStrategy
-    )(chart, options)
+      this.configSlider
+    )(chart, options, {}, this)
   }
   constructor() {
     super('percentage-bar-stack')

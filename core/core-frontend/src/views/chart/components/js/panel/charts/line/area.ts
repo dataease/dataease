@@ -5,7 +5,13 @@ import {
 import { Area as G2Area, AreaOptions } from '@antv/g2plot/esm/plots/area'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  hexColorToRGBA,
+  parseJson,
+  setUpGroupSeriesColor,
+  setUpStackSeriesColor
+} from '@/views/chart/components/js/util'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   LINE_AXIS_TYPE,
@@ -23,7 +29,11 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = {
     ...LINE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': [...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'], 'gradient'],
+    'basic-style-selector': [
+      ...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'],
+      'gradient',
+      'seriesColor'
+    ],
     'label-selector': ['seriesLabelFormatter'],
     'tooltip-selector': [
       ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
@@ -245,6 +255,8 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   protected setupOptions(chart: Chart, options: AreaOptions): AreaOptions {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configColor,
       this.configLabel,
       this.configTooltip,
       this.configBasicStyle,
@@ -252,9 +264,8 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse,
-      this.configEmptyDataStrategy
-    )(chart, options)
+      this.configAnalyse
+    )(chart, options, {}, this)
   }
 
   constructor(name = 'area') {
@@ -300,6 +311,12 @@ export class StackArea extends Area {
     return chart
   }
 
+  protected configColor(chart: Chart, options: AreaOptions): AreaOptions {
+    return this.configStackColor(chart, options)
+  }
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpStackSeriesColor(chart, data)
+  }
   protected configTooltip(chart: Chart, options: AreaOptions): AreaOptions {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
