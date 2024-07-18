@@ -17,13 +17,13 @@ public class Oracle extends DatasourceConfiguration {
         }
         if (StringUtils.isNotEmpty(getConnectionType()) && getConnectionType().equalsIgnoreCase("serviceName")) {
             return "jdbc:oracle:thin:@HOSTNAME:PORT/DATABASE"
-                    .replace("HOSTNAME", getHost().trim())
-                    .replace("PORT", getPort().toString().trim())
+                    .replace("HOSTNAME", getLHost().trim())
+                    .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         }else {
             return "jdbc:oracle:thin:@HOSTNAME:PORT:DATABASE"
-                    .replace("HOSTNAME", getHost().trim())
-                    .replace("PORT", getPort().toString().trim())
+                    .replace("HOSTNAME", getLHost().trim())
+                    .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         }
     }

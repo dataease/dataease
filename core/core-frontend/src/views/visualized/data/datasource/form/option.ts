@@ -136,6 +136,12 @@ export interface Configuration {
   minPoolSize: string
   maxPoolSize: string
   queryTimeout: string
+  useSSH: boolean
+  sshHost: string
+  sshPort: string
+  sshUserName: string
+  sshType: string
+  sshPassword: string
 }
 
 export interface ApiConfiguration {

@@ -1,6 +1,8 @@
 package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -35,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -54,7 +57,6 @@ public class CalciteProvider extends Provider {
     private final String FILE_PATH = "/opt/dataease2.0/drivers";
     private final String CUSTOM_PATH = "/opt/dataease2.0/custom-drivers/";
     private static String split = "DE";
-
     @Resource
     private CommonThreadPool commonThreadPool;
 
@@ -86,7 +88,7 @@ public class CalciteProvider extends Provider {
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
         List<String> schemas = new ArrayList<>();
         String queryStr = getSchemaSql(datasourceRequest.getDatasource());
-        try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(queryStr)) {
+        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30); ResultSet resultSet = statement.executeQuery(queryStr)) {
             while (resultSet.next()) {
                 schemas.add(resultSet.getString(1));
             }
@@ -101,7 +103,7 @@ public class CalciteProvider extends Provider {
         List<DatasetTableDTO> tables = new ArrayList<>();
         List<String> tablesSqls = getTablesSql(datasourceRequest);
         for (String tablesSql : tablesSqls) {
-            try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(tablesSql)) {
+            try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30); ResultSet resultSet = statement.executeQuery(tablesSql)) {
                 while (resultSet.next()) {
                     tables.add(getTableDesc(datasourceRequest, resultSet));
                 }
@@ -111,6 +113,7 @@ public class CalciteProvider extends Provider {
         }
         return tables;
     }
+
 
     @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
@@ -127,7 +130,7 @@ public class CalciteProvider extends Provider {
                 break;
         }
         String querySql = getTablesSql(datasourceRequest).get(0);
-        try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
+        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30); ResultSet resultSet = statement.executeQuery(querySql)) {
         } catch (Exception e) {
             throw e;
         }
@@ -190,14 +193,12 @@ public class CalciteProvider extends Provider {
         List<TableField> datasetTableFields = new ArrayList<>();
         DatasourceSchemaDTO datasourceSchemaDTO = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
         datasourceRequest.setDatasource(datasourceSchemaDTO);
-
         DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
-
         String table = datasourceRequest.getTable();
         if (StringUtils.isEmpty(table)) {
             ResultSet resultSet = null;
-            try (Connection con = getConnection(datasourceRequest.getDatasource());
-                 Statement statement = getStatement(con, 30)) {
+            try (ConnectionObj con = getConnection(datasourceRequest.getDatasource());
+                 Statement statement = getStatement(con.getConnection(), 30)) {
                 if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                     statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
                 }
@@ -216,8 +217,8 @@ public class CalciteProvider extends Provider {
             }
         } else {
             ResultSet resultSet = null;
-            try (Connection con = getConnection(datasourceRequest.getDatasource());
-                 Statement statement = getStatement(con, 30)) {
+            try (ConnectionObj con = getConnection(datasourceRequest.getDatasource());
+                 Statement statement = getStatement(con.getConnection(), 30)) {
                 if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                     statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
                 }
@@ -252,7 +253,8 @@ public class CalciteProvider extends Provider {
     }
 
     @Override
-    public Connection getConnection(DatasourceDTO coreDatasource) throws DEException {
+    public ConnectionObj getConnection(DatasourceDTO coreDatasource) throws Exception {
+        ConnectionObj connectionObj = new ConnectionObj();
         DatasourceConfiguration configuration = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
         switch (datasourceType) {
@@ -291,6 +293,7 @@ public class CalciteProvider extends Provider {
             default:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
         }
+        startSshSession(configuration, connectionObj, null);
         Properties props = new Properties();
         if (StringUtils.isNotBlank(configuration.getUsername())) {
             props.setProperty("user", configuration.getUsername());
@@ -304,11 +307,58 @@ public class CalciteProvider extends Provider {
         try {
             Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
             conn = driverClass.connect(configuration.getJdbc(), props);
+
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
         }
-        return conn;
+        connectionObj.setConnection(conn);
+        return connectionObj;
     }
+
+    private void startSshSession(DatasourceConfiguration configuration, ConnectionObj connectionObj, Long datacourseId) throws Exception {
+        if (configuration.isUseSSH()) {
+            if (datacourseId == null) {
+                configuration.setLPort(getLport(null));
+                connectionObj.setLPort(configuration.getLPort());
+                connectionObj.setConfiguration(configuration);
+                Session session = initSession(configuration);
+                connectionObj.setSession(session);
+            } else {
+                Integer lport = Provider.getLPorts().get(datacourseId);
+                configuration.setLPort(lport);
+                if (lport != null) {
+                    if (Provider.getSessions().get(datacourseId) == null || !Provider.getSessions().get(datacourseId).isConnected()) {
+                        Session session = initSession(configuration);
+                        Provider.getSessions().put(datacourseId, session);
+                    }
+                } else {
+                    configuration.setLPort(getLport(datacourseId));
+                    Session session = initSession(configuration);
+                    Provider.getSessions().put(datacourseId, session);
+                }
+                configuration.setLPort(lport);
+            }
+        }
+    }
+
+    private Session initSession(DatasourceConfiguration configuration) throws Exception{
+        JSch jsch = new JSch();
+        Session session = jsch.getSession(configuration.getSshUserName(), configuration.getSshHost(), configuration.getSshPort());
+        if (!configuration.getSshType().equalsIgnoreCase("password")) {
+            session.setConfig("PreferredAuthentications", "publickey");
+            jsch.addIdentity("sshkey", configuration.getSshKey().getBytes(StandardCharsets.UTF_8), null, configuration.getSshKeyPassword() == null ? null : configuration.getSshKeyPassword().getBytes(StandardCharsets.UTF_8));
+        }
+        if (configuration.getSshType().equalsIgnoreCase("password")) {
+            session.setPassword(configuration.getSshPassword());
+        }
+        session.setConfig("StrictHostKeyChecking", "no");
+        session.connect();
+        session.setPortForwardingL(configuration.getLPort(), configuration.getHost(), configuration.getPort());
+
+        return session;
+    }
+
+
 
     private DatasetTableDTO getTableDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
         DatasetTableDTO tableDesc = new DatasetTableDTO();
@@ -342,8 +392,8 @@ public class CalciteProvider extends Provider {
 
         // schema
         ResultSet resultSet = null;
-        try (Connection con = getConnection(datasourceRequest.getDatasource());
-             Statement statement = getStatement(con, datasourceConfiguration.getQueryTimeout())) {
+        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource());
+             Statement statement = getStatement(con.getConnection(), datasourceConfiguration.getQueryTimeout())) {
             if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                 statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
             }
@@ -754,6 +804,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setInitialSize(configuration.getInitialPoolSize());
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -766,6 +817,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -778,6 +830,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -790,6 +843,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -802,6 +856,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -814,6 +869,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -826,6 +882,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -838,6 +895,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -850,6 +908,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -862,6 +921,7 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                startSshSession(configuration, null, ds.getId());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                         }
@@ -1184,11 +1244,15 @@ public class CalciteProvider extends Provider {
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
         }
+        Provider.getLPorts().remove(datasource.getId());
+        if (Provider.getSessions().get(datasource.getId()) != null) {
+            Provider.getSessions().get(datasource.getId()).disconnect();
+        }
+        Provider.getSessions().remove(datasource.getId());
     }
 
 
     public Connection take() {
-        // 为了避免出现线程安全问题，这里使用 synchronized 锁，也可以使用 cas
         if (connection == null) {
             DEException.throwException("初始化连接池失败!");
         }

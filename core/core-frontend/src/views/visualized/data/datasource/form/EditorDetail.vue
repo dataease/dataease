@@ -107,6 +107,7 @@ const initForm = type => {
       dataBase: '',
       jdbcUrl: '',
       urlType: 'hostName',
+      sshType: 'password',
       extraParams: '',
       username: '',
       password: '',
@@ -340,6 +341,7 @@ const addApiItem = item => {
 
 const activeName = ref('table')
 const showPriority = ref(false)
+const showSSH = ref(false)
 
 const deleteItem = (item, idx) => {
   form.value.apiConfiguration.splice(form.value.apiConfiguration.indexOf(item), 1)
@@ -1014,6 +1016,87 @@ defineExpose({
               autocomplete="off"
             />
           </el-form-item>
+          <span
+            v-if="!['es', 'api'].includes(form.type)"
+            class="de-expand"
+            @click="showSSH = !showSSH"
+            >SSH 设置
+            <el-icon>
+              <Icon :name="showSSH ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+            </el-icon>
+          </span>
+          <template v-if="showSSH">
+            <el-form-item prop="configuration.sshHost">
+              <el-checkbox v-model="form.configuration.useSSH">启用SSH</el-checkbox>
+            </el-form-item>
+            <el-form-item label="主机" prop="configuration.sshHost">
+              <el-input
+                v-model="form.configuration.sshHost"
+                placeholder="请输入主机名"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <el-form-item label="端口" prop="configuration.sshPort">
+              <el-input-number
+                v-model="form.configuration.sshPort"
+                autocomplete="off"
+                step-strictly
+                class="text-left"
+                :min="0"
+                :max="65535"
+                :placeholder="t('common.inputText') + t('datasource.port')"
+                controls-position="right"
+              />
+            </el-form-item>
+            <el-form-item :label="t('datasource.user_name')">
+              <el-input
+                :placeholder="t('common.inputText') + t('datasource.user_name')"
+                v-model="form.configuration.sshUserName"
+                autocomplete="off"
+                :maxlength="255"
+              />
+            </el-form-item>
+            <el-form-item label="连接方式" prop="type">
+              <el-radio-group v-model="form.configuration.sshType">
+                <el-radio label="password">密码</el-radio>
+                <el-radio label="sshkey">ssh key</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item
+              :label="t('datasource.password')"
+              v-if="form.configuration.sshType === 'password'"
+            >
+              <CustomPassword
+                :placeholder="t('common.inputText') + t('datasource.password')"
+                show-password
+                type="password"
+                v-model="form.configuration.sshPassword"
+              />
+            </el-form-item>
+
+            <el-form-item
+              label="ssh key"
+              prop="configuration.sshKey"
+              v-if="form.configuration.sshType === 'sshkey'"
+            >
+              <el-input
+                type="textarea"
+                :rows="6"
+                v-model="form.configuration.sshKey"
+                placeholder="请输入ssh key"
+                autocomplete="off"
+              />
+            </el-form-item>
+
+            <el-form-item label="ssh key 密码" v-if="form.configuration.sshType === 'sshkey'">
+              <CustomPassword
+                :placeholder="t('common.inputText') + t('datasource.password')"
+                show-password
+                type="password"
+                v-model="form.configuration.sshKeyPassword"
+              />
+            </el-form-item>
+          </template>
           <span
             v-if="!['es', 'api'].includes(form.type)"
             class="de-expand"

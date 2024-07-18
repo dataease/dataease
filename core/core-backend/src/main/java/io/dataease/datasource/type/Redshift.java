@@ -16,8 +16,8 @@ public class Redshift extends DatasourceConfiguration {
             return getJdbcUrl();
         }
         return "jdbc:redshift://HOSTNAME:PORT/DATABASE"
-                .replace("HOSTNAME", getHost().trim())
-                .replace("PORT", getPort().toString().trim())
+                .replace("HOSTNAME", getLHost().trim())
+                .replace("PORT", getLPort().toString().trim())
                 .replace("DATABASE", getDataBase().trim());
     }
 }

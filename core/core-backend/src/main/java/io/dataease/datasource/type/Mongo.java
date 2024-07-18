@@ -22,8 +22,8 @@ public class Mongo extends DatasourceConfiguration {
         }
         if (StringUtils.isEmpty(extraParams.trim())) {
             return "jdbc:mysql://HOSTNAME:PORT/DATABASE"
-                    .replace("HOSTNAME", getHost().trim())
-                    .replace("PORT", getPort().toString().trim())
+                    .replace("HOSTNAME", getLHost().trim())
+                    .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         } else {
             for (String illegalParameter : illegalParameters) {
@@ -33,8 +33,8 @@ public class Mongo extends DatasourceConfiguration {
             }
 
             return "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
-                    .replace("HOSTNAME", getHost().trim())
-                    .replace("PORT", getPort().toString().trim())
+                    .replace("HOSTNAME", getLHost().trim())
+                    .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
         }

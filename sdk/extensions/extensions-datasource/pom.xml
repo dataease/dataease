@@ -29,6 +29,11 @@
             </exclusions>
             <classifier>de</classifier>
         </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${jsch.version}</version>
+        </dependency>
     </dependencies>
 
     <properties>

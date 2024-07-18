@@ -18,20 +18,20 @@ public class Pg extends DatasourceConfiguration {
         if(StringUtils.isEmpty(extraParams.trim())){
             if (StringUtils.isEmpty(getSchema())) {
                 return "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
-                        .replace("HOSTNAME", getHost().trim())
-                        .replace("PORT", getPort().toString().trim())
+                        .replace("HOSTNAME", getLHost().trim())
+                        .replace("PORT", getLPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim());
             } else {
                 return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?currentSchema=SCHEMA"
-                        .replace("HOSTNAME", getHost().trim())
-                        .replace("PORT", getPort().toString().trim())
+                        .replace("HOSTNAME", getLHost().trim())
+                        .replace("PORT", getLPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim())
                         .replace("SCHEMA", getSchema().trim());
             }
         }else {
             return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
-                    .replace("HOSTNAME", getHost().trim())
-                    .replace("PORT", getPort().toString().trim())
+                    .replace("HOSTNAME", getLHost().trim())
+                    .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
 
