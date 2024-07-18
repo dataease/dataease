@@ -228,7 +228,17 @@ const queryDataForId = id => {
           requiredName = next.name
         }
 
-        if (
+        if (next.displayType === '8') {
+          const { conditionValueF, conditionValueS, conditionType } = next
+          if (conditionType === 0) {
+            requiredName = conditionValueF === '' ? next.name : ''
+          } else {
+            requiredName = [conditionValueF || '', conditionValueS || ''].filter(ele => ele !== '')
+              .length
+              ? next.name
+              : ''
+          }
+        } else if (
           (Array.isArray(next.selectValue) && !next.selectValue.length) ||
           (next.selectValue !== 0 && !next.selectValue)
         ) {
@@ -258,6 +268,13 @@ const getQueryConditionWidth = () => {
 const getCascadeList = () => {
   return props.element.cascade
 }
+
+const isConfirmSearch = id => {
+  if (componentWithSure.value) return
+  queryDataForId(id)
+}
+
+provide('is-confirm-search', isConfirmSearch)
 provide('unmount-select', unMountSelect)
 provide('release-unmount-select', releaseSelect)
 provide('query-data-for-id', queryDataForId)
@@ -414,6 +431,22 @@ const clearData = () => {
 const listVisible = computed(() => {
   return list.value.filter(itx => itx.visible)
 })
+
+const componentWithSure = computed(() => {
+  return customStyle.btnList.includes('sure')
+})
+
+watch(
+  () => componentWithSure.value,
+  (val, oldVal) => {
+    if (!val && oldVal) {
+      queryData()
+    }
+  },
+  {
+    immediate: false
+  }
+)
 
 const queryData = () => {
   let requiredName = ''
@@ -574,7 +607,7 @@ const autoStyle = computed(() => {
             @click.stop="queryData"
             style="margin-right: 7px"
             :style="btnStyle"
-            v-if="customStyle.btnList.includes('sure')"
+            v-if="componentWithSure"
             type="primary"
           >
             {{ t('commons.adv_search.search') }}

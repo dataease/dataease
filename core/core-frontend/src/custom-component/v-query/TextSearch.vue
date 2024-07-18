@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { toRefs, onBeforeMount, type PropType, inject, computed } from 'vue'
+import { toRefs, onBeforeMount, type PropType, inject, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 interface SelectConfig {
+  id: string
   conditionValueOperatorF: string
   conditionValueF: string
   conditionValueOperatorS: string
@@ -31,6 +32,7 @@ const props = defineProps({
     type: Object as PropType<SelectConfig>,
     default: () => {
       return {
+        id: '',
         conditionType: 0,
         conditionValueOperatorF: 'eq',
         conditionValueF: '',
@@ -42,6 +44,10 @@ const props = defineProps({
         defaultConditionValueS: ''
       }
     }
+  },
+  isConfig: {
+    type: Boolean,
+    default: false
   }
 })
 const { config } = toRefs(props)
@@ -62,10 +68,18 @@ onBeforeMount(() => {
 })
 const queryConditionWidth = inject('com-width', Function, true)
 const customStyle = inject<{ background: string }>('$custom-style-filter')
+const isConfirmSearch = inject('is-confirm-search', Function, true)
 const selectStyle = computed(() => {
   return { width: queryConditionWidth() + 'px' }
 })
-
+const handleValueChange = () => {
+  if (!props.isConfig) {
+    nextTick(() => {
+      isConfirmSearch(config.value.id)
+    })
+    return
+  }
+}
 const lineWidth = computed(() => {
   return { width: queryConditionWidth() - 15 + 'px' }
 })
@@ -76,6 +90,7 @@ const lineWidth = computed(() => {
     <div class="condition-type">
       <el-select
         class="condition-value-select"
+        @change="handleValueChange"
         :effect="dvInfo.type === 'dataV' ? 'dark' : ''"
         popper-class="condition-value-select-popper"
         v-model="config.conditionValueOperatorF"
@@ -85,6 +100,7 @@ const lineWidth = computed(() => {
       </el-select>
       <el-input
         :style="selectStyle"
+        @blur="handleValueChange"
         class="condition-value-input"
         v-model="config.conditionValueF"
       />
@@ -94,6 +110,7 @@ const lineWidth = computed(() => {
       <sapn class="condition-type-tip">{{ config.conditionType === 1 ? '与' : '或' }}</sapn>
       <el-select
         class="condition-value-select"
+        @change="handleValueChange"
         :effect="dvInfo.type === 'dataV' ? 'dark' : ''"
         popper-class="condition-value-select-popper"
         v-model="config.conditionValueOperatorS"
@@ -103,6 +120,7 @@ const lineWidth = computed(() => {
       </el-select>
       <el-input
         :style="selectStyle"
+        @blur="handleValueChange"
         class="condition-value-input"
         v-model="config.conditionValueS"
       />
