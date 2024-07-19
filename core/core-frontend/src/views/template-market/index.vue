@@ -81,6 +81,14 @@
               :value="item.value"
             />
           </el-select>
+          <el-select class="title-type" v-model="state.templateClassifyType" placeholder="Select">
+            <el-option
+              v-for="item in state.templateClassifyOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
           <template v-if="['branchCreate', 'create'].includes(state.curPosition)">
             <el-divider class="custom-divider-line" direction="vertical" />
             <el-icon class="custom-market-icon hover-icon" @click="close"><Close /></el-icon>
@@ -203,9 +211,24 @@ const state = reactive({
     value: 'label',
     label: 'label'
   },
-  templateType: 'all',
-  templateSourceType: 'all',
+  templateType: 'all', // 模板类型 仪表板 数据大屏
+  templateSourceType: 'all', // 模板来源 模板市场 模板管理
+  templateClassifyType: 'all', // 模板分类 样式模板 应用模板
   treeShow: true,
+  templateClassifyOptions: [
+    {
+      value: 'all',
+      label: '全部分类'
+    },
+    {
+      value: 'app',
+      label: '应用模板'
+    },
+    {
+      value: 'template',
+      label: '样式模板'
+    }
+  ],
   templateSourceOptions: [
     {
       value: 'all',
@@ -231,7 +254,7 @@ const state = reactive({
     },
     {
       value: 'SCREEN',
-      label: '大屏'
+      label: '数据大屏'
     }
   ],
   loading: false,
@@ -344,6 +367,17 @@ watch(
 
 watch(
   () => state.templateSourceType,
+  () => {
+    state.treeShow = false
+    initTemplateShow()
+    nextTick(() => {
+      state.treeShow = true
+      initStyle()
+    })
+  }
+)
+watch(
+  () => state.templateClassifyType,
   () => {
     state.treeShow = false
     initTemplateShow()
@@ -497,6 +531,7 @@ const templateShow = templateItem => {
   let searchMarch = false
   let templateTypeMarch = false
   let templateSourceTypeMarch = false
+  let templateClassifyTypeMarch = false
   if (!state.searchText || templateItem.title.indexOf(state.searchText) > -1) {
     searchMarch = true
   }
@@ -508,7 +543,14 @@ const templateShow = templateItem => {
   if (state.templateSourceType === 'all' || templateItem.source === state.templateSourceType) {
     templateSourceTypeMarch = true
   }
-  return searchMarch && templateTypeMarch && templateSourceTypeMarch
+
+  if (
+    state.templateClassifyType === 'all' ||
+    templateItem.classify === state.templateClassifyType
+  ) {
+    templateClassifyTypeMarch = true
+  }
+  return searchMarch && templateTypeMarch && templateSourceTypeMarch && templateClassifyTypeMarch
 }
 
 const templatePreview = previewId => {

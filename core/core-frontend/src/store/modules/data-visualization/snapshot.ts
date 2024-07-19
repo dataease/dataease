@@ -138,6 +138,18 @@ export const snapshotStore = defineStore('snapshot', {
     resetStyleChangeTimes() {
       this.styleChangeTimes = 0
     },
+    resetSnapshot() {
+      this.styleChangeTimes = -1
+      this.cacheStyleChangeTimes = 0
+      this.snapshotCacheTimes = 0
+      this.cacheViewIdInfo = {
+        snapshotCacheViewCalc: [],
+        snapshotCacheViewRender: []
+      }
+      this.snapshotData = []
+      this.snapshotIndex = -1
+      this.recordSnapshot()
+    },
 
     recordSnapshot() {
       this.styleChangeTimes = ++this.styleChangeTimes
