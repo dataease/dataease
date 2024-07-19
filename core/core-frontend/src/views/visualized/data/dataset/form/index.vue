@@ -222,6 +222,11 @@ const getDsName = (id: string) => {
 }
 
 const pushDataset = () => {
+  if (appStore.isDataEaseBi) {
+    embeddedStore.clearState()
+    useEmitt().emitter.emit('changeCurrentComponent', 'DatasetEditor')
+    return
+  }
   const routeName = embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded' : 'dataset'
   push({
     name: routeName,
