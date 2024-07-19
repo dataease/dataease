@@ -619,6 +619,7 @@ const autoStyle = computed(() => {
   <Teleport to="body">
     <QueryConditionConfiguration
       :query-element="element"
+      @queryData="queryData"
       ref="queryConfig"
     ></QueryConditionConfiguration>
   </Teleport>
