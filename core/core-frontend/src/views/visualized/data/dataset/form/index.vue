@@ -222,7 +222,9 @@ const getDsName = (id: string) => {
 }
 
 const pushDataset = () => {
+  console.log('appStore.isDataEaseBi', appStore.isDataEaseBi)
   if (appStore.isDataEaseBi) {
+    debugger
     embeddedStore.clearState()
     useEmitt().emitter.emit('changeCurrentComponent', 'DatasetEditor')
     return

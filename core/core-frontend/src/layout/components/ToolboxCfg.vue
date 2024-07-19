@@ -101,7 +101,7 @@ onMounted(() => {
 }
 .is-light-setting {
   &:hover {
-    background-color: var(--ed-menu-hover-bg-color) !important;
+    background-color: #1f23291a !important;
   }
 }
 </style>
