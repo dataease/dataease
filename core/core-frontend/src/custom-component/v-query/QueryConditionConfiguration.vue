@@ -777,7 +777,7 @@ const handleBeforeClose = () => {
   handleDialogClick()
   dialogVisible.value = false
 }
-
+const emits = defineEmits(['queryData'])
 const confirmClick = () => {
   if (validate()) return
   inputCom.value?.mult?.handleClickOutside?.()
@@ -796,6 +796,9 @@ const confirmClick = () => {
   queryElement.value.cascade = cloneDeep(cascadeArr)
   cascadeArr = []
   snapshotStore.recordSnapshotCache()
+  nextTick(() => {
+    emits('queryData')
+  })
 }
 
 const cancelValueSource = () => {
