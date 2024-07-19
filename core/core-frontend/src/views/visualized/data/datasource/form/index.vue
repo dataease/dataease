@@ -6,7 +6,6 @@ import type { DsType } from './DsTypeList.vue'
 import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
-import EditorDetailPlugin from './EditorDetailPlugin.vue'
 import ExcelDetail from './ExcelDetail.vue'
 import { save, update, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
 import { Base64 } from 'js-base64'
@@ -41,6 +40,8 @@ interface Form {
   apiConfiguration?: ApiConfiguration[]
   paramsConfiguration?: ApiConfiguration[]
   syncSetting?: SyncSetting
+  isPlugin?: boolean
+  staticMap?: any
 }
 
 const { t } = useI18n()
@@ -66,6 +67,7 @@ state.datasourceTree = typeList.map(ele => {
 
 const activeStep = ref(0)
 const detail = ref()
+const xpack = ref()
 const excel = ref()
 const latestUseTypes = ref([])
 const currentType = ref<DsType>('OLTP')
@@ -79,7 +81,11 @@ const selectDsType = (type: string) => {
   activeStep.value = 1
   activeApiStep.value = 1
   nextTick(() => {
-    detail.value.initForm(type)
+    detail?.value?.initForm(type) ||
+      xpack?.value?.invokeMethod({
+        methodName: 'initForm',
+        args: type
+      })
     if (!dsTree.value) return
     currentTypeList.value
       .map(ele => ele.dbList)
@@ -142,6 +148,7 @@ const getDatasourceTypes = () => {
 }
 getDatasourceTypes()
 
+const pluginIndex = ref('')
 const pluginDs = ref([])
 const loadDsPlugin = data => {
   pluginDs.value = data
@@ -166,7 +173,11 @@ const getPluginStatic = type => {
   const arr = pluginDs.value.filter(ele => {
     return ele.type === type
   })
-  return arr && arr.length > 0 ? arr[0].staticMap?.index : null
+  return pluginIndex.value
+    ? pluginIndex.value
+    : arr && arr.length > 0
+    ? arr[0].staticMap?.index
+    : null
 }
 
 const getLatestUseTypes = () => {
@@ -280,6 +291,23 @@ const prev = () => {
   activeStep.value = activeStep.value - 1
 }
 
+const handleSubmit = param => {
+  const validateFrom = param.validate
+  if (param.eventName === 'saveDs') {
+    validateFrom(val => {
+      if (val) {
+        doSaveDs(param.args)
+      }
+    })
+  } else {
+    validateFrom(val => {
+      if (val) {
+        doValidateDs(param.args)
+      }
+    })
+  }
+}
+
 const validateDS = () => {
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
     Form,
@@ -302,32 +330,43 @@ const validateDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  const validateFrom = detail.value.submitForm()
-  validateFrom(val => {
-    if (val) {
-      validate(request).then(res => {
-        if (res.data.type === 'API') {
-          let error = 0
-          const status = JSON.parse(res.data.status) as Array<{ status: string; name: string }>
-          for (let i = 0; i < status.length; i++) {
-            if (status[i].status === 'Error') {
-              error++
-            }
-            for (let j = 0; j < form.apiConfiguration.length; j++) {
-              if (status[i].name === form.apiConfiguration[j].name) {
-                form.apiConfiguration[j].status = status[i].status
-              }
-            }
-          }
-          if (error === 0) {
-            ElMessage.success(t('datasource.validate_success'))
-          } else {
-            ElMessage.error('校验失败')
-          }
-        } else {
-          ElMessage.success(t('datasource.validate_success'))
+  if (isPlugin.value) {
+    xpack?.value?.invokeMethod({
+      methodName: 'submitForm',
+      args: [{ eventName: 'validateDs', args: request }]
+    })
+  } else {
+    const validateFrom = detail?.value?.submitForm()
+    validateFrom(val => {
+      if (val) {
+        doValidateDs(request)
+      }
+    })
+  }
+}
+
+const doValidateDs = request => {
+  validate(request).then(res => {
+    if (res.data.type === 'API') {
+      let error = 0
+      const status = JSON.parse(res.data.status) as Array<{ status: string; name: string }>
+      for (let i = 0; i < status.length; i++) {
+        if (status[i].status === 'Error') {
+          error++
         }
-      })
+        for (let j = 0; j < form.apiConfiguration.length; j++) {
+          if (status[i].name === form.apiConfiguration[j].name) {
+            form.apiConfiguration[j].status = status[i].status
+          }
+        }
+      }
+      if (error === 0) {
+        ElMessage.success(t('datasource.validate_success'))
+      } else {
+        ElMessage.error('校验失败')
+      }
+    } else {
+      ElMessage.success(t('datasource.validate_success'))
     }
   })
 }
@@ -404,40 +443,37 @@ const saveDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  const validate = detail.value.submitForm()
-  request.apiConfiguration = ''
-  validate(val => {
-    if (val) {
-      if (editDs.value && form.id) {
-        let options = {
-          confirmButtonType: 'danger',
-          type: 'warning',
-          autofocus: false,
-          showClose: false,
-          tip: ''
-        }
-        checkRepeat(request).then(res => {
-          let method = request.id === '' ? save : update
-          if (res) {
-            ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
-              () => {
-                if (dsLoading.value === true) {
-                  return
-                }
-                dsLoading.value = true
-                method(request)
-                  .then(res => {
-                    if (res !== undefined) {
-                      handleShowFinishPage({ id: res.id, name: res.name })
-                      ElMessage.success('保存数据源成功')
-                    }
-                  })
-                  .finally(() => {
-                    dsLoading.value = false
-                  })
-              }
-            )
-          } else {
+
+  if (isPlugin.value) {
+    xpack?.value?.invokeMethod({
+      methodName: 'submitForm',
+      args: [{ eventName: 'saveDs', args: request }]
+    })
+  } else {
+    const validate = detail?.value?.submitForm()
+    request.apiConfiguration = ''
+    validate(val => {
+      if (val) {
+        doSaveDs(request)
+      }
+    })
+  }
+}
+
+const doSaveDs = request => {
+  if (editDs.value && form.id) {
+    let options = {
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false,
+      tip: ''
+    }
+    checkRepeat(request).then(res => {
+      let method = request.id === '' ? save : update
+      if (res) {
+        ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
+          () => {
             if (dsLoading.value === true) {
               return
             }
@@ -453,12 +489,27 @@ const saveDS = () => {
                 dsLoading.value = false
               })
           }
-        })
+        )
       } else {
-        creatDsFolder.value.createInit('datasource', { id: pid.value, request }, '', form.name)
+        if (dsLoading.value === true) {
+          return
+        }
+        dsLoading.value = true
+        method(request)
+          .then(res => {
+            if (res !== undefined) {
+              handleShowFinishPage({ id: res.id, name: res.name })
+              ElMessage.success('保存数据源成功')
+            }
+          })
+          .finally(() => {
+            dsLoading.value = false
+          })
       }
-    }
-  })
+    })
+  } else {
+    creatDsFolder.value.createInit('datasource', { id: pid.value, request }, '', form.name)
+  }
 }
 
 const defaultForm = {
@@ -503,6 +554,9 @@ watch(
 )
 
 const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
+  isPlugin.value = nodeInfo?.isPlugin
+  pluginIndex.value = isPlugin.value ? nodeInfo?.staticMap?.index : null
+
   editDs.value = !!nodeInfo
   showFinishPage.value = false
 
@@ -543,7 +597,11 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
         })
       }
       nextTick(() => {
-        detail.value.clearForm()
+        detail?.value?.clearForm()
+        xpack?.value?.invokeMethod({
+          methodName: 'clearForm',
+          args: []
+        })
       })
     })
   }
@@ -711,10 +769,11 @@ defineExpose({
           ></editor-detail>
           <plugin-component
             :jsname="getPluginStatic(currentDsType)"
-            ref="detail"
+            ref="xpack"
             :form="form"
             :editDs="editDs"
             :active-step="activeApiStep"
+            @submitForm="handleSubmit"
             v-if="
               activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible && isPlugin
             "

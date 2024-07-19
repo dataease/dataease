@@ -141,7 +141,7 @@ const initForm = type => {
 
   form.value.type = type
   setTimeout(() => {
-    dsForm.value.clearValidate()
+    dsForm?.value?.clearValidate()
   }, 0)
 }
 

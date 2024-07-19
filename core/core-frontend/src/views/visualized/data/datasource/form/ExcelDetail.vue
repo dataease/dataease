@@ -29,6 +29,8 @@ export interface Param {
   id?: string
   name?: string
   creator?: string
+  isPlugin?: boolean
+  staticMap?: any
 }
 
 export interface Field {
