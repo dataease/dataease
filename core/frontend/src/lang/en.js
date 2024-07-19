@@ -671,6 +671,7 @@ export default {
       form_update_rule_none: 'Update Rules cannot be null',
       form_components_cannot_null: 'Form components cannot be null',
       option_list_cannot_empty: 'Option list cannot be empty',
+      option_list_datasource_cannot_empty: 'Datasource Settings of option list cannot be empty',
       component_setting_error: 'Component setting error',
       table_name: 'Table',
       form_column: 'Form Column',

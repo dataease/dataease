@@ -226,7 +226,6 @@ export default {
     }
   },
   created() {
-    this.handleClick()
   },
   mounted() {
     bus.$on('task-export-topic-call', this.taskExportTopicCall)

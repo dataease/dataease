@@ -722,6 +722,18 @@ export default {
                 }
               }
             }
+          } else {
+            if (f.settings.optionDatasource === undefined ||
+                  f.settings.optionTable === undefined ||
+                  f.settings.optionColumn === undefined) {
+              this.selectItem(f.id)
+              this.$message({
+                message: this.$t('data_fill.form.option_list_datasource_cannot_empty'),
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
           }
         }
       }
@@ -746,7 +758,7 @@ export default {
       forEach(this.formSettings.forms, f => {
         const temp = find(this.tempForms, tf => tf.id === f.id)
         if (temp) {
-          f.settings.updateRuleCheck = temp.updateRuleCheck
+          this.$set(f.settings, 'updateRuleCheck', temp.updateRuleCheck)
         }
       })
       this.closeEditCommitRule()

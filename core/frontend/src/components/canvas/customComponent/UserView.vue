@@ -778,8 +778,7 @@ export default {
       this.$message({
         message: h('p', null, [
           this.$t('data_export.exporting'),
-          this.editMode === 'preview'
-            ? h(
+          h(
               Button,
               {
                 props: {
@@ -793,7 +792,7 @@ export default {
                 }
               },
               this.$t('data_export.export_center')
-            ) : this.$t('data_export.export_center'),
+            ),
           this.$t('data_export.export_info')
         ]),
         iconClass,

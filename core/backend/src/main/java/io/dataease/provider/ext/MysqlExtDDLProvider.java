@@ -109,7 +109,16 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         StringBuilder builder = new StringBuilder("WHERE 1 = 1 ");
         for (TableField searchField : searchFields) {
             //目前只考虑等于
-            builder.append("AND $Column_Field$ = ? ".replace("$Column_Field$", searchField.getFieldName()));
+            if (searchField.getInCount() > 1) {
+                List<String> pList = new ArrayList<>();
+                for (int i = 0; i < searchField.getInCount(); i++) {
+                    pList.add("?");
+                }
+                String str = "AND $Column_Field$ IN (" + String.join(", ", pList) + ")";
+                builder.append(str.replace("$Column_Field$", searchField.getFieldName()));
+            } else {
+                builder.append("AND $Column_Field$ = ? ".replace("$Column_Field$", searchField.getFieldName()));
+            }
         }
         return builder.toString();
     }

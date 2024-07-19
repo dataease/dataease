@@ -435,9 +435,7 @@ public class OracleQueryProvider extends QueryProvider {
         xAxis.add(chartViewFieldDTO);
 
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>();
-//        for (ChartFieldCustomFilterDTO chartFieldCustomFilterDTO : OrgFieldCustomFilter) {
-//            fieldCustomFilter.add(chartFieldCustomFilterDTO);
-//        }
+
         ChartFieldCustomFilterDTO chartFieldCustomFilterDTO = new ChartFieldCustomFilterDTO();
         DatasetTableField datasetTableField = new DatasetTableField();
         datasetTableField.setOriginName("ROWNUM");
@@ -463,7 +461,6 @@ public class OracleQueryProvider extends QueryProvider {
 
         } else {
             if (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) {
-                System.out.println("SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, OrgFieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, fieldCustomFilter)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize());
                 return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, OrgFieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, fieldCustomFilter)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
             } else {
                 return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, OrgFieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, fieldCustomFilter)) + ") DE_RESULT_TMP ";
@@ -525,10 +522,12 @@ public class OracleQueryProvider extends QueryProvider {
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
         List<String> wheres = new ArrayList<>();
+        List<String> pageWheres = new ArrayList<>();
+
         if (customWheres != null) wheres.add(customWheres);
         if (extWheres != null) wheres.add(extWheres);
         if (whereTrees != null) wheres.add(whereTrees);
-        if (oldWhere != null) wheres.add(oldWhere);
+        if (oldWhere != null) pageWheres.add(oldWhere);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
@@ -539,6 +538,7 @@ public class OracleQueryProvider extends QueryProvider {
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", false);
         if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (CollectionUtils.isNotEmpty(orders)) st_sql.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
@@ -571,7 +571,7 @@ public class OracleQueryProvider extends QueryProvider {
                 .tableName(String.format(OracleConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 2))
                 .build();
-        if (CollectionUtils.isNotEmpty(wheres)) st2.add("filters", wheres);
+        if (CollectionUtils.isNotEmpty(pageWheres)) st2.add("filters", pageWheres);
         if (ObjectUtils.isNotEmpty(tableSQL)) st2.add("table", tableSQL2);
 
         return st2.render();
