@@ -23,6 +23,10 @@ public class XpackPluginsDatasourceVO implements Serializable {
 
     private String extraParams;
 
+    private String prefix;
+
+    private String suffix;
+
     private Map<String, String> staticMap;
 
 }

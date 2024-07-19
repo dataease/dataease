@@ -14,13 +14,14 @@ import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.dto.DsTypeDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
-import io.dataease.extensions.datasource.vo.PluginDatasourceType;
+import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
@@ -33,6 +34,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -53,6 +55,9 @@ public class DatasetSQLManage {
 
     @Resource
     private CorePermissionManage corePermissionManage;
+
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
@@ -362,16 +367,30 @@ public class DatasetSQLManage {
         } else {
             type = datasourceSchemaDTO.getType();
         }
+
         if (Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList().contains(type)) {
             DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(type);
             DsTypeDTO dto = new DsTypeDTO();
             BeanUtils.copyBean(dto, datasourceType);
             return dto;
         } else {
-            PluginDatasourceType.DatasourceType datasourceType = PluginDatasourceType.DatasourceType.valueOf(type);
-            DsTypeDTO dto = new DsTypeDTO();
-            BeanUtils.copyBean(dto, datasourceType);
-            return dto;
+            if (pluginManage != null) {
+                List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
+                List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), type)).toList();
+                if (ObjectUtils.isNotEmpty(list)) {
+                    XpackPluginsDatasourceVO first = list.getFirst();
+                    DsTypeDTO dto = new DsTypeDTO();
+                    dto.setName(first.getName());
+                    dto.setCatalog(first.getCategory());
+                    dto.setType(first.getType());
+                    dto.setPrefix(first.getPrefix());
+                    dto.setSuffix(first.getSuffix());
+                    return dto;
+                } else {
+                    DEException.throwException("当前数据源插件不存在");
+                }
+            }
+            return null;
         }
     }
 

@@ -32,11 +32,12 @@ import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
-import io.dataease.extensions.datasource.vo.PluginDatasourceType;
+import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.i18n.Translator;
 import io.dataease.job.schedule.CheckDsStatusJob;
 import io.dataease.job.schedule.ScheduleManager;
@@ -55,6 +56,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,6 +103,9 @@ public class DatasourceServer implements DatasourceApi {
     private ScheduleManager scheduleManager;
     @Resource
     private CoreUserManage coreUserManage;
+
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -853,8 +858,13 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
-        if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).toList().contains(datasource.getType())
-                && !Arrays.stream(PluginDatasourceType.DatasourceType.values()).map(PluginDatasourceType.DatasourceType::getType).toList().contains(datasource.getType())) {
+        List<String> list = datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).collect(Collectors.toList());
+        if (pluginManage != null) {
+            List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
+            xpackPluginsDatasourceVOS.forEach(ele -> list.add(ele.getType()));
+        }
+
+        if (!list.contains(datasource.getType())) {
             DEException.throwException("Datasource type not supported.");
         }
     }
