@@ -306,6 +306,9 @@ const showErrorInfo = info => {
 const pluginDs = ref([])
 const loadDsPlugin = data => {
   pluginDs.value = data
+  pluginDs.value.forEach(ele => {
+    typeMap[ele.type] = ele.name
+  })
 }
 const getDsIcon = data => {
   if (pluginDs?.value.length === 0) return null
@@ -606,6 +609,9 @@ const editDatasource = (editType?: number) => {
     nodeInfo.editType = editType
   }
   return getById(nodeInfo.id).then(res => {
+    let arr = pluginDs.value.filter(ele => {
+      return ele.type == res.data.type
+    })
     let {
       name,
       createBy,
@@ -648,7 +654,9 @@ const editDatasource = (editType?: number) => {
       syncSetting,
       apiConfiguration: apiConfigurationStr,
       paramsConfiguration: paramsStr,
-      lastSyncTime
+      lastSyncTime,
+      isPlugin: arr && arr.length > 0,
+      staticMap: arr[0]?.staticMap
     })
     datasourceEditor.value.init(datasource)
   })
