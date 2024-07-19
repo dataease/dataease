@@ -51,12 +51,11 @@ public class DeTaskExecutor {
 
     public void addRetryTask(Long taskId, Integer retryLimit, Integer retryInterval) {
         long saltTime = 3000L;
-        long interval = retryInterval == null ? 0L : retryInterval;
+        long interval = retryInterval == null ? 5L : retryInterval;
         long intervalMill = interval * 60000L;
         long now = System.currentTimeMillis();
-        long startTime = now - saltTime + intervalMill;
-        String cron = "0 */" + retryInterval + " * * * ?";
-        long endTime = (retryLimit - 1) * intervalMill + startTime + saltTime;
+        String cron = "0 */" + interval + " * * * ?";
+        long endTime = (retryLimit + 1) * intervalMill + now - saltTime;
         String key = taskId.toString();
         if (CronUtils.taskExpire(endTime)) {
             return;
@@ -68,7 +67,7 @@ public class DeTaskExecutor {
         jobDataMap.put(IS_RETRY_TASK, true);
         Date end = null;
         if (ObjectUtils.isNotEmpty(endTime)) end = new Date(endTime);
-        scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), end, jobDataMap);
+        scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(now), end, jobDataMap);
     }
 
     public boolean fireNow(Long taskId) throws Exception {
