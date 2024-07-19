@@ -31,6 +31,9 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
 
     // 模板来源 market = 模板市场；manage=模板管理
     private String source = "market";
+
+    // 模板分类 app = 应用模板；manage=样式模板
+    private String classify = "template";
     private List<MarketCategoryVO> categories;
 
     private List<String> categoryNames;
@@ -49,6 +52,7 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
         this.templateType = "dataV".equalsIgnoreCase(manageDTO.getDvType()) ? "SCREEN" : "PANEL";
         this.thumbnail = manageDTO.getSnapshot();
         this.source = "manage";
+        this.classify = manageDTO.getNodeType();
         if (manageDTO.getRecentUseTime() != null) {
             this.recentUseTime = manageDTO.getRecentUseTime();
             this.categories.add(new MarketCategoryVO("最近使用"));
