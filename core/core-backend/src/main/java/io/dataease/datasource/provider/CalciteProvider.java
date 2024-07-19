@@ -194,7 +194,6 @@ public class CalciteProvider extends Provider {
         List<TableField> fieldList = new ArrayList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
-        System.out.println(columnCount);
         for (int j = 0; j < columnCount; j++) {
             String columnName = metaData.getColumnName(j + 1);
             String label = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : columnName;
