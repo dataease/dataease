@@ -985,8 +985,8 @@ export default {
       this.scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
       const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
       const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
-      recursionTransObj(customAttrTrans, customAttrChart, this.scale, this.scaleCoefficientType)
-      recursionTransObj(customStyleTrans, customStyleChart, this.scale, this.scaleCoefficientType)
+      recursionTransObj(customAttrTrans, customAttrChart, this.scale, this.scaleCoefficientType, this.chart?.render)
+      recursionTransObj(customStyleTrans, customStyleChart, this.scale, this.scaleCoefficientType, this.chart?.render)
       // 移动端地图标签不显示
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
         customAttrChart.label.show = false
