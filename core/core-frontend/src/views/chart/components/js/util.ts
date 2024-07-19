@@ -513,6 +513,9 @@ export const exportExcelDownload = (chart, callBack?) => {
 
   const linkStore = useLinkStoreWithOut()
 
+  if (isDataEaseBi.value || appStore.getIsIframe) {
+    request.isDataEaseBi = true
+  }
   innerExportDetails(request)
     .then(res => {
       if (linkStore.getLinkToken || isDataEaseBi.value || appStore.getIsIframe) {

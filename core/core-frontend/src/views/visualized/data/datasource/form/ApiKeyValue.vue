@@ -46,6 +46,11 @@ onBeforeMount(() => {
   if (!items.value.length || items.value[items.value.length - 1].name) {
     items.value.push(new KeyValue({ enable: true, name: '', value: '' }))
   }
+  for (let i = 0; i < items.value.length; i++) {
+    if (!items.value[i].hasOwnProperty('nameType')) {
+      items.value[i].nameType = 'fixed'
+    }
+  }
 })
 
 const activeName = inject('api-active-name')
@@ -56,7 +61,7 @@ const remove = (index: number) => {
   items.value.splice(index, 1)
 }
 const change = () => {
-  items.value.push(new KeyValue({ enable: true }))
+  items.value.push(new KeyValue({ enable: true, nameType: 'fixed' }))
 }
 const isDisable = () => {
   return items.value.length === 1

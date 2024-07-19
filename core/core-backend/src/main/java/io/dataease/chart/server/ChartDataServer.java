@@ -89,7 +89,7 @@ public class ChartDataServer implements ChartDataApi {
     public void innerExportDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = httpServletRequest.getHeader(AuthConstant.LINK_TOKEN_KEY);
-        if (StringUtils.isEmpty(linkToken)) {
+        if (StringUtils.isEmpty(linkToken) || !request.isDataEaseBi()) {
             exportCenterManage.addTask(request.getViewId(), "chart", request);
             return;
         }
