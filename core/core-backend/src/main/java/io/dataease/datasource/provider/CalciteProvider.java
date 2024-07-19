@@ -1,6 +1,7 @@
 package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.gson.Gson;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import io.dataease.commons.utils.CommonThreadPool;
@@ -188,6 +189,28 @@ public class CalciteProvider extends Provider {
         return map;
     }
 
+
+    private List<TableField> fetchResultField(ResultSet rs ) throws Exception {
+        List<TableField> fieldList = new ArrayList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        System.out.println(columnCount);
+        for (int j = 0; j < columnCount; j++) {
+            String columnName = metaData.getColumnName(j + 1);
+            String label = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : columnName;
+            TableField tableField = new TableField();
+            tableField.setOriginName(columnName);
+            tableField.setName(label);
+            tableField.setType(metaData.getColumnTypeName(j + 1));
+            tableField.setFieldType(tableField.getType());
+            int deType = FieldUtils.transType2DeType(tableField.getType());
+            tableField.setDeExtractType(deType);
+            tableField.setDeType(deType);
+            fieldList.add(tableField);
+        }
+        return fieldList;
+    }
+
     @Override
     public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
         List<TableField> datasetTableFields = new ArrayList<>();
@@ -219,8 +242,9 @@ public class CalciteProvider extends Provider {
             ResultSet resultSet = null;
             try (ConnectionObj con = getConnection(datasourceRequest.getDatasource());
                  Statement statement = getStatement(con.getConnection(), 30)) {
-                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo") || datasourceRequest.getDatasource().getType().equalsIgnoreCase("doris")) {
+                    resultSet = statement.executeQuery("select * from " + table + " limit 0 offset 0 ");
+                    return fetchResultField(resultSet);
                 }
                 resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
                 while (resultSet.next()) {
@@ -341,7 +365,7 @@ public class CalciteProvider extends Provider {
         }
     }
 
-    private Session initSession(DatasourceConfiguration configuration) throws Exception{
+    private Session initSession(DatasourceConfiguration configuration) throws Exception {
         JSch jsch = new JSch();
         Session session = jsch.getSession(configuration.getSshUserName(), configuration.getSshHost(), configuration.getSshPort());
         if (!configuration.getSshType().equalsIgnoreCase("password")) {
@@ -357,7 +381,6 @@ public class CalciteProvider extends Provider {
 
         return session;
     }
-
 
 
     private DatasetTableDTO getTableDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
@@ -979,10 +1002,10 @@ public class CalciteProvider extends Provider {
         switch (datasourceType) {
             case StarRocks:
             case doris:
+            case mongo:
                 tableSqls.add("show tables");
                 break;
             case mysql:
-            case mongo:
             case mariadb:
             case TiDB:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
