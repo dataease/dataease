@@ -549,6 +549,7 @@ const sourceLinkageInfoFilter = computed(() => {
   if (state.sourceLinkageInfo.targetViewFields) {
     const curCheckAllAxisStr =
       JSON.stringify(state.curLinkageViewInfo.xAxis) +
+      JSON.stringify(state.curLinkageViewInfo.drillFields) +
       JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
       (state.curLinkageViewInfo.type.includes('chart-mix')
         ? JSON.stringify(state.curLinkageViewInfo.extBubble)
