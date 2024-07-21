@@ -131,6 +131,7 @@ import {
   ElForm,
   ElFormItem,
   ElInput,
+  ElMessage,
   ElTreeSelect
 } from 'element-plus-secondary'
 import { computed, PropType, reactive, ref, toRefs } from 'vue'
@@ -289,6 +290,16 @@ const close = () => {
 }
 
 const saveApp = () => {
+  let datasourceMatchReady = true
+  state.appData.datasourceInfo.forEach(datasource => {
+    if (!datasource.systemDatasourceId) {
+      datasourceMatchReady = false
+    }
+  })
+  if (!datasourceMatchReady) {
+    ElMessage.error('存在未配置的数据源')
+    return
+  }
   appSaveForm.value?.validate(valid => {
     if (valid) {
       // 还原datasource

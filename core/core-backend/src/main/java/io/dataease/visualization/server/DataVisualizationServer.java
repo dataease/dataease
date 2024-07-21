@@ -16,6 +16,7 @@ import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -203,16 +204,24 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 appCoreDatasourceVO.forEach(datasourceOld ->{
                     newDatasourceId.add(datasourceOld.getSystemDatasourceId());
                     // Excel 数据表明映射
-                    if (StringUtils.isNotEmpty(datasourceOld.getConfiguration()) && datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
-                        dsTableNamesMap.put(datasourceOld.getId(),ExcelUtils.getTableNamesMap(datasourceOld.getConfiguration()));
+                    if (StringUtils.isNotEmpty(datasourceOld.getConfiguration())) {
+                        if( datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())){
+                            dsTableNamesMap.put(datasourceOld.getId(),ExcelUtils.getTableNamesMap(datasourceOld.getConfiguration()));
+                        }else if(datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.API.name())){
+                            dsTableNamesMap.put(datasourceOld.getId(), ApiUtils.getTableNamesMap(datasourceOld.getConfiguration()));
+                        }
                     }
                 });
 
                 List<CoreDatasource> systemDatasource = coreDatasourceMapper.selectBatchIds(newDatasourceId);
                 systemDatasource.forEach(datasourceNew ->{
                     // Excel 数据表明映射
-                    if (StringUtils.isNotEmpty(datasourceNew.getConfiguration()) && datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
-                        dsTableNamesMap.put(datasourceNew.getId(),ExcelUtils.getTableNamesMap(datasourceNew.getConfiguration()));
+                    if (StringUtils.isNotEmpty(datasourceNew.getConfiguration())) {
+                        if(datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())){
+                            dsTableNamesMap.put(datasourceNew.getId(),ExcelUtils.getTableNamesMap(datasourceNew.getConfiguration()));
+                        }else if(datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.API.name())){
+                            dsTableNamesMap.put(datasourceNew.getId(), ApiUtils.getTableNamesMap(datasourceNew.getConfiguration()));
+                        }
                     }
                 });
                 datasourceIdMap.putAll(appData.getDatasourceInfo().stream()
