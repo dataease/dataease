@@ -58,6 +58,20 @@ public class ExcelUtils {
         return tableDescs;
     }
 
+    public static Map<String,String> getTableNamesMap(String configration) throws DEException {
+        Map<String,String> result = new HashMap<>();
+        try {
+            JsonNode rootNode = objectMapper.readTree(configration);
+            for (int i = 0; i < rootNode.size(); i++) {
+                result.put(rootNode.get(i).get("tableName").asText(),rootNode.get(i).get("deTableName").asText());
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+
+        return result;
+    }
+
     public static String getFileName(CoreDatasource datasource) throws DEException {
         try {
             JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
