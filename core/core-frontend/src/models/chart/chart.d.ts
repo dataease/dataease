@@ -58,6 +58,13 @@ declare interface Chart {
   aggregate?: boolean
   plugin?: CustomPlugin
   isPlugin: boolean
+  extremumValues?: Map<string, any>
+  filteredData?: any[]
+  container?: string
+  /**
+   * 针对不是序列字段的图表，通过获取分类字段的值作为序列字段
+   */
+  seriesFieldObjs?: any[]
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>
@@ -121,6 +128,10 @@ declare interface SeriesFormatter extends Axis {
    * 轴类型
    */
   axisType: string
+  /**
+   * 显示极值
+   */
+  showExtremum?: boolean
 }
 
 declare interface Axis extends ChartViewField {

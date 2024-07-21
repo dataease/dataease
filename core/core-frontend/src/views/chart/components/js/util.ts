@@ -12,6 +12,8 @@ import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { deepCopy } from '@/utils/utils'
 
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
@@ -882,4 +884,370 @@ export function setUpStackSeriesColor(
     })
   }
   return result
+}
+
+/**
+ * 注册极值点事件处理函数
+ * 该函数用于在新建的图表上注册极值点显示的事件处理逻辑，根据图表类型和配置数据处理极值点的显示
+ *
+ * @param newChart 新建的图表对象，用于绑定事件
+ * @param chart 原有的图表对象，用于存储处理后的数据和配置
+ * @param options 图表的配置选项，包含数据和各种配置项
+ * @param container 图表的容器，用于设置图表的容器
+ */
+export const registerExtremumPointEvt = (newChart, chart, options, container) => {
+  chart.container = container
+  const { label: labelAttr } = parseJson(chart.customAttr)
+  let seriesFields = []
+  // 针对不是序列字段的图表，通过获取分类字段的值作为序列字段,在标签配置时使用
+  const seriesFieldObjs = []
+  // 分组柱状图这种字段分类的图表，需要按照分类字段的值作为序列字段
+  if (['bar-group'].includes(chart.type)) {
+    const xAxisExt = chart.xAxisExt || []
+    seriesFields = [...new Set(options.data.map(item => item.category))]
+    if (xAxisExt.length === 0) {
+      seriesFields = ['@']
+    }
+    seriesFields.forEach(field => {
+      seriesFieldObjs.push({
+        dataeaseName:
+          xAxisExt.length === 0
+            ? 'f_' + chart.xAxis[0].dataeaseName + '_' + field
+            : chart.xAxisExt[0]?.dataeaseName + '_' + field,
+        name: field,
+        showExtremum: labelAttr.showExtremum,
+        formatterCfg: labelAttr.labelFormatter
+      })
+    })
+    chart.seriesFieldObjs = seriesFieldObjs
+  } else {
+    seriesFields = chart.yAxis.map(item => item.name)
+  }
+  // 筛选数据区间，默认所有数据
+  let filterDataRange = [0, options.data.length - 1]
+  const senior = parseJson(chart.senior)
+  // 高级配置了缩略轴，按照缩略轴默认配置进行区间配置
+  if (senior.functionCfg) {
+    if (senior.functionCfg.sliderShow) {
+      const cfg = {
+        start: senior.functionCfg.sliderRange[0] / 100,
+        end: senior.functionCfg.sliderRange[1] / 100
+      }
+      const dataLength = options.data.length / seriesFields.length
+      // 使用round方法，与antv 内置过滤数据方式一致，否则会出现数据区间错误
+      const startIndex = Math.round(cfg.start * (dataLength - 1))
+      const endIndex = Math.round(cfg.end * (dataLength - 1))
+      filterDataRange = [startIndex, endIndex]
+    }
+  }
+  // 通过区间筛选的数据
+  const filteredData = []
+  // 如果是根据字段值分类的图表时，并且没有子类别时
+  if (seriesFieldObjs.length > 0 && chart.xAxisExt[0]) {
+    // 按照字段值分类维度聚合数据
+    const fieldGroupList = options.data.reduce((groups, item) => {
+      const field = item.field
+      if (!groups[field]) {
+        groups[field] = []
+      }
+      groups[field].push(item)
+      return groups
+    }, {})
+    // 需要重新计算数据区间，因为数据区间是根据字段值分类维度聚合的数据
+    if (senior.functionCfg) {
+      if (senior.functionCfg.sliderShow) {
+        const cfg = {
+          start: senior.functionCfg.sliderRange[0] / 100,
+          end: senior.functionCfg.sliderRange[1] / 100
+        }
+        const dataLength = Object.keys(fieldGroupList).length
+        const startIndex = Math.round(cfg.start * (dataLength - 1))
+        const endIndex = Math.round(cfg.end * (dataLength - 1))
+        filterDataRange = [startIndex, endIndex]
+        Object.keys(fieldGroupList)
+          .slice(filterDataRange[0], filterDataRange[1] + 1)
+          .forEach(field => {
+            filteredData.push(...fieldGroupList[field])
+          })
+      }
+    }
+  } else {
+    seriesFields.forEach(field => {
+      const seriesFieldData = options.data.filter(
+        item => (item.category === '' ? '@' : item.category) === field
+      )
+      filteredData.push(...seriesFieldData.slice(filterDataRange[0], filterDataRange[1] + 1))
+    })
+  }
+  chart.filteredData = filteredData
+  if (options.legend) {
+    newChart.on('legend-item:click', ev => {
+      hideExtremumPoint(ev, chart)
+    })
+  }
+  if (options.slider) {
+    newChart.once('slider:valuechanged', _ev => {
+      newChart.on('beforerender', ev => {
+        sliderHandleExtremumPoint(ev, chart, options)
+      })
+    })
+  }
+  configExtremum(chart)
+}
+
+/**
+ * 创建极值point
+ * @param key
+ * @param value
+ * @param formatterCfg
+ * @param chartId
+ */
+const createExtremumPointDiv = (key, value, formatterCfg, chartId) => {
+  const id = key.split('@')[1] + '_' + value
+  const parentElement = document.getElementById(chartId)
+  if (parentElement) {
+    const element = document.getElementById(id)
+    if (!element) {
+      const div = document.createElement('div')
+      div.id = id
+      div.setAttribute(
+        'style',
+        `width: auto;
+        height: auto;
+        border-radius: 2px;
+        position: relative;
+        padding: 2px 5px 2px 5px;
+        display:none;
+        transform: translateX(-50%);
+        white-space:nowrap;`
+      )
+      div.textContent = valueFormatter(value, formatterCfg)
+      const span = document.createElement('span')
+      span.setAttribute(
+        'style',
+        `display: block;
+        width: 0px;
+        height: 0px;
+        border: 4px solid transparent;
+        border-top-color: red;
+        position: absolute;
+        left: calc(50% - 4px);
+        margin-top:2px;`
+      )
+      div.appendChild(span)
+      parentElement.appendChild(div)
+    }
+  }
+}
+
+/**
+ * 根据序列字段以及数据获取极值
+ * @param seriesLabelFormatter
+ * @param data
+ * @param chartId
+ */
+export const getExtremumValues = (seriesLabelFormatter, data, chartId) => {
+  const extremumValues = new Map()
+  seriesLabelFormatter.forEach((item: any) => {
+    if (!data.length || !item.showExtremum) return
+    const filteredData = data.filter(d => (d.category == '' ? '@' : d.category) === item.name)
+    const maxValue = Math.max(...filteredData.map(d => d.value))
+    const minValue = Math.min(...filteredData.map(d => d.value))
+    const maxObj = filteredData.find(d => d.value === maxValue)
+    const minObj = filteredData.find(d => d.value === minValue)
+    extremumValues.set(item.name + '@' + item.dataeaseName + '_' + chartId, {
+      cfg: item.formatterCfg,
+      value: [maxObj, minObj]
+    })
+  })
+  return extremumValues
+}
+
+/**
+ * 配置极值点dom
+ * @param chart
+ */
+export const configExtremum = (chart: Chart) => {
+  let customAttr: DeepPartial<ChartAttr>
+  // 清除图表标注
+  const pointElement = document.getElementById('point_' + chart.id)
+  if (pointElement) {
+    pointElement.remove()
+    pointElement.parentNode?.removeChild(pointElement)
+  }
+  if (chart.customAttr) {
+    customAttr = parseJson(chart.customAttr)
+    // label
+    if (customAttr.label?.show) {
+      const label = customAttr.label
+      let seriesLabelFormatter = []
+      if (chart.seriesFieldObjs && chart.seriesFieldObjs.length > 0) {
+        seriesLabelFormatter = chart.seriesFieldObjs
+      } else {
+        seriesLabelFormatter = deepCopy(label.seriesLabelFormatter)
+      }
+      if (seriesLabelFormatter.length > 0) {
+        chart.extremumValues = getExtremumValues(
+          seriesLabelFormatter,
+          chart.filteredData && chart.filteredData.length > 0
+            ? chart.filteredData
+            : chart.data.data,
+          chart.id
+        )
+        // 创建标注父元素
+        const divParent = document.createElement('div')
+        divParent.id = 'point_' + chart.id
+        divParent.style.position = 'fixed'
+        divParent.style.zIndex = '1'
+        const containerElement = document.getElementById(chart.container)
+        containerElement.insertBefore(divParent, containerElement.firstChild)
+        chart.extremumValues?.forEach((value, key) => {
+          value.value?.forEach(extremumValue => {
+            if (extremumValue) {
+              createExtremumPointDiv(key, extremumValue.value, value.cfg, 'point_' + chart.id)
+            }
+          })
+        })
+      }
+    }
+  }
+}
+
+/**
+ * 设置极值位置,并返回是否显示原始标签值
+ * @param data 数据点数据
+ * @param point 数据点信息
+ * @param chart
+ * @param labelCfg 标签样式
+ * @param pointSize 数据点大小
+ */
+export const setExtremumPosition = (data, point, chart, labelCfg, pointSize) => {
+  if (chart.extremumValues) {
+    v: for (const [key, value] of chart.extremumValues.entries()) {
+      for (let i = 0; i < value.value.length; i++) {
+        if (
+          value.value[i] &&
+          data.category === value.value[i].category &&
+          data.value === value.value[i].value
+        ) {
+          const id = key.split('@')[1] + '_' + data.value
+          const element = document.getElementById(id)
+          if (element) {
+            element.style.position = 'absolute'
+            element.style.top =
+              (point.y[1] ? point.y[1] : point.y) -
+              (labelCfg.fontSize + (pointSize ? pointSize : 0) + 8) +
+              'px'
+            element.style.left = point.x + 'px'
+            element.style.zIndex = '10'
+            element.style.fontSize = labelCfg.fontSize + 'px'
+            element.style.lineHeight = labelCfg.fontSize + 'px'
+            element.style.backgroundColor = point.color
+            element.style.color = labelCfg.color
+            element.children[0]['style'].borderTopColor = point.color
+            element.style.display = 'table'
+            return false
+          }
+        }
+      }
+    }
+  }
+  return true
+}
+
+/**
+ * 隐藏图表中的极端数据点
+ * 根据图例的选中状态，动态隐藏或显示图表中对应数据点的详细信息div
+ * @param ev 图表的事件对象，包含图例的选中状态
+ * @param chart 图表实例，用于获取图表的配置和数据
+ */
+export const hideExtremumPoint = (ev, chart) => {
+  // 获取图例中被取消选中的项，这些项对应的数据点将被隐藏
+  const hideLegendObj = ev.view
+    .getController('legend')
+    .components[0].component.cfg.items.filter(l => l.unchecked)
+
+  // 遍历图表数据，对每个数据点进行处理
+  chart.data.data.forEach(item => {
+    // 根据图表的系列字段配置，获取数据点对应的dataeaseName
+    let dataeaseName = ''
+    if (chart.seriesFieldObjs && chart.seriesFieldObjs.length > 0) {
+      dataeaseName = chart.seriesFieldObjs.find(
+        obj => obj.name === (item.category === '' ? item.field : item.category)
+      )?.dataeaseName
+    } else {
+      dataeaseName = chart.data.fields.find(
+        field => field.id === item.quotaList[0].id
+      )?.dataeaseName
+    }
+    // 根据数据点的信息生成唯一id，用于查找对应的详细信息div
+    const divElementId = `${dataeaseName}_${chart.id}_${item.value}`
+    const divElement = document.getElementById(divElementId)
+    // 如果找到了对应的数据点详细信息div，则根据图例的选中状态，动态隐藏或显示该div
+    if (divElement) {
+      const shouldHide = hideLegendObj?.some(
+        hide => hide.id === (item.category === '' ? item.field : item.category)
+      )
+      divElement.style.display = shouldHide ? 'none' : 'table'
+    }
+  })
+}
+
+/**
+ * 根据滑动操作更新图表的显示数据
+ * 此函数用于处理滑动组件的操作事件，根据滑动组件的位置，动态更新图表显示的数据范围
+ * @param ev 滑动操作的事件对象，包含当前滑动位置的信息
+ * @param chart 图表对象，用于更新图表的显示数据
+ * @param options 滑动组件的配置选项，包含滑动组件的初始数据等信息
+ */
+export const sliderHandleExtremumPoint = (ev, chart, options) => {
+  let seriesFields = []
+  // 如果chart中存在seriesFieldObjs且不为空，则使用seriesFieldObjs中的name作为系列字段
+  // 否则，使用yAxis中的name作为系列字段
+  if (chart.seriesFieldObjs && chart.seriesFieldObjs.length > 0) {
+    seriesFields = chart.seriesFieldObjs.map(item => item.name)
+  } else {
+    seriesFields = chart.yAxis.map(item => item.name)
+  }
+  // 筛选当前视图中已过滤的数据的类别，并去重
+  const filteredDataSeriesFields = [
+    ...new Set(ev.view.filteredData.map(({ category }) => category))
+  ]
+  // 如果筛选后的数据类别的数量与系列字段的数量相等，说明所有数据都被筛选出来了
+  // 此时直接使用视图中的过滤数据
+  if (filteredDataSeriesFields.length === seriesFields.length) {
+    chart.filteredData = ev.view.filteredData
+  } else {
+    // 否则，找出当前筛选位置的起始和结束数据对象
+    // 获取筛选后的数据的起止索引
+    const objList = ev.view.filteredData.filter(
+      item => item.category === filteredDataSeriesFields[0]
+    )
+    const startObj = objList[0]
+    const endObj = objList[objList.length - 1]
+    let start = 0
+    let end = 0
+    // 遍历options中的数据，找到起始和结束索引
+    options.data
+      .filter(item => filteredDataSeriesFields[0] === item.category)
+      .forEach((item, index) => {
+        if (JSON.stringify(startObj) === JSON.stringify(item)) {
+          start = index
+        }
+        if (JSON.stringify(endObj) === JSON.stringify(item)) {
+          end = index
+        }
+      })
+    const filteredData = []
+    // 重新计算被隐藏的序列字段数据
+    seriesFields
+      .filter(field => !filteredDataSeriesFields.includes(field))
+      ?.forEach(field => {
+        const seriesFieldData = options.data.filter(item => item.category === field)
+        filteredData.push(...seriesFieldData.slice(start, end + 1))
+      })
+    // 将筛选出的数据与当前视图中的过滤数据合并，更新图表的显示数据
+    chart.filteredData = [...filteredData, ...ev.view.filteredData]
+  }
+  configExtremum(chart)
 }
