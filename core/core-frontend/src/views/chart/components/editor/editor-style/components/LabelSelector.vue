@@ -89,7 +89,8 @@ const initSeriesLabel = () => {
       ...next,
       show: true,
       color: COMPUTED_DEFAULT_LABEL.value.color,
-      fontSize: COMPUTED_DEFAULT_LABEL.value.fontSize
+      fontSize: COMPUTED_DEFAULT_LABEL.value.fontSize,
+      showExtremum: false
     } as SeriesFormatter
     if (seriesAxisMap[next.id]) {
       tmp = {
@@ -97,7 +98,8 @@ const initSeriesLabel = () => {
         formatterCfg: seriesAxisMap[next.id].formatterCfg,
         show: seriesAxisMap[next.id].show,
         color: seriesAxisMap[next.id].color,
-        fontSize: seriesAxisMap[next.id].fontSize
+        fontSize: seriesAxisMap[next.id].fontSize,
+        showExtremum: seriesAxisMap[next.id].showExtremum
       }
     }
     formatter.push(tmp)
@@ -804,7 +806,7 @@ onMounted(() => {
             v-model="curSeriesFormatter.show"
             label="quota"
           >
-            {{ t('chart.show') }}
+            {{ t('chart.label') + t('chart.show') }}
           </el-checkbox>
         </el-form-item>
 
@@ -950,8 +952,34 @@ onMounted(() => {
             />
           </el-form-item>
         </div>
+        <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
+          <el-checkbox
+            :effect="themes"
+            size="small"
+            @change="changeLabelAttr('seriesLabelFormatter')"
+            v-model="curSeriesFormatter.showExtremum"
+            label="quota"
+          >
+            {{ t('chart.show') }}最值
+          </el-checkbox>
+        </el-form-item>
       </template>
     </div>
+    <el-form-item
+      class="form-item form-item-checkbox"
+      :class="'form-item-' + themes"
+      v-if="['bar-group'].includes(chartType)"
+    >
+      <el-checkbox
+        :effect="themes"
+        size="small"
+        @change="changeLabelAttr('showExtremum')"
+        v-model="state.labelForm.showExtremum"
+        label="quota"
+      >
+        {{ t('chart.show') }}最值
+      </el-checkbox>
+    </el-form-item>
     <el-form-item class="form-item" :class="'form-item-' + themes" v-show="showProperty('showGap')">
       <el-checkbox
         :effect="themes"

@@ -8,6 +8,8 @@ import {
   flow,
   hexColorToRGBA,
   parseJson,
+  registerExtremumPointEvt,
+  setExtremumPosition,
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
 import { cloneDeep, isEmpty } from 'lodash-es'
@@ -107,7 +109,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     const newChart = new G2Line(container, options)
 
     newChart.on('point:click', action)
-
+    registerExtremumPointEvt(newChart, chart, options, container)
     return newChart
   }
 
@@ -119,7 +121,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         label: false
       }
     }
-    const labelAttr = parseJson(chart.customAttr).label
+    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
     const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
       pre[next.id] = next
       return pre
@@ -130,7 +132,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       ...tmpOptions.label,
       offsetY: -8,
       layout: [{ type: 'hide-overlap' }, { type: 'limit-in-plot' }],
-      formatter: (data: Datum) => {
+      formatter: (data: Datum, point) => {
         if (!labelAttr.seriesLabelFormatter?.length) {
           return data.value
         }
@@ -142,20 +144,33 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
           return
         }
         const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
-        group.addShape({
-          type: 'text',
-          attrs: {
-            x: 0,
-            y: 0,
-            text: value,
-            textAlign: 'start',
-            textBaseline: 'top',
-            fontSize: labelCfg.fontSize,
-            fill: labelCfg.color
-          }
-        })
-        return group
+        const showLabel = setExtremumPosition(
+          data,
+          point,
+          chart,
+          labelCfg,
+          basicStyle.lineSymbolSize
+        )
+        const has = chart.filteredData?.filter(
+          item => JSON.stringify(item) === JSON.stringify(data)
+        )
+        if (has?.length > 0 && showLabel) {
+          const group = new G2PlotChartView.engine.Group({})
+          group.addShape({
+            type: 'text',
+            attrs: {
+              x: 0,
+              y: 0,
+              text: value,
+              textAlign: 'start',
+              textBaseline: 'top',
+              fontSize: labelCfg.fontSize,
+              fill: labelCfg.color
+            }
+          })
+          return group
+        }
+        return null
       }
     }
     return {

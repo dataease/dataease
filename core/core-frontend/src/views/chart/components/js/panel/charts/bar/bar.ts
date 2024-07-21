@@ -8,6 +8,8 @@ import {
   flow,
   hexColorToRGBA,
   parseJson,
+  registerExtremumPointEvt,
+  setExtremumPosition,
   setUpGroupSeriesColor,
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
@@ -107,7 +109,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
 
     const newChart = new Column(container, options)
     newChart.on('interval:click', action)
-
+    registerExtremumPointEvt(newChart, chart, options, container)
     return newChart
   }
 
@@ -119,7 +121,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         label: false
       }
     }
-    const labelAttr = parseJson(chart.customAttr).label
+    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
     const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
       pre[next.id] = next
       return pre
@@ -129,7 +131,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     const label = {
       fields: [],
       ...tmpOptions.label,
-      formatter: (data: Datum) => {
+      formatter: (data: Datum, point) => {
         if (!labelAttr.seriesLabelFormatter?.length) {
           return data.value
         }
@@ -141,20 +143,33 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
           return
         }
         const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
-        group.addShape({
-          type: 'text',
-          attrs: {
-            x: 0,
-            y: 0,
-            text: value,
-            textAlign: 'start',
-            textBaseline: 'top',
-            fontSize: labelCfg.fontSize,
-            fill: labelCfg.color
-          }
-        })
-        return group
+        const showLabel = setExtremumPosition(
+          data,
+          point,
+          chart,
+          labelCfg,
+          basicStyle.lineSymbolSize
+        )
+        const has = chart.filteredData?.filter(
+          item => JSON.stringify(item) === JSON.stringify(data)
+        )
+        if (has.length > 0 && showLabel) {
+          const group = new G2PlotChartView.engine.Group({})
+          group.addShape({
+            type: 'text',
+            attrs: {
+              x: 0,
+              y: 0,
+              text: value,
+              textAlign: 'start',
+              textBaseline: 'top',
+              fontSize: labelCfg.fontSize,
+              fill: labelCfg.color
+            }
+          })
+          return group
+        }
+        return null
       }
     }
     return {
@@ -331,6 +346,36 @@ export class GroupBar extends StackBar {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1
+    }
+  }
+
+  protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const baseOptions = super.configLabel(chart, options)
+    if (!baseOptions.label) {
+      return baseOptions
+    }
+    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
+    baseOptions.label.style.fill = labelAttr.color
+    const label = {
+      ...baseOptions.label,
+      formatter: function (param: Datum, point) {
+        const showLabel = setExtremumPosition(
+          param,
+          point,
+          chart,
+          labelAttr,
+          basicStyle.lineSymbolSize
+        )
+        const has = chart.filteredData?.filter(
+          item => JSON.stringify(item) === JSON.stringify(param)
+        )
+        const value = valueFormatter(param.value, labelAttr.labelFormatter)
+        return has.length > 0 && showLabel ? value : null
+      }
+    }
+    return {
+      ...baseOptions,
+      label
     }
   }
 
