@@ -347,7 +347,7 @@ watch(
             v-model="chart.customAttr.label.show"
             :change-model="chart.customAttr.label"
             @modelChange="val => onLabelChange(val, 'show')"
-            :title="$t('chart.label')"
+            :title="$t('chart.label') + '11'"
             name="label"
           >
             <label-selector

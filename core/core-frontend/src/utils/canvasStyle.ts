@@ -296,6 +296,23 @@ export function getScaleValue(propValue, scale) {
   const propValueTemp = Math.round(propValue * scale)
   return propValueTemp > 1 ? propValueTemp : 1
 }
+export const THEME_ATTR_TRANS_ARR_MAIN = {
+  label: {
+    seriesLabelFormatter: {
+      isArray: []
+    }
+  }
+}
+
+export function seriesAdaptor(template, color) {
+  template.label?.seriesLabelFormatter?.forEach(series => {
+    series['color'] = color
+  })
+
+  template.label?.seriesTooltipFormatter?.forEach(series => {
+    series['color'] = color
+  })
+}
 
 export function recursionTransObj(template, infoObj, scale, terminal) {
   for (const templateKey in template) {
@@ -378,6 +395,7 @@ export function adaptCurTheme(customStyle, customAttr) {
       customAttr,
       LIGHT_THEME_COMPONENT_BACKGROUND
     )
+    seriesAdaptor(customAttr, LIGHT_THEME_COLOR_MAIN)
     merge(customAttr, DEFAULT_COLOR_CASE, canvasStyle.component.chartColor)
   } else {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, DARK_THEME_COLOR_MAIN)
@@ -388,6 +406,7 @@ export function adaptCurTheme(customStyle, customAttr) {
       customAttr,
       DARK_THEME_COMPONENT_BACKGROUND_BACK
     )
+    seriesAdaptor(customAttr, DARK_THEME_COLOR_MAIN)
     merge(customAttr, DEFAULT_COLOR_CASE_DARK, canvasStyle.component.chartColor)
   }
   customStyle['text'] = {
