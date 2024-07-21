@@ -14,8 +14,14 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetGroupManage;
+import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
@@ -56,6 +62,7 @@ import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -124,6 +131,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
+    @Autowired
+    private CoreDatasourceMapper coreDatasourceMapper;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -183,9 +192,29 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<Long,Long> dsTableIdMap = new HashMap<>();
         Map<Long,Long> dsTableFieldsIdMap = new HashMap<>();
         Map<Long,Long> datasourceIdMap = new HashMap<>();
+        Map<Long,Map<String,String>> dsTableNamesMap = new HashMap<>();
+        List<Long> newDatasourceId = new ArrayList<>();
         if(appData != null){
             isAppSave = true;
             try {
+                List<AppCoreDatasourceVO>  appCoreDatasourceVO = appData.getDatasourceInfo();
+
+                //  app 数据源 excel 表名映射
+                appCoreDatasourceVO.forEach(datasourceOld ->{
+                    newDatasourceId.add(datasourceOld.getSystemDatasourceId());
+                    // Excel 数据表明映射
+                    if (StringUtils.isNotEmpty(datasourceOld.getConfiguration()) && datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+                        dsTableNamesMap.put(datasourceOld.getId(),ExcelUtils.getTableNamesMap(datasourceOld.getConfiguration()));
+                    }
+                });
+
+                List<CoreDatasource> systemDatasource = coreDatasourceMapper.selectBatchIds(newDatasourceId);
+                systemDatasource.forEach(datasourceNew ->{
+                    // Excel 数据表明映射
+                    if (StringUtils.isNotEmpty(datasourceNew.getConfiguration()) && datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+                        dsTableNamesMap.put(datasourceNew.getId(),ExcelUtils.getTableNamesMap(datasourceNew.getConfiguration()));
+                    }
+                });
                 datasourceIdMap.putAll(appData.getDatasourceInfo().stream()
                         .collect(Collectors.toMap(AppCoreDatasourceVO::getId, AppCoreDatasourceVO::getSystemDatasourceId)));
                 Long datasetFolderPid = request.getDatasetFolderPid();
@@ -261,6 +290,21 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     dsTableFieldsIdMap.forEach((key,value) ->{
                         dsGroup.setInfo(dsGroup.getInfo().replaceAll(key.toString(),value.toString()));
                     });
+
+                    datasourceIdMap.forEach((key,value) ->{
+                        dsGroup.setInfo(dsGroup.getInfo().replaceAll(key.toString(),value.toString()));
+                        //表名映射更新
+                        Map<String,String> appDsTableNamesMap = dsTableNamesMap.get(key);
+                        Map<String,String> systemDsTableNamesMap = dsTableNamesMap.get(value);
+
+                        appDsTableNamesMap.forEach((keyName,valueName) ->{
+                            if(StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))){
+                                dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName,systemDsTableNamesMap.get(keyName)));
+                            }
+                        });
+                    });
+
+
                     datasetGroupManage.innerSave(dsGroup);
                 });
 
