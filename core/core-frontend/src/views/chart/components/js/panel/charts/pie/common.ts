@@ -23,7 +23,7 @@ export const PIE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'showProportion'
   ],
   'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
-  'basic-style-selector': ['colors', 'alpha', 'radius'],
+  'basic-style-selector': ['colors', 'alpha', 'radius', 'seriesColor'],
   'title-selector': [
     'title',
     'fontSize',
