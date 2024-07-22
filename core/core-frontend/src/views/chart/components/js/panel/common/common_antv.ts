@@ -856,20 +856,39 @@ export function configL7Style(chart: Chart): AreaOptions['style'] {
 export function configL7Tooltip(chart: Chart): TooltipOptions {
   const customAttr = parseJson(chart.customAttr)
   const tooltip = customAttr.tooltip
-  const { yAxis } = chart
+  const formatterMap = tooltip.seriesTooltipFormatter
+    ?.filter(i => i.show)
+    .reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {}) as Record<string, SeriesFormatter>
   return {
     customTitle(data) {
       return data.name
     },
-    items: [
-      {
-        field: 'value',
-        alias: yAxis?.[0]?.chartShowName ?? yAxis?.[0]?.name,
-        customValue: value => {
-          return valueFormatter(value, tooltip.tooltipFormatter)
-        }
+    customItems(originalItem) {
+      const result = []
+      if (isEmpty(formatterMap)) {
+        return result
       }
-    ],
+      const head = originalItem.properties
+      const formatter = formatterMap[head.quotaList?.[0]?.id]
+      if (!isEmpty(formatter)) {
+        const originValue = parseFloat(head.value as string)
+        const value = valueFormatter(originValue, formatter.formatterCfg)
+        const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+        result.push({ ...head, name, value: `${value ?? ''}` })
+      }
+      head.dynamicTooltipValue?.forEach(item => {
+        const formatter = formatterMap[item.fieldId]
+        if (formatter) {
+          const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+          const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+          result.push({ color: 'grey', name, value: `${value ?? ''}` })
+        }
+      })
+      return result
+    },
     showComponent: tooltip.show,
     domStyles: {
       'l7plot-tooltip': {
