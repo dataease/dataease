@@ -191,6 +191,7 @@ const saveResource = () => {
         if (appData.value) {
           initCanvasData(dvInfo.value.id, 'dashboard', () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
+            useEmitt().emitter.emit('calcData-all')
             resourceAppOpt.value.close()
             dvMainStore.setAppDataInfo(null)
             snapshotStore.resetSnapshot()

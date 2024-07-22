@@ -3,10 +3,12 @@
     :title="'保存应用'"
     v-model="state.appApplyDrawer"
     custom-class="de-app-drawer"
+    :show-close="false"
     size="500px"
     direction="rtl"
+    z-index="1000"
   >
-    <div class="app-export" v-loading="requestStore.loadingMap[permissionStore.currentPath]">
+    <div class="app-export">
       <el-form
         ref="appSaveForm"
         :model="state.form"
@@ -117,7 +119,6 @@
     </div>
     <template #footer>
       <div class="apply" style="width: 100%">
-        <el-button secondary @click="close">{{ $t('commons.cancel') }} </el-button>
         <el-button type="primary" @click="saveApp">保存</el-button>
       </div>
     </template>
@@ -143,18 +144,13 @@ import DatasetSelect from '@/views/chart/components/editor/dataset-select/Datase
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { deepCopy } from '@/utils/utils'
-import eventBus from '@/utils/eventBus'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { useRequestStoreWithOut } from '@/store/modules/request'
-import { usePermissionStoreWithOut } from '@/store/modules/permission'
 const { t } = useI18n()
-const emits = defineEmits(['closeDraw', 'saveApp'])
+const emits = defineEmits(['closeDraw', 'saveAppCanvas'])
 const appSaveForm = ref(null)
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, appData } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
-const requestStore = useRequestStoreWithOut()
-const permissionStore = usePermissionStoreWithOut()
 const props = defineProps({
   componentData: {
     type: Object,
@@ -292,6 +288,7 @@ const dsTreeSelect = element => {
 
 const close = () => {
   emits('closeDraw')
+  snapshotStore.recordSnapshotCache('renderChart')
   state.appApplyDrawer = false
 }
 
@@ -315,12 +312,15 @@ const saveApp = () => {
       dvInfo.value['datasetFolderPid'] = state.form.datasetFolderPid
       dvInfo.value['datasetFolderName'] = state.form.datasetFolderName
       dvInfo.value['dataState'] = 'ready'
-      eventBus.emit('save')
       snapshotStore.recordSnapshotCache('renderChart')
+      emits('saveAppCanvas')
     } else {
       return false
     }
   })
+  setTimeout(() => {
+    appSaveForm?.value?.clearValidate()
+  }, 0)
 }
 
 defineExpose({

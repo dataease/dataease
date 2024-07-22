@@ -566,6 +566,34 @@ onMounted(() => {
       })
     }
   })
+
+  useEmitt({
+    name: 'calcData-' + view.value.id,
+    callback: function (val) {
+      if (!state.initReady) {
+        return
+      }
+      initTitle()
+      nextTick(() => {
+        view.value.chartExtRequest = filter(false)
+        calcData(val)
+      })
+    }
+  })
+
+  useEmitt({
+    name: 'calcData-all',
+    callback: function () {
+      if (!state.initReady) {
+        return
+      }
+      initTitle()
+      nextTick(() => {
+        view.value.chartExtRequest = filter(false)
+        calcData(view.value)
+      })
+    }
+  })
   useEmitt({
     name: 'renderChart-' + view.value.id,
     callback: function (val) {

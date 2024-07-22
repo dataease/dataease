@@ -80,7 +80,7 @@ export const storeStatusApi = (id: string): Promise<IResponse> => {
 }
 
 export const decompression = async data =>
-  request.post({ url: '/dataVisualization/decompression', data })
+  request.post({ url: '/dataVisualization/decompression', data, loading: true })
 
 export const viewDetailList = dvId => {
   return request.get({
