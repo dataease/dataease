@@ -1026,7 +1026,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
     trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
-      const currentFilters = element.linkageFilters || [] // 当前联动filter
+      let currentFilters = element.linkageFilters || [] // 当前联动filter
+      if (['table-info', 'table-normal'].includes(element.innerType)) {
+        currentFilters = []
+      }
       // 联动的图表情况历史条件
       // const currentFilters = []
       checkQDList.forEach(QDItem => {
