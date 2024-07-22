@@ -1,4 +1,4 @@
-import { isNumber } from 'lodash-es'
+import { isEmpty, isNumber } from 'lodash-es'
 import { DEFAULT_TITLE_STYLE } from '../editor/util/chart'
 import { equalsAny, includesAny } from '../editor/util/StringUtils'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -1016,7 +1016,7 @@ const createExtremumPointDiv = (key, value, formatterCfg, chartId) => {
         height: auto;
         border-radius: 2px;
         position: relative;
-        padding: 2px 5px 2px 5px;
+        padding: 4px 5px 4px 5px;
         display:none;
         transform: translateX(-50%);
         white-space:nowrap;`
@@ -1032,7 +1032,7 @@ const createExtremumPointDiv = (key, value, formatterCfg, chartId) => {
         border-top-color: red;
         position: absolute;
         left: calc(50% - 4px);
-        margin-top:2px;`
+        margin-top:4px;`
       )
       div.appendChild(span)
       parentElement.appendChild(div)
@@ -1136,15 +1136,18 @@ export const setExtremumPosition = (data, point, chart, labelCfg, pointSize) => 
             element.style.position = 'absolute'
             element.style.top =
               (point.y[1] ? point.y[1] : point.y) -
-              (labelCfg.fontSize + (pointSize ? pointSize : 0) + 8) +
+              (labelCfg.fontSize + (pointSize ? pointSize : 0) + 12) +
               'px'
             element.style.left = point.x + 'px'
             element.style.zIndex = '10'
             element.style.fontSize = labelCfg.fontSize + 'px'
             element.style.lineHeight = labelCfg.fontSize + 'px'
-            element.style.backgroundColor = point.color
-            element.style.color = labelCfg.color
-            element.children[0]['style'].borderTopColor = point.color
+            // 渐变颜色时需要获取最后一个rgba的值作为背景
+            const { r, b, g, a } = getRgbaColorLastRgba(point.color)
+            element.style.backgroundColor = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
+            element.style.color = isColorLight(point.color) ? '#000' : '#fff'
+            element.children[0]['style'].borderTopColor =
+              'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
             element.style.display = 'table'
             return false
           }
@@ -1153,6 +1156,46 @@ export const setExtremumPosition = (data, point, chart, labelCfg, pointSize) => 
     }
   }
   return true
+}
+
+/**
+ * 判断给定的RGBA字符串表示的颜色是亮色还是暗色
+ * 通过计算RGB颜色值的加权平均值（灰度值），判断颜色的明暗
+ * 如果给定的字符串不包含有效的RGBA值，则原样返回该字符串
+ *
+ * @param rgbaString 一个RGBA颜色字符串，例如 "rgba(255, 255, 255, 1)"
+ * @param greyValue 灰度值默认128
+ * @returns 如果计算出的灰度值大于等于128，则返回true，表示亮色；否则返回false，表示暗色。
+ *          如果rgbaString不包含有效的RGBA值，则返回原字符串
+ */
+const isColorLight = (rgbaString: string, greyValue = 128) => {
+  const lastRGBA = getRgbaColorLastRgba(rgbaString)
+  if (!isEmpty(lastRGBA)) {
+    // 计算灰度值的公式
+    const grayLevel = lastRGBA.r * 0.299 + lastRGBA.g * 0.587 + lastRGBA.b * 0.114
+    return grayLevel >= greyValue
+  } else {
+    return false
+  }
+}
+
+/**
+ * 从给定的rgba颜色字符串中提取最后一个rgba值
+ * @param rgbaString 包含一个或多个rgba颜色值的字符串
+ * @returns 返回最后一个解析出的rgba对象，如果未找到rgba值，则返回null
+ */
+const getRgbaColorLastRgba = (rgbaString: string) => {
+  const rgbaPattern = /rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/g
+  let match: string[]
+  let lastRGBA = null
+  while ((match = rgbaPattern.exec(rgbaString)) !== null) {
+    const r = parseInt(match[1])
+    const g = parseInt(match[2])
+    const b = parseInt(match[3])
+    const a = parseFloat(match[4])
+    lastRGBA = { r, g, b, a }
+  }
+  return lastRGBA
 }
 
 /**
