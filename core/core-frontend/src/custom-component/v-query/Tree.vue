@@ -217,6 +217,7 @@ const selectStyle = computed(() => {
     :data="treeOptionList"
     v-if="multiple && !loading"
     clearable
+    showWholePath
     @change="handleValueChange"
     :render-after-expand="false"
     show-checkbox
@@ -233,6 +234,7 @@ const selectStyle = computed(() => {
     :data="treeOptionList"
     check-strictly
     clearable
+    showWholePath
     :render-after-expand="false"
     v-else-if="!loading"
     key="singleTree"
