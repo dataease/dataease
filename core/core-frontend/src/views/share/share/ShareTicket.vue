@@ -248,6 +248,10 @@ const formatLinkBase = () => {
     const href = window.location.href
     prefix = href.substring(0, href.indexOf('#') + 1)
   }
+  if (prefix.includes('oidcbi/') || prefix.includes('casbi/')) {
+    prefix = prefix.replace('oidcbi/', '')
+    prefix = prefix.replace('casbi/', '')
+  }
   return prefix + SHARE_BASE
 }
 const copyTicket = async ticket => {
