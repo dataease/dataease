@@ -277,7 +277,7 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
   show: false,
   position: 'top',
   color: '#909399',
-  fontSize: 10,
+  fontSize: 12,
   formatter: '',
   labelLine: {
     show: true
