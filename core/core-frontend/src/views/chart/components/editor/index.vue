@@ -904,9 +904,22 @@ const onMiscChange = val => {
   }
 }
 
-const onLabelChange = val => {
-  view.value.customAttr.label = val
-  renderChart(view.value)
+const onLabelChange = (chartForm: ChartEditorForm<ChartLabelAttr>, prop: string) => {
+  const { data, requestData, render } = chartForm
+  let labelObj = data
+  if (!data) {
+    labelObj = chartForm as unknown as ChartLabelAttr
+  }
+  if (prop) {
+    const val = get(labelObj, prop)
+    set(view.value.customAttr.label, prop, val)
+  } else {
+    view.value.customAttr.label = labelObj
+  }
+  // for compatibility
+  if (render !== false) {
+    renderChart(view.value)
+  }
 }
 
 const onIndicatorChange = (val, prop) => {

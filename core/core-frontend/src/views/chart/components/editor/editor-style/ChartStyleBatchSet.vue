@@ -65,7 +65,7 @@ const onMiscChange = (val, prop) => {
 }
 
 const onLabelChange = (val, prop) => {
-  batchOptChange('customAttr', 'label', val, prop)
+  batchOptChange('customAttr', 'label', val.data, prop)
 }
 const onTooltipChange = (val, prop) => {
   batchOptChange('customAttr', 'tooltip', val.data, prop)

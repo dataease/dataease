@@ -84,6 +84,7 @@ const initSeriesLabel = () => {
     curSeriesFormatter.value = {}
     return
   }
+  let initFlag = false
   const axisMap = yAxis.value.reduce((pre, next) => {
     let tmp = {
       ...next,
@@ -101,14 +102,16 @@ const initSeriesLabel = () => {
         fontSize: seriesAxisMap[next.id].fontSize,
         showExtremum: seriesAxisMap[next.id].showExtremum
       }
+    } else {
+      initFlag = true
     }
     formatter.push(tmp)
     pre[next.id] = tmp
     return pre
   }, {})
   // 初始化一下序列数组，用于主题适配
-  if (!props.chart.customAttr.label.seriesLabelFormatter?.length) {
-    changeLabelAttr('seriesLabelFormatter')
+  if (initFlag) {
+    changeLabelAttr('seriesLabelFormatter', false)
   }
   if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.id]) {
     curSeriesFormatter.value = axisMap[formatter[0].id]
@@ -170,8 +173,8 @@ const state = reactive<{ labelForm: ChartLabelAttr | any }>({
 })
 
 const emit = defineEmits(['onLabelChange'])
-const changeLabelAttr = prop => {
-  emit('onLabelChange', state.labelForm, prop)
+const changeLabelAttr = (prop: string, render = true) => {
+  emit('onLabelChange', { data: state.labelForm, render }, prop)
 }
 
 const init = () => {
