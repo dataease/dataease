@@ -314,12 +314,7 @@ const updateQueryCriteria = () => {
           ![0, 2, 5].includes(+ele.displayType)
         )
           return
-        const checkedFields = []
-        datasetFieldList.value.forEach(itx => {
-          if (itx.tableId === ele.dataset.id) {
-            checkedFields.push(itx.id)
-          }
-        })
+        const checkedFields = datasetFieldList.value.map(itx => itx.id)
         ele.checkedFields.forEach(itx => {
           if (!checkedFields.includes(itx)) {
             ele.checkedFieldsMap[itx] = ''
