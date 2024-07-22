@@ -2098,12 +2098,20 @@ const getDsIconName = data => {
       width: 20px;
       box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
       border: 1px solid var(--deCardStrokeColor, #dee0e3);
-      border-top-right-radius: 13px;
-      border-bottom-right-radius: 13px;
+      display: flex;
+      align-items: center;
+      padding-left: 2px;
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
       background: #fff;
       font-size: 12px;
-      .ed-icon {
-        margin-left: 2px;
+
+      &:hover {
+        padding-left: 4px;
+        width: 24px;
+        .ed-icon {
+          color: var(--ed-color-primary, #3370ff);
+        }
       }
     }
 
