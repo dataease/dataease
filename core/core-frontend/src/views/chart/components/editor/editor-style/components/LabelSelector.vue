@@ -85,11 +85,12 @@ const initSeriesLabel = () => {
     return
   }
   let initFlag = false
+  const themeColor = dvMainStore.canvasStyleData.dashboard.themeColor
   const axisMap = yAxis.value.reduce((pre, next) => {
     let tmp = {
       ...next,
       show: true,
-      color: props.themes === 'dark' ? '#fff' : '#000',
+      color: themeColor === 'dark' ? '#fff' : '#000',
       fontSize: COMPUTED_DEFAULT_LABEL.value.fontSize,
       showExtremum: false
     } as SeriesFormatter
