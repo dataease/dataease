@@ -22,7 +22,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     'linkage'
   ]
   propertyInner: EditorPropertyInner = {
-    'basic-style-selector': ['colors', 'alpha', 'radarShape'],
+    'basic-style-selector': ['colors', 'alpha', 'radarShape', 'seriesColor'],
     'label-selector': ['seriesLabelFormatter'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'misc-style-selector': ['showName', 'color', 'fontSize', 'axisColor'],
@@ -220,6 +220,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
   protected setupOptions(chart: Chart, options: RadarOptions): RadarOptions {
     return flow(
       this.configTheme,
+      this.configColor,
       this.configLabel,
       this.configLegend,
       this.configMultiSeriesTooltip,
