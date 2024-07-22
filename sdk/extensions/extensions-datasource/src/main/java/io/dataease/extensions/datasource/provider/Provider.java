@@ -33,24 +33,69 @@ public abstract class Provider {
 
     public static Logger logger = LoggerFactory.getLogger(Provider.class);
 
+    /**
+     * 获取schema接口
+     *
+     * @param datasourceRequest
+     * @return
+     */
     public abstract List<String> getSchema(DatasourceRequest datasourceRequest);
 
+    /**
+     * 获取表接口
+     *
+     * @param datasourceRequest
+     * @return
+     */
     public abstract List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest);
 
+    /**
+     * 创建数据库连接
+     *
+     * @param coreDatasource
+     * @return
+     * @throws Exception
+     */
     public abstract ConnectionObj getConnection(DatasourceDTO coreDatasource) throws Exception;
 
+    /**
+     * 检测数据源状态是否有效
+     *
+     * @param datasourceRequest
+     * @return
+     * @throws Exception
+     */
     public abstract String checkStatus(DatasourceRequest datasourceRequest) throws Exception;
 
+    /**
+     * 获取数据
+     *
+     * @param datasourceRequest
+     * @return
+     * @throws DEException
+     */
     public abstract Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException;
 
+    /**
+     * 获取表字段
+     *
+     * @param datasourceRequest
+     * @return
+     * @throws DEException
+     */
     public abstract List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException;
+
+    /**
+     * 隐藏密码
+     *
+     * @param datasourceDTO
+     */
+    public abstract void hidePW(DatasourceDTO datasourceDTO);
 
     @Getter
     private static final Map<Long, Integer> lPorts = new HashMap<>();
     @Getter
     private static final Map<Long, Session> sessions = new HashMap<>();
-
-    public abstract void hidePW(DatasourceDTO datasourceDTO);
 
     public Statement getStatement(Connection connection, int queryTimeout) {
         if (connection == null) {
