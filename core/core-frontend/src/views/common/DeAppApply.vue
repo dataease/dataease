@@ -2,11 +2,11 @@
   <el-drawer
     :title="'保存应用'"
     v-model="state.appApplyDrawer"
-    custom-class="de-user-drawer"
+    custom-class="de-app-drawer"
     size="500px"
     direction="rtl"
   >
-    <div class="app-export">
+    <div class="app-export" v-loading="requestStore.loadingMap[permissionStore.currentPath]">
       <el-form
         ref="appSaveForm"
         :model="state.form"
@@ -143,12 +143,18 @@ import DatasetSelect from '@/views/chart/components/editor/dataset-select/Datase
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { deepCopy } from '@/utils/utils'
+import eventBus from '@/utils/eventBus'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { useRequestStoreWithOut } from '@/store/modules/request'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
 const { t } = useI18n()
 const emits = defineEmits(['closeDraw', 'saveApp'])
 const appSaveForm = ref(null)
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, appData } = storeToRefs(dvMainStore)
-
+const snapshotStore = snapshotStoreWithOut()
+const requestStore = useRequestStoreWithOut()
+const permissionStore = usePermissionStoreWithOut()
 const props = defineProps({
   componentData: {
     type: Object,
@@ -309,7 +315,8 @@ const saveApp = () => {
       dvInfo.value['datasetFolderPid'] = state.form.datasetFolderPid
       dvInfo.value['datasetFolderName'] = state.form.datasetFolderName
       dvInfo.value['dataState'] = 'ready'
-      emits('saveApp')
+      eventBus.emit('save')
+      snapshotStore.recordSnapshotCache('renderChart')
     } else {
       return false
     }
@@ -391,5 +398,11 @@ defineExpose({
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+</style>
+
+<style lang="less">
+.de-app-drawer {
+  z-index: 1000;
 }
 </style>

@@ -305,12 +305,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         //表名映射更新
                         Map<String,String> appDsTableNamesMap = dsTableNamesMap.get(key);
                         Map<String,String> systemDsTableNamesMap = dsTableNamesMap.get(value);
+                        if(!CollectionUtils.isEmpty(appDsTableNamesMap) && !CollectionUtils.isEmpty(systemDsTableNamesMap) ){
+                            appDsTableNamesMap.forEach((keyName,valueName) ->{
+                                if(StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))){
+                                    dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName,systemDsTableNamesMap.get(keyName)));
+                                }
+                            });
+                        }
 
-                        appDsTableNamesMap.forEach((keyName,valueName) ->{
-                            if(StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))){
-                                dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName,systemDsTableNamesMap.get(keyName)));
-                            }
-                        });
                     });
 
 
