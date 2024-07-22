@@ -1035,6 +1035,10 @@ public class DataFillDataService {
                     datasourceRequest.setDatasource(ds);
                     datasourceRequest.setTable(dataFillForm.getTableName());
                     Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+
+                    ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
+                    setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
+
                     List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
 
                     for (TableField tableField : tableFields) {
