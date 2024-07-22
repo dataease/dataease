@@ -1,6 +1,6 @@
 import { TreemapOptions, Treemap as G2Treemap } from '@antv/g2plot/esm/plots/treemap'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
-import { flow, parseJson } from '../../../util'
+import { flow, parseJson, setUpSigleDimensionSeriesColor } from '../../../util'
 import { getPadding, getTooltipSeriesTotalMap } from '../../common/common_antv'
 import { valueFormatter } from '../../../formatter'
 import { Label } from '@antv/g2plot/lib/types/label'
@@ -26,7 +26,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
-    'basic-style-selector': ['colors', 'alpha'],
+    'basic-style-selector': ['colors', 'alpha', 'seriesColor'],
     'label-selector': ['fontSize', 'color', 'showDimension', 'showQuota', 'showProportion'],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
@@ -214,14 +214,24 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
     legend.show = false
     return chart
   }
-
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    data?.sort((a, b) => b.value - a.value)
+    return setUpSigleDimensionSeriesColor(chart, data)
+  }
+  protected configColor(chart: Chart, options: TreemapOptions): TreemapOptions {
+    const data = options.data.children
+    data.sort((a, b) => b.value - a.value)
+    const tmpOptions = this.configSingleDimensionColor(chart, { ...options, data })
+    return { ...options, color: tmpOptions.color }
+  }
   protected setupOptions(chart: Chart, options: TreemapOptions): TreemapOptions {
     return flow(
       this.configTheme,
+      this.configColor,
       this.configLabel,
       this.configTooltip,
       this.configLegend
-    )(chart, options)
+    )(chart, options, {}, this)
   }
 
   constructor() {

@@ -116,9 +116,17 @@ const changeSeriesColor = () => {
   })
   changed && changeBasicStyle('seriesColor')
 }
-watch([chart, chart.value?.type], setupSeriesColor, {
-  deep: false
-})
+watch(
+  [
+    chart,
+    chart.value?.type,
+    () => chart.value?.customAttr.basicStyle.calcTopN,
+    () => chart.value?.customAttr.basicStyle.topN,
+    () => chart.value?.customAttr.basicStyle.topNLabel
+  ],
+  setupSeriesColor,
+  { deep: false }
+)
 onMounted(() => {
   useEmitt({ name: 'chart-type-change', callback: changeChartType })
   useEmitt({ name: 'chart-data-change', callback: setupSeriesColor })
@@ -576,6 +584,7 @@ const colorItemBorderColor = (index, state) => {
       height: 20px;
       border-radius: 3px;
       margin-right: 4px;
+      margin-bottom: 4px;
       cursor: pointer;
       padding: 2px;
       border: solid 1px transparent;

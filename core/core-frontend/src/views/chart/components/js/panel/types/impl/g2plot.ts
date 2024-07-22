@@ -22,6 +22,7 @@ import { getEngine } from '@antv/g2/esm/core'
 import {
   getColor,
   getGroupColor,
+  getSingleDimensionColor,
   getStackColor,
   handleEmptyDataStrategy,
   setupSeriesColor
@@ -152,6 +153,11 @@ export abstract class G2PlotChartView<
 
   protected configStackColor(chart: Chart, options: O): O {
     const color = getStackColor(chart, options)
+    return { ...options, color }
+  }
+
+  protected configSingleDimensionColor(chart: Chart, options: O): O {
+    const color = getSingleDimensionColor(chart, options)
     return { ...options, color }
   }
 

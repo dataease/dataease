@@ -886,6 +886,62 @@ export function setUpStackSeriesColor(
   return result
 }
 
+export function getSingleDimensionColor<O extends PickOptions = Options>(chart: Chart, options: O) {
+  const { basicStyle } = parseJson(chart.customAttr)
+  const { seriesColor } = basicStyle
+  if (!seriesColor?.length) {
+    return
+  }
+  const seriesMap = seriesColor.reduce((p, n) => {
+    p[n.id] = n
+    return p
+  }, {})
+  const { xAxis, yAxis } = chart
+  const { data } = options as unknown as Options
+  if (xAxis?.length && yAxis?.length) {
+    const seriesSet = new Set()
+    data?.forEach(d => d.field !== null && seriesSet.add(d.field))
+    const tmp = [...seriesSet]
+    tmp.forEach((c, i) => {
+      const curAxisColor = seriesMap[c as string]
+      if (curAxisColor) {
+        if (i + 1 > basicStyle.colors.length) {
+          basicStyle.colors.push(curAxisColor.color)
+        } else {
+          basicStyle.colors[i] = curAxisColor.color
+        }
+      }
+    })
+  }
+  const color = basicStyle.colors.map(c => hexColorToRGBA(c, basicStyle.alpha))
+  return color
+}
+
+export function setUpSigleDimensionSeriesColor(
+  chart: ChartObj,
+  data?: any[]
+): ChartBasicStyle['seriesColor'] {
+  const result: ChartBasicStyle['seriesColor'] = []
+  const seriesSet = new Set<string>()
+  const colors = chart.customAttr.basicStyle.colors
+  const { xAxis, yAxis } = chart
+  if (!(xAxis?.length && yAxis?.length)) {
+    return result
+  }
+  data?.forEach(item => {
+    if (seriesSet.has(item.field)) {
+      return
+    }
+    seriesSet.add(item.field)
+    result.push({
+      id: item.field,
+      name: item.field,
+      color: colors[(seriesSet.size - 1) % colors.length]
+    })
+  })
+  return result
+}
+
 /**
  * 注册极值点事件处理函数
  * 该函数用于在新建的图表上注册极值点显示的事件处理逻辑，根据图表类型和配置数据处理极值点的显示

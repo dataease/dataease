@@ -3,7 +3,12 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Pie as G2Pie, PieOptions } from '@antv/g2plot/esm/plots/pie'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  hexColorToRGBA,
+  parseJson,
+  setUpSigleDimensionSeriesColor
+} from '@/views/chart/components/js/util'
 import {
   getPadding,
   getTooltipSeriesTotalMap
@@ -18,6 +23,7 @@ import {
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
+import { cloneDeep } from 'lodash-es'
 
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
@@ -25,7 +31,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   properties = PIE_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = {
     ...PIE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'alpha', 'radius', 'topN']
+    'basic-style-selector': ['colors', 'alpha', 'radius', 'topN', 'seriesColor']
   }
   axisConfig = PIE_AXIS_CONFIG
 
@@ -271,14 +277,29 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     return chart
   }
 
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    data = cloneDeep(data)
+    const { calcTopN, topN, topNLabel } = chart.customAttr.basicStyle
+    if (data?.length && calcTopN && data.length > topN) {
+      data.sort((a, b) => b.value - a.value)
+      data.splice(topN)
+      data.push({
+        field: topNLabel,
+        value: 0
+      })
+    }
+    return setUpSigleDimensionSeriesColor(chart, data)
+  }
+
   protected setupOptions(chart: Chart, options: PieOptions): PieOptions {
     return flow(
       this.configTheme,
       this.configBasicStyle,
+      this.configSingleDimensionColor,
       this.configLabel,
       this.configTooltip,
       this.configLegend
-    )(chart, options)
+    )(chart, options, {}, this)
   }
 
   constructor(name = 'pie') {
@@ -289,7 +310,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 export class PieDonut extends Pie {
   propertyInner: EditorPropertyInner = {
     ...PIE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius', 'topN']
+    'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius', 'topN', 'seriesColor']
   }
   protected configBasicStyle(chart: Chart, options: PieOptions): PieOptions {
     const tmp = super.configBasicStyle(chart, options)
