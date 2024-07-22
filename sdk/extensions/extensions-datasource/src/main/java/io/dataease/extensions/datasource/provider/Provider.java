@@ -1,5 +1,6 @@
 package io.dataease.extensions.datasource.provider;
 
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
@@ -15,10 +16,11 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.Statement;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,5 +192,48 @@ public abstract class Provider {
         } catch (IOException e) {
             return true;
         }
+    }
+
+    public void startSshSession(DatasourceConfiguration configuration, ConnectionObj connectionObj, Long datacourseId) throws Exception {
+        if (configuration.isUseSSH()) {
+            if (datacourseId == null) {
+                configuration.setLPort(getLport(null));
+                connectionObj.setLPort(configuration.getLPort());
+                connectionObj.setConfiguration(configuration);
+                Session session = initSession(configuration);
+                connectionObj.setSession(session);
+            } else {
+                Integer lport = Provider.getLPorts().get(datacourseId);
+                configuration.setLPort(lport);
+                if (lport != null) {
+                    if (Provider.getSessions().get(datacourseId) == null || !Provider.getSessions().get(datacourseId).isConnected()) {
+                        Session session = initSession(configuration);
+                        Provider.getSessions().put(datacourseId, session);
+                    }
+                } else {
+                    configuration.setLPort(getLport(datacourseId));
+                    Session session = initSession(configuration);
+                    Provider.getSessions().put(datacourseId, session);
+                }
+                configuration.setLPort(lport);
+            }
+        }
+    }
+
+    public Session initSession(DatasourceConfiguration configuration) throws Exception {
+        JSch jsch = new JSch();
+        Session session = jsch.getSession(configuration.getSshUserName(), configuration.getSshHost(), configuration.getSshPort());
+        if (!configuration.getSshType().equalsIgnoreCase("password")) {
+            session.setConfig("PreferredAuthentications", "publickey");
+            jsch.addIdentity("sshkey", configuration.getSshKey().getBytes(StandardCharsets.UTF_8), null, configuration.getSshKeyPassword() == null ? null : configuration.getSshKeyPassword().getBytes(StandardCharsets.UTF_8));
+        }
+        if (configuration.getSshType().equalsIgnoreCase("password")) {
+            session.setPassword(configuration.getSshPassword());
+        }
+        session.setConfig("StrictHostKeyChecking", "no");
+        session.connect();
+        session.setPortForwardingL(configuration.getLPort(), configuration.getHost(), configuration.getPort());
+
+        return session;
     }
 }

@@ -1,9 +1,6 @@
 package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.gson.Gson;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -38,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -190,7 +186,7 @@ public class CalciteProvider extends Provider {
     }
 
 
-    private List<TableField> fetchResultField(ResultSet rs ) throws Exception {
+    private List<TableField> fetchResultField(ResultSet rs) throws Exception {
         List<TableField> fieldList = new ArrayList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -337,50 +333,6 @@ public class CalciteProvider extends Provider {
         connectionObj.setConnection(conn);
         return connectionObj;
     }
-
-    private void startSshSession(DatasourceConfiguration configuration, ConnectionObj connectionObj, Long datacourseId) throws Exception {
-        if (configuration.isUseSSH()) {
-            if (datacourseId == null) {
-                configuration.setLPort(getLport(null));
-                connectionObj.setLPort(configuration.getLPort());
-                connectionObj.setConfiguration(configuration);
-                Session session = initSession(configuration);
-                connectionObj.setSession(session);
-            } else {
-                Integer lport = Provider.getLPorts().get(datacourseId);
-                configuration.setLPort(lport);
-                if (lport != null) {
-                    if (Provider.getSessions().get(datacourseId) == null || !Provider.getSessions().get(datacourseId).isConnected()) {
-                        Session session = initSession(configuration);
-                        Provider.getSessions().put(datacourseId, session);
-                    }
-                } else {
-                    configuration.setLPort(getLport(datacourseId));
-                    Session session = initSession(configuration);
-                    Provider.getSessions().put(datacourseId, session);
-                }
-                configuration.setLPort(lport);
-            }
-        }
-    }
-
-    private Session initSession(DatasourceConfiguration configuration) throws Exception {
-        JSch jsch = new JSch();
-        Session session = jsch.getSession(configuration.getSshUserName(), configuration.getSshHost(), configuration.getSshPort());
-        if (!configuration.getSshType().equalsIgnoreCase("password")) {
-            session.setConfig("PreferredAuthentications", "publickey");
-            jsch.addIdentity("sshkey", configuration.getSshKey().getBytes(StandardCharsets.UTF_8), null, configuration.getSshKeyPassword() == null ? null : configuration.getSshKeyPassword().getBytes(StandardCharsets.UTF_8));
-        }
-        if (configuration.getSshType().equalsIgnoreCase("password")) {
-            session.setPassword(configuration.getSshPassword());
-        }
-        session.setConfig("StrictHostKeyChecking", "no");
-        session.connect();
-        session.setPortForwardingL(configuration.getLPort(), configuration.getHost(), configuration.getPort());
-
-        return session;
-    }
-
 
     private DatasetTableDTO getTableDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
         DatasetTableDTO tableDesc = new DatasetTableDTO();
