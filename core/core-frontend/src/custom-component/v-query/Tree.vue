@@ -220,6 +220,7 @@ const selectStyle = computed(() => {
     @change="handleValueChange"
     :render-after-expand="false"
     show-checkbox
+    showWholePath
     collapse-tags
     collapse-tags-tooltip
     key="multipleTree"
@@ -232,6 +233,7 @@ const selectStyle = computed(() => {
     @change="handleValueChange"
     :data="treeOptionList"
     check-strictly
+    showWholePath
     clearable
     :render-after-expand="false"
     v-else-if="!loading"
@@ -243,6 +245,7 @@ const selectStyle = computed(() => {
     v-model="fakeValue"
     v-loading="loading"
     :data="[]"
+    showWholePath
     :render-after-expand="false"
     v-else
     key="fakeTree"
