@@ -28,6 +28,7 @@ import { DOM } from '@antv/l7-utils'
 import { Scene } from '@antv/l7-scene'
 import { type IZoomControlOption } from '@antv/l7-component'
 import { PositionType } from '@antv/l7-core'
+import { centroid } from '@turf/centroid'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -890,8 +891,13 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
 
 export function handleGeoJson(geoJson: FeatureCollection, nameMapping?: Record<string, string>) {
   geoJson.features.forEach(item => {
-    if (!item.properties['centroid'] && item.properties['center']) {
-      item.properties['centroid'] = item.properties['center']
+    if (!item.properties['centroid']) {
+      if (item.properties['center']) {
+        item.properties['centroid'] = item.properties['center']
+      } else {
+        const tmp = centroid(item.geometry)
+        item.properties['centroid'] = tmp.geometry.coordinates
+      }
     }
     let name = item.properties['name']
     if (nameMapping?.[name]) {

@@ -21,6 +21,7 @@
     "@codemirror/lang-sql": "^6.4.0",
     "@npkg/tinymce-plugins": "^0.0.7",
     "@tinymce/tinymce-vue": "^5.1.0",
+    "@turf/centroid": "^7.0.0",
     "@videojs-player/vue": "^1.0.0",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.15.3",
