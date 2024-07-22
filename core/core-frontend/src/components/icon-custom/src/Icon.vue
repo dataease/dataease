@@ -477,6 +477,7 @@ import lock_other_open from '@/assets/svg/lock_other_open.svg'
 import log from '@/assets/svg/log.svg'
 import logo from '@/assets/svg/logo.svg'
 import logo_cas from '@/assets/svg/logo_cas.svg'
+import logo_ldap from '@/assets/svg/logo_ldap.svg'
 import logo_dingtalk from '@/assets/svg/logo_dingtalk.svg'
 import logo_lark from '@/assets/svg/logo_lark.svg'
 import logo_oauth from '@/assets/svg/logo_oauth.svg'
@@ -1136,6 +1137,7 @@ const iconMap = {
   log: log,
   logo: logo,
   logo_cas: logo_cas,
+  logo_ldap: logo_ldap,
   logo_dingtalk: logo_dingtalk,
   logo_lark: logo_lark,
   logo_oauth: logo_oauth,
