@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, shallowRef, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, shallowRef, computed, watch, onBeforeUnmount, nextTick } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
 import {
   getDatasetTree,
@@ -42,6 +42,7 @@ const dfs = arr => {
     return ele.leaf
   })
 }
+
 const computedTree = computed(() => {
   if (datasetTree.value[0]?.id === '0') {
     return dfs(datasetTree.value[0].children)
@@ -52,9 +53,24 @@ const computedTree = computed(() => {
 const isActive = computed(() => {
   return questionInput.value.trim().length && !!datasetId.value
 })
-const initDataset = () => {
-  getDatasetTree({}).then(res => {
+const initDataset = async () => {
+  await getDatasetTree({}).then(res => {
     datasetTree.value = (res as unknown as Tree[]) || []
+  })
+  getListCopilot().then(res => {
+    const allList = (res as unknown as { history: object }[]) || []
+    historyBack = allList[allList.length - 1]?.history || []
+    historyArr.value = cloneDeep(allList).map(ele => ({ ...ele, loading: false }))
+    if (!!allList.length) {
+      datasetId.value = allList[0].datasetGroupId
+      oldId = datasetId.value
+      datasetId.value && getOptions(datasetId.value)
+      if (oldId && !oldName) {
+        nextTick(() => {
+          dfsName(computedTree.value)
+        })
+      }
+    }
   })
 }
 
@@ -62,6 +78,19 @@ const treeSelectRef = ref()
 let oldId = ''
 let currentId = ''
 let oldName = ''
+
+const dfsName = arr => {
+  return arr.filter(ele => {
+    if (ele.id === oldId) {
+      oldName = ele.name
+    }
+    if (!!ele.children?.length && !ele.leaf) {
+      ele.children = dfsName(ele.children)
+      return !!ele.children?.length
+    }
+    return ele.leaf
+  })
+}
 const handleDatasetChange = () => {
   if (!!oldId && !!historyArr.value.length) {
     currentId = datasetId.value
@@ -97,14 +126,7 @@ const getOptions = id => {
 }
 initDataset()
 let historyBack = []
-getListCopilot().then(res => {
-  historyBack = (res as unknown as string[]) || []
-  historyArr.value = cloneDeep(historyBack).map(ele => ({ ...ele, loading: false }))
-  if (!!historyBack.length) {
-    datasetId.value = historyBack[0].datasetGroupId
-    datasetId.value && getOptions(datasetId.value)
-  }
-})
+
 const questionInputRef = ref()
 const overHeight = ref(false)
 const { height } = useElementSize(questionInputRef)

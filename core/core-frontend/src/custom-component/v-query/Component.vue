@@ -410,6 +410,7 @@ const resetData = () => {
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
+  !componentWithSure.value && queryData()
 }
 
 const clearData = () => {
@@ -427,6 +428,7 @@ const clearData = () => {
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
+  !componentWithSure.value && queryData()
 }
 const listVisible = computed(() => {
   return list.value.filter(itx => itx.visible)
