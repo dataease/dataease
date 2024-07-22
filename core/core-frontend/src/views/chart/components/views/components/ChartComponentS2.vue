@@ -83,6 +83,8 @@ const errMsg = ref('')
 const chartExtRequest = inject('chartExtRequest') as ShallowRef<object>
 
 const state = reactive({
+  curActionId: null,
+  curTrackMenu: [],
   trackBarStyle: {
     position: 'absolute',
     left: '50px',
@@ -302,6 +304,8 @@ const pointClickTrans = () => {
 
 const action = param => {
   state.pointParam = param
+  state.curActionId = param.data.name
+  state.curTrackMenu = trackMenuCalc(state.curActionId)
   // 点击
   pointClickTrans()
   // 下钻 联动 跳转
@@ -405,6 +409,14 @@ const trackClick = trackAction => {
 }
 
 const trackMenu = computed(() => {
+  if (['table-info', 'table-normal'].includes(view.value.type) && state.curActionId) {
+    return trackMenuCalc(state.curActionId)
+  } else {
+    return trackMenuCmp.value
+  }
+})
+
+const trackMenuCmp = computed(() => {
   let trackMenuInfo = []
   if (showPosition.value === 'viewDialog') {
     return trackMenuInfo
@@ -438,6 +450,39 @@ const trackMenu = computed(() => {
   }
   return trackMenuInfo
 })
+
+const trackMenuCalc = itemId => {
+  let trackMenuInfo = []
+  if (showPosition.value === 'viewDialog') {
+    return trackMenuInfo
+  }
+  let linkageCount = 0
+  let jumpCount = 0
+  const sourceInfo = view.value.id + '#' + itemId
+  if (nowPanelTrackInfo.value[sourceInfo]) {
+    linkageCount++
+  }
+  if (nowPanelJumpInfo.value[sourceInfo]) {
+    jumpCount++
+  }
+  jumpCount &&
+    view.value?.jumpActive &&
+    (!mobileInPc.value || inMobile.value) &&
+    trackMenuInfo.push('jump')
+  linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
+  view.value.drillFields.length && trackMenuInfo.push('drill')
+  // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
+  if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
+    trackMenuInfo = ['jump', 'linkageAndDrill']
+  } else if (
+    trackMenuInfo.length === 2 &&
+    props.element.actionSelection.linkageActive === 'auto' &&
+    !trackMenuInfo.includes('jump')
+  ) {
+    trackMenuInfo = ['linkageAndDrill']
+  }
+  return trackMenuInfo
+}
 
 const resizeAction = resizeColumn => {
   // 从头开始滚动

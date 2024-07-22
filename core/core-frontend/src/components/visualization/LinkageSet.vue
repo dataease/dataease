@@ -553,6 +553,9 @@ const sourceLinkageInfoFilter = computed(() => {
       JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
       (state.curLinkageViewInfo.type.includes('chart-mix')
         ? JSON.stringify(state.curLinkageViewInfo.extBubble)
+        : '') +
+      (state.curLinkageViewInfo.type.includes('table-normal')
+        ? JSON.stringify(state.curLinkageViewInfo.yAxis)
         : '')
     return state.sourceLinkageInfo.targetViewFields.filter(item =>
       curCheckAllAxisStr.includes(item.id)
