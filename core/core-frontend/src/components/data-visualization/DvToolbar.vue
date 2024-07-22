@@ -383,7 +383,7 @@ const fullScreenPreview = () => {
       :dv-info="dvInfo"
       :canvas-view-info="canvasViewInfo"
       cur-canvas-type="dataV"
-      @saveApp="saveCanvasWithCheck"
+      @saveAppCanvas="saveCanvasWithCheck"
     ></de-app-apply>
   </div>
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>

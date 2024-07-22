@@ -238,13 +238,13 @@ onUnmounted(() => {
   <div
     class="dv-common-layout dv-teleport-query"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
+    v-loading="requestStore.loadingMap[permissionStore.currentPath]"
     v-if="loadFinish && !mobileConfig"
   >
     <DbToolbar />
     <el-container
       class="dv-layout-container"
       :class="{ 'preview-content': editMode === 'preview' }"
-      v-loading="requestStore.loadingMap[permissionStore.currentPath]"
       element-loading-background="rgba(0, 0, 0, 0)"
     >
       <!-- 中间画布 -->

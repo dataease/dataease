@@ -179,25 +179,27 @@ const saveCanvasWithCheck = () => {
 const saveResource = () => {
   wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   if (styleChangeTimes.value > 0) {
-    snapshotStore.resetStyleChangeTimes()
     dvMainStore.matrixSizeAdaptor()
     queryList.value.forEach(ele => {
       useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
     })
-
-    canvasSave(() => {
-      snapshotStore.resetStyleChangeTimes()
-      ElMessage.success('保存成功')
-      window.history.pushState({}, '', `#/dashboard?resourceId=${dvInfo.value.id}`)
-      if (appData.value) {
-        initCanvasData(dvInfo.value.id, 'dashboard', () => {
-          useEmitt().emitter.emit('refresh-dataset-selector')
-          resourceAppOpt.value.close()
-          dvMainStore.setAppDataInfo(null)
-          snapshotStore.resetSnapshot()
-        })
-      }
-    })
+    try {
+      canvasSave(() => {
+        snapshotStore.resetStyleChangeTimes()
+        ElMessage.success('保存成功')
+        window.history.pushState({}, '', `#/dashboard?resourceId=${dvInfo.value.id}`)
+        if (appData.value) {
+          initCanvasData(dvInfo.value.id, 'dashboard', () => {
+            useEmitt().emitter.emit('refresh-dataset-selector')
+            resourceAppOpt.value.close()
+            dvMainStore.setAppDataInfo(null)
+            snapshotStore.resetSnapshot()
+          })
+        }
+      })
+    } catch (e) {
+      console.error(e)
+    }
   }
 }
 
@@ -663,7 +665,7 @@ const initOpenHandler = newWindow => {
     :dv-info="dvInfo"
     :canvas-view-info="canvasViewInfo"
     cur-canvas-type="dashboard"
-    @saveApp="saveCanvasWithCheck"
+    @saveAppCanvas="saveCanvasWithCheck"
   ></de-app-apply>
 </template>
 
