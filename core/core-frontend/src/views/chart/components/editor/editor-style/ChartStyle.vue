@@ -346,8 +346,8 @@ watch(
             v-if="showProperties('label-selector')"
             v-model="chart.customAttr.label.show"
             :change-model="chart.customAttr.label"
-            @modelChange="val => onLabelChange(val, 'show')"
-            :title="$t('chart.label')"
+            @modelChange="val => onLabelChange({ data: val }, 'show')"
+            :title="t('chart.label')"
             name="label"
           >
             <label-selector
@@ -364,7 +364,7 @@ watch(
             v-model="chart.customAttr.tooltip.show"
             :themes="themes"
             :change-model="chart.customAttr.tooltip"
-            :title="$t('chart.tooltip')"
+            :title="t('chart.tooltip')"
             :show-switch="propertyInnerAll['tooltip-selector'].includes('show')"
             name="tooltip"
             @modelChange="val => onTooltipChange({ data: val }, 'show')"
