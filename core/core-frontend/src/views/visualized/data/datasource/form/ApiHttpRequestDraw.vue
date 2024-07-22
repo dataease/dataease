@@ -811,7 +811,7 @@ defineExpose({
   .ed-form {
     width: 100%;
 
-    .ed-form-item {
+    .ed-form-item:not(.is-error) {
       margin-bottom: 16px;
     }
   }
