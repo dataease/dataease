@@ -106,7 +106,8 @@ const { element, editMode, active, disabled, showPosition } = toRefs(props)
 const state = reactive({
   data: null,
   viewDataInfo: null,
-  totalItems: 0
+  totalItems: 0,
+  firstRender: true
 })
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
@@ -453,8 +454,13 @@ const initCurFields = chartDetails => {
   }
 }
 
+// 初始化此处不必刷新
 const renderChart = viewInfo => {
-  calcData(viewInfo)
+  if (!state.firstRender) {
+    calcData(viewInfo)
+  } else {
+    state.firstRender = false
+  }
 }
 
 const conditionAdaptor = (chart: Chart) => {
