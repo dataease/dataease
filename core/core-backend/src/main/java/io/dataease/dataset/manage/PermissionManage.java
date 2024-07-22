@@ -23,10 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -211,7 +209,7 @@ public class PermissionManage {
                         continue;
                     }
 
-                    String value = handleSysVariable(userEntity, datasetRowPermissionsTreeItem.getValue());
+                    String value = handleSysVariable(userEntity, datasetRowPermissionsTreeItem);
                     if (value == null) {
                         continue;
                     } else {
@@ -227,28 +225,35 @@ public class PermissionManage {
         return result;
     }
 
-    private String handleSysVariable(UserFormVO userEntity, String sysVariable) {
+    private String handleSysVariable(UserFormVO userEntity, DatasetRowPermissionsTreeItem datasetRowPermissionsTreeItem) {
         String value = null;
-        if (StringUtils.isNotBlank(sysVariable) && sysVariable.startsWith("${") && sysVariable.endsWith("}")) {
-            String variableId = sysVariable.substring(2, sysVariable.length() - 1);
-            for (SysVariableValueItem variable : userEntity.getVariables()) {
-                if (!variable.isValid()){
-                    continue;
-                }
-                if (variableId.equalsIgnoreCase(variable.getVariableId().toString())) {
-                    if (variable.getSysVariableDto().getType().equalsIgnoreCase("text")) {
-                        for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {
-                            if (sysVariableValueDto.getId().equals(variable.getVariableValueId())) {
-                                value = sysVariableValueDto.getValue();
-                            }
+        String sysVariable = datasetRowPermissionsTreeItem.getValue();
+        if (StringUtils.isEmpty(sysVariable) && !(sysVariable.startsWith("${") && sysVariable.endsWith("}"))) {
+            return value;
+        }
+        String variableId = sysVariable.substring(2, sysVariable.length() - 1);
+        for (SysVariableValueItem variable : userEntity.getVariables()) {
+            if (!variable.isValid()) {
+                continue;
+            }
+            if (!variableId.equalsIgnoreCase(variable.getVariableId().toString())) {
+                continue;
+            }
+            if (variable.getSysVariableDto().getType().equalsIgnoreCase("text")) {
+                if (Arrays.asList("in", "not in").contains(datasetRowPermissionsTreeItem.getTerm())) {
+                    value = String.join(",", variable.getValueList().stream().filter(sysVariableValueDto -> variable.getVariableValueIds().contains(sysVariableValueDto.getId().toString())).map(SysVariableValueDto::getValue).collect(Collectors.toList()));
+                } else {
+                    for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {
+                        if (sysVariableValueDto.getId().equals(variable.getVariableValueId())) {
+                            value = sysVariableValueDto.getValue();
                         }
-                    } else {
-                        value = variable.getVariableValue();
                     }
-
                 }
+            } else {
+                value = variable.getVariableValue();
             }
         }
+
         return value;
     }
 
