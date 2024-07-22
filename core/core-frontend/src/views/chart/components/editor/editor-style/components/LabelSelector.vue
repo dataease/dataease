@@ -88,7 +88,7 @@ const initSeriesLabel = () => {
     let tmp = {
       ...next,
       show: true,
-      color: COMPUTED_DEFAULT_LABEL.value.color,
+      color: props.themes === 'dark' ? '#fff' : '#000',
       fontSize: COMPUTED_DEFAULT_LABEL.value.fontSize,
       showExtremum: false
     } as SeriesFormatter
@@ -106,6 +106,10 @@ const initSeriesLabel = () => {
     pre[next.id] = tmp
     return pre
   }, {})
+  // 初始化一下序列数组，用于主题适配
+  if (!props.chart.customAttr.label.seriesLabelFormatter?.length) {
+    changeLabelAttr('seriesLabelFormatter')
+  }
   if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.id]) {
     curSeriesFormatter.value = axisMap[formatter[0].id]
     return
