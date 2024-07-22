@@ -77,10 +77,6 @@ const rules = reactive<FormRules>({
 })
 
 const activeName = ref('simple')
-const handleClick = tab => {
-  const param = { methodName: 'tabSwicther', args: tab }
-  xpackLoginHandler?.value.invokeMethod(param)
-}
 
 const getCurLocation = () => {
   let queryRedirectPath = '/workbranch/index'
@@ -148,11 +144,6 @@ const ldapValidate = callback => {
 }
 const ldapFeedback = () => {
   duringLogin.value = false
-}
-const activeType = ref('account')
-const tablePaneList = ref([{ title: '普通登录', name: 'simple' }])
-const xpackLoaded = info => {
-  tablePaneList.value.push(info)
 }
 const xpackLoadFail = ref(false)
 const loadingText = ref('登录中...')
@@ -229,6 +220,9 @@ const loadArrearance = () => {
     }
   }
 }
+const switchTab = (name: string) => {
+  activeName.value = name || 'simple'
+}
 onMounted(async () => {
   loadArrearance()
   if (!checkPlatform()) {
@@ -240,22 +234,22 @@ onMounted(async () => {
     }
     if (res.data && !adminLogin) {
       if (res.data === 1) {
-        activeName.value = 'LDAP'
+        activeName.value = 'ldap'
         preheat.value = false
       } else {
         loadingText.value = '加载中...'
         document.getElementsByClassName('ed-loading-text')?.length &&
           (document.getElementsByClassName('ed-loading-text')[0]['innerText'] = loadingText.value)
-        nextTick(() => {
-          const param = { methodName: 'ssoLogin', args: res.data }
-          const timer = setInterval(() => {
-            if (xpackLoginHandler?.value.invokeMethod) {
-              xpackLoginHandler?.value.invokeMethod(param)
-              clearInterval(timer)
-            }
-          }, 1000)
-        })
       }
+      nextTick(() => {
+        const param = { methodName: 'ssoLogin', args: res.data }
+        const timer = setInterval(() => {
+          if (xpackLoginHandler?.value.invokeMethod) {
+            xpackLoginHandler?.value.invokeMethod(param)
+            clearInterval(timer)
+          }
+        }, 1000)
+      })
     } else {
       preheat.value = false
     }
@@ -321,16 +315,44 @@ onMounted(async () => {
               {{ slogan || '欢迎使用 DataEase 数据可视化分析工具' }}
             </div>
             <div class="login-form">
-              <el-tabs v-model="activeName" @tab-click="handleClick" class="default-login-tabs">
-                <template v-if="activeType === 'account'">
-                  <el-tab-pane
-                    v-for="item in tablePaneList"
-                    :key="item.name"
-                    :label="item.title"
-                    :name="item.name"
-                  ></el-tab-pane>
-                </template>
-              </el-tabs>
+              <div class="default-login-tabs" v-if="activeName === 'simple'">
+                <div class="login-form-title">
+                  <span>账号登录</span>
+                </div>
+                <el-form-item class="login-form-item" prop="username">
+                  <el-input
+                    v-model="state.loginForm.username"
+                    :placeholder="t('common.account') + '/' + t('commons.email')"
+                    autofocus
+                  />
+                </el-form-item>
+                <el-form-item prop="password">
+                  <CustomPassword
+                    v-model="state.loginForm.password"
+                    :placeholder="t('common.pwd')"
+                    show-password
+                    maxlength="30"
+                    show-word-limit
+                    autocomplete="new-password"
+                    @keypress.enter="handleLogin"
+                  />
+                </el-form-item>
+                <div class="login-btn">
+                  <el-button
+                    type="primary"
+                    class="submit"
+                    size="default"
+                    :disabled="duringLogin"
+                    @click="handleLogin"
+                  >
+                    {{ t('login.btn') }}
+                  </el-button>
+                  <div v-if="showDempTips" class="demo-tips">
+                    <span>{{ demoTips }}</span>
+                  </div>
+                </div>
+              </div>
+
               <XpackComponent
                 class="default-login-tabs"
                 :active-name="activeName"
@@ -340,47 +362,10 @@ onMounted(async () => {
                 jsname="L2NvbXBvbmVudC9sb2dpbi9MZGFw"
               />
 
-              <template v-if="activeName === 'simple'">
-                <div class="default-login-tabs">
-                  <el-form-item class="login-form-item" prop="username">
-                    <el-input
-                      v-model="state.loginForm.username"
-                      :placeholder="t('common.account') + '/' + t('commons.email')"
-                      autofocus
-                    />
-                  </el-form-item>
-                  <el-form-item prop="password">
-                    <CustomPassword
-                      v-model="state.loginForm.password"
-                      :placeholder="t('common.pwd')"
-                      show-password
-                      maxlength="30"
-                      show-word-limit
-                      autocomplete="new-password"
-                      @keypress.enter="handleLogin"
-                    />
-                  </el-form-item>
-                  <div class="login-btn">
-                    <el-button
-                      type="primary"
-                      class="submit"
-                      size="default"
-                      :disabled="duringLogin"
-                      @click="handleLogin"
-                    >
-                      {{ t('login.btn') }}
-                    </el-button>
-                    <div v-if="showDempTips" class="demo-tips">
-                      <span>{{ demoTips }}</span>
-                    </div>
-                  </div>
-                </div>
-              </template>
-
               <XpackComponent
                 ref="xpackLoginHandler"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy"
-                @loaded="xpackLoaded"
+                @switch-tab="switchTab"
               />
               <XpackComponent
                 ref="xpackInvalidPwd"
@@ -513,6 +498,15 @@ onMounted(async () => {
 
     .ed-form-item--default {
       margin-bottom: 24px;
+    }
+    .login-form-title {
+      margin-top: 20px;
+      color: #1f2329;
+      font-family: PingFang SC;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 28px;
+      text-align: left;
     }
   }
 
