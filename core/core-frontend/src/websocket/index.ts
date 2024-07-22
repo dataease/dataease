@@ -17,8 +17,8 @@ export default {
         event: 'task-export-topic-call'
       },
       {
-        topic: '/report-notici',
-        event: 'report-notici-call'
+        topic: '/report-notice',
+        event: 'report-notice-call'
       }
     ]
     function isLoginStatus() {
