@@ -290,8 +290,6 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
   setType()
 }
 
-const inputCom = ref()
-
 const setParameters = () => {
   const fieldArr = Object.values(curComponent.value.checkedFieldsMap).filter(ele => !!ele)
   curComponent.value.parameters = fields.value
@@ -347,7 +345,7 @@ const setTypeChange = () => {
   handleDialogClick()
   nextTick(() => {
     curComponent.value.field.id = ''
-    inputCom.value?.displayTypeChange?.()
+    defaultConfigurationRef.value?.displayTypeChange?.()
     if (
       +curComponent.value.displayType === 7 &&
       ['yearrange', 'monthrange', 'daterange', 'datetimerange'].includes(
@@ -772,16 +770,16 @@ const validate = () => {
 }
 
 const handleBeforeClose = () => {
-  inputCom.value?.mult?.handleClickOutside?.()
-  inputCom.value?.single?.handleClickOutside?.()
+  defaultConfigurationRef.value?.mult()
+  defaultConfigurationRef.value?.single()
   handleDialogClick()
   dialogVisible.value = false
 }
 const emits = defineEmits(['queryData'])
 const confirmClick = () => {
   if (validate()) return
-  inputCom.value?.mult?.handleClickOutside?.()
-  inputCom.value?.single?.handleClickOutside?.()
+  defaultConfigurationRef.value?.mult()
+  defaultConfigurationRef.value?.single()
   handleDialogClick()
   dialogVisible.value = false
   conditions.value.forEach(ele => {

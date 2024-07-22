@@ -211,11 +211,26 @@ const multipleChange = (val: boolean, isMultipleChange = false) => {
 const changeMultiple = val => {
   multiple.value = val
 }
+const inputCom = ref()
+const displayTypeChange = () => {
+  inputCom.value?.displayTypeChange?.()
+}
+
+const mult = () => {
+  inputCom.value?.mult?.handleClickOutside?.()
+}
+
+const single = () => {
+  inputCom.value?.single?.handleClickOutside?.()
+}
 
 defineExpose({
   multipleChange,
   handleDialogClick,
-  changeMultiple
+  changeMultiple,
+  displayTypeChange,
+  mult,
+  single
 })
 </script>
 
