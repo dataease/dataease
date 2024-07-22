@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { getGeoJsonFile, parseJson } from '../../../js/util'
 import { forEach, debounce } from 'lodash-es'
+import { toRefs } from 'vue'
 
 const props = defineProps({
   chart: {
@@ -15,9 +16,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['onMapMappingChange'])
-const { chart, themes } = props
+const { chart, themes } = toRefs(props)
 watch(
-  [() => props.chart.senior.areaMapping, () => chart.customAttr.map.id],
+  [() => chart.value?.senior.areaMapping, () => chart.value?.customAttr.map.id],
   () => {
     init()
   },
@@ -31,7 +32,7 @@ const search = ref('')
 const areaNameInput = ref(null)
 const areaData = reactive([])
 const dynamicAreaId = computed(() => {
-  return chart.customAttr.map.id
+  return chart.value?.customAttr.map.id
 })
 const state = reactive({
   mappingForm: {},
@@ -43,8 +44,8 @@ const pageInfo = reactive({
   currentPage: 1
 })
 const init = async () => {
-  const chartObj = JSON.parse(JSON.stringify(chart))
-  if (chartObj.senior) {
+  const chartObj = JSON.parse(JSON.stringify(chart.value))
+  if (chartObj?.senior) {
     let senior = parseJson(chartObj.senior)
     state.mappingForm = senior.areaMapping
     let curAreaMapping = state.mappingForm?.[dynamicAreaId.value]
@@ -133,7 +134,7 @@ onMounted(() => {
       :data="areaData"
     >
       <el-table-column label="图形" prop="originName" width="80" show-overflow-tooltip />
-      <el-table-column width="144">
+      <el-table-column width="140">
         <template #header>
           <span>属性</span>
           <el-input
@@ -153,7 +154,7 @@ onMounted(() => {
             :class="'area-edit-btn-' + themes"
             @click="triggerEdit(scope)"
           >
-            <span>{{ scope.row.mappedName }}</span>
+            <span :title="scope.row.mappedName">{{ scope.row.mappedName }}</span>
             <el-icon><Edit /></el-icon>
           </el-button>
         </template>
@@ -192,7 +193,7 @@ onMounted(() => {
   margin-left: 8px;
 }
 .area-edit-btn {
-  width: 120px;
+  width: 116px;
   padding: 0 4px;
   :deep(> span) {
     display: flex;

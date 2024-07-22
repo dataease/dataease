@@ -177,12 +177,7 @@ const changeLabelAttr = prop => {
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customAttr) {
-    let customAttr = null
-    if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
-      customAttr = JSON.parse(JSON.stringify(chart.customAttr))
-    } else {
-      customAttr = JSON.parse(chart.customAttr)
-    }
+    const customAttr = chart.customAttr
     if (customAttr.label) {
       state.labelForm = defaultsDeep(customAttr.label, cloneDeep(COMPUTED_DEFAULT_LABEL.value))
       if (chartType.value === 'liquid' && state.labelForm.fontSize < fontSizeList.value[0].value) {
