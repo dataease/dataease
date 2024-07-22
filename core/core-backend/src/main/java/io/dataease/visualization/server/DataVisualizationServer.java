@@ -635,7 +635,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<AppCoreDatasetTableFieldVO> datasetTableFieldVOInfo = null;
         List<AppCoreDatasourceVO> datasourceVOInfo = null;
         List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo = null;
-        //TODO 获取所有视图信息
+        //获取所有视图信息
         if (!CollectionUtils.isEmpty(viewIds)) {
             chartViewVOInfo = appTemplateMapper.findAppViewInfo(viewIds);
         }
@@ -645,6 +645,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
             datasetTableFieldVOInfo = appTemplateMapper.findAppDatasetTableFieldInfo(dsIds);
             datasourceVOInfo = appTemplateMapper.findAppDatasourceInfo(dsIds);
             datasourceTaskVOInfo = appTemplateMapper.findAppDatasourceTaskInfo(dsIds);
+        }
+
+        if(CollectionUtils.isEmpty(datasourceVOInfo)){
+            DEException.throwException("当前不存在数据源无法导出");
         }
 
         List<VisualizationLinkageVO> linkageVOInfo = appTemplateMapper.findAppLinkageInfo(dvId);

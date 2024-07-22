@@ -143,18 +143,22 @@ const gatherAppInfo = (viewIds, dsIds) => {
       dsIds.push(tableId)
     } else if (item.component === 'Group') {
       item.propValue.forEach(groupItem => {
-        const viewDetails = canvasViewInfo.value[groupItem.id]
-        const { id, tableId } = viewDetails
-        viewIds.push(id)
-        dsIds.push(tableId)
+        if (groupItem.component === 'UserView') {
+          const viewDetails = canvasViewInfo.value[groupItem.id]
+          const { id, tableId } = viewDetails
+          viewIds.push(id)
+          dsIds.push(tableId)
+        }
       })
     } else if (item.component === 'DeTabs') {
       item.propValue.forEach(tabItem => {
         tabItem.componentData.forEach(tabComponent => {
-          const viewDetails = canvasViewInfo.value[tabComponent.id]
-          const { id, tableId } = viewDetails
-          viewIds.push(id)
-          dsIds.push(tableId)
+          if (tabComponent.component === 'UserView') {
+            const viewDetails = canvasViewInfo.value[tabComponent.id]
+            const { id, tableId } = viewDetails
+            viewIds.push(id)
+            dsIds.push(tableId)
+          }
         })
       })
     }

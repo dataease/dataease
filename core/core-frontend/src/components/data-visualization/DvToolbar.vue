@@ -138,6 +138,7 @@ const saveResource = () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
             resourceAppOpt.value.close()
             dvMainStore.setAppDataInfo(null)
+            useEmitt().emitter.emit('calcData-all')
             snapshotStore.resetSnapshot()
           })
         }
