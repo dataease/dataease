@@ -31,7 +31,7 @@
           <el-input
             :placeholder="'请输入内容'"
             show-word-limit
-            :value="state.form.description"
+            v-model="state.form.description"
             type="textarea"
           />
         </el-form-item>
