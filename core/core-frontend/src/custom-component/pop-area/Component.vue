@@ -1,6 +1,12 @@
 <template>
   <!--此区域暂时放到类似视图和分组平行的组件作为后续扩展使用，但当前版本只作为类似MarkLine 和canvasCore平行组件 仅做区域显示使用-->
-  <div class="pop-area" :style="popCanvasStyle" @mousedown.stop @mousedup.stop>
+  <div
+    class="pop-area"
+    :style="popCanvasStyle"
+    :class="{ 'preview-pop': showPosition === 'preview' }"
+    @mousedown.stop
+    @mousedup.stop
+  >
     <div style="width: 100%; height: 100%">
       <div v-if="popComponentData && popComponentData.length > 0" class="pop-content">
         <!--使用ComponentWrapper 保留扩展能力-->
@@ -177,6 +183,10 @@ onBeforeUnmount(() => {
   background: rgba(26, 26, 26, 1);
   transition: height 0.2s ease;
   z-index: 1;
+}
+
+.preview-pop {
+  border: 1px rgba(67, 67, 67, 1) !important;
 }
 .pop-area-main {
   display: flex;
