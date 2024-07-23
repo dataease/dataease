@@ -2,7 +2,6 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.google.gson.Gson;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.visualization.request.VisualizationAppExportRequest;
 import io.dataease.api.visualization.vo.*;
@@ -18,10 +17,6 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.ExcelUtils;
-import io.dataease.extensions.datasource.dto.DatasetTableDTO;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.datasource.dto.DatasourceDTO;
-import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
@@ -39,7 +34,6 @@ import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
 import io.dataease.exception.DEException;
-import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
@@ -52,7 +46,6 @@ import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
 import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
-import io.dataease.visualization.dao.auto.entity.CoreStore;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
@@ -323,6 +316,34 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 LogUtil.error(e);
                 DEException.throwException(e);
             }
+            // 更换主数据内容
+            AtomicReference<String> componentDataStr = new AtomicReference<>(request.getComponentData());
+            dsGroupIdMap.forEach((key,value) ->{
+                componentDataStr.set(componentDataStr.get().replaceAll(key.toString(), value.toString()));
+            });
+            dsTableIdMap.forEach((key,value) ->{
+                componentDataStr.set(componentDataStr.get().replaceAll(key.toString(), value.toString()));
+            });
+
+            dsTableFieldsIdMap.forEach((key,value) ->{
+                componentDataStr.set(componentDataStr.get().replaceAll(key.toString(), value.toString()));
+            });
+
+            datasourceIdMap.forEach((key,value) ->{
+                componentDataStr.set(componentDataStr.get().replaceAll(key.toString(), value.toString()));
+                //表名映射更新
+                Map<String,String> appDsTableNamesMap = dsTableNamesMap.get(key);
+                Map<String,String> systemDsTableNamesMap = dsTableNamesMap.get(value);
+                if(!CollectionUtils.isEmpty(appDsTableNamesMap) && !CollectionUtils.isEmpty(systemDsTableNamesMap) ){
+                    appDsTableNamesMap.forEach((keyName,valueName) ->{
+                        if(StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))){
+                            componentDataStr.set(componentDataStr.get().replaceAll(key.toString(), value.toString()));
+                        }
+                    });
+                }
+
+            });
+
         }
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
@@ -587,6 +608,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 extendDataInfo.put(newViewId, extendDataDTO);
                 templateData = templateData.replaceAll(originViewId, newViewId.toString());
                 if(StringUtils.isNotEmpty(appDataStr)){
+                    chartView.setTableId(chartView.getSourceTableId());
                     appDataStr =  appDataStr.replaceAll(originViewId, newViewId.toString());
                 }
                 canvasViewInfo.put(chartView.getId(), chartView);
