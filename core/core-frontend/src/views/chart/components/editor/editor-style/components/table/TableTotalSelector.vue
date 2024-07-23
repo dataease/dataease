@@ -20,7 +20,7 @@ const props = defineProps({
   }
 })
 watch(
-  [props.chart.customAttr.tableTotal, props.chart.yAxis],
+  [() => props.chart.customAttr.tableTotal, () => props.chart.yAxis],
   () => {
     init()
   },
