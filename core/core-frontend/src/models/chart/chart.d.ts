@@ -65,6 +65,8 @@ declare interface Chart {
    * 针对不是序列字段的图表，通过获取分类字段的值作为序列字段
    */
   seriesFieldObjs?: any[]
+  flowMapStartName?: Axis[]
+  flowMapEndName?: Axis[]
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>

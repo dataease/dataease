@@ -12,7 +12,7 @@ import LegendSelector from '@/views/chart/components/editor/editor-style/compone
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
-import { ElCollapseItem } from 'element-plus-secondary'
+import { ElCollapse, ElCollapseItem } from 'element-plus-secondary'
 import BasicStyleSelector from '@/views/chart/components/editor/editor-style/components/BasicStyleSelector.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
@@ -23,6 +23,8 @@ import MiscStyleSelector from '@/views/chart/components/editor/editor-style/comp
 import IndicatorValueSelector from '@/views/chart/components/editor/editor-style/components/IndicatorValueSelector.vue'
 import IndicatorNameSelector from '@/views/chart/components/editor/editor-style/components/IndicatorNameSelector.vue'
 import QuadrantSelector from '@/views/chart/components/editor/editor-style/components/QuadrantSelector.vue'
+import FlowMapLineSelector from '@/views/chart/components/editor/editor-style/components/FlowMapLineSelector.vue'
+import FlowMapPointSelector from '@/views/chart/components/editor/editor-style/components/FlowMapPointSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -103,7 +105,9 @@ const emit = defineEmits([
   'onExtTooltipChange',
   'onIndicatorChange',
   'onIndicatorNameChange',
-  'onChangeQuadrantForm'
+  'onChangeQuadrantForm',
+  'onChangeFlowMapLineForm',
+  'onChangeFlowMapPointForm'
 ])
 
 const indicatorValueRef = ref()
@@ -188,6 +192,12 @@ const onExtTooltipChange = val => {
 }
 const onChangeQuadrantForm = val => {
   emit('onChangeQuadrantForm', val)
+}
+const onChangeFlowMapLineForm = val => {
+  emit('onChangeFlowMapLineForm', val)
+}
+const onChangeFlowMapPointForm = val => {
+  emit('onChangeFlowMapPointForm', val)
 }
 watch(
   () => props.chart.id,
@@ -434,6 +444,35 @@ watch(
               :themes="themes"
               :chart="chart"
               @onChangeQuadrantForm="onChangeQuadrantForm"
+            />
+          </el-collapse-item>
+          <el-collapse-item
+            :effect="themes"
+            name="flowMapLineSelector"
+            title="线条"
+            v-if="showProperties('flow-map-line-selector')"
+          >
+            <flow-map-line-selector
+              class="attr-selector"
+              :property-inner="propertyInnerAll['flow-map-line-selector']"
+              :themes="themes"
+              :chart="chart"
+              @onChangeFlowMapLineForm="onChangeFlowMapLineForm"
+              @onBasicStyleChange="onBasicStyleChange"
+            />
+          </el-collapse-item>
+          <el-collapse-item
+            :effect="themes"
+            name="flowMapPointSelector"
+            title="标注"
+            v-if="showProperties('flow-map-point-selector')"
+          >
+            <flow-map-point-selector
+              class="attr-selector"
+              :property-inner="propertyInnerAll['flow-map-point-selector']"
+              :themes="themes"
+              :chart="chart"
+              @onChangeFlowMapPointForm="onChangeFlowMapPointForm"
             />
           </el-collapse-item>
         </el-collapse>

@@ -208,4 +208,14 @@ public class ChartViewBaseDTO implements Serializable {
      */
     private Boolean aggregate;
 
+    /**
+     * 流向地图起点名称
+     */
+    private List<ChartViewFieldDTO> flowMapStartName;
+
+    /**
+     * 流向地图终点名称
+     */
+    private List<ChartViewFieldDTO> flowMapEndName;
+
 }

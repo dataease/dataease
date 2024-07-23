@@ -530,34 +530,6 @@ declare interface ChartMiscAttr {
    */
   mapPitch: number
   /**
-   * 地图线条类型
-   */
-  mapLineType: string
-  /**
-   * 地图线条宽度
-   */
-  mapLineWidth: number
-  /**
-   * 流向地图动画
-   */
-  mapLineAnimate?: boolean
-  /**
-   * 流向地图动画间隔
-   */
-  mapLineAnimateDuration: number
-  /**
-   * 地图线条渐变
-   */
-  mapLineGradient: boolean
-  /**
-   * 地图线条渐变起始颜色
-   */
-  mapLineSourceColor: string
-  /**
-   * 地图线条渐变结束颜色
-   */
-  mapLineTargetColor: string
-  /**
    * 指标/文本卡值字体
    */
   valueFontFamily: string
@@ -653,6 +625,54 @@ declare interface ChartMiscAttr {
    * 显示图例个数
    */
   mapLegendNumber: number
+  /**
+   * 流向地图配置
+   */
+  flowMapConfig: {
+    lineConfig: {
+      /**
+       * 地图线条类型
+       */
+      mapLineType: string
+      /**
+       * 地图线条宽度
+       */
+      mapLineWidth: number
+      /**
+       * 流向地图动画
+       */
+      mapLineAnimate?: boolean
+      /**
+       * 流向地图动画间隔
+       */
+      mapLineAnimateDuration: number
+      /**
+       * 地图线条渐变
+       */
+      mapLineGradient: boolean
+      /**
+       * 地图线条渐变起始颜色
+       */
+      mapLineSourceColor: string
+      /**
+       * 地图线条渐变结束颜色
+       */
+      mapLineTargetColor: string
+      alpha: number
+    }
+    pointConfig: {
+      text: {
+        color: string
+        fontSize: number
+      }
+      point: {
+        color: string
+        size: number
+        animate: boolean
+        speed: number
+      }
+    }
+  }
 }
 /**
  * 动态极值配置

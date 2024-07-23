@@ -25,6 +25,8 @@ declare type EditorProperty =
   | 'indicator-name-selector'
   | 'quadrant-selector'
   | 'map-symbolic-selector'
+  | 'flow-map-line-selector'
+  | 'flow-map-point-selector'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }
@@ -50,6 +52,9 @@ declare type AxisType =
   | 'extLabel'
   | 'extTooltip'
   | 'area'
+  | 'flowMapStartName'
+  | 'flowMapEndName'
+  | 'flowMapColor'
 /**
  * 轴配置
  */
