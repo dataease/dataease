@@ -147,11 +147,12 @@ watch(
     })
   }
 )
-
+const showWholePath = ref(false)
 watch(
   () => config.value.multiple,
   val => {
     if (!props.isConfig) return
+    showWholePath.value = false
     if (val) {
       treeValue.value = []
     }
@@ -162,6 +163,9 @@ watch(
           treeValue.value = undefined
         })
       }
+      nextTick(() => {
+        showWholePath.value = true
+      })
     })
   }
 )
@@ -191,6 +195,7 @@ const getTreeOption = debounce(() => {
     })
     .finally(() => {
       loading.value = false
+      showWholePath.value = true
     })
 }, 300)
 watch(
@@ -215,13 +220,13 @@ const selectStyle = computed(() => {
   <el-tree-select
     v-model="treeValue"
     :data="treeOptionList"
-    v-if="multiple && !loading"
     clearable
+    v-if="multiple && !loading"
     @change="handleValueChange"
     :render-after-expand="false"
     show-checkbox
-    showWholePath
     collapse-tags
+    :showWholePath="showWholePath"
     collapse-tags-tooltip
     key="multipleTree"
     filterable
@@ -233,11 +238,11 @@ const selectStyle = computed(() => {
     @change="handleValueChange"
     :data="treeOptionList"
     check-strictly
-    showWholePath
     clearable
     :render-after-expand="false"
-    v-else-if="!loading"
+    v-else-if="!multiple && !loading"
     key="singleTree"
+    :showWholePath="showWholePath"
     :style="selectStyle"
     filterable
   />
@@ -245,7 +250,6 @@ const selectStyle = computed(() => {
     v-model="fakeValue"
     v-loading="loading"
     :data="[]"
-    showWholePath
     :render-after-expand="false"
     v-else
     key="fakeTree"
@@ -253,4 +257,8 @@ const selectStyle = computed(() => {
   />
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+:deep(.ed-select-tags-wrapper) {
+  display: inline-flex !important;
+}
+</style>
