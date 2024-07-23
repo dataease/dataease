@@ -790,12 +790,15 @@ const confirmClick = () => {
         : curComponent.value.multiple
     )
   })
-  queryElement.value.propValue = cloneDeep(conditions.value)
-  queryElement.value.cascade = cloneDeep(cascadeArr)
-  cascadeArr = []
-  snapshotStore.recordSnapshotCache()
+  queryElement.value.propValue = []
   nextTick(() => {
-    emits('queryData')
+    queryElement.value.cascade = cloneDeep(cascadeArr)
+    cascadeArr = []
+    queryElement.value.propValue = cloneDeep(conditions.value)
+    snapshotStore.recordSnapshotCache()
+    nextTick(() => {
+      emits('queryData')
+    })
   })
 }
 
