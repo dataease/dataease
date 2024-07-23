@@ -190,6 +190,7 @@ const syncFree = () => {
     class="about-dialog"
   >
     <img width="792" height="180" :src="aboutBg" />
+    <div class="color-overlay"></div>
     <el-icon class="logo">
       <icon name="logo"></icon>
     </el-icon>
@@ -264,7 +265,15 @@ const syncFree = () => {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
-
+  .color-overlay {
+    position: absolute;
+    border-radius: 4px;
+    width: 792px;
+    height: 180px;
+    top: 72px;
+    background-color: #7394f0;
+    mix-blend-mode: multiply;
+  }
   .logo {
     font-size: 400px;
     position: absolute;
