@@ -900,7 +900,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
     @dragenter="$event => dragenter_handler($event)"
     @dragover="$event => dragover_handler($event)"
     @dragleave="$event => dragleave_handler($event)"
-    class="drag-mask"
+    class="drag-mask_dataset"
     ref="dragMask"
     @click="handleClickOutside"
     :style="{ height: dragHeight + 'px' }"
@@ -1215,11 +1215,12 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
   border-color: var(--ed-color-primary);
 }
 
-.drag-mask {
+.drag-mask_dataset {
   background: #f5f6f7;
   overflow: auto;
   position: relative;
   width: 100%;
+  border: none !important;
 }
 
 .mask-dataset {
