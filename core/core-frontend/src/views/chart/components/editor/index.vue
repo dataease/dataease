@@ -1670,10 +1670,7 @@ const deleteChartFieldItem = id => {
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-container direction="vertical">
                   <el-scrollbar class="has-footer drag_main_area attr-style theme-border-class">
-                    <el-row
-                      v-if="props.themes !== 'dark' && view.type !== 'rich-text'"
-                      class="drag-data padding-lr"
-                    >
+                    <el-row v-if="view.type !== 'rich-text'" class="drag-data padding-lr">
                       <span class="data-area-label">{{ t('chart.switch_chart') }}</span>
                       <el-popover
                         :offset="4"
@@ -1690,6 +1687,7 @@ const deleteChartFieldItem = id => {
                             popper-class="chart-type-hide-options"
                             class="chart-type-select"
                             :suffix-icon="arrowIcon()"
+                            :effect="themes"
                             size="small"
                           >
                             <template #prefix>
@@ -2902,6 +2900,7 @@ const deleteChartFieldItem = id => {
                 class="padding-lr field-height right-dimension"
                 :class="{ dark: themes === 'dark' }"
               >
+                <div class="divider"></div>
                 <label>{{ t('chart.quota') }}</label>
                 <el-scrollbar class="drag-list">
                   <div
@@ -3331,8 +3330,8 @@ const deleteChartFieldItem = id => {
     font-size: 12px;
     font-weight: 400;
   }
-  :deep(.field-height) {
-    border-top: 1px solid @side-outline-border-color-light !important;
+  :deep(.divider) {
+    background-color: @side-outline-border-color-light !important;
   }
   :deep(.item-span-style) {
     color: @canvas-main-font-color-light!important;
@@ -3481,7 +3480,7 @@ span {
   display: flex;
   transition: 0.5s;
   .padding-lr {
-    padding: 0 10px;
+    padding: 0 16px;
 
     &.no-top-border {
       border-top: none !important;
@@ -3637,11 +3636,11 @@ span {
 
       &.is-hovering::after,
       &:hover::after {
-        width: 100%;
+        width: calc(100% - 32px);
         height: 1px;
         content: '';
         position: absolute;
-        left: 0px;
+        left: 16px;
         top: 0;
         background: var(--ed-color-primary, #3370ff);
       }
@@ -3653,8 +3652,11 @@ span {
       }
     }
 
-    &:nth-child(n + 2) {
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    .divider {
+      width: 100%;
+      height: 1px;
+      padding: 0 16px;
+      background-color: rgba(255, 255, 255, 0.15);
     }
   }
 
@@ -4296,7 +4298,7 @@ span {
 .chart-type-select {
   width: 100%;
   margin-top: 8px;
-  :deep(.ed-select__prefix--light) {
+  :deep(.ed-input__prefix-inner > div) {
     padding: 0;
     margin: 0;
     border: none;
