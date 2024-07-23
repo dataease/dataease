@@ -1432,7 +1432,7 @@ const getDsIconName = data => {
               >
                 <template #icon>
                   <el-icon>
-                    <Icon name="icon_replace_outlined"></Icon>
+                    <Icon name="icon_refresh_outlined"></Icon>
                   </el-icon>
                 </template>
                 刷新数据
@@ -2013,6 +2013,13 @@ const getDsIconName = data => {
 
 .de-dataset-form {
   color: #1f2329;
+
+  :deep(.ed-table__border-left-patch),
+  :deep(.ed-table--border .ed-table__inner-wrapper::after) {
+    display: none !important;
+  }
+
+  --ed-border-color-lighter: #1f232926 !important;
   .top {
     height: 56px;
     display: flex;
@@ -2307,7 +2314,6 @@ const getDsIconName = data => {
             float: left;
             width: 260px;
             height: 100%;
-            border-right: 1px solid rgba(31, 35, 41, 0.15);
             position: relative;
 
             :deep(.ed-tree-node__content) {

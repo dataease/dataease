@@ -25,7 +25,7 @@ const init = (arr, treeArr) => {
 }
 
 const disableFieldArr = computed(() => {
-  return treeList.value.map(ele => ele.field)
+  return treeList.value.map(ele => ele.field).map(ele => ele.id)
 })
 
 const cancelClick = () => {
