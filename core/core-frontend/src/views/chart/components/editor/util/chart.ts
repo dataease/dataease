@@ -29,9 +29,14 @@ export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
     zoomBackground: '#fff'
   },
   misc: {
-    mapLineGradient: false,
-    mapLineSourceColor: '#146C94',
-    mapLineTargetColor: '#576CBC',
+    flowMapConfig: {
+      lineConfig: {
+        mapLineAnimate: true,
+        mapLineGradient: false,
+        mapLineSourceColor: '#146C94',
+        mapLineTargetColor: '#576CBC'
+      }
+    },
     nameFontColor: '#000000',
     valueFontColor: '#5470c6'
   },
@@ -72,9 +77,14 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     zoomBackground: '#fff'
   },
   misc: {
-    mapLineGradient: false,
-    mapLineSourceColor: '#146C94',
-    mapLineTargetColor: '#576CBC',
+    flowMapConfig: {
+      lineConfig: {
+        mapLineAnimate: true,
+        mapLineGradient: false,
+        mapLineSourceColor: '#146C94',
+        mapLineTargetColor: '#576CBC'
+      }
+    },
     nameFontColor: '#000000',
     valueFontColor: '#5470c6'
   },
@@ -115,9 +125,13 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     zoomBackground: '#000'
   },
   misc: {
-    mapLineGradient: false,
-    mapLineSourceColor: '#2F58CD',
-    mapLineTargetColor: '#3795BD',
+    flowMapConfig: {
+      lineConfig: {
+        mapLineGradient: false,
+        mapLineSourceColor: '#146C94',
+        mapLineTargetColor: '#576CBC'
+      }
+    },
     nameFontColor: '#ffffff',
     valueFontColor: '#5470c6'
   },
@@ -255,18 +269,36 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   hPosition: 'center',
   vPosition: 'center',
   mapPitch: 0,
-  mapLineType: 'arc',
-  mapLineWidth: 1,
-  mapLineAnimateDuration: 3,
-  mapLineGradient: false,
-  mapLineSourceColor: '#146C94',
-  mapLineTargetColor: '#576CBC',
   wordSizeRange: [8, 32],
   wordSpacing: 6,
   mapAutoLegend: true,
   mapLegendMax: 0,
   mapLegendMin: 0,
-  mapLegendNumber: 9
+  mapLegendNumber: 9,
+  flowMapConfig: {
+    lineConfig: {
+      mapLineAnimate: true,
+      mapLineType: 'arc',
+      mapLineWidth: 1,
+      mapLineAnimateDuration: 3,
+      mapLineGradient: false,
+      mapLineSourceColor: '#146C94',
+      mapLineTargetColor: '#576CBC',
+      alpha: 100
+    },
+    pointConfig: {
+      text: {
+        color: '#146C94',
+        fontSize: 10
+      },
+      point: {
+        color: 'red',
+        size: 4,
+        animate: false,
+        speed: 0.01
+      }
+    }
+  }
 }
 
 export const DEFAULT_MARK = {
@@ -1541,7 +1573,9 @@ export const BASE_VIEW_CONFIG = {
     threshold: DEFAULT_THRESHOLD,
     scrollCfg: DEFAULT_SCROLL,
     areaMapping: {}
-  }
+  },
+  flowMapStartName: [],
+  flowMapEndName: []
 }
 
 export function getScaleValue(propValue, scale) {

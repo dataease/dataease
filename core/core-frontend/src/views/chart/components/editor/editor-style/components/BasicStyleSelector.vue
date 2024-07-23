@@ -55,16 +55,6 @@ watch(
 )
 const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
 const changeBasicStyle = (prop?: string, requestData = false) => {
-  const mapLineColorStyle = prop?.split('@')
-  if (mapLineColorStyle.length === 2) {
-    if (mapLineColorStyle[1].toLowerCase() === 'SourceColor'.toLowerCase()) {
-      state.basicStyleForm.colors[0] = state.miscForm.mapLineSourceColor
-    }
-    if (mapLineColorStyle[1].toLowerCase() === 'TargetColor'.toLowerCase()) {
-      state.basicStyleForm.colors[1] = state.miscForm.mapLineTargetColor
-    }
-    changeMisc(state.basicStyleForm.colors[0] + state.basicStyleForm.colors[1])
-  }
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData }, prop)
 }
 const onAlphaChange = v => {
@@ -92,10 +82,6 @@ const init = () => {
   configCompat(basicStyle)
   state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
   state.miscForm = defaultsDeep(miscStyle, cloneDeep(DEFAULT_MISC)) as ChartMiscAttr
-  if (props.chart.type === 'flow-map') {
-    state.miscForm.mapLineSourceColor = state.basicStyleForm.colors[0]
-    state.miscForm.mapLineTargetColor = state.basicStyleForm.colors[1]
-  }
   if (!state.customColor) {
     state.customColor = state.basicStyleForm.colors[0]
     state.colorIndex = 0
@@ -220,12 +206,6 @@ const mapStyleOptions = [
 const heatMapTypeOptions = [
   { name: t('chart.heatmap_classics'), value: 'heatmap' },
   { name: t('chart.heatmap3D'), value: 'heatmap3D' }
-]
-
-const flowLineTypeOptions = [
-  { name: t('chart.map_line_type_line'), value: 'line' },
-  { name: t('chart.map_line_type_arc'), value: 'arc' },
-  { name: t('chart.map_line_type_arc_3d'), value: 'arc3d' }
 ]
 
 const mapSymbolOptions = [
@@ -404,190 +384,6 @@ onMounted(() => {
                 :max="90"
                 v-model="state.miscForm.mapPitch"
                 @change="changeMisc('mapPitch')"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-    <div class="map-flow-style" v-if="showProperty('mapLineStyle')">
-      <el-row style="flex: 1">
-        <el-col>
-          <el-form-item
-            :label="t('chart.line') + t('chart.map_line_type')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-select
-              :effect="themes"
-              v-model="state.miscForm.mapLineType"
-              @change="changeMisc('mapLineType')"
-            >
-              <el-option
-                v-for="item in flowLineTypeOptions"
-                :key="item.name"
-                :label="item.name"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <div class="alpha-setting">
-        <label class="alpha-label" :class="{ dark: 'dark' === themes }">
-          {{ t('chart.map_line_width') }}
-        </label>
-        <el-row style="flex: 1">
-          <el-col>
-            <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
-              <el-slider
-                :effect="themes"
-                :min="1"
-                :max="10"
-                v-model="state.miscForm.mapLineWidth"
-                @change="changeMisc('mapLineWidth')"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </div>
-      <el-row style="flex: 1">
-        <el-col>
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-checkbox
-              size="small"
-              :effect="themes"
-              v-model="state.miscForm.mapLineGradient"
-              :predefine="predefineColors"
-              @change="changeMisc('mapLineGradient')"
-            >
-              {{ t('chart.line') + t('chart.map_line_linear') }}
-            </el-checkbox>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <div v-if="state.miscForm.mapLineGradient">
-        <el-row style="flex: 1" :gutter="8">
-          <el-col :span="13">
-            <el-form-item
-              class="form-item"
-              :class="'form-item-' + themes"
-              :label="t('chart.map_line_color_source_color')"
-            >
-              <el-color-picker
-                is-custom
-                class="color-picker-style"
-                v-model="state.miscForm.mapLineSourceColor"
-                :persistent="false"
-                :effect="themes"
-                :trigger-width="108"
-                :predefine="predefineColors"
-                @change="changeBasicStyle('mapLine@SourceColor')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="13">
-            <el-form-item
-              class="form-item"
-              :class="'form-item-' + themes"
-              :label="t('chart.map_line_color_target_color')"
-            >
-              <el-color-picker
-                is-custom
-                class="color-picker-style"
-                v-model="state.miscForm.mapLineTargetColor"
-                :persistent="false"
-                :effect="themes"
-                :trigger-width="108"
-                :predefine="predefineColors"
-                @change="changeBasicStyle('mapLine@TargetColor')"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </div>
-      <div v-if="!state.miscForm.mapLineGradient">
-        <el-row style="flex: 1" :gutter="8">
-          <el-col>
-            <el-form-item
-              class="form-item"
-              :class="'form-item-' + themes"
-              :label="t('chart.color')"
-            >
-              <el-color-picker
-                is-custom
-                class="color-picker-style"
-                v-model="state.miscForm.mapLineSourceColor"
-                :persistent="false"
-                :effect="themes"
-                :trigger-width="108"
-                :predefine="predefineColors"
-                @change="changeBasicStyle('mapLine@SourceColor')"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </div>
-      <div class="alpha-setting">
-        <label class="alpha-label" :class="{ dark: 'dark' === themes }">
-          {{ t('chart.not_alpha') }}
-        </label>
-        <el-row style="flex: 1" :gutter="8">
-          <el-col :span="13">
-            <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
-              <el-slider
-                :effect="themes"
-                v-model="state.basicStyleForm.alpha"
-                @change="changeBasicStyle('alpha')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11" style="padding-top: 2px">
-            <el-form-item class="form-item" :class="'form-item-' + themes">
-              <el-input
-                type="number"
-                :effect="themes"
-                v-model="state.basicStyleForm.alpha"
-                :min="0"
-                :max="100"
-                class="basic-input-number"
-                :controls="false"
-                @change="onAlphaChange"
-              >
-                <template #suffix> % </template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </div>
-      <el-row style="flex: 1">
-        <el-col>
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-checkbox
-              size="small"
-              :effect="themes"
-              v-model="state.miscForm.mapLineAnimate"
-              :predefine="predefineColors"
-              @change="changeMisc('mapLineAnimate')"
-            >
-              {{ t('chart.line') + t('chart.map_line_animate') }}
-            </el-checkbox>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <div class="alpha-setting" v-if="state.miscForm.mapLineAnimate">
-        <label class="alpha-label" :class="{ dark: 'dark' === themes }">
-          {{ t('chart.map_line_animate_duration') }}
-        </label>
-        <el-row style="flex: 1" :gutter="8">
-          <el-col>
-            <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
-              <el-slider
-                :effect="themes"
-                :min="0"
-                :max="20"
-                v-model="state.miscForm.mapLineAnimateDuration"
-                @change="changeMisc('mapLineAnimateDuration')"
               />
             </el-form-item>
           </el-col>

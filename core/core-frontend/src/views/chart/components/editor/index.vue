@@ -396,6 +396,10 @@ const dimensionItemRemove = item => {
     view.value.yAxisExt.splice(item.index, 1)
   } else if (item.removeType === 'xAxisExtRight') {
     view.value.extBubble.splice(item.index, 1)
+  } else if (item.removeType === 'flowMapStartName') {
+    view.value.flowMapStartName.splice(item.index, 1)
+  } else if (item.removeType === 'flowMapEndName') {
+    view.value.flowMapEndName.splice(item.index, 1)
   }
 }
 
@@ -491,6 +495,20 @@ const onExtCustomRightSort = item => {
   recordSnapshotInfo('render')
   state.customSortField = view.value.extBubble[item.index]
   customSortAxis.value = 'extBubble'
+  customSort()
+}
+
+const onCustomFlowMapStartNameSort = item => {
+  recordSnapshotInfo('render')
+  state.customSortField = view.value.flowMapStartName[item.index]
+  customSortAxis.value = 'flowMapStartName'
+  customSort()
+}
+
+const onCustomFlowMapEndNameSort = item => {
+  recordSnapshotInfo('render')
+  state.customSortField = view.value.flowMapEndName[item.index]
+  customSortAxis.value = 'flowMapEndName'
   customSort()
 }
 
@@ -757,6 +775,14 @@ const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
   dragRemoveAggField(view.value.drillFields, e)
+}
+
+const addFlowMapStartName = e => {
+  addAxis(e, 'flowMapStartName')
+}
+
+const addFlowMapEndName = e => {
+  addAxis(e, 'flowMapEndName')
 }
 
 const onAxisChange = (e, axis: AxisType) => {
@@ -1045,6 +1071,14 @@ const onChangeQuadrantForm = val => {
   view.value.customAttr.quadrant = val
   renderChart(view.value)
 }
+const onChangeFlowMapLineForm = val => {
+  view.value.customAttr.misc.flowMapConfig.lineConfig = val
+  renderChart(view.value)
+}
+const onChangeFlowMapPointForm = val => {
+  view.value.customAttr.misc.flowMapConfig.pointConfig = val
+  renderChart(view.value)
+}
 
 const showRename = val => {
   recordSnapshotInfo('render')
@@ -1069,6 +1103,8 @@ const removeItems = (
     | 'extBubble'
     | 'customFilter'
     | 'drillFields'
+    | 'flowMapStartName'
+    | 'flowMapEndName'
 ) => {
   recordSnapshotInfo('calcData')
   let axis = []
@@ -1097,6 +1133,12 @@ const removeItems = (
       break
     case 'drillFields':
       axis = view.value.drillFields?.splice(0)
+      break
+    case 'flowMapStartName':
+      axis = view.value.flowMapStartName?.splice(0)
+      break
+    case 'flowMapEndName':
+      axis = view.value.flowMapEndName?.splice(0)
       break
   }
   axis?.length && emitter.emit('removeAxis', { axisType: _type, axis, editType: 'remove' })
@@ -1141,6 +1183,15 @@ const saveRename = ref => {
           break
         case 'extTooltip':
           view.value.extTooltip[index].chartShowName = chartShowName
+        case 'flowMapStartName':
+          axisType = 'flowMapStartName'
+          axis = view.value.flowMapStartName[index]
+          view.value.flowMapStartName[index].chartShowName = chartShowName
+          break
+        case 'flowMapEndName':
+          axisType = 'flowMapEndName'
+          axis = view.value.flowMapEndName[index]
+          view.value.flowMapEndName[index].chartShowName = chartShowName
           break
         default:
           break
@@ -1867,6 +1918,122 @@ const deleteChartFieldItem = id => {
                             </template>
                           </draggable>
                           <drag-placeholder :drag-list="view.xAxisExt" />
+                        </div>
+                      </el-row>
+
+                      <!--flowMapStartName-->
+                      <el-row v-if="showAxis('flowMapStartName')" class="padding-lr drag-data">
+                        <div class="form-draggable-title">
+                          <span>
+                            {{ chartViewInstance.axisConfig.flowMapStartName.name }}
+                          </span>
+                          <el-tooltip
+                            :effect="toolTip"
+                            placement="top"
+                            :content="t('common.delete')"
+                          >
+                            <el-icon
+                              class="remove-icon"
+                              :class="{ 'remove-icon--dark': themes === 'dark' }"
+                              size="14px"
+                              @click="removeItems('flowMapStartName')"
+                            >
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div
+                          class="qw"
+                          @drop="$event => drop($event, 'flowMapStartName')"
+                          @dragenter="dragEnter"
+                          @dragover="$event => dragOver($event)"
+                        >
+                          <draggable
+                            :list="view.flowMapStartName"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            :class="{ dark: themes === 'dark' }"
+                            @add="addFlowMapStartName"
+                          >
+                            <template #item="{ element, index }">
+                              <dimension-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                :themes="props.themes"
+                                type="flowMapStartName"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onCustomFlowMapStartNameSort"
+                                @valueFormatter="valueFormatter"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :themes="themes" :drag-list="view.flowMapStartName" />
+                        </div>
+                      </el-row>
+
+                      <!--flowMapEndName-->
+                      <el-row v-if="showAxis('flowMapEndName')" class="padding-lr drag-data">
+                        <div class="form-draggable-title">
+                          <span>
+                            {{ chartViewInstance.axisConfig.flowMapEndName.name }}
+                          </span>
+                          <el-tooltip
+                            :effect="toolTip"
+                            placement="top"
+                            :content="t('common.delete')"
+                          >
+                            <el-icon
+                              class="remove-icon"
+                              :class="{ 'remove-icon--dark': themes === 'dark' }"
+                              size="14px"
+                              @click="removeItems('flowMapEndName')"
+                            >
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div
+                          class="qw"
+                          @drop="$event => drop($event, 'flowMapEndName')"
+                          @dragenter="dragEnter"
+                          @dragover="$event => dragOver($event)"
+                        >
+                          <draggable
+                            :list="view.flowMapEndName"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            :class="{ dark: themes === 'dark' }"
+                            @add="addFlowMapEndName"
+                          >
+                            <template #item="{ element, index }">
+                              <dimension-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                :themes="props.themes"
+                                type="flowMapEndName"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onCustomFlowMapEndNameSort"
+                                @valueFormatter="valueFormatter"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :themes="themes" :drag-list="view.flowMapEndName" />
                         </div>
                       </el-row>
 
@@ -2599,6 +2766,8 @@ const deleteChartFieldItem = id => {
                         @onChangeMiscStyleForm="onChangeMiscStyleForm"
                         @onExtTooltipChange="onExtTooltipChange"
                         @onChangeQuadrantForm="onChangeQuadrantForm"
+                        @onChangeFlowMapLineForm="onChangeFlowMapLineForm"
+                        @onChangeFlowMapPointForm="onChangeFlowMapPointForm"
                       />
                     </template>
                   </el-scrollbar>
