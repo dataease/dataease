@@ -106,10 +106,10 @@ const setCollapse = () => {
     }
 
     .with-sider {
-      padding: 10px 24px 24px 24px;
+      padding: 16px 24px 24px 24px;
     }
     .with-sider:has(.appearance-foot) {
-      padding: 10px 24px 0px 24px !important;
+      padding: 16px 24px 0px 24px !important;
     }
   }
 }
