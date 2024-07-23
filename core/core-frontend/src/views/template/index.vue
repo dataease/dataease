@@ -622,9 +622,9 @@ onMounted(() => {
 .sys-setting-p {
   width: 100%;
   background: #ffffff;
-  height: calc(100vh - 136px);
+  height: calc(100vh - 140px);
   box-sizing: border-box;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 .setting-auto-h {
   height: auto !important;
