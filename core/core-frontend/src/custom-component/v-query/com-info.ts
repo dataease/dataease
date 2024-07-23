@@ -11,26 +11,44 @@ interface DatasetField {
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
 
-export const comInfo = (queryElementId: string) => {
+export const comInfo = () => {
   const dfsComponentData = () => {
-    const isMain = componentData.value.some(ele => ele.id === queryElementId)
-    let arr = componentData.value.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
-    let tabArr = []
+    let arr = componentData.value.filter(
+      com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
+    )
     componentData.value.forEach(ele => {
       if (ele.innerType === 'DeTabs') {
         ele.propValue.forEach(itx => {
-          if (itx.componentData.some(item => item.id === queryElementId) && !isMain) {
-            tabArr = itx.componentData.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
-          } else {
-            arr = [
-              ...arr,
-              ...itx.componentData.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
-            ]
+          arr = [
+            ...arr,
+            ...itx.componentData.filter(
+              com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
+            )
+          ]
+        })
+      } else if (ele.component === 'Group') {
+        arr = [
+          ...arr,
+          ele.propValue.filter(
+            com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
+          )
+        ]
+        ele.propValue.forEach(element => {
+          if (element.innerType === 'DeTabs') {
+            element.propValue.forEach(itx => {
+              arr = [
+                ...arr,
+                ...itx.componentData.filter(
+                  com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
+                )
+              ]
+            })
           }
         })
       }
     })
-    return isMain ? arr : tabArr
+
+    return arr.flat()
   }
 
   const datasetFieldList = computed(() => {

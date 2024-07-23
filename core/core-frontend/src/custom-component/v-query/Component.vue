@@ -113,7 +113,7 @@ const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
 })
 
-const { datasetFieldList } = comInfo(element.value.id)
+const { datasetFieldList } = comInfo()
 
 const setCustomStyle = val => {
   const {
