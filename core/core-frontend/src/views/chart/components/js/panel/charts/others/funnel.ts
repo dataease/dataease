@@ -1,6 +1,6 @@
 import { FunnelOptions, Funnel as G2Funnel } from '@antv/g2plot/esm/plots/funnel'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
-import { flow } from '@/views/chart/components/js/util'
+import { flow, setUpSingleDimensionSeriesColor } from '@/views/chart/components/js/util'
 import { getPadding } from '../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 
@@ -22,7 +22,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
-    'basic-style-selector': ['colors', 'alpha'],
+    'basic-style-selector': ['colors', 'alpha', 'seriesColor'],
     'label-selector': ['fontSize', 'color', 'hPosition', 'labelFormatter'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'title-selector': [
@@ -121,9 +121,13 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     return tmpOptions
   }
 
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpSingleDimensionSeriesColor(chart, data)
+  }
   protected setupOptions(chart: Chart, options: FunnelOptions): FunnelOptions {
     return flow(
       this.configTheme,
+      this.configSingleDimensionColor,
       this.configLabel,
       this.configMultiSeriesTooltip,
       this.configLegend
