@@ -27,7 +27,13 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     'linkage'
   ]
   propertyInner: EditorPropertyInner = {
-    'basic-style-selector': ['colors', 'alpha', 'scatterSymbol', 'scatterSymbolSize'],
+    'basic-style-selector': [
+      'colors',
+      'alpha',
+      'scatterSymbol',
+      'scatterSymbolSize',
+      'seriesColor'
+    ],
     'label-selector': ['fontSize', 'color', 'labelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'x-axis-selector': [
@@ -69,6 +75,10 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'extBubble', 'filter', 'drill', 'extLabel', 'extTooltip']
   axisConfig: AxisConfig = {
     ...this['axisConfig'],
+    yAxis: {
+      ...this['axisConfig'].yAxis,
+      limit: undefined
+    },
     extBubble: {
       name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
       type: 'q',
@@ -234,6 +244,7 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   protected setupOptions(chart: Chart, options: ScatterOptions) {
     return flow(
       this.configTheme,
+      this.configColor,
       this.configLabel,
       this.configTooltip,
       this.configLegend,

@@ -3,7 +3,7 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { ScatterOptions, Scatter as G2Scatter } from '@antv/g2plot/esm/plots/scatter'
-import { flow, parseJson } from '../../../util'
+import { flow, parseJson, setUpSingleDimensionSeriesColor } from '../../../util'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isEmpty, map } from 'lodash-es'
@@ -28,7 +28,13 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     'quadrant-selector'
   ]
   propertyInner: EditorPropertyInner = {
-    'basic-style-selector': ['colors', 'alpha', 'scatterSymbol', 'scatterSymbolSize'],
+    'basic-style-selector': [
+      'colors',
+      'alpha',
+      'scatterSymbol',
+      'scatterSymbolSize',
+      'seriesColor'
+    ],
     'label-selector': ['fontSize', 'color'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'x-axis-selector': [
@@ -393,10 +399,25 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     }
     return chart
   }
-
+  protected configColor(chart: Chart, options: ScatterOptions): ScatterOptions {
+    const { xAxis, yAxis, yAxisExt } = chart
+    if (!(xAxis?.length && yAxis?.length && yAxisExt?.length)) {
+      return options
+    }
+    return this.configSingleDimensionColor(chart, options)
+  }
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    const { xAxis, yAxis, yAxisExt } = chart
+    if (!(xAxis?.length && yAxis?.length && yAxisExt?.length)) {
+      return []
+    }
+    const tmp = data[0].data
+    return setUpSingleDimensionSeriesColor(chart, tmp)
+  }
   protected setupOptions(chart: Chart, options: ScatterOptions) {
     return flow(
       this.configTheme,
+      this.configColor,
       this.configLabel,
       this.configTooltip,
       this.configLegend,
@@ -405,7 +426,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       this.configAnalyse,
       this.configSlider,
       this.configBasicStyle
-    )(chart, options)
+    )(chart, options, {}, this)
   }
 
   constructor() {
