@@ -157,6 +157,50 @@ const authMethodList = [
     label: 'Kerberos'
   }
 ]
+
+const validateSshHost = (_: any, value: any, callback: any) => {
+  if ((value === null || value === '') && form.value.configuration.useSSH) {
+    callback(new Error('SSH主机不能为空'))
+  }
+  return callback()
+}
+
+const validateSshPort = (_: any, value: any, callback: any) => {
+  if ((value === null || value === '') && form.value.configuration.useSSH) {
+    callback(new Error('SSH端口不能为空'))
+  }
+  return callback()
+}
+
+const validateSshUserName = (_: any, value: any, callback: any) => {
+  if ((value === null || value === '') && form.value.configuration.useSSH) {
+    callback(new Error('SSH用户名不能为空'))
+  }
+  return callback()
+}
+
+const validateSshPassword = (_: any, value: any, callback: any) => {
+  if (
+    (value === null || value === '') &&
+    form.value.configuration.useSSH &&
+    form.value.configuration.sshType === 'password'
+  ) {
+    callback(new Error('SSH密码不能为空'))
+  }
+  return callback()
+}
+
+const validateSshkey = (_: any, value: any, callback: any) => {
+  if (
+    (value === null || value === '' || value === undefined) &&
+    form.value.configuration.useSSH &&
+    form.value.configuration.sshType === 'sshkey'
+  ) {
+    callback(new Error('SSH key不能为空'))
+  }
+  return callback()
+}
+
 const setRules = () => {
   const configRules = {
     'configuration.jdbcUrl': [
@@ -242,7 +286,12 @@ const setRules = () => {
         message: t('common.inputText') + t('datasource.query_timeout'),
         trigger: 'blur'
       }
-    ]
+    ],
+    'configuration.sshHost': [{ validator: validateSshHost, trigger: 'blur' }],
+    'configuration.sshPort': [{ validator: validateSshPort, trigger: 'blur' }],
+    'configuration.sshUserName': [{ validator: validateSshUserName, trigger: 'blur' }],
+    'configuration.sshPassword': [{ validator: validateSshPassword, trigger: 'blur' }],
+    'configuration.sshKey': [{ validator: validateSshkey, trigger: 'blur' }]
   }
   if (['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.value.type)) {
     configRules['configuration.schema'] = [
@@ -1016,17 +1065,19 @@ defineExpose({
               autocomplete="off"
             />
           </el-form-item>
-          <span
-            v-if="!['es', 'api'].includes(form.type)"
-            class="de-expand"
-            @click="showSSH = !showSSH"
-            >SSH 设置
-            <el-icon>
-              <Icon :name="showSSH ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
-            </el-icon>
-          </span>
+          <el-form-item>
+            <span
+              v-if="!['es', 'api'].includes(form.type) && form.configuration.urlType !== 'jdbcUrl'"
+              class="de-expand"
+              @click="showSSH = !showSSH"
+              >SSH 设置
+              <el-icon>
+                <Icon :name="showSSH ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+              </el-icon>
+            </span>
+          </el-form-item>
           <template v-if="showSSH">
-            <el-form-item prop="configuration.sshHost">
+            <el-form-item>
               <el-checkbox v-model="form.configuration.useSSH">启用SSH</el-checkbox>
             </el-form-item>
             <el-form-item label="主机" prop="configuration.sshHost">
@@ -1048,7 +1099,7 @@ defineExpose({
                 controls-position="right"
               />
             </el-form-item>
-            <el-form-item :label="t('datasource.user_name')">
+            <el-form-item :label="t('datasource.user_name')" prop="configuration.sshUserName">
               <el-input
                 :placeholder="t('common.inputText') + t('datasource.user_name')"
                 v-model="form.configuration.sshUserName"
@@ -1056,7 +1107,7 @@ defineExpose({
                 :maxlength="255"
               />
             </el-form-item>
-            <el-form-item label="连接方式" prop="type">
+            <el-form-item label="连接方式">
               <el-radio-group v-model="form.configuration.sshType">
                 <el-radio label="password">密码</el-radio>
                 <el-radio label="sshkey">ssh key</el-radio>
@@ -1065,6 +1116,7 @@ defineExpose({
             <el-form-item
               :label="t('datasource.password')"
               v-if="form.configuration.sshType === 'password'"
+              prop="configuration.sshPassword"
             >
               <CustomPassword
                 :placeholder="t('common.inputText') + t('datasource.password')"
@@ -1097,15 +1149,18 @@ defineExpose({
               />
             </el-form-item>
           </template>
-          <span
-            v-if="!['es', 'api'].includes(form.type)"
-            class="de-expand"
-            @click="showPriority = !showPriority"
-            >{{ t('datasource.priority') }}
-            <el-icon>
-              <Icon :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
-            </el-icon>
-          </span>
+          <el-form-item>
+            <span
+              v-if="!['es', 'api'].includes(form.type)"
+              class="de-expand"
+              @click="showPriority = !showPriority"
+              >{{ t('datasource.priority') }}
+              <el-icon>
+                <Icon :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+              </el-icon>
+            </span>
+          </el-form-item>
+
           <template v-if="showPriority">
             <el-row :gutter="24" class="mb16">
               <el-col :span="12">
