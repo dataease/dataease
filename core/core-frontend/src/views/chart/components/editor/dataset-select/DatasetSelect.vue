@@ -351,7 +351,7 @@ onMounted(() => {
   }
 }
 .customDatasetSelect {
-  --ed-popover-padding: 0;
+  --ed-popover-padding: 0 !important;
   max-height: 356px;
 
   .ed-container {
