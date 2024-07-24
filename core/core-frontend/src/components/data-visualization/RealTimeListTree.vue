@@ -275,7 +275,7 @@ const areaClick = area => {
                 :title="element.name"
                 class="component-item"
                 :class="{
-                  'container-item-not-show': !element.isShow,
+                  'container-item-not-show': !element.isShow || !canvasStyleData.popupAvailable,
                   activated:
                     (curComponent && curComponent?.id === element?.id) ||
                     areaData.components.includes(element)
@@ -478,6 +478,7 @@ const areaClick = area => {
     </el-row>
     <Teleport v-if="editComponentId && nameEdit" :to="editComponentId">
       <input
+        class="custom-teleport"
         @keydown.stop
         @keyup.stop
         ref="nameInput"
@@ -683,6 +684,10 @@ const areaClick = area => {
 
 .layer-screen {
   border-top: rgba(255, 255, 255, 0.15) 1px solid;
+}
+
+.custom-teleport {
+  background: #1a1a1a !important;
 }
 </style>
 

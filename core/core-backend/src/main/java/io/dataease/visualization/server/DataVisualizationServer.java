@@ -343,7 +343,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 }
 
             });
-
+            request.setComponentData(componentDataStr.get());
         }
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
