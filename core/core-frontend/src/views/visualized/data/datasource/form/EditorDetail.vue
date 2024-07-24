@@ -159,21 +159,22 @@ const authMethodList = [
 ]
 
 const validateSshHost = (_: any, value: any, callback: any) => {
-  if ((value === null || value === '') && form.value.configuration.useSSH) {
+  console.log(value)
+  if ((value === undefined || value === null || value === '') && form.value.configuration.useSSH) {
     callback(new Error('SSH主机不能为空'))
   }
   return callback()
 }
 
 const validateSshPort = (_: any, value: any, callback: any) => {
-  if ((value === null || value === '') && form.value.configuration.useSSH) {
+  if ((value === undefined || value === null || value === '') && form.value.configuration.useSSH) {
     callback(new Error('SSH端口不能为空'))
   }
   return callback()
 }
 
 const validateSshUserName = (_: any, value: any, callback: any) => {
-  if ((value === null || value === '') && form.value.configuration.useSSH) {
+  if ((value === undefined || value === null || value === '') && form.value.configuration.useSSH) {
     callback(new Error('SSH用户名不能为空'))
   }
   return callback()
@@ -181,7 +182,7 @@ const validateSshUserName = (_: any, value: any, callback: any) => {
 
 const validateSshPassword = (_: any, value: any, callback: any) => {
   if (
-    (value === null || value === '') &&
+    (value === undefined || value === null || value === '') &&
     form.value.configuration.useSSH &&
     form.value.configuration.sshType === 'password'
   ) {

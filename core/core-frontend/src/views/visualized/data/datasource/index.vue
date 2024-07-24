@@ -1299,17 +1299,51 @@ const getMenuList = (val: boolean) => {
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <span
-                  v-if="!['es', 'api'].includes(nodeInfo.type.toLowerCase())"
-                  class="de-expand"
-                  @click="showPriority = !showPriority"
-                  >{{ t('datasource.priority') }}
-                  <el-icon>
-                    <Icon
-                      :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"
-                    ></Icon>
-                  </el-icon>
-                </span>
+                <el-row :gutter="24">
+                  <span
+                    v-if="
+                      !['es', 'api'].includes(nodeInfo.type.toLowerCase()) &&
+                      nodeInfo.configuration.urlType !== 'jdbcUrl'
+                    "
+                    class="de-expand"
+                    @click="showSSH = !showSSH"
+                    >SSH 设置
+                    <el-icon>
+                      <Icon :name="showSSH ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+                    </el-icon>
+                  </span>
+                </el-row>
+                <template v-if="showSSH">
+                  <el-row :gutter="24" v-if="nodeInfo.configuration.useSSH">
+                    <el-col :span="12">
+                      <BaseInfoItem label="主机">{{ nodeInfo.configuration.sshHost }}</BaseInfoItem>
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem label="端口">{{ nodeInfo.configuration.sshPort }}</BaseInfoItem>
+                    </el-col>
+                  </el-row>
+                  <el-row :gutter="24" v-if="nodeInfo.configuration.useSSH">
+                    <el-col :span="12">
+                      <BaseInfoItem label="用户名">{{
+                        nodeInfo.configuration.sshUserName
+                      }}</BaseInfoItem>
+                    </el-col>
+                  </el-row>
+                </template>
+                <el-row :gutter="24">
+                  <span
+                    v-if="!['es', 'api'].includes(nodeInfo.type.toLowerCase())"
+                    class="de-expand"
+                    @click="showPriority = !showPriority"
+                    >{{ t('datasource.priority') }}
+                    <el-icon>
+                      <Icon
+                        :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"
+                      ></Icon>
+                    </el-icon>
+                  </span>
+                </el-row>
+
                 <template v-if="showPriority">
                   <el-row :gutter="24">
                     <el-col :span="12">
@@ -1336,35 +1370,6 @@ const getMenuList = (val: boolean) => {
                         >{{ nodeInfo.configuration.queryTimeout || '30'
                         }}{{ t('common.second') }}</BaseInfoItem
                       >
-                    </el-col>
-                  </el-row>
-                </template>
-                <span
-                  v-if="
-                    !['es', 'api'].includes(nodeInfo.type.toLowerCase()) &&
-                    nodeInfo.configuration.urlType !== 'jdbcUrl'
-                  "
-                  class="de-expand"
-                  @click="showSSH = !showSSH"
-                  >SSH 设置
-                  <el-icon>
-                    <Icon :name="showSSH ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
-                  </el-icon>
-                </span>
-                <template v-if="showSSH">
-                  <el-row :gutter="24" v-if="nodeInfo.configuration.useSSH">
-                    <el-col :span="12">
-                      <BaseInfoItem label="主机">{{ nodeInfo.configuration.sshHost }}</BaseInfoItem>
-                    </el-col>
-                    <el-col :span="12">
-                      <BaseInfoItem label="端口">{{ nodeInfo.configuration.sshPort }}</BaseInfoItem>
-                    </el-col>
-                  </el-row>
-                  <el-row :gutter="24" v-if="nodeInfo.configuration.useSSH">
-                    <el-col :span="12">
-                      <BaseInfoItem label="用户名">{{
-                        nodeInfo.configuration.sshUserName
-                      }}</BaseInfoItem>
                     </el-col>
                   </el-row>
                 </template>
