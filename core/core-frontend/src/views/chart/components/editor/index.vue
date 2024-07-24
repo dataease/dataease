@@ -1645,6 +1645,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
   for (let i = 0; i < arr.length; i++) {
     const obj = cloneDeep(arr[i])
     state.moveId = obj.id as unknown as number
+    view.value[type] ??= []
     view.value[type].push(obj)
     const e = { newDraggableIndex: view.value[type].length - 1 }
 
