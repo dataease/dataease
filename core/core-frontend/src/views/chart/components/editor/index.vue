@@ -888,6 +888,14 @@ const onTypeChange = (render, type) => {
     ) {
       removeItems('drillFields')
     }
+    if (!['line', 'area', 'bar', 'bar-group'].includes(view.value.type)) {
+      // 清除图表标注
+      const pointElement = document.getElementById('point_' + view.value.id)
+      if (pointElement) {
+        pointElement.remove()
+        pointElement.parentNode?.removeChild(pointElement)
+      }
+    }
   }
   curComponent.value.innerType = type
   calcData(view.value, true)
