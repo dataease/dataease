@@ -614,7 +614,7 @@ initMarketTemplate()
     height: 100%;
 
     .template-market {
-      padding: 24px;
+      padding: 24px 24px 0;
       background: #fff;
       border-radius: 4px;
       .label {
@@ -693,6 +693,7 @@ initMarketTemplate()
         display: flex;
         margin-left: -16px;
         overflow-x: auto;
+        padding-bottom: 24px;
       }
     }
   }
