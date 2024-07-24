@@ -159,7 +159,6 @@ const authMethodList = [
 ]
 
 const validateSshHost = (_: any, value: any, callback: any) => {
-  console.log(value)
   if ((value === undefined || value === null || value === '') && form.value.configuration.useSSH) {
     callback(new Error('SSH主机不能为空'))
   }

@@ -85,6 +85,10 @@ const options = [
   {
     label: '固定值',
     value: 'fixed'
+  },
+  {
+    label: '自定义',
+    value: 'custom'
   }
 ]
 </script>
@@ -162,7 +166,7 @@ const options = [
                 v-if="!needMock && activeName === 'table' && element.nameType !== 'params'"
                 v-model="element.value"
                 :disabled="isReadOnly"
-                :placeholder="'值'"
+                :placeholder="element.nameType === 'fixed' ? '值' : '可用${参数名}使用用参数'"
                 show-word-limit
               />
             </el-col>

@@ -23,6 +23,8 @@ import org.springframework.util.ObjectUtils;
 
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ApiUtils {
@@ -53,12 +55,12 @@ public class ApiUtils {
         return tableDescs;
     }
 
-    public static Map<String,String> getTableNamesMap(String configration) throws DEException {
-        Map<String,String> result = new HashMap<>();
+    public static Map<String, String> getTableNamesMap(String configration) throws DEException {
+        Map<String, String> result = new HashMap<>();
         try {
             JsonNode rootNode = objectMapper.readTree(configration);
             for (int i = 0; i < rootNode.size(); i++) {
-                result.put(rootNode.get(i).get("name").asText(),rootNode.get(i).get("deTableName").asText());
+                result.put(rootNode.get(i).get("name").asText(), rootNode.get(i).get("deTableName").asText());
             }
         } catch (Exception e) {
             DEException.throwException(e);
@@ -158,8 +160,31 @@ public class ApiUtils {
                                 }
                             }
                         }
-
                     }
+                } else if (header.get("nameType") != null && header.get("nameType").toString().equalsIgnoreCase("custom")) {
+                    List<String> params = new ArrayList<>();
+                    String regex = "\\$\\{(.*?)\\}";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(header.get("value").toString());
+                    while (matcher.find()) {
+                        params.add(matcher.group(1));
+                    }
+                    String result = header.get("value").toString();
+                    for (String param : params) {
+                        for (ApiDefinition definition : paramsList) {
+                            for (int i = 0; i < definition.getFields().size(); i++) {
+                                TableField field = definition.getFields().get(i);
+                                if (field.getOriginName().equalsIgnoreCase(param)) {
+                                    String resultStr = execHttpRequest(definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
+                                    List<String[]> dataList = fetchResult(resultStr, definition);
+                                    if (dataList.size() > 0) {
+                                        result = result.replace("${" + param +"}",dataList.get(0)[i]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    httpClientConfig.addHeader(header.get("name").toString(), result);
                 } else {
                     httpClientConfig.addHeader(header.get("name").toString(), header.get("value").toString());
                 }
