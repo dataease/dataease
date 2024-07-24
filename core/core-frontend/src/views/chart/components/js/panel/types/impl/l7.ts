@@ -13,6 +13,9 @@ import {
   configL7Tooltip,
   configL7Zoom
 } from '@/views/chart/components/js/panel/common/common_antv'
+import { queryMapKeyApi } from '@/api/setting/sysParameter'
+import { useMapStoreWithOut } from '@/store/modules/map'
+const mapStore = useMapStoreWithOut()
 
 export type L7DrawConfig<P> = AntVDrawOptions<P>
 export interface L7Config extends ILayer {
@@ -109,5 +112,13 @@ export abstract class L7ChartView<
   protected constructor(name: string, defaultData: any[]) {
     super(ChartLibraryType.L7, name, defaultData)
   }
+
+  protected getMapKey = async () => {
+    if (!mapStore.mapKey) {
+      await queryMapKeyApi().then(res => mapStore.setKey(res.data))
+    }
+    return mapStore.mapKey
+  }
+
   protected abstract setupOptions(chart: Chart, options: O): O
 }
