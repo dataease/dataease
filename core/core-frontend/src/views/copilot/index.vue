@@ -151,20 +151,22 @@ const handleShowLeft = val => {
 }
 const copilotChatLoading = ref(false)
 const inputRef = ref()
-let time = null
-const queryAnswer = () => {
+const queryAnswer = (event?: KeyboardEvent) => {
+  if (event.keyCode === 13) {
+    event.preventDefault()
+  }
   let copyAuestionInput = questionInput.value
   if (!isActive.value || copilotChatLoading.value) return
-  clearTimeout(time)
-  time = setTimeout(() => {
-    questionInput.value = copyAuestionInput
-    inputRef.value.blur()
-  }, 0)
+  questionInput.value = ''
+  inputRef.value.blur()
+  nextTick(() => {
+    overHeight.value = false
+  })
   historyArr.value.push({
     msgType: 'user',
     chart: {},
     id: `${+new Date()}`,
-    question: questionInput.value,
+    question: copyAuestionInput,
     chartData: {
       data: {},
       title: ''
@@ -174,7 +176,7 @@ const queryAnswer = () => {
   copilotChatLoading.value = true
   copilotChat({
     datasetGroupId: datasetId.value,
-    question: questionInput.value,
+    question: copyAuestionInput,
     history: historyBack
   })
     .then(res => {
@@ -185,9 +187,6 @@ const queryAnswer = () => {
       copilotChatLoading.value = false
     })
 }
-onBeforeUnmount(() => {
-  clearTimeout(time)
-})
 </script>
 
 <template>
@@ -498,7 +497,7 @@ onBeforeUnmount(() => {
       .preview-field {
         padding: 0 8px;
         width: 100%;
-        height: calc(100% - 340px);
+        height: calc(100% - 100px);
         position: relative;
         overflow-y: auto;
 
