@@ -629,13 +629,13 @@ public class CalciteProvider extends Provider {
                         "    JOIN pg_attribute a ON a.attrelid = c.oid\n" +
                         "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" +
                         "    JOIN pg_type t ON a.atttypid = t.oid\n" +
-                        "WHERE\n" +
-                        "    c.relname = '%s'\n" +
+                        "where\n" +
+                        " \tc.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '%s') \n" +
+                        "    AND c.relname = '%s'\n" +
                         "    AND a.attnum > 0\n" +
                         "    AND NOT a.attisdropped\n" +
                         "ORDER BY\n" +
-                        "    a.attnum\n" +
-                        "   ", datasourceRequest.getTable());
+                        "    a.attnum;", configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
