@@ -130,12 +130,26 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     if (yAxisExt.length > 0) {
       lineColorField = yAxisExt[0].dataeaseName
     }
+    const asteriskField = '*'
+    const data = []
+    chart.data?.tableRow.forEach(item => {
+      const newKey = 'f_record'
+      const newObj = Object.keys(item).reduce((acc, key) => {
+        if (key === asteriskField) {
+          acc[newKey] = item[key]
+        } else {
+          acc[key] = item[key]
+        }
+        return acc
+      }, {})
+      data.push(newObj)
+    })
     const config: L7Config = new LineLayer({
       name: 'line',
       blend: 'normal',
       autoFit: true
     })
-      .source(chart.data?.tableRow ? chart.data.tableRow : [], {
+      .source(data, {
         parser: {
           type: 'json',
           x: xAxis[0].dataeaseName,
@@ -154,7 +168,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
       })
 
     if (lineWidthField) {
-      config.size(lineWidthField, [1, 10])
+      config.size(lineWidthField === asteriskField ? 'f_record' : lineWidthField, [1, 10])
     }
     if (lineColorField) {
       config.style({
