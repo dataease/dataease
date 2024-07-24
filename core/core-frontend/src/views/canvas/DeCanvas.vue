@@ -48,7 +48,7 @@ const domId = ref('de-canvas-' + canvasId.value)
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { pcMatrixCount, curOriginThemes } = storeToRefs(dvMainStore)
+const { pcMatrixCount, curOriginThemes, mobileInPc } = storeToRefs(dvMainStore)
 const canvasOut = ref(null)
 const canvasInner = ref(null)
 const canvasInitStatus = ref(false)
@@ -177,7 +177,8 @@ const scaleInit = () => {
       scaleHeight.value = Math.floor((canvasHeight * 100) / canvasStyleData.value.height)
       scaleMin.value = Math.min(scaleWidth.value, scaleHeight.value)
       if (isDashboard() && isMainCanvas(canvasId.value)) {
-        dvMainStore.setCanvasStyleScale(scaleMin.value)
+        const offset = mobileInPc.value ? 4 : 1
+        dvMainStore.setCanvasStyleScale(scaleMin.value * offset)
       }
     }
   })
