@@ -1919,7 +1919,7 @@ defineExpose({
 
 <style lang="less">
 .field-select--dqp {
-  width: 210px;
+  min-width: 210px !important;
 }
 .ed-select-dropdown__header {
   padding: 0 8px;
