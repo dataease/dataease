@@ -45,3 +45,7 @@ export const batchDelApi = (ids: string[]) => {
 export const getFieldListApi = data => {
   return request.post({ url: `/sync/datasource/fields`, data })
 }
+
+export const validateByIdApi = (id: string) => {
+  return request.get({ url: `/sync/datasource/validate/${id}` })
+}
