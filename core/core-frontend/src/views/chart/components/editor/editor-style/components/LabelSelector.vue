@@ -837,7 +837,7 @@ onMounted(() => {
                   :effect="themes"
                   v-model.number="curSeriesFormatter.fontSize"
                   :placeholder="t('chart.text_fontsize')"
-                  @change="changeLabelAttr('fontSize')"
+                  @change="changeLabelAttr('seriesLabelFormatter')"
                 >
                   <el-option
                     v-for="option in fontSizeList"
