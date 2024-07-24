@@ -655,14 +655,14 @@ export const stepsColor = (start, end, steps, gamma) => {
   function parseColor(hexStr) {
     return hexStr.length === 4
       ? hexStr
-          .substr(1)
-          .split('')
-          .map(function (s) {
-            return 0x11 * parseInt(s, 16)
-          })
-      : [hexStr.substr(1, 2), hexStr.substr(3, 2), hexStr.substr(5, 2)].map(function (s) {
-          return parseInt(s, 16)
+        .substr(1)
+        .split('')
+        .map(function (s) {
+          return 0x11 * parseInt(s, 16)
         })
+      : [hexStr.substr(1, 2), hexStr.substr(3, 2), hexStr.substr(5, 2)].map(function (s) {
+        return parseInt(s, 16)
+      })
   }
   function pad(s) {
     return s.length === 1 ? '0' + s : s
@@ -958,8 +958,8 @@ export const registerExtremumPointEvt = (newChart, chart, options, container) =>
   // 针对不是序列字段的图表，通过获取分类字段的值作为序列字段,在标签配置时使用
   const seriesFieldObjs = []
   // 分组柱状图这种字段分类的图表，需要按照分类字段的值作为序列字段
-  if (['bar-group'].includes(chart.type)) {
-    const xAxisExt = chart.xAxisExt || []
+  const xAxisExt = chart.xAxisExt || []
+  if (['bar-group'].includes(chart.type) || xAxisExt.length > 0) {
     seriesFields = [...new Set(options.data.map(item => item.category))]
     if (xAxisExt.length === 0) {
       seriesFields = ['@']
@@ -971,7 +971,7 @@ export const registerExtremumPointEvt = (newChart, chart, options, container) =>
             ? 'f_' + chart.xAxis[0].dataeaseName + '_' + field
             : chart.xAxisExt[0]?.dataeaseName + '_' + field,
         name: field,
-        showExtremum: labelAttr.showExtremum,
+        showExtremum: true,
         formatterCfg: labelAttr.labelFormatter
       })
     })
