@@ -1,4 +1,4 @@
-import { copyString, hexColorToRGBA, parseJson, resetRgbOpacity } from '../..//util'
+import { copyString, hexColorToRGBA, isAlphaColor, parseJson, resetRgbOpacity } from '../..//util'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_TABLE_CELL,
@@ -192,7 +192,10 @@ export function getCustomTheme(chart: Chart): S2Theme {
         tableHeader.tableHeaderFontColor,
         basicStyle.alpha
       )
-      const tableHeaderBgColor = hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
+      let tableHeaderBgColor = tableHeader.tableHeaderBgColor
+      if (!isAlphaColor(tableHeaderBgColor)) {
+        tableHeaderBgColor = hexColorToRGBA(tableHeaderBgColor, basicStyle.alpha)
+      }
       const { tableHeaderAlign, tableTitleFontSize } = tableHeader
       const tmpTheme: S2Theme = {
         cornerCell: {
@@ -241,8 +244,14 @@ export function getCustomTheme(chart: Chart): S2Theme {
     // cell
     if (tableCell) {
       const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
-      const tableItemBgColor = hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
-      const tableItemSubBgColor = hexColorToRGBA(tableCell.tableItemSubBgColor, basicStyle.alpha)
+      let tableItemBgColor = tableCell.tableItemBgColor
+      if (!isAlphaColor(tableItemBgColor)) {
+        tableItemBgColor = hexColorToRGBA(tableItemBgColor, basicStyle.alpha)
+      }
+      let tableItemSubBgColor = tableCell.tableItemSubBgColor
+      if (!isAlphaColor(tableItemSubBgColor)) {
+        tableItemSubBgColor = hexColorToRGBA(tableItemSubBgColor, basicStyle.alpha)
+      }
       const { tableItemAlign, tableItemFontSize, enableTableCrossBG } = tableCell
       const tmpTheme: S2Theme = {
         rowCell: {

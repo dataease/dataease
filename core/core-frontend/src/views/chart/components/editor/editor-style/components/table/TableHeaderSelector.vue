@@ -4,6 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { convertToAlphaColor, isAlphaColor } from '@/views/chart/components/js/util'
 
 const { t } = useI18n()
 
@@ -56,6 +57,13 @@ const init = () => {
   const tableHeader = props.chart?.customAttr?.tableHeader
   if (tableHeader) {
     state.tableHeaderForm = defaultsDeep(cloneDeep(tableHeader), cloneDeep(DEFAULT_TABLE_HEADER))
+    if (!isAlphaColor(state.tableHeaderForm.tableHeaderBgColor)) {
+      const alpha = props.chart.customAttr.basicStyle.alpha
+      state.tableHeaderForm.tableHeaderBgColor = convertToAlphaColor(
+        state.tableHeaderForm.tableHeaderBgColor,
+        alpha
+      )
+    }
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
@@ -84,6 +92,7 @@ onMounted(() => {
         is-custom
         :trigger-width="108"
         :predefine="predefineColors"
+        show-alpha
         @change="changeTableHeader('tableHeaderBgColor')"
       />
     </el-form-item>
