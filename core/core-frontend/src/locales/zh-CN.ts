@@ -1213,6 +1213,7 @@ export default {
     only_input_number: '请输入正确数值',
     value_min_max_invalid: '最小值必须小于最大值',
     add_assist_line: '添加辅助线',
+    assist_line_tip: '辅助线数值格式跟随纵轴/横轴的标签格式化配置，请到样式中配置。',
     add_threshold: '添加阈值',
     add_condition: '添加条件',
     chart_quadrant: '象限图',

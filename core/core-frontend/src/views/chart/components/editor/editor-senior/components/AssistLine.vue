@@ -205,7 +205,6 @@ onMounted(() => {
     <el-dialog
       v-if="state.editLineDialog"
       v-model="state.editLineDialog"
-      :title="t('chart.assist_line')"
       :visible="state.editLineDialog"
       width="1000px"
       class="dialog-css"
@@ -217,6 +216,19 @@ onMounted(() => {
         :use-quota-ext="useQuotaExt"
         @onAssistLineChange="lineChange"
       />
+      <template #header>
+        <div class="assist-line-cfg-header">
+          <span class="ed-dialog__title">{{ t('chart.assist_line') }}</span>
+          <el-tooltip class="item" effect="dark" placement="top">
+            <template #content>
+              <span> {{ t('chart.assist_line_tip') }}</span>
+            </template>
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined" />
+            </el-icon>
+          </el-tooltip>
+        </div>
+      </template>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeEditLine">{{ t('chart.cancel') }}</el-button>
@@ -270,6 +282,16 @@ onMounted(() => {
         color: #a6a6a6;
         background: rgba(235, 235, 235, 0.1);
       }
+    }
+  }
+  .assist-line-cfg-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    .ed-dialog__title {
+      margin-right: 4px;
+      font-size: 16px;
     }
   }
 }
