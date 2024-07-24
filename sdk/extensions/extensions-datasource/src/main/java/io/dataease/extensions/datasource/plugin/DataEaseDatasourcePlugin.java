@@ -5,7 +5,6 @@ import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.license.utils.JsonUtil;
-import io.dataease.license.utils.LogUtil;
 import io.dataease.plugins.template.DataEasePlugin;
 import io.dataease.plugins.vo.DataEasePluginVO;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +15,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -24,7 +22,7 @@ import java.util.jar.JarFile;
  * @Author Junjun
  */
 public abstract class DataEaseDatasourcePlugin extends Provider implements DataEasePlugin {
-    private final String FILE_PATH = "/opt/dataease2.0/drivers";
+    private final String DEFAULT_FILE_PATH = "/opt/dataease2.0/drivers/plugin";
 
     @Override
     public void loadPlugin() {
@@ -38,6 +36,8 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
     }
 
     private void loadDriver() throws Exception {
+        XpackPluginsDatasourceVO config = getConfig();
+        String localPath = StringUtils.isEmpty(config.getDriverPath()) ? DEFAULT_FILE_PATH : config.getDriverPath();
         ClassLoader classLoader = this.getClass().getClassLoader();
         URL[] urls = ((URLClassLoader) classLoader).getURLs();
         String jarPath = urls[0].getPath();
@@ -48,7 +48,10 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
             String name = entry.getName();
             if (StringUtils.endsWith(name, ".jar")) {
                 InputStream inputStream = jarFile.getInputStream(entry);
-                File file = new File(FILE_PATH, name.substring(name.indexOf("/") + 1));
+                File file = new File(localPath, name.substring(name.indexOf("/") + 1));
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
                 FileOutputStream outputStream = new FileOutputStream(file);
                 byte[] bytes = new byte[1024];
                 int length;
@@ -72,8 +75,10 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
         return vo;
     }
 
-    /*@Override
+    @Override
     public void unloadPlugin() {
+        XpackPluginsDatasourceVO config = getConfig();
+        String localPath = StringUtils.isEmpty(config.getDriverPath()) ? DEFAULT_FILE_PATH : config.getDriverPath();
         try {
             ClassLoader classLoader = this.getClass().getClassLoader();
             URL[] urls = ((URLClassLoader) classLoader).getURLs();
@@ -84,12 +89,12 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
                 JarEntry entry = (JarEntry) entries.nextElement();
                 String name = entry.getName();
                 if (StringUtils.endsWith(name, ".jar")) {
-                    File file = new File(FILE_PATH, name.substring(name.indexOf("/") + 1));
+                    File file = new File(localPath, name.substring(name.indexOf("/") + 1));
                     file.delete();
                 }
             }
         } catch (Exception e) {
             DEException.throwException(e);
         }
-    }*/
+    }
 }
