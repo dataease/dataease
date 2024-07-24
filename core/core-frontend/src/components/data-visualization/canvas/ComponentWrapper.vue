@@ -192,6 +192,10 @@ const onPointClick = param => {
   emits('onPointClick', param)
 }
 
+const innerOutActive = computed(() => {
+  return config.value.category === 'hidden' && showPosition.value === 'popEdit'
+})
+
 const deepScale = computed(() => scale.value / 100)
 </script>
 
@@ -228,7 +232,7 @@ const deepScale = computed(() => scale.value / 100)
         :style="{ color: config.commonBackground.innerImageColor }"
         :name="commonBackgroundSvgInner"
       ></Board>
-      <div class="wrapper-inner-adaptor">
+      <div class="wrapper-inner-adaptor" :class="{ 'pop-wrapper-inner': innerOutActive }">
         <component
           :is="findComponent(config['component'])"
           :view="viewInfo"
@@ -256,6 +260,10 @@ const deepScale = computed(() => scale.value / 100)
 </template>
 
 <style lang="less" scoped>
+.pop-wrapper-inner {
+  overflow: hidden;
+  outline: 1px solid var(--ed-color-primary) !important;
+}
 .wrapper-outer {
   position: absolute;
 }
