@@ -1350,3 +1350,41 @@ export const sliderHandleExtremumPoint = (ev, chart, options) => {
   }
   configExtremum(chart)
 }
+
+export function isAlphaColor(color: string): boolean {
+  if (!color?.trim()) {
+    return false
+  }
+  if (color.startsWith('#')) {
+    return color.length === 9
+  }
+  if (color.startsWith('rgb')) {
+    return color.split(',').length === 4
+  }
+  return false
+}
+
+export function convertToAlphaColor(color: string, alpha: number): string {
+  if (!color?.trim()) {
+    return 'rgba(255,255,255,1)'
+  }
+  if (color.startsWith('#')) {
+    let colorStr = color.trim().substring(1)
+    if (colorStr.length === 3) {
+      const tmp = colorStr.split('')
+      colorStr = `${tmp[0]}${tmp[0]}${tmp[1]}${tmp[1]}${tmp[2]}${tmp[2]}`
+    }
+    if (colorStr.length !== 6) {
+      return '#FFFFFFFF'
+    }
+    const alphaHex = parseInt((alpha * 2.55).toFixed(0))
+      .toString(16)
+      .toUpperCase()
+    return `#${colorStr}${alphaHex}`
+  }
+  if (color.startsWith('rgb')) {
+    const rgb = color.match(/\d+/g)
+    return `rgba(${rgb.join(',')},${alpha / 100})`
+  }
+  return 'rgba(255,255,255,1)'
+}

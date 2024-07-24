@@ -4,6 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_CELL } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { convertToAlphaColor, isAlphaColor } from '@/views/chart/components/js/util'
 
 const { t } = useI18n()
 
@@ -56,6 +57,19 @@ const init = () => {
   const tableCell = props.chart?.customAttr?.tableCell
   if (tableCell) {
     state.tableCellForm = defaultsDeep(cloneDeep(tableCell), cloneDeep(DEFAULT_TABLE_CELL))
+    const alpha = props.chart.customAttr.basicStyle.alpha
+    if (!isAlphaColor(state.tableCellForm.tableItemBgColor)) {
+      state.tableCellForm.tableItemBgColor = convertToAlphaColor(
+        state.tableCellForm.tableItemBgColor,
+        alpha
+      )
+    }
+    if (!isAlphaColor(state.tableCellForm.tableItemSubBgColor)) {
+      state.tableCellForm.tableItemSubBgColor = convertToAlphaColor(
+        state.tableCellForm.tableItemSubBgColor,
+        alpha
+      )
+    }
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
@@ -79,6 +93,7 @@ onMounted(() => {
         :trigger-width="108"
         v-model="state.tableCellForm.tableItemBgColor"
         :predefine="predefineColors"
+        show-alpha
         @change="changeTableCell('tableItemBgColor')"
       />
     </el-form-item>
@@ -107,6 +122,7 @@ onMounted(() => {
         :predefine="predefineColors"
         :disabled="!state.tableCellForm.enableTableCrossBG"
         is-custom
+        show-alpha
         @change="changeTableCell('tableItemSubBgColor')"
       />
     </el-form-item>
