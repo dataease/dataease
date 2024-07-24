@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, shallowRef, computed, watch, onBeforeUnmount, nextTick } from 'vue'
+import { ref, shallowRef, computed, watch, nextTick } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
 import {
   getDatasetTree,
@@ -152,6 +152,10 @@ const handleShowLeft = val => {
 const copilotChatLoading = ref(false)
 const inputRef = ref()
 const queryAnswer = (event?: KeyboardEvent) => {
+  if (event?.keyCode === 229) {
+    return
+  }
+
   if (event?.keyCode === 13) {
     event.preventDefault()
   }
