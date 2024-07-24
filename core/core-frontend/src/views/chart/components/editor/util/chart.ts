@@ -725,6 +725,13 @@ export const DEFAULT_SCROLL: ScrollCfg = {
   step: 50
 }
 
+export const DEFAULT_BUBBLE_ANIMATE: BubbleCfg = {
+  enable: false,
+  speed: 1,
+  rings: 1,
+  type: 'wave'
+}
+
 export const DEFAULT_QUADRANT_STYLE: QuadrantAttr = {
   lineStyle: {
     stroke: '#aaa',
@@ -1572,7 +1579,8 @@ export const BASE_VIEW_CONFIG = {
     assistLineCfg: DEFAULT_ASSIST_LINE_CFG,
     threshold: DEFAULT_THRESHOLD,
     scrollCfg: DEFAULT_SCROLL,
-    areaMapping: {}
+    areaMapping: {},
+    bubbleCfg: DEFAULT_BUBBLE_ANIMATE
   },
   flowMapStartName: [],
   flowMapEndName: []

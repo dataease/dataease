@@ -19,6 +19,7 @@ import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '../util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
+import BubbleAnimateCfg from '@/views/chart/components/editor/editor-senior/components/BubbleAnimateCfg.vue'
 const dvMainStore = dvMainStoreWithOut()
 
 const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData } = storeToRefs(dvMainStore)
@@ -37,7 +38,8 @@ const emit = defineEmits([
   'onAssistLineChange',
   'onScrollCfgChange',
   'onThresholdChange',
-  'onMapMappingChange'
+  'onMapMappingChange',
+  'onBubbleAnimateChange'
 ])
 
 const props = defineProps({
@@ -121,6 +123,11 @@ const onThresholdChange = val => {
 
 const onMapMappingChange = val => {
   emit('onMapMappingChange', val)
+}
+
+const onBubbleAnimateChange = val => {
+  console.log(val)
+  emit('onBubbleAnimateChange', val)
 }
 
 const showProperties = (prop: EditorProperty) => {
@@ -358,6 +365,22 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
                 </el-button>
               </span>
             </div>
+          </collapse-switch-item>
+          <collapse-switch-item
+            :effect="themes"
+            title="气泡动效"
+            :change-model="chart.senior.bubbleCfg"
+            v-if="showProperties('bubble-animate')"
+            v-model="chart.senior.bubbleCfg.enable"
+            name="bubbleAnimate"
+            @modelChange="onBubbleAnimateChange"
+          >
+            <bubble-animate-cfg
+              :themes="themes"
+              :chart="props.chart"
+              :property-inner="propertyInnerAll['bubble-animate']"
+              @onBubbleAnimateChange="onBubbleAnimateChange"
+            />
           </collapse-switch-item>
         </el-collapse>
       </el-row>

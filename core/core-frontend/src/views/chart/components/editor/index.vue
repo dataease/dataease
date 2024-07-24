@@ -1056,6 +1056,11 @@ const onScrollCfgChange = val => {
   renderChart(view.value)
 }
 
+const onBubbleAnimateChange = val => {
+  view.value.senior.bubbleCfg = val
+  renderChart(view.value)
+}
+
 const onTableColumnWidthChange = val => {
   if (editMode.value !== 'edit') {
     return
@@ -2806,6 +2811,7 @@ const deleteChartFieldItem = id => {
                         @onScrollCfgChange="onScrollCfgChange"
                         @onThresholdChange="onThresholdChange"
                         @onMapMappingChange="onMapMappingChange"
+                        @onBubbleAnimateChange="onBubbleAnimateChange"
                       />
                     </template>
                   </el-scrollbar>

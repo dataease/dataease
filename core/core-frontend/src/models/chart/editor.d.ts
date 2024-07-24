@@ -27,6 +27,7 @@ declare type EditorProperty =
   | 'map-symbolic-selector'
   | 'flow-map-line-selector'
   | 'flow-map-point-selector'
+  | 'bubble-animate'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }
