@@ -1,6 +1,9 @@
 package io.dataease.chart.charts.impl.map;
 
 import io.dataease.chart.charts.impl.GroupChartHandler;
+import io.dataease.extensions.view.dto.AxisFormatResult;
+import io.dataease.extensions.view.dto.ChartAxis;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
@@ -8,4 +11,13 @@ import org.springframework.stereotype.Component;
 public class FlowMapHandler extends GroupChartHandler {
     @Getter
     private String type = "flow-map";
+    @Override
+    public AxisFormatResult formatAxis(ChartViewDTO view) {
+        var result = super.formatAxis(view);
+        var xAxis = result.getAxisMap().get(ChartAxis.xAxis);
+        xAxis.addAll(view.getFlowMapStartName());
+        xAxis.addAll(view.getFlowMapEndName());
+        result.getAxisMap().put(ChartAxis.xAxis, xAxis);
+        return result;
+    }
 }
