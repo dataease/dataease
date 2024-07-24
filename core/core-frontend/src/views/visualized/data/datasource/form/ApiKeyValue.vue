@@ -166,7 +166,7 @@ const options = [
                 v-if="!needMock && activeName === 'table' && element.nameType !== 'params'"
                 v-model="element.value"
                 :disabled="isReadOnly"
-                :placeholder="element.nameType === 'fixed' ? '值' : '可用${参数名}使用用参数'"
+                :placeholder="element.nameType === 'fixed' ? '值' : '可用${参数名}，使用参数'"
                 show-word-limit
               />
             </el-col>
