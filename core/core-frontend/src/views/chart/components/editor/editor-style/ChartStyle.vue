@@ -485,7 +485,7 @@ watch(
             :change-model="chart.customStyle.xAxis"
             @modelChange="val => onChangeXAxisForm(val, 'show')"
             name="xAxis"
-            :title="selectorSpec['x-axis-selector']?.title"
+            :title="selectorSpec['x-axis-selector']?.title || t('chart.xAxis')"
           >
             <x-axis-selector
               class="attr-selector"
@@ -502,7 +502,7 @@ watch(
             :change-model="chart.customStyle.yAxis"
             @modelChange="val => onChangeYAxisForm(val, 'show')"
             name="yAxis"
-            :title="$t('chart.yAxis')"
+            :title="t('chart.yAxis')"
           >
             <y-axis-selector
               class="attr-selector"

@@ -1228,7 +1228,7 @@ export default {
     table_layout_tree: '树形展示',
     top_n_desc: '合并数据',
     top_n_input_1: '显示 Top',
-    top_n_input_2: ', 其余合并至其他',
+    top_n_input_2: ', 其余合并',
     top_n_label: '其他项名称',
     progress_target: '目标值',
     progress_current: '实际值',
