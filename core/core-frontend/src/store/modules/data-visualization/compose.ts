@@ -142,7 +142,7 @@ export const composeStore = defineStore('compose', {
 
       const components = []
       areaData.components.forEach(component => {
-        if (component.component != 'Group') {
+        if (!['Group', 'GroupArea'].includes(component.component)) {
           components.push(component)
         } else {
           // 如果要组合的组件中，已经存在组合数据，则需要提前拆分

@@ -260,9 +260,11 @@ function handleCommand(command) {
 
 const reloadLinkage = () => {
   // 刷新联动信息
-  getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
-    dvMainStore.setNowPanelTrackInfo(rsp.data)
-  })
+  if (dvInfo.value.id) {
+    getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
+      dvMainStore.setNowPanelTrackInfo(rsp.data)
+    })
+  }
 }
 
 const componentMoveIn = component => {
