@@ -485,7 +485,7 @@ watch(
             :change-model="chart.customStyle.xAxis"
             @modelChange="val => onChangeXAxisForm(val, 'show')"
             name="xAxis"
-            :title="t('chart.xAxis')"
+            :title="selectorSpec['x-axis-selector']?.title"
           >
             <x-axis-selector
               class="attr-selector"
