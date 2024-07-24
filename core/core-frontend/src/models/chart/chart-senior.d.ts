@@ -22,6 +22,10 @@ declare interface ChartSenior {
    * 区域称映射，{区域id: {原始名称: 映射名称}}
    */
   areaMapping: Record<string, Record<string, string>>
+  /**
+   * 气泡动效
+   */
+  bubbleCfg: BubbleCfg
 }
 
 /**
@@ -208,4 +212,26 @@ declare interface ScrollCfg {
    * 滚动步长
    */
   step: number
+}
+
+/**
+ * 气泡动效设置
+ */
+declare interface BubbleCfg {
+  /**
+   * 开启动效
+   */
+  enable: boolean
+  /**
+   * 动效类型
+   */
+  type: 'wave'
+  /**
+   * 水波速度
+   */
+  speed: number
+  /**
+   * 水波环数
+   */
+  rings: number
 }

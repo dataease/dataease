@@ -28,7 +28,7 @@ const { t } = useI18n()
  * 气泡地图
  */
 export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
-  properties = MAP_EDITOR_PROPERTY
+  properties: EditorProperty[] = [...MAP_EDITOR_PROPERTY, 'bubble-animate']
   propertyInner = MAP_EDITOR_PROPERTY_INNER
   axis = MAP_AXIS_TYPE
   axisConfig: AxisConfig = {
@@ -147,6 +147,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
     })
     const { basicStyle } = parseJson(chart.customAttr)
+    const { bubbleCfg } = parseJson(chart.senior)
     const { offsetHeight, offsetWidth } = document.getElementById(drawOption.container)
     const options: DotLayerOptions = {
       source: {
@@ -172,6 +173,20 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       state: {
         active: true
       }
+    }
+    if (bubbleCfg && bubbleCfg.enable) {
+      return new DotLayer({
+        ...options,
+        size: {
+          field: 'size',
+          value: [10, Math.min(offsetHeight, offsetWidth) / 10]
+        },
+        animate: {
+          enable: true,
+          speed: bubbleCfg.speed,
+          rings: bubbleCfg.rings
+        }
+      })
     }
     return new DotLayer(options)
   }
