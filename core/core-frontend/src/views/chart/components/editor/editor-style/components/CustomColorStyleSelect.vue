@@ -238,7 +238,7 @@ const colorItemBorderColor = (index, state) => {
     <el-row>
       <el-form-item
         v-if="showProperty('gradient-color')"
-        :label="$t('chart.color_case')"
+        :label="t('chart.color_case')"
         class="form-item"
         :class="'form-item-' + themes"
         style="flex: 1; padding-right: 8px; margin-bottom: 16px"
@@ -342,7 +342,7 @@ const colorItemBorderColor = (index, state) => {
         </span>
       </div>
 
-      <div class="custom-color-extend-setting colors">
+      <div v-if="!showProperty('seriesColor')" class="custom-color-extend-setting colors">
         <div
           v-for="(c, index) in state.basicStyleForm.colors"
           :key="index"
