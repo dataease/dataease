@@ -16,7 +16,6 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const interactiveStore = interactiveStoreWithOut()
 import router from '@/router'
 import { useI18n } from '@/hooks/web/useI18n'
-import { parseUrl } from '@/utils/ParseUrl'
 import _ from 'lodash'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
@@ -106,8 +105,7 @@ const dvSvgType = computed(() =>
   curCanvasType.value === 'dashboard' ? 'dv-dashboard-spine' : 'dv-screen-spine'
 )
 
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-const isIframe = computed(() => appStore.getIsIframe)
+const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 
 const resourceTypeList = computed(() => {
   const list = [
@@ -281,7 +279,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         curCanvasType.value === 'dataV'
           ? `#/dvCanvas?opt=copy&pid=${params.pid}&dvId=${data.data}`
           : `#/dashboard?opt=copy&pid=${params.pid}&resourceId=${data.data}`
-      if (isDataEaseBi.value) {
+      if (isEmbedded.value) {
         embeddedStore.clearState()
         embeddedStore.setPid(params.pid as string)
         embeddedStore.setOpt('copy')
@@ -296,12 +294,6 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         )
         return
       }
-
-      if (isIframe.value) {
-        router.push(parseUrl(baseUrl))
-        return
-      }
-
       const newWindow = window.open(baseUrl, '_blank')
       initOpenHandler(newWindow)
     })
@@ -321,7 +313,7 @@ const addOperation = (
     const baseUrl =
       curCanvasType.value === 'dataV' ? '#/dvCanvas?opt=create' : '#/dashboard?opt=create'
     let newWindow = null
-    if (isDataEaseBi.value) {
+    if (isEmbedded.value) {
       embeddedStore.clearState()
       embeddedStore.setOpt('create')
       if (data?.id) {
@@ -331,11 +323,6 @@ const addOperation = (
         'changeCurrentComponent',
         curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
       )
-      return
-    }
-
-    if (isIframe.value) {
-      router.push(parseUrl(data?.id ? baseUrl + `&pid=${data.id}` : baseUrl))
       return
     }
     if (data?.id) {
@@ -362,7 +349,7 @@ function createNewObject() {
 
 const resourceEdit = resourceId => {
   const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
-  if (isDataEaseBi.value) {
+  if (isEmbedded.value) {
     embeddedStore.clearState()
     if (curCanvasType.value === 'dataV') {
       embeddedStore.setDvId(resourceId)
@@ -376,10 +363,6 @@ const resourceEdit = resourceId => {
     return
   }
 
-  if (isIframe.value) {
-    router.push(parseUrl(baseUrl + resourceId))
-    return
-  }
   const newWindow = window.open(baseUrl + resourceId, '_blank')
   initOpenHandler(newWindow)
 }
@@ -396,7 +379,7 @@ const resourceCreateFinish = templateData => {
       ? '#/dvCanvas?opt=create&createType=template'
       : '#/dashboard?opt=create&createType=template'
   let newWindow = null
-  if (isDataEaseBi.value) {
+  if (isEmbedded.value) {
     embeddedStore.clearState()
     embeddedStore.setOpt('create')
     embeddedStore.setCreateType('template')
@@ -410,12 +393,6 @@ const resourceCreateFinish = templateData => {
     return
   }
 
-  if (isIframe.value) {
-    router.push(
-      parseUrl(state.templateCreatePid ? baseUrl + `&pid=${state.templateCreatePid}` : baseUrl)
-    )
-    return
-  }
   if (state.templateCreatePid) {
     newWindow = window.open(baseUrl + `&pid=${state.templateCreatePid}`, '_blank')
   } else {

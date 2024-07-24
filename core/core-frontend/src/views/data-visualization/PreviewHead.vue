@@ -41,7 +41,7 @@ const downloadAsAppTemplate = downloadType => {
 }
 
 const dvEdit = () => {
-  if (isDataEaseBi.value) {
+  if (isDataEaseBi.value || isIframe.value) {
     embeddedStore.clearState()
     if (dvInfo.value.type === 'dataV') {
       embeddedStore.setDvId(dvInfo.value.id)
