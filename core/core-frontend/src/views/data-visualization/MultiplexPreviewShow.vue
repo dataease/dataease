@@ -117,7 +117,7 @@ const multiplexingCheck = (val, data) => {
     })
   } else {
     // remove
-    dvMainStore.removeCurMultiplexingComponentWithId(data)
+    dvMainStore.removeCurMultiplexingComponentWithId(data.id)
   }
 }
 
