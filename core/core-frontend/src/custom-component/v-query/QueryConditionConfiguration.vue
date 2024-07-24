@@ -1522,7 +1522,7 @@ defineExpose({
           <div class="list-item" v-if="curComponent.displayType === '9'">
             <div class="label">选项值数量</div>
             <div class="value">
-              <el-radio-group v-model="curComponent.resultMode">
+              <el-radio-group class="larger-radio" v-model="curComponent.resultMode">
                 <el-radio :label="0">默认</el-radio>
                 <el-radio :label="1">全部</el-radio>
               </el-radio-group>
@@ -1868,7 +1868,7 @@ defineExpose({
             </div>
             <div class="label" style="margin-top: 10.5px">选项值数量</div>
             <div class="value" style="margin-top: 10.5px">
-              <el-radio-group v-model="curComponent.resultMode">
+              <el-radio-group class="larger-radio" v-model="curComponent.resultMode">
                 <el-radio :label="0">默认</el-radio>
                 <el-radio :label="1">全部</el-radio>
               </el-radio-group>
