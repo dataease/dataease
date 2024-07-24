@@ -27,6 +27,8 @@ public class XpackPluginsDatasourceVO implements Serializable {
 
     private String suffix;
 
+    private String driverPath;
+
     private Map<String, String> staticMap;
 
 }
