@@ -655,14 +655,14 @@ export const stepsColor = (start, end, steps, gamma) => {
   function parseColor(hexStr) {
     return hexStr.length === 4
       ? hexStr
-        .substr(1)
-        .split('')
-        .map(function (s) {
-          return 0x11 * parseInt(s, 16)
-        })
+          .substr(1)
+          .split('')
+          .map(function (s) {
+            return 0x11 * parseInt(s, 16)
+          })
       : [hexStr.substr(1, 2), hexStr.substr(3, 2), hexStr.substr(5, 2)].map(function (s) {
-        return parseInt(s, 16)
-      })
+          return parseInt(s, 16)
+        })
   }
   function pad(s) {
     return s.length === 1 ? '0' + s : s
