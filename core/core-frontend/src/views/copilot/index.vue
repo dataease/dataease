@@ -152,7 +152,7 @@ const handleShowLeft = val => {
 const copilotChatLoading = ref(false)
 const inputRef = ref()
 const queryAnswer = (event?: KeyboardEvent) => {
-  if (event.keyCode === 13) {
+  if (event?.keyCode === 13) {
     event.preventDefault()
   }
   let copyAuestionInput = questionInput.value
