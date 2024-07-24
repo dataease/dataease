@@ -2,6 +2,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { ref, nextTick, computed, toRefs } from 'vue'
+import { useEmbedded } from '@/store/modules/embedded'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -179,7 +180,15 @@ const backToMain = () => {
     backHandler(url)
   }
 }
+const embeddedStore = useEmbedded()
+const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
+
 const backHandler = (url: string) => {
+  if (isEmbedded.value) {
+    embeddedStore.clearState()
+    useEmitt().emitter.emit('changeCurrentComponent', 'ScreenPanel')
+    return
+  }
   if (window['dataease-embedded-host'] && openHandler?.value) {
     const pm = {
       methodName: 'embeddedInteractive',
@@ -247,7 +256,7 @@ const fullScreenPreview = () => {
         <div class="middle-area"></div>
       </template>
       <template v-else>
-        <el-icon v-if="!isDataEaseBi" class="custom-el-icon back-icon" @click="backToMain()">
+        <el-icon class="custom-el-icon back-icon" @click="backToMain()">
           <Icon class="toolbar-icon" name="icon_left_outlined" />
         </el-icon>
         <div class="left-area">

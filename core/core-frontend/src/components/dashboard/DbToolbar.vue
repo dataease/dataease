@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
+import { useEmbedded } from '@/store/modules/embedded'
 import { deepCopy } from '@/utils/utils'
 import { nextTick, reactive, ref, computed, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -228,8 +229,14 @@ const backToMain = () => {
     backHandler(url)
   }
 }
+const embeddedStore = useEmbedded()
 
 const backHandler = (url: string) => {
+  if (isEmbedded.value) {
+    embeddedStore.clearState()
+    useEmitt().emitter.emit('changeCurrentComponent', 'DashboardPanel')
+    return
+  }
   if (window['dataease-embedded-host'] && openHandler?.value) {
     const pm = {
       methodName: 'embeddedInteractive',
@@ -391,7 +398,7 @@ const onDvNameChange = () => {
   snapshotStore.recordSnapshotCache()
 }
 const appStore = useAppStoreWithOut()
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
@@ -417,11 +424,7 @@ const initOpenHandler = newWindow => {
         <div class="middle-area"></div>
       </template>
       <template v-else>
-        <el-icon
-          v-if="!batchOptStatus && !isDataEaseBi"
-          class="custom-el-icon back-icon"
-          @click="backToMain()"
-        >
+        <el-icon v-if="!batchOptStatus" class="custom-el-icon back-icon" @click="backToMain()">
           <Icon class="toolbar-icon" name="icon_left_outlined" />
         </el-icon>
         <div class="left-area" v-if="editMode === 'edit' && !batchOptStatus">
