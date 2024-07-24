@@ -1382,7 +1382,6 @@ const groupAreaClickChange = async () => {
   if (areaData.value.components.length > 1) {
     // 重新计算边界
     composeStore.calcComposeArea()
-    const hist2 = dvMainStore.componentData.filter(ele => ele.component === 'GroupArea')
     if (groupAreaHis.length === 0) {
       // 如果不存在 新建视括组件
       groupAreaCom = findNewComponent('GroupArea', 'GroupArea')

@@ -1272,6 +1272,15 @@ export const dvMainStore = defineStore('dataVisualization', {
         mobileLayout: false
       }
       this.canvasStyleData = { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null }
+    },
+    removeGroupArea() {
+      // 清理临时组件
+      const groupAreaHis = this.componentData.filter(ele => ele.component === 'GroupArea')
+      if (groupAreaHis && groupAreaHis.length > 0) {
+        groupAreaHis.forEach(ele => {
+          this.deleteComponentById(ele.id)
+        })
+      }
     }
   }
 })

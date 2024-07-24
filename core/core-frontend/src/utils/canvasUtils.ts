@@ -329,6 +329,7 @@ export function checkIsBatchOptView(viewId) {
 }
 
 export async function canvasSave(callBack) {
+  dvMainStore.removeGroupArea()
   const componentDataToSave = cloneDeep(componentData.value)
   componentDataToSave.forEach(item => {
     if (item.component === 'UserView') {

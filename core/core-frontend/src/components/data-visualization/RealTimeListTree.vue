@@ -33,7 +33,13 @@ const transformIndex = index => {
   return componentData.value.length - 1 - index
 }
 const areaDataPush = component => {
-  if (component && !component.isLock && component.isShow && component.canvasId === 'canvas-main') {
+  if (
+    component &&
+    !component.isLock &&
+    component.isShow &&
+    component.canvasId === 'canvas-main' &&
+    component.category !== 'hidden'
+  ) {
     areaData.value.components.push(component)
   }
 }
@@ -63,7 +69,11 @@ const shiftDataPush = curClickIndex => {
   const shiftAreaComponents = componentData.value
     .slice(indexBegin, indexEnd + 1)
     .filter(
-      component => !areaDataIdArray.includes(component.id) && !component.isLock && component.isShow
+      component =>
+        !areaDataIdArray.includes(component.id) &&
+        !component.isLock &&
+        component.isShow &&
+        component.category !== 'hidden'
     )
   areaData.value.components.push(...shiftAreaComponents)
   dvMainStore.setCurComponent({ component: null, index: null })
