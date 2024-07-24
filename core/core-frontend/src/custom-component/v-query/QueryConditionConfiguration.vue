@@ -1866,8 +1866,8 @@ defineExpose({
                 </div>
               </div>
             </div>
-            <div class="label">选项值数量</div>
-            <div class="value">
+            <div class="label" style="margin-top: 10.5px">选项值数量</div>
+            <div class="value" style="margin-top: 10.5px">
               <el-radio-group v-model="curComponent.resultMode">
                 <el-radio :label="0">默认</el-radio>
                 <el-radio :label="1">全部</el-radio>

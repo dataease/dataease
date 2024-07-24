@@ -269,7 +269,7 @@ const tips = computed(() => {
       <div v-else class="question-or-title">
         {{ tips }}
       </div>
-      <div v-if="isWelcome" class="is-welcome">这是一句 Copilot 的功能描述</div>
+      <div v-if="isWelcome" class="is-welcome">您可以问我: 2020年各个销售部门销售额占比的饼图</div>
       <div
         v-else-if="copilotInfo.msgType === 'api' && copilotInfo.msgStatus === 1"
         class="chart-type"

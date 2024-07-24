@@ -279,6 +279,21 @@ const handleShowFinishPage = ({ id, name, pid }) => {
 emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
+  if ((currentDsType.value === 'API' && activeApiStep.value === 1) || activeStep.value === 1) {
+    ElMessageBox.confirm('填写的信息将会清空，确定返回上一步吗？', {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      prevConfirm()
+    })
+  } else {
+    prevConfirm()
+  }
+}
+
+const prevConfirm = () => {
   if (currentDsType.value === 'API' && activeApiStep.value === 2) {
     activeApiStep.value = 1
     activeStep.value = 1
