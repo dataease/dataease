@@ -12,7 +12,6 @@ import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
 import { LineLayer } from '@antv/l7-layers'
 import { PointLayer } from '@antv/l7-layers'
-import { queryMapKeyApi } from '@/api/setting/sysParameter'
 import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 
@@ -314,14 +313,6 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
       configList.push(fromAnimatePointLayer)
       configList.push(toAnimatePointLayer)
     }
-  }
-
-  getMapKey = async () => {
-    const key = 'online-map-key'
-    if (!localStorage.getItem(key)) {
-      await queryMapKeyApi().then(res => localStorage.setItem(key, res.data))
-    }
-    return localStorage.getItem(key)
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
