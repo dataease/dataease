@@ -18,6 +18,7 @@
           :config="item"
           :index="index"
           :dv-info="dvInfo"
+          :pop-active="curActive(item)"
           :show-position="showPosition"
           :style="customPopStyle"
           :scale="innerScale"
@@ -49,6 +50,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import eventBus from '@/utils/eventBus'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 import { ElMessage } from 'element-plus-secondary'
+import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const areaActive = ref(false)
@@ -91,6 +93,7 @@ const props = defineProps({
 })
 
 const { canvasStyleData, popComponentData, canvasViewInfo, scale, canvasState } = toRefs(props)
+const { curComponent } = storeToRefs(dvMainStore)
 const baseStyle = computed(() => {
   return {
     fontSize: 30 * props.scale + 'px',
@@ -101,6 +104,10 @@ const baseStyle = computed(() => {
 const innerScale = computed(() =>
   props.showPosition === 'preview' ? props.scale : props.scale * 100
 )
+
+const curActive = item => {
+  return curComponent.value?.id === item.id && props.showPosition === 'popEdit'
+}
 
 const handleDragOver = e => {
   areaActive.value = true
