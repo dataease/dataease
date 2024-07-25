@@ -16,6 +16,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import chartViewManager from '@/views/chart/components/js/panel'
 import {
   COMMON_COMPONENT_BACKGROUND_BASE,
+  COMMON_COMPONENT_BACKGROUND_DARK,
+  COMMON_COMPONENT_BACKGROUND_LIGHT,
   defaultStyleValue,
   findBaseDeFaultAttr
 } from '@/custom-component/component-list'
@@ -630,7 +632,11 @@ export const dvMainStore = defineStore('dataVisualization', {
             mode: 'batchOpt',
             render: batchAttachInfo.render,
             type: batchAttachInfo.type,
-            commonBackground: deepCopy(COMMON_COMPONENT_BACKGROUND_BASE),
+            commonBackground: deepCopy(
+              this.curOriginThemes === 'light'
+                ? COMMON_COMPONENT_BACKGROUND_LIGHT
+                : COMMON_COMPONENT_BACKGROUND_DARK
+            ),
             customAttr: this.changeProperties.customAttr,
             customStyle: this.changeProperties.customStyle
           }

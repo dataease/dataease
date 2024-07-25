@@ -34,7 +34,7 @@ const props = withDefaults(
 
 const { themes, element, showStyle } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo } = storeToRefs(dvMainStore)
+const { dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
 const activeName = ref(element.value.collapseName)
 
 const styleKeys = computed(() => {
@@ -53,6 +53,11 @@ const onChange = () => {
 const isIncludesColor = str => {
   return str.toLowerCase().includes('color')
 }
+
+const positionComponentShow = computed(() => {
+  return !batchOptStatus.value && !dashboardActive.value
+})
+
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
@@ -123,7 +128,7 @@ const stopEvent = e => {
 <template>
   <div class="v-common-attr" ref="containerRef">
     <el-collapse v-model="activeName" @change="onChange()">
-      <el-collapse-item :effect="themes" title="位置" name="position" v-if="!dashboardActive">
+      <el-collapse-item :effect="themes" title="位置" name="position" v-if="positionComponentShow">
         <component-position :themes="themes" />
       </el-collapse-item>
 
