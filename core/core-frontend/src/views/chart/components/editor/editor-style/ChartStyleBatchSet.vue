@@ -3,7 +3,7 @@
     <chart-style
       v-if="mixProperties && batchOptComponentInfo && batchOptComponentType === 'UserView'"
       class="chart-style-main"
-      themes="light"
+      :themes="themes"
       :param="param"
       :common-background-pop="batchOptComponentInfo.commonBackground"
       :view="batchOptComponentInfo"
@@ -59,6 +59,15 @@ const state = reactive({
   dimensionData: [],
   quotaData: []
 })
+
+const props = withDefaults(
+  defineProps<{
+    themes?: EditorTheme
+  }>(),
+  {
+    themes: 'light'
+  }
+)
 
 const onMiscChange = (val, prop) => {
   batchOptChange('customAttr', 'misc', val.data, prop)

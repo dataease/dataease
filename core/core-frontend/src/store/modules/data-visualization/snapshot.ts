@@ -154,10 +154,11 @@ export const snapshotStore = defineStore('snapshot', {
     recordSnapshot() {
       this.styleChangeTimes = ++this.styleChangeTimes
       if (dataPrepareState.value) {
-        dvMainStore.removeGroupArea()
+        const snapshotComponentData = deepCopy(componentData.value)
+        dvMainStore.removeGroupArea(snapshotComponentData)
         // 添加新的快照
         const newSnapshot = {
-          componentData: deepCopy(componentData.value),
+          componentData: snapshotComponentData,
           canvasStyleData: deepCopy(canvasStyleData.value),
           canvasViewInfo: deepCopy(canvasViewInfo.value),
           cacheViewIdInfo: deepCopy(this.cacheViewIdInfo),

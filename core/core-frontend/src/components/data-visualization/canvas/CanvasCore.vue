@@ -1371,6 +1371,15 @@ const contextMenuShow = computed(() => {
 
 const markLineShow = computed(() => isMainCanvas(canvasId.value))
 
+// 批量设置
+
+const dataVBatchOptAdaptor = () => {
+  dvMainStore.setBatchOptStatus(true)
+  areaData.value.components.forEach(component => {
+    dvMainStore.addCurBatchComponent(component)
+  })
+}
+
 // 点击事件导致选择区域变更
 const groupAreaClickChange = async () => {
   let groupAreaCom
@@ -1378,8 +1387,12 @@ const groupAreaClickChange = async () => {
   if (groupAreaHis && groupAreaHis.length > 0) {
     groupAreaCom = groupAreaHis[0]
   }
+  if (areaData.value.components.length === 0) {
+    dvMainStore.setBatchOptStatus(false)
+  }
   // 显示Group视括组件
   if (areaData.value.components.length > 1) {
+    dataVBatchOptAdaptor()
     // 重新计算边界
     composeStore.calcComposeArea()
     if (groupAreaHis.length === 0) {

@@ -59,7 +59,7 @@
         :style="getPointStyle(item)"
         @mousedown="handleMouseDownOnPoint(item, $event)"
       ></div>
-      <div class="shape-shadow" v-show="batchOptStatus" @mousedown="batchSelected"></div>
+      <div class="shape-shadow" v-show="batchOptFlag" @mousedown="batchSelected"></div>
       <template v-if="boardMoveActive">
         <div
           v-show="!element.editing"
@@ -164,7 +164,8 @@ const shapeLock = computed(() => {
 
 const showPosition = computed(() => {
   let position
-  if (batchOptStatus.value) {
+  // 数据大屏批量操作合并为分组
+  if (batchOptFlag.value) {
     position = 'batchOpt'
   } else if (isEditMode.value) {
     position = dvInfo.value.type === 'dashboard' ? 'canvas' : 'canvasDataV'
@@ -421,7 +422,7 @@ const handleInnerMouseDownOnShape = e => {
   if (!canvasActive.value) {
     return
   }
-  if (dvMainStore.batchOptStatus) {
+  if (batchOptFlag.value) {
     componentEditBarRef.value.batchOptCheckOut()
     e.stopPropagation()
     e.preventDefault()
@@ -592,7 +593,7 @@ const selectCurComponent = e => {
 }
 
 const batchSelected = e => {
-  if (dvMainStore.batchOptStatus) {
+  if (batchOptFlag.value) {
     componentEditBarRef.value.batchOptCheckOut()
     e.stopPropagation()
     e.preventDefault()
@@ -823,7 +824,7 @@ const componentBackgroundStyle = computed(() => {
 
 const editBarShowFlag = computed(() => {
   return (
-    ((active.value || batchOptStatus.value) &&
+    ((active.value || batchOptFlag.value) &&
       ['canvas', 'canvasDataV', 'batchOpt'].includes(showPosition.value)) ||
     linkageSettingStatus.value
   )
@@ -920,6 +921,10 @@ const tabMoveInCheck = async () => {
     }
   }
 }
+
+const batchOptFlag = computed(() => {
+  return batchOptStatus.value && dashboardActive.value
+})
 
 const dragCollision = computed(() => {
   return active.value && Boolean(tabCollisionActiveId.value)
