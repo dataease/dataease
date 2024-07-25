@@ -152,6 +152,8 @@ const state = reactive({
   drillClickDimensionList: []
 })
 
+const drillClickLength = computed(() => state.drillClickDimensionList.length)
+
 const titleAlign = computed<string>(() => {
   if (!titleShow.value) {
     return 'flex-start'
@@ -911,6 +913,7 @@ const loadPluginCategory = data => {
         :scale="scale"
         :show-position="showPosition"
         :element="element"
+        :drill-length="drillClickLength"
         v-else-if="showChartView(ChartLibraryType.S2)"
         ref="chartComponent"
         @onPointClick="onPointClick"
