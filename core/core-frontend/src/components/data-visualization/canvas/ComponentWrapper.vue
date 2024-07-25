@@ -19,6 +19,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  popActive: {
+    type: Boolean,
+    default: false
+  },
   canvasStyleData: {
     type: Object,
     required: true
@@ -192,10 +196,6 @@ const onPointClick = param => {
   emits('onPointClick', param)
 }
 
-const innerOutActive = computed(() => {
-  return config.value.category === 'hidden' && showPosition.value === 'popEdit'
-})
-
 const deepScale = computed(() => scale.value / 100)
 </script>
 
@@ -232,7 +232,7 @@ const deepScale = computed(() => scale.value / 100)
         :style="{ color: config.commonBackground.innerImageColor }"
         :name="commonBackgroundSvgInner"
       ></Board>
-      <div class="wrapper-inner-adaptor" :class="{ 'pop-wrapper-inner': innerOutActive }">
+      <div class="wrapper-inner-adaptor" :class="{ 'pop-wrapper-inner': popActive }">
         <component
           :is="findComponent(config['component'])"
           :view="viewInfo"
