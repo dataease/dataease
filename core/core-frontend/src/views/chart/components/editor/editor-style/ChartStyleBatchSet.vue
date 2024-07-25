@@ -130,6 +130,7 @@ const batchOptChange = (custom, property, value, subProp?) => {
     value: value,
     subProp: subProp
   })
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 
 const onStyleAttrChange = params => {
