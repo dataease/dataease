@@ -1,10 +1,12 @@
 package io.dataease.commons.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
-import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.JsonUtil;
 import net.sf.jsqlparser.expression.*;
@@ -484,7 +486,7 @@ public class SqlparserUtils {
         };
     }
 
-    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
+    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage) {
         if (StringUtils.isEmpty(sql)) {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -538,9 +540,26 @@ public class SqlparserUtils {
             if (!isCross) {
                 Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
                 DatasourceSchemaDTO value = next.getValue();
-                DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(value.getType());
-                String prefix = datasourceType.getPrefix();
-                String suffix = datasourceType.getSuffix();
+
+                String prefix = "";
+                String suffix = "";
+                if (Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList().contains(value.getType())) {
+                    DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(value.getType());
+                    prefix = datasourceType.getPrefix();
+                    suffix = datasourceType.getSuffix();
+                } else {
+                    if (pluginManage != null) {
+                        List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
+                        List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), value.getType())).toList();
+                        if (ObjectUtils.isNotEmpty(list)) {
+                            XpackPluginsDatasourceVO first = list.getFirst();
+                            prefix = first.getPrefix();
+                            suffix = first.getSuffix();
+                        } else {
+                            DEException.throwException("当前数据源插件不存在");
+                        }
+                    }
+                }
 
                 Pattern pattern = Pattern.compile("(`.*?`)");
                 Matcher matcher = pattern.matcher(sql);

@@ -23,6 +23,7 @@ import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
@@ -42,6 +43,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -69,6 +71,8 @@ public class DatasetDataManage {
     private PermissionManage permissionManage;
     @Resource
     private DatasetTableSqlLogManage datasetTableSqlLogManage;
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
@@ -103,7 +107,7 @@ public class DatasetDataManage {
                 sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             } else {
                 // parser sql params and replace default value
-                String originSql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList());
+                String originSql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList(), pluginManage);
                 // add sql table schema
 
                 sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
@@ -337,7 +341,7 @@ public class DatasetDataManage {
         datasourceRequest.setDsList(dsMap);
 
         // parser sql params and replace default value
-        String originSql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, true, null, false, dsMap);
+        String originSql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, true, null, false, dsMap, pluginManage);
 
         // sql 作为临时表，外层加上limit
         String sql;
