@@ -440,8 +440,10 @@ const multiplexingCheck = val => {
 // 批量操作-Begin
 
 const batchOptCheckOut = () => {
-  state.batchOptCheckModel = !state.batchOptCheckModel
-  batchOptChange(state.batchOptCheckModel)
+  if (showPosition.value === 'batchOpt') {
+    state.batchOptCheckModel = !state.batchOptCheckModel
+    batchOptChange(state.batchOptCheckModel)
+  }
 }
 
 const batchOptChange = val => {

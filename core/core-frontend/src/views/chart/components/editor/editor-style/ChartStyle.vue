@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { PropType, toRefs, nextTick, watch, ref } from 'vue'
+import { PropType, toRefs, nextTick, watch, ref, computed } from 'vue'
 import MiscSelector from '@/views/chart/components/editor/editor-style/components/MiscSelector.vue'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 import TooltipSelector from '@/views/chart/components/editor/editor-style/components/TooltipSelector.vue'
@@ -27,7 +27,7 @@ import FlowMapLineSelector from '@/views/chart/components/editor/editor-style/co
 import FlowMapPointSelector from '@/views/chart/components/editor/editor-style/components/FlowMapPointSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo } = storeToRefs(dvMainStore)
+const { dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const state = {
@@ -112,6 +112,10 @@ const emit = defineEmits([
 
 const indicatorValueRef = ref()
 const indicatorNameRef = ref()
+
+const positionComponentShow = computed(() => {
+  return !batchOptStatus.value && dvInfo.value.type !== 'dashboard'
+})
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
 
@@ -220,7 +224,7 @@ watch(
             :effect="themes"
             name="position"
             :title="'位置'"
-            v-if="dvInfo.type !== 'dashboard'"
+            v-if="positionComponentShow"
           >
             <component-position :themes="themes" />
           </el-collapse-item>

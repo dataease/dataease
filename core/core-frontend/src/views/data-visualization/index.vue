@@ -42,6 +42,7 @@ import DvPreview from '@/views/data-visualization/DvPreview.vue'
 import DeRuler from '@/custom-component/common/DeRuler.vue'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -79,7 +80,8 @@ const {
   canvasViewInfo,
   editMode,
   dvInfo,
-  canvasState
+  canvasState,
+  batchOptStatus
 } = storeToRefs(dvMainStore)
 const { editorMap } = storeToRefs(composeStore)
 const canvasOut = ref(null)
@@ -471,39 +473,52 @@ eventBus.on('handleNew', handleNew)
       </main>
       <!-- 右侧侧组件列表 -->
       <div style="width: auto; height: 100%" ref="leftSidebarRef">
+        <template v-if="!batchOptStatus">
+          <dv-sidebar
+            v-if="commonPropertiesShow"
+            :title="curComponent['name']"
+            :width="240"
+            :side-name="'componentProp'"
+            :aside-position="'right'"
+            class="left-sidebar"
+            :class="{ 'preview-aside': editMode === 'preview' }"
+          >
+            <component :is="findComponent(curComponent['component'] + 'Attr')" />
+          </dv-sidebar>
+          <dv-sidebar
+            v-show="canvasPropertiesShow"
+            :title="'大屏配置'"
+            :width="240"
+            :side-name="'canvas'"
+            :aside-position="'right'"
+            class="left-sidebar"
+            :class="{ 'preview-aside': editMode === 'preview' }"
+          >
+            <canvas-attr></canvas-attr>
+          </dv-sidebar>
+          <div
+            v-show="viewsPropertiesShow"
+            style="height: 100%"
+            :class="{ 'preview-aside': editMode === 'preview' }"
+          >
+            <editor
+              :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
+              themes="dark"
+              :dataset-tree="state.datasetTree"
+            ></editor>
+          </div>
+        </template>
         <dv-sidebar
-          v-if="commonPropertiesShow"
-          :title="curComponent['name']"
-          :width="240"
-          :side-name="'componentProp'"
-          :aside-position="'right'"
+          v-if="batchOptStatus"
+          :theme-info="'dark'"
+          title="批量设置样式"
+          :width="280"
+          aside-position="right"
           class="left-sidebar"
-          :class="{ 'preview-aside': editMode === 'preview' }"
+          :side-name="'batchOpt'"
         >
-          <component :is="findComponent(curComponent['component'] + 'Attr')" />
+          <chart-style-batch-set themes="dark"></chart-style-batch-set>
         </dv-sidebar>
-        <dv-sidebar
-          v-show="canvasPropertiesShow"
-          :title="'大屏配置'"
-          :width="240"
-          :side-name="'canvas'"
-          :aside-position="'right'"
-          class="left-sidebar"
-          :class="{ 'preview-aside': editMode === 'preview' }"
-        >
-          <canvas-attr></canvas-attr>
-        </dv-sidebar>
-        <div
-          v-show="viewsPropertiesShow"
-          style="height: 100%"
-          :class="{ 'preview-aside': editMode === 'preview' }"
-        >
-          <editor
-            :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
-            themes="dark"
-            :dataset-tree="state.datasetTree"
-          ></editor>
-        </div>
       </div>
     </el-container>
   </div>
