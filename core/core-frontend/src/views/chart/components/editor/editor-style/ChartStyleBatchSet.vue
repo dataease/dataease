@@ -33,7 +33,7 @@
       :element="batchOptComponentInfo"
       :show-style="mixProperties.includes('common-style')"
       @onAttrChange="onStyleAttrChange"
-      themes="light"
+      :themes="themes"
     ></common-attr>
     <el-row v-else class="view-selected-message-class">
       <span class="select-view">请选择组件...</span>
