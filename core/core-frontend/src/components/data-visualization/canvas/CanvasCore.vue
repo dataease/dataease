@@ -526,6 +526,10 @@ const handleContextMenu = e => {
 
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
+    if (['VQuery'].includes(curComponent.value.component)) {
+      left = left * curBaseScale.value + 150
+      top = top * curBaseScale.value + curComponent.value.style.top * (1 - curBaseScale.value)
+    }
     contextmenuStore.showContextMenu({ top, left, position: 'canvasCore' })
     const iconDom = document.getElementById('close-button')
     if (iconDom) {
