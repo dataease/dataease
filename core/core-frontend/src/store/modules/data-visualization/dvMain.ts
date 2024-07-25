@@ -1273,12 +1273,12 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       this.canvasStyleData = { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null }
     },
-    removeGroupArea() {
+    removeGroupArea(curComponentData = this.componentData) {
       // 清理临时组件
-      const groupAreaHis = this.componentData.filter(ele => ele.component === 'GroupArea')
+      const groupAreaHis = curComponentData.filter(ele => ele.component === 'GroupArea')
       if (groupAreaHis && groupAreaHis.length > 0) {
         groupAreaHis.forEach(ele => {
-          this.deleteComponentById(ele.id)
+          this.deleteComponentById(ele.id, curComponentData)
         })
       }
     }
