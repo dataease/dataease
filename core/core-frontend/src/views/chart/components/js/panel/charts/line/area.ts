@@ -11,7 +11,6 @@ import {
   parseJson,
   registerExtremumPointEvt,
   setExtremumPosition,
-  setUpGroupSeriesColor,
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
@@ -36,7 +35,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       'gradient',
       'seriesColor'
     ],
-    'label-selector': ['seriesLabelFormatter'],
+    'label-selector': ['seriesLabelFormatter', 'showExtremum'],
     'tooltip-selector': [
       ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
       'seriesTooltipFormatter'
@@ -144,21 +143,18 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
         if (!labelCfg) {
           return data.value
         }
+        let showLabel = true
+        if (labelCfg.showExtremum) {
+          showLabel = setExtremumPosition(data, point, chart, labelCfg, basicStyle.lineSymbolSize)
+        }
         if (!labelCfg.show) {
           return
         }
-        const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const showLabel = setExtremumPosition(
-          data,
-          point,
-          chart,
-          labelCfg,
-          basicStyle.lineSymbolSize
-        )
         const has = chart.filteredData?.filter(
           item => JSON.stringify(item) === JSON.stringify(data)
         )
         if (has?.length > 0 && showLabel) {
+          const value = valueFormatter(data.value, labelCfg.formatterCfg)
           const group = new G2PlotChartView.engine.Group({})
           group.addShape({
             type: 'text',

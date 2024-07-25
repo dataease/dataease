@@ -697,6 +697,10 @@ declare interface ChartLabelAttr {
    */
   show: boolean
   /**
+   * 收缩下的显示标签
+   */
+  childrenShow?: boolean
+  /**
    * 位置
    */
   position: string
@@ -772,6 +776,11 @@ declare interface ChartLabelAttr {
   customContent?: string
 
   showGap?: boolean
+
+  /**
+   * 显示极值
+   */
+  showExtremum?: boolean
 }
 /**
  * 提示设置
