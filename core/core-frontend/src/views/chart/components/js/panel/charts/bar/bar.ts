@@ -34,7 +34,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
     'basic-style-selector': [...BAR_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
-    'label-selector': ['vPosition', 'seriesLabelFormatter'],
+    'label-selector': ['vPosition', 'seriesLabelFormatter', 'showExtremum'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'axisLabelFormatter']
   }
@@ -139,21 +139,15 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         if (!labelCfg) {
           return data.value
         }
+        let showLabel = true
+        if (labelCfg.showExtremum) {
+          showLabel = setExtremumPosition(data, point, chart, labelCfg, basicStyle.lineSymbolSize)
+        }
         if (!labelCfg.show) {
           return
         }
-        const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const showLabel = setExtremumPosition(
-          data,
-          point,
-          chart,
-          labelCfg,
-          basicStyle.lineSymbolSize
-        )
-        const has = chart.filteredData?.filter(
-          item => JSON.stringify(item) === JSON.stringify(data)
-        )
-        if (has.length > 0 && showLabel) {
+        if (showLabel) {
+          const value = valueFormatter(data.value, labelCfg.formatterCfg)
           const group = new G2PlotChartView.engine.Group({})
           group.addShape({
             type: 'text',
@@ -340,6 +334,10 @@ export class StackBar extends Bar {
  * 分组柱状图
  */
 export class GroupBar extends StackBar {
+  propertyInner = {
+    ...this['propertyInner'],
+    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition', 'showExtremum']
+  }
   axisConfig = {
     ...this['axisConfig'],
     yAxis: {
@@ -359,18 +357,15 @@ export class GroupBar extends StackBar {
     const label = {
       ...baseOptions.label,
       formatter: function (param: Datum, point) {
-        const showLabel = setExtremumPosition(
-          param,
-          point,
-          chart,
-          labelAttr,
-          basicStyle.lineSymbolSize
-        )
-        const has = chart.filteredData?.filter(
-          item => JSON.stringify(item) === JSON.stringify(param)
-        )
+        let showLabel = true
+        if (labelAttr.showExtremum) {
+          showLabel = setExtremumPosition(param, point, chart, labelAttr, basicStyle.lineSymbolSize)
+        }
+        if (!labelAttr.childrenShow) {
+          return null
+        }
         const value = valueFormatter(param.value, labelAttr.labelFormatter)
-        return has.length > 0 && showLabel ? value : null
+        return showLabel ? value : null
       }
     }
     return {

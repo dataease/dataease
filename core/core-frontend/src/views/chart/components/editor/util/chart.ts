@@ -307,6 +307,7 @@ export const DEFAULT_MARK = {
 }
 export const DEFAULT_LABEL: ChartLabelAttr = {
   show: false,
+  childrenShow: true,
   position: 'top',
   color: '#909399',
   fontSize: 12,
@@ -1525,7 +1526,8 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   gaugePercentLabel: true,
   showSummary: false,
   summaryLabel: '总计',
-  seriesColor: []
+  seriesColor: [],
+  layout: 'horizontal'
 }
 
 export const BASE_VIEW_CONFIG = {
