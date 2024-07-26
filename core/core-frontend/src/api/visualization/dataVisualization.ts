@@ -49,6 +49,9 @@ export const save = data => request.post({ url: '/dataVisualization/save', data 
 export const saveCanvas = data =>
   request.post({ url: '/dataVisualization/saveCanvas', data, loading: true })
 
+export const appCanvasNameCheck = async data =>
+  request.post({ url: '/dataVisualization/appCanvasNameCheck', data, loading: false })
+
 export const updateBase = data => request.post({ url: '/dataVisualization/updateBase', data })
 
 export const updateCanvas = data =>
@@ -69,7 +72,7 @@ export const saveOrUpdateSubject = data =>
 
 export const deleteSubject = id => request.delete({ url: '/visualizationSubject/delete/' + id })
 
-export const dvNameCheck = data => request.post({ url: '/dataVisualization/nameCheck', data })
+export const dvNameCheck = async data => request.post({ url: '/dataVisualization/nameCheck', data })
 
 export const storeApi = (data): Promise<IResponse> => {
   return request.post({ url: '/store/execute', data })

@@ -221,12 +221,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         .collect(Collectors.toMap(AppCoreDatasourceVO::getId, AppCoreDatasourceVO::getSystemDatasourceId)));
                 Long datasetFolderPid = request.getDatasetFolderPid();
                 String datasetFolderName = request.getDatasetFolderName();
-                QueryWrapper<CoreDatasetGroup> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("name", datasetFolderName);
-                queryWrapper.eq("pid", datasetFolderPid);
-                if (coreDatasetGroupMapper.exists(queryWrapper)) {
-                    DEException.throwException("当前数据集分组名称已存在");
-                }
                 //新建数据集分组
                 DatasetGroupInfoDTO datasetFolderNewRequest = new DatasetGroupInfoDTO();
                 datasetFolderNewRequest.setName(datasetFolderName);
@@ -391,6 +385,20 @@ public class DataVisualizationServer implements DataVisualizationApi {
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, canvasViews);
         return newDvId.toString();
+    }
+
+    @Override
+    public String appCanvasNameCheck(DataVisualizationBaseRequest request) throws Exception {
+        Long datasetFolderPid = request.getDatasetFolderPid();
+        String datasetFolderName = request.getDatasetFolderName();
+        QueryWrapper<CoreDatasetGroup> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name", datasetFolderName);
+        queryWrapper.eq("pid", datasetFolderPid);
+        if (coreDatasetGroupMapper.exists(queryWrapper)) {
+            return "repeat";
+        }else{
+            return "success";
+        }
     }
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, stExp = "#p0.type")
