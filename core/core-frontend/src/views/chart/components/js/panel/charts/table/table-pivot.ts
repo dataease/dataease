@@ -35,7 +35,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'tableTitleHeight',
       'tableHeaderAlign',
       'showColTooltip',
-      'showRowTooltip'
+      'showRowTooltip',
+      'showHorizonBorder',
+      'showVerticalBorder'
     ],
     'table-total-selector': ['row', 'col'],
     'basic-style-selector': [
@@ -283,7 +285,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
   }
   protected configTheme(chart: Chart): S2Theme {
     const theme = super.configTheme(chart)
-    const { basicStyle, tableHeader } = parseJson(chart.customAttr)
+    const { basicStyle, tableHeader, tableCell } = parseJson(chart.customAttr)
     let tableHeaderBgColor = tableHeader.tableHeaderBgColor
     if (!isAlphaColor(tableHeaderBgColor)) {
       tableHeaderBgColor = hexColorToRGBA(tableHeaderBgColor, basicStyle.alpha)
@@ -291,11 +293,6 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     const tableBorderColor = hexColorToRGBA(basicStyle.tableBorderColor, basicStyle.alpha)
     const tableHeaderFontColor = hexColorToRGBA(tableHeader.tableHeaderFontColor, basicStyle.alpha)
     const pivotTheme = {
-      cornerCell: {
-        cell: {
-          verticalBorderWidth: 1
-        }
-      },
       rowCell: {
         cell: {
           backgroundColor: tableHeaderBgColor,
@@ -326,6 +323,40 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       }
     }
     merge(theme, pivotTheme)
+    if (tableHeader.showHorizonBorder === false) {
+      const tmp: S2Theme = {
+        cornerCell: {
+          cell: {
+            horizontalBorderColor: tableHeaderBgColor,
+            horizontalBorderWidth: 0
+          }
+        },
+        rowCell: {
+          cell: {
+            horizontalBorderColor: tableHeaderBgColor,
+            horizontalBorderWidth: 0
+          }
+        }
+      }
+      merge(theme, tmp)
+    }
+    if (tableHeader.showVerticalBorder === false) {
+      const tmp: S2Theme = {
+        cornerCell: {
+          cell: {
+            verticalBorderColor: tableHeaderBgColor,
+            verticalBorderWidth: 0
+          }
+        },
+        rowCell: {
+          cell: {
+            verticalBorderColor: tableHeaderBgColor,
+            verticalBorderWidth: 0
+          }
+        }
+      }
+      merge(theme, tmp)
+    }
     return theme
   }
 

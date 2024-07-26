@@ -332,6 +332,14 @@ declare interface ChartTableHeaderAttr {
    * 表头显示开关
    */
   showTableHeader: boolean
+  /**
+   * 表头横边框线
+   */
+  showHorizonBorder: boolean
+  /**
+   * 表头纵边框线
+   */
+  showVerticalBorder: boolean
 }
 /**
  * 单元格属性
@@ -370,6 +378,14 @@ declare interface ChartTableCellAttr {
    * 鼠标悬浮提示
    */
   showTooltip: boolean
+  /**
+   * 单元格横边框线
+   */
+  showHorizonBorder: boolean
+  /**
+   * 单元格纵边框线
+   */
+  showVerticalBorder: boolean
 }
 
 /**

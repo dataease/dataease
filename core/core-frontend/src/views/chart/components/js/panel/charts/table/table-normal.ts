@@ -3,7 +3,16 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 import { copyContent, SortTooltip } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
-import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet, ViewMeta } from '@antv/s2'
+import {
+  S2Event,
+  S2Options,
+  SHAPE_STYLE_MAP,
+  TableColCell,
+  TableDataCell,
+  TableSheet,
+  updateShapeAttr,
+  ViewMeta
+} from '@antv/s2'
 import { cloneDeep, isNumber } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
@@ -259,5 +268,19 @@ class SummaryCell extends TableDataCell {
   getBackgroundColor() {
     const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
     return { backgroundColor, backgroundColorOpacity }
+  }
+  /**
+   * 重写这个方法是为了处理底部的汇总行取消 hover 状态时设置 border 为 1,
+   * 这样会导致单元格隐藏横边边框失败，出现一条白线
+   */
+  hideInteractionShape() {
+    const width = this.theme.dataCell.cell.horizontalBorderWidth
+    this.stateShapes.forEach(shape => {
+      updateShapeAttr(shape, SHAPE_STYLE_MAP.backgroundOpacity, 0)
+      updateShapeAttr(shape, SHAPE_STYLE_MAP.backgroundColor, 'transparent')
+      updateShapeAttr(shape, SHAPE_STYLE_MAP.borderOpacity, 0)
+      updateShapeAttr(shape, SHAPE_STYLE_MAP.borderWidth, width)
+      updateShapeAttr(shape, SHAPE_STYLE_MAP.borderColor, 'transparent')
+    })
   }
 }

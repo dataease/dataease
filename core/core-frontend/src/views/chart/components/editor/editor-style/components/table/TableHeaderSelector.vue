@@ -259,6 +259,34 @@ onMounted(() => {
         {{ t('chart.table_header_sort') }}
       </el-checkbox>
     </el-form-item>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showHorizonBorder')"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableHeaderForm.showHorizonBorder"
+        @change="changeTableHeader('showHorizonBorder')"
+      >
+        {{ t('chart.table_header_show_horizon_border') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showVerticalBorder')"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableHeaderForm.showVerticalBorder"
+        @change="changeTableHeader('showVerticalBorder')"
+      >
+        {{ t('chart.table_header_show_vertical_border') }}
+      </el-checkbox>
+    </el-form-item>
   </el-form>
 </template>
 
