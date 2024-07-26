@@ -8,6 +8,7 @@ import componentList, {
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
+  appCanvasNameCheck,
   decompression,
   dvNameCheck,
   findById,
@@ -24,6 +25,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { deepCopy } from '@/utils/utils'
+import { ElMessage } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo, appData } =
   storeToRefs(dvMainStore)
@@ -353,6 +355,20 @@ export async function canvasSave(callBack) {
     appData: appData.value,
     ...dvInfo.value,
     watermarkInfo: null
+  }
+
+  let dsNameCheck = 'success'
+  if (appData.value) {
+    await appCanvasNameCheck({
+      datasetFolderPid: canvasInfo.datasetFolderPid,
+      datasetFolderName: canvasInfo.datasetFolderName
+    }).then(rsp => {
+      dsNameCheck = rsp.data
+    })
+  }
+  if (dsNameCheck === 'repeat') {
+    ElMessage.error('数据集名称已存在')
+    return
   }
 
   const method = dvInfo.value.id && dvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
