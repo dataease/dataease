@@ -48,6 +48,11 @@ public interface DataVisualizationApi {
     @Operation(summary = "画布保存")
     String saveCanvas(@RequestBody DataVisualizationBaseRequest request) throws Exception;
 
+    @PostMapping("/appCanvasNameCheck")
+    @Operation(summary = "应用名称检查")
+    String appCanvasNameCheck(@RequestBody DataVisualizationBaseRequest request) throws Exception;
+
+
     @PostMapping("/updateCanvas")
     @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
     @Operation(summary = "画布更新")
