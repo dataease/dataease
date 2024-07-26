@@ -9,7 +9,7 @@ import { storeToRefs } from 'pinia'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
-import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
+import { isDashboard, isMainCanvas, refreshOtherComponent } from '@/utils/canvasUtils'
 import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
 import router from '@/router'
@@ -220,6 +220,9 @@ const initRefreshTimer = () => {
     }
     refreshTimer.value = setInterval(() => {
       searchCount.value++
+      if (isMainCanvas(canvasId.value)) {
+        refreshOtherComponent(dvInfo.value.id, dvInfo.value.type)
+      }
     }, refreshTime)
   }
 }
