@@ -192,6 +192,8 @@ export function getCustomTheme(chart: Chart): S2Theme {
       if (!isAlphaColor(tableHeaderBgColor)) {
         tableHeaderBgColor = hexColorToRGBA(tableHeaderBgColor, basicStyle.alpha)
       }
+      const fontStyle = tableHeader.isItalic ? 'italic' : 'normal'
+      const fontWeight = tableHeader.isBolder === false ? 'normal' : 'bold'
       const { tableHeaderAlign, tableTitleFontSize } = tableHeader
       const tmpTheme: S2Theme = {
         cornerCell: {
@@ -201,17 +203,23 @@ export function getCustomTheme(chart: Chart): S2Theme {
           bolderText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign
+            textAlign: tableHeaderAlign,
+            fontStyle,
+            fontWeight
           },
           text: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign
+            textAlign: tableHeaderAlign,
+            fontStyle,
+            fontWeight
           },
           measureText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign
+            textAlign: tableHeaderAlign,
+            fontStyle,
+            fontWeight
           }
         },
         colCell: {
@@ -221,17 +229,23 @@ export function getCustomTheme(chart: Chart): S2Theme {
           bolderText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign
+            textAlign: tableHeaderAlign,
+            fontStyle,
+            fontWeight
           },
           text: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign
+            textAlign: tableHeaderAlign,
+            fontStyle,
+            fontWeight
           },
           measureText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign
+            textAlign: tableHeaderAlign,
+            fontStyle,
+            fontWeight
           }
         }
       }
@@ -278,6 +292,8 @@ export function getCustomTheme(chart: Chart): S2Theme {
       if (!isAlphaColor(tableItemSubBgColor)) {
         tableItemSubBgColor = hexColorToRGBA(tableItemSubBgColor, basicStyle.alpha)
       }
+      const fontStyle = tableCell.isItalic ? 'italic' : 'normal'
+      const fontWeight = tableCell.isBolder === false ? 'normal' : 'bold'
       const { tableItemAlign, tableItemFontSize, enableTableCrossBG } = tableCell
       const tmpTheme: S2Theme = {
         rowCell: {
@@ -315,22 +331,30 @@ export function getCustomTheme(chart: Chart): S2Theme {
           bolderText: {
             fill: tableFontColor,
             textAlign: tableItemAlign,
-            fontSize: tableItemFontSize
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
           },
           text: {
             fill: tableFontColor,
             textAlign: tableItemAlign,
-            fontSize: tableItemFontSize
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
           },
           measureText: {
             fill: tableFontColor,
             textAlign: tableItemAlign,
-            fontSize: tableItemFontSize
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
           },
           seriesText: {
             fill: tableFontColor,
             textAlign: tableItemAlign,
-            fontSize: tableItemFontSize
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
           }
         }
       }

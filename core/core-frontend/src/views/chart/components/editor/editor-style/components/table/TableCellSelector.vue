@@ -161,13 +161,60 @@ onMounted(() => {
           />
         </el-select>
       </el-form-item>
+    </el-space>
+    <el-space>
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          :effect="themes"
+          class="icon-checkbox"
+          v-model="state.tableCellForm.isBolder"
+          @change="changeTableCell('isBolder')"
+        >
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.bolder') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: state.tableCellForm.isBolder }"
+            >
+              <el-icon>
+                <Icon name="icon_bold_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-checkbox>
+      </el-form-item>
+
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          :effect="themes"
+          class="icon-checkbox"
+          v-model="state.tableCellForm.isItalic"
+          @change="changeTableCell('isItalic')"
+        >
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.italic') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: state.tableCellForm.isItalic }"
+            >
+              <el-icon>
+                <Icon name="icon_italic_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-checkbox>
+      </el-form-item>
+
+      <div class="position-divider" :class="'position-divider--' + themes"></div>
       <el-form-item
         class="form-item"
         :class="'form-item-' + themes"
         v-if="showProperty('tableItemAlign')"
       >
-        <template #label>&nbsp;</template>
-
         <el-radio-group
           class="icon-radio-group"
           v-model="state.tableCellForm.tableItemAlign"
@@ -328,6 +375,24 @@ onMounted(() => {
     display: none;
   }
   :deep(.ed-radio__label) {
+    padding: 0;
+  }
+}
+.position-divider {
+  width: 1px;
+  height: 18px;
+  margin-bottom: 8px;
+  background: rgba(31, 35, 41, 0.15);
+
+  &.position-divider--dark {
+    background: rgba(235, 235, 235, 0.15);
+  }
+}
+.icon-checkbox {
+  :deep(.ed-checkbox__input) {
+    display: none;
+  }
+  :deep(.ed-checkbox__label) {
     padding: 0;
   }
 }

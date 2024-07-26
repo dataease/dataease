@@ -285,13 +285,15 @@ export class TablePivot extends S2ChartView<PivotSheet> {
   }
   protected configTheme(chart: Chart): S2Theme {
     const theme = super.configTheme(chart)
-    const { basicStyle, tableHeader, tableCell } = parseJson(chart.customAttr)
+    const { basicStyle, tableHeader } = parseJson(chart.customAttr)
     let tableHeaderBgColor = tableHeader.tableHeaderBgColor
     if (!isAlphaColor(tableHeaderBgColor)) {
       tableHeaderBgColor = hexColorToRGBA(tableHeaderBgColor, basicStyle.alpha)
     }
     const tableBorderColor = hexColorToRGBA(basicStyle.tableBorderColor, basicStyle.alpha)
     const tableHeaderFontColor = hexColorToRGBA(tableHeader.tableHeaderFontColor, basicStyle.alpha)
+    const fontStyle = tableHeader.isItalic ? 'italic' : 'normal'
+    const fontWeight = tableHeader.isBolder === false ? 'normal' : 'bold'
     const pivotTheme = {
       rowCell: {
         cell: {
@@ -303,22 +305,30 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           fill: tableHeaderFontColor,
           fontSize: tableHeader.tableTitleFontSize,
           textAlign: tableHeader.tableHeaderAlign,
-          textBaseline: 'top'
+          textBaseline: 'top',
+          fontStyle,
+          fontWeight
         },
         bolderText: {
           fill: tableHeaderFontColor,
           fontSize: tableHeader.tableTitleFontSize,
-          textAlign: tableHeader.tableHeaderAlign
+          textAlign: tableHeader.tableHeaderAlign,
+          fontStyle,
+          fontWeight
         },
         measureText: {
           fill: tableHeaderFontColor,
           fontSize: tableHeader.tableTitleFontSize,
-          textAlign: tableHeader.tableHeaderAlign
+          textAlign: tableHeader.tableHeaderAlign,
+          fontStyle,
+          fontWeight
         },
         seriesText: {
           fill: tableHeaderFontColor,
           fontSize: tableHeader.tableTitleFontSize,
-          textAlign: tableHeader.tableHeaderAlign
+          textAlign: tableHeader.tableHeaderAlign,
+          fontStyle,
+          fontWeight
         }
       }
     }

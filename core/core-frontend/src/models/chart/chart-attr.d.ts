@@ -340,6 +340,14 @@ declare interface ChartTableHeaderAttr {
    * 表头纵边框线
    */
   showVerticalBorder: boolean
+  /**
+   * 斜体
+   */
+  isItalic: boolean
+  /**
+   * 加粗
+   */
+  isBolder: boolean
 }
 /**
  * 单元格属性
@@ -386,6 +394,14 @@ declare interface ChartTableCellAttr {
    * 单元格纵边框线
    */
   showVerticalBorder: boolean
+  /**
+   * 斜体
+   */
+  isItalic: boolean
+  /**
+   * 加粗
+   */
+  isBolder: boolean
 }
 
 /**
