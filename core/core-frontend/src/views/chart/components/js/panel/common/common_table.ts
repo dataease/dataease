@@ -40,9 +40,6 @@ export function getCustomTheme(chart: Chart): S2Theme {
   const scrollBarHoverColor = resetRgbOpacity(scrollBarColor, 3)
 
   const theme: S2Theme = {
-    background: {
-      color: '#00000000'
-    },
     splitLine: {
       horizontalBorderColor: borderColor,
       verticalBorderColor: borderColor
@@ -51,8 +48,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
       cell: {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
-        verticalBorderColor: borderColor,
-        verticalBorderWidth: 0
+        verticalBorderColor: borderColor
       },
       text: {
         fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
@@ -240,6 +236,36 @@ export function getCustomTheme(chart: Chart): S2Theme {
         }
       }
       merge(theme, tmpTheme)
+      if (tableHeader.showHorizonBorder === false) {
+        const tmpTheme = {
+          splitLine: {
+            horizontalBorderColor: tableHeaderBgColor,
+            horizontalBorderWidth: 0
+          },
+          colCell: {
+            cell: {
+              horizontalBorderColor: tableHeaderBgColor,
+              horizontalBorderWidth: 0
+            }
+          }
+        }
+        merge(theme, tmpTheme)
+      }
+      if (tableHeader.showVerticalBorder === false) {
+        const tmpTheme: S2Theme = {
+          splitLine: {
+            verticalBorderColor: tableHeaderBgColor,
+            verticalBorderWidth: 0
+          },
+          colCell: {
+            cell: {
+              verticalBorderColor: tableHeaderBgColor,
+              verticalBorderWidth: 0
+            }
+          }
+        }
+        merge(theme, tmpTheme)
+      }
     }
     // cell
     if (tableCell) {
@@ -309,6 +335,28 @@ export function getCustomTheme(chart: Chart): S2Theme {
         }
       }
       merge(theme, tmpTheme)
+      if (tableCell.showHorizonBorder === false) {
+        const tmpTheme: S2Theme = {
+          dataCell: {
+            cell: {
+              horizontalBorderColor: tableItemBgColor,
+              horizontalBorderWidth: 0
+            }
+          }
+        }
+        merge(theme, tmpTheme)
+      }
+      if (tableCell.showVerticalBorder === false) {
+        const tmpTheme = {
+          dataCell: {
+            cell: {
+              verticalBorderColor: tableItemBgColor,
+              verticalBorderWidth: 0
+            }
+          }
+        }
+        merge(theme, tmpTheme)
+      }
     }
   }
 
@@ -360,7 +408,10 @@ export function getStyle(chart: Chart): Style {
             return width / columnCount
           }
           const baseWidth = width / 100
-          return fieldMap[node.field] ? fieldMap[node.field].width * baseWidth : baseWidth * 10
+          const resultWidth = fieldMap[node.field]
+            ? fieldMap[node.field].width * baseWidth
+            : baseWidth * 10
+          return parseInt(resultWidth.toFixed(0))
         }
         break
       }

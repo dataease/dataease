@@ -387,7 +387,9 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   tableHeaderSort: false,
   showColTooltip: false,
   showRowTooltip: false,
-  showTableHeader: true
+  showTableHeader: true,
+  showHorizonBorder: true,
+  showVerticalBorder: true
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',
@@ -397,7 +399,9 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableItemHeight: 36,
   enableTableCrossBG: false,
   tableItemSubBgColor: '#EEEEEE',
-  showTooltip: false
+  showTooltip: false,
+  showHorizonBorder: true,
+  showVerticalBorder: true
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,

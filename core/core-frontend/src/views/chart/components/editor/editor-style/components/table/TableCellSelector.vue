@@ -250,6 +250,34 @@ onMounted(() => {
         </el-form-item>
       </el-col>
     </el-row>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showHorizonBorder')"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableCellForm.showHorizonBorder"
+        @change="changeTableCell('showHorizonBorder')"
+      >
+        {{ t('chart.table_cell_show_horizon_border') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showVerticalBorder')"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableCellForm.showVerticalBorder"
+        @change="changeTableCell('showVerticalBorder')"
+      >
+        {{ t('chart.table_cell_show_vertical_border') }}
+      </el-checkbox>
+    </el-form-item>
   </el-form>
 </template>
 
