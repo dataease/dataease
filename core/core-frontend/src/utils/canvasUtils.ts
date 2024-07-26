@@ -170,6 +170,30 @@ export function historyAdaptor(
   })
 }
 
+// 重置仪表板、大屏中的其他组件
+export function refreshOtherComponent(dvId, busiFlag) {
+  // 富文本 跑马灯组件进行刷新
+  const refreshComponentList = componentData.value.filter(
+    ele => ['ScrollText'].includes(ele.component) || ele.innerType === 'rich-text'
+  )
+  if (refreshComponentList && refreshComponentList.length > 0) {
+    const refreshIdList = refreshComponentList.map(ele => ele.id)
+    findById(dvId, busiFlag, {}).then(rsp => {
+      const canvasInfo = rsp.data
+      const canvasDataResult = JSON.parse(canvasInfo.componentData)
+      const canvasDataResultMap = canvasDataResult.reduce((acc, comp) => {
+        acc.set(comp.id, comp)
+        return acc
+      }, new Map())
+      componentData.value.map(component =>
+        refreshIdList.includes(component.id) && canvasDataResultMap[component.id]
+          ? canvasDataResultMap[component.id]
+          : component
+      )
+    })
+  }
+}
+
 export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   const copyFlag = busiFlag != null && busiFlag.includes('-copy')
   const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag

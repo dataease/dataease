@@ -73,3 +73,6 @@ ALTER TABLE `visualization_template`
     MODIFY COLUMN `node_type` varchar(255) NULL DEFAULT NULL COMMENT '节点类型  app or template 应用 或者 模板' AFTER `dv_type`,
     ADD COLUMN `app_data` longtext NULL COMMENT 'app数据' AFTER `dynamic_data`;
 
+INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (10, 'basic.exportFileLiveTime', '30', 'text', 2);
+delete from visualization_background where id ='dark_1';
+
