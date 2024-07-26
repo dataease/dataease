@@ -16,6 +16,8 @@ public class FieldUtils {
             case "ENUM":
             case "ANY":
             case "STRING":
+            case "BOOL":
+            case "BOOLEAN":
                 return 0;// 文本
             case "DATE":
             case "TIME":
@@ -66,8 +68,6 @@ public class FieldUtils {
                 return 3;// 浮点
             case "BIT":
             case "TINYINT":
-            case "BOOL":
-            case "BOOLEAN":
                 return 4;// 布尔
             default:
                 return 0;
