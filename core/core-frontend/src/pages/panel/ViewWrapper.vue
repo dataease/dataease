@@ -77,12 +77,7 @@ onBeforeMount(async () => {
   initCanvasData(
     embeddedStore.dvId,
     embeddedStore.busiFlag,
-    function ({
-      canvasDataResult,
-      canvasStyleResult,
-      dvInfo,
-      canvasViewInfoPreview,
-    }) {
+    function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
