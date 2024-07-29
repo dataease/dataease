@@ -52,9 +52,10 @@
         icon="Download"
         size="middle"
         :loading="exportLoading"
+        :disabled="!enableFormattedExport"
         @click="exportAsFormattedExcel"
       >
-        导出Excel(带格式)
+        <span :title="enableFormattedExport ? '' : '树形模式暂不支持导出'">导出Excel(带格式)</span>
       </el-button>
       <el-divider class="close-divider" direction="vertical" v-if="authShow" />
     </div>
@@ -298,7 +299,11 @@ const exportAsFormattedExcel = () => {
   const chart = dvMainStore.getViewDetails(viewInfo.value.id)
   exportPivotExcel(s2Instance, chart)
 }
-
+const enableFormattedExport = computed(() => {
+  const chart = dvMainStore.getViewDetails(viewInfo.value.id) as ChartObj
+  const mode = chart?.customAttr?.basicStyle?.tableLayoutMode
+  return mode === 'grid'
+})
 const exportData = () => {
   useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
 }
