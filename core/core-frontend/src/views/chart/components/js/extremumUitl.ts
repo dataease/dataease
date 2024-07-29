@@ -52,6 +52,10 @@ const getRgbaColorLastRgba = (rgbaString: string) => {
 }
 
 function createExtremumDiv(id, value, formatterCfg, chartId) {
+  // 空值不处理
+  if (!value && value != 0) {
+    return
+  }
   // 装标注的div
   const parentElement = document.getElementById('point_' + chartId)
   if (parentElement) {
