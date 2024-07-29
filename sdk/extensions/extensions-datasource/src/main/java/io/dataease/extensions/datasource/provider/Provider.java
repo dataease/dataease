@@ -276,7 +276,11 @@ public abstract class Provider {
             session.setPassword(configuration.getSshPassword());
         }
         session.setConfig("StrictHostKeyChecking", "no");
-        session.connect();
+        try {
+            session.connect(1000 * 5);
+        } catch (Exception e) {
+            DEException.throwException("SSH 连接失败：" + e.getMessage());
+        }
         session.setPortForwardingL(configuration.getLPort(), configuration.getHost(), configuration.getPort());
 
         return session;
