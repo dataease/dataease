@@ -37,12 +37,12 @@ const sortFunc = (sortParams: SortFuncParam) => {
       if (typeof aValue === 'number') {
         return aValue - bValue
       }
-      return aValue < bValue ? 1 : -1
+      return aValue < bValue ? -1 : 1
     }
     if (typeof aValue === 'number') {
       return bValue - aValue
     }
-    return aValue > bValue ? 1 : -1
+    return aValue > bValue ? -1 : 1
   })
 }
 const sort = (type?) => {
