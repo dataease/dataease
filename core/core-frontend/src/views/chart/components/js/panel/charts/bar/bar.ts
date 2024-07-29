@@ -8,8 +8,6 @@ import {
   flow,
   hexColorToRGBA,
   parseJson,
-  registerExtremumPointEvt,
-  setExtremumPosition,
   setUpGroupSeriesColor,
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
@@ -23,6 +21,7 @@ import {
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
+import { clearExtremum, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -97,6 +96,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
     const { chart, container, action } = drawOptions
     if (!chart?.data?.data?.length) {
+      clearExtremum(chart)
       return
     }
     const data = cloneDeep(drawOptions.chart.data?.data)
@@ -109,7 +109,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
 
     const newChart = new Column(container, options)
     newChart.on('interval:click', action)
-    registerExtremumPointEvt(newChart, chart, options, container)
+    extremumEvt(newChart, chart, options, container)
     return newChart
   }
 
@@ -121,7 +121,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         label: false
       }
     }
-    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
+    const { label: labelAttr } = parseJson(chart.customAttr)
     const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
       pre[next.id] = next
       return pre
@@ -131,7 +131,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     const label = {
       fields: [],
       ...tmpOptions.label,
-      formatter: (data: Datum, point) => {
+      formatter: (data: Datum, _point) => {
         if (!labelAttr.seriesLabelFormatter?.length) {
           return data.value
         }
@@ -139,31 +139,24 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         if (!labelCfg) {
           return data.value
         }
-        let showLabel = true
-        if (labelCfg.showExtremum) {
-          showLabel = setExtremumPosition(data, point, chart, labelCfg, basicStyle.lineSymbolSize)
-        }
         if (!labelCfg.show) {
           return
         }
-        if (showLabel) {
-          const value = valueFormatter(data.value, labelCfg.formatterCfg)
-          const group = new G2PlotChartView.engine.Group({})
-          group.addShape({
-            type: 'text',
-            attrs: {
-              x: 0,
-              y: 0,
-              text: value,
-              textAlign: 'start',
-              textBaseline: 'top',
-              fontSize: labelCfg.fontSize,
-              fill: labelCfg.color
-            }
-          })
-          return group
-        }
-        return null
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
+          }
+        })
+        return group
       }
     }
     return {
@@ -352,20 +345,13 @@ export class GroupBar extends StackBar {
     if (!baseOptions.label) {
       return baseOptions
     }
-    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
+    const { label: labelAttr } = parseJson(chart.customAttr)
     baseOptions.label.style.fill = labelAttr.color
     const label = {
       ...baseOptions.label,
-      formatter: function (param: Datum, point) {
-        let showLabel = true
-        if (labelAttr.showExtremum) {
-          showLabel = setExtremumPosition(param, point, chart, labelAttr, basicStyle.lineSymbolSize)
-        }
-        if (!labelAttr.childrenShow) {
-          return null
-        }
+      formatter: function (param: Datum, _point) {
         const value = valueFormatter(param.value, labelAttr.labelFormatter)
-        return showLabel ? value : null
+        return labelAttr.childrenShow ? value : null
       }
     }
     return {
