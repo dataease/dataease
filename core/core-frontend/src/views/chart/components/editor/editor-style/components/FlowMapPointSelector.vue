@@ -1,13 +1,8 @@
 <script lang="tsx" setup>
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import {
-  COLOR_PANEL,
-  DEFAULT_BASIC_STYLE,
-  DEFAULT_MISC
-} from '@/views/chart/components/editor/util/chart'
+import { COLOR_PANEL, DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { ElSpace } from 'element-plus-secondary'
 
 const { t } = useI18n()
@@ -87,85 +82,55 @@ onMounted(() => {
 
 <template>
   <el-form ref="pointForm" :model="state.pointForm" size="small" label-position="top">
-    <el-space>
-      <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.text')">
-        <el-color-picker
-          :effect="themes"
-          v-model="state.pointForm.text.color"
-          class="color-picker-style"
-          :predefine="predefineColors"
-          @change="changeStyle()"
-          is-custom
-        />
-      </el-form-item>
-
-      <el-form-item class="form-item" :class="'form-item-' + themes">
-        <template #label>&nbsp;</template>
-        <el-tooltip content="字号" :effect="toolTip" placement="top">
-          <el-select
-            size="small"
-            style="width: 108px"
+    <div>
+      <el-space>
+        <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.text')">
+          <el-color-picker
             :effect="themes"
-            v-model.number="state.pointForm.text.fontSize"
-            :placeholder="t('chart.text_fontsize')"
+            size="default"
+            v-model="state.pointForm.text.color"
+            class="color-picker-style"
+            :predefine="predefineColors"
             @change="changeStyle()"
-          >
-            <el-option
-              v-for="option in fontSizeList"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-tooltip>
-      </el-form-item>
-    </el-space>
+            is-custom
+          />
+        </el-form-item>
+
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <template #label>&nbsp;</template>
+          <el-tooltip content="字号" :effect="toolTip" placement="top">
+            <el-select
+              size="small"
+              style="width: 108px"
+              :effect="themes"
+              v-model.number="state.pointForm.text.fontSize"
+              :placeholder="t('chart.text_fontsize')"
+              @change="changeStyle()"
+            >
+              <el-option
+                v-for="option in fontSizeList"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-tooltip>
+        </el-form-item>
+      </el-space>
+    </div>
     <div class="alpha-setting">
-      <label class="alpha-label" :class="{ dark: 'dark' === themes }"> 标注点大小 </label>
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }"> 标注点气泡大小 </label>
       <el-row style="flex: 1">
         <el-col>
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
             <el-slider
               :effect="themes"
               :min="0"
-              :max="5"
+              :max="20"
               v-model="state.pointForm.point.size"
               @change="changeStyle()"
             />
           </el-form-item>
-        </el-col>
-      </el-row>
-    </div>
-    <div class="alpha-setting">
-      <el-row style="flex: 1">
-        <el-col>
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-checkbox
-              :effect="themes"
-              @change="changeStyle()"
-              v-model="state.pointForm.point.animate"
-            >
-              标注点动画
-            </el-checkbox>
-          </el-form-item>
-        </el-col>
-        <el-col>
-          <div class="alpha-setting" v-if="state.pointForm.point.animate">
-            <label class="alpha-label" :class="{ dark: 'dark' === themes }"> 闪烁频率 </label>
-            <el-row style="flex: 1">
-              <el-col>
-                <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
-                  <el-slider
-                    :effect="themes"
-                    :min="1"
-                    :max="5"
-                    v-model="state.pointForm.point.speed"
-                    @change="changeStyle()"
-                  />
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </div>
         </el-col>
       </el-row>
     </div>
