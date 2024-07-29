@@ -233,10 +233,10 @@ const queryDataForId = id => {
           if (conditionType === 0) {
             requiredName = conditionValueF === '' ? next.name : ''
           } else {
-            requiredName = [conditionValueF || '', conditionValueS || ''].filter(ele => ele !== '')
-              .length
-              ? next.name
-              : ''
+            requiredName =
+              [conditionValueF || '', conditionValueS || ''].filter(ele => ele !== '').length < 2
+                ? next.name
+                : ''
           }
         } else if (
           (Array.isArray(next.selectValue) && !next.selectValue.length) ||
@@ -458,10 +458,10 @@ const queryData = () => {
         if (conditionType === 0) {
           requiredName = conditionValueF === '' ? next.name : ''
         } else {
-          requiredName = [conditionValueF || '', conditionValueS || ''].filter(ele => ele !== '')
-            .length
-            ? next.name
-            : ''
+          requiredName =
+            [conditionValueF || '', conditionValueS || ''].filter(ele => ele !== '').length < 2
+              ? next.name
+              : ''
         }
       } else if (
         (Array.isArray(next.selectValue) && !next.selectValue.length) ||
