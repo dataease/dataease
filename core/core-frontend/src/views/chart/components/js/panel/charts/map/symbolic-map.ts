@@ -139,30 +139,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
         }
       })
     })
-    scene.once('loaded', () => {
-      this.autoZoom(symbolicLayer, scene)
-    })
-    return new L7Wrapper(scene, configList)
-  }
 
-  /**
-   * 根据数据自动缩放大小及位置
-   * @param symbolicLayer
-   * @param scene
-   */
-  autoZoom = (symbolicLayer, scene) => {
-    const roamMap = flag => {
-      return flag ? scene.zoomIn() : scene.zoomOut()
-    }
-    const resetZoom = () => {
-      symbolicLayer.fitBounds()
-    }
-    symbolicLayer && resetZoom()
-    // 自动放大两级
-    let index = 2
-    while (index--) {
-      roamMap(true)
-    }
+    return new L7Wrapper(scene, configList)
   }
 
   /**
@@ -199,7 +177,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           }
         })
       : []
-    const pointLayer = new PointLayer()
+    const pointLayer = new PointLayer({ autoFit: true })
       .source(data, {
         parser: {
           type: 'json',
