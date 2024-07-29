@@ -16,6 +16,7 @@ import router from '@/router'
 import { XpackComponent } from '@/components/plugin'
 import PopArea from '@/custom-component/pop-area/Component.vue'
 import CanvasFilterBtn from '@/custom-component/canvas-filter-btn/Component.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
@@ -152,6 +153,14 @@ watch(
     }
   }
 )
+
+useEmitt({
+  name: 'tabCanvasChange-' + canvasId.value,
+  callback: function () {
+    console.log('tabCanvasChange--' + canvasId.value)
+    restore()
+  }
+})
 
 const resetLayout = () => {
   if (downloadStatus.value) {
