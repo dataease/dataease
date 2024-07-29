@@ -869,7 +869,7 @@ const isGroupBar = computed(() => {
               style="width: 100%"
               :effect="props.themes"
               v-model="curSeriesFormatter.formatterCfg.type"
-              @change="changeLabelAttr('quotaLabelFormatter')"
+              @change="changeLabelAttr('seriesLabelFormatter')"
             >
               <el-option
                 v-for="type in formatterType"
@@ -897,7 +897,7 @@ const isGroupBar = computed(() => {
               :min="0"
               :max="10"
               size="small"
-              @change="changeLabelAttr('quotaLabelFormatter')"
+              @change="changeLabelAttr('seriesLabelFormatter')"
             />
           </el-form-item>
 
@@ -921,7 +921,7 @@ const isGroupBar = computed(() => {
                   v-model="curSeriesFormatter.formatterCfg.unit"
                   :placeholder="t('chart.pls_select_field')"
                   size="small"
-                  @change="changeLabelAttr('quotaLabelFormatter')"
+                  @change="changeLabelAttr('seriesLabelFormatter')"
                 >
                   <el-option
                     v-for="item in unitType"
@@ -945,7 +945,7 @@ const isGroupBar = computed(() => {
                   size="small"
                   clearable
                   :placeholder="t('commons.input_content')"
-                  @change="changeLabelAttr('quotaLabelFormatter')"
+                  @change="changeLabelAttr('seriesLabelFormatter')"
                 />
               </el-form-item>
             </el-col>
@@ -957,7 +957,7 @@ const isGroupBar = computed(() => {
               size="small"
               :effect="props.themes"
               v-model="curSeriesFormatter.formatterCfg.thousandSeparator"
-              @change="changeLabelAttr('quotaLabelFormatter')"
+              @change="changeLabelAttr('seriesLabelFormatter')"
               :label="t('chart.value_formatter_thousand_separator')"
             />
           </el-form-item>

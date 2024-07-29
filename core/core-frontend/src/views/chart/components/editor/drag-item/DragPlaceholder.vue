@@ -35,7 +35,6 @@ span {
 .drag-placeholder-style {
   position: absolute;
   top: calc(50% - 4px);
-  left: 0;
   width: 100%;
   color: #757575;
   text-align: left;
