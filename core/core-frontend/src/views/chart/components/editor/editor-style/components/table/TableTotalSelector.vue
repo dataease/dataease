@@ -67,10 +67,12 @@ const init = () => {
   const yAxis = props.chart.yAxis
   if (yAxis?.length > 0) {
     const axisArr = yAxis.map(i => i.dataeaseName)
-    if (axisArr.indexOf(state.tableTotalForm.row.totalSortField) != -1) {
+    if (axisArr.indexOf(state.tableTotalForm.row.totalSortField) === -1) {
       state.tableTotalForm.row.totalSortField = yAxis[0].dataeaseName
     }
-    state.tableTotalForm.col.totalSortField = yAxis[0].dataeaseName
+    if (axisArr.indexOf(state.tableTotalForm.col.totalSortField) === -1) {
+      state.tableTotalForm.col.totalSortField = yAxis[0].dataeaseName
+    }
   } else {
     state.tableTotalForm.row.totalSortField = ''
     state.tableTotalForm.col.totalSortField = ''
@@ -279,7 +281,7 @@ onMounted(() => {
           v-model="state.tableTotalForm.row.totalSortField"
           class="form-item-select"
           :placeholder="t('chart.total_sort_field')"
-          @change="changeTableTotal('row')"
+          @change="changeTableTotal('row.totalSortField')"
         >
           <el-option
             v-for="option in chart.yAxis"
