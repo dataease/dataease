@@ -237,7 +237,12 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
 
             const isTree = +displayType === 9
 
-            if (timeType === 'dynamic' && [1, 7].includes(+displayType) && firstLoad) {
+            if (
+              timeType === 'dynamic' &&
+              [1, 7].includes(+displayType) &&
+              firstLoad &&
+              defaultValueCheck
+            ) {
               if (+displayType === 1) {
                 selectValue = getDynamicRange(item)
                 item.defaultValue = new Date(selectValue[0])
