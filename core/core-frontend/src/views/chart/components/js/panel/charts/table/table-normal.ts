@@ -184,7 +184,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       const summaryObj = newData.reduce(
         (p, n) => {
           yAxis.forEach(axis => {
-            p[axis.dataeaseName] = (n[axis.dataeaseName] || 0) + (p[axis.dataeaseName] || 0)
+            p[axis.dataeaseName] =
+              (parseFloat(n[axis.dataeaseName]) || 0) + (parseFloat(p[axis.dataeaseName]) || 0)
           })
           return p
         },
