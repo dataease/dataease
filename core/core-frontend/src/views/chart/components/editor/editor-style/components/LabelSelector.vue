@@ -262,23 +262,25 @@ watch(
   () => props.chart.customAttr.basicStyle.layout,
   () => {
     const layout = props.chart.customAttr.basicStyle.layout
-    if (layout === 'horizontal') {
-      if (state?.labelForm?.position === 'top') {
-        state.labelForm.position = 'right'
+    if (chartType.value === 'bidirectional-bar') {
+      if (layout === 'horizontal') {
+        if (state?.labelForm?.position === 'top') {
+          state.labelForm.position = 'right'
+        }
+        if (state?.labelForm?.position === 'bottom') {
+          state.labelForm.position = 'left'
+        }
       }
-      if (state?.labelForm?.position === 'bottom') {
-        state.labelForm.position = 'left'
+      if (layout === 'vertical') {
+        if (state?.labelForm?.position === 'left') {
+          state.labelForm.position = 'bottom'
+        }
+        if (state?.labelForm?.position === 'right') {
+          state.labelForm.position = 'top'
+        }
       }
+      changeLabelAttr('position')
     }
-    if (layout === 'vertical') {
-      if (state?.labelForm?.position === 'left') {
-        state.labelForm.position = 'bottom'
-      }
-      if (state?.labelForm?.position === 'right') {
-        state.labelForm.position = 'top'
-      }
-    }
-    changeLabelAttr('position')
   },
   { deep: true }
 )
