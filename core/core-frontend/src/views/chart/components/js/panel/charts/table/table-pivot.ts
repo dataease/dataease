@@ -386,16 +386,16 @@ function customCalcFunc(query, data, totalCfgMap) {
   if (!data?.length || !query[EXTRA_FIELD]) {
     return 0
   }
-  const aggregation = totalCfgMap[query[EXTRA_FIELD]].aggregation
+  const aggregation = totalCfgMap[query[EXTRA_FIELD]]?.aggregation || 'SUM'
   switch (aggregation) {
     case 'SUM': {
       return data.reduce((p, n) => {
-        return p + parseFloat(n[query[EXTRA_FIELD]])
+        return p + parseFloat(n[query[EXTRA_FIELD]] ?? 0)
       }, 0)
     }
     case 'AVG': {
       const sum = data.reduce((p, n) => {
-        return p + parseFloat(n[query[EXTRA_FIELD]])
+        return p + parseFloat(n[query[EXTRA_FIELD]] ?? 0)
       }, 0)
       return sum / data.length
     }
@@ -413,7 +413,7 @@ function customCalcFunc(query, data, totalCfgMap) {
     }
     default: {
       return data.reduce((p, n) => {
-        return p + parseFloat(n[query[EXTRA_FIELD]])
+        return p + parseFloat(n[query[EXTRA_FIELD]] ?? 0)
       }, 0)
     }
   }
