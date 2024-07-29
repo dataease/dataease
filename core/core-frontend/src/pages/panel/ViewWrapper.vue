@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, onBeforeMount, reactive } from 'vue'
-import { initCanvasDataPrepare } from '@/utils/canvasUtils'
+import { initCanvasData } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmbedded } from '@/store/modules/embedded'
 import { check } from '@/utils/CrossPermission'
@@ -24,7 +24,6 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0,
   chartId: null
 })
 
@@ -75,7 +74,7 @@ onBeforeMount(async () => {
     }
   }
 
-  initCanvasDataPrepare(
+  initCanvasData(
     embeddedStore.dvId,
     embeddedStore.busiFlag,
     function ({
@@ -83,13 +82,11 @@ onBeforeMount(async () => {
       canvasStyleResult,
       dvInfo,
       canvasViewInfoPreview,
-      curPreviewGap
     }) {
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
-      state.curPreviewGap = curPreviewGap
       if (attachParams) {
         dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult)
       }
