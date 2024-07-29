@@ -116,7 +116,6 @@ onBeforeMount(async () => {
       :canvas-style-data="state.canvasStylePreview"
       :canvas-view-info="state.canvasViewInfoPreview"
       show-position="preview"
-      :download-status="isPc"
     ></de-preview>
   </div>
 </template>
