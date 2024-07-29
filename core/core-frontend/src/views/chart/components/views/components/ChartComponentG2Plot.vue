@@ -176,8 +176,6 @@ const calcData = async (view, callback) => {
               dynamicAreaId.value = country.value + dynamicAreaId.value
             }
           }
-          console.log('chartData.value', chartData.value)
-
           dvMainStore.setViewDataDetails(view.id, chartData.value)
           emitter.emit('chart-data-change')
           await renderChart(res, callback)
