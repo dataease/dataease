@@ -75,6 +75,13 @@ const menuSelect = (index: string, indexPath: string[]) => {
         background-color: #1f23291a !important;
       }
     }
+    ul.ed-menu {
+      li.ed-menu-item {
+        i {
+          width: 4px !important;
+        }
+      }
+    }
   }
   :deep(.ed-sub-menu.is-active) {
     .ed-sub-menu__title {
