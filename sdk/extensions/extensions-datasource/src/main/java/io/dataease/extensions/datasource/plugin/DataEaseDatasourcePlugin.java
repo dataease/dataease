@@ -77,8 +77,6 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
 
     @Override
     public void unloadPlugin() {
-        XpackPluginsDatasourceVO config = getConfig();
-        String localPath = StringUtils.isEmpty(config.getDriverPath()) ? DEFAULT_FILE_PATH : config.getDriverPath();
         try {
             ClassLoader classLoader = this.getClass().getClassLoader();
             URL[] urls = ((URLClassLoader) classLoader).getURLs();
@@ -89,7 +87,7 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
                 JarEntry entry = (JarEntry) entries.nextElement();
                 String name = entry.getName();
                 if (StringUtils.endsWith(name, ".jar")) {
-                    File file = new File(localPath, name.substring(name.indexOf("/") + 1));
+                    File file = new File(DEFAULT_FILE_PATH, name.substring(name.indexOf("/") + 1));
                     file.delete();
                 }
             }
