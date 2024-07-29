@@ -162,7 +162,8 @@ const SENIOR_PROP: EditorProperty[] = [
   'scroll-cfg',
   'threshold',
   'jump-set',
-  'linkage'
+  'linkage',
+  'bubble-animate'
 ]
 const noSenior = computed(() => {
   return !includesAny(properties.value, ...SENIOR_PROP)

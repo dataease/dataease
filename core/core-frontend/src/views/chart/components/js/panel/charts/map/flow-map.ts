@@ -24,7 +24,8 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     'basic-style-selector',
     'title-selector',
     'flow-map-line-selector',
-    'flow-map-point-selector'
+    'flow-map-point-selector',
+    'bubble-animate'
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
@@ -259,8 +260,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
   pointConfig = (chart, xAxis, xAxisExt, misc, configList) => {
     const color = misc.flowMapConfig.pointConfig.text.color
     const size = misc.flowMapConfig.pointConfig.point.size
-    const animate = misc.flowMapConfig.pointConfig.point.animate
-    const speed = misc.flowMapConfig.pointConfig.point.speed
+    const { bubbleCfg } = parseJson(chart.senior)
     const fromDefaultPointLayer = new PointLayer({ zIndex: -1 })
       .source(chart.data?.tableRow, {
         parser: {
@@ -274,23 +274,6 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
       .color(color)
       .style({
         blur: 0.6
-      })
-    configList.push(fromDefaultPointLayer)
-    const fromAnimatePointLayer = new PointLayer({ zIndex: -1 })
-      .source(chart.data?.tableRow, {
-        parser: {
-          type: 'json',
-          x: xAxis[0].dataeaseName,
-          y: xAxis[1].dataeaseName
-        }
-      })
-      .shape('circle')
-      .size(20)
-      .color(color)
-      .animate({
-        enable: true,
-        speed: speed,
-        rings: 0.01
       })
     const toDefaultPointLayer = new PointLayer({ zIndex: -1 })
       .source(chart.data?.tableRow, {
@@ -306,27 +289,19 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
       .style({
         blur: 0.6
       })
-    configList.push(toDefaultPointLayer)
-    const toAnimatePointLayer = new PointLayer({ zIndex: -1 })
-      .source(chart.data?.tableRow, {
-        parser: {
-          type: 'json',
-          x: xAxisExt[0].dataeaseName,
-          y: xAxisExt[1].dataeaseName
-        }
-      })
-      .shape('circle')
-      .size(20)
-      .color(color)
-      .animate({
+    if (bubbleCfg && bubbleCfg.enable) {
+      const animate = {
         enable: true,
-        speed: speed,
-        rings: 0.01
-      })
-    if (animate) {
-      configList.push(fromAnimatePointLayer)
-      configList.push(toAnimatePointLayer)
+        speed: bubbleCfg.speed,
+        rings: bubbleCfg.rings
+      }
+      fromDefaultPointLayer.size(size * 2)
+      fromDefaultPointLayer.animate(animate)
+      toDefaultPointLayer.size(size * 2)
+      toDefaultPointLayer.animate(animate)
     }
+    configList.push(fromDefaultPointLayer)
+    configList.push(toDefaultPointLayer)
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {

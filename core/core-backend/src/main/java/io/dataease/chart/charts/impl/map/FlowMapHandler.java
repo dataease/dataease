@@ -19,7 +19,7 @@ public class FlowMapHandler extends GroupChartHandler {
         var result = super.formatAxis(view);
         var xAxis = result.getAxisMap().get(ChartAxis.xAxis);
         xAxis.addAll(Optional.ofNullable(view.getFlowMapStartName()).orElse(new ArrayList<>()));
-        xAxis.addAll(Optional.ofNullable(view.getFlowMapStartName()).orElse(new ArrayList<>()));
+        xAxis.addAll(Optional.ofNullable(view.getFlowMapEndName()).orElse(new ArrayList<>()));
         result.getAxisMap().put(ChartAxis.xAxis, xAxis);
         return result;
     }
