@@ -8,7 +8,7 @@ services:
     volumes:
     - ${DE_BASE}/dataease2.0/apisix/dashboard_conf/conf.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
     ports:
-    - 9000:9000
+    - ${DE_APISIX_DASHBOARD_PORT}:9000
     networks:
       dataease-network:
 
@@ -26,8 +26,7 @@ services:
     depends_on:
       - etcd
     ports:
-      - 9180:9180
-      - 9080:9080
+      - ${DE_APISIX_PORT}:9080
     networks:
       dataease-network:
 
