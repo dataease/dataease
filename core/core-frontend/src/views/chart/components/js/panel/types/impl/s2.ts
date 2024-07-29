@@ -70,7 +70,7 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     switch (cell.cellType) {
       case 'dataCell':
         if (meta.valueField === SERIES_NUMBER_FIELD) {
-          content = meta.fieldValue
+          content = meta.fieldValue.toString()
           break
         }
         field = find(metaConfig, item => item.field === meta.valueField)
