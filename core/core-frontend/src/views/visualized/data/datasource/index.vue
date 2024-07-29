@@ -716,6 +716,11 @@ const handleCopy = async data => {
     })
     datasource.id = ''
     datasource.name = '复制数据源'
+    if (datasource.type === 'API') {
+      for (let i = 0; i < datasource.apiConfiguration.length; i++) {
+        datasource.apiConfiguration[i].deTableName = ''
+      }
+    }
     datasourceEditor.value.init(datasource)
   })
 }
@@ -1003,7 +1008,7 @@ const getMenuList = (val: boolean) => {
                     @handle-command="
                       cmd => operation(cmd, data, data.leaf ? 'datasource' : 'folder')
                     "
-                    :menu-list="getMenuList(!['Excel', 'API'].includes(data.type) && data.leaf)"
+                    :menu-list="getMenuList(!['Excel'].includes(data.type) && data.leaf)"
                   ></handle-more>
                 </div>
               </span>
