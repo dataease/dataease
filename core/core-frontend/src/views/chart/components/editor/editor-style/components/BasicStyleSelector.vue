@@ -770,13 +770,14 @@ onMounted(() => {
     </el-form-item>
     <el-form-item
       v-if="showProperty('summaryLabel') && state.basicStyleForm.showSummary"
-      :label="$t('chart.table_summary_label')"
+      :label="t('chart.table_summary_label')"
       :class="'form-item-' + themes"
       class="form-item"
     >
       <el-input
         v-model="state.basicStyleForm.summaryLabel"
         type="text"
+        :effect="themes"
         :max-length="10"
         @blur="changeBasicStyle('summaryLabel')"
       />
