@@ -4548,7 +4548,7 @@ span {
   display: flex;
   flex-direction: column;
   margin: 0;
-  position: absolute;
+  position: absolute !important;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
