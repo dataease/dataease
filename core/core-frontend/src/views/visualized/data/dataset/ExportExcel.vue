@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, h, onUnmounted } from 'vue'
+import { ref, h, onUnmounted, computed } from 'vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { ElButton, ElMessage, ElMessageBox, ElTabPane, ElTabs } from 'element-plus-secondary'
 import { RefreshLeft } from '@element-plus/icons-vue'
@@ -15,6 +15,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { useCache } from '@/hooks/web/useCache'
+import { useLinkStoreWithOut } from '@/store/modules/link'
+import { useAppStoreWithOut } from '@/store/modules/app'
 
 const { t } = useI18n()
 const tableData = ref([])
@@ -150,22 +152,27 @@ const init = params => {
     }
   }, 5000)
 }
+const linkStore = useLinkStoreWithOut()
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const taskExportTopicCall = task => {
-  if (JSON.parse(task).exportStatus === 'SUCCESS') {
-    openMessageLoading(
-      JSON.parse(task).exportFromName + ' 导出成功，前往',
-      'success',
-      callbackExportSuc
-    )
-    return
-  }
-  if (JSON.parse(task).exportStatus === 'FAILED') {
-    openMessageLoading(
-      JSON.parse(task).exportFromName + ' 导出失败，前往',
-      'error',
-      callbackExportError
-    )
+  if (!linkStore.getLinkToken && !isDataEaseBi.value && !appStore.getIsIframe) {
+    if (JSON.parse(task).exportStatus === 'SUCCESS') {
+      openMessageLoading(
+        JSON.parse(task).exportFromName + ' 导出成功，前往',
+        'success',
+        callbackExportSuc
+      )
+      return
+    }
+    if (JSON.parse(task).exportStatus === 'FAILED') {
+      openMessageLoading(
+        JSON.parse(task).exportFromName + ' 导出失败，前往',
+        'error',
+        callbackExportError
+      )
+    }
   }
 }
 

@@ -89,67 +89,67 @@ public class ChartDataServer implements ChartDataApi {
     public void innerExportDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = httpServletRequest.getHeader(AuthConstant.LINK_TOKEN_KEY);
-        if (StringUtils.isEmpty(linkToken) || !request.isDataEaseBi()) {
-            exportCenterManage.addTask(request.getViewId(), "chart", request);
-            return;
-        }
-        OutputStream outputStream = response.getOutputStream();
-        try {
-            findExcelData(request);
+        if ((StringUtils.isNotEmpty(linkToken) && !request.isDataEaseBi()) || (request.isDataEaseBi() && StringUtils.isEmpty(linkToken))) {
+            OutputStream outputStream = response.getOutputStream();
+            try {
+                findExcelData(request);
+                Workbook wb = new SXSSFWorkbook();
 
-            Workbook wb = new SXSSFWorkbook();
+                //给单元格设置样式
+                CellStyle cellStyle = wb.createCellStyle();
+                Font font = wb.createFont();
+                //设置字体大小
+                font.setFontHeightInPoints((short) 12);
+                //设置字体加粗
+                font.setBold(true);
+                //给字体设置样式
+                cellStyle.setFont(font);
+                //设置单元格背景颜色
+                cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+                //设置单元格填充样式(使用纯色背景颜色填充)
+                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-            //给单元格设置样式
-            CellStyle cellStyle = wb.createCellStyle();
-            Font font = wb.createFont();
-            //设置字体大小
-            font.setFontHeightInPoints((short) 12);
-            //设置字体加粗
-            font.setBold(true);
-            //给字体设置样式
-            cellStyle.setFont(font);
-            //设置单元格背景颜色
-            cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-            //设置单元格填充样式(使用纯色背景颜色填充)
-            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-            if (CollectionUtils.isEmpty(request.getMultiInfo())) {
-                List<Object[]> details = request.getDetails();
-                Integer[] excelTypes = request.getExcelTypes();
-                details.add(0, request.getHeader());
-                ViewDetailField[] detailFields = request.getDetailFields();
-                Object[] header = request.getHeader();
-
-                //明细sheet
-                Sheet detailsSheet = wb.createSheet("数据");
-
-                setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
-            } else {
-                //多个sheet
-                for (int i = 0; i < request.getMultiInfo().size(); i++) {
-                    ChartExcelRequestInner requestInner = request.getMultiInfo().get(i);
-
-                    List<Object[]> details = requestInner.getDetails();
-                    Integer[] excelTypes = requestInner.getExcelTypes();
-                    details.add(0, requestInner.getHeader());
-                    ViewDetailField[] detailFields = requestInner.getDetailFields();
-                    Object[] header = requestInner.getHeader();
+                if (CollectionUtils.isEmpty(request.getMultiInfo())) {
+                    List<Object[]> details = request.getDetails();
+                    Integer[] excelTypes = request.getExcelTypes();
+                    details.add(0, request.getHeader());
+                    ViewDetailField[] detailFields = request.getDetailFields();
+                    Object[] header = request.getHeader();
 
                     //明细sheet
-                    Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
+                    Sheet detailsSheet = wb.createSheet("数据");
 
                     setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
-                }
-            }
+                } else {
+                    //多个sheet
+                    for (int i = 0; i < request.getMultiInfo().size(); i++) {
+                        ChartExcelRequestInner requestInner = request.getMultiInfo().get(i);
 
-            response.setContentType("application/vnd.ms-excel");
-            //文件名称
-            response.setHeader("Content-disposition", "attachment;filename=" + request.getViewName() + ".xlsx");
-            wb.write(outputStream);
-            outputStream.flush();
-            outputStream.close();
-        } catch (Exception e) {
-            DEException.throwException(e);
+                        List<Object[]> details = requestInner.getDetails();
+                        Integer[] excelTypes = requestInner.getExcelTypes();
+                        details.add(0, requestInner.getHeader());
+                        ViewDetailField[] detailFields = requestInner.getDetailFields();
+                        Object[] header = requestInner.getHeader();
+
+                        //明细sheet
+                        Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
+
+                        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                    }
+                }
+
+                response.setContentType("application/vnd.ms-excel");
+                //文件名称
+                response.setHeader("Content-disposition", "attachment;filename=" + request.getViewName() + ".xlsx");
+                wb.write(outputStream);
+                outputStream.flush();
+                outputStream.close();
+            } catch (Exception e) {
+                DEException.throwException(e);
+            }
+        }else {
+            exportCenterManage.addTask(request.getViewId(), "chart", request);
+            return;
         }
     }
 
