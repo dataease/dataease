@@ -134,23 +134,25 @@ const handleMouseDown = e => {
 }
 
 const canvasInit = (isFistLoad = true) => {
-  renderState.value = true
-  setTimeout(function () {
-    if (canvasOut.value) {
-      dashboardCanvasSizeInit()
-      nextTick(() => {
-        cyGridster.value.canvasInit() //在适当的时候初始化布局组件
-        cyGridster.value.afterInitOk(function () {
-          renderState.value = false
+  if (canvasActive.value) {
+    renderState.value = true
+    setTimeout(function () {
+      if (canvasOut.value) {
+        dashboardCanvasSizeInit()
+        nextTick(() => {
+          cyGridster.value.canvasInit() //在适当的时候初始化布局组件
+          cyGridster.value.afterInitOk(function () {
+            renderState.value = false
+          })
         })
-      })
-    }
-    // afterInit
-    dvMainStore.setDataPrepareState(true)
-    if (isMainCanvas(canvasId.value) && isFistLoad) {
-      snapshotStore.recordSnapshotCache('renderChart')
-    }
-  }, 500)
+      }
+      // afterInit
+      dvMainStore.setDataPrepareState(true)
+      if (isMainCanvas(canvasId.value) && isFistLoad) {
+        snapshotStore.recordSnapshotCache('renderChart')
+      }
+    }, 500)
+  }
 }
 
 const canvasSizeInit = () => {
