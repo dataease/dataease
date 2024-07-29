@@ -8,8 +8,6 @@ import {
   flow,
   hexColorToRGBA,
   parseJson,
-  registerExtremumPointEvt,
-  setExtremumPosition,
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
 import { cloneDeep, isEmpty } from 'lodash-es'
@@ -22,6 +20,7 @@ import {
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
+import { clearExtremum, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -50,6 +49,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Line>): G2Line {
     const { chart, action, container } = drawOptions
     if (!chart.data.data?.length) {
+      clearExtremum(chart)
       return
     }
     const data = cloneDeep(chart.data.data)
@@ -109,7 +109,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     const newChart = new G2Line(container, options)
 
     newChart.on('point:click', action)
-    registerExtremumPointEvt(newChart, chart, options, container)
+    extremumEvt(newChart, chart, options, container)
     return newChart
   }
 
@@ -121,7 +121,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         label: false
       }
     }
-    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
+    const { label: labelAttr } = parseJson(chart.customAttr)
     const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
       pre[next.id] = next
       return pre
@@ -132,7 +132,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       ...tmpOptions.label,
       offsetY: -8,
       layout: [{ type: 'hide-overlap' }, { type: 'limit-in-plot' }],
-      formatter: (data: Datum, point) => {
+      formatter: (data: Datum, _point) => {
         if (!labelAttr.seriesLabelFormatter?.length) {
           return data.value
         }
@@ -140,34 +140,24 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         if (!labelCfg) {
           return data.value
         }
-        let showLabel = true
-        if (labelCfg.showExtremum) {
-          showLabel = setExtremumPosition(data, point, chart, labelCfg, basicStyle.lineSymbolSize)
-        }
         if (!labelCfg.show) {
           return
         }
-        const has = chart.filteredData?.filter(
-          item => JSON.stringify(item) === JSON.stringify(data)
-        )
-        if (has?.length > 0 && showLabel) {
-          const value = valueFormatter(data.value, labelCfg.formatterCfg)
-          const group = new G2PlotChartView.engine.Group({})
-          group.addShape({
-            type: 'text',
-            attrs: {
-              x: 0,
-              y: 0,
-              text: value,
-              textAlign: 'start',
-              textBaseline: 'top',
-              fontSize: labelCfg.fontSize,
-              fill: labelCfg.color
-            }
-          })
-          return group
-        }
-        return null
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
+          }
+        })
+        return group
       }
     }
     return {

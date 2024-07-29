@@ -9,8 +9,6 @@ import {
   flow,
   hexColorToRGBA,
   parseJson,
-  registerExtremumPointEvt,
-  setExtremumPosition,
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
@@ -23,6 +21,7 @@ import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
+import { clearExtremum, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -98,6 +97,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const { chart, container, action } = drawOptions
     if (!chart.data.data?.length) {
+      clearExtremum(chart)
       return
     }
     // data
@@ -114,7 +114,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     const newChart = new G2Area(container, options)
 
     newChart.on('point:click', action)
-    registerExtremumPointEvt(newChart, chart, options, container)
+    extremumEvt(newChart, chart, options, container)
     return newChart
   }
 
@@ -126,7 +126,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
         label: false
       }
     }
-    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
+    const { label: labelAttr } = parseJson(chart.customAttr)
     const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
       pre[next.id] = next
       return pre
@@ -135,7 +135,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     const label = {
       fields: [],
       ...tmpOptions.label,
-      formatter: (data: Datum, point) => {
+      formatter: (data: Datum, _point) => {
         if (!labelAttr.seriesLabelFormatter?.length) {
           return data.value
         }
@@ -143,34 +143,24 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
         if (!labelCfg) {
           return data.value
         }
-        let showLabel = true
-        if (labelCfg.showExtremum) {
-          showLabel = setExtremumPosition(data, point, chart, labelCfg, basicStyle.lineSymbolSize)
-        }
         if (!labelCfg.show) {
           return
         }
-        const has = chart.filteredData?.filter(
-          item => JSON.stringify(item) === JSON.stringify(data)
-        )
-        if (has?.length > 0 && showLabel) {
-          const value = valueFormatter(data.value, labelCfg.formatterCfg)
-          const group = new G2PlotChartView.engine.Group({})
-          group.addShape({
-            type: 'text',
-            attrs: {
-              x: 0,
-              y: 0,
-              text: value,
-              textAlign: 'start',
-              textBaseline: 'top',
-              fontSize: labelCfg.fontSize,
-              fill: labelCfg.color
-            }
-          })
-          return group
-        }
-        return null
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
+          }
+        })
+        return group
       }
     }
     return {
