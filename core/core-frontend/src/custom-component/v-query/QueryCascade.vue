@@ -74,11 +74,6 @@ const init = (cascadeMap: cascadeMap, arr) => {
   deTypeMap.value = obj
   listByDsIds(datasetMap.value.map(ele => ele.value.split('--')[0]))
     .then(res => {
-      for (let i in res || {}) {
-        res[i] = res[i].filter(
-          ele => ele.deType === Object.values(cascadeMap).find(ele => ele.datasetId === i).deType
-        )
-      }
       optionsMap.value = res
     })
     .finally(() => {
@@ -248,13 +243,14 @@ defineExpose({
             style="width: 300px"
           >
             <el-option
-              v-for="item in datasetMap"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="itx in datasetMap"
+              :key="itx.value"
+              :label="itx.label"
+              :value="itx.value"
               :disabled="
-                disabledDatasetId.includes(item.value) ||
-                (!!ele.datasetId && deTypeMap[ele.datasetId] !== item.deType)
+                (disabledDatasetId.includes(itx.value) &&
+                  item.map(ele => ele.datasetId).includes(itx.value)) ||
+                (!!ele.datasetId && deTypeMap[ele.datasetId] !== itx.deType)
               "
             />
           </el-select>
