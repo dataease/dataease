@@ -50,7 +50,7 @@ CREATE TABLE `core_copilot_config`
 );
 
 INSERT INTO `core_copilot_config`
-VALUES (1, 'https://copilot-dataease.fit2cloud.com', 'xlab', 'Q2Fsb25nQDIwMTU=');
+VALUES (1, 'https://copilot.dataease.cn', 'xlab', 'Q2Fsb25nQDIwMTU=');
 
 UPDATE `core_sys_setting`
 SET `pkey` = 'ai.baseUrl',
