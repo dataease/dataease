@@ -128,7 +128,7 @@ const menuAsideClose = (param, index) => {
   if (iconDom) {
     iconDom.click()
   }
-  if (param.opt === 'rename') {
+  if (param?.opt === 'rename') {
     setTimeout(() => {
       editComponentName(getComponent(index))
     }, 200)
