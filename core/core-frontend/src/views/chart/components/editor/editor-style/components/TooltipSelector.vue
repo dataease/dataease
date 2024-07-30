@@ -94,6 +94,10 @@ const changeDataset = () => {
       })
     }
   })
+  if (showProperty('showFields')) {
+    state.tooltipForm.showFields = []
+    emit('onTooltipChange', { data: state.tooltipForm }, 'showFields')
+  }
 }
 
 const AXIS_PROP: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']

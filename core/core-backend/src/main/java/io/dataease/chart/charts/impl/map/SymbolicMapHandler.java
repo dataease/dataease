@@ -2,10 +2,14 @@ package io.dataease.chart.charts.impl.map;
 
 import io.dataease.chart.charts.impl.GroupChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
+import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
+import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Quota2SQLObj;
+import io.dataease.engine.trans.Table2SQLObj;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
@@ -14,6 +18,7 @@ import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
 import io.dataease.utils.BeanUtils;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -24,6 +29,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class SymbolicMapHandler extends GroupChartHandler {
+    @Resource
+    private DatasetDataManage datasetDataManage;
+
     @Getter
     private String type = "symbolic-map";
 
@@ -80,16 +88,22 @@ public class SymbolicMapHandler extends GroupChartHandler {
         detailFields.addAll(xAxis);
         detailFields.addAll(allFields.stream().filter(field -> !xAxisIds.contains(field.getId())).toList());
         if (ObjectUtils.isNotEmpty(detailFields)) {
-            Dimension2SQLObj.dimension2sqlObj(sqlMeta1, detailFields, FieldUtil.transFields(allFields), crossDs, dsMap);
-            // 为了不添加limit,要查所有数据，否则无法跟前面的数据对上，因为前面使用了group by
-            String defaultResultMode = view.getResultMode();
-            view.setResultMode("");
-            String originSql = SQLProvider.createQuerySQL(sqlMeta1, false, needOrder, view);
-            originSql = provider.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
-            datasourceRequest.setQuery(originSql);
-            logger.info("calcite detail field sql: " + querySql);
-            detailData = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-            view.setResultMode(defaultResultMode);
+            List<DatasetTableFieldDTO> allFieldsTmp = FieldUtil.transFields(detailFields);
+            datasetDataManage.buildFieldName(sqlMap, allFieldsTmp);
+            String sql = (String) sqlMap.get("sql");
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
+            SQLMeta sqlMeta2 = new SQLMeta();
+            Table2SQLObj.table2sqlobj(sqlMeta2, null, "(" +  sql + ")", crossDs);
+            Field2SQLObj.field2sqlObj(sqlMeta2, allFieldsTmp, allFieldsTmp, crossDs, dsMap);
+            String querySQL;
+            querySQL = SQLProvider.createQuerySQL(sqlMeta2, false, needOrder, false);
+            querySQL = provider.rebuildSQL(querySQL, sqlMeta2, crossDs, dsMap);
+            logger.info("calcite data preview sql: " + querySQL);
+            // 调用数据源的calcite获得data
+            DatasourceRequest datasourceRequest1 = new DatasourceRequest();
+            datasourceRequest1.setQuery(querySQL);
+            datasourceRequest1.setDsList(dsMap);
+            detailData = (List<String[]>) provider.fetchResultField(datasourceRequest1).get("data");
         }
         //自定义排序
         data = ChartDataUtil.resultCustomSort(xAxis, data);

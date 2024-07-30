@@ -10,6 +10,7 @@ import { fieldType } from '@/utils/attr'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const { t } = useI18n()
 
@@ -42,6 +43,12 @@ const dvMainStore = dvMainStoreWithOut()
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
+const changeDataset = () => {
+  if (showProperty('showFields')) {
+    state.labelForm.showFields = []
+    emit('onLabelChange', { data: state.labelForm }, 'showFields')
+  }
+}
 const { batchOptStatus } = storeToRefs(dvMainStore)
 watch(
   () => props.chart.customAttr.label,
@@ -306,6 +313,7 @@ const defaultPlaceholder = computed(() => {
 })
 onMounted(() => {
   init()
+  useEmitt({ name: 'dataset-change', callback: changeDataset })
 })
 const isGroupBar = computed(() => {
   return props.chart.type === 'bar-group'
