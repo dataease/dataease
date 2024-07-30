@@ -14,7 +14,6 @@ const props = defineProps({
 
 <template>
   <div class="canvas-content error-info">
-    <span>{{ props.errMsg }}</span>
     <span>[{{ t('chart.chart_error_tips') }}]</span>
   </div>
 </template>
