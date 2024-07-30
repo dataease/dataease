@@ -792,6 +792,17 @@ const confirmClick = () => {
   })
   queryElement.value.propValue = []
   nextTick(() => {
+    conditions.value.forEach(itx => {
+      cascadeArr.forEach(ele => {
+        ele.forEach(item => {
+          if (item.datasetId.split('--')[1] === itx.id && itx.defaultValueCheck) {
+            const val = itx.mapValue
+            item.selectValue = Array.isArray(val) ? [...val] : val
+            item.currentSelectValue = Array.isArray(val) ? [...val] : val
+          }
+        })
+      })
+    })
     queryElement.value.cascade = cloneDeep(cascadeArr)
     cascadeArr = []
     queryElement.value.propValue = cloneDeep(conditions.value)
@@ -1379,9 +1390,11 @@ defineExpose({
               <el-checkbox :label="field.componentId"
                 ><el-icon class="component-type">
                   <Icon :name="canvasViewInfo[field.componentId].type"></Icon> </el-icon
-                ><span class="checkbox-name ellipsis">{{
-                  canvasViewInfo[field.componentId].title
-                }}</span></el-checkbox
+                ><span
+                  :title="canvasViewInfo[field.componentId].title"
+                  class="checkbox-name ellipsis"
+                  >{{ canvasViewInfo[field.componentId].title }}</span
+                ></el-checkbox
               >
               <span :title="field.name" class="dataset ellipsis">{{ field.name }}</span>
               <el-select

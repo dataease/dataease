@@ -115,9 +115,8 @@ const setCascadeValueBack = val => {
       if (item.datasetId.split('--')[1] === config.value.id) {
         if (props.isConfig) {
           item.selectValue = Array.isArray(val) ? [...val] : val
-        } else {
-          item.currentSelectValue = Array.isArray(val) ? [...val] : val
         }
+        item.currentSelectValue = Array.isArray(val) ? [...val] : val
       }
     })
   })
