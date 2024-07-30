@@ -318,9 +318,6 @@ const saveApp = () => {
       return false
     }
   })
-  setTimeout(() => {
-    appSaveForm?.value?.clearValidate()
-  }, 0)
 }
 
 defineExpose({
