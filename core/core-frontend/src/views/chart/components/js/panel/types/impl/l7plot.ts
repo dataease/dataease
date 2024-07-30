@@ -61,12 +61,21 @@ export abstract class L7PlotChartView<
     if (emptyDataStrategy === 'setZero') {
       data.forEach(item => {
         item.value === null && (item.value = 0)
+        item.dynamicTooltipValue?.length > 0 &&
+          item.dynamicTooltipValue.forEach(ele => {
+            ele.value === null && (ele.value = 0)
+          })
       })
     }
     if (emptyDataStrategy === 'ignoreData') {
       for (let i = data.length - 1; i >= 0; i--) {
         if (data[i].value === null) {
           data.splice(i, 1)
+        }
+        for (let j = data[i].dynamicTooltipValue?.length - 1; j >= 0; j--) {
+          if (data[i].dynamicTooltipValue[j].value === null) {
+            data[i].dynamicTooltipValue.splice(j, 1)
+          }
         }
       }
     }
