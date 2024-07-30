@@ -132,6 +132,9 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       fields: [],
       ...tmpOptions.label,
       formatter: (data: Datum, _point) => {
+        if (data.EXTREME) {
+          return ''
+        }
         if (!labelAttr.seriesLabelFormatter?.length) {
           return data.value
         }
