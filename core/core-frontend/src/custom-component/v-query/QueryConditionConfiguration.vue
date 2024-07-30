@@ -1383,7 +1383,7 @@ defineExpose({
                   canvasViewInfo[field.componentId].title
                 }}</span></el-checkbox
               >
-              <span class="dataset ellipsis">{{ field.name }}</span>
+              <span :title="field.name" class="dataset ellipsis">{{ field.name }}</span>
               <el-select
                 @change="setParameters"
                 @focus="handleDialogClick"
