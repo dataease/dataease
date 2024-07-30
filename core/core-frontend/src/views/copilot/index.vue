@@ -357,7 +357,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
       }
       .question-input {
         min-height: 47px;
-        width: calc(100% - 400px);
+        width: calc(100% - 360px);
         margin-left: 20px;
         display: flex;
         align-items: center;

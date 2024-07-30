@@ -537,3 +537,11 @@ const save = () => {
   }
 }
 </style>
+
+<style lang="less">
+.mobile-config-panel {
+  .title-container {
+    width: 90% !important;
+  }
+}
+</style>
