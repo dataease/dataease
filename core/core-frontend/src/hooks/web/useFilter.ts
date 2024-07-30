@@ -133,6 +133,20 @@ export const useFilter = (curComponentId: string, firstLoad = false) => {
   const queryComponentList = componentData.value.filter(ele => ele.component === 'VQuery')
   searchQuery(queryComponentList, filter, curComponentId, firstLoad)
   componentData.value.forEach(ele => {
+    if (ele.component === 'Group') {
+      const list = ele.propValue.filter(item => item.innerType === 'VQuery')
+      searchQuery(list, filter, curComponentId, firstLoad)
+
+      list.forEach(element => {
+        if (element.innerType === 'DeTabs') {
+          element.propValue.forEach(itx => {
+            const elementArr = itx.componentData.filter(item => item.innerType === 'VQuery')
+            searchQuery(elementArr, filter, curComponentId, firstLoad)
+          })
+        }
+      })
+    }
+
     if (ele.innerType === 'DeTabs') {
       ele.propValue.forEach(itx => {
         const arr = itx.componentData.filter(item => item.innerType === 'VQuery')
