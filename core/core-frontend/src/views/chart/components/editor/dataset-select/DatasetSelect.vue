@@ -8,6 +8,11 @@ import _ from 'lodash'
 import { getDatasetTree, getDatasourceList } from '@/api/dataset'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { useCache } from '@/hooks/web/useCache'
+import { useUserStoreWithOut } from '@/store/modules/user'
+
+const { wsCache } = useCache('localStorage')
+const userStore = useUserStoreWithOut()
 
 const props = withDefaults(
   defineProps<{
@@ -27,6 +32,8 @@ const props = withDefaults(
 const datasetSelector = ref(null)
 
 const loadingDatasetTree = ref(false)
+
+const orgCheck = ref(true)
 
 const datasetTree = ref<Tree[]>([])
 const toolTip = computed(() => {
@@ -82,11 +89,17 @@ watch(searchStr, val => {
 })
 
 const showTree = computed(() => {
-  return datasetTree.value && datasetTree.value.length > 0 && !loadingDatasetTree.value
+  return (
+    datasetTree.value && datasetTree.value.length > 0 && !loadingDatasetTree.value && orgCheck.value
+  )
+})
+
+const emptyMsg = computed(() => {
+  return orgCheck.value ? '暂无' + sourceName.value : '已切换至新组织，无权访问其他组织的资源'
 })
 
 const showEmptyInfo = computed(() => {
-  return !showTree.value && !loadingDatasetTree.value
+  return !showTree.value && !loadingDatasetTree.value && !orgCheck.value
 })
 
 const computedTree = computed(() => {
@@ -187,6 +200,18 @@ function onPopoverHide() {
 function getNode(nodeId: number) {
   return datasetSelector?.value?.getNode(nodeId)
 }
+const handleFocus = () => {
+  if (
+    props.sourceType === 'dataset' &&
+    userStore.getOid &&
+    wsCache.get('user.oid') &&
+    userStore.getOid !== wsCache.get('user.oid')
+  ) {
+    orgCheck.value = false
+  } else {
+    orgCheck.value = true
+  }
+}
 
 defineExpose({ getNode })
 const appStore = useAppStoreWithOut()
@@ -223,6 +248,7 @@ onMounted(() => {
               v-model="selectedNodeName"
               readonly
               class="data-set-dark"
+              @focus="handleFocus"
               :placeholder="'请选择' + sourceName"
             >
               <template #suffix>
@@ -255,7 +281,7 @@ onMounted(() => {
           <el-main :class="{ dark: themes === 'dark' }">
             <el-scrollbar max-height="252px" always>
               <div class="m-loading" v-if="loadingDatasetTree" v-loading="loadingDatasetTree"></div>
-              <div class="empty-info" v-if="showEmptyInfo">暂无{{ sourceName }}</div>
+              <div class="empty-info" v-if="showEmptyInfo">{{ emptyMsg }}</div>
               <!--          <div class="empty-info" v-if="showEmptySearchInfo">暂无相关数据</div>-->
               <el-tree
                 :class="{ dark: themes === 'dark' }"
@@ -426,6 +452,7 @@ onMounted(() => {
         font-style: normal;
         font-weight: 400;
         line-height: 20px;
+        text-align: center;
       }
 
       .m-loading {
