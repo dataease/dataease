@@ -512,6 +512,19 @@ const labelStyle = computed(() => {
   }
   return style
 })
+
+const paddingTop = computed<CSSProperties>(() => {
+  return {
+    paddingTop: customStyle.layout !== 'horizontal' ? customStyle.nameboxSpacing + 22 + 'px' : '0'
+  }
+})
+
+const marginRight = computed<CSSProperties>(() => {
+  return {
+    marginRight: customStyle.layout === 'horizontal' ? customStyle.nameboxSpacing + 'px' : '8px'
+  }
+})
+
 const autoStyle = computed(() => {
   return {
     position: 'absolute',
@@ -558,8 +571,8 @@ const autoStyle = computed(() => {
           :key="ele.id"
           v-for="(ele, index) in listVisible"
         >
-          <div class="query-field">
-            <div class="label" :style="{ marginRight: `${customStyle.nameboxSpacing}px` }">
+          <div class="query-field" :style="paddingTop">
+            <div class="label" :style="marginRight">
               <div class="label-wrapper" v-show="customStyle.labelShow">
                 <div class="label-wrapper-text" :style="labelStyle">
                   <el-tooltip effect="dark" :content="ele.name" placement="top">
