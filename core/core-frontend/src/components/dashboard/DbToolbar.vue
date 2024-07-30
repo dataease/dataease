@@ -31,6 +31,7 @@ import DbMoreComGroup from '@/custom-component/component-group/DbMoreComGroup.vu
 import { useCache } from '@/hooks/web/useCache'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
+import {useUserStoreWithOut} from "@/store/modules/user";
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -62,6 +63,7 @@ const state = reactive({
 const resourceGroupOpt = ref(null)
 const outerParamsSetRef = ref(null)
 const { wsCache } = useCache('localStorage')
+const userStore = useUserStoreWithOut()
 
 const props = defineProps({
   createType: {
@@ -155,6 +157,19 @@ const resourceOptFinish = param => {
 }
 
 const saveCanvasWithCheck = () => {
+  if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
+    ElMessageBox.confirm('已切换至新组织，无权保存其他组织的资源', {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      confirmButtonText: '关闭页面',
+      cancelButtonText: '取消',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      window.close()
+    })
+    return
+  }
   if (dvInfo.value.dataState === 'prepare') {
     if (appData.value) {
       // 应用保存
