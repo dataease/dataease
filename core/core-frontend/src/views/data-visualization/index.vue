@@ -169,6 +169,7 @@ const handleDragOver = e => {
 }
 
 const handleMouseDown = e => {
+  console.log('====handleMouseDown===' + e)
   // e.stopPropagation()
   dvMainStore.setClickComponentStatus(false)
   // 点击画布的空区域 提前清空curComponent 防止右击菜单内容抖动

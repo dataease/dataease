@@ -537,6 +537,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       if (item.linkageFilters && item.linkageFilters.length > 0) {
         const historyLinkageFiltersLength = item.linkageFilters.length
         const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
+        console.log('===newList= ' + JSON.stringify(newList))
         item.linkageFilters.splice(0, item.linkageFilters.length)
         // 重新push 可保证数组指针不变 可以watch到
         if (newList.length > 0) {
@@ -894,27 +895,35 @@ export const dvMainStore = defineStore('dataVisualization', {
       const checkQDList = [...data.dimensionList, ...data.quotaList]
       for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
         const element = this.componentData[indexOuter]
-        if (['UserView', 'VQuery'].includes(element.component)) {
-          this.trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId)
-          this.componentData[indexOuter] = element
-        } else if (element.component === 'Group') {
-          element.propValue.forEach((groupItem, index) => {
-            this.trackFilterCursor(groupItem, checkQDList, trackInfo, preActiveComponentIds, viewId)
-            element.propValue[index] = groupItem
-          })
-        } else if (element.component === 'DeTabs') {
-          element.propValue.forEach(tabItem => {
-            tabItem.componentData.forEach((tabComponent, index) => {
+        if (element.id !== viewId) {
+          if (['UserView', 'VQuery'].includes(element.component)) {
+            this.trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId)
+            this.componentData[indexOuter] = element
+          } else if (element.component === 'Group') {
+            element.propValue.forEach((groupItem, index) => {
               this.trackFilterCursor(
-                tabComponent,
+                groupItem,
                 checkQDList,
                 trackInfo,
                 preActiveComponentIds,
                 viewId
               )
-              tabItem.componentData[index] = tabComponent
+              element.propValue[index] = groupItem
             })
-          })
+          } else if (element.component === 'DeTabs') {
+            element.propValue.forEach(tabItem => {
+              tabItem.componentData.forEach((tabComponent, index) => {
+                this.trackFilterCursor(
+                  tabComponent,
+                  checkQDList,
+                  trackInfo,
+                  preActiveComponentIds,
+                  viewId
+                )
+                tabItem.componentData[index] = tabComponent
+              })
+            })
+          }
         }
       }
       preActiveComponentIds.forEach(viewId => {
