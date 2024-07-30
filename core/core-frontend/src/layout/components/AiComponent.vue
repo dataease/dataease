@@ -65,16 +65,16 @@ onMounted(() => {
     .close {
       position: absolute;
       right: 12px;
-      top: 12px;
+      top: 16px;
       font-size: 24px;
       color: rgb(100, 106, 115);
       cursor: pointer;
     }
     .size-class {
       position: absolute;
-      right: 48px;
+      right: 50px;
       font-size: 16px;
-      top: 17px;
+      top: 20px;
       color: rgb(100, 106, 115);
       cursor: pointer;
     }
@@ -89,7 +89,7 @@ onMounted(() => {
   max-width: 420px;
   height: 50%;
   width: 25%;
-  min-height: 450px;
+  min-height: 540px;
   max-height: 600px;
   bottom: 48px;
   right: 36px;
