@@ -3,6 +3,7 @@
     v-if="existLinkage && !dvMainStore.mobileInPc"
     class="bar-main-right"
     :class="{ 'bar-main-edit-right': dvEditMode }"
+    @mousedown="handOptBarMousedown"
   >
     <el-button size="mini" type="warning" @click="clearAllLinkage"
       ><el-icon class="bar-base-icon"> <Icon name="dv-bar-unLinkage"></Icon></el-icon
@@ -34,6 +35,11 @@ const props = defineProps({
     default: 'canvas-main'
   }
 })
+
+const handOptBarMousedown = e => {
+  e.preventDefault()
+  e.stopPropagation()
+}
 
 const clearAllLinkage = () => {
   dvMainStore.clearPanelLinkageInfo()

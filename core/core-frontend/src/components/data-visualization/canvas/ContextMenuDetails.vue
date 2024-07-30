@@ -253,7 +253,7 @@ const editQueryCriteria = () => {
               popComponentDataLength === 0
             "
           >
-            移动到大屏弹框区
+            移动到大屏弹窗区
           </li>
           <el-divider class="custom-divider" />
           <li @click="hide" v-show="curComponent['isShow']">隐藏</li>

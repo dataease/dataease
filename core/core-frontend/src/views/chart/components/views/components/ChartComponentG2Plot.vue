@@ -102,9 +102,13 @@ const viewTrack = ref(null)
 
 const clearLinkage = () => {
   linkageActiveHistory.value = false
-  myChart?.setState('active', () => true, false)
-  myChart?.setState('inactive', () => true, false)
-  myChart?.setState('selected', () => true, false)
+  try {
+    myChart?.setState('active', () => true, false)
+    myChart?.setState('inactive', () => true, false)
+    myChart?.setState('selected', () => true, false)
+  } catch (e) {
+    console.warn('clearLinkage error')
+  }
 }
 const reDrawView = () => {
   linkageActiveHistory.value = false
