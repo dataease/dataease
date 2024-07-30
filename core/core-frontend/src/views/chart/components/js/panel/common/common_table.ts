@@ -40,6 +40,9 @@ export function getCustomTheme(chart: Chart): S2Theme {
   const scrollBarHoverColor = resetRgbOpacity(scrollBarColor, 3)
 
   const theme: S2Theme = {
+    background: {
+      color: '#00000000'
+    },
     splitLine: {
       horizontalBorderColor: borderColor,
       verticalBorderColor: borderColor
