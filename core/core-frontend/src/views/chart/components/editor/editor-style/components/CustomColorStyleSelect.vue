@@ -31,7 +31,6 @@ const props = withDefaults(
 )
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
-const { chart } = toRefs(props)
 const emits = defineEmits(['update:modelValue', 'changeBasicStyle'])
 const changeChartType = () => {
   if (isColorGradient.value) {
@@ -42,33 +41,34 @@ const changeChartType = () => {
 
 const seriesColorPickerRef = ref<InstanceType<typeof ElColorPicker>>()
 const seriesColorState = reactive({
+  seriesColor: [],
   curSeriesColor: {
     id: '',
     name: '',
-    color: '#000'
+    color: ''
   } as any,
   curColorIndex: 0,
   seriesColorPickerId: 'body'
 })
 const setupSeriesColor = () => {
-  if (batchOptStatus.value || !chart.value) {
+  if (batchOptStatus.value || !props.chart) {
     return
   }
   const instance = chartViewManager.getChartView(
-    chart.value.render,
-    chart.value.type
+    props.chart.render,
+    props.chart.type
   ) as G2PlotChartView
   if (!instance?.propertyInner?.['basic-style-selector'].includes('seriesColor')) {
     return
   }
 
-  const viewData = dvMainStore.getViewDataDetails(chart.value.id)
+  const viewData = dvMainStore.getViewOriginData(props.chart.id)
   if (!viewData) {
     return
   }
-  const newSeriesColor = instance.setupSeriesColor(chart.value, viewData.data)
+  const newSeriesColor = instance.setupSeriesColor(props.chart, viewData.data)
   const oldSeriesColor =
-    state.value.basicStyleForm.seriesColor?.reduce((p, n) => {
+    props.chart.customAttr.basicStyle.seriesColor?.reduce((p, n) => {
       p[n.id] = n
       return p
     }, {}) || {}
@@ -78,18 +78,19 @@ const setupSeriesColor = () => {
       item.color = oldColorItem.color
     }
   })
-  const seriesColor = state.value.basicStyleForm.seriesColor
-  seriesColor.splice(0, seriesColor.length, ...newSeriesColor)
-  if (seriesColor.length) {
-    if (seriesColorState.curColorIndex > seriesColor.length - 1) {
+  seriesColorState.seriesColor.splice(0, seriesColorState.seriesColor.length, ...newSeriesColor)
+  if (seriesColorState.seriesColor.length) {
+    if (seriesColorState.curColorIndex > seriesColorState.seriesColor.length - 1) {
       seriesColorState.curColorIndex = 0
     }
-    seriesColorState.curSeriesColor = seriesColor[seriesColorState.curColorIndex]
-    const targetId = 'series-color-picker-' + seriesColorState.curColorIndex
-    const target = document.getElementById(targetId)
-    if (target) {
-      seriesColorState.seriesColorPickerId = `#${targetId}`
-    }
+    seriesColorState.curSeriesColor = seriesColorState.seriesColor[seriesColorState.curColorIndex]
+    nextTick(() => {
+      const targetId = 'series-color-picker-' + seriesColorState.curColorIndex
+      const target = document.getElementById(targetId)
+      if (target) {
+        seriesColorState.seriesColorPickerId = `#${targetId}`
+      }
+    })
   }
 }
 
@@ -105,7 +106,7 @@ const switchSeriesColor = (seriesColor, index) => {
 
 const changeSeriesColor = () => {
   let changed = false
-  state.value.basicStyleForm.seriesColor.forEach(c => {
+  seriesColorState.seriesColor.forEach(c => {
     if (
       c.id === seriesColorState.curSeriesColor.id &&
       c.color !== seriesColorState.curSeriesColor.color
@@ -114,15 +115,18 @@ const changeSeriesColor = () => {
       c.color = seriesColorState.curSeriesColor.color
     }
   })
-  changed && changeBasicStyle('seriesColor')
+  if (changed) {
+    state.value.basicStyleForm.seriesColor = seriesColorState.seriesColor
+    changeBasicStyle('seriesColor')
+  }
 }
 watch(
   [
-    chart,
-    chart.value?.type,
-    () => chart.value?.customAttr.basicStyle.calcTopN,
-    () => chart.value?.customAttr.basicStyle.topN,
-    () => chart.value?.customAttr.basicStyle.topNLabel
+    () => props.chart,
+    () => props.chart?.type,
+    () => props.chart?.customAttr.basicStyle.calcTopN,
+    () => props.chart?.customAttr.basicStyle.topN,
+    () => props.chart?.customAttr.basicStyle.topNLabel
   ],
   setupSeriesColor,
   { deep: false }
@@ -130,6 +134,7 @@ watch(
 onMounted(() => {
   useEmitt({ name: 'chart-type-change', callback: changeChartType })
   useEmitt({ name: 'chart-data-change', callback: setupSeriesColor })
+  setupSeriesColor()
 })
 const state = computed({
   get() {
@@ -392,7 +397,7 @@ const colorItemBorderColor = (index, state) => {
         class="series-color-setting colors"
       >
         <div
-          v-for="(item, index) in state.basicStyleForm.seriesColor"
+          v-for="(item, index) in seriesColorState.seriesColor"
           :key="item.id"
           class="color-list-item"
         >
