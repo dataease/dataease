@@ -103,11 +103,6 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
     return new L7Wrapper(scene, config)
   }
 
-  setupDefaultOptions(chart: ChartObj): ChartObj {
-    chart.customAttr.misc.mapLineAnimate = true
-    return chart
-  }
-
   protected setupOptions(chart: Chart, config: L7Config): L7Config {
     return flow(this.configEmptyDataStrategy)(chart, config)
   }
