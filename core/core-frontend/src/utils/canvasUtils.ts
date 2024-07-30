@@ -182,14 +182,16 @@ export function refreshOtherComponent(dvId, busiFlag) {
       const canvasInfo = rsp.data
       const canvasDataResult = JSON.parse(canvasInfo.componentData)
       const canvasDataResultMap = canvasDataResult.reduce((acc, comp) => {
-        acc.set(comp.id, comp)
+        acc[comp.id] = comp
         return acc
-      }, new Map())
-      componentData.value.map(component =>
-        refreshIdList.includes(component.id) && canvasDataResultMap[component.id]
-          ? canvasDataResultMap[component.id]
-          : component
-      )
+      }, {})
+      // 遍历数组并替换
+      for (let i = 0; i < componentData.value.length; i++) {
+        const component = componentData.value[i]
+        if (refreshIdList.includes(component.id) && canvasDataResultMap[component.id]) {
+          componentData.value[i] = canvasDataResultMap[component.id]
+        }
+      }
     })
   }
 }
