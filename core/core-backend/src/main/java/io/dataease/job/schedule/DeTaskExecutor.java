@@ -49,7 +49,7 @@ public class DeTaskExecutor {
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), end, jobDataMap);
     }
 
-    public void addRetryTask(Long taskId, Integer retryLimit, Integer retryInterval) {
+    public void addRetryTask(Long taskId, Integer retryLimit, Integer retryInterval, Object retryParam) {
         long saltTime = 3000L;
         long interval = retryInterval == null ? 5L : retryInterval;
         long intervalMill = interval * 60000L;
@@ -65,6 +65,7 @@ public class DeTaskExecutor {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put("taskId", taskId);
         jobDataMap.put(IS_RETRY_TASK, true);
+        jobDataMap.put("retryParam", retryParam);
         Date end = null;
         if (ObjectUtils.isNotEmpty(endTime)) end = new Date(endTime);
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(now), end, jobDataMap);
