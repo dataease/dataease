@@ -408,7 +408,13 @@ const handleBoardMouseDownOnShape = e => {
 }
 
 const areaDataPush = component => {
-  if (component && !component.isLock && component.isShow && component.canvasId === 'canvas-main') {
+  if (
+    component &&
+    !component.isLock &&
+    component.isShow &&
+    component.canvasId === 'canvas-main' &&
+    component.component !== 'GroupArea'
+  ) {
     areaData.value.components.push(component)
   }
 }
