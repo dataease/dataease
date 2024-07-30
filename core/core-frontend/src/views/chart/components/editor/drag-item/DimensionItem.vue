@@ -168,7 +168,7 @@ const valueFormatter = () => {
   emit('valueFormatter', item.value)
 }
 const showCustomSort = item => {
-  if (props.chart.type === 'symbolic-map') {
+  if (props.chart.type === 'symbolic-map' || props.chart.type === 'flow-map') {
     return false
   }
   return !item.chartId && (item.deType === 0 || item.deType === 5)
