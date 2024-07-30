@@ -292,7 +292,7 @@ export const DEFAULT_MISC: ChartMiscAttr = {
         fontSize: 10
       },
       point: {
-        color: 'red',
+        color: '#146C94',
         size: 4,
         animate: false,
         speed: 0.01
