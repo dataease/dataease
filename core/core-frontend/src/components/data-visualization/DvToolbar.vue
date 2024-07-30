@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { ref, nextTick, computed, toRefs } from 'vue'
+import { ref, nextTick, computed, toRefs, onMounted } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -27,6 +27,7 @@ import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabe
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { useUserStoreWithOut } from '@/store/modules/user'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -43,6 +44,7 @@ const { wsCache } = useCache('localStorage')
 const dvModel = 'dataV'
 const outerParamsSetRef = ref(null)
 const fullScreeRef = ref(null)
+const userStore = useUserStoreWithOut()
 
 const props = defineProps({
   createType: {
@@ -103,6 +105,19 @@ const resourceOptFinish = param => {
 }
 
 const saveCanvasWithCheck = () => {
+  if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
+    ElMessageBox.confirm('已切换至新组织，无权保存其他组织的资源', {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      confirmButtonText: '关闭页面',
+      cancelButtonText: '取消',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      window.close()
+    })
+    return
+  }
   if (dvInfo.value.dataState === 'prepare') {
     if (appData.value) {
       // 应用保存

@@ -349,6 +349,15 @@ const editCursor = () => {
     if (myDiv.focus) {
       myDiv.focus()
     }
+    tinymce.init({
+      selector: tinymceId,
+      plugins: 'table',
+      setup: function (editor) {
+        editor.on('init', function () {
+          console.log('====init====')
+        })
+      }
+    })
   }, 100)
 }
 
