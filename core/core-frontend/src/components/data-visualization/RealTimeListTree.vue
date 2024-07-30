@@ -38,7 +38,8 @@ const areaDataPush = component => {
     !component.isLock &&
     component.isShow &&
     component.canvasId === 'canvas-main' &&
-    component.category !== 'hidden'
+    component.category !== 'hidden' &&
+    component.component !== 'GroupArea'
   ) {
     areaData.value.components.push(component)
   }
@@ -73,7 +74,8 @@ const shiftDataPush = curClickIndex => {
         !areaDataIdArray.includes(component.id) &&
         !component.isLock &&
         component.isShow &&
-        component.category !== 'hidden'
+        component.category !== 'hidden' &&
+        component.component !== 'GroupArea'
     )
   areaData.value.components.push(...shiftAreaComponents)
   dvMainStore.setCurComponent({ component: null, index: null })
