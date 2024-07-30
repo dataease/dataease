@@ -13,7 +13,7 @@ export const useEmitt = (option?: Option) => {
     emitter.on(option.name, option.callback)
 
     onBeforeUnmount(() => {
-      emitter.off(option.name)
+      emitter.off(option.name, option.callback)
     })
   }
 
