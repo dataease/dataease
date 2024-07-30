@@ -104,8 +104,10 @@ const noChildrenFieldChart = chart => {
 
 export const extremumEvt = (newChart, chart, _options, container) => {
   chart.container = container
-  newChart.on('afterrender', ev => {
-    createExtremumPoint(chart, ev)
+  newChart.on('beforerender', ev => {
+    newChart.chart.geometries[0].on('beforerenderlabel', () => {
+      createExtremumPoint(chart, ev)
+    })
   })
 }
 
@@ -158,6 +160,8 @@ export const createExtremumPoint = (chart, ev) => {
     if (pointObjList && pointObjList.length > 0) {
       const pointObj = pointObjList[0]
       const { minItem, maxItem } = findMinMax(pointObjList.reverse())
+      minItem._origin.EXTREME = true
+      maxItem._origin.EXTREME = true
       let attr
       let showExtremum = false
       if (noChildrenFieldChart(chart) || yAxis.length > 1) {
