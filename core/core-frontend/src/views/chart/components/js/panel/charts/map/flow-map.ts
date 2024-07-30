@@ -258,7 +258,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
   }
 
   pointConfig = (chart, xAxis, xAxisExt, misc, configList) => {
-    const color = misc.flowMapConfig.pointConfig.text.color
+    const color = misc.flowMapConfig.pointConfig.point.color
     const size = misc.flowMapConfig.pointConfig.point.size
     const { bubbleCfg } = parseJson(chart.senior)
     const fromDefaultPointLayer = new PointLayer({ zIndex: -1 })

@@ -82,7 +82,7 @@ onMounted(() => {
 
 <template>
   <el-form ref="pointForm" :model="state.pointForm" size="small" label-position="top">
-    <div>
+    <div style="padding-bottom: 8px">
       <el-space>
         <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.text')">
           <el-color-picker
@@ -118,6 +118,19 @@ onMounted(() => {
         </el-form-item>
       </el-space>
     </div>
+    <el-space>
+      <el-form-item class="form-item" :class="'form-item-' + themes" label="标注点气泡颜色">
+        <el-color-picker
+          :effect="themes"
+          size="default"
+          v-model="state.pointForm.point.color"
+          class="color-picker-style"
+          :predefine="predefineColors"
+          @change="changeStyle()"
+          is-custom
+        />
+      </el-form-item>
+    </el-space>
     <div class="alpha-setting">
       <label class="alpha-label" :class="{ dark: 'dark' === themes }"> 标注点气泡大小 </label>
       <el-row style="flex: 1">
