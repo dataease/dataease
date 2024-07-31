@@ -105,6 +105,13 @@ const noChildrenFieldChart = chart => {
 export const extremumEvt = (newChart, chart, _options, container) => {
   chart.container = container
   newChart.on('beforerender', ev => {
+    ev.view.on('beforepaint', () => {
+      newChart.chart.geometries[0]?.beforeMappingData.forEach(i => {
+        const { minItem, maxItem } = findMinMax(i)
+        minItem._origin.EXTREME = true
+        maxItem._origin.EXTREME = true
+      })
+    })
     newChart.chart.geometries[0].on('beforerenderlabel', () => {
       createExtremumPoint(chart, ev)
     })
@@ -120,6 +127,8 @@ const findMinMax = (data): { minItem; maxItem } => {
       if (maxItem === undefined || currentItem._origin.value > maxItem._origin.value) {
         maxItem = currentItem
       }
+      delete minItem?._origin.EXTREME
+      delete maxItem?._origin.EXTREME
       return { minItem, maxItem }
     },
     { minItem: undefined, maxItem: undefined }
@@ -159,9 +168,7 @@ export const createExtremumPoint = (chart, ev) => {
   geometriesDataArray?.forEach(pointObjList => {
     if (pointObjList && pointObjList.length > 0) {
       const pointObj = pointObjList[0]
-      const { minItem, maxItem } = findMinMax(pointObjList.reverse())
-      minItem._origin.EXTREME = true
-      maxItem._origin.EXTREME = true
+      const [minItem, maxItem] = pointObjList.filter(i => i._origin.EXTREME)
       let attr
       let showExtremum = false
       if (noChildrenFieldChart(chart) || yAxis.length > 1) {
@@ -195,7 +202,7 @@ export const createExtremumPoint = (chart, ev) => {
           const pointElement = document.getElementById(
             'point_' + point._origin.category + '-' + point._origin.value
           )
-          if (pointElement) {
+          if (pointElement && point._origin.EXTREME) {
             pointElement.style.position = 'absolute'
             pointElement.style.position = 'absolute'
             pointElement.style.top =
