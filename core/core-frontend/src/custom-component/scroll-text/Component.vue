@@ -13,7 +13,8 @@ const isCtrlDown = ref(false)
 const emit = defineEmits(['input'])
 const text = ref(null)
 const textOut = ref(null)
-const scrollScale = ref('100%')
+const scrollScale0 = ref('100%')
+const scrollScale100 = ref('100%')
 let timeId = null
 
 const props = defineProps({
@@ -132,17 +133,27 @@ const varStyle = computed(() => [
           canvasStyleData.value.scale /
           element.value.style.scrollSpeed
     }s`,
-    '--scroll-scale': `${scrollScale.value}`
+    '--scroll-scale0': `${scrollScale0.value}`,
+    '--scroll-scale100': `${scrollScale100.value}`
   }
 ])
 
 const init = () => {
   timeId = setInterval(() => {
     if (textOut.value && text.value) {
-      scrollScale.value =
-        (element.value.style.width * canvasStyleData.value.scale) / text.value.clientWidth + '%'
+      const textValue = text.value.clientWidth * 100
+      const fontLength = document.getElementsByClassName('marquee-txt')[0]?.innerText?.length
+      const fontSizeLength = fontLength * element.value.style.fontSize * canvasStyleData.value.scale
+      if (textValue < fontSizeLength) {
+        scrollScale0.value = (textValue * 100) / textValue + '%'
+        scrollScale100.value = '100%'
+      } else {
+        scrollScale0.value = '100%'
+        scrollScale100.value = (-(fontSizeLength + 5000) * 100) / textValue + '%'
+      }
     } else {
-      scrollScale.value = '100%'
+      scrollScale0.value = '100%'
+      scrollScale100.value = '-100%'
     }
   }, 1000)
 }
@@ -224,10 +235,10 @@ onMounted(() => {
 }
 @keyframes marqueeAnimation {
   0% {
-    transform: translate(var(--scroll-scale), 0);
+    transform: translate(var(--scroll-scale0), 0);
   }
   100% {
-    transform: translate(-100%, 0);
+    transform: translate(var(--scroll-scale100), 0);
   }
 }
 </style>
