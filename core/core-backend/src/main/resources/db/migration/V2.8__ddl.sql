@@ -41,12 +41,12 @@ CREATE TABLE `visualization_report_filter` (
                                                `report_id` bigint DEFAULT NULL COMMENT '定时报告id',
                                                `task_id` bigint DEFAULT NULL COMMENT '任务id',
                                                `resource_id` bigint DEFAULT NULL COMMENT '资源id',
-                                               `dv_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '资源类型',
+                                               `dv_type` varchar(255) DEFAULT NULL COMMENT '资源类型',
                                                `component_id` bigint DEFAULT NULL COMMENT '组件id',
                                                `filter_id` bigint DEFAULT NULL COMMENT '过滤项id',
-                                               `filter_info` longtext COLLATE utf8mb4_general_ci COMMENT '过滤组件内容',
+                                               `filter_info` longtext COMMENT '过滤组件内容',
                                                `filter_version` int DEFAULT NULL COMMENT '过滤组件版本',
                                                `create_time` bigint DEFAULT NULL COMMENT '创建时间',
-                                               `create_user` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '创建人',
+                                               `create_user` varchar(255) DEFAULT NULL COMMENT '创建人',
                                                PRIMARY KEY (`id`)
 );
