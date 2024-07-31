@@ -3,6 +3,7 @@ import { reactive, computed, ref, nextTick, inject, type Ref, watch, unref } fro
 import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import zeroNodeImg from '@/assets/img/drag.png'
+import { ElMessageBox, type Action } from 'element-plus-secondary'
 import { guid } from './util'
 import { HandleMore } from '@/components/handle-more'
 import { propTypes } from '@/utils/propTypes'
@@ -113,7 +114,7 @@ const dfsForDsId = (arr, datasourceId) => {
     if (ele.children?.length) {
       return dfsForDsId(ele.children, datasourceId)
     }
-    return ele.datasourceId === datasourceId || !ele.datasourceId
+    return ele.datasourceId === datasourceId
   })
 }
 
@@ -160,6 +161,29 @@ const delNode = (id, arr) => {
       delNode(id, ele.children)
     }
     return false
+  })
+}
+let fakeDelId = []
+
+const collectId = arr => {
+  arr.forEach(ele => {
+    fakeDelId = [...fakeDelId, ...ele.currentDsFields.map(itx => itx.id)]
+    if (ele.children?.length) {
+      collectId(ele.children)
+    }
+  })
+}
+
+const delNodeFake = (id, arr) => {
+  arr.forEach(ele => {
+    if (id === ele.id) {
+      fakeDelId = [...ele.currentDsFields.map(itx => itx.id)]
+      if (ele.children?.length) {
+        collectId(ele.children)
+      }
+    } else if (ele.children?.length) {
+      delNodeFake(id, ele.children)
+    }
   })
 }
 
@@ -306,8 +330,71 @@ const delUpdateDsFields = (id, arr: Node[]) => {
     return false
   })
 }
+const delUpdateDsFieldsFake = (id, arr: Node[]) => {
+  arr.forEach(ele => {
+    if (id === ele.id) {
+      fakeDelId = [...ele.currentDsFields.map(itx => itx.id)]
+    }
+    if (ele.children?.length) {
+      delUpdateDsFieldsFake(id, ele.children)
+    }
+  })
+}
 
 const confirmEditUnion = () => {
+  delUpdateDsFieldsFake(currentNode.value.id, state.nodeList)
+  const currentIds = currentNode.value.currentDsFields.map(ele => ele.id)
+  let ids = fakeDelId.filter(ele => !currentIds.includes(ele))
+  fakeDelId = []
+  if (!!ids.length) {
+    const idArr = allfields.value.reduce((pre, next) => {
+      if (next.extField === 2) {
+        const idMap = next.originName.match(/\[(.+?)\]/g)
+        const result = idMap.map(itm => {
+          return itm.slice(1, -1)
+        })
+        result.forEach(ele => {
+          if (ids.includes(ele)) {
+            pre.push(ele)
+          }
+        })
+      }
+      return pre
+    }, [])
+
+    if (!!idArr.length) {
+      ElMessageBox.confirm(
+        `字段${allfields.value
+          .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
+          .map(ele => ele.name)
+          .join(',')}未被选择，其相关的新建字段将被删除，是否继续？`,
+        {
+          confirmButtonText: t('dataset.confirm'),
+          cancelButtonText: t('common.cancel'),
+          showCancelButton: true,
+          confirmButtonType: 'danger',
+          type: 'warning',
+          autofocus: false,
+          showClose: false,
+          callback: (action: Action) => {
+            if (action === 'confirm') {
+              delUpdateDsFields(currentNode.value.id, state.nodeList)
+              const [fir] = state.nodeList
+              if (fir.isShadow) {
+                delete fir.isShadow
+              }
+              closeEditUnion()
+              nextTick(() => {
+                emits('updateAllfields')
+              })
+            }
+          }
+        }
+      )
+      return
+    }
+  }
+
   delUpdateDsFields(currentNode.value.id, state.nodeList)
   const [fir] = state.nodeList
   if (fir.isShadow) {
@@ -345,6 +432,53 @@ const handleCommand = (ele, command) => {
   }
 
   if (command === 'del') {
+    delNodeFake(ele.id, state.nodeList)
+    if (!!fakeDelId.length) {
+      const idArr = allfields.value.reduce((pre, next) => {
+        if (next.extField === 2) {
+          const idMap = next.originName.match(/\[(.+?)\]/g)
+          const result = idMap.map(itm => {
+            return itm.slice(1, -1)
+          })
+          result.forEach(ele => {
+            if (fakeDelId.includes(ele)) {
+              pre.push(ele)
+            }
+          })
+        }
+        return pre
+      }, [])
+      fakeDelId = []
+
+      if (!!idArr.length) {
+        ElMessageBox.confirm(
+          `字段${allfields.value
+            .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
+            .map(ele => ele.name)
+            .join(',')}未被选择，其相关的新建字段将被删除，是否继续？`,
+          {
+            confirmButtonText: t('dataset.confirm'),
+            cancelButtonText: t('common.cancel'),
+            showCancelButton: true,
+            confirmButtonType: 'danger',
+            type: 'warning',
+            autofocus: false,
+            showClose: false,
+            callback: (action: Action) => {
+              if (action === 'confirm') {
+                delNode(ele.id, state.nodeList)
+                nextTick(() => {
+                  emits('addComplete')
+                  emits('updateAllfields')
+                })
+              }
+            }
+          }
+        )
+        return
+      }
+    }
+
     delNode(ele.id, state.nodeList)
     nextTick(() => {
       emits('addComplete')
