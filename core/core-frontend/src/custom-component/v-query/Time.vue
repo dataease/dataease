@@ -151,6 +151,7 @@ const init = () => {
     selectValue.value = plus ? [] : undefined
   }
   multiple.value = config.value.displayType === '7'
+  currentDate.value = currentDate.value.slice(0, getIndex() + 1)
 }
 
 const queryConditionWidth = inject('com-width', Function, true)
