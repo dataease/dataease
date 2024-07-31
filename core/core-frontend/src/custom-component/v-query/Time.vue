@@ -135,7 +135,9 @@ const handleValueChange = () => {
     })
     return
   }
-  config.value.defaultValue = value.map(ele => new Date(ele).toLocaleString())
+  config.value.defaultValue = Array.isArray(value)
+    ? value.map(ele => new Date(ele).toLocaleString())
+    : new Date(value).toLocaleString()
 }
 
 const init = () => {
