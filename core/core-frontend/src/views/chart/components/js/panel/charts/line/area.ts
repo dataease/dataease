@@ -136,6 +136,9 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       fields: [],
       ...tmpOptions.label,
       formatter: (data: Datum, _point) => {
+        if (data.EXTREME) {
+          return ''
+        }
         if (!labelAttr.seriesLabelFormatter?.length) {
           return data.value
         }

@@ -133,6 +133,9 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       offsetY: -8,
       layout: [{ type: 'hide-overlap' }, { type: 'limit-in-plot' }],
       formatter: (data: Datum, _point) => {
+        if (data.EXTREME) {
+          return ''
+        }
         if (!labelAttr.seriesLabelFormatter?.length) {
           return data.value
         }
