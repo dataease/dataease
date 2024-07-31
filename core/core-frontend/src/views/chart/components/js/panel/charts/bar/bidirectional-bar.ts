@@ -61,7 +61,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
   propertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gradient', 'layout'],
-    'x-axis-selector': ['color', 'fontSize', 'position', 'axisLabel', 'axisLine', 'splitLine'],
+    'x-axis-selector': ['position', 'axisLabel', 'axisLine', 'splitLine'],
     'y-axis-selector': [
       'name',
       'position',
@@ -221,7 +221,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       return tmpOptions
     }
     if (tmpOptions.xAxis.label) {
-      tmpOptions.xAxis.label.style = {}
+      delete tmpOptions.xAxis.label.style.textAlign
     }
     return tmpOptions
   }
