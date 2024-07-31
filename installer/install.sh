@@ -28,6 +28,7 @@ function prop {
 function check_and_prepare_env_params() {
    log "当前时间 : $(date)"
    log_title "检查安装环境并初始化环境变量"
+   DE_APISIX_PORT=9080
 
    cd ${CURRENT_DIR}
    if [ -f /usr/bin/dectl ]; then
@@ -297,7 +298,7 @@ function start_de_service() {
 
    access_port=$DE_PORT
    if [[ $DE_INSTALL_MODE != "community" ]];then
-      access_port=9080
+      access_port=$DE_APISIX_PORT
    fi
 
    echo
