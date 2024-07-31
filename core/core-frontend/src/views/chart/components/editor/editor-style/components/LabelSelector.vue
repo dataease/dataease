@@ -95,6 +95,13 @@ watch(
   { deep: true }
 )
 
+const computedIdKey = computed(() => {
+  if (props.chart.type.includes('chart-mix')) {
+    return 'seriesId'
+  }
+  return 'id'
+})
+
 const curSeriesFormatter = ref<Partial<SeriesFormatter>>({})
 const formatterEditable = computed(() => {
   return showProperty('seriesLabelFormatter') && yAxis.value?.length
@@ -109,7 +116,8 @@ const initSeriesLabel = () => {
   const formatter = state.labelForm.seriesLabelFormatter
 
   const seriesAxisMap = formatter.reduce((pre, next) => {
-    pre[next.id] = next
+    const id = next.seriesId ?? next.id
+    pre[next[computedIdKey.value]] = { ...next, seriesId: id }
     return pre
   }, {})
   formatter.splice(0, formatter.length)
@@ -147,32 +155,32 @@ const initSeriesLabel = () => {
       fontSize: COMPUTED_DEFAULT_LABEL.value.fontSize,
       showExtremum: false
     } as SeriesFormatter
-    if (seriesAxisMap[next.id]) {
+    if (seriesAxisMap[next[computedIdKey.value]]) {
       tmp = {
         ...tmp,
-        formatterCfg: seriesAxisMap[next.id].formatterCfg,
-        show: seriesAxisMap[next.id].show,
-        color: seriesAxisMap[next.id].color,
-        fontSize: seriesAxisMap[next.id].fontSize,
-        showExtremum: seriesAxisMap[next.id].showExtremum
+        formatterCfg: seriesAxisMap[next[computedIdKey.value]].formatterCfg,
+        show: seriesAxisMap[next[computedIdKey.value]].show,
+        color: seriesAxisMap[next[computedIdKey.value]].color,
+        fontSize: seriesAxisMap[next[computedIdKey.value]].fontSize,
+        showExtremum: seriesAxisMap[next[computedIdKey.value]].showExtremum
       }
     } else {
       initFlag = true
     }
     formatter.push(tmp)
     next.seriesId = next.seriesId ?? next.id
-    pre[next.seriesId] = tmp
+    pre[next[computedIdKey.value]] = tmp
     return pre
   }, {})
   // 初始化一下序列数组，用于主题适配
   if (initFlag) {
     changeLabelAttr('seriesLabelFormatter', false)
   }
-  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.seriesId]) {
-    curSeriesFormatter.value = axisMap[formatter[0].seriesId]
+  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value[computedIdKey.value]]) {
+    curSeriesFormatter.value = axisMap[formatter[0][computedIdKey.value]]
     return
   }
-  curSeriesFormatter.value = axisMap[curSeriesFormatter.value.seriesId]
+  curSeriesFormatter.value = axisMap[curSeriesFormatter.value[computedIdKey.value]]
 }
 
 const labelPositionR = [
@@ -832,19 +840,19 @@ const isGroupBar = computed(() => {
           :teleported="false"
           :disabled="!formatterEditable"
           ref="formatterSelector"
-          value-key="seriesId"
+          :value-key="computedIdKey"
           class="series-select"
           size="small"
         >
           <template #prefix>
-            <el-icon v-if="curSeriesFormatter.seriesId" style="font-size: 14px">
+            <el-icon v-if="curSeriesFormatter[computedIdKey]" style="font-size: 14px">
               <Icon
                 :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
                 :name="`field_${fieldType[curSeriesFormatter.deType]}`"
               />
             </el-icon>
           </template>
-          <template v-for="item in state.labelForm.seriesLabelFormatter" :key="item.seriesId">
+          <template v-for="item in state.labelForm.seriesLabelFormatter" :key="item[computedIdKey]">
             <el-option class="series-select-option" :value="item" :label="item.optionLabel">
               <el-icon style="margin-right: 8px">
                 <Icon
