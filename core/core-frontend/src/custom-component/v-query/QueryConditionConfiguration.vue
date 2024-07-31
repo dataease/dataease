@@ -19,7 +19,7 @@ import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
-import { ElMessage, ElSelect } from 'element-plus-secondary'
+import { ElMessage, ElSelect, ElMessageBox } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
 import { getDsDetailsWithPerm, getSqlParams, listFieldsWithPermissions } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -156,7 +156,6 @@ const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
 
 const { queryElement } = toRefs(props)
-
 const getDetype = (id, arr) => {
   return arr.flat().find(ele => ele.id === id)?.deType
 }
@@ -419,8 +418,39 @@ const computedTree = computed(() => {
   }
   return dfs(datasetTree.value)
 })
+let newDatasetId = ''
+let oldDatasetId = ''
+const handleCurrentChange = node => {
+  oldDatasetId = curComponent.value.dataset?.id
+  newDatasetId = node.id
+}
+
+const confirmIdChange = () => {
+  curComponent.value.dataset.id = newDatasetId
+  clearCascadeArrDataset(`${oldDatasetId}--${curComponent.value.id}`)
+  newDatasetId = ''
+  oldDatasetId = ''
+  handleDatasetChange()
+}
 
 const handleDatasetChange = () => {
+  if (!!newDatasetId && !!oldDatasetId) {
+    curComponent.value.dataset.id = oldDatasetId
+    ElMessageBox.confirm(
+      '数据集的修改，会导致级联配置失效，因此对应的级联关系将被清除，确定修改吗？',
+      {
+        confirmButtonType: 'primary',
+        type: 'warning',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        autofocus: false,
+        showClose: false
+      }
+    ).then(() => {
+      confirmIdChange()
+    })
+    return
+  }
   curComponent.value.field.id = ''
   curComponent.value.displayId = ''
   curComponent.value.sortId = ''
@@ -578,6 +608,18 @@ const openCascadeDialog = () => {
       return pre
     }, {})
   cascadeDialog.value.init(cascadeMap, cascadeArr)
+}
+
+const clearCascadeArrDataset = id => {
+  for (let i in cascadeArr) {
+    const [fir, sec] = cascadeArr[i]
+    if (fir?.datasetId.includes(id)) {
+      cascadeArr[i] = []
+    } else if (sec?.datasetId.includes(id)) {
+      cascadeArr[i] = [fir]
+    }
+  }
+  cascadeArr = cascadeArr.filter(ele => !!ele.length)
 }
 
 const indexCascade = ' 一二三四五'
@@ -1639,6 +1681,7 @@ defineExpose({
                     :data="computedTree"
                     placeholder="请选择数据集"
                     @change="handleDatasetChange"
+                    @current-change="handleCurrentChange"
                     :props="dsSelectProps"
                     placement="bottom"
                     :render-after-expand="false"
