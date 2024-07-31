@@ -1,15 +1,16 @@
 package io.dataease.visualization.manage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.extensions.view.dto.ChartExtFilterDTO;
-import io.dataease.extensions.view.dto.ChartViewDTO;
-import io.dataease.extensions.view.dto.ChartViewFieldDTO;
-import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.constant.CommonConstants;
+import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.view.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartExtRequest;
+import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.bo.ExcelSheetModel;
@@ -97,6 +98,10 @@ public class CoreVisualizationExportManage {
                 if (ObjectUtils.isNotEmpty(name) && ObjectUtils.isNotEmpty(dataeaseName)) {
                     heads.add(name.toString());
                     headKeys.add(dataeaseName.toString());
+                    if (deType == null) {
+                        field.setDeType(DeTypeConstants.DE_STRING);
+                        deType = DeTypeConstants.DE_STRING;
+                    }
                     fieldTypes.add((int) deType);
                 }
             });
