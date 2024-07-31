@@ -22,6 +22,6 @@ public class ChartExcelRequest extends ChartExcelRequestInner {
 
     private List<ChartExcelRequestInner> multiInfo;
 
-    private boolean isDataEaseBi = false;
+    private boolean dataEaseBi = false;
 
 }
