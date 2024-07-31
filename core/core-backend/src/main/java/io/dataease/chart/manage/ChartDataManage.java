@@ -288,7 +288,7 @@ public class ChartDataManage {
                         if (i == drillRequestList.size() - 1) {
                             ChartViewFieldDTO nextDrillField = drill.get(i + 1);
                             if (!fields.contains(nextDrillField.getId())) {
-                                viewField.setSource(FieldSource.DRILL);
+                                nextDrillField.setSource(FieldSource.DRILL);
                                 nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
                                 xAxis.add(nextDrillField);
                                 dillAxis.add(nextDrillField);
