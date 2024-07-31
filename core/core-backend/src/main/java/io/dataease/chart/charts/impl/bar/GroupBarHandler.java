@@ -6,10 +6,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -69,7 +66,8 @@ public class GroupBarHandler extends BarHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        var xAxisBase = xAxis.subList(0, xAxis.size() - xAxisExt.size());
+        var drillAxis = xAxis.stream().filter(axis -> FieldSource.DRILL == axis.getSource()).toList();
+        var xAxisBase = xAxis.subList(0, xAxis.size() - xAxisExt.size() - drillAxis.size());
         return ChartDataBuild.transBaseGroupDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
     }
 }
