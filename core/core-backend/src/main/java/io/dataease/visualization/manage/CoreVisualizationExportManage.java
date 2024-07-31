@@ -50,8 +50,12 @@ public class CoreVisualizationExportManage {
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
         List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
 
+        String componentsJson = visualization.getComponentData();
+        List<Map<String, Object>> components = JsonUtil.parseList(componentsJson, tokenType);
+        List<Long> idList = components.stream().filter(c -> ObjectUtils.isNotEmpty(c.get("id"))).map(component -> Long.parseLong(component.get("id").toString())).toList();
+
         if (CollectionUtils.isNotEmpty(viewIdList)) {
-            chartViewDTOS = chartViewDTOS.stream().filter(item -> viewIdList.contains(item.getId())).collect(Collectors.toList());
+            chartViewDTOS = chartViewDTOS.stream().filter(item -> idList.contains(item.getId()) && viewIdList.contains(item.getId())).collect(Collectors.toList());
         }
         if (CollectionUtils.isEmpty(chartViewDTOS)) return null;
         Map<String, ChartExtRequest> chartExtRequestMap = buildViewRequest(visualization, onlyDisplay);
