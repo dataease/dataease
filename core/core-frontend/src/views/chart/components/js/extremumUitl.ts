@@ -66,6 +66,7 @@ function createExtremumDiv(id, value, formatterCfg, chartId) {
     }
     const div = document.createElement('div')
     div.id = id
+    div.className = 'child'
     div.setAttribute(
       'style',
       `width: auto;
@@ -102,6 +103,44 @@ const noChildrenFieldChart = chart => {
   return ['area', 'bar'].includes(chart.type)
 }
 
+const overlap = chart => {
+  const container = document.getElementById('point_' + chart.id)
+  const children = Array.from(container.getElementsByClassName('child'))
+
+  function getOverlapArea(rect1, rect2) {
+    const x_overlap = Math.max(
+      0,
+      Math.min(rect1.right, rect2.right) - Math.max(rect1.left, rect2.left)
+    )
+    const y_overlap = Math.max(
+      0,
+      Math.min(rect1.bottom, rect2.bottom) - Math.max(rect1.top, rect2.top)
+    )
+    return x_overlap * y_overlap
+  }
+
+  function checkAndHideOverlappedElements() {
+    children.forEach(child => {
+      const childRect = child.getBoundingClientRect()
+      let totalOverlapArea = 0
+
+      children.forEach(otherChild => {
+        if (child !== otherChild) {
+          const otherChildRect = otherChild.getBoundingClientRect()
+          totalOverlapArea += getOverlapArea(childRect, otherChildRect)
+        }
+      })
+
+      const childArea = childRect.width * childRect.height
+      if (totalOverlapArea / childArea > 0.3) {
+        child.parentNode?.removeChild(child)
+      }
+    })
+  }
+
+  checkAndHideOverlappedElements()
+}
+
 export const extremumEvt = (newChart, chart, _options, container) => {
   chart.container = container
   const { label: labelAttr } = parseJson(chart.customAttr)
@@ -112,7 +151,10 @@ export const extremumEvt = (newChart, chart, _options, container) => {
         i.forEach(item => {
           delete item._origin.EXTREME
         })
-        const { minItem, maxItem } = findMinMax(i)
+        const { minItem, maxItem } = findMinMax(i.filter(item => item._origin.value))
+        if (!minItem || !maxItem) {
+          return
+        }
         let showExtremum = false
         if (noChildrenFieldChart(chart) || yAxis.length > 1) {
           const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(
@@ -134,6 +176,7 @@ export const extremumEvt = (newChart, chart, _options, container) => {
     })
     newChart.chart.geometries[0].on('afteranimate', () => {
       createExtremumPoint(chart, ev)
+      overlap(chart)
     })
   })
   newChart.on('legend-item:click', ev => {
@@ -211,8 +254,12 @@ export const createExtremumPoint = (chart, ev) => {
         showExtremum = seriesLabelFormatter?.showExtremum
         attr = seriesLabelFormatter
       } else {
-        showExtremum = labelAttr.seriesLabelFormatter[0]?.showExtremum
-        attr = labelAttr.seriesLabelFormatter[0]
+        if (['bar-group'].includes(chart.type)) {
+          showExtremum = labelAttr.showExtremum
+        } else {
+          showExtremum = labelAttr.seriesLabelFormatter[0]?.showExtremum
+          attr = labelAttr.seriesLabelFormatter[0]
+        }
       }
       const fontSize = attr ? attr.fontSize : labelAttr.fontSize
       if (!minItem) {
