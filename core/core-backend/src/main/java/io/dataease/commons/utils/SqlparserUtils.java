@@ -8,6 +8,7 @@ import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.utils.JsonUtil;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -548,7 +549,7 @@ public class SqlparserUtils {
                     prefix = datasourceType.getPrefix();
                     suffix = datasourceType.getSuffix();
                 } else {
-                    if (pluginManage != null) {
+                    if (LicenseUtil.licenseValid()) {
                         List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
                         List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), value.getType())).toList();
                         if (ObjectUtils.isNotEmpty(list)) {

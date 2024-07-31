@@ -26,6 +26,7 @@ import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -374,7 +375,7 @@ public class DatasetSQLManage {
             BeanUtils.copyBean(dto, datasourceType);
             return dto;
         } else {
-            if (pluginManage != null) {
+            if (LicenseUtil.licenseValid()) {
                 List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
                 List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), type)).toList();
                 if (ObjectUtils.isNotEmpty(list)) {
