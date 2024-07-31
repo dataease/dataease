@@ -4,7 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { ElIcon, ElSpace } from 'element-plus-secondary'
 import { formatterType, unitType } from '../../../js/formatter'
-import { defaultsDeep, cloneDeep, intersection, union, defaultTo } from 'lodash-es'
+import { defaultsDeep, cloneDeep, intersection, union, defaultTo, map } from 'lodash-es'
 import { includesAny } from '../../util/StringUtils'
 import { fieldType } from '@/utils/attr'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -51,18 +51,44 @@ const changeDataset = () => {
 }
 const { batchOptStatus } = storeToRefs(dvMainStore)
 watch(
-  () => props.chart.customAttr.label,
+  [() => props.chart.customAttr.label, () => props.chart.customAttr.label.show],
   () => {
     init()
   },
-  { deep: true }
+  { deep: false }
 )
 const yAxis = computed(() => {
-  return union(defaultTo(props.chart.yAxis, []), defaultTo(props.chart.yAxisExt, []))
+  if (props.chart.type.includes('chart-mix')) {
+    return union(
+      defaultTo(
+        map(props.chart.yAxis, y => {
+          return { ...y, axisType: 'yAxis', seriesId: y.id + '-yAxis' }
+        }),
+        []
+      ),
+      defaultTo(
+        map(props.chart.yAxisExt, y => {
+          return { ...y, axisType: 'yAxisExt', seriesId: y.id + '-yAxisExt' }
+        }),
+        []
+      )
+    )
+  } else {
+    return defaultTo(
+      map(props.chart.yAxis, y => {
+        return { ...y, axisType: 'yAxis', seriesId: y.id + '-yAxis' }
+      }),
+      []
+    )
+  }
+})
+
+const yAxisIds = computed(() => {
+  return map(yAxis.value, y => y.seriesId)
 })
 
 watch(
-  [() => yAxis.value, () => props.chart.type],
+  [() => yAxisIds.value, () => props.chart.type],
   () => {
     initSeriesLabel()
   },
@@ -94,14 +120,34 @@ const initSeriesLabel = () => {
   let initFlag = false
   const themeColor = dvMainStore.canvasStyleData.dashboard.themeColor
   const axisMap = yAxis.value.reduce((pre, next) => {
+    const optionLabel: string = `${next.chartShowName ?? next.name}${
+      next.summary !== '' ? '(' + t('chart.' + next.summary) + ')' : ''
+    }${
+      props.chart.type.includes('chart-mix')
+        ? next.axisType === 'yAxis'
+          ? '(左轴)'
+          : '(右轴)'
+        : ''
+    }` as string
+    const optionShowName: string = `${next.chartShowName ?? next.name}${
+      next.summary !== '' ? '(' + t('chart.' + next.summary) + ')' : ''
+    }${
+      props.chart.type.includes('chart-mix')
+        ? next.axisType === 'yAxis'
+          ? '(左轴)'
+          : '(右轴)'
+        : ''
+    }` as string
     let tmp = {
       ...next,
+      optionLabel: optionLabel,
+      optionShowName: optionShowName,
       show: true,
       color: themeColor === 'dark' ? '#fff' : '#000',
       fontSize: COMPUTED_DEFAULT_LABEL.value.fontSize,
       showExtremum: false
     } as SeriesFormatter
-    if (seriesAxisMap[next.id]) {
+    if (seriesAxisMap[next.seriesId]) {
       tmp = {
         ...tmp,
         formatterCfg: seriesAxisMap[next.id].formatterCfg,
@@ -114,18 +160,19 @@ const initSeriesLabel = () => {
       initFlag = true
     }
     formatter.push(tmp)
-    pre[next.id] = tmp
+    next.seriesId = next.seriesId ?? next.id
+    pre[next.seriesId] = tmp
     return pre
   }, {})
   // 初始化一下序列数组，用于主题适配
   if (initFlag) {
     changeLabelAttr('seriesLabelFormatter', false)
   }
-  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.id]) {
-    curSeriesFormatter.value = axisMap[formatter[0].id]
+  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.seriesId]) {
+    curSeriesFormatter.value = axisMap[formatter[0].seriesId]
     return
   }
-  curSeriesFormatter.value = axisMap[curSeriesFormatter.value.id]
+  curSeriesFormatter.value = axisMap[curSeriesFormatter.value.seriesId]
 }
 
 const labelPositionR = [
@@ -785,36 +832,29 @@ const isGroupBar = computed(() => {
           :teleported="false"
           :disabled="!formatterEditable"
           ref="formatterSelector"
-          value-key="id"
+          value-key="seriesId"
           class="series-select"
           size="small"
         >
           <template #prefix>
-            <el-icon v-if="curSeriesFormatter.id" style="font-size: 14px">
+            <el-icon v-if="curSeriesFormatter.seriesId" style="font-size: 14px">
               <Icon
                 :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
                 :name="`field_${fieldType[curSeriesFormatter.deType]}`"
               />
             </el-icon>
           </template>
-          <el-option
-            class="series-select-option"
-            :key="item.id"
-            :value="item"
-            :label="`${item.chartShowName ?? item.name}${
-              item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
-            }`"
-            v-for="item in state.labelForm.seriesLabelFormatter"
-          >
-            <el-icon style="margin-right: 8px">
-              <Icon
-                :className="`field-icon-${fieldType[item.deType]}`"
-                :name="`field_${fieldType[item.deType]}`"
-              />
-            </el-icon>
-            {{ item.chartShowName ?? item.name }}
-            {{ item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : '' }}
-          </el-option>
+          <template v-for="item in state.labelForm.seriesLabelFormatter" :key="item.seriesId">
+            <el-option class="series-select-option" :value="item" :label="item.optionLabel">
+              <el-icon style="margin-right: 8px">
+                <Icon
+                  :className="`field-icon-${fieldType[item.deType]}`"
+                  :name="`field_${fieldType[item.deType]}`"
+                />
+              </el-icon>
+              {{ item.optionShowName }}
+            </el-option>
+          </template>
         </el-select>
       </el-form-item>
       <template v-if="curSeriesFormatter?.id">
