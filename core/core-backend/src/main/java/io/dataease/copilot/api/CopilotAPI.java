@@ -58,7 +58,6 @@ public class CopilotAPI {
         JSONObject json = new JSONObject();
         json.put("licenseText", license);
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        httpClientConfig.addHeader("Authorization", basicAuth(getConfig().getUsername(), getConfig().getPwd()));
         String tokenJson = HttpClientUtil.post(url, json.toString(), httpClientConfig);
         return (String) JsonUtil.parse(tokenJson, Map.class).get("accessToken");
     }
@@ -66,7 +65,6 @@ public class CopilotAPI {
     public String getFreeToken() throws Exception {
         String url = getConfig().getCopilotUrl() + FREE_TOKEN;
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        httpClientConfig.addHeader("Authorization", basicAuth(getConfig().getUsername(), getConfig().getPwd()));
         String tokenJson = HttpClientUtil.post(url, "", httpClientConfig);
         return (String) JsonUtil.parse(tokenJson, Map.class).get("accessToken");
     }
