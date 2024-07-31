@@ -265,7 +265,7 @@ public class ChartDataBuild {
     }
 
     // AntV柱状堆叠图
-    public static Map<String, Object> transStackChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, List<ChartViewFieldDTO> extStack, boolean isDrill) {
+    public static Map<String, Object> transStackChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, List<ChartViewFieldDTO> extStack, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
         List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
@@ -279,8 +279,8 @@ public class ChartDataBuild {
                 if (isDrill) {
                     a.append(row[xAxis.size() - 1]);
                 } else {
-                    for (int i = 0; i < xAxis.size(); i++) {
-                        if (i == xAxis.size() - 1) {
+                    for (int i = 0; i < xAxisBase.size(); i++) {
+                        if (i == xAxisBase.size() - 1) {
                             a.append(row[i]);
                         } else {
                             a.append(row[i]).append("\n");
@@ -289,7 +289,7 @@ public class ChartDataBuild {
                 }
                 axisChartDataDTO.setField(a.toString());
                 axisChartDataDTO.setName(a.toString());
-                axisChartDataDTO.setCategory(row[xAxis.size()]);
+                axisChartDataDTO.setCategory(row[xAxisBase.size()]);
 
                 List<ChartDimensionDTO> dimensionList = new ArrayList<>();
                 List<ChartQuotaDTO> quotaList = new ArrayList<>();
@@ -300,18 +300,10 @@ public class ChartDataBuild {
                     chartDimensionDTO.setValue(row[k]);
                     dimensionList.add(chartDimensionDTO);
                 }
-                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
-                chartDimensionDTO.setId(extStack.get(0).getId());
-                chartDimensionDTO.setValue(row[xAxis.size()]);
-                dimensionList.add(chartDimensionDTO);
                 axisChartDataDTO.setDimensionList(dimensionList);
 
-                // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
-                int size = xAxis.size() + extStack.size() + yAxis.size();
-                int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
-
                 if (ObjectUtils.isNotEmpty(yAxis)) {
-                    int valueIndex = xAxis.size() + extStack.size();
+                    int valueIndex = xAxis.size();
                     ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
                     chartQuotaDTO.setId(yAxis.get(0).getId());
                     quotaList.add(chartQuotaDTO);
@@ -321,7 +313,6 @@ public class ChartDataBuild {
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
-                    buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                 } else {
                     axisChartDataDTO.setQuotaList(quotaList);
                     axisChartDataDTO.setValue(new BigDecimal(0));
@@ -345,11 +336,7 @@ public class ChartDataBuild {
                     }
                 }
 
-                // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
-                int size = xAxis.size() + yAxis.size();
-                int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
-
-                for (int i = xAxis.size(); i < size - extSize; i++) {
+                for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                     AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                     axisChartDataDTO.setField(a.toString());
                     axisChartDataDTO.setName(a.toString());
@@ -376,7 +363,6 @@ public class ChartDataBuild {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
                     axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
-                    buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                     dataList.add(axisChartDataDTO);
                 }
             }
@@ -1335,7 +1321,7 @@ public class ChartDataBuild {
     public static Map<String, Object> transGroupStackDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extStack, List<String[]> data, ChartViewDTO view, boolean isDrill) {
         // 堆叠柱状图
         if (ObjectUtils.isEmpty(xAxisExt)) {
-            return transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
+            return transStackChartDataAntV(xAxisBase, xAxis, yAxis, view, data, extStack, isDrill);
             //  分组柱状图
         } else if (ObjectUtils.isNotEmpty(xAxisExt) && ObjectUtils.isEmpty(extStack)) {
             return transBaseGroupDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
@@ -1370,8 +1356,8 @@ public class ChartDataBuild {
                 }
 
                 StringBuilder stackField = new StringBuilder();
-                for (int i = xAxis.size(); i < xAxis.size() + extStack.size(); i++) {
-                    if (i == xAxis.size() + extStack.size() - 1) {
+                for (int i = xAxisBase.size() + xAxisExt.size(); i < xAxisBase.size() + xAxisExt.size() + extStack.size(); i++) {
+                    if (i == xAxisBase.size() + xAxisExt.size() + extStack.size() - 1) {
                         stackField.append(row[i]);
                     } else {
                         stackField.append(row[i]).append("\n");
@@ -1398,7 +1384,7 @@ public class ChartDataBuild {
                 axisChartDataDTO.setDimensionList(dimensionList);
 
                 if (ObjectUtils.isNotEmpty(yAxis)) {
-                    int valueIndex = xAxis.size() + extStack.size();
+                    int valueIndex = xAxis.size();
                     ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
                     chartQuotaDTO.setId(yAxis.get(0).getId());
                     quotaList.add(chartQuotaDTO);
