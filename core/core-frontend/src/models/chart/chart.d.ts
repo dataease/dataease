@@ -134,6 +134,9 @@ declare interface SeriesFormatter extends Axis {
    * 显示极值
    */
   showExtremum?: boolean
+
+  optionLabel?: string
+  optionShowName?: string
 }
 
 declare interface Axis extends ChartViewField {

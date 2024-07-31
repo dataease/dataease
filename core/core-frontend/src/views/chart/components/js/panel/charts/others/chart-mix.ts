@@ -181,47 +181,61 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     }
 
     const labelAttr = parseJson(chart.customAttr).label
-    const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
-      pre[next.id] = next
-      return pre
-    }, {})
-    tempLabel.style.fill = DEFAULT_LABEL.color
-    const label = {
-      fields: [],
-      ...tempLabel,
-      offsetY: -8,
-      formatter: (data: Datum) => {
-        if (!labelAttr.seriesLabelFormatter?.length) {
-          return data.value
-        }
-        const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
-        if (!labelCfg) {
-          return data.value
-        }
-        if (!labelCfg.show) {
-          return
-        }
-        const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
-        group.addShape({
-          type: 'text',
-          attrs: {
-            x: 0,
-            y: 0,
-            text: value,
-            textAlign: 'start',
-            textBaseline: 'top',
-            fontSize: labelCfg.fontSize,
-            fill: labelCfg.color
-          }
-        })
-        return group
+    const axisFormatterMap = {}
+    labelAttr.seriesLabelFormatter?.forEach(attr => {
+      if (!axisFormatterMap[attr.axisType]) {
+        axisFormatterMap[attr.axisType] = []
       }
-    }
-    if (tmpOption.geometryOptions) {
-      tmpOption.geometryOptions[0].label = label
-      tmpOption.geometryOptions[1].label = label
-    }
+      axisFormatterMap[attr.axisType].push(attr)
+    })
+    const axisTypes = ['yAxis', 'yAxisExt']
+    axisTypes.forEach(axisType => {
+      const formatterMap = axisFormatterMap[axisType]?.reduce((pre, next) => {
+        pre[next.id] = next
+        return pre
+      }, {})
+      tempLabel.style.fill = DEFAULT_LABEL.color
+      const label = {
+        fields: [],
+        ...tempLabel,
+        offsetY: -8,
+        formatter: (data: Datum) => {
+          if (!labelAttr.seriesLabelFormatter?.length) {
+            return data.value
+          }
+          const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
+          if (!labelCfg) {
+            return data.value
+          }
+          if (!labelCfg.show) {
+            return
+          }
+          const value = valueFormatter(data.value, labelCfg.formatterCfg)
+          const group = new G2PlotChartView.engine.Group({})
+          group.addShape({
+            type: 'text',
+            attrs: {
+              x: 0,
+              y: 0,
+              text: value,
+              textAlign: 'start',
+              textBaseline: 'top',
+              fontSize: labelCfg.fontSize,
+              fill: labelCfg.color
+            }
+          })
+          return group
+        }
+      }
+      if (tmpOption.geometryOptions) {
+        if (axisType === 'yAxis') {
+          tmpOption.geometryOptions[0].label = label
+        } else if (axisType === 'yAxisExt') {
+          tmpOption.geometryOptions[1].label = label
+        }
+      }
+    })
+
     return tmpOption
   }
 
