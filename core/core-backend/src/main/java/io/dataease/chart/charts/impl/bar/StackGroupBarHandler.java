@@ -31,7 +31,6 @@ public class StackGroupBarHandler extends BarHandler {
         var xAxis = result.getAxisMap().get(ChartAxis.xAxis);
         xAxis.addAll(view.getXAxisExt());
         xAxis.addAll(view.getExtStack());
-        result.getAxisMap().put(ChartAxis.xAxisExt, view.getExtStack());
         result.getAxisMap().put(ChartAxis.extStack, view.getExtStack());
         result.getAxisMap().put(ChartAxis.xAxisExt, view.getXAxisExt());
         return result;
@@ -82,8 +81,8 @@ public class StackGroupBarHandler extends BarHandler {
         var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
         var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        var xAxisBase = xAxis.subList(0, xAxis.size() - xAxisExt.size() - extStack.size());
-        var xAxisMain = xAxis.subList(0, xAxis.size() - extStack.size());
-        return ChartDataBuild.transGroupStackDataAntV(xAxisBase, xAxisMain, xAxisExt, yAxis, extStack, data, view, isDrill);
+        var drillAxis = xAxis.stream().filter(axis -> FieldSource.DRILL == axis.getSource()).toList();
+        var xAxisBase = xAxis.subList(0, xAxis.size() - xAxisExt.size() - extStack.size() - drillAxis.size());
+        return ChartDataBuild.transGroupStackDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, extStack, data, view, isDrill);
     }
 }

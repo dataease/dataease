@@ -65,7 +65,8 @@ public class StackBarHandler extends BarHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        var xAxisBase = xAxis.subList(0, xAxis.size() - extStack.size());
-        return ChartDataBuild.transStackChartDataAntV(xAxisBase, yAxis, view, data, extStack, isDrill);
+        var drillAxis = xAxis.stream().filter(axis -> FieldSource.DRILL == axis.getSource()).toList();
+        var xAxisBase = xAxis.subList(0, xAxis.size() - extStack.size() - drillAxis.size());
+        return ChartDataBuild.transStackChartDataAntV(xAxisBase, xAxis, yAxis, view, data, extStack, isDrill);
     }
 }

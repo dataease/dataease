@@ -46,9 +46,10 @@ public class StackAreaHandler extends YoyChartHandler {
                 .anyMatch(ele -> ele.getFilterType() == 1);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
-        var axisBase = xAxis.subList(0, xAxis.size() - extStack.size());
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        return ChartDataBuild.transStackChartDataAntV(axisBase, yAxis, view, data, extStack, isDrill);
+        var drillAxis = xAxis.stream().filter(axis -> FieldSource.DRILL == axis.getSource()).toList();
+        var xAxisBase = xAxis.subList(0, xAxis.size() - extStack.size() - drillAxis.size());
+        return ChartDataBuild.transStackChartDataAntV(xAxisBase, xAxis, yAxis, view, data, extStack, isDrill);
     }
 
     @Override
