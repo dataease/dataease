@@ -25,6 +25,7 @@ import CalcFieldEdit from './CalcFieldEdit.vue'
 import { useRoute, useRouter } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import type { FormInstance } from 'element-plus-secondary'
+import type { BusiTreeNode } from '@/models/tree/TreeNode'
 import CreatDsGroup from './CreatDsGroup.vue'
 import { guid, getFieldName, timeTypes, type DataSource } from './util'
 import { fieldType } from '@/utils/attr'
@@ -439,6 +440,32 @@ const delFieldById = arr => {
   }
 }
 
+const delFieldByIdFake = (arr, fakeAllfields) => {
+  const delId = [...arr]
+  let idList = []
+  while (delId.length) {
+    const [targetId] = delId
+    delId.shift()
+    fakeAllfields = fakeAllfields.filter(ele => ele.id !== targetId)
+    const allfieldsId = fakeAllfields.map(ele => ele.id)
+    fakeAllfields = fakeAllfields.filter(ele => {
+      if (ele.extField !== 2) return true
+      const idMap = ele.originName.match(/\[(.+?)\]/g)
+      if (!idMap) return true
+      const result = idMap.every(itm => {
+        const id = itm.slice(1, -1)
+        return allfieldsId.includes(id)
+      })
+      if (result) return true
+      delId.push(ele.id)
+      idList.push(ele.id)
+      return false
+    })
+  }
+
+  return idList
+}
+
 const deleteField = item => {
   ElMessageBox.confirm(t('dataset.confirm_delete'), {
     confirmButtonText: t('dataset.confirm'),
@@ -776,6 +803,18 @@ const dfsNode = (arr, id) => {
     return pre
   }, [])
 }
+
+const dfsFieldsTips = (arr, list, idArr) => {
+  list.forEach(ele => {
+    if (ele.children?.length) {
+      dfsFieldsTips(arr, ele.children, idArr)
+    }
+    if (!idArr.includes(ele.id)) {
+      const { currentDsFields } = ele
+      arr.push(...cloneDeep(currentDsFields))
+    }
+  })
+}
 const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
   const to = node.id
@@ -797,6 +836,52 @@ const confirmEditUnion = () => {
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId, parentOldCurrentDsFields)
   const top = cloneDeep(node)
   const bottom = cloneDeep(parent)
+
+  let arr = []
+  dfsFieldsTips(arr, datasetDrag.value.getNodeList(), [node.id, parent.id])
+  arr = [...arr, ...node.currentDsFields, ...parent.currentDsFields]
+  const delIdArr = getDelIdArr(arr, allfields.value)
+  let fakeAllfields = diffArr(arr, allfields.value)
+  const idList = delFieldByIdFake(delIdArr, fakeAllfields)
+  if (!!idList.length) {
+    const idArr = allfields.value.reduce((pre, next) => {
+      if (idList.includes(next.id)) {
+        const idMap = next.originName.match(/\[(.+?)\]/g)
+        const result = idMap.map(itm => {
+          return itm.slice(1, -1)
+        })
+        pre = [...result, ...pre]
+      }
+      return pre
+    }, [])
+
+    ElMessageBox.confirm(
+      `字段${allfields.value
+        .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
+        .map(ele => ele.name)
+        .join(',')}未被选择，其相关的新建字段将被删除，是否继续？`,
+      {
+        confirmButtonText: t('dataset.confirm'),
+        cancelButtonText: t('common.cancel'),
+        showCancelButton: true,
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        showClose: false,
+        callback: (action: Action) => {
+          if (action === 'confirm') {
+            datasetDrag.value.setStateBack(top, bottom)
+            setFieldAll()
+            editUnion.value = false
+            addComplete()
+            datasetDrag.value.setChangeStatus(to, from)
+          }
+        }
+      }
+    )
+    return
+  }
+
   datasetDrag.value.setStateBack(top, bottom)
   setFieldAll()
   editUnion.value = false
