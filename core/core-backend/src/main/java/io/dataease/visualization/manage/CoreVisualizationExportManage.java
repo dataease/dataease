@@ -118,9 +118,9 @@ public class CoreVisualizationExportManage {
             for (int i = 0; i < headKeys.size(); i++) {
                 String key = headKeys.get(i);
                 Object val = row.get(key);
-                if (ObjectUtils.isEmpty(val))
+                if (ObjectUtils.isEmpty(val)) {
                     tempList.add(StringUtils.EMPTY);
-                if (fieldTypes.get(i) == 3) {
+                } else if (fieldTypes.get(i) == 3) {
                     tempList.add(filterInvalidDecimal(val.toString()));
                 } else {
                     tempList.add(val.toString());
