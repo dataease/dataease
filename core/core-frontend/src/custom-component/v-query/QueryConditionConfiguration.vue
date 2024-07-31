@@ -1483,10 +1483,15 @@ defineExpose({
                 <template #header>
                   <el-tabs stretch class="params-select--header" v-model="field.activelist">
                     <el-tab-pane label="维度" name="dimensionList"></el-tab-pane>
-                    <el-tab-pane label="指标" name="quotaList"></el-tab-pane>
+                    <el-tab-pane
+                      :disabled="curComponent.displayType === '9'"
+                      label="指标"
+                      name="quotaList"
+                    ></el-tab-pane>
                     <el-tab-pane
                       v-if="field.hasParameter"
                       label="参数"
+                      :disabled="curComponent.displayType === '9'"
                       name="parameterList"
                     ></el-tab-pane>
                   </el-tabs>
@@ -1496,7 +1501,9 @@ defineExpose({
                   :key="ele.id"
                   :label="ele.name || ele.variableName"
                   :value="ele.id"
-                  :disabled="ele.desensitized"
+                  :disabled="
+                    ele.desensitized || (curComponent.displayType === '9' && ele.deType === 1)
+                  "
                 >
                   <div
                     class="flex-align-center icon"
