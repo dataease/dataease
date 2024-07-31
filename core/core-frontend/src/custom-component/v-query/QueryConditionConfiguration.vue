@@ -421,6 +421,16 @@ const computedTree = computed(() => {
 let newDatasetId = ''
 let oldDatasetId = ''
 const handleCurrentChange = node => {
+  if (!curComponent.value.dataset?.id) return
+  let id = `${curComponent.value.dataset?.id}--${curComponent.value.id}`
+  let isChange = false
+  for (let i in cascadeArr) {
+    const [fir, sec] = cascadeArr[i]
+    if (fir?.datasetId.includes(id) || sec?.datasetId.includes(id)) {
+      isChange = true
+    }
+  }
+  if (!isChange) return
   oldDatasetId = curComponent.value.dataset?.id
   newDatasetId = node.id
 }
