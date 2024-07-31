@@ -147,7 +147,7 @@ const initSeriesLabel = () => {
       fontSize: COMPUTED_DEFAULT_LABEL.value.fontSize,
       showExtremum: false
     } as SeriesFormatter
-    if (seriesAxisMap[next.seriesId]) {
+    if (seriesAxisMap[next.id]) {
       tmp = {
         ...tmp,
         formatterCfg: seriesAxisMap[next.id].formatterCfg,

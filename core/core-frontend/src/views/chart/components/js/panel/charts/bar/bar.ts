@@ -353,6 +353,9 @@ export class GroupBar extends StackBar {
     const label = {
       ...baseOptions.label,
       formatter: function (param: Datum, _point) {
+        if (param.EXTREME) {
+          return ''
+        }
         const value = valueFormatter(param.value, labelAttr.labelFormatter)
         return labelAttr.childrenShow ? value : null
       }

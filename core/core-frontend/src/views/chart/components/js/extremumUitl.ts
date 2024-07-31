@@ -104,17 +104,50 @@ const noChildrenFieldChart = chart => {
 
 export const extremumEvt = (newChart, chart, _options, container) => {
   chart.container = container
+  const { label: labelAttr } = parseJson(chart.customAttr)
+  const { yAxis } = parseJson(chart)
   newChart.on('beforerender', ev => {
     ev.view.on('beforepaint', () => {
       newChart.chart.geometries[0]?.beforeMappingData.forEach(i => {
+        i.forEach(item => {
+          delete item._origin.EXTREME
+        })
         const { minItem, maxItem } = findMinMax(i)
-        minItem._origin.EXTREME = true
-        maxItem._origin.EXTREME = true
+        let showExtremum = false
+        if (noChildrenFieldChart(chart) || yAxis.length > 1) {
+          const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(
+            d => d.name === minItem._origin.category || d.name === maxItem._origin.category
+          )
+          showExtremum = seriesLabelFormatter?.showExtremum
+        } else {
+          if (['bar-group'].includes(chart.type)) {
+            showExtremum = labelAttr.showExtremum
+          } else {
+            showExtremum = labelAttr.seriesLabelFormatter[0]?.showExtremum
+          }
+        }
+        if (showExtremum) {
+          minItem._origin.EXTREME = true
+          maxItem._origin.EXTREME = true
+        }
       })
     })
-    newChart.chart.geometries[0].on('beforerenderlabel', () => {
+    newChart.chart.geometries[0].on('afteranimate', () => {
       createExtremumPoint(chart, ev)
     })
+  })
+  newChart.on('legend-item:click', ev => {
+    const legendShowSize = ev.view
+      .getController('legend')
+      .components[0].component.cfg.items.filter(l => !l.unchecked)
+    if (legendShowSize.length === 0) {
+      const allElement = document.getElementById('point_' + chart.id)
+      if (allElement && allElement.childNodes) {
+        allElement.childNodes.forEach(c => {
+          c.style.display = 'none'
+        })
+      }
+    }
   })
 }
 
@@ -182,16 +215,25 @@ export const createExtremumPoint = (chart, ev) => {
         attr = labelAttr.seriesLabelFormatter[0]
       }
       const fontSize = attr ? attr.fontSize : labelAttr.fontSize
-      const maxKey = 'point_' + pointObj._origin.category + '-' + maxItem._origin.value
+      if (!minItem) {
+        return
+      }
+      const maxKey =
+        'point_' +
+        pointObj._origin.category +
+        '-' +
+        (maxItem ? maxItem._origin.value : minItem._origin.value)
       const minKey = 'point_' + pointObj._origin.category + '-' + minItem._origin.value
       // 最值标注
-      if (showExtremum) {
-        createExtremumDiv(
-          maxKey,
-          maxItem._origin.value,
-          attr ? attr.formatterCfg : labelAttr.labelFormatter,
-          chart.id
-        )
+      if (showExtremum && labelAttr.show) {
+        if (maxItem) {
+          createExtremumDiv(
+            maxKey,
+            maxItem._origin.value,
+            attr ? attr.formatterCfg : labelAttr.labelFormatter,
+            chart.id
+          )
+        }
         createExtremumDiv(
           minKey,
           minItem._origin.value,
