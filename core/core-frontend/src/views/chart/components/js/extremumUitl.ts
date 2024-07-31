@@ -216,11 +216,12 @@ export const createExtremumPoint = (chart, ev) => {
   const pointSize = basicStyle.lineSymbolSize
   const { yAxis } = parseJson(chart)
   clearExtremum(chart)
+  const parentKey = 'point_' + chart.id
   // 创建标注父元素
-  const divParentElement = document.getElementById('point_' + chart.id)
+  const divParentElement = document.getElementById(parentKey)
   if (!divParentElement) {
     const divParent = document.createElement('div')
-    divParent.id = 'point_' + chart.id
+    divParent.id = parentKey
     divParent.style.position = 'fixed'
     divParent.style.zIndex = '1'
     // 将父标注加入到图表中
@@ -266,11 +267,12 @@ export const createExtremumPoint = (chart, ev) => {
         return
       }
       const maxKey =
+        parentKey +
         'point_' +
         pointObj._origin.category +
         '-' +
         (maxItem ? maxItem._origin.value : minItem._origin.value)
-      const minKey = 'point_' + pointObj._origin.category + '-' + minItem._origin.value
+      const minKey = parentKey + 'point_' + pointObj._origin.category + '-' + minItem._origin.value
       // 最值标注
       if (showExtremum && labelAttr.show) {
         if (maxItem) {
@@ -289,7 +291,7 @@ export const createExtremumPoint = (chart, ev) => {
         )
         pointObjList.forEach(point => {
           const pointElement = document.getElementById(
-            'point_' + point._origin.category + '-' + point._origin.value
+            parentKey + 'point_' + point._origin.category + '-' + point._origin.value
           )
           if (pointElement && point._origin.EXTREME) {
             pointElement.style.position = 'absolute'
