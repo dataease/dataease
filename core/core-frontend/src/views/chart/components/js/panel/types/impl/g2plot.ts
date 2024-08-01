@@ -165,6 +165,10 @@ export abstract class G2PlotChartView<
     return setupSeriesColor(chart, data)
   }
 
+  public setupSubSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return undefined
+  }
+
   /**
    * 流式配置公共参数，处理常用的配置，后续如果有其他通用配置也可以放进来，需要单独配置的属性在各个图表自行实现。
    * @param chart 数据库图表对象。

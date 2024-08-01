@@ -14,6 +14,7 @@ import { storeToRefs } from 'pinia'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { ElCollapse, ElCollapseItem } from 'element-plus-secondary'
 import BasicStyleSelector from '@/views/chart/components/editor/editor-style/components/BasicStyleSelector.vue'
+import DualBasicStyleSelector from '@/views/chart/components/editor/editor-style/components/DualBasicStyleSelector.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 import TableHeaderSelector from '@/views/chart/components/editor/editor-style/components/table/TableHeaderSelector.vue'
@@ -236,6 +237,20 @@ watch(
           >
             <basic-style-selector
               :property-inner="propertyInnerAll['basic-style-selector']"
+              :themes="themes"
+              :chart="chart"
+              @onBasicStyleChange="onBasicStyleChange"
+              @onMiscChange="onMiscChange"
+            />
+          </el-collapse-item>
+          <el-collapse-item
+            :effect="themes"
+            name="basicStyle"
+            :title="t('chart.basic_style')"
+            v-if="showProperties('dual-basic-style-selector')"
+          >
+            <DualBasicStyleSelector
+              :property-inner="propertyInnerAll['dual-basic-style-selector']"
               :themes="themes"
               :chart="chart"
               @onBasicStyleChange="onBasicStyleChange"
