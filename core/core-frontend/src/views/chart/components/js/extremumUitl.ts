@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash-es'
 
 export const clearExtremum = chart => {
   // 清除图表标注
-  const pointElement = document.getElementById('point_' + chart.id)
+  const pointElement = document.getElementById(chartPointParentId(chart))
   if (pointElement) {
     pointElement.remove()
     pointElement.parentNode?.removeChild(pointElement)
@@ -51,13 +51,13 @@ const getRgbaColorLastRgba = (rgbaString: string) => {
   return lastRGBA
 }
 
-function createExtremumDiv(id, value, formatterCfg, chartId) {
+function createExtremumDiv(id, value, formatterCfg, chart) {
   // 空值不处理
   if (!value && value != 0) {
     return
   }
   // 装标注的div
-  const parentElement = document.getElementById('point_' + chartId)
+  const parentElement = document.getElementById(chartPointParentId(chart))
   if (parentElement) {
     // 标注div
     const element = document.getElementById(id)
@@ -103,8 +103,16 @@ const noChildrenFieldChart = chart => {
   return ['area', 'bar'].includes(chart.type)
 }
 
+const chartContainerId = chart => {
+  return chart.container + '_'
+}
+
+const chartPointParentId = chart => {
+  return chart.container + '_point_' + chart.id + '_'
+}
+
 const overlap = chart => {
-  const container = document.getElementById('point_' + chart.id)
+  const container = document.getElementById(chartPointParentId(chart))
   const children = Array.from(container.getElementsByClassName('child'))
 
   function getOverlapArea(rect1, rect2) {
@@ -145,7 +153,7 @@ export const extremumEvt = (newChart, chart, _options, container) => {
   chart.container = container
   const { label: labelAttr } = parseJson(chart.customAttr)
   const { yAxis } = parseJson(chart)
-  newChart.on('beforerender', ev => {
+  newChart.once('beforerender', ev => {
     ev.view.on('beforepaint', () => {
       newChart.chart.geometries[0]?.beforeMappingData.forEach(i => {
         i.forEach(item => {
@@ -184,7 +192,7 @@ export const extremumEvt = (newChart, chart, _options, container) => {
       .getController('legend')
       .components[0].component.cfg.items.filter(l => !l.unchecked)
     if (legendShowSize.length === 0) {
-      const allElement = document.getElementById('point_' + chart.id)
+      const allElement = document.getElementById(chartPointParentId(chart))
       if (allElement && allElement.childNodes) {
         allElement.childNodes.forEach(c => {
           c.style.display = 'none'
@@ -216,12 +224,11 @@ export const createExtremumPoint = (chart, ev) => {
   const pointSize = basicStyle.lineSymbolSize
   const { yAxis } = parseJson(chart)
   clearExtremum(chart)
-  const parentKey = 'point_' + chart.id
   // 创建标注父元素
-  const divParentElement = document.getElementById(parentKey)
+  const divParentElement = document.getElementById(chartPointParentId(chart))
   if (!divParentElement) {
     const divParent = document.createElement('div')
-    divParent.id = parentKey
+    divParent.id = chartPointParentId(chart)
     divParent.style.position = 'fixed'
     divParent.style.zIndex = '1'
     // 将父标注加入到图表中
@@ -267,12 +274,17 @@ export const createExtremumPoint = (chart, ev) => {
         return
       }
       const maxKey =
-        parentKey +
-        'point_' +
+        chartContainerId(chart) +
+        chartPointParentId(chart) +
         pointObj._origin.category +
-        '-' +
+        '_' +
         (maxItem ? maxItem._origin.value : minItem._origin.value)
-      const minKey = parentKey + 'point_' + pointObj._origin.category + '-' + minItem._origin.value
+      const minKey =
+        chartContainerId(chart) +
+        chartPointParentId(chart) +
+        pointObj._origin.category +
+        '_' +
+        minItem._origin.value
       // 最值标注
       if (showExtremum && labelAttr.show) {
         if (maxItem) {
@@ -280,18 +292,22 @@ export const createExtremumPoint = (chart, ev) => {
             maxKey,
             maxItem._origin.value,
             attr ? attr.formatterCfg : labelAttr.labelFormatter,
-            chart.id
+            chart
           )
         }
         createExtremumDiv(
           minKey,
           minItem._origin.value,
           attr ? attr.formatterCfg : labelAttr.labelFormatter,
-          chart.id
+          chart
         )
         pointObjList.forEach(point => {
           const pointElement = document.getElementById(
-            parentKey + 'point_' + point._origin.category + '-' + point._origin.value
+            chartContainerId(chart) +
+              chartPointParentId(chart) +
+              point._origin.category +
+              '_' +
+              point._origin.value
           )
           if (pointElement && point._origin.EXTREME) {
             pointElement.style.position = 'absolute'
