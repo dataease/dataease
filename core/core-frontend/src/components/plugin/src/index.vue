@@ -117,12 +117,12 @@ onMounted(async () => {
       plugin.value = xpack.default
     } else if (!window._de_xpack_not_loaded) {
       window._de_xpack_not_loaded = true
-      window['Vue'] = Vue
-      window['Axios'] = axios
-      window['Pinia'] = Pinia
-      window['vueRouter'] = router
-      window['MittAll'] = useEmitt().emitter.all
-      window['I18n'] = i18n
+      window['VueDe'] = Vue
+      window['AxiosDe'] = axios
+      window['PiniaDe'] = Pinia
+      window['vueRouterDe'] = router
+      window['MittAllDe'] = useEmitt().emitter.all
+      window['I18nDe'] = i18n
       if (!window.tinymce) {
         window.tinymce = tinymce
       }
