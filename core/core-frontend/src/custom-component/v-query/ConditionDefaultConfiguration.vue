@@ -480,12 +480,7 @@ defineExpose({
   </div>
 </template>
 
-<style lang="less">
-.condition-value-select-popper {
-  .ed-select-dropdown__item.selected::after {
-    display: none;
-  }
-}
+<style lang="less" scoped>
 .list-item {
   display: flex;
   align-items: center;
@@ -730,6 +725,13 @@ defineExpose({
         }
       }
     }
+  }
+}
+</style>
+<style lang="less">
+.condition-value-select-popper {
+  .ed-select-dropdown__item.selected::after {
+    display: none;
   }
 }
 </style>
