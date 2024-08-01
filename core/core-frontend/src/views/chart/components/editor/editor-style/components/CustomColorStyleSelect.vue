@@ -24,9 +24,11 @@ const props = withDefaults(
     }
     propertyInner: Array<string>
     chart: ChartObj
+    sub?: boolean
   }>(),
   {
-    themes: 'light'
+    themes: 'light',
+    sub: false
   }
 )
 const dvMainStore = dvMainStoreWithOut()
@@ -34,7 +36,7 @@ const { batchOptStatus } = storeToRefs(dvMainStore)
 const emits = defineEmits(['update:modelValue', 'changeBasicStyle'])
 const changeChartType = () => {
   if (isColorGradient.value) {
-    state.value.basicStyleForm.colorScheme = 'default'
+    state.value.basicStyleForm[colorSchemeName.value] = 'default'
     changeColorOption({ value: 'default' })
   }
 }
@@ -50,28 +52,79 @@ const seriesColorState = reactive({
   curColorIndex: 0,
   seriesColorPickerId: 'body'
 })
+
+const instance = ref<G2PlotChartView | undefined>()
+
+const colorsName = computed(() => {
+  return props.sub ? 'subColors' : 'colors'
+})
+const colorSchemeName = computed(() => {
+  return props.sub ? 'subColorScheme' : 'colorScheme'
+})
+const seriesColorName = computed(() => {
+  return props.sub ? 'subSeriesColor' : 'seriesColor'
+})
+
+const needSetSeriesColor = computed(() => {
+  return (
+    instance.value?.propertyInner?.['basic-style-selector']?.includes('seriesColor') ||
+    instance.value?.propertyInner?.['dual-basic-style-selector']?.includes('seriesColor')
+  )
+})
+
+const needSetSubSeriesColor = computed(() => {
+  return instance.value?.propertyInner?.['dual-basic-style-selector']?.includes('subSeriesColor')
+})
+
 const setupSeriesColor = () => {
   if (batchOptStatus.value || !props.chart) {
     return
   }
-  const instance = chartViewManager.getChartView(
+
+  instance.value = chartViewManager.getChartView(
     props.chart.render,
     props.chart.type
   ) as G2PlotChartView
-  if (!instance?.propertyInner?.['basic-style-selector'].includes('seriesColor')) {
-    return
+
+  if (!props.sub) {
+    if (!needSetSeriesColor.value) {
+      return
+    }
+  } else {
+    if (!needSetSubSeriesColor.value) {
+      return
+    }
   }
 
-  const viewData = dvMainStore.getViewOriginData(props.chart.id)
+  let viewData = dvMainStore.getViewOriginData(props.chart.id)
   if (!viewData) {
     return
   }
-  const newSeriesColor = instance.setupSeriesColor(props.chart, viewData.data)
+
+  if (props.chart.type.includes('chart-mix')) {
+    if (props.sub) {
+      viewData = viewData.right?.data?.[0]
+    } else {
+      viewData = viewData.left?.data?.[0]
+    }
+  }
+  if (!viewData) {
+    return
+  }
+
+  const sFunction = props.sub
+    ? instance.value?.setupSubSeriesColor
+    : instance.value.setupSeriesColor
+  if (!sFunction) {
+    return
+  }
+  const newSeriesColor = sFunction(props.chart, viewData.data)
   const oldSeriesColor =
-    props.chart.customAttr.basicStyle.seriesColor?.reduce((p, n) => {
+    props.chart.customAttr.basicStyle[seriesColorName.value]?.reduce((p, n) => {
       p[n.id] = n
       return p
     }, {}) || {}
+
   newSeriesColor?.forEach(item => {
     const oldColorItem = oldSeriesColor[item.id]
     if (oldColorItem) {
@@ -116,7 +169,7 @@ const changeSeriesColor = () => {
     }
   })
   if (changed) {
-    state.value.basicStyleForm.seriesColor = seriesColorState.seriesColor
+    state.value.basicStyleForm[seriesColorName.value] = seriesColorState.seriesColor
     changeBasicStyle('seriesColor')
   }
 }
@@ -154,7 +207,7 @@ const colorCaseSelectorRef = ref<InstanceType<typeof ElPopover>>()
 const customColorPickerRef = ref<InstanceType<typeof ElColorPicker>>()
 
 function selectColorCase(option) {
-  state.value.basicStyleForm.colorScheme = option.value
+  state.value.basicStyleForm[colorSchemeName.value] = option.value
   colorCaseSelectorRef.value?.hide()
   changeColorOption(option)
 }
@@ -162,13 +215,14 @@ function selectColorCase(option) {
 const changeColorOption = (option?) => {
   let isGradient = option?.value?.endsWith('_split_gradient') || isColorGradient.value
   const getColorItems = isGradient ? getMapColorCases(colorCases) : colorCases
-  const items = getColorItems.filter(ele => ele.value === state.value.basicStyleForm.colorScheme)
-
+  const items = getColorItems.filter(
+    ele => ele.value === state.value.basicStyleForm[colorSchemeName.value]
+  )
   if (items.length > 0) {
-    state.value.basicStyleForm.colors = [...items[0].colors]
-    state.value.customColor = state.value.basicStyleForm.colors[0]
+    state.value.basicStyleForm[colorsName.value] = [...items[0].colors]
+    state.value.customColor = state.value.basicStyleForm[colorsName.value][0]
     state.value.colorIndex = 0
-    state.value.basicStyleForm.seriesColor?.forEach((c, i) => {
+    state.value.basicStyleForm[seriesColorName.value]?.forEach((c, i) => {
       const length = items[0].colors.length
       c.color = items[0].colors[i % length]
     })
@@ -181,22 +235,22 @@ const resetCustomColor = () => {
 
 const switchColorCase = () => {
   const { colorIndex, customColor, basicStyleForm } = state.value
-  const colors = basicStyleForm.colors
+  const colors = basicStyleForm[colorsName.value]
 
   if (isColorGradient.value) {
     let startColor = colorIndex === 0 ? customColor : colors[0]
     let endColor = colorIndex === 0 ? colors[8] : customColor
-    basicStyleForm.colors = stepsColor(startColor, endColor, 9, 1)
+    basicStyleForm[colorsName.value] = stepsColor(startColor, endColor, 9, 1)
   } else {
     colors[colorIndex] = customColor
   }
   changeBasicStyle()
 }
 const isColorGradient = computed(() =>
-  state.value.basicStyleForm.colorScheme.endsWith('_split_gradient')
+  state.value.basicStyleForm[colorSchemeName.value].endsWith('_split_gradient')
 )
 const showColorGradientIndex = index => {
-  return index === 0 || index === state.value.basicStyleForm.colors.length - 1
+  return index === 0 || index === state.value.basicStyleForm[colorsName.value].length - 1
 }
 const switchColor = (index, c) => {
   if (isColorGradient.value && !showColorGradientIndex(index)) {
@@ -279,7 +333,7 @@ const colorItemBorderColor = (index, state) => {
               <template #prefix>
                 <div class="custom-color-selector-container">
                   <div
-                    v-for="(c, index) in state.basicStyleForm.colors"
+                    v-for="(c, index) in state.basicStyleForm[colorsName]"
                     :key="index"
                     :style="{
                       flex: 1,
@@ -306,7 +360,7 @@ const colorItemBorderColor = (index, state) => {
                 v-for="option in colorCases"
                 :key="option.value"
                 class="select-color-item"
-                :class="{ active: state.basicStyleForm.colorScheme === option.value }"
+                :class="{ active: state.basicStyleForm[colorSchemeName] === option.value }"
                 @click="selectColorCase(option)"
               >
                 <div style="float: left">
@@ -347,9 +401,12 @@ const colorItemBorderColor = (index, state) => {
         </span>
       </div>
 
-      <div v-if="!showProperty('seriesColor')" class="custom-color-extend-setting colors">
+      <div
+        v-if="!((!sub && showProperty('seriesColor')) || (sub && showProperty('subSeriesColor')))"
+        class="custom-color-extend-setting colors"
+      >
         <div
-          v-for="(c, index) in state.basicStyleForm.colors"
+          v-for="(c, index) in state.basicStyleForm[colorsName]"
           :key="index"
           :class="{
             active: state.colorIndex === index,
@@ -393,7 +450,10 @@ const colorItemBorderColor = (index, state) => {
         </div>
       </div>
       <div
-        v-if="showProperty('seriesColor') && !batchOptStatus"
+        v-if="
+          ((!sub && showProperty('seriesColor')) || (sub && showProperty('subSeriesColor'))) &&
+          !batchOptStatus
+        "
         class="series-color-setting colors"
       >
         <div

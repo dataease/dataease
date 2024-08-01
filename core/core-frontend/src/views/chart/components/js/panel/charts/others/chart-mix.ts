@@ -12,16 +12,19 @@ import {
   setGradientColor
 } from '../../common/common_antv'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep, isEmpty, defaultTo, map, filter, union, slice } from 'lodash-es'
+import { cloneDeep, isEmpty, defaultTo, map, filter, union, defaultsDeep } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   CHART_MIX_AXIS_TYPE,
+  CHART_MIX_DEFAULT_BASIC_STYLE,
   CHART_MIX_EDITOR_PROPERTY,
-  CHART_MIX_EDITOR_PROPERTY_INNER
+  CHART_MIX_EDITOR_PROPERTY_INNER,
+  MixChartBasicStyle
 } from './chart-mix-common'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
+import { Options } from '@antv/g2plot/esm'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -74,8 +77,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
 
     const isGroup = this.name === 'chart-mix-group' && chart.xAxisExt?.length > 0
     const isStack = this.name === 'chart-mix-stack' && chart.extStack?.length > 0
-    const seriesField = isGroup ? 'category' : isStack ? 'category' : undefined
-    const seriesField2 = chart.extBubble?.length > 0 ? 'category' : undefined
+    const seriesField = 'category'
+    const seriesField2 = 'category'
 
     const data1 = defaultTo(left[0]?.data, [])
     const data2 = map(defaultTo(right[0]?.data, []), d => {
@@ -84,29 +87,6 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
         valueExt: d.value
       }
     })
-
-    // custom color
-    const customAttr = parseJson(chart.customAttr)
-    let color = customAttr.basicStyle.colors
-
-    const colorSize = color.length
-
-    color = color.map(ele => {
-      const tmp = hexColorToRGBA(ele, customAttr.basicStyle.alpha)
-      if (customAttr.basicStyle.gradient) {
-        return setGradientColor(tmp, true, 270)
-      } else {
-        return tmp
-      }
-    })
-
-    const color2StartNum = defaultTo(left[0]?.categories?.length, 1)
-    const color2StartIndex = color2StartNum % colorSize
-
-    const color2 =
-      color2StartIndex === 0
-        ? cloneDeep(color)
-        : union(slice(color, color2StartIndex), slice(color, 0, color2StartIndex))
 
     // options
     const initOptions: DualAxesOptions = {
@@ -117,15 +97,14 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       geometryOptions: [
         {
           geometry: data1Type,
-          color: isGroup || isStack ? color : color[0],
-
+          color: [],
           isGroup: isGroup,
           isStack: isStack,
           seriesField: seriesField
         },
         {
           geometry: data2Type,
-          color: seriesField2 ? color2 : color2[0],
+          color: [],
           seriesField: seriesField2
         }
       ],
@@ -295,12 +274,108 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   }
 
   protected configCustomColors(chart: Chart, options: DualAxesOptions): DualAxesOptions {
-    const basicStyle = parseJson(chart.customAttr).basicStyle
-    const color = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
-    return {
-      ...options,
-      color
+    const tempOption = {
+      ...options
     }
+    const basicStyle = parseJson(chart.customAttr).basicStyle as MixChartBasicStyle
+    //左轴
+    const color = basicStyle.colors.map(ele => {
+      const tmp = hexColorToRGBA(ele, basicStyle.alpha)
+      if (basicStyle.gradient) {
+        return setGradientColor(tmp, true, 270)
+      } else {
+        return tmp
+      }
+    })
+    tempOption.geometryOptions[0].color = color
+
+    return tempOption
+  }
+
+  protected configSubCustomColors(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    const tempOption = {
+      ...options
+    }
+    const basicStyle = defaultsDeep(
+      parseJson(chart.customAttr).basicStyle as MixChartBasicStyle,
+      cloneDeep(CHART_MIX_DEFAULT_BASIC_STYLE)
+    )
+    //右轴
+    const { subSeriesColor } = basicStyle
+    if (subSeriesColor?.length) {
+      const { yAxisExt, extBubble } = chart
+      const seriesMap = subSeriesColor.reduce((p, n) => {
+        p[n.id] = n
+        return p
+      }, {})
+      const { data } = options as unknown as Options
+      if (extBubble?.length) {
+        const seriesSet = new Set()
+        data[1]?.forEach(d => d.category !== null && seriesSet.add(d.category))
+        const tmp = [...seriesSet]
+        tmp.forEach((c, i) => {
+          const curAxisColor = seriesMap[c as string]
+          if (curAxisColor) {
+            if (i + 1 > basicStyle.subColors.length) {
+              basicStyle.subColors.push(curAxisColor.color)
+            } else {
+              basicStyle.subColors[i] = curAxisColor.color
+            }
+          }
+        })
+      } else {
+        yAxisExt?.forEach((axis, index) => {
+          const curAxisColor = seriesMap[axis.id]
+          if (curAxisColor) {
+            if (index + 1 > basicStyle.subColors.length) {
+              basicStyle.subColors.push(curAxisColor.color)
+            } else {
+              basicStyle.subColors[index] = curAxisColor.color
+            }
+          }
+        })
+      }
+    }
+    const subColor = basicStyle.subColors.map(c => {
+      const cc = hexColorToRGBA(c, basicStyle.subAlpha)
+      return cc
+    })
+    tempOption.geometryOptions[1].color = subColor
+
+    return tempOption
+  }
+
+  public setupSubSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    const result: ChartBasicStyle['seriesColor'] = []
+    const seriesSet = new Set<string>()
+    const colors = chart.customAttr.basicStyle.subColors ?? chart.customAttr.basicStyle.colors
+    const { yAxisExt, extBubble } = chart
+    if (extBubble?.length) {
+      data?.forEach(d => {
+        if (d.value === null || d.category === null || seriesSet.has(d.category)) {
+          return
+        }
+        seriesSet.add(d.category)
+        result.push({
+          id: d.category,
+          name: d.category,
+          color: colors[(seriesSet.size - 1) % colors.length]
+        })
+      })
+    } else {
+      yAxisExt?.forEach(axis => {
+        if (seriesSet.has(axis.id)) {
+          return
+        }
+        seriesSet.add(axis.id)
+        result.push({
+          id: axis.id,
+          name: axis.chartShowName ?? axis.name,
+          color: colors[(seriesSet.size - 1) % colors.length]
+        })
+      })
+    }
+    return result
   }
 
   protected configYAxis(chart: Chart, options: DualAxesOptions): DualAxesOptions {
@@ -473,6 +548,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       this.configTooltip,
       this.configBasicStyle,
       this.configCustomColors,
+      this.configSubCustomColors,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
@@ -489,6 +565,18 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
 
 export class GroupColumnLineMix extends ColumnLineMix {
   axis: AxisType[] = [...this['axis'], 'xAxisExt']
+  propertyInner = {
+    ...CHART_MIX_EDITOR_PROPERTY_INNER,
+    'dual-basic-style-selector': [
+      ...CHART_MIX_EDITOR_PROPERTY_INNER['dual-basic-style-selector'],
+      'seriesColor'
+    ],
+    'label-selector': ['vPosition', 'seriesLabelFormatter'],
+    'tooltip-selector': [
+      ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
+      'seriesTooltipFormatter'
+    ]
+  }
   axisConfig = {
     ...this['axisConfig'],
     yAxis: {
@@ -497,12 +585,113 @@ export class GroupColumnLineMix extends ColumnLineMix {
       type: 'q'
     }
   }
+
+  protected configCustomColors(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    const tempOption = {
+      ...options
+    }
+    const basicStyle = parseJson(chart.customAttr).basicStyle as MixChartBasicStyle
+
+    const { seriesColor } = basicStyle
+    if (seriesColor?.length) {
+      const seriesMap = seriesColor.reduce((p, n) => {
+        p[n.id] = n
+        return p
+      }, {})
+      const { yAxis, xAxisExt } = chart
+      const { data } = options as unknown as Options
+      if (xAxisExt?.length) {
+        const seriesSet = new Set()
+        data[0]?.forEach(d => d.category !== null && seriesSet.add(d.category))
+        const tmp = [...seriesSet]
+        tmp.forEach((c, i) => {
+          const curAxisColor = seriesMap[c as string]
+          if (curAxisColor) {
+            if (i + 1 > basicStyle.colors.length) {
+              basicStyle.colors.push(curAxisColor.color)
+            } else {
+              basicStyle.colors[i] = curAxisColor.color
+            }
+          }
+        })
+      } else {
+        yAxis?.forEach((axis, index) => {
+          const curAxisColor = seriesMap[axis.id]
+          if (curAxisColor) {
+            if (index + 1 > basicStyle.colors.length) {
+              basicStyle.colors.push(curAxisColor.color)
+            } else {
+              basicStyle.colors[index] = curAxisColor.color
+            }
+          }
+        })
+      }
+    }
+    //左轴
+    const color = basicStyle.colors.map(ele => {
+      const tmp = hexColorToRGBA(ele, basicStyle.alpha)
+      if (basicStyle.gradient) {
+        return setGradientColor(tmp, true, 270)
+      } else {
+        return tmp
+      }
+    })
+    tempOption.geometryOptions[0].color = color
+
+    return tempOption
+  }
+
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    const result: ChartBasicStyle['seriesColor'] = []
+    const seriesSet = new Set<string>()
+    const colors = chart.customAttr.basicStyle.colors
+    const { yAxis, xAxisExt } = chart
+    if (xAxisExt?.length) {
+      data?.forEach(d => {
+        if (d.value === null || d.category === null || seriesSet.has(d.category)) {
+          return
+        }
+        seriesSet.add(d.category)
+        result.push({
+          id: d.category,
+          name: d.category,
+          color: colors[(seriesSet.size - 1) % colors.length]
+        })
+      })
+    } else {
+      yAxis?.forEach(axis => {
+        if (seriesSet.has(axis.id)) {
+          return
+        }
+        seriesSet.add(axis.id)
+        result.push({
+          id: axis.id,
+          name: axis.chartShowName ?? axis.name,
+          color: colors[(seriesSet.size - 1) % colors.length]
+        })
+      })
+    }
+    return result
+  }
+
   constructor(name = 'chart-mix-group') {
     super(name)
   }
 }
 export class StackColumnLineMix extends ColumnLineMix {
   axis: AxisType[] = [...this['axis'], 'extStack']
+  propertyInner = {
+    ...CHART_MIX_EDITOR_PROPERTY_INNER,
+    'dual-basic-style-selector': [
+      ...CHART_MIX_EDITOR_PROPERTY_INNER['dual-basic-style-selector'],
+      'seriesColor'
+    ],
+    'label-selector': ['vPosition', 'seriesLabelFormatter'],
+    'tooltip-selector': [
+      ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
+      'seriesTooltipFormatter'
+    ]
+  }
   axisConfig = {
     ...this['axisConfig'],
     yAxis: {
@@ -511,6 +700,95 @@ export class StackColumnLineMix extends ColumnLineMix {
       type: 'q'
     }
   }
+
+  protected configCustomColors(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    const tempOption = {
+      ...options
+    }
+    const basicStyle = parseJson(chart.customAttr).basicStyle as MixChartBasicStyle
+
+    const { seriesColor } = basicStyle
+    if (seriesColor?.length) {
+      const seriesMap = seriesColor.reduce((p, n) => {
+        p[n.id] = n
+        return p
+      }, {})
+      const { yAxis, extStack } = chart
+      const { data } = options as unknown as Options
+      if (extStack?.length) {
+        const seriesSet = new Set()
+        data[0]?.forEach(d => d.category !== null && seriesSet.add(d.category))
+        const tmp = [...seriesSet]
+        tmp.forEach((c, i) => {
+          const curAxisColor = seriesMap[c as string]
+          if (curAxisColor) {
+            if (i + 1 > basicStyle.colors.length) {
+              basicStyle.colors.push(curAxisColor.color)
+            } else {
+              basicStyle.colors[i] = curAxisColor.color
+            }
+          }
+        })
+      } else {
+        yAxis?.forEach((axis, index) => {
+          const curAxisColor = seriesMap[axis.id]
+          if (curAxisColor) {
+            if (index + 1 > basicStyle.colors.length) {
+              basicStyle.colors.push(curAxisColor.color)
+            } else {
+              basicStyle.colors[index] = curAxisColor.color
+            }
+          }
+        })
+      }
+    }
+    //左轴
+    const color = basicStyle.colors.map(ele => {
+      const tmp = hexColorToRGBA(ele, basicStyle.alpha)
+      if (basicStyle.gradient) {
+        return setGradientColor(tmp, true, 270)
+      } else {
+        return tmp
+      }
+    })
+    tempOption.geometryOptions[0].color = color
+
+    return tempOption
+  }
+
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    const result: ChartBasicStyle['seriesColor'] = []
+    const seriesSet = new Set<string>()
+    const colors = chart.customAttr.basicStyle.colors
+    const { yAxis, extStack } = chart
+    if (extStack?.length) {
+      data?.forEach(d => {
+        if (d.value === null || d.category === null || seriesSet.has(d.category)) {
+          return
+        }
+        seriesSet.add(d.category)
+        result.push({
+          id: d.category,
+          name: d.category,
+          color: colors[(seriesSet.size - 1) % colors.length]
+        })
+      })
+    } else {
+      yAxis?.forEach(axis => {
+        if (seriesSet.has(axis.id)) {
+          return
+        }
+        seriesSet.add(axis.id)
+        result.push({
+          id: axis.id,
+          name: axis.chartShowName ?? axis.name,
+          color: colors[(seriesSet.size - 1) % colors.length]
+        })
+      })
+    }
+    return result
+  }
+
   constructor(name = 'chart-mix-stack') {
     super(name)
   }

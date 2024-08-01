@@ -576,12 +576,19 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 // 模板市场记录
                 coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
             }
-            if(StringUtils.isNotEmpty(appDataStr)){
-                VisualizationExport2AppVO appDataFormat = JsonUtil.parseObject(appDataStr,VisualizationExport2AppVO.class);
-                String dvInfo  = appDataFormat.getVisualizationInfo();
-                VisualizationBaseInfoVO baseInfoVO = JsonUtil.parseObject(dvInfo,VisualizationBaseInfoVO.class);
-                Long sourceDvId = baseInfoVO.getId();
-                appDataStr =  appDataStr.replaceAll(sourceDvId.toString(), newDvId.toString());
+            if(StringUtils.isNotEmpty(appDataStr) && appDataStr.length()>10){
+                try{
+                    VisualizationExport2AppVO appDataFormat = JsonUtil.parseObject(appDataStr,VisualizationExport2AppVO.class);
+                    String dvInfo  = appDataFormat.getVisualizationInfo();
+                    VisualizationBaseInfoVO baseInfoVO = JsonUtil.parseObject(dvInfo,VisualizationBaseInfoVO.class);
+                    Long sourceDvId = baseInfoVO.getId();
+                    appDataStr =  appDataStr.replaceAll(sourceDvId.toString(), newDvId.toString());
+                }catch (Exception e){
+                    LogUtil.error(e);
+                    appDataStr = null;
+                }
+            }else{
+                appDataStr = null;
             }
             // 解析动态数据
             Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);
