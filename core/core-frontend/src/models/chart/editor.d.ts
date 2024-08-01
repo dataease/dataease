@@ -1,6 +1,7 @@
 declare type EditorProperty =
   | 'background-overall-component'
   | 'basic-style-selector'
+  | 'dual-basic-style-selector'
   | 'label-selector'
   | 'tooltip-selector'
   | 'x-axis-selector'
