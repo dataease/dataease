@@ -56,7 +56,7 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
             componentData: JSON.stringify(componentData.value),
             dynamicData: JSON.stringify(canvasViewDataTemplate),
             staticResource: JSON.stringify(staticResource || {}),
-            appData: JSON.stringify(attachParams || {})
+            appData: attachParams ? JSON.stringify(attachParams) : null
           }
           const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
           if (downloadType === 'template') {
