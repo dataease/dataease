@@ -40,7 +40,7 @@
             >{{ t('visualization.apply_this_template') }}</el-button
           >
           <el-divider class="custom-divider-line" direction="vertical" />
-          <el-icon class="custom-market-icon hover-icon" @click="close"><Close /></el-icon>
+          <el-icon class="custom-market-icon hover-icon_custom" @click="close"><Close /></el-icon>
         </el-row>
       </el-row>
       <el-row class="template-area">
@@ -91,7 +91,7 @@
           </el-select>
           <template v-if="['branchCreate', 'create'].includes(state.curPosition)">
             <el-divider class="custom-divider-line" direction="vertical" />
-            <el-icon class="custom-market-icon hover-icon" @click="close"><Close /></el-icon>
+            <el-icon class="custom-market-icon hover-icon_custom" @click="close"><Close /></el-icon>
           </template>
         </el-row>
       </el-row>
@@ -697,13 +697,32 @@ defineExpose({
 
 .custom-divider-line {
   height: 16px;
-  margin-top: 6px;
+  margin: 8px 14px 0 16px !important;
 }
 
 .custom-market-icon {
   font-size: 20px;
   margin-top: 4px;
+  height: 24px !important;
+  width: 24px !important;
   cursor: pointer;
+
+  &.hover-icon_custom {
+    border-radius: 4px;
+    color: #646a73;
+
+    &[aria-expanded='true'] {
+      background: rgba(31, 35, 41, 0.1);
+    }
+
+    &:hover {
+      background: rgba(31, 35, 41, 0.1);
+    }
+
+    &:active {
+      background: rgba(31, 35, 41, 0.2);
+    }
+  }
 }
 
 .custom-back-icon {
