@@ -90,7 +90,7 @@ public class TableInfoHandler extends DefaultChartHandler {
         var querySql = originSql + limit;
 
         var tablePageMode = (String) filterResult.getContext().get("tablePageMode");
-        var totalPageSql = "SELECT COUNT(*) FROM (" + SQLProvider.createQuerySQL(sqlMeta, false, false, view) + ") COUNT_TEMP";
+        var totalPageSql = "SELECT COUNT(*) FROM (" + SQLProvider.createQuerySQLNoSort(sqlMeta, false, view) + ") COUNT_TEMP";
         if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase(tablePageMode, "page")) {
             totalPageSql = provider.rebuildSQL(totalPageSql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(totalPageSql);
