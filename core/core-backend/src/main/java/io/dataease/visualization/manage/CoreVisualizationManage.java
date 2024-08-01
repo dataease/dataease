@@ -56,7 +56,11 @@ public class CoreVisualizationManage {
         }
         QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("delete_flag", false);
-        queryWrapper.ne("pid", -1);
+        if(StringUtils.isNotEmpty(request.getPid())) {
+            queryWrapper.eq("pid", request.getPid());
+        } else {
+            queryWrapper.ne("pid", -1);
+        }
         queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", ObjectUtils.isNotEmpty(request.getLeaf()) && request.getLeaf() ? "leaf" : "folder");
         queryWrapper.eq("type", request.getBusiFlag());
         queryWrapper.orderByDesc("create_time");

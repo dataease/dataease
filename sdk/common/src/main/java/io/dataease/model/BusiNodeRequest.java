@@ -14,6 +14,8 @@ public class BusiNodeRequest implements Serializable {
 
     private String id;
 
+    private String pid;
+
     private Boolean leaf;
 
     private Integer weight;
