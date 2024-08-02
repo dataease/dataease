@@ -114,7 +114,7 @@ public class CopilotManage {
         }
 
         DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
-        String type = ds.getType();// 数据库类型，如mysql，oracle等，可能需要映射成copilot需要的类型
+        String type = engine(ds.getType());// 数据库类型，如mysql，oracle等，可能需要映射成copilot需要的类型
 
         datasetDataManage.buildFieldName(sqlMap, allFields);
         List<String> strings = transCreateTableFields(allFields);
@@ -466,6 +466,21 @@ public class CopilotManage {
             }
         } else {
             return copilotSQL;
+        }
+    }
+
+    private String engine(String type) {
+        switch (type) {
+            case "ck":
+                return "ClickHouse";
+            case "pg":
+                return "PostgreSQL";
+            case "mysql":
+                return "MySQL";
+            case "sqlServer":
+                return "SQL Server";
+            default:
+                return type;
         }
     }
 }
