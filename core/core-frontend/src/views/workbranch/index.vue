@@ -79,7 +79,7 @@ const activeTabChange = value => {
 
 const tabBtnList = [
   {
-    name: '推荐仪表板',
+    name: t('work_branch.recommended_dashboard'),
     value: 'PANEL'
   },
   {
@@ -221,7 +221,7 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const apply = () => {
   if (state.dvCreateForm.newFrom === 'new_market_template' && !state.dvCreateForm.templateUrl) {
-    ElMessage.warning('未获取模板下载链接请联系模板市场官方')
+    ElMessage.warning(t('work_branch.template_market_official'))
     return false
   }
   const templateTemplate = {
@@ -305,7 +305,7 @@ initMarketTemplate()
       </div>
 
       <div class="quick-creation">
-        <span class="label"> 快速创建 </span>
+        <span class="label"> {{ t('work_branch.create_quickly') }} </span>
         <div class="item-creation">
           <div
             :key="ele.name"
@@ -320,7 +320,7 @@ initMarketTemplate()
               v-if="!ele['menuAuth'] || !ele['anyManage']"
               class="box-item"
               effect="dark"
-              content="缺少创建权限"
+              :content="t('work_branch.template_market_official')"
               placement="top"
             >
               <div class="empty-tooltip-container" />
@@ -343,7 +343,7 @@ initMarketTemplate()
               v-if="!(havePanelAuth || haveScreenAuth)"
               class="box-item"
               effect="dark"
-              content="缺少创建权限"
+              :content="t('work_branch.permission_to_create')"
               placement="top"
             >
               <div class="empty-tooltip-container-template" />
@@ -351,7 +351,7 @@ initMarketTemplate()
             <el-icon class="main-color-quick template-create">
               <Icon name="icon_template_colorful" />
             </el-icon>
-            <span class="name">使用模板新建</span>
+            <span class="name">{{ t('work_branch.new_using_template') }}</span>
           </div>
         </div>
       </div>
@@ -359,9 +359,11 @@ initMarketTemplate()
     <div class="template-market-dashboard">
       <div class="template-market">
         <div class="label">
-          模板中心
+          {{ t('work_branch.template_center') }}
           <div class="expand-all">
-            <button class="all flex-center" @click="toTemplateMarket">查看全部</button>
+            <button class="all flex-center" @click="toTemplateMarket">
+              {{ t('work_branch.view_all') }}
+            </button>
             <el-divider direction="vertical" />
             <button @click="handleExpandFold" class="expand flex-center">
               {{ t(`visualization.${expandFold}`) }}
@@ -397,7 +399,7 @@ initMarketTemplate()
             <div style="text-align: center">
               <Icon name="no_result" class="no-result"></Icon>
               <br />
-              <span class="no-result-tips">没有找到相关模板</span>
+              <span class="no-result-tips">{{ t('work_branch.relevant_templates_found') }}</span>
             </div>
           </el-row>
           <el-row v-show="!state.networkStatus" class="template-empty">

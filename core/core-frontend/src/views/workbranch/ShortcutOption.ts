@@ -36,8 +36,8 @@ class ShortcutOption {
         columnList: [
           { field: 'type', label: t('datasource.type') },
           { field: 'creator', label: t('visualization.create_by') },
-          { field: 'lastEditor', label: '最近编辑人' },
-          { field: 'lastEditTime', label: '最近编辑时间', type: 'time' }
+          { field: 'lastEditor', label: t('work_branch.last_edited_by') },
+          { field: 'lastEditTime', label: t('work_branch.last_edit_time'), type: 'time' }
         ]
       },
       store: {
@@ -47,8 +47,8 @@ class ShortcutOption {
         columnList: [
           { field: 'type', label: t('datasource.type') },
           { field: 'creator', label: t('visualization.create_by') },
-          { field: 'lastEditor', label: '最近编辑人' },
-          { field: 'lastEditTime', label: '最近编辑时间', type: 'time' }
+          { field: 'lastEditor', label: t('work_branch.last_edited_by') },
+          { field: 'lastEditTime', label: t('work_branch.last_edit_time'), type: 'time' }
         ]
       }
     }

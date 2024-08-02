@@ -102,12 +102,12 @@ const formatterTime = (_, _column, cellValue) => {
 }
 
 const typeMap = {
-  screen: '数据大屏',
-  dataV: '数据大屏',
-  dashboard: '仪表板',
-  panel: '仪表板',
-  dataset: '数据集',
-  datasource: '数据源'
+  screen: t('work_branch.big_data_screen'),
+  dataV: t('work_branch.big_data_screen'),
+  dashboard: t('work_branch.dashboard'),
+  panel: t('work_branch.dashboard'),
+  dataset: t('work_branch.data_set'),
+  datasource: t('work_branch.data_source')
 }
 
 const loadTableData = () => {
@@ -134,8 +134,8 @@ const loadTableData = () => {
 } */
 
 const tablePaneList = ref([
-  { title: '最近使用', name: 'recent', disabled: false },
-  { title: '我的收藏', name: 'store', disabled: false },
+  { title: t('work_branch.recently_used'), name: 'recent', disabled: false },
+  { title: t('work_branch.my_collection'), name: 'store', disabled: false },
   { title: t('visualization.share_out'), name: 'share', disabled: false }
 ])
 
@@ -223,13 +223,13 @@ const getEmptyImg = (): string => {
 
 const getEmptyDesc = (): string => {
   if (panelKeyword.value) {
-    return '没有找到相关内容'
+    return t('work_branch.relevant_content_found')
   }
   if (activeName.value === 'recent') {
-    return '暂无内容'
+    return t('work_branch.no_content_yet')
   }
   if (activeName.value === 'store') {
-    return '暂无收藏'
+    return t('work_branch.no_favorites_yet')
   }
   return ''
 }
@@ -252,7 +252,11 @@ const getEmptyDesc = (): string => {
       >
         <template #label>
           <span class="custom-tabs-label">
-            <el-tooltip placement="top" v-if="item.disabled" content="没有权限">
+            <el-tooltip
+              placement="top"
+              v-if="item.disabled"
+              :content="t('work_branch.permission_denied')"
+            >
               <span>{{ item.title }}</span>
             </el-tooltip>
             <span v-else>{{ item.title }}</span>
@@ -284,7 +288,7 @@ const getEmptyDesc = (): string => {
           v-model="panelKeyword"
           clearable
           @change="triggerFilterPanel"
-          placeholder="搜索关键词"
+          :placeholder="t('work_branch.search_keyword')"
         >
           <template #prefix>
             <el-icon>
@@ -357,7 +361,11 @@ const getEmptyDesc = (): string => {
         <el-table-column width="100" fixed="right" key="_operation" :label="$t('common.operate')">
           <template #default="scope">
             <template v-if="['dashboard', 'dataV', 'panel', 'screen'].includes(scope.row.type)">
-              <el-tooltip effect="dark" content="新页面预览" placement="top">
+              <el-tooltip
+                effect="dark"
+                :content="t('work_branch.new_page_preview')"
+                placement="top"
+              >
                 <el-icon
                   class="hover-icon hover-icon-in-table"
                   @click.stop="
@@ -383,7 +391,7 @@ const getEmptyDesc = (): string => {
               <el-tooltip
                 v-if="activeName === 'store'"
                 effect="dark"
-                content="取消收藏"
+                :content="t('work_branch.cancel_favorites')"
                 placement="top"
               >
                 <el-icon
@@ -396,7 +404,7 @@ const getEmptyDesc = (): string => {
             </template>
 
             <template v-if="['dataset'].includes(scope.row.type)">
-              <el-tooltip effect="dark" content="打开数据集" placement="top">
+              <el-tooltip effect="dark" :content="t('work_branch.open_dataset')" placement="top">
                 <el-icon
                   class="hover-icon hover-icon-in-table"
                   @click.stop="
@@ -412,7 +420,11 @@ const getEmptyDesc = (): string => {
       </GridTable>
     </div>
   </div>
-  <el-empty class="dashboard-type" v-else description="没有任何业务菜单权限，请联系管理员授权" />
+  <el-empty
+    class="dashboard-type"
+    v-else
+    :description="t('work_branch.administrator_for_authorization')"
+  />
 </template>
 
 <style lang="less" scoped>
