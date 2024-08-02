@@ -114,7 +114,7 @@ public class ChartDataManage {
         dto.setAuthEnum(AuthEnum.READ);
         boolean checked = corePermissionManage.checkAuth(dto);
         if (!checked) {
-            DEException.throwException(Translator.get("i18n_no_datasource_permission"));
+            DEException.throwException(Translator.get("i18n_no_dataset_permission"));
         }
 
         List<ChartViewFieldDTO> allFields = getAllChartFields(view);

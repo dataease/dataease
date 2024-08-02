@@ -4,10 +4,12 @@ import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.dataset.dto.*;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
+import io.dataease.constant.AuthEnum;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.FieldUtils;
@@ -34,6 +36,7 @@ import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -73,6 +76,8 @@ public class DatasetDataManage {
     private DatasetTableSqlLogManage datasetTableSqlLogManage;
     @Autowired(required = false)
     private PluginManageApi pluginManage;
+    @Resource
+    private CorePermissionManage corePermissionManage;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
@@ -447,6 +452,15 @@ public class DatasetDataManage {
             List<DatasetTableFieldDTO> allFields = new ArrayList<>();
             // 根据图表计算字段，获取数据集
             Long datasetGroupId = field.getDatasetGroupId();
+
+            // check permission
+            BusiPerCheckDTO dto = new BusiPerCheckDTO();
+            dto.setId(datasetGroupId);
+            dto.setAuthEnum(AuthEnum.READ);
+            boolean checked = corePermissionManage.checkAuth(dto);
+            if (!checked) {
+                DEException.throwException(Translator.get("i18n_no_dataset_permission"));
+            }
             if (field.getChartId() != null) {
                 allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
             }
@@ -589,6 +603,16 @@ public class DatasetDataManage {
 
             // 根据图表计算字段，获取数据集
             Long datasetGroupId = field.getDatasetGroupId();
+
+            // check permission
+            BusiPerCheckDTO dto = new BusiPerCheckDTO();
+            dto.setId(datasetGroupId);
+            dto.setAuthEnum(AuthEnum.READ);
+            boolean checked = corePermissionManage.checkAuth(dto);
+            if (!checked) {
+                DEException.throwException(Translator.get("i18n_no_dataset_permission"));
+            }
+
             if (field.getChartId() != null) {
                 allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
             }
