@@ -26,6 +26,35 @@ export default {
     delete_success: 'Delete success',
     no_auth_tips: 'Missing menu permissions, please contact the administrator'
   },
+  work_branch: {
+    recommended_dashboard: 'Recommended dashboard',
+    template_market_official:
+      'If you have not obtained the template download link, please contact the template market official',
+    create_quickly: 'Create quickly',
+    permission_to_create: 'Missing permission to create',
+    new_using_template: 'Create new using template',
+    template_center: 'Template Center',
+    view_all: 'view all',
+    relevant_templates_found: 'No relevant templates found',
+    last_edited_by: 'Last edited by',
+    last_edit_time: 'last edit time',
+    big_data_screen: 'Big data screen',
+    dashboard: 'Dashboard',
+    data_set: 'data set',
+    data_source: 'data source',
+    recently_used: 'Recently Used',
+    my_collection: 'my collection',
+    relevant_content_found: 'No relevant content found',
+    no_content_yet: 'no content yet',
+    no_favorites_yet: 'No favorites yet',
+    search_keyword: 'search keyword',
+    new_page_preview: 'New page preview',
+    permission_denied: 'permission denied',
+    cancel_favorites: 'Cancel favorites',
+    open_dataset: 'Open dataset',
+    administrator_for_authorization:
+      'There is no business menu permission, please contact the administrator for authorization'
+  },
   login: {
     welcome: 'Welcome',
     btn: 'Login',

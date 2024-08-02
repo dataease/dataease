@@ -310,15 +310,6 @@ const handleSelectionChange = val => {
   multipleSelection.value = val
 }
 
-const confirmDelete = () => {
-  const options = {
-    title: '确定删除该任务吗？',
-    type: 'primary',
-    cb: deleteField
-  }
-  //   handlerConfirm(options)
-}
-
 const delAll = () => {
   if (multipleSelection.value.length === 0) {
     ElMessageBox.confirm(t('data_export.sure_del_all'), {
