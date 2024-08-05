@@ -96,7 +96,9 @@ const loadDsPlugin = data => {
     }
     const index = typeList.findIndex(ele => ele === node.catalog)
     if (index !== -1) {
-      databaseList.value[index].push(node)
+      let copiedArr = JSON.parse(JSON.stringify(databaseList.value))
+      copiedArr[index].push(node)
+      databaseList.value = copiedArr
     }
   })
 }
