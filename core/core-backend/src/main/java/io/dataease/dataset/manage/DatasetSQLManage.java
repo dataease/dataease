@@ -95,15 +95,15 @@ public class DatasetSQLManage {
         if (ObjectUtils.isEmpty(union)) {
             return null;
         }
+        Set<Long> allDs = getAllDs(union);
+        boolean isCross = allDs.size() > 1;
 
         DatasetTableDTO currentDs = union.get(0).getCurrentDs();
 
         // get datasource and schema,put map
-        String tableSchema = putObj2Map(dsMap, currentDs);
+        String tableSchema = putObj2Map(dsMap, currentDs, isCross);
         // get table
         DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(currentDs.getInfo(), DatasetTableInfoDTO.class);
-        Set<Long> allDs = getAllDs(union);
-        boolean isCross = allDs.size() > 1;
 
         SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0, filterParameters(chartExtRequest, currentDs.getId()), chartExtRequest == null, isCross, dsMap);
 
@@ -116,7 +116,7 @@ public class DatasetSQLManage {
             if (dsMap.containsKey(datasetTable.getDatasourceId())) {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
-                schema = putObj2Map(dsMap, datasetTable);
+                schema = putObj2Map(dsMap, datasetTable, isCross);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i, filterParameters(chartExtRequest, currentDs.getId()), chartExtRequest == null, isCross, dsMap);
 
@@ -287,7 +287,7 @@ public class DatasetSQLManage {
             if (dsMap.containsKey(datasetTable.getDatasourceId())) {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
-                schema = putObj2Map(dsMap, datasetTable);
+                schema = putObj2Map(dsMap, datasetTable, isCross);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, index, filterParameters(chartExtRequest, datasetTable.getId()), chartExtRequest == null, isCross, dsMap);
 
@@ -444,7 +444,7 @@ public class DatasetSQLManage {
         return tableObj;
     }
 
-    private String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds) throws Exception {
+    private String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, boolean isCross) throws Exception {
         // 通过datasource id校验数据源权限
         BusiPerCheckDTO dto = new BusiPerCheckDTO();
         dto.setId(ds.getDatasourceId());
@@ -464,7 +464,14 @@ public class DatasetSQLManage {
             if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
                 coreDatasource = engineManage.getDeEngine();
             }
-            schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
+
+            Map map = JsonUtil.parseObject(coreDatasource.getConfiguration(), Map.class);
+            if (!isCross && ObjectUtils.isNotEmpty(map.get("schema"))) {
+                schemaAlias = (String) map.get("schema");
+            } else {
+                schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
+            }
+
             if (!dsMap.containsKey(coreDatasource.getId())) {
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
                 BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
