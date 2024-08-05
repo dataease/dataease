@@ -144,7 +144,8 @@ const createInit = (type, data: Tree, exec, name: string) => {
   datasetForm.name = ''
   filterText.value = ''
   nodeType.value = type
-  placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据集名称'
+  placeholder.value =
+    type === 'folder' ? t('data_set.a_folder_name') : t('data_set.the_dataset_name')
   if (type === 'dataset') {
     union = data.union
     allfields = data.allfields
@@ -155,7 +156,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
       if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
-        state.tData[0].name = '数据集'
+        state.tData[0].name = t('data_set.data_set')
       }
       data.id = formatRootMiss(data.id, state.tData)
       if (exec) {
@@ -222,7 +223,7 @@ const nodeClick = (data: Tree) => {
 }
 const checkPid = pid => {
   if (pid !== 0 && !pid) {
-    ElMessage.error('请选择目标文件夹')
+    ElMessage.error(t('data_set.the_destination_folder'))
     return false
   }
   return true
@@ -265,10 +266,10 @@ const saveDataset = () => {
           emits('finish', res)
           switch (cmd.value) {
             case 'move':
-              ElMessage.success('移动成功')
+              ElMessage.success(t('data_set.moved_successfully'))
               break
             case 'rename':
-              ElMessage.success('重命名成功')
+              ElMessage.success(t('data_set.rename_successful'))
               break
             default:
               useEmitt().emitter.emit('onDatasetSave')
@@ -362,7 +363,7 @@ const emits = defineEmits(['finish'])
           </el-tree>
           <div v-if="searchEmpty" class="empty-search">
             <img :src="nothingTree" />
-            <span>没有找到相关内容</span>
+            <span>{{ t('data_set.relevant_content_found') }}</span>
           </div>
         </div>
       </div>

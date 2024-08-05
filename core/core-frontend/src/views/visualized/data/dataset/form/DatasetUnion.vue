@@ -364,10 +364,10 @@ const confirmEditUnion = () => {
 
     if (!!idArr.length) {
       ElMessageBox.confirm(
-        `字段${allfields.value
+        `${t('data_set.field')}${allfields.value
           .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
           .map(ele => ele.name)
-          .join(',')}未被选择，其相关的新建字段将被删除，是否继续？`,
+          .join(',')}${t('data_set.want_to_continue')}`,
         {
           confirmButtonText: t('dataset.confirm'),
           cancelButtonText: t('common.cancel'),
@@ -452,10 +452,10 @@ const handleCommand = (ele, command) => {
 
       if (!!idArr.length) {
         ElMessageBox.confirm(
-          `字段${allfields.value
+          `${t('field.want_to_continue')}${allfields.value
             .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
             .map(ele => ele.name)
-            .join(',')}未被选择，其相关的新建字段将被删除，是否继续？`,
+            .join(',')}${t('data_set.want_to_continue')}`,
           {
             confirmButtonText: t('dataset.confirm'),
             cancelButtonText: t('common.cancel'),
@@ -534,12 +534,12 @@ const dfsNodeFieldBack = (list, { originName, datasetTableId }) => {
 const menuList = [
   {
     svgName: 'icon_text-box_outlined',
-    label: '字段选择',
+    label: t('data_set.field_selection'),
     command: 'editerField'
   },
   {
     svgName: 'icon_delete-trash_outlined',
-    label: '删除',
+    label: t('data_set.delete'),
     command: 'del'
   }
 ]
@@ -547,7 +547,7 @@ const menuList = [
 const sqlMenu = [
   {
     svgName: 'icon_edit_outlined',
-    label: '编辑SQL',
+    label: t('data_set.edit_sql'),
     command: 'editerSql'
   },
   {
@@ -1120,15 +1120,15 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
     ></div>
     <div class="zero" v-if="!state.nodeList.length">
       <img :src="zeroNodeImg" alt="" />
-      <p>将左侧的数据表、自定义SQL</p>
-      <p>拖拽到这里创建数据集</p>
+      <p>{{ t('data_set.on_the_left') }}</p>
+      <p>{{ t('data_set.a_data_set') }}</p>
     </div>
   </div>
   <el-dialog
     v-model="dialogRename"
     :close-on-press-escape="false"
     :close-on-click-modal="false"
-    title="重命名表"
+    :title="t('data_set.rename_table')"
     width="420px"
   >
     <el-form
@@ -1139,7 +1139,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
     >
       <el-form-item
         prop="name"
-        label="表名称"
+        :label="t('data_set.table_name')"
         :rules="[
           {
             required: true,
@@ -1171,13 +1171,13 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
     <template #header v-if="currentNode">
       <div class="info-content">
         <div class="info">
-          <span class="label">表名</span>
+          <span class="label">{{ t('data_set.table_name_de') }}</span>
           <span :title="currentNode.tableName" class="name ellipsis">{{
             currentNode.tableName
           }}</span>
         </div>
         <div class="info">
-          <span class="label">表备注</span>
+          <span class="label">{{ t('data_set.table_remarks') }}</span>
           <span :title="currentNode.noteName" style="max-width: 240px" class="name ellipsis">{{
             currentNode.noteName || '-'
           }}</span>

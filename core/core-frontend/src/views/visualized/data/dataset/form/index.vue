@@ -66,7 +66,7 @@ const editCalcField = ref(false)
 const calcEdit = ref()
 const editUnion = ref(false)
 const datasetDrag = ref()
-const datasetName = ref('未命名数据集')
+const datasetName = ref(t('data_set.unnamed_dataset'))
 const tabActive = ref('preview')
 const activeName = ref('')
 const dataSource = ref('')
@@ -159,7 +159,7 @@ const ruleFormRef = ref<FormInstance>()
 const ruleFormFieldRef = ref<FormInstance>()
 
 const rules = {
-  name: [{ required: true, message: '自定义时间格式不能为空', trigger: 'blur' }]
+  name: [{ required: true, message: t('data_set.cannot_be_empty_time'), trigger: 'blur' }]
 }
 
 const fieldRules = {
@@ -169,7 +169,7 @@ const fieldRules = {
 const sqlNode = reactive<Table>({
   datasourceId: '',
   name: '',
-  tableName: '自定义SQL',
+  tableName: t('data_set.custom_sql'),
   type: 'sql'
 })
 
@@ -239,7 +239,7 @@ const pushDataset = () => {
 
 const backToMain = () => {
   if (isUpdate) {
-    ElMessageBox.confirm('当前的更改尚未保存,确定退出吗?', {
+    ElMessageBox.confirm(t('data_set.want_to_exit'), {
       confirmButtonText: t('dataset.confirm'),
       cancelButtonText: t('common.cancel'),
       showCancelButton: true,
@@ -332,7 +332,7 @@ const editeSave = () => {
   })
     .then(() => {
       isUpdate = false
-      ElMessage.success('保存成功')
+      ElMessage.success(t('data_set.saved_successfully'))
       if (willBack) {
         pushDataset()
       }
@@ -551,7 +551,7 @@ const confirmEditCalc = () => {
     if (val) {
       calcEdit.value.setFieldForm()
       if (!calcEdit.value.fieldForm.originName.trim()) {
-        ElMessage.error('表达式不能为空!')
+        ElMessage.error(t('data_set.cannot_be_empty_de_'))
         return
       }
       const obj = cloneDeep(calcEdit.value.fieldForm)
@@ -641,7 +641,7 @@ const initEdite = async () => {
       nodeInfo = {
         id,
         pid,
-        name: copyId ? '复制数据集' : name
+        name: copyId ? t('data_set.copy_a_dataset') : name
       }
       if (copyId) {
         nodeInfo.id = ''
@@ -825,7 +825,7 @@ const confirmEditUnion = () => {
   })
 
   if (unionFieldsLost) {
-    ElMessage.error('关联字段不能为空!')
+    ElMessage.error(t('data_set.cannot_be_empty_de_field'))
     return
   }
 
@@ -856,10 +856,10 @@ const confirmEditUnion = () => {
     }, [])
 
     ElMessageBox.confirm(
-      `字段${allfields.value
+      `${t('data_set.field')}${allfields.value
         .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
         .map(ele => ele.name)
-        .join(',')}未被选择，其相关的新建字段将被删除，是否继续？`,
+        .join(',')}${t('data_set.want_to_continue')}`,
       {
         confirmButtonText: t('dataset.confirm'),
         cancelButtonText: t('common.cancel'),
@@ -1052,7 +1052,7 @@ const datasetSave = () => {
   dfsNodeList(union, datasetDrag.value.getNodeList())
   const pid = appStore.getIsDataEaseBi ? embeddedStore.datasetPid : route.query.pid || nodeInfo.pid
   if (!union.length) {
-    ElMessage.error('数据集不能为空')
+    ElMessage.error(t('data_set.dataset_cannot_be'))
     return
   }
   if (nodeInfo.pid && !nodeInfo.id) {
@@ -1334,10 +1334,12 @@ const getDsIconName = data => {
         </template>
       </span>
       <span class="oprate">
-        <el-button :disabled="showInput" type="primary" @click="datasetSaveAndBack"
-          >保存并返回</el-button
-        >
-        <el-button :disabled="showInput" type="primary" @click="datasetSave">保存</el-button>
+        <el-button :disabled="showInput" type="primary" @click="datasetSaveAndBack">{{
+          t('data_set.save_and_return')
+        }}</el-button>
+        <el-button :disabled="showInput" type="primary" @click="datasetSave">{{
+          t('data_set.save')
+        }}</el-button>
       </span>
     </div>
     <div class="container dataset-db" @mouseup="mouseupDrag">
@@ -1361,7 +1363,7 @@ const getDsIconName = data => {
       >
         <div class="table-list-top">
           <p class="select-ds">
-            选择数据源
+            {{ t('data_set.select_data_source') }}
             <span class="left-outlined">
               <el-icon style="color: #1f2329" @click="showLeft = false">
                 <Icon name="icon_left_outlined" />
@@ -1391,7 +1393,12 @@ const getDsIconName = data => {
                   ></icon>
                 </el-icon>
                 <span v-if="!leaf || extraFlag > -1">{{ name }}</span>
-                <el-tooltip effect="dark" v-else :content="`无效数据源:${name}`" placement="top">
+                <el-tooltip
+                  effect="dark"
+                  v-else
+                  :content="`${t('data_set.invalid_data_source')}:${name}`"
+                  placement="top"
+                >
                   <span>{{ name }}</span>
                 </el-tooltip>
               </div>
@@ -1424,7 +1431,7 @@ const getDsIconName = data => {
             class="el-empty__description"
             style="margin-top: 80px; color: #5e6d82; text-align: center"
           >
-            没有找到相关内容
+            {{ t('data_set.relevant_content_found') }}
           </div>
         </div>
         <div v-else class="table-checkbox-list">
@@ -1439,7 +1446,7 @@ const getDsIconName = data => {
             <el-icon class="icon-color">
               <Icon name="icon_sql_outlined_1"></Icon>
             </el-icon>
-            <span class="label">自定义SQL</span>
+            <span class="label">{{ t('data_set.custom_sql') }}</span>
           </div>
           <FixedSizeList
             :itemSize="40"
@@ -1475,7 +1482,7 @@ const getDsIconName = data => {
           <el-icon>
             <Icon name="icon_warning_colorful"></Icon>
           </el-icon>
-          您正在进行跨数据源的表关联,请确保使用calcite的标准语法和函数,否则会导致数据集报错
+          {{ t('data_set.be_reported_incorrectly') }}
         </div>
         <dataset-union
           @join-editor="joinEditor"
@@ -1520,7 +1527,7 @@ const getDsIconName = data => {
                     <Icon name="icon_refresh_outlined"></Icon>
                   </el-icon>
                 </template>
-                刷新数据
+                {{ t('data_set.refresh_data') }}
               </el-button>
             </div>
           </div>
@@ -1552,7 +1559,7 @@ const getDsIconName = data => {
                       <div class="operate child">
                         <field-more
                           :extField="data.extField"
-                          trans-type="转换为指标"
+                          :trans-type="t('data_set.convert_to_indicator')"
                           :show-time="data.deExtractType === 0"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
@@ -1582,7 +1589,7 @@ const getDsIconName = data => {
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
                       <div class="operate child">
                         <field-more
-                          trans-type="转换为维度"
+                          :trans-type="t('data_set.convert_to_dimension')"
                           typeColor="green-color"
                           :show-time="data.deExtractType === 0"
                           :extField="data.extField"
@@ -1625,7 +1632,7 @@ const getDsIconName = data => {
                   </template>
                 </el-table-column>
                 <template #empty>
-                  <empty-background description="暂无数据" img-type="noneWhite" />
+                  <empty-background :description="t('data_set.no_data')" img-type="noneWhite" />
                 </template>
               </el-table>
             </div>
@@ -1742,7 +1749,11 @@ const getDsIconName = data => {
 
                     <el-table-column fixed="right" :label="t('chart.dimension')">
                       <template #default="scope">
-                        <el-tooltip effect="dark" content="转换为指标" placement="top">
+                        <el-tooltip
+                          effect="dark"
+                          :content="t('data_set.convert_to_indicator')"
+                          placement="top"
+                        >
                           <template #default>
                             <el-button text @click="handleFieldMore(scope.row, 'translate')">
                               <template #icon>
@@ -1902,7 +1913,11 @@ const getDsIconName = data => {
 
                     <el-table-column fixed="right" :label="t('chart.quota')">
                       <template #default="scope">
-                        <el-tooltip effect="dark" content="转换为维度" placement="top">
+                        <el-tooltip
+                          effect="dark"
+                          :content="t('data_set.convert_to_dimension')"
+                          placement="top"
+                        >
                           <template #default>
                             <el-button text @click="handleFieldMore(scope.row, 'translate')">
                               <template #icon>
@@ -1957,9 +1972,9 @@ const getDsIconName = data => {
             </div>
             <div class="batch-operate flex-align-center" v-if="!!deTypeSelection.length">
               <div class="flex-align-center">
-                已选择
+                {{ t('data_set.selected') }}
                 <span class="num">{{ deTypeSelection.length }}</span>
-                条
+                {{ t('data_set.bar') }}
                 <el-button @click="clearSelection" text style="margin-left: 16px">{{
                   t('commons.clear')
                 }}</el-button>
@@ -1999,7 +2014,7 @@ const getDsIconName = data => {
                 plain
                 style="margin-left: 200px"
               >
-                转换为指标
+                {{ t('data_set.convert_to_indicator') }}
               </el-button>
               <el-button
                 @click="dqTransArr('d')"
@@ -2007,7 +2022,7 @@ const getDsIconName = data => {
                 plain
                 style="margin-left: 200px"
               >
-                转换为维度
+                {{ t('data_set.convert_to_dimension') }}
               </el-button>
             </div>
           </div>
@@ -2042,9 +2057,14 @@ const getDsIconName = data => {
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
-  <el-dialog class="create-dialog" title="格式编辑" v-model="updateCustomTime" width="1000px">
+  <el-dialog
+    class="create-dialog"
+    :title="t('data_set.format_edit')"
+    v-model="updateCustomTime"
+    width="1000px"
+  >
     <el-form ref="ruleFormRef" :rules="rules" :model="currentField" label-width="120px">
-      <el-form-item prop="name" label="自定义时间格式">
+      <el-form-item prop="name" :label="t('data_set.custom_time_format')">
         <el-input v-model="currentField.name" />
       </el-form-item>
     </el-form>

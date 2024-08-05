@@ -137,7 +137,21 @@ export default {
     cannot_be_empty_de_: 'Expression cannot be empty!',
     copy_a_dataset: 'Copy a dataset',
     cannot_be_empty_de_field: 'The related field cannot be empty!',
-    dataset_cannot_be: 'The dataset cannot be'
+    dataset_cannot_be: 'The dataset cannot be empty',
+    save_and_return: 'Save and return',
+    select_data_source: 'Select data source',
+    invalid_data_source: 'Invalid data source',
+    be_reported_incorrectly:
+      'You are linking tables across data sources. Please make sure to use the standard syntax and functions of calcite, otherwise the data set will be reported incorrectly',
+    refresh_data: 'Refresh data',
+    convert_to_indicator: 'Convert to indicator',
+    convert_to_dimension: 'Convert to dimension',
+    selected: 'Selected',
+    bar: 'Bar',
+    format_edit: 'Format edit',
+    custom_time_format: 'Custom time format',
+    cannot_be_empty_: 'Filter field cannot be empty',
+    cannot_be_empty_de_ruler: 'Rule condition cannot be empty'
   },
   login: {
     welcome: 'Welcome',

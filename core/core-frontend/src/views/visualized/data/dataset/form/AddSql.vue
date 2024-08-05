@@ -224,7 +224,7 @@ let sql = ''
 
 const save = (cb?: () => void) => {
   if (!sqlNode.value.tableName.trim()) {
-    ElMessage.error('SQL名字不能为空')
+    ElMessage.error(t('data_set.cannot_be_empty'))
     return
   }
 
@@ -232,7 +232,7 @@ const save = (cb?: () => void) => {
   sql = codeCom.value.state.doc.toString()
   sqlNode.value.changeFlag = true
   if (!sql.trim()) {
-    ElMessage.error('SQL不能为空')
+    ElMessage.error(t('data_set.cannot_be_empty_de'))
     return
   }
   sqlNode.value.sql = Base64.encode(sql)
@@ -264,7 +264,7 @@ const handleClose = () => {
   if (changeFlag || sql !== sqlNew || !sqlNew.trim()) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
-      tip: '你填写的信息未保存，确认退出吗？',
+      tip: t('data_set.sure_to_exit'),
       type: 'warning',
       autofocus: false,
       showClose: false
@@ -342,9 +342,9 @@ const dsChange = (val: string) => {
 const copyInfo = async (value: string) => {
   try {
     await toClipboard(value)
-    ElMessage.success('复制成功')
+    ElMessage.success(t('data_set.copied_successfully'))
   } catch (e) {
-    ElMessage.warning('您的浏览器不支持复制：', e)
+    ElMessage.warning(t('data_set.not_support_copying'), e)
   }
 }
 
@@ -397,7 +397,7 @@ const saveVariable = () => {
   state.variables = JSON.parse(JSON.stringify(state.variablesTmp))
   showVariableMgm.value = false
   changeFlagCode.value = true
-  ElMessage.success('参数设置成功')
+  ElMessage.success(t('data_set.parameters_set_successfully'))
 }
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateWidth)
@@ -414,7 +414,7 @@ const mousedownDrag = () => {
             <Icon name="reference-play"></Icon>
           </el-icon>
         </template>
-        运行
+        {{ t('data_set.run') }}
       </el-button>
       <el-button @click="referenceSetting()" style="color: #1f2329" text>
         <template #icon>
@@ -422,10 +422,10 @@ const mousedownDrag = () => {
             <Icon name="reference-setting"></Icon>
           </el-icon>
         </template>
-        参数设置
+        {{ t('data_set.parameter_settings') }}
       </el-button>
       <el-button :disabled="!changeFlagCode" @click="save(() => {})" type="primary">
-        保存</el-button
+        {{ t('data_set.save') }}</el-button
       >
       <el-divider direction="vertical" />
       <el-icon class="hover-icon" @click="handleClose">
@@ -454,7 +454,7 @@ const mousedownDrag = () => {
     >
       <div class="table-list-top">
         <p class="select-ds">
-          当前数据源
+          {{ t('data_set.current_data_source') }}
           <span class="left-outlined">
             <el-icon style="color: #1f2329" @click="showLeft = false">
               <Icon name="icon_left_outlined" />
@@ -500,7 +500,7 @@ const mousedownDrag = () => {
           class="el-empty__description"
           style="margin-top: 80px; color: #5e6d82; text-align: center"
         >
-          没有找到相关内容
+          {{ t('data_set.relevant_content_found') }}
         </div>
       </div>
       <div v-else class="table-checkbox-list">
@@ -580,7 +580,7 @@ const mousedownDrag = () => {
                         header-cell-class-name="header-cell"
                         :data="gridData"
                       >
-                        <el-table-column label="物理字段名">
+                        <el-table-column :label="t('data_set.physical_field_name')">
                           <template #default="scope">
                             <div class="flex-align-center icon">
                               <el-icon>
@@ -647,7 +647,10 @@ const mousedownDrag = () => {
                   :height="height"
                   fixed
                   ><template #empty>
-                    <empty-background description="暂无数据" img-type="noneWhite" /> </template
+                    <empty-background
+                      :description="t('data_set.no_data')"
+                      img-type="noneWhite"
+                    /> </template
                 ></el-table-v2>
               </template>
             </el-auto-resizer>
@@ -655,11 +658,11 @@ const mousedownDrag = () => {
           <template v-else>
             <empty-background description=" " img-type="noneWhite">
               <div class="sql-tips flex-align-center">
-                点击上方
+                {{ t('data_set.click_above') }}
                 <el-icon>
                   <icon name="icon_play-round_outlined"></icon>
                 </el-icon>
-                运行，即可查看运行结果
+                {{ t('data_set.see_the_results') }}
               </div>
             </empty-background>
           </template>
@@ -852,7 +855,7 @@ const mousedownDrag = () => {
         </template>
       </el-table-column>
       <template #empty>
-        <empty-background description="暂无数据" img-type="noneWhite" />
+        <empty-background :description="t('data_set.no_data')" img-type="noneWhite" />
       </template>
     </el-table>
     <template #footer>
