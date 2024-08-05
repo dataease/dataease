@@ -60,9 +60,10 @@ function createExtremumDiv(id, value, formatterCfg, chart) {
   const parentElement = document.getElementById(chartPointParentId(chart))
   if (parentElement) {
     // 标注div
-    const element = document.getElementById(id)
-    if (element) {
-      return
+    const oldElement = document.getElementById(id)
+    if (oldElement) {
+      oldElement.remove()
+      oldElement.parentNode?.removeChild(oldElement)
     }
     const div = document.createElement('div')
     div.id = id
@@ -76,6 +77,8 @@ function createExtremumDiv(id, value, formatterCfg, chart) {
         padding: 4px 5px 4px 5px;
         display:none;
         transform: translateX(-50%);
+        opacity: 1;
+        transition: opacity 0.2s ease-in-out;
         white-space:nowrap;`
     )
     div.textContent = valueFormatter(value, formatterCfg)
@@ -111,42 +114,20 @@ const chartPointParentId = chart => {
   return chart.container + '_point_' + chart.id + '_'
 }
 
-const overlap = chart => {
-  const container = document.getElementById(chartPointParentId(chart))
-  const children = Array.from(container.getElementsByClassName('child'))
 
-  function getOverlapArea(rect1, rect2) {
-    const x_overlap = Math.max(
-      0,
-      Math.min(rect1.right, rect2.right) - Math.max(rect1.left, rect2.left)
-    )
-    const y_overlap = Math.max(
-      0,
-      Math.min(rect1.bottom, rect2.bottom) - Math.max(rect1.top, rect2.top)
-    )
-    return x_overlap * y_overlap
+function removeDivsWithPrefix(parentDivId, prefix) {
+  const parentDiv = document.getElementById(parentDivId)
+  if (!parentDiv) {
+    console.error('Parent div not found')
+    return
   }
-
-  function checkAndHideOverlappedElements() {
-    children.forEach(child => {
-      const childRect = child.getBoundingClientRect()
-      let totalOverlapArea = 0
-
-      children.forEach(otherChild => {
-        if (child !== otherChild) {
-          const otherChildRect = otherChild.getBoundingClientRect()
-          totalOverlapArea += getOverlapArea(childRect, otherChildRect)
-        }
-      })
-
-      const childArea = childRect.width * childRect.height
-      if (totalOverlapArea / childArea > 0.3) {
-        child.parentNode?.removeChild(child)
-      }
-    })
+  const childDivs = parentDiv.getElementsByTagName('div')
+  for (let i = childDivs.length - 1; i >= 0; i--) {
+    const div = childDivs[i]
+    if (div.id && div.id.startsWith(prefix)) {
+      div.parentNode.removeChild(div)
+    }
   }
-
-  checkAndHideOverlappedElements()
 }
 
 export const extremumEvt = (newChart, chart, _options, container) => {
@@ -184,20 +165,17 @@ export const extremumEvt = (newChart, chart, _options, container) => {
     })
     newChart.chart.geometries[0].on('afteranimate', () => {
       createExtremumPoint(chart, ev)
-      overlap(chart)
     })
   })
   newChart.on('legend-item:click', ev => {
-    const legendShowSize = ev.view
+    const legendHideData = ev.view
       .getController('legend')
-      .components[0].component.cfg.items.filter(l => !l.unchecked)
-    if (legendShowSize.length === 0) {
-      const allElement = document.getElementById(chartPointParentId(chart))
-      if (allElement && allElement.childNodes) {
-        allElement.childNodes.forEach(c => {
-          c.style.display = 'none'
-        })
-      }
+      .components[0].component.cfg.items.filter(l => l.unchecked)
+    if (legendHideData.length > 0) {
+      legendHideData.forEach(l => {
+        const seriesKey = chartContainerId(chart) + chartPointParentId(chart) + l.id
+        removeDivsWithPrefix(chartPointParentId(chart), seriesKey)
+      })
     }
   })
 }
@@ -231,9 +209,24 @@ export const createExtremumPoint = (chart, ev) => {
     divParent.id = chartPointParentId(chart)
     divParent.style.position = 'fixed'
     divParent.style.zIndex = '1'
+    divParent.style.opacity = '0'
+    divParent.style.transition = 'opacity 0.2s ease-in-out'
     // 将父标注加入到图表中
     const containerElement = document.getElementById(chart.container)
     containerElement.insertBefore(divParent, containerElement.firstChild)
+    // 处理最值闪烁的问题
+    let opacity = 0
+    const animate = timestamp => {
+      // 增加不透明度
+      opacity += 0.19
+      if (opacity >= 1) {
+        cancelAnimationFrame(animationFrameId)
+        return
+      }
+      divParent.style.opacity = opacity
+      animationFrameId = requestAnimationFrame(animate)
+    }
+    let animationFrameId = requestAnimationFrame(animate)
   }
   let geometriesDataArray = []
   // 获取数据点
@@ -249,7 +242,7 @@ export const createExtremumPoint = (chart, ev) => {
   if (pointPoint) {
     geometriesDataArray = pointPoint.dataArray
   }
-  geometriesDataArray?.forEach(pointObjList => {
+  performChunk(geometriesDataArray, (pointObjList, index) => {
     if (pointObjList && pointObjList.length > 0) {
       const pointObj = pointObjList[0]
       const [minItem, maxItem] = pointObjList.filter(i => i._origin.EXTREME)
@@ -311,7 +304,6 @@ export const createExtremumPoint = (chart, ev) => {
           )
           if (pointElement && point._origin.EXTREME) {
             pointElement.style.position = 'absolute'
-            pointElement.style.position = 'absolute'
             pointElement.style.top =
               (point.y[1] ? point.y[1] : point.y) -
               (fontSize + (pointSize ? pointSize : 0) + 12) +
@@ -335,12 +327,38 @@ export const createExtremumPoint = (chart, ev) => {
       }
     }
   })
+}
 
-  function removeDivElement(key) {
-    const element = document.getElementById(key)
-    if (element) {
-      element.remove()
-      element.parentNode?.removeChild(element)
-    }
+function removeDivElement(key) {
+  const element = document.getElementById(key)
+  if (element) {
+    element.remove()
+    element.parentNode?.removeChild(element)
   }
+}
+
+/**
+ * 用于分批处理数据，利用requestIdleCallback在浏览器空闲期间执行任务，避免阻塞主线程
+ * @param datas
+ * @param taskHandler
+ */
+function performChunk(datas, taskHandler) {
+  if (typeof datas === 'number') {
+    datas = { length: datas }
+  }
+  if (datas.length === 0) return
+  let i = 0
+  function _run() {
+    if (i >= datas.length) return
+    // 请求浏览器空闲期间执行的回调函数
+    requestIdleCallback(idle => {
+      // 在当前空闲期间内尽可能多地处理任务，直到时间耗尽或所有任务处理完毕
+      while (idle.timeRemaining() > 0 && i < datas.length) {
+        taskHandler(datas[i], i)
+        i++
+      }
+      _run()
+    })
+  }
+  _run()
 }
