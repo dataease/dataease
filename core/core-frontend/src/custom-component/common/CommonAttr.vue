@@ -95,8 +95,7 @@ const colorPickerWidth = computed(() => {
 
 // 暂时关闭
 const eventsShow = computed(() => {
-  return false
-  // return !dashboardActive.value && ['Picture'].includes(element.value.component)
+  return !dashboardActive.value && ['Picture'].includes(element.value.component)
 })
 
 const backgroundCustomShow = computed(() => {

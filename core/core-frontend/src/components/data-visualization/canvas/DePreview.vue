@@ -157,8 +157,16 @@ watch(
 useEmitt({
   name: 'tabCanvasChange-' + canvasId.value,
   callback: function () {
-    console.log('tabCanvasChange--' + canvasId.value)
     restore()
+  }
+})
+
+useEmitt({
+  name: 'componentRefresh',
+  callback: function () {
+    if (isMainCanvas(canvasId.value)) {
+      refreshDataV()
+    }
   }
 })
 
@@ -228,11 +236,15 @@ const initRefreshTimer = () => {
       }
     }
     refreshTimer.value = setInterval(() => {
-      searchCount.value++
-      if (isMainCanvas(canvasId.value)) {
-        refreshOtherComponent(dvInfo.value.id, dvInfo.value.type)
-      }
+      refreshDataV()
     }, refreshTime)
+  }
+}
+
+const refreshDataV = () => {
+  searchCount.value++
+  if (isMainCanvas(canvasId.value)) {
+    refreshOtherComponent(dvInfo.value.id, dvInfo.value.type)
   }
 }
 

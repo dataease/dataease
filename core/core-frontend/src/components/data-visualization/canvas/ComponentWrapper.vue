@@ -207,6 +207,24 @@ const onPointClick = param => {
   emits('onPointClick', param)
 }
 
+const onWrapperClick = () => {
+  if (['Picture,ScrollText'].includes(config.value.component)) {
+    // doWrapperClick
+    if (config.value.events && config.value.events.checked) {
+      if (config.value.events.type === 'displayChange') {
+        // 打开弹框区域
+        nextTick(() => {
+          dvMainStore.popAreaActiveSwitch()
+        })
+      } else if (config.value.events.type === 'jump') {
+        window.open(config.value.events.jump.value, '_blank')
+      } else if (config.value.events.type === 'refresh') {
+        useEmitt().emitter.emit('componentRefresh')
+      }
+    }
+  }
+}
+
 const deepScale = computed(() => scale.value / 100)
 </script>
 
@@ -247,6 +265,7 @@ const deepScale = computed(() => scale.value / 100)
         class="wrapper-inner-adaptor"
         :style="slotStyle"
         :class="{ 'pop-wrapper-inner': popActive }"
+        @click="onWrapperClick"
       >
         <component
           :is="findComponent(config['component'])"
