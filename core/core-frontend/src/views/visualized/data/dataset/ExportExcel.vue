@@ -27,26 +27,26 @@ const msg = ref('')
 const exportDatasetLoading = ref(false)
 const activeName = ref('ALL')
 const multipleSelection = ref([])
-const description = ref('暂无任务')
+const description = ref(t('data_set.no_tasks_yet'))
 const tabList = ref([
   {
-    label: '导出中(0)',
+    label: t('data_set.exporting') + '(0)',
     name: 'IN_PROGRESS'
   },
   {
-    label: '成功(0)',
+    label: t('data_set.success') + '(0)',
     name: 'SUCCESS'
   },
   {
-    label: '失败(0)',
+    label: t('data_set.fail') + '(0)',
     name: 'FAILED'
   },
   {
-    label: '等待中(0)',
+    label: t('data_set.waiting') + '(0)',
     name: 'PENDING'
   },
   {
-    label: '全部(0)',
+    label: t('data_set.all') + '(0)',
     name: 'ALL'
   }
 ])
@@ -77,26 +77,35 @@ const handleClick = tab => {
     .then(res => {
       tabList.value.forEach(item => {
         if (item.name === 'ALL') {
-          item.label = '全部' + '(' + res.data.length + ')'
+          item.label = t('data_set.all') + '(' + res.data.length + ')'
         }
         if (item.name === 'IN_PROGRESS') {
           item.label =
-            '导出中' +
+            t('data_set.exporting') +
             '(' +
             res.data.filter(task => task.exportStatus === 'IN_PROGRESS').length +
             ')'
         }
         if (item.name === 'SUCCESS') {
           item.label =
-            '成功' + '(' + res.data.filter(task => task.exportStatus === 'SUCCESS').length + ')'
+            t('data_set.success') +
+            '(' +
+            res.data.filter(task => task.exportStatus === 'SUCCESS').length +
+            ')'
         }
         if (item.name === 'FAILED') {
           item.label =
-            '失败' + '(' + res.data.filter(task => task.exportStatus === 'FAILED').length + ')'
+            t('data_set.fail') +
+            '(' +
+            res.data.filter(task => task.exportStatus === 'FAILED').length +
+            ')'
         }
         if (item.name === 'PENDING') {
           item.label =
-            '等待中' + '(' + res.data.filter(task => task.exportStatus === 'PENDING').length + ')'
+            t('data_set.waiting') +
+            '(' +
+            res.data.filter(task => task.exportStatus === 'PENDING').length +
+            ')'
         }
       })
       if (activeName.value === 'ALL') {
@@ -121,26 +130,35 @@ const init = params => {
       exportTasks(activeName.value).then(res => {
         tabList.value.forEach(item => {
           if (item.name === 'ALL') {
-            item.label = '全部' + '(' + res.data.length + ')'
+            item.label = t('data_set.all') + '(' + res.data.length + ')'
           }
           if (item.name === 'IN_PROGRESS') {
             item.label =
-              '导出中' +
+              t('data_set.exporting') +
               '(' +
               res.data.filter(task => task.exportStatus === 'IN_PROGRESS').length +
               ')'
           }
           if (item.name === 'SUCCESS') {
             item.label =
-              '成功' + '(' + res.data.filter(task => task.exportStatus === 'SUCCESS').length + ')'
+              t('data_set.success') +
+              '(' +
+              res.data.filter(task => task.exportStatus === 'SUCCESS').length +
+              ')'
           }
           if (item.name === 'FAILED') {
             item.label =
-              '失败' + '(' + res.data.filter(task => task.exportStatus === 'FAILED').length + ')'
+              t('data_set.fail') +
+              '(' +
+              res.data.filter(task => task.exportStatus === 'FAILED').length +
+              ')'
           }
           if (item.name === 'PENDING') {
             item.label =
-              '等待中' + '(' + res.data.filter(task => task.exportStatus === 'PENDING').length + ')'
+              t('data_set.waiting') +
+              '(' +
+              res.data.filter(task => task.exportStatus === 'PENDING').length +
+              ')'
           }
         })
         if (activeName.value === 'ALL') {
@@ -160,7 +178,7 @@ const taskExportTopicCall = task => {
   if (!linkStore.getLinkToken && !isDataEaseBi.value && !appStore.getIsIframe) {
     if (JSON.parse(task).exportStatus === 'SUCCESS') {
       openMessageLoading(
-        JSON.parse(task).exportFromName + ' 导出成功，前往',
+        JSON.parse(task).exportFromName + ` ${t('data_set.successful_go_to')}`,
         'success',
         callbackExportSuc
       )
@@ -168,7 +186,7 @@ const taskExportTopicCall = task => {
     }
     if (JSON.parse(task).exportStatus === 'FAILED') {
       openMessageLoading(
-        JSON.parse(task).exportFromName + ' 导出失败，前往',
+        JSON.parse(task).exportFromName + ` ${t('data_set.failed_go_to')}`,
         'error',
         callbackExportError
       )
@@ -432,11 +450,16 @@ defineExpose({
         <el-table-column prop="exportFromName" :label="$t('data_export.export_obj')" width="200" />
         <el-table-column prop="exportFromType" width="120" :label="$t('data_export.export_from')">
           <template #default="scope">
-            <span v-if="scope.row.exportFromType === 'dataset'">数据集</span>
-            <span v-if="scope.row.exportFromType === 'chart'">视图</span>
+            <span v-if="scope.row.exportFromType === 'dataset'">{{ t('data_set.data_set') }}</span>
+            <span v-if="scope.row.exportFromType === 'chart'">{{ t('data_set.view') }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-show="xpack" prop="orgName" label="所属组织" width="200" />
+        <el-table-column
+          v-show="xpack"
+          prop="orgName"
+          :label="t('data_set.organization')"
+          width="200"
+        />
         <el-table-column prop="exportTime" width="180" :label="$t('data_export.export_time')">
           <template #default="scope">
             <span>{{ timestampFormatDate(scope.row.exportTime) }}</span>
@@ -444,7 +467,7 @@ defineExpose({
         </el-table-column>
         <el-table-column fixed="right" prop="operate" width="90" :label="$t('commons.operating')">
           <template #default="scope">
-            <el-tooltip effect="dark" content="下载" placement="top">
+            <el-tooltip effect="dark" :content="t('data_set.download')" placement="top">
               <el-button
                 v-if="scope.row.exportStatus === 'SUCCESS'"
                 text
@@ -458,7 +481,7 @@ defineExpose({
               </el-button>
             </el-tooltip>
 
-            <el-tooltip effect="dark" content="重新导出" placement="top">
+            <el-tooltip effect="dark" :content="t('data_set.re_export')" placement="top">
               <el-button v-if="scope.row.exportStatus === 'FAILED'" text @click="retry(scope.row)">
                 <template #icon>
                   <Icon name="icon_refresh_outlined"></Icon>
@@ -466,7 +489,7 @@ defineExpose({
               </el-button>
             </el-tooltip>
 
-            <el-tooltip effect="dark" content="删除" placement="top">
+            <el-tooltip effect="dark" :content="t('data_set.delete')" placement="top">
               <el-button text @click="deleteField(scope.row)">
                 <template #icon>
                   <Icon name="de-delete"></Icon>
@@ -482,11 +505,13 @@ defineExpose({
     </div>
   </el-drawer>
 
-  <el-dialog title="失败原因" v-model="msgDialogVisible" width="30%">
+  <el-dialog :title="t('data_set.reason_for_failure')" v-model="msgDialogVisible" width="30%">
     <span>{{ msg }}</span>
     <template v-slot:footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="msgDialogVisible = false">关闭</el-button>
+        <el-button type="primary" @click="msgDialogVisible = false">{{
+          t('data_set.closure')
+        }}</el-button>
       </span>
     </template>
   </el-dialog>
