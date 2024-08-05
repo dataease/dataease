@@ -207,21 +207,29 @@ const onPointClick = param => {
   emits('onPointClick', param)
 }
 
-const onWrapperClick = () => {
-  if (['Picture,ScrollText'].includes(config.value.component)) {
-    // doWrapperClick
-    if (config.value.events && config.value.events.checked) {
-      if (config.value.events.type === 'displayChange') {
-        // 打开弹框区域
-        nextTick(() => {
-          dvMainStore.popAreaActiveSwitch()
-        })
-      } else if (config.value.events.type === 'jump') {
-        window.open(config.value.events.jump.value, '_blank')
-      } else if (config.value.events.type === 'refresh') {
-        useEmitt().emitter.emit('componentRefresh')
-      }
+const eventEnable = computed(
+  () =>
+    ['Picture', 'CanvasIcon', 'CircleShape', 'SvgTriangle', 'RectShape', 'ScrollText'].includes(
+      config.value.component
+    ) &&
+    config.value.events &&
+    config.value.events.checked
+)
+
+const onWrapperClick = e => {
+  if (eventEnable.value) {
+    if (config.value.events.type === 'showHidden') {
+      // 打开弹框区域
+      nextTick(() => {
+        dvMainStore.popAreaActiveSwitch()
+      })
+    } else if (config.value.events.type === 'jump') {
+      window.open(config.value.events.jump.value, '_blank')
+    } else if (config.value.events.type === 'refreshDataV') {
+      useEmitt().emitter.emit('componentRefresh')
     }
+    e.preventDefault()
+    e.stopPropagation()
   }
 }
 
@@ -264,8 +272,8 @@ const deepScale = computed(() => scale.value / 100)
       <div
         class="wrapper-inner-adaptor"
         :style="slotStyle"
-        :class="{ 'pop-wrapper-inner': popActive }"
-        @click="onWrapperClick"
+        :class="{ 'pop-wrapper-inner': popActive, 'event-active': eventEnable }"
+        @mousedown="onWrapperClick"
       >
         <component
           :is="findComponent(config['component'])"
@@ -345,5 +353,8 @@ const deepScale = computed(() => scale.value / 100)
   z-index: 0;
   width: 100% !important;
   height: 100% !important;
+}
+.event-active {
+  cursor: pointer;
 }
 </style>
