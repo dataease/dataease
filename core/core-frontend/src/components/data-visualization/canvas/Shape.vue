@@ -48,7 +48,7 @@
           :style="{ color: element.commonBackground.innerImageColor }"
           :name="commonBackgroundSvgInner"
         ></Board>
-        <div class="component-slot">
+        <div class="component-slot" :style="slotStyle">
           <slot></slot>
         </div>
       </div>
@@ -927,6 +927,16 @@ const tabMoveInCheck = async () => {
     }
   }
 }
+const slotStyle = computed(() => {
+  // 3d效果支持
+  if (element.value['multiDimensional'] && element.value['multiDimensional']?.enable) {
+    return {
+      transform: `rotateX(${element.value['multiDimensional'].x}deg) rotateY(${element.value['multiDimensional'].y}deg) rotateZ(${element.value['multiDimensional'].z}deg)`
+    }
+  } else {
+    return {}
+  }
+})
 
 const batchOptFlag = computed(() => {
   return batchOptStatus.value && dashboardActive.value
@@ -974,7 +984,6 @@ onMounted(() => {
 <style lang="less" scoped>
 .shape {
   position: absolute;
-
   .del-from-mobile {
     position: absolute;
     right: 12px;
@@ -1127,5 +1136,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
+  transform-style: preserve-3d;
 }
 </style>

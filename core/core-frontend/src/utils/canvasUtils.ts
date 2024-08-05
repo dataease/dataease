@@ -3,7 +3,8 @@ import componentList, {
   ACTION_SELECTION,
   BASE_EVENTS,
   COMMON_COMPONENT_BACKGROUND_DARK,
-  COMMON_COMPONENT_BACKGROUND_LIGHT
+  COMMON_COMPONENT_BACKGROUND_LIGHT,
+  MULTI_DIMENSIONAL
 } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -153,6 +154,8 @@ export function historyAdaptor(
       componentItem.style['adaptation'] = componentItem.style['adaptation'] || 'adaptation'
     }
     componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
+    componentItem['multiDimensional'] =
+      componentItem['multiDimensional'] || deepCopy(MULTI_DIMENSIONAL)
     componentItem['aspectRatio'] = componentItem['aspectRatio'] || 1
     if (componentItem.component === 'UserView') {
       componentItem.actionSelection = componentItem.actionSelection || deepCopy(ACTION_SELECTION)
