@@ -98,15 +98,18 @@ public class CalciteProvider extends Provider {
     @Override
     public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) {
         List<DatasetTableDTO> tables = new ArrayList<>();
-        List<String> tablesSqls = getTablesSql(datasourceRequest);
-        for (String tablesSql : tablesSqls) {
-            try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30); ResultSet resultSet = statement.executeQuery(tablesSql)) {
+
+        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30)) {
+            datasourceRequest.setDsVersion(con.getConnection().getMetaData().getDatabaseMajorVersion());
+            List<String> tablesSqls = getTablesSql(datasourceRequest);
+            for (String tablesSql : tablesSqls) {
+                ResultSet resultSet = statement.executeQuery(tablesSql);
                 while (resultSet.next()) {
                     tables.add(getTableDesc(datasourceRequest, resultSet));
                 }
-            } catch (Exception e) {
-                DEException.throwException(e.getMessage());
             }
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
         }
         return tables;
     }
@@ -237,6 +240,7 @@ public class CalciteProvider extends Provider {
             ResultSet resultSet = null;
             try (ConnectionObj con = getConnection(datasourceRequest.getDatasource());
                  Statement statement = getStatement(con.getConnection(), 30)) {
+                datasourceRequest.setDsVersion(con.getConnection().getMetaData().getDatabaseMajorVersion());
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo") || datasourceRequest.getDatasource().getType().equalsIgnoreCase("doris")) {
                     resultSet = statement.executeQuery("select * from " + table + " limit 0 offset 0 ");
                     return fetchResultField(resultSet);
@@ -1054,7 +1058,12 @@ public class CalciteProvider extends Provider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                tableSqls.add("SELECT name, comment FROM system.tables where database='DATABASE';".replace("DATABASE", database));
+                if(datasourceRequest.getDsVersion() < 22){
+                    tableSqls.add("SELECT name, name FROM system.tables where database='DATABASE';".replace("DATABASE", database));
+                }else {
+                    tableSqls.add("SELECT name, comment FROM system.tables where database='DATABASE';".replace("DATABASE", database));
+                }
+
 
                 break;
             default:

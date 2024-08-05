@@ -15,6 +15,7 @@ public class DatasourceRequest implements Serializable {
     protected String query;
     protected String table;
     protected DatasourceDTO datasource;
+    private Integer dsVersion;
     private Integer pageSize;
     private Integer page;
     private Integer realSize;
