@@ -134,6 +134,13 @@ export const ACTION_SELECTION = {
   linkageActive: 'custom'
 }
 
+export const MULTI_DIMENSIONAL = {
+  enable: false,
+  x: 0,
+  y: 0,
+  z: 0
+}
+
 export const COMMON_COMPONENT_BACKGROUND_BASE = {
   backgroundColorSelect: true,
   backgroundImageEnable: false,
@@ -172,6 +179,7 @@ export const commonAttr = {
   animations: [],
   canvasId: 'canvas-main',
   events: BASE_EVENTS,
+  multiDimensional: MULTI_DIMENSIONAL, // 3d 设置
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
   maintainRadio: false, // 布局时保持宽高比例

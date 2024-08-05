@@ -192,6 +192,17 @@ const commonBackgroundSvgInner = computed(() => {
   }
 })
 
+const slotStyle = computed(() => {
+  // 3d效果支持
+  if (config.value['multiDimensional'] && config.value['multiDimensional']?.enable) {
+    return {
+      transform: `rotateX(${config.value['multiDimensional'].x}deg) rotateY(${config.value['multiDimensional'].y}deg) rotateZ(${config.value['multiDimensional'].z}deg)`
+    }
+  } else {
+    return {}
+  }
+})
+
 const onPointClick = param => {
   emits('onPointClick', param)
 }
@@ -232,7 +243,11 @@ const deepScale = computed(() => scale.value / 100)
         :style="{ color: config.commonBackground.innerImageColor }"
         :name="commonBackgroundSvgInner"
       ></Board>
-      <div class="wrapper-inner-adaptor" :class="{ 'pop-wrapper-inner': popActive }">
+      <div
+        class="wrapper-inner-adaptor"
+        :style="slotStyle"
+        :class="{ 'pop-wrapper-inner': popActive }"
+      >
         <component
           :is="findComponent(config['component'])"
           :view="viewInfo"
@@ -274,6 +289,7 @@ const deepScale = computed(() => scale.value / 100)
   background-size: 100% 100% !important;
   .wrapper-inner-adaptor {
     position: relative;
+    transform-style: preserve-3d;
     width: 100%;
     height: 100%;
   }

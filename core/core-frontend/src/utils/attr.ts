@@ -5,6 +5,12 @@ export const positionData = [
   { key: 'height', label: 'H', min: 10, max: 20000, step: 10 }
 ]
 
+export const multiDimensionalData = [
+  { key: 'x', label: 'X', min: -360, max: 360, step: 1 },
+  { key: 'y', label: 'W', min: -360, max: 360, step: 1 },
+  { key: 'z', label: 'Y', min: -360, max: 360, step: 1 }
+]
+
 export const styleData = [
   { key: 'lineHeight', label: '行高', min: 0, max: 50, step: 1 },
   { key: 'opacity', label: '不透明度', min: 0, max: 1, step: 0.1 },

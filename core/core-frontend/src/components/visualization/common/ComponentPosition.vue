@@ -28,6 +28,61 @@
         保持宽高比
       </el-checkbox>
     </el-form-item>
+    <el-row v-if="curComponent && curComponent.multiDimensional">
+      <el-col :span="12">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            :effect="themes"
+            v-model="curComponent.multiDimensional.enable"
+            @change="multiDimensionalChange"
+          >
+            3D
+          </el-checkbox>
+        </el-form-item>
+        <template v-if="curComponent.multiDimensional.enable">
+          <el-form-item class="form-item" :class="'form-item-' + themes" label="X">
+            <el-input-number
+              :effect="themes"
+              size="middle"
+              :disabled="curComponent['isLock']"
+              :min="-360"
+              :max="360"
+              :step="1"
+              v-model="curComponent.multiDimensional.x"
+              @change="multiDimensionalChange"
+              controls-position="right"
+            />
+          </el-form-item>
+          <el-form-item class="form-item" :class="'form-item-' + themes" label="Y">
+            <el-input-number
+              :effect="themes"
+              size="middle"
+              :disabled="curComponent['isLock']"
+              :min="-360"
+              :max="360"
+              :step="1"
+              v-model="curComponent.multiDimensional.y"
+              @change="multiDimensionalChange"
+              controls-position="right"
+            />
+          </el-form-item>
+          <el-form-item class="form-item" :class="'form-item-' + themes" label="Z">
+            <el-input-number
+              :effect="themes"
+              size="middle"
+              :disabled="curComponent['isLock']"
+              :min="-360"
+              :max="360"
+              :step="1"
+              v-model="curComponent.multiDimensional.z"
+              @change="multiDimensionalChange"
+              controls-position="right"
+            />
+          </el-form-item>
+        </template>
+      </el-col>
+    </el-row>
   </el-form>
 </template>
 
@@ -116,6 +171,9 @@ const onPositionChange = key => {
 const maintainRadioChange = () => {
   curComponent.value.aspectRatio = curComponent.value.style.width / curComponent.value.style.height
   snapshotStore.recordSnapshotCache()
+}
+const multiDimensionalChange = () => {
+  // do change
 }
 
 const positionInit = () => {
