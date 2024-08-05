@@ -42,12 +42,12 @@ const submit = () => {
 }
 const errorDetected = ({ enumValue, deType, filterType, term, value, name }) => {
   if (!name) {
-    errorMessage.value = '过滤字段不能为空'
+    errorMessage.value = t('data_set.cannot_be_empty_')
     return
   }
   if (filterType === 'logic') {
     if (!term) {
-      errorMessage.value = '规则条件不能为空'
+      errorMessage.value = t('data_set.cannot_be_empty_de_ruler')
       return
     }
     if (!term.includes('null') && !term.includes('empty') && value === '') {

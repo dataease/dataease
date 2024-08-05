@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { PropType, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import type { Field } from './UnionFieldList.vue'
+import type { Field } from '@/api/chart'
 import { fieldType } from '@/utils/attr'
 const unionTypeFromParent = ref('left')
 const { t } = useI18n()

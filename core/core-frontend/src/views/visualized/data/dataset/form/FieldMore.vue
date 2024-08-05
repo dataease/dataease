@@ -3,6 +3,7 @@ import { ref, computed, nextTick } from 'vue'
 import { ElCascaderPanel } from 'element-plus-secondary'
 import { timeTypes } from './util'
 import { fieldType } from '@/utils/attr'
+import { useI18n } from '@/hooks/web/useI18n'
 
 export interface Menu {
   svgName: string
@@ -10,6 +11,7 @@ export interface Menu {
   command: string
   divided?: boolean
 }
+const { t } = useI18n()
 
 const props = defineProps({
   extField: {
@@ -27,7 +29,7 @@ const props = defineProps({
 })
 const timeTypesChildren = timeTypes.map(ele => {
   return {
-    label: ele === 'custom' ? '自定义' : ele,
+    label: ele === 'custom' ? t('data_set.customize') : ele,
     value: ele
   }
 })
@@ -39,55 +41,55 @@ const options = computed(() => {
       icon: 'icon_switch_outlined'
     },
     {
-      label: '更换字段类型',
+      label: t('data_set.change_field_type'),
       value: 'translateType',
       icon: 'custom_sort',
       children: [
         {
-          label: '文本',
+          label: t('data_set.text'),
           icon: 'icon_text_outlined',
           value: 'text'
         },
         {
-          label: '时间',
+          label: t('data_set.time'),
           icon: 'icon_calendar_outlined',
           value: 'time',
           children: props.showTime ? timeTypesChildren : []
         },
         {
-          label: '地理位置',
+          label: t('data_set.geographical_location'),
           icon: 'icon_local_outlined',
           value: 'location'
         },
         {
-          label: '数值',
+          label: t('data_set.numerical_value'),
           icon: 'icon_number_outlined',
           value: 'value'
         },
         {
-          label: '数值 (小数)',
+          label: t('data_set.numeric_value_decimal'),
           icon: 'icon_number_outlined',
           value: 'float'
         }
       ]
     },
     {
-      label: '编辑',
+      label: t('data_set.edit'),
       value: 'editor',
       icon: 'icon_edit_outlined'
     },
     {
-      label: '重命名',
+      label: t('data_set.rename'),
       value: 'rename',
       icon: 'dv-rename'
     },
     {
-      label: '复制',
+      label: t('data_set.copy'),
       value: 'copy',
       icon: 'icon_copy_outlined'
     },
     {
-      label: '删除',
+      label: t('data_set.delete'),
       value: 'delete',
       icon: 'icon_delete-trash_outlined'
     }

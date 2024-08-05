@@ -158,7 +158,21 @@ export default {
     cannot_be_empty_de_: '表达式不能为空!',
     copy_a_dataset: '复制数据集',
     cannot_be_empty_de_field: '关联字段不能为空!',
-    dataset_cannot_be: '数据集不能为'
+    dataset_cannot_be: '数据集不能为空',
+    save_and_return: '保存并返回',
+    select_data_source: '选择数据源',
+    invalid_data_source: '无效数据源',
+    be_reported_incorrectly:
+      '您正在进行跨数据源的表关联,请确保使用calcite的标准语法和函数,否则会导致数据集报错',
+    refresh_data: '刷新数据',
+    convert_to_indicator: '转换为指标',
+    convert_to_dimension: '转换为维度',
+    selected: '已选择',
+    bar: '条',
+    format_edit: '格式编辑',
+    custom_time_format: '自定义时间格式',
+    cannot_be_empty_: '过滤字段不能为空',
+    cannot_be_empty_de_ruler: '规则条件不能为空'
   },
   dynamic_time: {
     set_default: '设置默认值',
