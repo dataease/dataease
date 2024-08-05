@@ -37,7 +37,7 @@
             v-model="curComponent.multiDimensional.enable"
             @change="multiDimensionalChange"
           >
-            3D
+            3D旋转
           </el-checkbox>
         </el-form-item>
         <template v-if="curComponent.multiDimensional.enable">
