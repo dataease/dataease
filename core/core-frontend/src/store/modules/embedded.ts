@@ -20,6 +20,7 @@ interface AppState {
   datasetId: string
   datasetCopyId: string
   datasetPid: string
+  tokenInfo?: Map<string, object>
 }
 
 export const userStore = defineStore('embedded', {
@@ -43,7 +44,8 @@ export const userStore = defineStore('embedded', {
       tableName: '',
       datasetId: '',
       datasetCopyId: '',
-      datasetPid: ''
+      datasetPid: '',
+      tokenInfo: new Map()
     }
   },
   getters: {
@@ -88,6 +90,9 @@ export const userStore = defineStore('embedded', {
     },
     getOpt(): string {
       return this.opt
+    },
+    getTokenInfo(): Map<string, object> {
+      return this.tokenInfo
     },
     getIframeData(): any {
       return {
@@ -160,7 +165,7 @@ export const userStore = defineStore('embedded', {
     setOpt(opt: string) {
       this.opt = opt
     },
-    setIframeData(data: any) {
+    async setIframeData(data: any) {
       this.type = data['type']
       this.token = data['embeddedToken']
       this.busiFlag = data['busiFlag']
@@ -169,6 +174,9 @@ export const userStore = defineStore('embedded', {
       this.chartId = data['chartId']
       this.pid = data['pid']
       this.resourceId = data['resourceId']
+    },
+    async setTokenInfo(tokenInfo: Map<string, object>) {
+      this.tokenInfo = tokenInfo
     },
     clearState() {
       this.setPid('')

@@ -13,6 +13,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import VanSticky from 'vant/es/sticky'
 import VanNavBar from 'vant/es/nav-bar'
+import request from '@/config/axios'
 import 'vant/es/nav-bar/style'
 import 'vant/es/sticky/style'
 const { wsCache } = useCache()
@@ -44,6 +45,12 @@ onBeforeMount(async () => {
   if (!checkResult) {
     return
   }
+  let tokenInfo = null
+  if (embeddedStore.getToken && !Object.keys((tokenInfo = embeddedStore.getTokenInfo)).length) {
+    const res = await request.get({ url: '/embedded/getTokenArgs' })
+    embeddedStore.setTokenInfo(res.data)
+    tokenInfo = embeddedStore.getTokenInfo
+  }
   // 添加外部参数
   let attachParams
   await getOuterParamsInfo(embeddedStore.dvId).then(rsp => {
@@ -60,6 +67,9 @@ onBeforeMount(async () => {
       console.error(e)
       ElMessage.error(t('visualization.outer_param_decode_error'))
     }
+  }
+  if (tokenInfo && Object.keys(tokenInfo).length) {
+    attachParams = Object.assign({}, attachParams, tokenInfo)
   }
 
   isPc.value = !isMobile()
