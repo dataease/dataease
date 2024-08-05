@@ -9,6 +9,7 @@ import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.i18n.Translator;
+import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -251,6 +252,10 @@ public class Utils {
 
     public static String replaceSchemaAlias(String sql, Map<Long, DatasourceSchemaDTO> dsMap) {
         DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
+        Map map = JsonUtil.parseObject(value.getConfiguration(), Map.class);
+        if (ObjectUtils.isNotEmpty(map.get("schema"))) {
+            return sql;
+        }
         return sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + value.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
     }
 
