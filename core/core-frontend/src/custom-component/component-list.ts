@@ -10,11 +10,32 @@ export const commonStyle = {
 
 export const BASE_EVENTS = {
   checked: false,
-  type: 'displayChange', // openHidden  jump
+  showTips: false,
+  type: 'jump', // openHidden  jump
+  typeList: [
+    { key: 'jump', label: '跳转' },
+    { key: 'download', label: '下载' },
+    { key: 'share', label: '分享' },
+    { key: 'showHidden', label: '弹框区域' },
+    { key: 'refreshDataV', label: '刷新' },
+    { key: 'refreshView', label: '刷新图表' }
+  ],
   jump: {
-    value: null
+    value: 'https://'
   },
-  displayChange: {
+  download: {
+    value: true
+  },
+  share: {
+    value: true
+  },
+  showHidden: {
+    value: true
+  },
+  refreshDataV: {
+    value: true
+  },
+  refreshView: {
     value: true, // 事件当前值 false
     target: 'all'
   }
