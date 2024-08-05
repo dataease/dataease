@@ -142,13 +142,13 @@ const allFieldsColumns = [
   {
     key: 'name',
     dataKey: 'name',
-    title: '字段名称',
+    title: t('data_set.field_name'),
     width: 250
   },
   {
     key: 'deType',
     dataKey: 'deType',
-    title: '字段类型',
+    title: t('data_set.field_type'),
     width: 250,
     cellRenderer: ({ cellData: deType }) => (
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
@@ -166,7 +166,7 @@ const allFieldsColumns = [
   {
     key: 'description',
     dataKey: 'description',
-    title: '字段备注',
+    title: t('data_set.field_notes'),
     width: 250
   }
 ]
@@ -379,13 +379,15 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
     }
 
     if (!!data.children?.length) {
-      options.tip = '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。'
+      options.tip = t('data_set.operate_with_caution')
     } else {
       delete options.tip
     }
 
     ElMessageBox.confirm(
-      nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.delete_this_dataset'),
+      nodeType === 'folder'
+        ? t('data_set.delete_this_folder')
+        : t('datasource.delete_this_dataset'),
       options as ElMessageBoxOptions
     ).then(() => {
       delDatasetTree(data.id).then(() => {
@@ -444,7 +446,7 @@ const nodeCollapse = data => {
 const datasetTypeList = computed(() => {
   return [
     {
-      label: '新建数据集',
+      label: t('data_set.a_new_dataset'),
       svgName: 'icon_dataset',
       command: 'dataset'
     },
@@ -468,27 +470,27 @@ const defaultTab = [
     name: 'dataPreview'
   },
   {
-    title: '结构预览',
+    title: t('data_set.structure_preview'),
     name: 'structPreview'
   }
 ]
 
 const sortList = [
   {
-    name: '按创建时间升序',
+    name: t('data_set.by_creation_time'),
     value: 'time_asc'
   },
   {
-    name: '按创建时间降序',
+    name: t('data_set.by_creation_time_de'),
     value: 'time_desc',
     divided: true
   },
   {
-    name: '按照名称升序',
+    name: t('data_set.by_name_ascending'),
     value: 'name_asc'
   },
   {
-    name: '按照名称降序',
+    name: t('data_set.order_by_name'),
     value: 'name_desc'
   }
 ]
@@ -585,7 +587,12 @@ const getMenuList = (val: boolean) => {
                   <Icon name="dv-new-folder" />
                 </el-icon>
               </el-tooltip>
-              <el-tooltip class="box-item" effect="dark" content="新建数据集" placement="top">
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="t('data_set.a_new_dataset')"
+                placement="top"
+              >
                 <el-icon class="custom-icon btn" @click="createDataset">
                   <Icon name="icon_file-add_outlined" />
                 </el-icon>
@@ -693,7 +700,7 @@ const getMenuList = (val: boolean) => {
       }"
     >
       <template v-if="!state.datasetTree.length && mounted">
-        <empty-background description="暂无数据集" img-type="none">
+        <empty-background :description="t('data_set.data_set_yet')" img-type="none">
           <el-button v-if="rootManage" @click="() => createDataset()" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined"></Icon>
@@ -731,7 +738,7 @@ const getMenuList = (val: boolean) => {
               </el-button>
               <el-button secondary @click="createPanel('dvCanvas')" v-permission="['screen']">
                 <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
-                >新建数据大屏
+                >{{ t('data_set.new_data_screen') }}
               </el-button>
               <el-button type="primary" @click="editorDataset" v-if="nodeInfo.weight >= 7">
                 <template #icon>
@@ -774,7 +781,10 @@ const getMenuList = (val: boolean) => {
                     :height="height"
                     fixed
                     ><template #empty>
-                      <empty-background description="暂无数据" img-type="noneWhite" /> </template
+                      <empty-background
+                        :description="t('data_set.no_data')"
+                        img-type="noneWhite"
+                      /> </template
                   ></el-table-v2>
                 </template>
               </el-auto-resizer>
@@ -810,7 +820,7 @@ const getMenuList = (val: boolean) => {
                     </template>
                   </el-table-column>
                   <template #empty>
-                    <empty-background description="暂无数据" img-type="noneWhite" />
+                    <empty-background :description="t('data_set.no_data')" img-type="noneWhite" />
                   </template>
                 </el-table>
               </template>
