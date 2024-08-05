@@ -114,7 +114,6 @@ const chartPointParentId = chart => {
   return chart.container + '_point_' + chart.id + '_'
 }
 
-
 function removeDivsWithPrefix(parentDivId, prefix) {
   const parentDiv = document.getElementById(parentDivId)
   if (!parentDiv) {
@@ -216,14 +215,14 @@ export const createExtremumPoint = (chart, ev) => {
     containerElement.insertBefore(divParent, containerElement.firstChild)
     // 处理最值闪烁的问题
     let opacity = 0
-    const animate = timestamp => {
+    const animate = () => {
       // 增加不透明度
       opacity += 0.19
       if (opacity >= 1) {
         cancelAnimationFrame(animationFrameId)
         return
       }
-      divParent.style.opacity = opacity
+      divParent.style.opacity = opacity + ''
       animationFrameId = requestAnimationFrame(animate)
     }
     let animationFrameId = requestAnimationFrame(animate)
@@ -242,7 +241,7 @@ export const createExtremumPoint = (chart, ev) => {
   if (pointPoint) {
     geometriesDataArray = pointPoint.dataArray
   }
-  performChunk(geometriesDataArray, (pointObjList, index) => {
+  performChunk(geometriesDataArray, pointObjList => {
     if (pointObjList && pointObjList.length > 0) {
       const pointObj = pointObjList[0]
       const [minItem, maxItem] = pointObjList.filter(i => i._origin.EXTREME)
@@ -339,22 +338,22 @@ function removeDivElement(key) {
 
 /**
  * 用于分批处理数据，利用requestIdleCallback在浏览器空闲期间执行任务，避免阻塞主线程
- * @param datas
+ * @param dataList
  * @param taskHandler
  */
-function performChunk(datas, taskHandler) {
-  if (typeof datas === 'number') {
-    datas = { length: datas }
+function performChunk(dataList, taskHandler) {
+  if (typeof dataList === 'number') {
+    dataList = { length: dataList }
   }
-  if (datas.length === 0) return
+  if (dataList.length === 0) return
   let i = 0
   function _run() {
-    if (i >= datas.length) return
+    if (i >= dataList.length) return
     // 请求浏览器空闲期间执行的回调函数
     requestIdleCallback(idle => {
       // 在当前空闲期间内尽可能多地处理任务，直到时间耗尽或所有任务处理完毕
-      while (idle.timeRemaining() > 0 && i < datas.length) {
-        taskHandler(datas[i], i)
+      while (idle.timeRemaining() > 0 && i < dataList.length) {
+        taskHandler(dataList[i], i)
         i++
       }
       _run()
