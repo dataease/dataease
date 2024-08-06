@@ -402,6 +402,13 @@ const reShow = () => {
   })
 }
 
+watch(
+  () => isEditMode.value,
+  () => {
+    initCarousel()
+  }
+)
+
 const initCarousel = () => {
   carouselTimer && clearInterval(carouselTimer)
   carouselTimer = null
