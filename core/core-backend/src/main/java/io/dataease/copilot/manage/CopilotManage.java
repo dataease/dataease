@@ -119,7 +119,7 @@ public class CopilotManage {
         datasetDataManage.buildFieldName(sqlMap, allFields);
         List<String> strings = transCreateTableFields(allFields);
         String createSql = "CREATE TABLE de_tmp_table (" + StringUtils.join(strings, ",") + ")";
-        logger.info("Copilot Schema SQL: " + createSql);
+        logger.debug("Copilot Schema SQL: " + createSql);
 
 //        PerMsgDTO perMsgDTO = new PerMsgDTO();
         msgDTO.setDatasetGroupId(dto.getId());
@@ -178,7 +178,7 @@ public class CopilotManage {
 //        Order2SQLObj.getOrders(sqlMeta, dto.getSortFields(), allFields, crossDs, dsMap);
 //        String querySQL = SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder);
 //        querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
-//        logger.info("preview sql: " + querySQL);
+//        logger.debug("preview sql: " + querySQL);
 
         // 无法加行权限的情况下，直接用sql
         String querySQL = sql;
@@ -197,7 +197,7 @@ public class CopilotManage {
             s = copilotSQL
                     .replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + "de_tmp_table" + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, "(" + querySQL + ")")
                     .replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + "DE_TMP_TABLE" + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, "(" + querySQL + ")");
-            logger.info("copilot sql: " + s);
+            logger.debug("copilot sql: " + s);
             datasourceRequest.setQuery(s);
             data = provider.fetchResultField(datasourceRequest);
         } catch (Exception e) {
@@ -205,7 +205,7 @@ public class CopilotManage {
                 s = copilotSQL
                         .replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + "de_tmp_table" + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, "(" + querySQL + ") tmp")
                         .replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + "DE_TMP_TABLE" + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, "(" + querySQL + ") tmp");
-                logger.info("copilot sql: " + s);
+                logger.debug("copilot sql: " + s);
                 datasourceRequest.setQuery(s);
                 data = provider.fetchResultField(datasourceRequest);
             } catch (Exception e1) {
@@ -293,8 +293,8 @@ public class CopilotManage {
         if (!receiveDTO.getSqlOk() || !receiveDTO.getChartOk()) {
             DEException.throwException((String) JsonUtil.toJSONString(receiveDTO));
         }
-        logger.info("Copilot Service SQL: " + receiveDTO.getSql());
-        logger.info("Copilot Service Chart: " + JsonUtil.toJSONString(receiveDTO.getChart()));
+        logger.debug("Copilot Service SQL: " + receiveDTO.getSql());
+        logger.debug("Copilot Service Chart: " + JsonUtil.toJSONString(receiveDTO.getChart()));
         return receiveDTO;
     }
 
@@ -461,7 +461,7 @@ public class CopilotManage {
                 SqlNode sqlNode = parser.parseStmt();
                 return sqlNode.toSqlString(dialect).toString().toLowerCase();
             } catch (Exception e) {
-                logger.info("calcite trans copilot SQL error");
+                logger.debug("calcite trans copilot SQL error");
                 return receiveDTO.getSql();
             }
         } else {

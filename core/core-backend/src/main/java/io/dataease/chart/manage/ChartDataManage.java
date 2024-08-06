@@ -721,7 +721,7 @@ public class ChartDataManage {
 
             querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(querySql);
-            logger.info("calcite chart get field enum sql: " + querySql);
+            logger.debug("calcite chart get field enum sql: " + querySql);
 
             data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         }
