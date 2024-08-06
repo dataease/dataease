@@ -86,27 +86,7 @@ public class CoreVisualizationExportManage {
             chartViewDTO = extendDataManage.getChartDataInfo(request.getId(), request);
         } else {
             try {
-                List<String> dsHeader = null;
-                Integer[] dsTypes = null;
-                //downloadType = dataset 为下载原始名字 这里做数据转换模拟 table-info类型图表导出
-                if ("dataset".equals(request.getDownloadType())) {
-                    request.setType("table-info");
-                    request.setIsPlugin(false);
-                    List<DatasetTableFieldDTO> sourceFields = datasetFieldServer.listByDatasetGroup(request.getTableId());
-                    dsHeader = sourceFields.stream()
-                            .map(DatasetTableFieldDTO::getName)
-                            .toList();
-                    dsTypes = sourceFields.stream()
-                            .map(DatasetTableFieldDTO::getDeType)
-                            .toArray(Integer[]::new);
-                    TypeReference<List<ChartViewFieldDTO>> listTypeReference = new TypeReference<List<ChartViewFieldDTO>>(){
-                    };
-                    request.setXAxis(JsonUtil.parseList(JsonUtil.toJSONString(sourceFields).toString(),listTypeReference));
-                }
                 chartViewDTO = chartDataManage.calcData(request);
-                if ("dataset".equals(request.getDownloadType())) {
-                    result.getData().addFirst(dsHeader);
-                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

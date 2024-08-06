@@ -500,7 +500,8 @@ export const exportExcelDownload = (chart, callBack?) => {
     proxy: null,
     viewId: chart.id,
     viewInfo: chart,
-    viewName: excelName
+    viewName: excelName,
+    downloadType: chart.downloadType
   }
   if (chart.type.includes('chart-mix')) {
     const req1 = getExcelDownloadRequest(chart.data.left)

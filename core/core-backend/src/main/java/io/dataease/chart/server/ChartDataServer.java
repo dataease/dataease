@@ -1,5 +1,6 @@
 package io.dataease.chart.server;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.ChartDataApi;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
@@ -8,11 +9,15 @@ import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.CommonConstants;
+import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.manage.ExportCenterManage;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.result.ResultCode;
+import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import io.dataease.visualization.manage.VisualizationTemplateExtendDataManage;
 import jakarta.annotation.Resource;
@@ -51,6 +56,9 @@ public class ChartDataServer implements ChartDataApi {
     @Value("${export.views.limit:500000}")
     private Integer limit;
 
+    @Resource
+    private DatasetFieldServer datasetFieldServer;
+
     @Override
     public ChartViewDTO getData(ChartViewDTO chartViewDTO) throws Exception {
         try {
@@ -70,6 +78,22 @@ public class ChartDataServer implements ChartDataApi {
         try {
             ChartViewDTO viewDTO = request.getViewInfo();
             viewDTO.setIsExcelExport(true);
+            String[] dsHeader = null;
+            Integer[] dsTypes = null;
+            //downloadType = dataset 为下载原始名字 这里做数据转换模拟 table-info类型图表导出
+            if ("dataset".equals(request.getDownloadType())) {
+                viewDTO.setType("table-info");
+                List<DatasetTableFieldDTO> sourceFields = datasetFieldServer.listByDatasetGroup(viewDTO.getTableId());
+                dsHeader = sourceFields.stream()
+                        .map(DatasetTableFieldDTO::getName)
+                        .toArray(String[]::new);
+                dsTypes = sourceFields.stream()
+                        .map(DatasetTableFieldDTO::getDeType)
+                        .toArray(Integer[]::new);
+                TypeReference<List<ChartViewFieldDTO>> listTypeReference = new TypeReference<List<ChartViewFieldDTO>>(){
+                };
+                viewDTO.setXAxis(JsonUtil.parseList(JsonUtil.toJSONString(sourceFields).toString(),listTypeReference));
+            }
             if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode())) {
                 Integer limitCount = viewDTO.getResultCount();
                 viewDTO.setResultCount(limitCount > limit ? limit : limitCount);
@@ -78,6 +102,10 @@ public class ChartDataServer implements ChartDataApi {
             }
             ChartViewDTO chartViewInfo = getData(viewDTO);
             List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
+            if ("dataset".equals(request.getDownloadType())) {
+                request.setHeader(dsHeader);
+                request.setExcelTypes(dsTypes);
+            }
             request.setDetails(tableRow);
         } catch (Exception e) {
             throw new RuntimeException(e);
