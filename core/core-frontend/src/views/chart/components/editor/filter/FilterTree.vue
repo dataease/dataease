@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus-secondary'
 import { inject, computed, ref, nextTick, provide } from 'vue'
-import RowAuth from '@/views/visualized/data/dataset/auth-tree/RowAuth.vue'
+import RowAuth from '@/views/chart/components/editor/filter/auth-tree/RowAuth.vue'
 
 const emits = defineEmits(['filter-data'])
 const filedList = inject('filedList', () => [])
