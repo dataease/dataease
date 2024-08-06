@@ -35,4 +35,7 @@ public class ChartViewDTO extends ChartViewBaseDTO {
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sourceTableId;
+
+    // 数据下载模式 dataset 指的是现在原始数据
+    private String downloadType;
 }

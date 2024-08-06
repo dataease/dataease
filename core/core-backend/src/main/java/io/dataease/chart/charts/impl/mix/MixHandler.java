@@ -86,7 +86,7 @@ public class MixHandler extends YoyChartHandler {
                 req.setDsList(dsMap);
                 var assistSql = assistSQL(originSql, assistFields);
                 req.setQuery(assistSql);
-                logger.info("calcite assistSql sql: " + assistSql);
+                logger.debug("calcite assistSql sql: " + assistSql);
                 var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
                 leftResult.setAssistData(assistData);
                 leftResult.setDynamicAssistFields(leftAssistFields);

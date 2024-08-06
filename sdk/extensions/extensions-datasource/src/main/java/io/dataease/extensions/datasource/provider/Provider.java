@@ -112,7 +112,7 @@ public abstract class Provider {
     }
 
     public String rebuildSQL(String sql, SQLMeta sqlMeta, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap) {
-        logger.info("calcite sql: " + sql);
+        logger.debug("calcite sql: " + sql);
         if (crossDs) {
             return sql;
         }
