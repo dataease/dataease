@@ -205,8 +205,8 @@ defineExpose({
   }
 
   li.select {
-    background: var(--deWhiteHover, #e0eaff) !important;
-    color: var(--TextActive, #3370ff) !important;
+    background: var(--ed-color-primary-1a, #e0eaff) !important;
+    color: var(--ed-color-primary, #3370ff) !important;
   }
 
   .de-btn-fix {
