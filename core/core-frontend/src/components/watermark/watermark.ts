@@ -121,7 +121,7 @@ export function watermark(settings, domId) {
       oTemp.appendChild(mask_div)
     }
   }
-  oTemp.setAttribute('id', 'de-watermark-server')
+  oTemp.setAttribute('id', domId + '-de-watermark-server')
   watermarkDom.appendChild(oTemp)
 }
 
@@ -154,7 +154,7 @@ export function activeWatermark(
   scale = 1
 ) {
   // 清理历史水印
-  const historyWatermarkDom = document.getElementById('de-watermark-server')
+  const historyWatermarkDom = document.getElementById(domId + '-de-watermark-server')
   if (historyWatermarkDom) {
     historyWatermarkDom.remove()
   }
