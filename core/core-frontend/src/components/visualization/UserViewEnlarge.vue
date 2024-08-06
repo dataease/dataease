@@ -41,6 +41,7 @@
         icon="Download"
         size="middle"
         :loading="exportLoading"
+        :disabled="requestStore.loadingMap[permissionStore.currentPath] > 0"
         @click="downloadViewDetails('view')"
       >
         导出Excel
@@ -53,6 +54,7 @@
         size="middle"
         :loading="exportLoading"
         @click="downloadViewDetails('dataset')"
+        :disabled="requestStore.loadingMap[permissionStore.currentPath] > 0"
       >
         导出原始明细
       </el-button>
