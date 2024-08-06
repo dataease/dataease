@@ -41,6 +41,7 @@
         icon="Download"
         size="middle"
         :loading="exportLoading"
+        :disabled="requestStore.loadingMap[permissionStore.currentPath] > 0"
         @click="downloadViewDetails('view')"
       >
         导出Excel
@@ -53,6 +54,7 @@
         size="middle"
         :loading="exportLoading"
         @click="downloadViewDetails('dataset')"
+        :disabled="requestStore.loadingMap[permissionStore.currentPath] > 0"
       >
         导出原始明细
       </el-button>
@@ -78,6 +80,7 @@
       v-if="dialogShow"
     >
       <div
+        id="enlarge-inner-content"
         class="enlarge-inner"
         :class="{
           'enlarge-inner-with-header': optType === 'details' && sourceViewType.includes('chart-mix')
@@ -142,6 +145,8 @@ import { ElMessage, ElButton } from 'element-plus-secondary'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { activeWatermark } from '@/components/watermark/watermark'
+import { personInfoApi } from '@/api/user'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -159,6 +164,7 @@ const { dvInfo, editMode } = storeToRefs(dvMainStore)
 const exportLoading = ref(false)
 const sourceViewType = ref()
 const activeName = ref('left')
+const userInfo = ref(null)
 const DETAIL_CHART_ATTR: DeepPartial<ChartObj> = {
   render: 'antv',
   type: 'table-info',
@@ -262,6 +268,9 @@ const dialogInit = (canvasStyle, view, item, opt) => {
     }
     dataDetailsOpt()
   }
+  nextTick(() => {
+    initWatermark()
+  })
 }
 
 const dataDetailsOpt = () => {
@@ -355,6 +364,7 @@ const htmlToImage = () => {
   downLoading.value = true
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
   setTimeout(() => {
+    initWatermark()
     toPng(viewContainer.value)
       .then(dataUrl => {
         downLoading.value = false
@@ -363,13 +373,44 @@ const htmlToImage = () => {
         a.href = dataUrl
         a.click()
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+        initWatermark()
       })
       .catch(error => {
         downLoading.value = false
+        initWatermark()
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
         console.error('oops, something went wrong!', error)
       })
   }, 500)
+}
+
+const initWatermark = () => {
+  if (dvInfo.value.watermarkInfo) {
+    if (userInfo.value && userInfo.value.model !== 'lose') {
+      activeWatermark(
+        dvInfo.value.watermarkInfo.settingContent,
+        userInfo.value,
+        'enlarge-inner-content',
+        'canvas-main',
+        dvInfo.value.selfWatermarkStatus,
+        0.5
+      )
+    } else {
+      personInfoApi().then(res => {
+        userInfo.value = res.data
+        if (userInfo.value && userInfo.value.model !== 'lose') {
+          activeWatermark(
+            dvInfo.value.watermarkInfo.settingContent,
+            userInfo.value,
+            'enlarge-inner-content',
+            'canvas-main',
+            dvInfo.value.selfWatermarkStatus,
+            0.5
+          )
+        }
+      })
+    }
+  }
 }
 
 defineExpose({
