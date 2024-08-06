@@ -1,6 +1,7 @@
 import { cloneDeep } from 'lodash-es'
 import componentList, {
   ACTION_SELECTION,
+  BASE_CAROUSEL,
   BASE_EVENTS,
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT,
@@ -153,9 +154,11 @@ export function historyAdaptor(
     if (componentItem.component === 'Picture') {
       componentItem.style['adaptation'] = componentItem.style['adaptation'] || 'adaptation'
     }
+    // public
     componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
     componentItem['multiDimensional'] =
       componentItem['multiDimensional'] || deepCopy(MULTI_DIMENSIONAL)
+    componentItem['carousel'] = componentItem['carousel'] || deepCopy(BASE_CAROUSEL)
     componentItem['aspectRatio'] = componentItem['aspectRatio'] || 1
     if (componentItem.component === 'UserView') {
       componentItem.actionSelection = componentItem.actionSelection || deepCopy(ACTION_SELECTION)

@@ -124,6 +124,7 @@ import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 const dvMainStore = dvMainStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
+let carouselTimer = null
 
 const props = defineProps({
   canvasStyleData: {
@@ -401,6 +402,25 @@ const reShow = () => {
   })
 }
 
+const initCarousel = () => {
+  carouselTimer && clearInterval(carouselTimer)
+  carouselTimer = null
+  if (!isEditMode.value) {
+    if (element.value.carousel?.enable) {
+      const switchTime = (element.value.carousel.time || 5) * 1000
+      let switchCount = 1
+      // 轮播定时器
+      carouselTimer = setInterval(() => {
+        const nowIndex = switchCount % element.value.propValue.length
+        switchCount++
+        nextTick(() => {
+          editableTabsValue.value = element.value.propValue[nowIndex].name
+        })
+      }, switchTime)
+    }
+  }
+}
+
 onMounted(() => {
   if (element.value.propValue.length > 0) {
     editableTabsValue.value = element.value.propValue[0].name
@@ -410,12 +430,17 @@ onMounted(() => {
   eventBus.on('onTabMoveOut-' + element.value.id, componentMoveOut)
   eventBus.on('onTabSortChange-' + element.value.id, reShow)
   currentInstance = getCurrentInstance()
+  initCarousel()
 })
 
 onBeforeMount(() => {
   eventBus.off('onTabMoveIn-' + element.value.id, componentMoveIn)
   eventBus.off('onTabMoveOut-' + element.value.id, componentMoveOut)
   eventBus.off('onTabSortChange-' + element.value.id, reShow)
+  if (carouselTimer) {
+    clearInterval(carouselTimer)
+    carouselTimer = null
+  }
 })
 </script>
 <style lang="less" scoped>
