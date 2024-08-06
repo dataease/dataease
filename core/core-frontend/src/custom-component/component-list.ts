@@ -8,6 +8,12 @@ export const commonStyle = {
   opacity: 1
 }
 
+// 轮询设置
+export const BASE_CAROUSEL = {
+  enable: false,
+  time: 10
+}
+
 export const BASE_EVENTS = {
   checked: false,
   showTips: false,
@@ -200,6 +206,7 @@ export const commonAttr = {
   animations: [],
   canvasId: 'canvas-main',
   events: BASE_EVENTS,
+  carousel: BASE_CAROUSEL,
   multiDimensional: MULTI_DIMENSIONAL, // 3d 设置
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
