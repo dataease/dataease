@@ -260,7 +260,7 @@ public class DatasetSQLManage {
             }
             sql = MessageFormat.format("SELECT {0} FROM {1}", f, TableUtils.getTableAndAlias(tableName, getDatasourceType(dsMap, currentDs.getDatasourceId()), isCross));
         }
-        logger.info("calcite origin sql: " + sql);
+        logger.debug("calcite origin sql: " + sql);
         Map<String, Object> map = new HashMap<>();
         map.put("sql", sql);
         map.put("field", checkedFields);

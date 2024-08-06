@@ -122,7 +122,7 @@ public class DatasetDataManage {
             }
             datasourceRequest.setQuery(sql.replaceAll("\r\n", " ")
                     .replaceAll("\n", " "));
-            logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
+            logger.debug("calcite data table field sql: " + datasourceRequest.getQuery());
             // 获取数据源表的原始字段
             if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
                 datasourceRequest.setTable(tableInfoDTO.getTable());
@@ -144,7 +144,7 @@ public class DatasetDataManage {
             sql = Utils.replaceSchemaAlias(sql, datasourceRequest.getDsList());
             sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             datasourceRequest.setQuery(sql);
-            logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
+            logger.debug("calcite data table field sql: " + datasourceRequest.getQuery());
             tableFields = provider.fetchTableField(datasourceRequest);
         }
         return transFields(tableFields, true);
@@ -228,7 +228,7 @@ public class DatasetDataManage {
             querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, start, count);
         }
         querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
-        logger.info("calcite data preview sql: " + querySQL);
+        logger.debug("calcite data preview sql: " + querySQL);
 
         // 通过数据源请求数据
         // 调用数据源的calcite获得data
@@ -276,7 +276,7 @@ public class DatasetDataManage {
             sql = s;
         }
         String querySQL = "SELECT COUNT(*) FROM (" + sql + ") t_a_0";
-        logger.info("calcite data count sql: " + querySQL);
+        logger.debug("calcite data count sql: " + querySQL);
 
         // 通过数据源请求数据
         // 调用数据源的calcite获得data
@@ -373,7 +373,7 @@ public class DatasetDataManage {
         // replace placeholder
         sql = provider.replaceTablePlaceHolder(sql, originSql);
 
-        logger.info("calcite data preview sql: " + sql);
+        logger.debug("calcite data preview sql: " + sql);
         datasourceRequest.setQuery(sql);
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         // 重新构造data
@@ -519,7 +519,7 @@ public class DatasetDataManage {
                 querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, true);
             }
             querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
-            logger.info("calcite data enum sql: " + querySQL);
+            logger.debug("calcite data enum sql: " + querySQL);
 
             // 通过数据源请求数据
             // 调用数据源的calcite获得data
@@ -767,7 +767,7 @@ public class DatasetDataManage {
             querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1);
         }
         querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
-        logger.info("calcite data enum sql: " + querySQL);
+        logger.debug("calcite data enum sql: " + querySQL);
 
         // 通过数据源请求数据
         // 调用数据源的calcite获得data
@@ -898,7 +898,7 @@ public class DatasetDataManage {
             querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, false);
         }
         querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
-        logger.info("filter tree sql: " + querySQL);
+        logger.debug("filter tree sql: " + querySQL);
 
         // 通过数据源请求数据
         // 调用数据源的calcite获得data

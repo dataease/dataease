@@ -110,7 +110,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
-        logger.info("calcite chart sql: " + querySql);
+        logger.debug("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         //自定义排序
         data = ChartDataUtil.resultCustomSort(xAxis, data);
