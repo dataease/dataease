@@ -41,9 +41,20 @@
         icon="Download"
         size="middle"
         :loading="exportLoading"
-        @click="downloadViewDetails"
+        @click="downloadViewDetails('view')"
       >
         导出Excel
+      </el-button>
+      <el-button
+        class="m-button"
+        v-if="optType === 'details' && authShow"
+        link
+        icon="Download"
+        size="middle"
+        :loading="exportLoading"
+        @click="downloadViewDetails('dataset')"
+      >
+        导出原始明细
       </el-button>
       <el-button
         class="m-button"
@@ -275,14 +286,15 @@ const downloadViewImage = () => {
   htmlToImage()
 }
 
-const downloadViewDetails = () => {
+const downloadViewDetails = (downloadType = 'view') => {
   const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
   const chartExtRequest = dvMainStore.getLastViewRequestInfo(viewInfo.value.id)
   const chart = {
     ...viewInfo.value,
     chartExtRequest,
     data: viewDataInfo,
-    type: sourceViewType.value
+    type: sourceViewType.value,
+    downloadType: downloadType
   }
   exportLoading.value = true
   exportExcelDownload(chart, () => {

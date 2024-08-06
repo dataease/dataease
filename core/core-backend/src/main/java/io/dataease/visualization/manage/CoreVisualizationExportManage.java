@@ -5,8 +5,10 @@ import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.constant.CommonConstants;
+import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.ChartViewDTO;
@@ -45,6 +47,9 @@ public class CoreVisualizationExportManage {
     @Resource
     private VisualizationTemplateExtendDataManage extendDataManage;
 
+    @Resource
+    private DatasetFieldServer datasetFieldServer;
+
     public File exportExcel(Long dvId, String busiFlag, List<Long> viewIdList, boolean onlyDisplay) throws Exception {
         DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
@@ -81,7 +86,27 @@ public class CoreVisualizationExportManage {
             chartViewDTO = extendDataManage.getChartDataInfo(request.getId(), request);
         } else {
             try {
+                List<String> dsHeader = null;
+                Integer[] dsTypes = null;
+                //downloadType = dataset 为下载原始名字 这里做数据转换模拟 table-info类型图表导出
+                if ("dataset".equals(request.getDownloadType())) {
+                    request.setType("table-info");
+                    request.setIsPlugin(false);
+                    List<DatasetTableFieldDTO> sourceFields = datasetFieldServer.listByDatasetGroup(request.getTableId());
+                    dsHeader = sourceFields.stream()
+                            .map(DatasetTableFieldDTO::getName)
+                            .toList();
+                    dsTypes = sourceFields.stream()
+                            .map(DatasetTableFieldDTO::getDeType)
+                            .toArray(Integer[]::new);
+                    TypeReference<List<ChartViewFieldDTO>> listTypeReference = new TypeReference<List<ChartViewFieldDTO>>(){
+                    };
+                    request.setXAxis(JsonUtil.parseList(JsonUtil.toJSONString(sourceFields).toString(),listTypeReference));
+                }
                 chartViewDTO = chartDataManage.calcData(request);
+                if ("dataset".equals(request.getDownloadType())) {
+                    result.getData().addFirst(dsHeader);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
