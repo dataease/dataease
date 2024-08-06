@@ -82,6 +82,7 @@
         :class="{
           'enlarge-inner-with-header': optType === 'details' && sourceViewType.includes('chart-mix')
         }"
+        v-loading="requestStore.loadingMap[permissionStore.currentPath]"
         ref="viewContainer"
         :style="customExport"
       >
@@ -139,9 +140,13 @@ import { assign } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage, ElButton } from 'element-plus-secondary'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
+import { useRequestStoreWithOut } from '@/store/modules/request'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
+const requestStore = useRequestStoreWithOut()
+const permissionStore = usePermissionStoreWithOut()
 let viewInfo = ref<DeepPartial<ChartObj>>(null)
 const config = ref(null)
 const canvasStyleData = ref(null)
