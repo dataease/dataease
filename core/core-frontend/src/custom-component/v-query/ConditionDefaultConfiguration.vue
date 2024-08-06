@@ -156,6 +156,85 @@ const relativeToCurrentList = computed(() => {
   ]
 })
 
+const relativeToCurrentListRange = computed(() => {
+  let list = []
+  if (!curComponent.value) return list
+  switch (curComponent.value.timeGranularityMultiple) {
+    case 'yearrange':
+      list = [
+        {
+          label: '今年',
+          value: 'thisYear'
+        },
+        {
+          label: '去年',
+          value: 'lastYear'
+        }
+      ]
+      break
+    case 'monthrange':
+      list = [
+        {
+          label: '本月',
+          value: 'thisMonth'
+        },
+        {
+          label: '上月',
+          value: 'lastMonth'
+        },
+        {
+          label: '最近 3 个 月',
+          value: 'LastThreeMonths'
+        },
+        {
+          label: '最近 6 个 月',
+          value: 'LastSixMonths'
+        },
+        {
+          label: '最近 12 个 月',
+          value: 'LastTwelveMonths'
+        }
+      ]
+      break
+    case 'daterange':
+    case 'datetimerange':
+      list = [
+        {
+          label: '今天',
+          value: 'today'
+        },
+        {
+          label: '昨天',
+          value: 'yesterday'
+        },
+        {
+          label: '最近 3 天',
+          value: 'LastThreeDays'
+        },
+        {
+          label: '月初至今',
+          value: 'monthBeginning'
+        },
+        {
+          label: '年初至今',
+          value: 'yearBeginning'
+        }
+      ]
+      break
+
+    default:
+      break
+  }
+
+  return [
+    ...list,
+    {
+      label: '自定义',
+      value: 'custom'
+    }
+  ]
+})
+
 const aroundList = [
   {
     label: '前',
@@ -405,8 +484,22 @@ defineExpose({
         </div>
       </template>
       <template v-else-if="dynamicTime && curComponent.displayType === '7'">
+        <div class="setting">
+          <div class="setting-label">相对当前</div>
+          <div class="setting-value select">
+            <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrentRange">
+              <el-option
+                v-for="item in relativeToCurrentListRange"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </div>
+        </div>
         <div
           class="setting"
+          v-if="curComponent.relativeToCurrentRange === 'custom'"
           :class="
             ['yearrange', 'monthrange', 'daterange'].includes(
               curComponent.timeGranularityMultiple
@@ -437,6 +530,7 @@ defineExpose({
         </div>
         <div
           class="setting"
+          v-if="curComponent.relativeToCurrentRange === 'custom'"
           :class="
             ['yearrange', 'monthrange', 'daterange'].includes(
               curComponent.timeGranularityMultiple
