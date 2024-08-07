@@ -22,6 +22,8 @@ public class FilterTreeItem implements Serializable {
     private String term;//'eq','not_eq','lt','le','gt','ge','in','not in','like','not like','null','not_null','empty','not_empty','between'
     private String value;// 'a'
     private List<String> enumValue;// ['a','b']
+    private String filterTypeTime;// dateValue | dynamicDate
+    private DynamicTimeSetting dynamicTimeSetting;
     // tree
     private FilterTreeObj subTree;
 }

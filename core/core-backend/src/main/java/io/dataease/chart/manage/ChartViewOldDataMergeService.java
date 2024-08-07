@@ -2,15 +2,16 @@ package io.dataease.chart.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.chart.dao.auto.entity.CoreChartView;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.extensions.view.dto.ChartCustomFilterItemDTO;
 import io.dataease.extensions.view.dto.ChartFieldCustomFilterDTO;
 import io.dataease.extensions.view.filter.FilterTreeItem;
 import io.dataease.extensions.view.filter.FilterTreeObj;
-import io.dataease.chart.dao.auto.entity.CoreChartView;
-import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -146,5 +147,59 @@ public class ChartViewOldDataMergeService {
             }
         }
         return tree;
+    }
+
+    /**
+     * 视图过滤器动态时间兼容老数据
+     */
+    public void refreshFilter() {
+        // 获取所有视图数据
+        // 在filter中增加filterTypeTime = dateValue
+        List<CoreChartView> chartViewWithBLOBs = coreChartViewMapper.selectList(new QueryWrapper<>());
+        if (CollectionUtils.isEmpty(chartViewWithBLOBs)) {
+            return;
+        }
+
+        for (CoreChartView view : chartViewWithBLOBs) {
+            FilterTreeObj filterTreeObj;
+            try {
+                filterTreeObj = JsonUtil.parseObject(view.getCustomFilter(), FilterTreeObj.class);
+            } catch (Exception e) {
+                continue;
+            }
+
+            if (ObjectUtils.isNotEmpty(filterTreeObj)) {
+                if (ObjectUtils.isEmpty(filterTreeObj.getItems())) {
+                    continue;
+                }
+                FilterTreeObj tree = fixFilter(filterTreeObj);
+                view.setCustomFilter((String) JsonUtil.toJSONString(tree));
+            }
+
+            try {
+                coreChartViewMapper.updateById(view);
+            } catch (Exception e) {
+                // do nothing,to continue
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public FilterTreeObj fixFilter(FilterTreeObj filterTreeObj) {
+        doFix(filterTreeObj.getItems());
+        return filterTreeObj;
+    }
+
+    public void doFix(List<FilterTreeItem> items) {
+        if (ObjectUtils.isEmpty(items)) {
+            return;
+        }
+        for (FilterTreeItem item : items) {
+            if (StringUtils.equalsIgnoreCase(item.getType(), "item")) {
+                item.setFilterTypeTime("dateValue");
+            } else {
+                doFix(item.getSubTree().getItems());
+            }
+        }
     }
 }
