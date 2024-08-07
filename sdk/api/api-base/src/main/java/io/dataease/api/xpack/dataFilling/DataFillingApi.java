@@ -51,16 +51,16 @@ public interface DataFillingApi {
     List<ColumnOption> listColumnData(@PathVariable("optionDatasource") Long optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception;
 
     @PostMapping("/form/{id}/tableData")
-    DataFillFormTableDataResponse tableData(@PathVariable Long id, @RequestBody DataFillFormTableDataRequest request) throws Exception;
+    DataFillFormTableDataResponse tableData(@PathVariable("id") Long id, @RequestBody DataFillFormTableDataRequest request) throws Exception;
 
     @GetMapping("/form/{formId}/delete/{id}")
-    void deleteRowData(@PathVariable Long formId, @PathVariable Long id) throws Exception;
+    void deleteRowData(@PathVariable("formId") Long formId, @PathVariable("id") Long id) throws Exception;
 
     @PostMapping("/form/{formId}/batch-delete")
-    void batchDeleteRowData(@PathVariable Long formId, @RequestBody List<Long> ids) throws Exception;
+    void batchDeleteRowData(@PathVariable("formId") Long formId, @RequestBody List<Long> ids) throws Exception;
 
     @PostMapping("/form/{formId}/rowData/save")
-    DataFillFormTableDataResponse saveRowData(@PathVariable Long formId, @RequestBody Map<String, Object> data) throws Exception;
+    DataFillFormTableDataResponse saveRowData(@PathVariable("formId") Long formId, @RequestBody Map<String, Object> data) throws Exception;
 
 
     @GetMapping("/task/info/{taskId}")
@@ -74,38 +74,38 @@ public interface DataFillingApi {
     String logMsg(@RequestBody ReportInstanceMsgRequest request);
 
     @PostMapping("/task/page/{goPage}/{pageSize}")
-    IPage<ReportGridVO> taskPager(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody DfTaskInfoRequest request);
+    IPage<ReportGridVO> taskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfTaskInfoRequest request);
 
     @PostMapping("/sub-task/page/{goPage}/{pageSize}")
-    IPage<DfSubTaskVo> subTaskPager(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody DfSubTaskInfoRequest request);
+    IPage<DfSubTaskVo> subTaskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfSubTaskInfoRequest request);
 
     @PostMapping("/task/delete")
     void batchDeleteTask(@RequestBody List<Long> ids) throws Exception;
 
     @GetMapping("/task/{id}/stop")
-    void stopTask(@PathVariable Long id) throws Exception;
+    void stopTask(@PathVariable("id") Long id) throws Exception;
 
     @GetMapping("/task/{id}/start")
-    void startTask(@PathVariable Long id) throws Exception;
+    void startTask(@PathVariable("id") Long id) throws Exception;
 
     @PostMapping("/sub-task/delete")
     void batchDeleteSubTask(@RequestBody List<Long> ids) throws Exception;
 
     @GetMapping("/sub-task/{id}/users/list/{type}")
-    List<Map<String, Object>> listSubTaskUser(@PathVariable Long id, @PathVariable String type) throws Exception;
+    List<Map<String, Object>> listSubTaskUser(@PathVariable("id") Long id, @PathVariable("type") String type) throws Exception;
 
     @PostMapping("/user-task")
     List<DfUserTaskVo> listUserTask(@RequestBody DfUserTaskRequest request) throws Exception;
 
     @GetMapping("/user-task/list/{id}")
-    DfUserTaskData listUserTaskData(@PathVariable Long id) throws Exception;
+    DfUserTaskData listUserTaskData(@PathVariable("id") Long id) throws Exception;
 
     @PostMapping("/user-task/saveData/{id}")
-    DataFillFormTableDataResponse saveFormRowData(@PathVariable Long id, @RequestBody Map<String, Object> data) throws Exception;
+    DataFillFormTableDataResponse saveFormRowData(@PathVariable("id") Long id, @RequestBody Map<String, Object> data) throws Exception;
 
 
     @PostMapping("/log/page/{goPage}/{pageSize}")
-    IPage<DfCommitLog> taskPager(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody DfCommitLogRequest request);
+    IPage<DfCommitLog> taskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfCommitLogRequest request);
 
 
 }

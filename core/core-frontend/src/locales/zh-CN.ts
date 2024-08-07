@@ -2595,6 +2595,9 @@ export default {
   },
   data_fill: {
     data_fill: '数据填报',
+    data_fill_name: '数据填报名称',
+    p_data_fill_name: '请输入数据填报名称',
+    save_df_success: '保存数据填报成功',
     permission: '填报权限',
     enable: '开启',
     enable_hint: '数据填报开启后，可将表单数据存放至数据源中，一旦开启后，后期不允许关闭。',
@@ -2701,6 +2704,7 @@ export default {
       datetime: '日期'
     },
     data: {
+      commit_time: '提交时间',
       confirm_delete: '确认删除?',
       add_data: '添加数据',
       download_template: '下载模板',
@@ -2715,6 +2719,12 @@ export default {
       data_not_found: ']的数据不存在'
     },
     task: {
+      exec_logs: '执行日志',
+      assign_num: '下发人数',
+      finished_user_num: '已完成人数',
+      unfinished_user_num: '未完成人数',
+      finished_rate: '完成率',
+      confirm_batch_delete: '确定批量删除任务',
       name: '名称',
       creator: '创建人',
       create_time: '创建时间',
@@ -2743,6 +2753,8 @@ export default {
       todo: '待办项',
       finished: '已提交',
       expired: '已过期',
+      running: '进行中',
+      assigned_task: '已下发任务',
       task_finish_in: '在任务下发',
       task_finish_in_suffix: '内完成填报',
       open_sub_task: '查看子任务'

@@ -263,6 +263,9 @@ export default {
   },
   data_fill: {
     data_fill: 'Data Filling',
+    data_fill_name: 'Data Filling Name',
+    p_data_fill_name: 'Data Filling Name',
+    save_df_success: 'Save Success',
     permission: 'Data Filling Permission',
     enable: 'Enable',
     enable_hint: 'Cannot disable after enable',
@@ -370,6 +373,7 @@ export default {
       datetime: 'Datetime'
     },
     data: {
+      commit_time: 'Commit Time',
       confirm_delete: 'Confirm delete?',
       add_data: 'Add Data',
       download_template: 'Download Template',
@@ -384,6 +388,12 @@ export default {
       data_not_found: '] Not Found'
     },
     task: {
+      exec_logs: 'Execute Logs',
+      assign_num: 'Assigned User Count',
+      finished_user_num: 'Finished User Count',
+      unfinished_user_num: 'Unfinished User Count',
+      finished_rate: 'Finished Rate',
+      confirm_batch_delete: 'Confirm to batch delete tasks',
       name: 'Name',
       creator: 'Creator',
       create_time: 'Create Time',
@@ -412,6 +422,8 @@ export default {
       todo: 'Todo',
       finished: 'Committed',
       expired: 'Expired',
+      running: 'Running',
+      assigned_task: 'Assigned Task',
       task_finish_in: 'Task Finished in ',
       task_finish_in_suffix: '',
       open_sub_task: 'Open Sub Tasks'
