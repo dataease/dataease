@@ -101,31 +101,44 @@ public class SqlparserUtils {
     private static void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception {
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof ParenthesedSelect) {
-            if (((ParenthesedSelect) fromItem).getSelect() instanceof SetOperationList) {
-                StringBuilder result = new StringBuilder();
-                SetOperationList setOperationList = (SetOperationList) ((ParenthesedSelect) fromItem).getSelect().getSelectBody();
-                for (int i = 0; i < setOperationList.getSelects().size(); i++) {
-                    result.append(handlePlainSelect((PlainSelect) setOperationList.getSelects().get(i), null, dsType));
-                    if (i < setOperationList.getSelects().size() - 1) {
-                        result.append(" ").append(setOperationList.getOperations().get(i).toString()).append(" ");
-                    }
+            handleParenthesedSelect(fromItem, dsType);
+            plainSelect.setFromItem(fromItem);
+        } else {
+            if (fromItem instanceof ParenthesedFromItem) {
+                fromItem = ((ParenthesedFromItem) fromItem).getFromItem();
+                while (fromItem instanceof ParenthesedFromItem) {
+                    fromItem = ((ParenthesedFromItem) fromItem).getFromItem();
                 }
-            } else {
-                PlainSelect selectBody = ((ParenthesedSelect) fromItem).getSelect().getPlainSelect();
-                Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
-                ((ParenthesedSelect) fromItem).setSelect(subSelectTmp.getSelectBody());
-                if (dsType.equals(DatasourceConfiguration.DatasourceType.oracle.getType())) {
-                    if (fromItem.getAlias() != null) {
-                        fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
-                    }
-                } else {
-                    if (fromItem.getAlias() == null) {
-                        throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
-                    }
-                    fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
-                }
+                handleParenthesedSelect(fromItem, dsType);
             }
             plainSelect.setFromItem(fromItem);
+        }
+    }
+
+    private static void handleParenthesedSelect(FromItem fromItem, String dsType) throws Exception {
+        if (((ParenthesedSelect) fromItem).getSelect() instanceof SetOperationList) {
+            StringBuilder result = new StringBuilder();
+            SetOperationList setOperationList = (SetOperationList) ((ParenthesedSelect) fromItem).getSelect().getSelectBody();
+            for (int i = 0; i < setOperationList.getSelects().size(); i++) {
+                result.append(handlePlainSelect((PlainSelect) setOperationList.getSelects().get(i), null, dsType));
+                if (i < setOperationList.getSelects().size() - 1) {
+                    result.append(" ").append(setOperationList.getOperations().get(i).toString()).append(" ");
+                }
+            }
+        } else {
+            PlainSelect selectBody = ((ParenthesedSelect) fromItem).getSelect().getPlainSelect();
+            Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+            ((ParenthesedSelect) fromItem).setSelect(subSelectTmp.getSelectBody());
+            if (dsType.equals(DatasourceConfiguration.DatasourceType.oracle.getType())) {
+                if (fromItem.getAlias() != null) {
+                    fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                }
+            } else {
+                if (fromItem.getAlias() == null) {
+                    throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                }
+                fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
+            }
         }
     }
 
