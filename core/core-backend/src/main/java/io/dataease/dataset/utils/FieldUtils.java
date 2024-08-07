@@ -31,6 +31,7 @@ public class FieldUtils {
             case "SMALLDATETIME":
             case "DATETIME64":
             case "_TIMESTAMPTZ":
+            case "TIMESTAMPTZ":
                 return 1;// 时间
             case "INT":
             case "SMALLINT":
