@@ -40,7 +40,16 @@ const submit = () => {
     errorMessage: errorMessage.value
   })
 }
-const errorDetected = ({ enumValue, deType, filterType, term, value, name, timeValue }) => {
+const errorDetected = ({
+  enumValue,
+  deType,
+  filterType,
+  term,
+  value,
+  name,
+  timeValue,
+  filterTypeTime
+}) => {
   if (!name) {
     errorMessage.value = t('data_set.cannot_be_empty_')
     return
@@ -64,7 +73,8 @@ const errorDetected = ({ enumValue, deType, filterType, term, value, name, timeV
       !term.includes('null') &&
       !term.includes('empty') &&
       ['', null, undefined].includes(timeValue) &&
-      deType === 1
+      deType === 1 &&
+      filterTypeTime === 'dynamicDate'
     ) {
       errorMessage.value = t('chart.filter_value_can_null')
       return
