@@ -1,19 +1,26 @@
-import {useI18n} from '@/hooks/web/useI18n'
-import {L7PlotChartView, L7PlotDrawOptions} from '@/views/chart/components/js/panel/types/impl/l7plot'
-import {Choropleth, ChoroplethOptions} from '@antv/l7plot/dist/esm/plots/choropleth'
-import {Dot, DotOptions, IPlotLayer} from '@antv/l7plot'
+import { useI18n } from '@/hooks/web/useI18n'
+import {
+  L7PlotChartView,
+  L7PlotDrawOptions
+} from '@/views/chart/components/js/panel/types/impl/l7plot'
+import { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
+import { Dot, DotOptions, IPlotLayer } from '@antv/l7plot'
 import {
   MAP_AXIS_TYPE,
   MAP_EDITOR_PROPERTY,
   MAP_EDITOR_PROPERTY_INNER,
   MapMouseEvent
 } from '@/views/chart/components/js/panel/charts/map/common'
-import {flow, getGeoJsonFile, hexColorToRGBA, parseJson} from '@/views/chart/components/js/util'
-import {cloneDeep} from 'lodash-es'
-import {FeatureCollection} from '@antv/l7plot/dist/esm/plots/choropleth/types'
-import {handleGeoJson, mapRendered, mapRendering} from '@/views/chart/components/js/panel/common/common_antv'
-import {valueFormatter} from '@/views/chart/components/js/formatter'
-import {deepCopy} from '@/utils/utils'
+import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import { cloneDeep } from 'lodash-es'
+import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import {
+  handleGeoJson,
+  mapRendered,
+  mapRendering
+} from '@/views/chart/components/js/panel/common/common_antv'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { deepCopy } from '@/utils/utils'
 
 const { t } = useI18n()
 
