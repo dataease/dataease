@@ -15,7 +15,7 @@ import { storeToRefs } from 'pinia'
 import { addQueryCriteriaConfig } from './options'
 import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
+import { getThisStart, getLastStart, getAround, getCustomRange } from './time-format-dayjs'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
@@ -725,6 +725,7 @@ const validate = () => {
         timeNum,
         relativeToCurrentType,
         around,
+        relativeToCurrentRange,
         timeGranularityMultiple,
         arbitraryTime,
         timeGranularity,
@@ -735,7 +736,7 @@ const validate = () => {
         timeType
       } = ele
 
-      const startTime =
+      let startTime =
         timeType === 'dynamic'
           ? getCustomTime(
               timeNum,
@@ -747,7 +748,7 @@ const validate = () => {
               'start-config'
             )
           : new Date(ele.defaultValue[0])
-      const endTime =
+      let endTime =
         timeType === 'dynamic'
           ? getCustomTime(
               timeNumRange,
@@ -759,6 +760,9 @@ const validate = () => {
               'end-config'
             )
           : new Date(ele.defaultValue[1])
+      if (!relativeToCurrentRange || relativeToCurrentRange === 'custom') {
+        ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
+      }
       if (+startTime > +endTime) {
         ElMessage.error('结束时间必须大于开始时间!')
         return true
