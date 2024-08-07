@@ -15,6 +15,7 @@ import ShareGrid from '@/views/share/share/ShareGrid.vue'
 import ShareHandler from '@/views/share/share/ShareHandler.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
+import { XpackComponent } from '@/components/plugin'
 const userStore = useUserStoreWithOut()
 const { resolve } = useRouter()
 const { t } = useI18n()
@@ -263,6 +264,8 @@ const getEmptyDesc = (): string => {
           </span>
         </template>
       </el-tab-pane>
+
+      <XpackComponent jsname="L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5l" />
     </el-tabs>
     <!-- <XpackComponent jsname="c2hhcmUtcGFuZWw=" @loaded="panelLoad" /> -->
     <!-- <XpackComponent :active-name="activeName" jsname="c2hhcmU=" @set-loading="setLoading" /> -->
@@ -419,6 +422,10 @@ const getEmptyDesc = (): string => {
         </el-table-column>
       </GridTable>
     </div>
+    <XpackComponent
+      jsname="L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5lVGFibGU="
+      v-if="activeName === 'data-filling'"
+    />
   </div>
   <el-empty
     class="dashboard-type"

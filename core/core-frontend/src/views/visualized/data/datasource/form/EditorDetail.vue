@@ -14,6 +14,7 @@ import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
+import { XpackComponent } from '@/components/plugin'
 const { t } = useI18n()
 const prop = defineProps({
   form: {
@@ -28,6 +29,7 @@ const prop = defineProps({
         configuration?: Configuration
         apiConfiguration?: ApiConfiguration[]
         paramsConfiguration?: ApiConfiguration[]
+        enableDataFill?: boolean
       }>({
         id: 0,
         name: '',
@@ -340,16 +342,16 @@ const setItemRef = (ele: ComponentPublicInstance | null | Element) => {
 }
 
 const copyItem = (item?: ApiConfiguration) => {
-  var newItem = JSON.parse(JSON.stringify(item))
+  const newItem = JSON.parse(JSON.stringify(item))
   newItem.deTableName = ''
   newItem.serialNumber =
     form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
-  var reg = new RegExp(item.name + '_copy_' + '([0-9]*)', 'gim')
-  var number = 0
-  for (var i = 1; i < form.value.apiConfiguration.length; i++) {
-    var match = form.value.apiConfiguration[i].name.match(reg)
+  const reg = new RegExp(item.name + '_copy_' + '([0-9]*)', 'gim')
+  let number = 0
+  for (let i = 1; i < form.value.apiConfiguration.length; i++) {
+    const match = form.value.apiConfiguration[i].name.match(reg)
     if (match !== null) {
-      var num = match[0].substring(
+      const num = match[0].substring(
         form.value.apiConfiguration[i].name.length + 5,
         match[0].length - 1
       )
@@ -413,7 +415,7 @@ const resetForm = () => {
 }
 
 const returnItem = apiItem => {
-  var find = false
+  let find = false
   if (apiItem.type !== 'params') {
     apiItem.status = 'Success'
     for (let i = 0; i < form.value.apiConfiguration.length; i++) {
@@ -1227,6 +1229,12 @@ defineExpose({
               </el-col>
             </el-row>
           </template>
+
+          <!--    数据填报      -->
+          <XpackComponent
+            :form="form"
+            jsname="L2NvbXBvbmVudC9kYXRhLWZpbGxpbmcvRGF0YXNvdXJjZUVuYWJsZURhdGFGaWxsaW5n"
+          />
         </template>
       </el-form>
       <el-form

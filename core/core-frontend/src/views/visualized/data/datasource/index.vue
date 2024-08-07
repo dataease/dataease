@@ -366,7 +366,8 @@ const defaultInfo = {
   configuration: null,
   syncSetting: null,
   apiConfiguration: [],
-  weight: 0
+  weight: 0,
+  enableDataFill: false
 }
 const nodeInfo = reactive<Node>(cloneDeep(defaultInfo))
 const infoList = computed(() => {
@@ -504,7 +505,8 @@ const handleNodeClick = data => {
       fileName,
       size,
       description,
-      lastSyncTime
+      lastSyncTime,
+      enableDataFill
     } = res.data
     if (configuration) {
       configuration = JSON.parse(Base64.decode(configuration))
@@ -531,7 +533,8 @@ const handleNodeClick = data => {
       apiConfiguration: apiConfigurationStr,
       paramsConfiguration: paramsStr,
       weight: data.weight,
-      lastSyncTime
+      lastSyncTime,
+      enableDataFill
     })
     activeTab.value = ''
     activeName.value = 'config'
@@ -628,7 +631,8 @@ const editDatasource = (editType?: number) => {
       fileName,
       size,
       description,
-      lastSyncTime
+      lastSyncTime,
+      enableDataFill
     } = res.data
     if (configuration) {
       configuration = JSON.parse(Base64.decode(configuration))
@@ -656,6 +660,7 @@ const editDatasource = (editType?: number) => {
       apiConfiguration: apiConfigurationStr,
       paramsConfiguration: paramsStr,
       lastSyncTime,
+      enableDataFill,
       isPlugin: arr && arr.length > 0,
       staticMap: arr[0]?.staticMap
     })

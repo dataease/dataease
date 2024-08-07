@@ -92,6 +92,11 @@ public abstract class Provider {
      */
     public abstract void hidePW(DatasourceDTO datasourceDTO);
 
+    public abstract void exec(DatasourceRequest datasourceRequest) throws DEException;
+
+    public abstract int executeUpdate(DatasourceRequest datasourceRequest) throws DEException;
+
+
     @Getter
     private static final Map<Long, Integer> lPorts = new HashMap<>();
     @Getter

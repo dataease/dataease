@@ -1,14 +1,18 @@
-package io.dataease.api.report.vo;
+package io.dataease.api.xpack.dataFilling.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.utils.LongArray2StringSerialize;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
-public class ReportGridVO implements Serializable {
+@Accessors(chain = true)
+public class TaskInfoGridVO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -5178055146669970633L;
@@ -25,9 +29,10 @@ public class ReportGridVO implements Serializable {
 
     private Long nextExecTime;
 
+    private String creatBy;
+
     private String creator;
 
-    private String updater;
-
     private Long createTime;
+
 }

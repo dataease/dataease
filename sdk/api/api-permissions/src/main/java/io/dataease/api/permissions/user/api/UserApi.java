@@ -194,4 +194,12 @@ public interface UserApi {
     @PostMapping("/subOrgUser")
     List<UserItem> subOrgUser(@RequestBody List<Long> oidList);
 
+    List<Long> getRecipientUserIds(UserReciRequest request);
+
+    List<Long> getUserIdByAccount(String account);
+
+    List<Long> getUserIdByName(String name);
+
+    List<Map<String, Object>> listUserInfosByIds(List<Long> ids);
+
 }
