@@ -2,7 +2,7 @@ import {
   L7PlotChartView,
   L7PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/l7plot'
-import { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
+import type { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
 import {
   filterChartDataByRange,
   flow,
@@ -17,7 +17,7 @@ import {
   mapRendered,
   mapRendering
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import type { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '../../../formatter'
@@ -27,7 +27,7 @@ import {
   MAP_EDITOR_PROPERTY_INNER,
   MapMouseEvent
 } from '@/views/chart/components/js/panel/charts/map/common'
-import { CategoryLegendListItem } from '@antv/l7plot-component/dist/lib/types/legend'
+import type { CategoryLegendListItem } from '@antv/l7plot-component/dist/lib/types/legend'
 import createDom from '@antv/dom-util/esm/create-dom'
 import {
   CONTAINER_TPL,
@@ -143,6 +143,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     const context = { drawOption, geoJson }
     options = this.setupOptions(chart, options, context)
+    const { Choropleth } = await import('@antv/l7plot/dist/esm/plots/choropleth')
     const view = new Choropleth(container, options)
     this.configZoomButton(chart, view)
     mapRendering(container)

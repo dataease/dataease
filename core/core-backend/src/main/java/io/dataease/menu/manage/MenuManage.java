@@ -100,6 +100,8 @@ public class MenuManage {
                 || coreMenu.getId().equals(28L)
                 || coreMenu.getId().equals(35L)
                 || coreMenu.getId().equals(40L)
-                || coreMenu.getId().equals(50L);
+                || coreMenu.getId().equals(50L)
+                || coreMenu.getId().equals(60L)
+                || coreMenu.getId().equals(61L);
     }
 }

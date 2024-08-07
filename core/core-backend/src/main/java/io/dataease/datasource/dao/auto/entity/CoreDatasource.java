@@ -7,11 +7,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ * 数据源表
  * </p>
  *
  * @author fit2cloud
- * @since 2023-09-26
+ * @since 2024-07-09
  */
 @TableName("core_datasource")
 public class CoreDatasource implements Serializable {
@@ -88,6 +88,11 @@ public class CoreDatasource implements Serializable {
      * 任务状态
      */
     private String taskStatus;
+
+    /**
+     * 开启数据填报
+     */
+    private Boolean enableDataFill;
 
     public Long getId() {
         return id;
@@ -201,6 +206,14 @@ public class CoreDatasource implements Serializable {
         this.taskStatus = taskStatus;
     }
 
+    public Boolean getEnableDataFill() {
+        return enableDataFill;
+    }
+
+    public void setEnableDataFill(Boolean enableDataFill) {
+        this.enableDataFill = enableDataFill;
+    }
+
     @Override
     public String toString() {
         return "CoreDatasource{" +
@@ -218,6 +231,7 @@ public class CoreDatasource implements Serializable {
         ", status = " + status +
         ", qrtzInstance = " + qrtzInstance +
         ", taskStatus = " + taskStatus +
+        ", enableDataFill = " + enableDataFill +
         "}";
     }
 }

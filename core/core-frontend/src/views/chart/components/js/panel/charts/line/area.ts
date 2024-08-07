@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Area as G2Area, AreaOptions } from '@antv/g2plot/esm/plots/area'
+import type { Area as G2Area, AreaOptions } from '@antv/g2plot/esm/plots/area'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
 import {
@@ -22,6 +22,7 @@ import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { clearExtremum, extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -94,7 +95,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     ]
   }
 
-  drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Area>): Promise<G2Area> {
     const { chart, container, action } = drawOptions
     if (!chart.data.data?.length) {
       clearExtremum(chart)
@@ -110,6 +111,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     }
     // options
     const options = this.setupOptions(chart, initOptions)
+    const { Area: G2Area } = await import('@antv/g2plot/esm/plots/area')
     // 开始渲染
     const newChart = new G2Area(container, options)
 
@@ -150,7 +152,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
           return
         }
         const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
+        const group = new Group({})
         group.addShape({
           type: 'text',
           attrs: {

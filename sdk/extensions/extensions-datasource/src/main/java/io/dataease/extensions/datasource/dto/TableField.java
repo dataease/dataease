@@ -19,7 +19,9 @@ public class TableField {
     private Integer deExtractType;
     private int extField;
     private String jsonPath;
+    private boolean primary;
     List<Object> value;
 
+    private int inCount;
 
 }

@@ -2,12 +2,12 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Mix, MixOptions } from '@antv/g2plot/esm/plots/mix'
+import type { Mix, MixOptions } from '@antv/g2plot/esm/plots/mix'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { LINE_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/line/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { Options } from '@antv/g2plot/esm'
+import type { Options } from '@antv/g2plot/esm'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -206,7 +206,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     })
   }
 
-  drawChart(drawOptions: G2PlotDrawOptions<Mix>): Mix {
+  async drawChart(drawOptions: G2PlotDrawOptions<Mix>): Promise<Mix> {
     const { chart, action, container } = drawOptions
     if (!chart.data.data?.length) {
       return
@@ -341,7 +341,8 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
         ...averageLines
       ]
     })
-    const plot = new Mix(container, option)
+    const { Mix: MixClass } = await import('@antv/g2plot/esm/plots/mix')
+    const plot = new MixClass(container, option)
     this.registerEvent(data, plot, averagesLineData)
     plot.on('schema:click', evt => {
       const selectSchema = evt.data.data[xAxisDataeaseName]

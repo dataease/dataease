@@ -576,16 +576,21 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
   if (intervalType === 'timeInterval') {
     const startTime =
       regularOrTrends === 'fixed'
-        ? regularOrTrendsValue[0]
+        ? new Date(
+            dayjs(new Date(regularOrTrendsValue[0])).startOf(noTime).format('YYYY/MM/DD HH:mm:ss')
+          )
         : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
     const endTime =
       regularOrTrends === 'fixed'
-        ? regularOrTrendsValue[1]
+        ? new Date(
+            dayjs(new Date(regularOrTrendsValue[1])).endOf(noTime).format('YYYY/MM/DD HH:mm:ss')
+          )
         : getAround(
             relativeToCurrentTypeRange,
             aroundRange === 'f' ? 'subtract' : 'add',
             timeNumRange
           )
+
     return (
       startWindowTime < +new Date(startTime) - 1000 ||
       timeStamp > +new Date(endTime) ||
@@ -760,7 +765,7 @@ const validate = () => {
               'end-config'
             )
           : new Date(ele.defaultValue[1])
-      if (!relativeToCurrentRange || relativeToCurrentRange === 'custom') {
+      if (!!relativeToCurrentRange && relativeToCurrentRange !== 'custom') {
         ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
       }
       if (+startTime > +endTime) {
@@ -1032,6 +1037,10 @@ const parameterCompletion = () => {
   Object.entries(attributes).forEach(([key, val]) => {
     !curComponent.value[key] && (curComponent.value[key] = val)
   })
+
+  if (!curComponent.value.timeRange.relativeToCurrentRange) {
+    curComponent.value.timeRange.relativeToCurrentRange = 'custom'
+  }
 }
 
 const handleCondition = item => {

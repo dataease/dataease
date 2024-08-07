@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { store } from '../index'
+import { store } from '@/store'
 import { queryTreeApi } from '@/api/visualization/dataVisualization'
 import { getDatasetTree } from '@/api/dataset'
 import { listDatasources } from '@/api/datasource'
@@ -7,6 +7,7 @@ import type { BusiTreeRequest, BusiTreeNode } from '@/models/tree/TreeNode'
 import { pathValid } from '@/store/modules/permission'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { listDataFillingForms } from '@/api/data-filling'
 const appStore = useAppStoreWithOut()
 const { wsCache } = useCache()
 export interface InnerInteractive {
@@ -21,9 +22,9 @@ interface InteractiveState {
   data: Record<number, InnerInteractive>
 }
 
-const apiMap = [queryTreeApi, queryTreeApi, getDatasetTree, listDatasources]
+const apiMap = [queryTreeApi, queryTreeApi, getDatasetTree, listDatasources, listDataFillingForms]
 
-const busiFlagMap = ['dashboard', 'dataV', 'dataset', 'datasource']
+const busiFlagMap = ['dashboard', 'dataV', 'dataset', 'datasource', 'data-filling']
 
 export const interactiveStore = defineStore('interactive', {
   state: (): InteractiveState => ({

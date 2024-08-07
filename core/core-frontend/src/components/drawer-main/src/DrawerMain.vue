@@ -33,6 +33,18 @@ const userDrawer = ref(false)
 const init = () => {
   userDrawer.value = true
 }
+const cleanrInnerValue = (index: number) => {
+  const field = componentList.value[index]?.field
+  if (!field) {
+    return
+  }
+  myRefs.value[index]?.clear()
+  for (let i = 0; i < state.conditions.length; i++) {
+    if (state.conditions[i].field === field) {
+      state.conditions[i].value = []
+    }
+  }
+}
 const clearInnerTag = (index?: number) => {
   if (isNaN(index)) {
     for (let i = 0; i < componentList.value.length; i++) {
@@ -74,6 +86,7 @@ const filterChange = (value, field, operator) => {
   if (!exits && value?.length) {
     state.conditions.push({ field, value, operator })
   }
+  treeFilterChange(value, field, operator)
 }
 const reset = () => {
   clearFilter()
@@ -82,14 +95,22 @@ const reset = () => {
 const close = () => {
   userDrawer.value = false
 }
-const emits = defineEmits(['trigger-filter'])
+const emits = defineEmits(['trigger-filter', 'tree-filter-change'])
 const trigger = () => {
   emits('trigger-filter', state.conditions)
+}
+const treeFilterChange = (value, field, operator) => {
+  emits('tree-filter-change', {
+    value,
+    field,
+    operator
+  })
 }
 defineExpose({
   init,
   clearFilter,
-  close
+  close,
+  cleanrInnerValue
 })
 </script>
 

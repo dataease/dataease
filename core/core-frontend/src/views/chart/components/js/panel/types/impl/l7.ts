@@ -1,4 +1,4 @@
-import { Scene } from '@antv/l7-scene'
+import type { Scene } from '@antv/l7-scene'
 import {
   AntVAbstractChartView,
   AntVDrawOptions,
@@ -7,7 +7,7 @@ import {
 } from '@/views/chart/components/js/panel/types'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { parseJson } from '@/views/chart/components/js/util'
-import { ILayer } from '@antv/l7plot'
+import type { ILayer } from '@antv/l7plot'
 import {
   configL7Label,
   configL7Tooltip,

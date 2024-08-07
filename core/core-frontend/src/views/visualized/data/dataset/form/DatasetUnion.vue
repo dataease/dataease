@@ -363,34 +363,32 @@ const confirmEditUnion = () => {
     }, [])
 
     if (!!idArr.length) {
-      ElMessageBox.confirm(
-        `${t('data_set.field')}${allfields.value
+      ElMessageBox.confirm('字段选择', {
+        confirmButtonText: t('dataset.confirm'),
+        cancelButtonText: t('common.cancel'),
+        showCancelButton: true,
+        tip: `${t('data_set.field')}: ${allfields.value
           .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
           .map(ele => ele.name)
-          .join(',')}${t('data_set.want_to_continue')}`,
-        {
-          confirmButtonText: t('dataset.confirm'),
-          cancelButtonText: t('common.cancel'),
-          showCancelButton: true,
-          confirmButtonType: 'danger',
-          type: 'warning',
-          autofocus: false,
-          showClose: false,
-          callback: (action: Action) => {
-            if (action === 'confirm') {
-              delUpdateDsFields(currentNode.value.id, state.nodeList)
-              const [fir] = state.nodeList
-              if (fir.isShadow) {
-                delete fir.isShadow
-              }
-              closeEditUnion()
-              nextTick(() => {
-                emits('updateAllfields')
-              })
+          .join(',')}, 未被勾选, 与其相关的计算字段将被删除，确认删除？`,
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        showClose: false,
+        callback: (action: Action) => {
+          if (action === 'confirm') {
+            delUpdateDsFields(currentNode.value.id, state.nodeList)
+            const [fir] = state.nodeList
+            if (fir.isShadow) {
+              delete fir.isShadow
             }
+            closeEditUnion()
+            nextTick(() => {
+              emits('updateAllfields')
+            })
           }
         }
-      )
+      })
       return
     }
   }
@@ -449,32 +447,26 @@ const handleCommand = (ele, command) => {
         return pre
       }, [])
       fakeDelId = []
-
       if (!!idArr.length) {
-        ElMessageBox.confirm(
-          `${t('field.want_to_continue')}${allfields.value
-            .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
-            .map(ele => ele.name)
-            .join(',')}${t('data_set.want_to_continue')}`,
-          {
-            confirmButtonText: t('dataset.confirm'),
-            cancelButtonText: t('common.cancel'),
-            showCancelButton: true,
-            confirmButtonType: 'danger',
-            type: 'warning',
-            autofocus: false,
-            showClose: false,
-            callback: (action: Action) => {
-              if (action === 'confirm') {
-                delNode(ele.id, state.nodeList)
-                nextTick(() => {
-                  emits('addComplete')
-                  emits('updateAllfields')
-                })
-              }
+        ElMessageBox.confirm(`确定要删除 ${ele.tableName} 吗`, {
+          confirmButtonText: t('dataset.confirm'),
+          cancelButtonText: t('common.cancel'),
+          showCancelButton: true,
+          tip: '删除后，被关联的表或sql片段将被删除，与其相关的计算字段也将被删除。',
+          confirmButtonType: 'danger',
+          type: 'warning',
+          autofocus: false,
+          showClose: false,
+          callback: (action: Action) => {
+            if (action === 'confirm') {
+              delNode(ele.id, state.nodeList)
+              nextTick(() => {
+                emits('addComplete')
+                emits('updateAllfields')
+              })
             }
           }
-        )
+        })
         return
       }
     }
@@ -529,6 +521,10 @@ const dfsNodeFieldBack = (list, { originName, datasetTableId }) => {
       dfsNodeFieldBack(ele.children, { originName, datasetTableId })
     }
   })
+}
+
+const dfsNodeFieldBackReal = ele => {
+  dfsNodeFieldBack(state.nodeList, ele)
 }
 
 const menuList = [
@@ -1014,7 +1010,7 @@ defineExpose({
   getNodeList,
   setStateBack,
   notConfirm,
-  dfsNodeFieldBack,
+  dfsNodeFieldBackReal,
   initState,
   setChangeStatus,
   crossDatasources

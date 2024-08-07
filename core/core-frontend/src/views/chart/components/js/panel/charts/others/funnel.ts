@@ -1,4 +1,4 @@
-import { FunnelOptions, Funnel as G2Funnel } from '@antv/g2plot/esm/plots/funnel'
+import type { FunnelOptions, Funnel as G2Funnel } from '@antv/g2plot/esm/plots/funnel'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, setUpSingleDimensionSeriesColor } from '@/views/chart/components/js/util'
 import { getPadding } from '../../common/common_antv'
@@ -53,7 +53,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     }
   }
 
-  public drawChart(drawOptions: G2PlotDrawOptions<G2Funnel>): G2Funnel {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Funnel>): Promise<G2Funnel> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {
       return
@@ -104,6 +104,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
       }
     }
     const options = this.setupOptions(chart, baseOptions)
+    const { Funnel: G2Funnel } = await import('@antv/g2plot/esm/plots/funnel')
     const newChart = new G2Funnel(container, options)
     newChart.on('interval:click', action)
     return newChart

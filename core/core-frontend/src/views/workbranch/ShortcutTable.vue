@@ -15,6 +15,7 @@ import ShareGrid from '@/views/share/share/ShareGrid.vue'
 import ShareHandler from '@/views/share/share/ShareHandler.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
+import { XpackComponent } from '@/components/plugin'
 const userStore = useUserStoreWithOut()
 const { resolve } = useRouter()
 const { t } = useI18n()
@@ -138,6 +139,10 @@ const tablePaneList = ref([
   { title: t('work_branch.my_collection'), name: 'store', disabled: false },
   { title: t('visualization.share_out'), name: 'share', disabled: false }
 ])
+
+const loadedDataFilling = data => {
+  tablePaneList.value.push(data)
+}
 
 const busiAuthList = getBusiListWithPermission()
 onMounted(() => {
@@ -419,6 +424,14 @@ const getEmptyDesc = (): string => {
         </el-table-column>
       </GridTable>
     </div>
+    <XpackComponent
+      jsname="L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5l"
+      @loaded="loadedDataFilling"
+    />
+    <XpackComponent
+      jsname="L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5lVGFibGU="
+      v-if="activeName === 'data-filling'"
+    />
   </div>
   <el-empty
     class="dashboard-type"
