@@ -96,10 +96,9 @@ const colorPickerWidth = computed(() => {
 // 暂时关闭
 const eventsShow = computed(() => {
   return (
-    !dashboardActive.value &&
     ['Picture', 'CanvasIcon', 'CircleShape', 'SvgTriangle', 'RectShape', 'ScrollText'].includes(
       element.value.component
-    )
+    ) || element.value.innerType === 'rich-text'
   )
 })
 
@@ -169,10 +168,10 @@ const stopEvent = e => {
         v-if="element && element.events && eventsShow"
         :effect="themes"
         title="事件"
-        name="style"
+        name="events"
         class="common-style-area"
       >
-        <common-event :themes="themes" :element="element"></common-event>
+        <common-event :themes="themes" :events-info="element.events"></common-event>
       </el-collapse-item>
     </el-collapse>
   </div>
