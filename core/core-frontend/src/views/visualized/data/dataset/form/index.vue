@@ -467,8 +467,20 @@ const delFieldByIdFake = (arr, fakeAllfields) => {
 }
 
 const deleteField = item => {
-  ElMessageBox.confirm(t('dataset.confirm_delete'), {
+  let tip = ''
+  const idArr = allfields.value.reduce((pre, next) => {
+    if (next.extField !== 2) return pre
+    const idMap = next.originName.match(/\[(.+?)\]/g) || []
+    const result = idMap.map(itm => {
+      return itm.slice(1, -1)
+    })
+    pre = [...result, ...pre]
+    return pre
+  }, [])
+  tip = idArr.includes(item.id) ? `如果该字段被删除，与其相关的计算字段将被删除，确认删除？` : ''
+  ElMessageBox.confirm(`确认删除字段 ${item.name} 吗`, {
     confirmButtonText: t('dataset.confirm'),
+    tip,
     cancelButtonText: t('common.cancel'),
     showCancelButton: true,
     confirmButtonType: 'danger',
@@ -478,7 +490,7 @@ const deleteField = item => {
     callback: (action: Action) => {
       if (action === 'confirm') {
         delFieldById([item.id])
-        datasetDrag.value.dfsNodeFieldBack(datasetDrag.value.getNodeList(), item)
+        datasetDrag.value.dfsNodeFieldBackReal(item)
         ElMessage({
           message: t('chart.delete_success'),
           type: 'success'
@@ -855,30 +867,28 @@ const confirmEditUnion = () => {
       return pre
     }, [])
 
-    ElMessageBox.confirm(
-      `${t('data_set.field')}${allfields.value
+    ElMessageBox.confirm('字段选择', {
+      confirmButtonText: t('dataset.confirm'),
+      cancelButtonText: t('common.cancel'),
+      showCancelButton: true,
+      tip: `${t('data_set.field')}: ${allfields.value
         .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
         .map(ele => ele.name)
-        .join(',')}${t('data_set.want_to_continue')}`,
-      {
-        confirmButtonText: t('dataset.confirm'),
-        cancelButtonText: t('common.cancel'),
-        showCancelButton: true,
-        confirmButtonType: 'danger',
-        type: 'warning',
-        autofocus: false,
-        showClose: false,
-        callback: (action: Action) => {
-          if (action === 'confirm') {
-            datasetDrag.value.setStateBack(top, bottom)
-            setFieldAll()
-            editUnion.value = false
-            addComplete()
-            datasetDrag.value.setChangeStatus(to, from)
-          }
+        .join(',')}, 未被勾选, 与其相关的计算字段将被删除，确认删除？`,
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false,
+      callback: (action: Action) => {
+        if (action === 'confirm') {
+          datasetDrag.value.setStateBack(top, bottom)
+          setFieldAll()
+          editUnion.value = false
+          addComplete()
+          datasetDrag.value.setChangeStatus(to, from)
         }
       }
-    )
+    })
     return
   }
 
