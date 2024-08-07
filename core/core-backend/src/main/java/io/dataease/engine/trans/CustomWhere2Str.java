@@ -1,22 +1,20 @@
 package io.dataease.engine.trans;
 
+import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
+import io.dataease.extensions.view.filter.DynamicTimeSetting;
 import io.dataease.extensions.view.filter.FilterTreeItem;
 import io.dataease.extensions.view.filter.FilterTreeObj;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.utils.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author Junjun
@@ -153,6 +151,8 @@ public class CustomWhere2Str {
             } else {
                 // 如果是时间字段过滤，当条件是等于和不等于的时候转换成between和not between
                 if (field.getDeType() == 1) {
+                    // 如果是动态时间，计算具体值
+                    value = fixValue(item);
                     if (StringUtils.equalsIgnoreCase(whereTerm, " = ")) {
                         whereTerm = " BETWEEN ";
                         // 把value类似过滤组件处理，获得start time和end time
@@ -177,5 +177,110 @@ public class CustomWhere2Str {
             res = build.getWhereField() + " " + build.getWhereTermAndValue();
         }
         return res;
+    }
+
+    private static String fixValue(FilterTreeItem item) {
+        if (StringUtils.isNotEmpty(item.getFilterTypeTime()) && StringUtils.equalsIgnoreCase(item.getFilterTypeTime(), "dynamicDate")) {
+            DynamicTimeSetting dynamicTimeSetting = item.getDynamicTimeSetting();
+            Calendar instance = Calendar.getInstance();
+            if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getTimeGranularity(), "year")) {
+                if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "thisYear")) {
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "lastYear")) {
+                    instance.add(Calendar.YEAR, -1);
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "custom")) {
+                    if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                        instance.add(Calendar.YEAR, -dynamicTimeSetting.getTimeNum());
+                    } else {
+                        instance.add(Calendar.YEAR, dynamicTimeSetting.getTimeNum());
+                    }
+                }
+                return "" + instance.get(Calendar.YEAR);
+            } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getTimeGranularity(), "month")) {
+                if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "thisMonth")) {
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "lastMonth")) {
+                    instance.add(Calendar.MONTH, -1);
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "custom")) {
+                    if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrentType(), "year")) {
+                        if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                            instance.add(Calendar.YEAR, -dynamicTimeSetting.getTimeNum());
+                        } else {
+                            instance.add(Calendar.YEAR, dynamicTimeSetting.getTimeNum());
+                        }
+                    } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrentType(), "month")) {
+                        if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                            instance.add(Calendar.MONTH, -dynamicTimeSetting.getTimeNum());
+                        } else {
+                            instance.add(Calendar.MONTH, dynamicTimeSetting.getTimeNum());
+                        }
+                    }
+                }
+                return instance.get(Calendar.YEAR) + "-" + (instance.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (instance.get(Calendar.MONTH) + 1);
+            } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getTimeGranularity(), "date")) {
+                if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "today")) {
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "yesterday")) {
+                    instance.add(Calendar.DAY_OF_MONTH, -1);
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "monthBeginning")) {
+                    instance.set(Calendar.DAY_OF_MONTH, 1);
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "yearBeginning")) {
+                    instance.set(Calendar.MONTH, 0);
+                    instance.set(Calendar.DAY_OF_MONTH, 1);
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "custom")) {
+                    if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrentType(), "year")) {
+                        if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                            instance.add(Calendar.YEAR, -dynamicTimeSetting.getTimeNum());
+                        } else {
+                            instance.add(Calendar.YEAR, dynamicTimeSetting.getTimeNum());
+                        }
+                    } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrentType(), "month")) {
+                        if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                            instance.add(Calendar.MONTH, -dynamicTimeSetting.getTimeNum());
+                        } else {
+                            instance.add(Calendar.MONTH, dynamicTimeSetting.getTimeNum());
+                        }
+                    } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrentType(), "date")) {
+                        if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                            instance.add(Calendar.DAY_OF_MONTH, -dynamicTimeSetting.getTimeNum());
+                        } else {
+                            instance.add(Calendar.DAY_OF_MONTH, dynamicTimeSetting.getTimeNum());
+                        }
+                    }
+                }
+                return instance.get(Calendar.YEAR) + "-" + (instance.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (instance.get(Calendar.MONTH) + 1) + "-" + (instance.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + instance.get(Calendar.DAY_OF_MONTH);
+            } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getTimeGranularity(), "datetime")) {
+                String time = " 00:00:00";
+                if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "today")) {
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "yesterday")) {
+                    instance.add(Calendar.DAY_OF_MONTH, -1);
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "monthBeginning")) {
+                    instance.set(Calendar.DAY_OF_MONTH, 1);
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "yearBeginning")) {
+                    instance.set(Calendar.MONTH, 0);
+                    instance.set(Calendar.DAY_OF_MONTH, 1);
+                } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrent(), "custom")) {
+                    time = " " + dynamicTimeSetting.getArbitraryTime().substring(11, 19);
+                    if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrentType(), "year")) {
+                        if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                            instance.add(Calendar.YEAR, -dynamicTimeSetting.getTimeNum());
+                        } else {
+                            instance.add(Calendar.YEAR, dynamicTimeSetting.getTimeNum());
+                        }
+                    } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrentType(), "month")) {
+                        if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                            instance.add(Calendar.MONTH, -dynamicTimeSetting.getTimeNum());
+                        } else {
+                            instance.add(Calendar.MONTH, dynamicTimeSetting.getTimeNum());
+                        }
+                    } else if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getRelativeToCurrentType(), "date")) {
+                        if (StringUtils.equalsIgnoreCase(dynamicTimeSetting.getAround(), "f")) {
+                            instance.add(Calendar.DAY_OF_MONTH, -dynamicTimeSetting.getTimeNum());
+                        } else {
+                            instance.add(Calendar.DAY_OF_MONTH, dynamicTimeSetting.getTimeNum());
+                        }
+                    }
+                }
+                return instance.get(Calendar.YEAR) + "-" + (instance.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (instance.get(Calendar.MONTH) + 1) + "-" + (instance.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + instance.get(Calendar.DAY_OF_MONTH) + time;
+            }
+        }
+        return item.getValue();
     }
 }
