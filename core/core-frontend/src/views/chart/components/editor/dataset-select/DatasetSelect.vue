@@ -10,6 +10,8 @@ import { ElFormItem, FormInstance } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useCache } from '@/hooks/web/useCache'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
 
 const { wsCache } = useCache('localStorage')
 const userStore = useUserStoreWithOut()
@@ -200,6 +202,20 @@ function onPopoverHide() {
 function getNode(nodeId: number) {
   return datasetSelector?.value?.getNode(nodeId)
 }
+
+const clearShow = computed(
+  () =>
+    props.sourceType === 'dataset' &&
+    dvMainStore.curComponent &&
+    dvMainStore.curComponent.innerType === 'rich-text'
+)
+
+const handleClear = e => {
+  e.preventDefault()
+  e.stopPropagation()
+  dsClick({ leaf: true, id: null } as Tree)
+}
+
 const handleFocus = () => {
   if (
     props.sourceType === 'dataset' &&
@@ -246,7 +262,6 @@ onMounted(() => {
               size="middle"
               :effect="themes"
               v-model="selectedNodeName"
-              readonly
               class="data-set-dark"
               @focus="handleFocus"
               :placeholder="'请选择' + sourceName"
@@ -254,6 +269,9 @@ onMounted(() => {
               <template #suffix>
                 <el-icon class="input-arrow-icon" :class="{ reverse: _popoverShow }">
                   <ArrowDown />
+                </el-icon>
+                <el-icon v-if="clearShow" class="input-custom-clear-icon" @click="handleClear">
+                  <CircleClose />
                 </el-icon>
               </template>
             </el-input>
@@ -367,6 +385,9 @@ onMounted(() => {
 </style>
 
 <style lang="less">
+.input-custom-clear-icon {
+  font-size: 14px;
+}
 .input-arrow-icon {
   font-size: 16px;
   transform: rotateZ(0);
