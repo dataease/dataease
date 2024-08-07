@@ -74,6 +74,9 @@ public interface DatasourceApi {
     @GetMapping("/get/{datasourceId}")
     DatasourceDTO get(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
+    DatasourceDTO innerGet(Long datasourceId) throws DEException;
+    List<DatasourceDTO> innerList(List<Long> ids) throws DEException;
+
     @DePermit({"#p0+':read'"})
     @GetMapping("/hidePw/{datasourceId}")
     DatasourceDTO hidePw(@PathVariable("datasourceId") Long datasourceId) throws DEException;

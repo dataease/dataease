@@ -1,7 +1,7 @@
 import { ref, onBeforeUnmount, onMounted } from 'vue'
 import { useCache } from '@/hooks/web/useCache'
 
-type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE'
+type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE' | 'DATA-FILLING'
 
 export const useMoveLine = (type: Sidebar) => {
   const { wsCache } = useCache('localStorage')

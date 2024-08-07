@@ -1,5 +1,6 @@
 package io.dataease.datasource.server;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -356,7 +357,8 @@ public class DatasourceServer implements DatasourceApi {
         List<String> toCreateTables = new ArrayList<>();
         List<String> toDeleteTables = new ArrayList<>();
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
-            List<String> sourceTables = ApiUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
+            requestDatasource.setEnableDataFill(null);
+            List<String> sourceTables = ApiUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).toList();
             List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
             List<String> tables = datasetTableDTOS.stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
             checkName(datasetTableDTOS.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
@@ -410,6 +412,7 @@ public class DatasourceServer implements DatasourceApi {
             dataSourceManage.checkName(dataSourceDTO);
             dataSourceManage.innerEdit(requestDatasource);
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+            requestDatasource.setEnableDataFill(null);
             List<String> sourceTables = ExcelUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
             List<String> tables = ExcelUtils.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
             if (dataSourceDTO.getEditType() == 0) {
@@ -439,6 +442,9 @@ public class DatasourceServer implements DatasourceApi {
                 dataSourceManage.innerEdit(requestDatasource);
             }
         } else {
+            if (!LicenseUtil.licenseValid()) {
+                requestDatasource.setEnableDataFill(null);
+            }
             checkParams(dataSourceDTO.getConfiguration());
             dataSourceManage.checkName(dataSourceDTO);
             dataSourceManage.innerEdit(requestDatasource);
@@ -515,12 +521,39 @@ public class DatasourceServer implements DatasourceApi {
         return getDatasourceDTOById(datasourceId, false);
     }
 
+    @Override
+    public DatasourceDTO innerGet(Long datasourceId) throws DEException {
+        return getDatasourceDTOById(datasourceId, false);
+    }
+
+    @Override
+    public List<DatasourceDTO> innerList(List<Long> ids) throws DEException {
+        List<DatasourceDTO> list = new ArrayList<>();
+        LambdaQueryWrapper<CoreDatasource> queryWrapper = new LambdaQueryWrapper<>();
+        if (ids != null) {
+            if (ids.isEmpty()) {
+                return list;
+            } else {
+                queryWrapper.in(CoreDatasource::getId, ids);
+            }
+        }
+        List<CoreDatasource> dsList = datasourceMapper.selectList(queryWrapper);
+        for (CoreDatasource datasource : dsList) {
+            list.add(convertCoreDatasource(datasource.getId(), false, datasource));
+        }
+        return list;
+    }
+
     private DatasourceDTO getDatasourceDTOById(Long datasourceId, boolean hidePw) throws DEException {
-        DatasourceDTO datasourceDTO = new DatasourceDTO();
         CoreDatasource datasource = datasourceMapper.selectById(datasourceId);
         if (datasource == null) {
             DEException.throwException("不存在的数据源！");
         }
+        return convertCoreDatasource(datasourceId, hidePw, datasource);
+    }
+
+    private DatasourceDTO convertCoreDatasource(Long datasourceId, boolean hidePw, CoreDatasource datasource) {
+        DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, datasource);
 
         if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {

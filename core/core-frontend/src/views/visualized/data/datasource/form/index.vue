@@ -432,7 +432,7 @@ const saveDS = () => {
 
     return
   } else if (currentDsType.value === 'API') {
-    for (var i = 0; i < request.apiConfiguration.length; i++) {
+    for (let i = 0; i < request.apiConfiguration.length; i++) {
       if (
         request.apiConfiguration[i].deTableName === '' ||
         request.apiConfiguration[i].deTableName === undefined ||
@@ -445,7 +445,7 @@ const saveDS = () => {
           uuid.v1().replaceAll('-', '').substring(0, 10)
       }
       request.apiConfiguration[i].jsonFields = []
-      for (var j = 0; j < request.apiConfiguration[i].fields.length; j++) {
+      for (let j = 0; j < request.apiConfiguration[i].fields.length; j++) {
         request.apiConfiguration[i].fields[j].value = []
       }
     }
