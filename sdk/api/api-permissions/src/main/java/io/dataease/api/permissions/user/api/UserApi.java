@@ -190,4 +190,8 @@ public interface UserApi {
     @GetMapping("/invalidPwd")
     InvalidPwdVO invalidPwd();
 
+    @Hidden
+    @PostMapping("/subOrgUser")
+    List<UserItem> subOrgUser(@RequestBody List<Long> oidList);
+
 }
