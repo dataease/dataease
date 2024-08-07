@@ -107,7 +107,8 @@ const state = reactive({
   data: null,
   viewDataInfo: null,
   totalItems: 0,
-  firstRender: true
+  firstRender: true,
+  previewFirstRender: true
 })
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
@@ -465,11 +466,9 @@ const initCurFields = chartDetails => {
 
 // 初始化此处不必刷新
 const renderChart = viewInfo => {
-  if (!state.firstRender) {
-    calcData(viewInfo)
-  } else {
-    state.firstRender = false
-  }
+  //do renderView
+  initCurFieldsChange()
+  eventBus.emit('initCurFields-' + element.value.id)
 }
 
 const conditionAdaptor = (chart: Chart) => {
