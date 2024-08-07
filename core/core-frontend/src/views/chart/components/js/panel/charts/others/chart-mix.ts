@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { DualAxes, DualAxesOptions } from '@antv/g2plot/esm/plots/dual-axes'
+import type { DualAxes, DualAxesOptions } from '@antv/g2plot/esm/plots/dual-axes'
 import {
   getAnalyse,
   getLabel,
@@ -21,10 +21,11 @@ import {
   CHART_MIX_EDITOR_PROPERTY_INNER,
   MixChartBasicStyle
 } from './chart-mix-common'
-import { Datum } from '@antv/g2plot/esm/types/common'
+import type { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
-import { Options } from '@antv/g2plot/esm'
+import type { Options } from '@antv/g2plot/esm'
+import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -62,7 +63,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       type: 'q'
     }
   }
-  drawChart(drawOptions: G2PlotDrawOptions<DualAxes>): DualAxes {
+  async drawChart(drawOptions: G2PlotDrawOptions<DualAxes>): Promise<DualAxes> {
     const { chart, action, container } = drawOptions
     if (!chart.data?.left?.data?.length && !chart.data?.right?.data?.length) {
       return
@@ -138,7 +139,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       ]
     }
     const options = this.setupOptions(chart, initOptions)
-
+    const { DualAxes } = await import('@antv/g2plot/esm/plots/dual-axes')
     // 开始渲染
     const newChart = new DualAxes(container, options)
 
@@ -190,7 +191,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
             return
           }
           const value = valueFormatter(data.value, labelCfg.formatterCfg)
-          const group = new G2PlotChartView.engine.Group({})
+          const group = new Group({})
           group.addShape({
             type: 'text',
             attrs: {

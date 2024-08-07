@@ -26,7 +26,7 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
   propertyInner: EditorPropertyInner = PIE_EDITOR_PROPERTY_INNER
   axisConfig = PIE_AXIS_CONFIG
 
-  drawChart(drawOptions: G2PlotDrawOptions<G2Rose>): G2Rose {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Rose>): Promise<G2Rose> {
     const { chart, container, action } = drawOptions
     if (!chart?.data?.data?.length) {
       return
@@ -79,9 +79,8 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
       }
     }
     const options = this.setupOptions(chart, baseOptions)
-    // custom color
-    // options.color = antVCustomColor(chart)
 
+    const { Rose: G2Rose } = await import('@antv/g2plot/esm/plots/rose')
     // 开始渲染
     const plot = new G2Rose(container, options)
 

@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Bar, BarOptions } from '@antv/g2plot/esm/plots/bar'
+import type { Bar, BarOptions } from '@antv/g2plot/esm/plots/bar'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep, find } from 'lodash-es'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
@@ -107,7 +107,7 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
     ]
   }
 
-  drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
+  async drawChart(drawOptions: G2PlotDrawOptions<Bar>): Promise<Bar> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
       return
@@ -163,8 +163,9 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
 
     const options = this.setupOptions(chart, initOptions)
 
+    const { Bar: BarClass } = await import('@antv/g2plot/esm/plots/bar')
     // 开始渲染
-    const newChart = new Bar(container, options)
+    const newChart = new BarClass(container, options)
 
     newChart.on('interval:click', action)
 

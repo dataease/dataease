@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Pie as G2Pie, PieOptions } from '@antv/g2plot/esm/plots/pie'
+import type { Pie as G2Pie, PieOptions } from '@antv/g2plot/esm/plots/pie'
 import {
   flow,
   hexColorToRGBA,
@@ -20,7 +20,7 @@ import {
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/pie/common'
-import { Datum } from '@antv/g2plot/esm/types/common'
+import type { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
 import { cloneDeep } from 'lodash-es'
@@ -35,7 +35,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   }
   axisConfig = PIE_AXIS_CONFIG
 
-  drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): Promise<G2Pie> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
       return
@@ -114,7 +114,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
       }
     }
     const options = this.setupOptions(chart, initOptions)
-
+    const { Pie: G2Pie } = await import('@antv/g2plot/esm/plots/pie')
     const newChart = new G2Pie(container, options)
     newChart.on('interval:click', action)
     return newChart

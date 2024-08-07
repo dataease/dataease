@@ -55,7 +55,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
     }
   }
 
-  public drawChart(drawOptions: G2PlotDrawOptions<G2Treemap>): G2Treemap {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Treemap>): Promise<G2Treemap> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
       return
@@ -102,6 +102,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
       ]
     }
     const options = this.setupOptions(chart, baseOptions)
+    const { Treemap: G2Treemap } = await import('@antv/g2plot/esm/plots/treemap')
     const newChart = new G2Treemap(container, options)
     newChart.on('polygon:click', action)
     return newChart

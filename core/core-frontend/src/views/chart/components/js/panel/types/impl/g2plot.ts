@@ -1,5 +1,5 @@
-import { PickOptions } from '@antv/g2plot/esm/core/plot'
-import { Plot } from '@antv/g2plot/esm/core/plot'
+import type { PickOptions } from '@antv/g2plot/esm/core/plot'
+import type { Plot } from '@antv/g2plot/esm/core/plot'
 import {
   getAnalyse,
   getAnalyseHorizontal,
@@ -18,7 +18,7 @@ import {
   ChartLibraryType,
   ChartWrapper
 } from '@/views/chart/components/js/panel/types'
-import { getEngine } from '@antv/g2/esm/core'
+
 import {
   getColor,
   getGroupColor,
@@ -79,14 +79,12 @@ export abstract class G2PlotChartView<
   O extends PickOptions = PickOptions,
   P extends Plot<O> = Plot<O>
 > extends AntVAbstractChartView {
-  protected static engine = getEngine('canvas')
-
   /**
    * 根据参数构建图表对象然后返回
    * @param drawOptions 图表配置参数
    * @return 生成的图表对象，类型为 Plot 的子类
    */
-  public abstract drawChart(drawOptions: G2PlotDrawOptions<P>): G2PlotWrapper<O, P> | P
+  public abstract drawChart(drawOptions: G2PlotDrawOptions<P>): G2PlotWrapper<O, P> | P | Promise<P>
 
   protected configTheme(chart: Chart, options: O): O {
     const theme = getTheme(chart)

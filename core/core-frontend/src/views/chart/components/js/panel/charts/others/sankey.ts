@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Sankey, SankeyOptions } from '@antv/g2plot/esm/plots/sankey'
+import type { Sankey, SankeyOptions } from '@antv/g2plot/esm/plots/sankey'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep, get } from 'lodash-es'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
@@ -95,7 +95,7 @@ export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
     ]
   }
 
-  drawChart(drawOptions: G2PlotDrawOptions<Sankey>): Sankey {
+  async drawChart(drawOptions: G2PlotDrawOptions<Sankey>): Promise<Sankey> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
       return
@@ -158,7 +158,7 @@ export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
     }
 
     const options = this.setupOptions(chart, initOptions)
-
+    const { Sankey } = await import('@antv/g2plot/esm/plots/sankey')
     // 开始渲染
     const newChart = new Sankey(container, options)
 
