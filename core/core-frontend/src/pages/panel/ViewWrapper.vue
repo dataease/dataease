@@ -113,8 +113,15 @@ onBeforeMount(async () => {
     }
   )
 })
-const userViewEnlargeOpen = () => {
-  userViewEnlargeRef.value.dialogInit(state.canvasStylePreview, viewInfo.value, config.value)
+const userViewEnlargeOpen = (a, b) => {
+  console.log(a, b, 'item')
+
+  userViewEnlargeRef.value.dialogInit(
+    state.canvasStylePreview,
+    viewInfo.value,
+    config.value,
+    'details'
+  )
 }
 
 const onPointClick = param => {
