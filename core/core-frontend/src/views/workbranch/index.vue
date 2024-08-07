@@ -154,8 +154,10 @@ const fillCardInfo = () => {
     if (key !== '3') {
       busiCountCardList.value.push(busiDataMap.value[key])
     }
-    quickCreationList.value[key]['menuAuth'] = busiDataMap.value[key]['menuAuth']
-    quickCreationList.value[key]['anyManage'] = busiDataMap.value[key]['anyManage']
+    if (quickCreationList.value[key]) {
+      quickCreationList.value[key]['menuAuth'] = busiDataMap.value[key]['menuAuth']
+      quickCreationList.value[key]['anyManage'] = busiDataMap.value[key]['anyManage']
+    }
   }
 }
 const quickCreate = (flag: number, hasAuth: boolean) => {
