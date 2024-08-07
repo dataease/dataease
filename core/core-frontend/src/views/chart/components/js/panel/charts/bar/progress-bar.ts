@@ -2,7 +2,7 @@ import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, hexColorToRGBA, parseJson } from '../../../util'
 import { setGradientColor } from '../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Bar as G2Progress, BarOptions } from '@antv/g2plot/esm/plots/bar'
+import type { Bar as G2Progress, BarOptions } from '@antv/g2plot/esm/plots/bar'
 import {
   BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY_INNER
@@ -66,7 +66,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     appendPadding: [0, 0, 10, 0]
   }
 
-  drawChart(drawOptions: G2PlotDrawOptions<G2Progress>): G2Progress {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Progress>): Promise<G2Progress> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
       return
@@ -128,6 +128,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     }
     const options = this.setupOptions(chart, initOptions)
 
+    const { Bar: G2Progress } = await import('@antv/g2plot/esm/plots/bar')
     // 开始渲染
     const newChart = new G2Progress(container, options)
 

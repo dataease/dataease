@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Bar, BarOptions } from '@antv/g2plot/esm/plots/bar'
+import type { Bar, BarOptions } from '@antv/g2plot/esm/plots/bar'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
 import {
@@ -17,9 +17,10 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
-import { Datum } from '@antv/g2plot/esm/types/common'
+import type { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
+import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -105,7 +106,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     ]
   }
 
-  drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
+  async drawChart(drawOptions: G2PlotDrawOptions<Bar>): Promise<Bar> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
       return
@@ -122,6 +123,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
 
     const options = this.setupOptions(chart, initOptions)
 
+    const { Bar } = await import('@antv/g2plot/esm/plots/bar')
     // 开始渲染
     const newChart = new Bar(container, options)
 
@@ -238,7 +240,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
           return
         }
         const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
+        const group = new Group({})
         group.addShape({
           type: 'text',
           attrs: {

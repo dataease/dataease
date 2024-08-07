@@ -225,7 +225,7 @@ const renderChart = async (view, callback?) => {
       await renderL7(chart, chartView as L7ChartView<any, any>, callback)
       break
     case ChartLibraryType.G2_PLOT:
-      renderG2Plot(chart, chartView as G2PlotChartView<any, any>)
+      await renderG2Plot(chart, chartView as G2PlotChartView<any, any>)
       callback?.()
       break
     default:
@@ -233,9 +233,9 @@ const renderChart = async (view, callback?) => {
   }
 }
 let myChart = null
-const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
+const renderG2Plot = async (chart, chartView: G2PlotChartView<any, any>) => {
   myChart?.destroy()
-  myChart = chartView.drawChart({
+  myChart = await chartView.drawChart({
     chartObj: myChart,
     container: containerId,
     chart: chart,

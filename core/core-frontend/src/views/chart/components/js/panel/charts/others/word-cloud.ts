@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { WordCloud as G2WordCloud, WordCloudOptions } from '@antv/g2plot/esm/plots/word-cloud'
+import type { WordCloud as G2WordCloud, WordCloudOptions } from '@antv/g2plot/esm/plots/word-cloud'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
@@ -56,7 +56,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
       limit: 1
     }
   }
-  drawChart(drawOptions: G2PlotDrawOptions<G2WordCloud>): G2WordCloud {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2WordCloud>): Promise<G2WordCloud> {
     const { chart, container, action } = drawOptions
     if (chart?.data) {
       // data
@@ -80,6 +80,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
         interactions: []
       }
       const options = this.setupOptions(chart, initOptions)
+      const { WordCloud: G2WordCloud } = await import('@antv/g2plot/esm/plots/word-cloud')
       const newChart = new G2WordCloud(container, options)
       newChart.on('point:click', param => {
         action({ x: param.x, y: param.y, data: { data: param.data.data.datum } })

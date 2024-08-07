@@ -1,4 +1,4 @@
-import { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot/esm/plots/waterfall'
+import type { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot/esm/plots/waterfall'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, hexColorToRGBA, parseJson } from '../../../util'
 import { valueFormatter } from '../../../formatter'
@@ -60,7 +60,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     ]
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
-  public drawChart(drawOptions: G2PlotDrawOptions<G2Waterfall>): G2Waterfall {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Waterfall>): Promise<G2Waterfall> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {
       return
@@ -83,6 +83,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       ]
     }
     const options = this.setupOptions(chart, baseOptions)
+    const { Waterfall: G2Waterfall } = await import('@antv/g2plot/esm/plots/waterfall')
     const newChart = new G2Waterfall(container, options)
     newChart.on('interval:click', action)
     return newChart

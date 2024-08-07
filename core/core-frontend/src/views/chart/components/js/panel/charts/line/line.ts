@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Line as G2Line, LineOptions } from '@antv/g2plot/esm/plots/line'
+import type { Line as G2Line, LineOptions } from '@antv/g2plot/esm/plots/line'
 import { getPadding } from '../../common/common_antv'
 import {
   flow,
@@ -17,10 +17,11 @@ import {
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/line/common'
-import { Datum } from '@antv/g2plot/esm/types/common'
+import type { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { clearExtremum, extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -46,7 +47,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       type: 'q'
     }
   }
-  drawChart(drawOptions: G2PlotDrawOptions<G2Line>): G2Line {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Line>): Promise<G2Line> {
     const { chart, action, container } = drawOptions
     if (!chart.data.data?.length) {
       clearExtremum(chart)
@@ -105,6 +106,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       ]
     }
     const options = this.setupOptions(chart, initOptions)
+    const { Line: G2Line } = await import('@antv/g2plot/esm/plots/line')
     // 开始渲染
     const newChart = new G2Line(container, options)
 
@@ -147,7 +149,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
           return
         }
         const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
+        const group = new Group({})
         group.addShape({
           type: 'text',
           attrs: {

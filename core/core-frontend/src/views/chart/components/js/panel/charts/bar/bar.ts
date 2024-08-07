@@ -1,4 +1,4 @@
-import { Column, ColumnOptions } from '@antv/g2plot/esm/plots/column'
+import type { Column, ColumnOptions } from '@antv/g2plot/esm/plots/column'
 import { cloneDeep, isEmpty } from 'lodash-es'
 import {
   G2PlotChartView,
@@ -11,7 +11,7 @@ import {
   setUpGroupSeriesColor,
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
-import { Datum } from '@antv/g2plot'
+import type { Datum } from '@antv/g2plot'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   BAR_AXIS_TYPE,
@@ -22,6 +22,7 @@ import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { clearExtremum, extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -93,7 +94,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     }
   }
 
-  drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
+  async drawChart(drawOptions: G2PlotDrawOptions<Column>): Promise<Column> {
     const { chart, container, action } = drawOptions
     if (!chart?.data?.data?.length) {
       clearExtremum(chart)
@@ -106,8 +107,9 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       data
     }
     const options: ColumnOptions = this.setupOptions(chart, initOptions)
-
-    const newChart = new Column(container, options)
+    let newChart = null
+    const { Column: ColumnClass } = await import('@antv/g2plot/esm/plots/column')
+    newChart = new ColumnClass(container, options)
     newChart.on('interval:click', action)
     extremumEvt(newChart, chart, options, container)
     return newChart
@@ -146,7 +148,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
           return
         }
         const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
+        const group = new Group({})
         group.addShape({
           type: 'text',
           attrs: {

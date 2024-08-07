@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Gauge as G2Gauge, GaugeOptions } from '@antv/g2plot/esm/plots/gauge'
+import type { Gauge as G2Gauge, GaugeOptions } from '@antv/g2plot/esm/plots/gauge'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
   DEFAULT_LABEL,
@@ -64,7 +64,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     }
   }
 
-  drawChart(drawOptions: G2PlotDrawOptions<G2Gauge>): G2Gauge {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Gauge>): Promise<G2Gauge> {
     const { chart, container, scale } = drawOptions
     if (!chart.data?.series) {
       return
@@ -96,6 +96,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
       }
     }
     const options = this.setupOptions(chart, initOptions, { scale })
+    const { Gauge: G2Gauge } = await import('@antv/g2plot/esm/plots/gauge')
     return new G2Gauge(container, options)
   }
 

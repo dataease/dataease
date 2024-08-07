@@ -1,11 +1,12 @@
-import { RadarOptions, Radar as G2Radar } from '@antv/g2plot/esm/plots/radar'
+import type { RadarOptions, Radar as G2Radar } from '@antv/g2plot/esm/plots/radar'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
 import { getPadding } from '../../common/common_antv'
 import { valueFormatter } from '../../../formatter'
-import { Datum } from '@antv/g2plot/esm/types/common'
+import type { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
+import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 
@@ -59,7 +60,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     }
   }
 
-  public drawChart(drawOptions: G2PlotDrawOptions<G2Radar>): G2Radar {
+  async drawChart(drawOptions: G2PlotDrawOptions<G2Radar>): Promise<G2Radar> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {
       return
@@ -112,6 +113,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
       ]
     }
     const options = this.setupOptions(chart, baseOptions)
+    const { Radar: G2Radar } = await import('@antv/g2plot/esm/plots/radar')
     const newChart = new G2Radar(container, options)
     newChart.on('point:click', action)
     return newChart
@@ -149,7 +151,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
           return
         }
         const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
+        const group = new Group({})
         group.addShape({
           type: 'text',
           attrs: {
