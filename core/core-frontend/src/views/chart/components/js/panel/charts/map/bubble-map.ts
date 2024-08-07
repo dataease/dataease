@@ -1,26 +1,19 @@
-import { useI18n } from '@/hooks/web/useI18n'
-import {
-  L7PlotChartView,
-  L7PlotDrawOptions
-} from '@/views/chart/components/js/panel/types/impl/l7plot'
-import { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
-import { DotLayer, IPlotLayer } from '@antv/l7plot'
-import { DotLayerOptions } from '@antv/l7plot/dist/esm/layers/dot-layer/types'
+import {useI18n} from '@/hooks/web/useI18n'
+import {L7PlotChartView, L7PlotDrawOptions} from '@/views/chart/components/js/panel/types/impl/l7plot'
+import {Choropleth, ChoroplethOptions} from '@antv/l7plot/dist/esm/plots/choropleth'
+import {Dot, DotOptions, IPlotLayer} from '@antv/l7plot'
 import {
   MAP_AXIS_TYPE,
   MAP_EDITOR_PROPERTY,
   MAP_EDITOR_PROPERTY_INNER,
   MapMouseEvent
 } from '@/views/chart/components/js/panel/charts/map/common'
-import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep } from 'lodash-es'
-import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
-import {
-  handleGeoJson,
-  mapRendered,
-  mapRendering
-} from '@/views/chart/components/js/panel/common/common_antv'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import {flow, getGeoJsonFile, hexColorToRGBA, parseJson} from '@/views/chart/components/js/util'
+import {cloneDeep} from 'lodash-es'
+import {FeatureCollection} from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import {handleGeoJson, mapRendered, mapRendering} from '@/views/chart/components/js/panel/common/common_antv'
+import {valueFormatter} from '@/views/chart/components/js/formatter'
+import {deepCopy} from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -91,9 +84,6 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           textAnchor: 'center'
         }
       },
-      state: {
-        active: { stroke: 'green', lineWidth: 1 }
-      },
       tooltip: {},
       legend: false,
       // 禁用线上地图数据
@@ -101,24 +91,33 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     const context = { drawOption, geoJson }
     options = this.setupOptions(chart, options, context)
+
+    const tooltip = deepCopy(options.tooltip)
+    options = { ...options, tooltip: false }
     const view = new Choropleth(container, options)
     const dotLayer = this.getDotLayer(chart, geoJson, drawOption)
+    dotLayer.options = { ...dotLayer.options, tooltip }
     this.configZoomButton(chart, view)
     mapRendering(container)
     view.once('loaded', () => {
-      view.addLayer(dotLayer)
+      // 修改地图鼠标样式为默认
+      view.scene.map._canvasContainer.lastElementChild.style.cursor = 'default'
+      dotLayer.addToScene(view.scene)
       dotLayer.once('add', () => {
         mapRendered(container)
       })
       view.scene.map['keyboard'].disable()
-      view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
+      dotLayer.on('dotLayer:click', (ev: MapMouseEvent) => {
         const data = ev.feature.properties
+        const adcode = view.currentDistrictData.features.find(
+          i => i.properties.name === ev.feature.properties.name
+        )?.properties.adcode
         action({
           x: ev.x,
           y: ev.y,
           data: {
             data,
-            extra: { adcode: data.adcode }
+            extra: { adcode: adcode }
           }
         })
       })
@@ -132,24 +131,26 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     drawOption: L7PlotDrawOptions<Choropleth>
   ): IPlotLayer {
     const areaMap = chart.data?.data?.reduce((obj, value) => {
-      obj[value['field']] = value.value
+      obj[value['field']] = { value: value.value, data: value }
       return obj
     }, {})
     const dotData = []
     geoJson.features.forEach(item => {
       const name = item.properties['name']
-      if (areaMap?.[name]) {
+      if (areaMap?.[name]?.value) {
         dotData.push({
           x: item.properties['centroid'][0],
           y: item.properties['centroid'][1],
-          size: areaMap[name]
+          size: areaMap[name].value,
+          properties: areaMap[name].data,
+          name: name
         })
       }
     })
     const { basicStyle } = parseJson(chart.customAttr)
     const { bubbleCfg } = parseJson(chart.senior)
     const { offsetHeight, offsetWidth } = document.getElementById(drawOption.container)
-    const options: DotLayerOptions = {
+    const options: DotOptions = {
       source: {
         data: dotData,
         parser: {
@@ -172,10 +173,11 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       },
       state: {
         active: true
-      }
+      },
+      tooltip: {}
     }
     if (bubbleCfg && bubbleCfg.enable) {
-      return new DotLayer({
+      return new Dot({
         ...options,
         size: {
           field: 'size',
@@ -188,7 +190,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         }
       })
     }
-    return new DotLayer(options)
+    return new Dot(options)
   }
 
   private configBasicStyle(
