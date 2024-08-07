@@ -2756,6 +2756,7 @@ const deleteChartFieldItem = id => {
                         :property-inner-all="chartViewInstance.propertyInner"
                         :selector-spec="chartViewInstance.selectorSpec"
                         :common-background-pop="curComponent?.commonBackground"
+                        :event-info="curComponent?.events"
                         :chart="view"
                         :themes="themes"
                         :dimension-data="state.dimension"

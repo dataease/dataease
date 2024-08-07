@@ -26,6 +26,7 @@ import IndicatorNameSelector from '@/views/chart/components/editor/editor-style/
 import QuadrantSelector from '@/views/chart/components/editor/editor-style/components/QuadrantSelector.vue'
 import FlowMapLineSelector from '@/views/chart/components/editor/editor-style/components/FlowMapLineSelector.vue'
 import FlowMapPointSelector from '@/views/chart/components/editor/editor-style/components/FlowMapPointSelector.vue'
+import CommonEvent from '@/custom-component/common/CommonEvent.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
@@ -39,6 +40,10 @@ const state = {
 
 const props = defineProps({
   commonBackgroundPop: {
+    type: Object,
+    required: false
+  },
+  eventInfo: {
     type: Object,
     required: false
   },
@@ -116,6 +121,10 @@ const indicatorNameRef = ref()
 
 const positionComponentShow = computed(() => {
   return !batchOptStatus.value && dvInfo.value.type !== 'dashboard'
+})
+
+const eventsShow = computed(() => {
+  return !batchOptStatus.value && chart.value.type.includes('rich-text') && props.eventInfo
 })
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
@@ -304,6 +313,9 @@ watch(
               @onBackgroundChange="onBackgroundChange"
               component-position="component"
             />
+          </el-collapse-item>
+          <el-collapse-item :effect="themes" name="events" title="事件" v-if="eventsShow">
+            <common-event :themes="themes" :events-info="eventInfo"></common-event>
           </el-collapse-item>
           <el-collapse-item
             :effect="themes"

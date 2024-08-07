@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { toRefs } from 'vue'
 import { ElFormItem, ElIcon } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import Icon from '../../components/icon-custom/src/Icon.vue'
@@ -9,19 +9,15 @@ const snapshotStore = snapshotStoreWithOut()
 const props = withDefaults(
   defineProps<{
     themes?: EditorTheme
-    element: any
+    eventsInfo: any
   }>(),
   {
     themes: 'dark'
   }
 )
-const { themes, element } = toRefs(props)
+const { themes, eventsInfo } = toRefs(props)
 
 const curSupportEvents = ['jump', 'showHidden', 'refreshDataV']
-
-const eventsInfo = computed(() => {
-  return element.value.events
-})
 
 const onEventChange = () => {
   snapshotStore.recordSnapshotCache('renderChart')
@@ -45,7 +41,7 @@ const onJumpValueChange = () => {
         >
         <el-tooltip class="item" :effect="themes" placement="top">
           <template #content>
-            <div>事件绑定需要退出编辑模式才开生效</div>
+            <div>事件绑定需退出编辑模式后生效,富文本开启绑定事件则内部点击事件失效</div>
           </template>
           <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
             <Icon name="icon_info_outlined" />
