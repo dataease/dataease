@@ -87,8 +87,23 @@ const options = [
     value: 'fixed'
   },
   {
+    label: '时间函数',
+    value: 'timeFun'
+  },
+  {
     label: '自定义',
     value: 'custom'
+  }
+]
+
+const timeFunLists = [
+  {
+    label: '当天（yyyy-MM-DD）',
+    value: 'currentDay yyyy-MM-DD'
+  },
+  {
+    label: '当天（yyyy/MM/DD）',
+    value: 'currentDay yyyy/MM/DD'
   }
 ]
 </script>
@@ -161,9 +176,25 @@ const options = [
                   :value="item.originName"
                 />
               </el-select>
+              <el-select
+                v-model="element.value"
+                v-if="!needMock && activeName === 'table' && element.nameType === 'timeFun'"
+              >
+                <el-option
+                  v-for="item in timeFunLists"
+                  :key="item.originName"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
 
               <el-input
-                v-if="!needMock && activeName === 'table' && element.nameType !== 'params'"
+                v-if="
+                  !needMock &&
+                  activeName === 'table' &&
+                  element.nameType !== 'params' &&
+                  element.nameType !== 'timeFun'
+                "
                 v-model="element.value"
                 :disabled="isReadOnly"
                 :placeholder="element.nameType === 'fixed' ? '值' : '可用${参数名}，使用参数'"

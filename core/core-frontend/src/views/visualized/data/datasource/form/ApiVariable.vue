@@ -22,6 +22,10 @@ const props = defineProps({
     type: Array as PropType<Item[]>,
     default: () => []
   },
+  valueList: {
+    type: Array as PropType<Item[]>,
+    default: () => []
+  },
   suggestions: {
     type: Array,
     default: () => []
@@ -43,6 +47,7 @@ onBeforeMount(() => {
     parameters.value.push(
       new KeyValue({
         type: 'text',
+        nameType: 'fixed',
         enable: true,
         required: true,
         uuid: guid(),
@@ -91,7 +96,36 @@ const createFilter = (queryString: string) => {
     return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
   }
 }
+
 const activeName = inject('api-active-name')
+const options = [
+  {
+    label: '参数',
+    value: 'params'
+  },
+  {
+    label: '固定值',
+    value: 'fixed'
+  },
+  {
+    label: '时间函数',
+    value: 'timeFun'
+  },
+  {
+    label: '自定义',
+    value: 'custom'
+  }
+]
+const timeFunLists = [
+  {
+    label: '当天（yyyy-MM-DD）',
+    value: 'currentDay yyyy-MM-DD'
+  },
+  {
+    label: '当天（yyyy/MM/DD）',
+    value: 'currentDay yyyy/MM/DD'
+  }
+]
 </script>
 
 <template>
@@ -138,9 +172,55 @@ const activeName = inject('api-active-name')
                 show-word-limit
               />
             </el-col>
-
+            <el-col :span="3" v-if="activeName === 'table'">
+              <el-select v-model="element.nameType">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-col>
             <el-col v-if="element.type !== 'file'" :span="6">
               <el-input
+                v-if="activeName === 'params'"
+                v-model="element.value"
+                :disabled="isReadOnly"
+                class="input-with-autocomplete"
+                :placeholder="valueText"
+                value-key="name"
+                highlight-first-item
+              />
+
+              <el-select
+                v-model="element.value"
+                v-if="!needMock && activeName === 'table' && element.nameType === 'params'"
+              >
+                <el-option
+                  v-for="item in valueList"
+                  :key="item.originName"
+                  :label="item.name"
+                  :value="item.originName"
+                />
+              </el-select>
+              <el-select
+                v-model="element.value"
+                v-if="!needMock && activeName === 'table' && element.nameType === 'timeFun'"
+              >
+                <el-option
+                  v-for="item in timeFunLists"
+                  :key="item.originName"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+              <el-input
+                v-if="
+                  activeName === 'table' &&
+                  element.nameType !== 'params' &&
+                  element.nameType !== 'timeFun'
+                "
                 v-model="element.value"
                 :disabled="isReadOnly"
                 class="input-with-autocomplete"
@@ -150,7 +230,7 @@ const activeName = inject('api-active-name')
               />
             </el-col>
 
-            <el-col :span="10">
+            <el-col :span="activeName === 'params' ? 10 : 7">
               <el-input
                 v-model="element.description"
                 maxlength="200"
