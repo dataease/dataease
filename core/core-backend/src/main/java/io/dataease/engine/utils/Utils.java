@@ -417,7 +417,7 @@ public class Utils {
     }
 
     public static List<CalParam> getParams(List<DatasetTableFieldDTO> list) {
-        if (ObjectUtils.isNotEmpty(list)) return Collections.emptyList();
+        if (ObjectUtils.isEmpty(list)) return Collections.emptyList();
         List<CalParam> param = new ArrayList<>();
         for (DatasetTableFieldDTO dto : list) {
             if (Objects.equals(dto.getExtField(), ExtFieldConstant.EXT_CALC) && ObjectUtils.isNotEmpty(dto.getParams())) {
