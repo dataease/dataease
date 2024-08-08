@@ -508,7 +508,12 @@ defineExpose({
         >
           <div class="setting-label">开始时间</div>
           <div class="setting-input with-date range">
-            <el-input-number v-model="curComponent.timeNum" :min="0" controls-position="right" />
+            <el-input-number
+              step-strictly
+              v-model="curComponent.timeNum"
+              :min="0"
+              controls-position="right"
+            />
             <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrentType">
               <el-option
                 v-for="item in relativeToCurrentTypeList"
@@ -542,6 +547,7 @@ defineExpose({
             <el-input-number
               v-model="curComponent.timeNumRange"
               :min="0"
+              step-strictly
               controls-position="right"
             />
             <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrentTypeRange">

@@ -339,7 +339,12 @@ const relativeToCurrentListRange = computed(() => {
             >
               <div class="setting-label">开始时间</div>
               <div class="setting-input range">
-                <el-input-number v-model="timeRange.timeNum" :min="0" controls-position="right" />
+                <el-input-number
+                  step-strictly
+                  v-model="timeRange.timeNum"
+                  :min="0"
+                  controls-position="right"
+                />
                 <el-select v-model="timeRange.relativeToCurrentType">
                   <el-option
                     v-for="item in relativeToCurrentTypeList"
@@ -370,6 +375,7 @@ const relativeToCurrentListRange = computed(() => {
                 <el-input-number
                   v-model="timeRange.timeNumRange"
                   :min="0"
+                  step-strictly
                   controls-position="right"
                 />
                 <el-select v-model="timeRange.relativeToCurrentTypeRange">
