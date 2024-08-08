@@ -1462,7 +1462,7 @@ const getDsIconName = data => {
             :itemSize="40"
             :data="datasourceTableData"
             :total="datasourceTableData.length"
-            :width="LeftWidth - 7"
+            :width="LeftWidth - 17"
             :height="height - 305"
             :scrollbarAlwaysOn="false"
             class-name="el-select-dropdown__list"

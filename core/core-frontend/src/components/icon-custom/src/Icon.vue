@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 
 import _401 from '@/assets/svg/401.svg'
+import calculate from '@/assets/svg/calculate.svg'
 import _403 from '@/assets/svg/403.svg'
 import APIDs from '@/assets/svg/API-ds.svg'
 import Apache_Hive from '@/assets/svg/Apache Hive.svg'
@@ -1330,6 +1331,7 @@ const iconMap = {
   'word-cloud-dark': wordCloudDark,
   'word-cloud-origin': wordCloudOrigin,
   'word-cloud': wordCloud,
+  calculate,
   'icon_file-doc_colorful': icon_file_doc_colorful
 }
 
