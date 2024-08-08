@@ -130,6 +130,7 @@
               </el-dropdown>
             </el-dropdown-item>
           </template>
+          <xpack-component jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg==" />
           <el-dropdown-item divided @click="deleteComponent" v-if="barShowCheck('delete')"
             >删除</el-dropdown-item
           >
@@ -186,6 +187,7 @@ import { RefreshLeft } from '@element-plus/icons-vue'
 import { ElMessage, ElTooltip, ElButton } from 'element-plus-secondary'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
+import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
