@@ -289,6 +289,18 @@ export default {
       data_not_found: ']的數據不存在'
     },
     task: {
+      distribute_frequency: '發送頻率',
+      one_time: '僅下發一次',
+      interval: '定期下發',
+      distribute_setting: '下發設置',
+      task_distribute_setting: '任務下發設置',
+      receive_object: '接收對象',
+      receive_fit_column: '接收對象匹配字段',
+      receiver: '接收人',
+      receiver_not_null: '接收人不能為空！',
+      commit_type: '數據提交方式',
+      person: '人',
+      select_receiver: '選擇接收人',
       exec_logs: '執行日志',
       assign_num: '下發人數',
       finished_user_num: '已完成人數',

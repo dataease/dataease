@@ -388,6 +388,18 @@ export default {
       data_not_found: '] Not Found'
     },
     task: {
+      distribute_frequency: 'Distribute Frequency',
+      one_time: 'One Time',
+      interval: 'Interval',
+      distribute_setting: 'Distribute Setting',
+      task_distribute_setting: 'Task Distribute Setting',
+      receive_object: 'Receive Object',
+      receive_fit_column: 'Receive Fit Column',
+      receiver: 'Receiver',
+      receiver_not_null: 'Receiver cannot be null !',
+      commit_type: 'Commit Type',
+      person: 'user',
+      select_receiver: 'Select receiver',
       exec_logs: 'Execute Logs',
       assign_num: 'Assigned User Count',
       finished_user_num: 'Finished User Count',

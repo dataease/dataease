@@ -2719,6 +2719,18 @@ export default {
       data_not_found: ']的数据不存在'
     },
     task: {
+      distribute_frequency: '发送频率',
+      one_time: '仅下发一次',
+      interval: '定期下发',
+      distribute_setting: '下发设置',
+      task_distribute_setting: '任务下发设置',
+      receive_object: '接收对象',
+      receive_fit_column: '接收对象匹配字段',
+      receiver: '接收人',
+      receiver_not_null: '接收人不能为空！',
+      commit_type: '数据提交方式',
+      person: '人',
+      select_receiver: '选择接收人',
       exec_logs: '执行日志',
       assign_num: '下发人数',
       finished_user_num: '已完成人数',
