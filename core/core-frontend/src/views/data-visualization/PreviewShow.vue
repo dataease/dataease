@@ -344,22 +344,6 @@ onBeforeMount(() => {
       overflow-x: hidden;
       overflow-y: auto;
       align-items: center;
-      .content-outer {
-        width: 100%;
-        height: calc(100vh - 112px);
-        background: #f5f6f7;
-        display: flex;
-        overflow-y: auto;
-        align-items: center;
-        flex-direction: column;
-        justify-content: center; /* 上下居中 */
-        .content-inner {
-          width: 100%;
-          height: auto;
-          overflow-x: hidden;
-          overflow-y: auto;
-        }
-      }
     }
   }
 }
