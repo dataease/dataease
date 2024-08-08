@@ -219,6 +219,8 @@ import editIn from '@/assets/svg/edit-in.svg'
 import edit from '@/assets/svg/edit.svg'
 import emailTask from '@/assets/svg/email-task.svg'
 import embedded from '@/assets/svg/embedded.svg'
+import association from '@/assets/svg/association.svg'
+import threshold from '@/assets/svg/threshold.svg'
 import example from '@/assets/svg/example.svg'
 import exclamationmark from '@/assets/svg/exclamationmark.svg'
 import exclamationmark2 from '@/assets/svg/exclamationmark2.svg'
@@ -884,6 +886,8 @@ const iconMap = {
   edit: edit,
   'email-task': emailTask,
   embedded: embedded,
+  association: association,
+  threshold: threshold,
   example: example,
   exclamationmark: exclamationmark,
   exclamationmark2: exclamationmark2,
