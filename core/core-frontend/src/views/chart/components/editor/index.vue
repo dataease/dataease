@@ -145,8 +145,21 @@ const { view } = toRefs(props)
 
 let cacheId = ''
 
+const clearRemove = items => {
+  if (items) {
+    items.forEach(item => removeItems(item))
+  }
+}
+
 onBeforeMount(() => {
   cacheId = route.query.id as unknown as string
+})
+
+onMounted(() => {
+  useEmitt({
+    name: 'clear-remove',
+    callback: clearRemove
+  })
 })
 
 const appStore = useAppStoreWithOut()
@@ -1474,7 +1487,14 @@ const calcEle = () => {
 
 const setCacheId = () => {
   nextTick(() => {
-    if (!cacheId || !!view.value.tableId || templateStatusShow.value) return
+    // 富文本不使用cacheId
+    if (
+      !cacheId ||
+      !!view.value.tableId ||
+      templateStatusShow.value ||
+      view.value.type === 'rich-text'
+    )
+      return
     view.value.tableId = cacheId as unknown as number
   })
 }

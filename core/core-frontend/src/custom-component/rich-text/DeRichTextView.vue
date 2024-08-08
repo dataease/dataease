@@ -392,6 +392,19 @@ const calcData = (view: Chart, callback) => {
         })
         callback?.()
       })
+  } else if (!view.tableId) {
+    state.data = []
+    state.viewDataInfo = {}
+    state.totalItems = 0
+    const curViewInfo = canvasViewInfo.value[element.value.id]
+    curViewInfo['curFields'] = []
+    dvMainStore.setViewDataDetails(element.value.id, state.data)
+    initReady.value = true
+    initCurFields(curViewInfo)
+    callback?.()
+    nextTick(() => {
+      initReady.value = true
+    })
   } else {
     nextTick(() => {
       initReady.value = true
@@ -472,7 +485,7 @@ const renderChart = viewInfo => {
 }
 
 const conditionAdaptor = (chart: Chart) => {
-  if (!chart) {
+  if (!chart || !chart.senior) {
     return
   }
   const { threshold } = parseJson(chart.senior)
