@@ -4,10 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.datasource.model.SQLObj;
-import io.dataease.extensions.view.dto.*;
-import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
@@ -20,6 +16,11 @@ import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.CalParam;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.model.SQLObj;
+import io.dataease.extensions.view.dto.*;
+import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
@@ -75,10 +76,10 @@ public class ChartViewManege {
             UpdateWrapper<CoreChartView> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", record.getId());
             //富文本允许设置空的tableId 这里额外更新一下
-            if(record.getTableId() == null){
+            if (record.getTableId() == null) {
                 updateWrapper.set("table_id", null);
             }
-            coreChartViewMapper.update(record,updateWrapper);
+            coreChartViewMapper.update(record, updateWrapper);
         }
         return chartViewDTO;
     }
@@ -137,10 +138,13 @@ public class ChartViewManege {
         wrapper.eq("checked", true);
         wrapper.isNull("chart_id");
 
+        TypeReference<List<CalParam>> typeToken = new TypeReference<>() {
+        };
         List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
         List<DatasetTableFieldDTO> collect = fields.stream().map(ele -> {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
             BeanUtils.copyBean(dto, ele);
+            dto.setParams(JsonUtil.parseList(ele.getParams(), typeToken));
             return dto;
         }).collect(Collectors.toList());
         // filter column disable field
