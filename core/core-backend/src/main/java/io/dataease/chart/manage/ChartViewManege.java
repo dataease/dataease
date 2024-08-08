@@ -1,6 +1,7 @@
 package io.dataease.chart.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -71,7 +72,13 @@ public class ChartViewManege {
         if (ObjectUtils.isEmpty(coreChartView)) {
             coreChartViewMapper.insert(record);
         } else {
-            coreChartViewMapper.updateById(record);
+            UpdateWrapper<CoreChartView> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", record.getId());
+            //富文本允许设置空的tableId 这里额外更新一下
+            if(record.getTableId() == null){
+                updateWrapper.set("table_id", null);
+            }
+            coreChartViewMapper.update(record,updateWrapper);
         }
         return chartViewDTO;
     }

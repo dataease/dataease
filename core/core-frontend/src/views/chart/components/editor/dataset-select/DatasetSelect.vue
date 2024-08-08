@@ -214,6 +214,7 @@ const handleClear = e => {
   e.preventDefault()
   e.stopPropagation()
   dsClick({ leaf: true, id: null } as Tree)
+  useEmitt().emitter.emit('clear-remove', ['xAxis', 'yAxis', 'drillFields'])
 }
 
 const handleFocus = () => {
