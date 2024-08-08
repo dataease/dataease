@@ -669,6 +669,7 @@ import icon_radio_outlined from '@/assets/svg/icon_radio_outlined.svg'
 import icon_single_line_outlined from '@/assets/svg/icon_single-line_outlined.svg'
 import icon_todo_outlined from '@/assets/svg/icon_todo_outlined.svg'
 import icon_file_doc_colorful from '@/assets/svg/icon_file-doc_colorful.svg'
+import icon_font from '@/assets/svg/icon_font.svg'
 const iconMap = {
   '401': _401,
   '403': _403,
@@ -1336,7 +1337,8 @@ const iconMap = {
   'word-cloud-origin': wordCloudOrigin,
   'word-cloud': wordCloud,
   calculate,
-  'icon_file-doc_colorful': icon_file_doc_colorful
+  'icon_file-doc_colorful': icon_file_doc_colorful,
+  icon_font
 }
 
 const props = defineProps({
