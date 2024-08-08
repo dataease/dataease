@@ -460,7 +460,7 @@ initFunction()
                 <el-icon class="hover-icon_quota" @click="addParmasToQuota">
                   <Icon
                     :class="[`field-icon-${fieldType[0]}`, disableCaParams && 'not-allow']"
-                    name="caculate"
+                    name="calculate"
                   ></Icon>
                 </el-icon>
               </el-tooltip>
@@ -474,7 +474,7 @@ initFunction()
                 @click="insertFieldToCodeMirror('[' + item.name + ']')"
               >
                 <el-icon v-if="!item.groupType">
-                  <Icon name="caculate"></Icon>
+                  <Icon name="calculate"></Icon>
                 </el-icon>
                 <el-icon v-else>
                   <Icon
