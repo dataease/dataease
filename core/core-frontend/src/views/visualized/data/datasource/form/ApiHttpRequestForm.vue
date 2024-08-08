@@ -157,6 +157,7 @@ const emits = defineEmits(['changeId'])
           :is-read-only="isReadOnly"
           :isShowEnable="isShowEnable"
           :parameters="apiRequest.arguments"
+          :value-list="valueList"
         />
       </el-tab-pane>
 

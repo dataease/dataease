@@ -22,6 +22,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,13 +179,21 @@ public class ApiUtils {
                                     String resultStr = execHttpRequest(definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
                                     List<String[]> dataList = fetchResult(resultStr, definition);
                                     if (dataList.size() > 0) {
-                                        result = result.replace("${" + param +"}",dataList.get(0)[i]);
+                                        result = result.replace("${" + param + "}", dataList.get(0)[i]);
                                     }
                                 }
                             }
                         }
                     }
                     httpClientConfig.addHeader(header.get("name").toString(), result);
+                } else if (header.get("nameType") != null && header.get("nameType").toString().equalsIgnoreCase("timeFun")) {
+                    String timeFormat = header.get("value").toString();
+                    Calendar calendar = Calendar.getInstance();
+                    Date date = calendar.getTime();
+                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentDay")) {
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
+                        httpClientConfig.addHeader(header.get("name").toString(), simpleDateFormat.format(date));
+                    }
                 } else {
                     httpClientConfig.addHeader(header.get("name").toString(), header.get("value").toString());
                 }
@@ -203,7 +212,55 @@ public class ApiUtils {
         List<String> params = new ArrayList<>();
         for (Map<String, String> argument : apiDefinition.getRequest().getArguments()) {
             if (StringUtils.isNotEmpty(argument.get("name")) && StringUtils.isNotEmpty(argument.get("value"))) {
-                params.add(argument.get("name") + "=" + URLEncoder.encode(argument.get("value")));
+                if (argument.get("nameType") != null && argument.get("nameType").toString().equalsIgnoreCase("params")) {
+                    String param = argument.get("value").toString();
+                    for (ApiDefinition definition : paramsList) {
+                        for (int i = 0; i < definition.getFields().size(); i++) {
+                            TableField field = definition.getFields().get(i);
+                            if (field.getOriginName().equalsIgnoreCase(param)) {
+                                String resultStr = execHttpRequest(definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
+                                List<String[]> dataList = fetchResult(resultStr, definition);
+                                if (dataList.size() > 0) {
+                                    params.add(argument.get("name") + "=" + dataList.get(0)[i]);
+                                }
+                            }
+                        }
+                    }
+                } else if (argument.get("nameType") != null && argument.get("nameType").toString().equalsIgnoreCase("custom")) {
+                    List<String> arrayList = new ArrayList<>();
+                    String regex = "\\$\\{(.*?)\\}";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(argument.get("value").toString());
+                    while (matcher.find()) {
+                        arrayList.add(matcher.group(1));
+                    }
+                    String result = argument.get("value").toString();
+                    for (String param : arrayList) {
+                        for (ApiDefinition definition : paramsList) {
+                            for (int i = 0; i < definition.getFields().size(); i++) {
+                                TableField field = definition.getFields().get(i);
+                                if (field.getOriginName().equalsIgnoreCase(param)) {
+                                    String resultStr = execHttpRequest(definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
+                                    List<String[]> dataList = fetchResult(resultStr, definition);
+                                    if (dataList.size() > 0) {
+                                        result = result.replace("${" + param + "}", dataList.get(0)[i]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    params.add(argument.get("name") + "=" + result);
+                } else if (argument.get("nameType") != null && argument.get("nameType").toString().equalsIgnoreCase("timeFun")) {
+                    String timeFormat = argument.get("value").toString();
+                    Calendar calendar = Calendar.getInstance();
+                    Date date = calendar.getTime();
+                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentDay")) {
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
+                        params.add(argument.get("name") + "=" + simpleDateFormat.format(date));
+                    }
+                } else {
+                    params.add(argument.get("name") + "=" + URLEncoder.encode(argument.get("value")));
+                }
             }
         }
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(params)) {
