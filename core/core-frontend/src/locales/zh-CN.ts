@@ -2773,5 +2773,13 @@ export default {
     },
     on_the_left: '请在左侧选择表单',
     search_by_commit_name: '根据操作人名称搜索'
+  },
+  threshold: {
+    drawer_title: '设置阈值告警',
+    table_name: '阈值告警名称',
+    status: '数据状态',
+    base_setting: '基本设置',
+    threshold_setting: '告警设置',
+    name: '告警名称'
   }
 }

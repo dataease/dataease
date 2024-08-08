@@ -313,6 +313,7 @@ onUnmounted(() => {
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   />
+  <xpack-component jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9UaHJlc2hvbGREaWFsb2c=" />
   <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
 </template>
 
