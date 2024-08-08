@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, watch, unref, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from './CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
 import { fieldType } from '@/utils/attr'
 import { cloneDeep } from 'lodash-es'
+import { guid } from './util'
 export interface CalcFieldType {
   id?: string
   datasourceId?: string // 数据源id
@@ -15,6 +16,7 @@ export interface CalcFieldType {
   dataeaseName?: string // 字段别名
   groupType: 'd' | 'q' // d=维度，q=指标
   type: string
+  params?: Array<{ id: string; name: string; value: number }>
   checked: boolean
   deType: number // 字段类型
   deExtractType?: number // 字段原始类型
@@ -65,6 +67,60 @@ const state = reactive({
   quotaList: [],
   quotaData: []
 })
+const formQuotaRef = ref()
+const formQuota = reactive({
+  id: null,
+  name: '',
+  value: null
+})
+const dialogFormVisible = ref(false)
+const formQuotaRules = {
+  name: [
+    { required: true, message: '请输入参数名称', trigger: 'blur' },
+    { min: 1, max: 50, message: '请输入1-50个字符', trigger: 'blur' }
+  ],
+  value: [{ required: true, message: '请输入参数默认值', trigger: 'blur' }]
+}
+
+const formQuotaClose = () => {
+  formQuotaRef.value.resetFields()
+  dialogFormVisible.value = false
+}
+
+const formQuotaConfirm = () => {
+  formQuotaRef.value.validate(val => {
+    if (val) {
+      if (!formQuota.id) {
+        formQuota.id = `params_${guid()}`
+      }
+      const q = cloneDeep(unref(formQuota))
+      fieldForm.params = [q]
+      const i = state.quotaData.find(ele => ele.id === formQuota.id)
+      const j = state.quotaList.find(ele => ele.id === formQuota.id)
+      if (i && j) {
+        const str = mirror.value.state.doc.toString()
+        const name2Auto = []
+        fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
+        Object.assign(i, cloneDeep(unref(formQuota)))
+        Object.assign(j, cloneDeep(unref(formQuota)))
+
+        nextTick(() => {
+          mirror.value.dispatch({
+            changes: {
+              from: 0,
+              to: mirror.value.viewState.state.doc.length,
+              insert: setNameIdTrans('id', 'name', fieldForm.originName)
+            }
+          })
+        })
+      } else {
+        state.quotaData.push(q)
+        state.quotaList.push(q)
+      }
+      formQuotaClose()
+    }
+  })
+}
 
 const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
 
@@ -98,8 +154,8 @@ let dimensionDataList = []
 const initEdit = (obj, dimensionData, quotaData) => {
   Object.assign(fieldForm, { ...defaultForm, ...obj })
   state.dimensionData = dimensionData
-  state.quotaData = quotaData
-  quotaDataList = cloneDeep(quotaData)
+  state.quotaData = quotaData.concat(fieldForm.params || [])
+  quotaDataList = cloneDeep(quotaData.concat(fieldForm.params || []))
   dimensionDataList = cloneDeep(dimensionData)
   setTimeout(() => {
     formField.value.clearValidate()
@@ -114,12 +170,14 @@ const initEdit = (obj, dimensionData, quotaData) => {
     })
     return
   }
-  mirror.value.dispatch({
-    changes: {
-      from: 0,
-      to: mirror.value.viewState.state.doc.length,
-      insert: setNameIdTrans('id', 'name', obj.originName)
-    }
+  nextTick(() => {
+    mirror.value.dispatch({
+      changes: {
+        from: 0,
+        to: mirror.value.viewState.state.doc.length,
+        insert: setNameIdTrans('id', 'name', obj.originName)
+      }
+    })
   })
 }
 
@@ -206,6 +264,40 @@ defineExpose({
   formField
 })
 
+const addParmasToQuota = () => {
+  if (disableCaParams.value) return
+  if (!fieldForm.params) {
+    fieldForm.params = []
+  }
+  dialogFormVisible.value = true
+}
+
+const updateParmasToQuota = () => {
+  const [o] = fieldForm.params
+  Object.assign(formQuota, o || {})
+  dialogFormVisible.value = true
+}
+
+const disableCaParams = computed(() => {
+  return !!fieldForm.params?.length
+})
+
+const delParmasToQuota = () => {
+  const [o] = fieldForm.params
+  fieldForm.params = []
+  const str = mirror.value.state.doc.toString()
+  const name2Auto = []
+  fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto).replaceAll(`[${o.id}]`, '')
+  state.quotaData = state.quotaData.filter(ele => ele.id !== o.id)
+  state.quotaList = state.quotaList.filter(ele => ele.id !== o.id)
+  mirror.value.dispatch({
+    changes: {
+      from: 0,
+      to: mirror.value.viewState.state.doc.length,
+      insert: setNameIdTrans('id', 'name', fieldForm.originName)
+    }
+  })
+}
 initFunction()
 </script>
 
@@ -358,7 +450,21 @@ initFunction()
             <div v-else class="class-na">{{ t('dataset.na') }}</div>
           </div>
           <div class="field-height">
-            <span>{{ t('chart.quota') }}</span>
+            <div style="display: flex; align-items: center; justify-content: space-between">
+              <span>{{ t('chart.quota') }}</span>
+              <el-tooltip
+                effect="dark"
+                :content="disableCaParams ? '仅支持添加一个计算参数。' : '添加计算参数'"
+                placement="top"
+              >
+                <el-icon class="hover-icon_quota" @click="addParmasToQuota">
+                  <Icon
+                    :class="[`field-icon-${fieldType[0]}`, disableCaParams && 'not-allow']"
+                    name="caculate"
+                  ></Icon>
+                </el-icon>
+              </el-tooltip>
+            </div>
             <div v-if="state.quotaData.length" class="field-list">
               <span
                 v-for="item in state.quotaData"
@@ -367,13 +473,24 @@ initFunction()
                 :title="item.name"
                 @click="insertFieldToCodeMirror('[' + item.name + ']')"
               >
-                <el-icon>
+                <el-icon v-if="!item.groupType">
+                  <Icon name="caculate"></Icon>
+                </el-icon>
+                <el-icon v-else>
                   <Icon
                     :name="`field_${fieldType[item.deType]}`"
                     :className="`field-icon-${fieldType[item.deType]}`"
                   ></Icon>
                 </el-icon>
                 {{ item.name }}
+                <div v-if="!item.groupType" class="icon-right">
+                  <el-icon @click.stop="updateParmasToQuota" class="hover-icon">
+                    <Icon name="icon_edit_outlined"></Icon>
+                  </el-icon>
+                  <el-icon @click.stop="delParmasToQuota" class="hover-icon">
+                    <Icon name="icon_delete-trash_outlined"></Icon>
+                  </el-icon>
+                </div>
               </span>
             </div>
             <div v-else class="class-na">{{ t('dataset.na') }}</div>
@@ -440,6 +557,32 @@ initFunction()
         </div>
       </div>
     </div>
+    <el-dialog
+      :before-close="formQuotaClose"
+      v-model="dialogFormVisible"
+      title="添加计算参数"
+      width="500"
+    >
+      <el-form label-position="top" ref="formQuotaRef" :model="formQuota" :rules="formQuotaRules">
+        <el-form-item label="参数名称" prop="name">
+          <el-input style="width: 100%" v-model="formQuota.name" placeholder="请输入1-50个字符" />
+        </el-form-item>
+        <el-form-item label="参数默认值" prop="value">
+          <el-input-number
+            style="width: 100%"
+            v-model="formQuota.value"
+            placeholder="请输入一个数字"
+            controls-position="right"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="formQuotaClose">取消</el-button>
+          <el-button type="primary" @click="formQuotaConfirm"> 确认 </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -537,6 +680,30 @@ initFunction()
   & > :nth-child(1) {
     color: #1f2329;
   }
+
+  .hover-icon_quota {
+    cursor: pointer;
+    height: 20px !important;
+    width: 20px !important;
+    border-radius: 4px;
+
+    &[aria-expanded='true'] {
+      background: rgba(31, 35, 41, 0.1);
+    }
+
+    &:hover {
+      background: rgba(31, 35, 41, 0.1);
+    }
+
+    &:active {
+      background: rgba(31, 35, 41, 0.2);
+    }
+  }
+
+  .not-allow {
+    cursor: not-allowed;
+    color: #bbbfc4 !important;
+  }
 }
 .item-dimension,
 .item-quota {
@@ -553,6 +720,15 @@ initFunction()
   margin-top: 4px;
   word-break: break-all;
   border-radius: 4px;
+
+  .icon-right {
+    display: none;
+    margin-left: auto;
+    align-items: center;
+    .ed-icon {
+      margin: 0 0 0 6px;
+    }
+  }
 }
 
 .item-dimension:hover {
@@ -571,6 +747,9 @@ initFunction()
   background: rgba(4, 180, 156, 0.1);
   border-color: #04b49c;
   cursor: pointer;
+  .icon-right {
+    display: flex;
+  }
 }
 
 .function-style {
