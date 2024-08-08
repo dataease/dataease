@@ -127,9 +127,17 @@ onBeforeMount(() => {
 <template>
   <el-date-picker
     disabled
+    class="date-editor_granularity"
     :key="config.timeGranularity"
     v-model="selectValue"
     :type="config.timeGranularity"
     :placeholder="$t('commons.date.select_date_time')"
   />
 </template>
+
+<style lang="less">
+.date-editor_granularity .ed-input__wrapper {
+  width: 325px;
+  margin-top: 0;
+}
+</style>

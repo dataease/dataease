@@ -231,7 +231,7 @@ defineExpose({
           />
         </el-select>
         <el-time-picker
-          style="width: 146px; margin-left: 8px"
+          style="width: 108px; margin-left: 8px"
           v-if="curComponent.timeGranularity === 'datetime'"
           v-model="curComponent.arbitraryTime"
         />
@@ -239,8 +239,8 @@ defineExpose({
     </div>
     <div class="setting">
       <div class="setting-label">预览</div>
-      <div class="setting-value">
-        <component :config="curComponent" isConfig ref="inputCom" :is="DynamicTime"></component>
+      <div class="setting-value" style="width: 325px">
+        <DynamicTime style="width: 100%" :config="curComponent" isConfig></DynamicTime>
       </div>
     </div>
   </div>
@@ -280,7 +280,7 @@ defineExpose({
 
     .setting-input {
       display: flex;
-      padding-left: 86px;
+      padding-left: 126px;
       justify-content: flex-end;
       align-items: center;
       &.range {
