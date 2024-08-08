@@ -197,14 +197,59 @@ const relativeToCurrentTypeMap = {
 
 const confirmTimeSelect = () => {
   item.value.dynamicTimeSetting = { ...timeDialog.value.curComponent }
-  const { timeGranularity, timeNum, relativeToCurrentType, around, arbitraryTime } =
-    item.value.dynamicTimeSetting
+  const {
+    timeGranularity,
+    timeNum,
+    relativeToCurrentType,
+    around,
+    arbitraryTime,
+    relativeToCurrent
+  } = item.value.dynamicTimeSetting
+  if (relativeToCurrent !== 'custom') {
+    item.value.timeValue = [
+      {
+        label: '今年',
+        value: 'thisYear'
+      },
+      {
+        label: '去年',
+        value: 'lastYear'
+      },
+      {
+        label: '本月',
+        value: 'thisMonth'
+      },
+      {
+        label: '上月',
+        value: 'lastMonth'
+      },
+      {
+        label: '今天',
+        value: 'today'
+      },
+      {
+        label: '昨天',
+        value: 'yesterday'
+      },
+      {
+        label: '月初',
+        value: 'monthBeginning'
+      },
+      {
+        label: '年初',
+        value: 'yearBeginning'
+      }
+    ].find(ele => ele.value === relativeToCurrent).label
+    dialogVisible.value = false
+    return
+  }
   item.value.timeValue = `${timeNum}${relativeToCurrentTypeMap[relativeToCurrentType]}${
     around === 'f' ? '前' : '后'
   }`
   if (timeGranularity === 'datetime') {
     item.value.timeValue += new Date(arbitraryTime).toLocaleString().split(' ')[1]
   }
+
   dialogVisible.value = false
 }
 
