@@ -64,7 +64,6 @@ const state = reactive({
   functionData: [],
   dimensionData: [],
   dimensionList: [],
-  quotaList: [],
   quotaData: []
 })
 const formQuotaRef = ref()
@@ -96,13 +95,11 @@ const formQuotaConfirm = () => {
       const q = cloneDeep(unref(formQuota))
       fieldForm.params = [q]
       const i = state.quotaData.find(ele => ele.id === formQuota.id)
-      const j = state.quotaList.find(ele => ele.id === formQuota.id)
-      if (i && j) {
+      if (i) {
         const str = mirror.value.state.doc.toString()
         const name2Auto = []
         fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
         Object.assign(i, cloneDeep(unref(formQuota)))
-        Object.assign(j, cloneDeep(unref(formQuota)))
 
         nextTick(() => {
           mirror.value.dispatch({
@@ -115,7 +112,6 @@ const formQuotaConfirm = () => {
         })
       } else {
         state.quotaData.push(q)
-        state.quotaList.push(q)
       }
       formQuotaClose()
     }
@@ -263,9 +259,10 @@ defineExpose({
   fieldForm,
   formField
 })
-
+const parmasTitle = ref('')
 const addParmasToQuota = () => {
   if (disableCaParams.value) return
+  parmasTitle.value = '添加计算参数'
   if (!fieldForm.params) {
     fieldForm.params = []
   }
@@ -274,6 +271,7 @@ const addParmasToQuota = () => {
 
 const updateParmasToQuota = () => {
   const [o] = fieldForm.params
+  parmasTitle.value = '编辑计算参数'
   Object.assign(formQuota, o || {})
   dialogFormVisible.value = true
 }
@@ -289,7 +287,6 @@ const delParmasToQuota = () => {
   const name2Auto = []
   fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto).replaceAll(`[${o.id}]`, '')
   state.quotaData = state.quotaData.filter(ele => ele.id !== o.id)
-  state.quotaList = state.quotaList.filter(ele => ele.id !== o.id)
   mirror.value.dispatch({
     changes: {
       from: 0,
