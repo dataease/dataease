@@ -71,11 +71,11 @@ public class SymbolicMapHandler extends GroupChartHandler {
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         SQLMeta sqlMeta1 = new SQLMeta();
         BeanUtils.copyBean(sqlMeta1, sqlMeta);
-        Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
+        Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
         List<ChartViewFieldDTO> yFields = new ArrayList<>();
         yFields.addAll(chartViewManege.transFieldDTO(Collections.singletonList(chartViewManege.createCountField(view.getTableId()))));
         yAxis.addAll(yFields);
-        Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
+        Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
@@ -93,8 +93,8 @@ public class SymbolicMapHandler extends GroupChartHandler {
             String sql = (String) sqlMap.get("sql");
             sql = Utils.replaceSchemaAlias(sql, dsMap);
             SQLMeta sqlMeta2 = new SQLMeta();
-            Table2SQLObj.table2sqlobj(sqlMeta2, null, "(" +  sql + ")", crossDs);
-            Field2SQLObj.field2sqlObj(sqlMeta2, allFieldsTmp, allFieldsTmp, crossDs, dsMap);
+            Table2SQLObj.table2sqlobj(sqlMeta2, null, "(" + sql + ")", crossDs);
+            Field2SQLObj.field2sqlObj(sqlMeta2, allFieldsTmp, allFieldsTmp, crossDs, dsMap, Utils.getParams(allFieldsTmp), null);// todo chartParam从视图里取
             String querySQL;
             querySQL = SQLProvider.createQuerySQL(sqlMeta2, false, needOrder, false);
             querySQL = provider.rebuildSQL(querySQL, sqlMeta2, crossDs, dsMap);

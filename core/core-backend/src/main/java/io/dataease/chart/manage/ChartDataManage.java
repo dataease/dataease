@@ -347,11 +347,15 @@ public class ChartDataManage {
             provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
         }
 
+        if (ObjectUtils.isEmpty(view.getCalParams())) {
+            view.setCalParams(Utils.getParams(transFields(allFields)));
+        }
+
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-        CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields), crossDs, dsMap);
-        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields), crossDs, dsMap);
-        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap);
+        CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
+        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
         // TODO 數據源插件化之後放到插件裡面組裝SQL
         if (BooleanUtils.isTrue(view.getIsPlugin())) {
             List<String> dsList = new ArrayList<>();
@@ -359,8 +363,8 @@ public class ChartDataManage {
                 dsList.add(next.getValue().getType());
             }
             boolean needOrder = Utils.isNeedOrder(dsList);
-            Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
-            Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
+            Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
+            Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
             String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             filterResult.getContext().put("querySql", querySql);
@@ -691,31 +695,31 @@ public class ChartDataManage {
 
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap);
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 List<ChartViewFieldDTO> xFields = new ArrayList<>();
                 xFields.addAll(xAxis);
                 xFields.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields), crossDs, dsMap);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 List<ChartViewFieldDTO> yFields = new ArrayList<>();
                 yFields.addAll(yAxis);
                 yFields.addAll(extBubble);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields), crossDs, dsMap);
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
                 querySql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);
             } else {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams());
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             }
 

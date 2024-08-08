@@ -4,6 +4,7 @@ import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
+import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
@@ -26,7 +27,7 @@ public class Utils {
     }
 
     // 解析计算字段
-    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
+    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, Map<String, String> paramMap) {
         try {
             int i = 0;
             DatasourceConfiguration.DatasourceType datasourceType = null;
@@ -34,7 +35,7 @@ public class Utils {
                 Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
                 datasourceType = DatasourceConfiguration.DatasourceType.valueOf(next.getValue().getType());
             }
-            return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType);
+            return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType, paramMap);
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
@@ -49,14 +50,14 @@ public class Utils {
                 Map.Entry<Long, String> next = dsTypeMap.entrySet().iterator().next();
                 datasourceType = DatasourceConfiguration.DatasourceType.valueOf(next.getValue());
             }
-            return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType);
+            return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType, null);
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
 
-    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i, boolean isCross, DatasourceConfiguration.DatasourceType datasourceType) throws Exception {
+    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i, boolean isCross, DatasourceConfiguration.DatasourceType datasourceType, Map<String, String> paramMap) throws Exception {
         try {
             i++;
             if (i > 100) {
@@ -75,6 +76,14 @@ public class Utils {
             if (CollectionUtils.isEmpty(ids)) {
                 return originField;
             }
+            // 替换参数
+            if (ObjectUtils.isNotEmpty(paramMap)) {
+                Set<Map.Entry<String, String>> entries = paramMap.entrySet();
+                for (Map.Entry<String, String> ele : entries) {
+                    originField = originField.replaceAll("\\[" + ele.getKey() + "]", ele.getValue());
+                }
+            }
+            // 替换字段引用
             for (DatasetTableFieldDTO ele : originFields) {
                 if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
                     // 计算字段允许二次引用，这里递归查询完整引用链
@@ -86,7 +95,7 @@ public class Utils {
                         }
                     } else {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]", "(" + ele.getOriginName() + ")");
-                        originField = buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType);
+                        originField = buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType, paramMap);
                     }
                 }
             }
@@ -404,6 +413,32 @@ public class Utils {
 
         map.put("startTime", startTime);
         map.put("endTime", endTime);
+        return map;
+    }
+
+    public static List<CalParam> getParams(List<DatasetTableFieldDTO> list) {
+        if (ObjectUtils.isNotEmpty(list)) return Collections.emptyList();
+        List<CalParam> param = new ArrayList<>();
+        for (DatasetTableFieldDTO dto : list) {
+            if (Objects.equals(dto.getExtField(), ExtFieldConstant.EXT_CALC) && ObjectUtils.isNotEmpty(dto.getParams())) {
+                param.addAll(dto.getParams());
+            }
+        }
+        return param;
+    }
+
+    public static Map<String, String> mergeParam(List<CalParam> fieldParam, List<CalParam> chartParam) {
+        Map<String, String> map = new HashMap<>();
+        if (ObjectUtils.isNotEmpty(fieldParam)) {
+            for (CalParam param : fieldParam) {
+                map.put(param.getId(), param.getValue());
+            }
+        }
+        if (ObjectUtils.isNotEmpty(chartParam)) {
+            for (CalParam param : chartParam) {
+                map.put(param.getId(), param.getValue());
+            }
+        }
         return map;
     }
 }

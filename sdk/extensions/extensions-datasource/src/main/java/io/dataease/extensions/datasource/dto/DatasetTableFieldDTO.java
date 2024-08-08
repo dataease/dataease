@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Author Junjun
@@ -126,4 +127,9 @@ public class DatasetTableFieldDTO implements Serializable {
      * 是否脱敏
      */
     private Boolean desensitized;
+
+    /**
+     * 计算字段参数
+     */
+    private List<CalParam> params;
 }

@@ -1,13 +1,14 @@
 package io.dataease.engine.trans;
 
+import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
+import io.dataease.extensions.datasource.dto.CalParam;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,11 +22,12 @@ import java.util.Map;
  */
 public class ExtWhere2Str {
 
-    public static void extWhere2sqlOjb(SQLMeta meta, List<ChartExtFilterDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
+    public static void extWhere2sqlOjb(SQLMeta meta, List<ChartExtFilterDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
         }
+        Map<String, String> paramMap = Utils.mergeParam(fieldParam, chartParam);
         List<SQLObj> list = new ArrayList<>();
         Map<String, String> fieldsDialect = new HashMap<>();
         if (ObjectUtils.isNotEmpty(fields)) {
@@ -49,7 +51,7 @@ public class ExtWhere2Str {
                     String originName;
                     if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
                         // 解析origin name中有关联的字段生成sql表达式
-                        String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap);
+                        String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap);
                         // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                         originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
                         fieldsDialect.put(originName, calcFieldExp);

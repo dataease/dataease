@@ -1,15 +1,16 @@
 package io.dataease.engine.trans;
 
-import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
-import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.datasource.model.SQLMeta;
-import io.dataease.extensions.datasource.model.SQLObj;
-import io.dataease.extensions.view.dto.ChartViewFieldDTO;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
+import io.dataease.extensions.datasource.dto.CalParam;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.model.SQLMeta;
+import io.dataease.extensions.datasource.model.SQLObj;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -21,11 +22,12 @@ import java.util.*;
  */
 public class Quota2SQLObj {
 
-    public static void quota2sqlObj(SQLMeta meta, List<ChartViewFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
+    public static void quota2sqlObj(SQLMeta meta, List<ChartViewFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
         }
+        Map<String, String> paramMap = Utils.mergeParam(fieldParam, chartParam);
         List<SQLObj> yFields = new ArrayList<>();
         List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
@@ -36,7 +38,7 @@ public class Quota2SQLObj {
                 String originField;
                 if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    String calcFieldExp = Utils.calcFieldRegex(y.getOriginName(), tableObj, originFields, isCross, dsMap);
+                    String calcFieldExp = Utils.calcFieldRegex(y.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap);
                     // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                     originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, y.getId());
                     fieldsDialect.put(originField, calcFieldExp);
