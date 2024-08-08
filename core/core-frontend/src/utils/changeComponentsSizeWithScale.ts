@@ -59,8 +59,24 @@ export function changeComponentsSizeWithScale(scale, changeAttrs = needToChangeA
     scale
   })
 }
+export function changeRefComponentsSizeWithScale(componentDataRef, canvasStyleDataRef, scale) {
+  componentDataRef.forEach(component => {
+    Object.keys(component.style).forEach(key => {
+      if (needToChangeAttrs.includes(key)) {
+        if (key === 'fontSize' && component.style[key] === '') return
+        // 根据原来的比例获取样式原来的尺寸
+        // 再用原来的尺寸 * 现在的比例得出新的尺寸
+        component.style[key] = format(
+          getOriginStyle(component.style[key], canvasStyleDataRef.scale),
+          scale
+        )
+      }
+    })
+  })
+  canvasStyleDataRef.scale = scale
+}
 
-export function changeRefComponentsSizeWithScale(
+export function changeRefComponentsSizeWithScalePoint(
   componentDataRef,
   canvasStyleDataRef,
   scaleWidth,
