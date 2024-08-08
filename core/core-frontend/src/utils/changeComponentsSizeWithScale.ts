@@ -54,8 +54,11 @@ export function changeComponentsSizeWithScale(scale, changeAttrs = needToChangeA
     index: curComponentIndex.value
   })
 
+  // 分开保存初始化宽高比例
   dvMainStore.setCanvasStyle({
     ...canvasStyleData.value,
+    scaleWidth: scale,
+    scaleHeight: scale,
     scale
   })
 }
@@ -96,7 +99,7 @@ export function changeRefComponentsSizeWithScalePoint(
         // 根据原来的比例获取样式原来的尺寸
         // 再用原来的尺寸 * 现在的比例得出新的尺寸
         component.style[key] = format(
-          getOriginStyle(component.style[key], canvasStyleDataRef.scale),
+          getOriginStyle(component.style[key], canvasStyleDataRef.scaleHeight),
           scaleHeight
         )
       }

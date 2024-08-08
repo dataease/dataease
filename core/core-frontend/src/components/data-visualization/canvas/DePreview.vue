@@ -3,7 +3,7 @@ import { getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { computed, nextTick, ref, toRefs, watch, onBeforeUnmount, onMounted } from 'vue'
-import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
+import { changeRefComponentsSizeWithScalePoint } from '@/utils/changeComponentsSizeWithScale'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import elementResizeDetectorMaker from 'element-resize-detector'
@@ -83,8 +83,8 @@ const {
   outerScale
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
-const scaleWidth = ref(100)
-const scaleHeight = ref(100)
+const scaleWidthPoint = ref(100)
+const scaleHeightPoint = ref(100)
 const scaleMin = ref(100)
 const previewCanvas = ref(null)
 const cellWidth = ref(10)
@@ -96,6 +96,11 @@ const userInfo = ref(null)
 
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
+})
+
+// 大屏是否保持宽高比例 非全屏 full 都需要保持宽高比例
+const dataVKeepRadio = computed(() => {
+  return canvasStyleData.value.screenAdaptor !== 'full'
 })
 const isReport = computed(() => {
   return !!router.currentRoute.value.query?.report
@@ -117,8 +122,15 @@ const canvasStyle = computed(() => {
         ? downloadStatus.value
           ? getDownloadStatusMainHeight()
           : '100%'
-        : changeStyleWithScale(canvasStyleData.value?.height, scaleMin.value) + 'px'
+        : !canvasStyleData.value?.screenAdaptor ||
+          canvasStyleData.value?.screenAdaptor === 'widthFirst'
+        ? changeStyleWithScale(canvasStyleData.value?.height, scaleMin.value) + 'px'
+        : '100%'
     }
+    style['width'] =
+      !dashboardActive.value && canvasStyleData.value?.screenAdaptor === 'heightFirst'
+        ? changeStyleWithScale(canvasStyleData.value?.width, scaleHeightPoint.value) + 'px'
+        : '100%'
   }
   if (!dashboardActive.value) {
     style['overflow-y'] = 'hidden'
@@ -179,11 +191,11 @@ const resetLayout = () => {
       //div容器获取tableBox.value.clientWidth
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
-      scaleWidth.value = Math.floor((canvasWidth * 100) / canvasStyleData.value.width)
-      scaleHeight.value = Math.floor((canvasHeight * 100) / canvasStyleData.value.height)
+      scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
+      scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
       scaleMin.value = isDashboard()
-        ? Math.min(scaleWidth.value, scaleHeight.value)
-        : (canvasWidth * 100) / canvasStyleData.value.width
+        ? Math.floor(Math.min(scaleWidthPoint.value, scaleHeightPoint.value))
+        : scaleWidthPoint.value
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
@@ -191,10 +203,13 @@ const resetLayout = () => {
           ? scaleMin.value * 1.2
           : outerScale.value * 100
       } else {
-        changeRefComponentsSizeWithScale(
+        // 需要保持宽高比例时 高度伸缩和宽度伸缩保持一致 否则 高度伸缩单独计算
+        const scaleMinHeight = dataVKeepRadio.value ? scaleMin.value : scaleHeightPoint.value
+        changeRefComponentsSizeWithScalePoint(
           baseComponentData.value,
           canvasStyleData.value,
-          scaleMin.value
+          scaleMin.value,
+          scaleMinHeight
         )
       }
     }

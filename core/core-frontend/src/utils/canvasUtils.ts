@@ -131,6 +131,9 @@ export function historyAdaptor(
   canvasStyleResult.component['seniorStyleSetting'] =
     canvasStyleResult.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
   canvasStyleResult['screenAdaptor'] = canvasStyleResult['screenAdaptor'] || 'widthFirst'
+  // 同步宽高比例(大屏使用)
+  canvasStyleResult['scaleWidth'] = canvasStyleResult['scale']
+  canvasStyleResult['scaleHeight'] = canvasStyleResult['scale']
   canvasStyleResult['popupAvailable'] =
     canvasStyleResult['popupAvailable'] === undefined ? true : canvasStyleResult['popupAvailable'] //兼容弹框区域开关
   const reportFilterInfo = canvasInfo.reportFilterInfo

@@ -22,8 +22,7 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
 const screenAdaptorList = [
   { label: '宽度优先', value: 'widthFirst' },
   { label: '高度优先', value: 'heightFirst' },
-  { label: '铺满全屏', value: 'full' },
-  { label: '不缩放', value: 'keepSize' }
+  { label: '铺满全屏', value: 'full' }
 ]
 const init = () => {
   nextTick(() => {
@@ -33,6 +32,10 @@ const init = () => {
 
 const onColorChange = val => {
   themeAttrChange('customAttr', 'color', val)
+}
+
+const onStyleChange = () => {
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 
 const onBaseChange = () => {
@@ -128,6 +131,7 @@ onMounted(() => {
                 style="margin: 0 0 0 8px; flex: 1"
                 effect="dark"
                 v-model="canvasStyleData.screenAdaptor"
+                @change="onStyleChange"
                 size="small"
               >
                 <el-option
