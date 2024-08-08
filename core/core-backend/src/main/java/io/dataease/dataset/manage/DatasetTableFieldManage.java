@@ -1,6 +1,7 @@
 package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
@@ -9,6 +10,7 @@ import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
@@ -17,6 +19,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,8 +81,7 @@ public class DatasetTableFieldManage {
     public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) {
         checkNameLength(datasetTableFieldDTO.getName());
         CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
-        CoreDatasetTableField record = new CoreDatasetTableField();
-        BeanUtils.copyBean(record, datasetTableFieldDTO);
+        CoreDatasetTableField record = transDTO2Record(datasetTableFieldDTO);
         if (ObjectUtils.isEmpty(record.getDataeaseName())) {
             String n = TableUtils.fieldNameShort(record.getId() + "");
             record.setFieldShortName(n);
@@ -256,7 +258,7 @@ public class DatasetTableFieldManage {
                 .filter(ele -> {
                     boolean flag = true;
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                        String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, fields, true, null);
+                        String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, fields, true, null, Utils.mergeParam(Utils.getParams(fields), null));
                         for (String func : FunctionConstant.AGG_FUNC) {
                             if (Utils.matchFunction(func, originField)) {
                                 flag = false;
@@ -277,8 +279,23 @@ public class DatasetTableFieldManage {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
             if (ele == null) return null;
             BeanUtils.copyBean(dto, ele);
+            if (StringUtils.isNotEmpty(ele.getParams())) {
+                TypeReference<List<CalParam>> tokenType = new TypeReference<>() {
+                };
+                List<CalParam> calParams = JsonUtil.parseList(ele.getParams(), tokenType);
+                dto.setParams(calParams);
+            }
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    private CoreDatasetTableField transDTO2Record(DatasetTableFieldDTO dto) {
+        CoreDatasetTableField record = new CoreDatasetTableField();
+        BeanUtils.copyBean(record, dto);
+        if (ObjectUtils.isNotEmpty(dto.getParams())) {
+            record.setParams(JsonUtil.toJSONString(dto.getParams()).toString());
+        }
+        return record;
     }
 
     private void checkNameLength(String name) {

@@ -81,7 +81,7 @@ public class YoyChartHandler extends DefaultChartHandler {
         if (yoyFiltered) {
             var originFilter = (List<ChartExtFilterDTO>) filterResult.getContext().get("originFilter");
             var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
-            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, originFilter, FieldUtil.transFields(allFields), crossDs, dsMap);
+            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, originFilter, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
             var originSql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             originSql = provider.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
             var request = new DatasourceRequest();

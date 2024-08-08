@@ -6,11 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- *  Mapper 接口
+ * table数据集表字段 Mapper 接口
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-20
+ * @since 2024-08-07
  */
 @Mapper
 public interface CoreDatasetTableFieldMapper extends BaseMapper<CoreDatasetTableField> {

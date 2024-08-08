@@ -105,8 +105,8 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
-        Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
-        Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
+        Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
+        Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
