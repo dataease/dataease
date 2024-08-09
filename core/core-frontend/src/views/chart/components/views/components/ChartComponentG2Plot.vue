@@ -530,8 +530,12 @@ onMounted(() => {
   resizeObserver.observe(containerDom)
 })
 onBeforeUnmount(() => {
-  myChart?.destroy()
-  resizeObserver?.disconnect()
+  try {
+    myChart?.destroy()
+    resizeObserver?.disconnect()
+  } catch (e) {
+    console.log(e)
+  }
 })
 </script>
 

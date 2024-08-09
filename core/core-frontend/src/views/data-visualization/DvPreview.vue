@@ -3,6 +3,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { computed, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { storeToRefs } from 'pinia'
+import { ElScrollbar } from 'element-plus-secondary'
 
 const dvMainStore = dvMainStoreWithOut()
 const { fullscreenFlag } = storeToRefs(dvMainStore)
@@ -57,13 +58,24 @@ const contentInnerClass = computed(() => {
   }
 })
 
+const outerStyle = computed(() => {
+  return {
+    flexDirection: props.canvasStylePreview.screenAdaptor === 'heightFirst' ? 'row' : 'column'
+  }
+})
+
 defineExpose({
   restore
 })
 </script>
 
 <template>
-  <div id="de-preview-content" :class="{ 'de-screen-full': fullscreenFlag }" class="content-outer">
+  <div
+    id="de-preview-content"
+    :class="{ 'de-screen-full': fullscreenFlag }"
+    :style="outerStyle"
+    class="content-outer"
+  >
     <div class="content-inner" :class="contentInnerClass">
       <de-preview
         ref="dePreviewRef"

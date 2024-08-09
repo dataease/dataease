@@ -561,10 +561,14 @@ onMounted(() => {
   resizeObserver.observe(document.getElementById(containerId))
 })
 onBeforeUnmount(() => {
-  myChart?.facet.timer?.stop()
-  myChart?.destroy()
-  myChart = null
-  resizeObserver?.disconnect()
+  try {
+    myChart?.facet.timer?.stop()
+    myChart?.destroy()
+    myChart = null
+    resizeObserver?.disconnect()
+  } catch (e) {
+    console.log(e)
+  }
 })
 
 const autoStyle = computed(() => {
