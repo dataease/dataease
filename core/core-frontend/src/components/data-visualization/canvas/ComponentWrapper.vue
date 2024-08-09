@@ -246,9 +246,8 @@ const deepScale = computed(() => scale.value / 100)
   >
     <component-edit-bar
       v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard' && !props.isSelector"
-      class="wrapper-edit-bar"
+      class="wrapper-edit-bar wrapper-edit-bar-active"
       ref="componentEditBarRef"
-      :class="{ 'wrapper-edit-bar-active': active }"
       :canvas-id="canvasId"
       :index="index"
       :element="config"
