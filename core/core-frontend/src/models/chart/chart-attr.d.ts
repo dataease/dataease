@@ -813,6 +813,11 @@ declare interface ChartLabelAttr {
    * 显示极值
    */
   showExtremum?: boolean
+
+  /**
+   * 转化率标签
+   */
+  conversionTag: ConversionTagAtt
 }
 /**
  * 提示设置
@@ -1079,4 +1084,19 @@ declare interface CarouselAttr {
    * 轮播间隔时间 秒
    */
   intervalTime: number
+}
+
+declare interface ConversionTagAtt {
+  /**
+   * 是否显示
+   */
+  show: boolean
+  /**
+   * 文本
+   */
+  text: string
+  /**
+   * 精度
+   */
+  precision: number
 }
