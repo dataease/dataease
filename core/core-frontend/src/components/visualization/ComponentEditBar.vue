@@ -56,6 +56,18 @@
         </el-icon>
       </span>
     </el-tooltip>
+    <el-tooltip
+      effect="dark"
+      placement="top"
+      content="输入计算数据"
+      v-if="barShowCheck('datasetParams')"
+    >
+      <span>
+        <el-icon class="bar-base-icon" @click="datasetParamsInit">
+          <Icon name="icon_params_setting"></Icon>
+        </el-icon>
+      </span>
+    </el-tooltip>
 
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
       <el-checkbox
@@ -161,7 +173,6 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-
     <el-popover v-if="selectFieldShow" width="200" trigger="click" @mousedown="fieldsAreaDown">
       <template #reference>
         <el-icon class="bar-base-icon"> <Icon name="database"></Icon></el-icon>
@@ -206,6 +217,7 @@ const { emitter } = useEmitt()
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
   canvas: [
+    'datasetParams',
     'enlarge',
     'details',
     'setting',
@@ -216,7 +228,7 @@ const positionBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  preview: ['enlarge', 'details', 'download', 'unLinkage', 'previewDownload'],
+  preview: ['enlarge', 'details', 'download', 'unLinkage', 'previewDownload', 'datasetParams'],
   multiplexing: ['multiplexing'],
   batchOpt: ['batchOpt'],
   linkage: ['linkage']
@@ -225,6 +237,7 @@ const positionBarShow = {
 // bar所属组件类型可以显示的功能按钮
 const componentTypeBarShow = {
   UserView: [
+    'datasetParams',
     'enlarge',
     'details',
     'setting',
@@ -417,6 +430,10 @@ const deleteComponent = () => {
   eventBus.emit('removeMatrixItem-' + canvasId.value, index.value)
   dvMainStore.setCurComponent({ component: null, index: null })
   snapshotStore.recordSnapshotCache()
+}
+
+const datasetParamsInit = () => {
+  // do init
 }
 
 const copyComponent = () => {
