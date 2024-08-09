@@ -6,6 +6,7 @@ import io.dataease.api.report.dto.ReportInstanceMsgRequest;
 import io.dataease.api.report.vo.ReportGridVO;
 import io.dataease.api.xpack.dataFilling.dto.*;
 import io.dataease.auth.DeApiPath;
+import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
 import io.dataease.model.BusiNodeRequest;
@@ -29,6 +30,7 @@ public interface DataFillingApi {
     @PostMapping("tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request) throws DEException;
 
+    @DePermit({"#p0+':read'"})
     @GetMapping("/get/{id}")
     DataFillingDTO get(@PathVariable("id") Long id);
 

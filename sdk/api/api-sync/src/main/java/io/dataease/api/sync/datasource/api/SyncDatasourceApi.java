@@ -6,7 +6,6 @@ import io.dataease.api.sync.datasource.dto.GetDatasourceRequest;
 import io.dataease.api.sync.datasource.dto.SyncDatasourceDTO;
 import io.dataease.api.sync.datasource.vo.SyncDatasourceVO;
 import io.dataease.auth.DeApiPath;
-import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.request.BaseGridRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +35,7 @@ public interface SyncDatasourceApi {
     void save(@RequestBody SyncDatasourceDTO dataSourceDTO) throws DEException;
 
     @PostMapping("/update")
-    Map<String,Object> update(@RequestBody SyncDatasourceDTO dataSourceDTO) throws DEException;
+    Map<String, Object> update(@RequestBody SyncDatasourceDTO dataSourceDTO) throws DEException;
 
     @PostMapping("/delete/{datasourceId}")
     void delete(@PathVariable("datasourceId") String datasourceId) throws DEException;
@@ -63,15 +62,13 @@ public interface SyncDatasourceApi {
     void batchDel(@RequestBody List<String> ids) throws DEException;
 
     @PostMapping("/fields")
-    Map<String, Object> getFields(@RequestBody GetDatasourceRequest getDsRequest) throws DEException ;
+    Map<String, Object> getFields(@RequestBody GetDatasourceRequest getDsRequest) throws DEException;
 
     @GetMapping("/list/{type}")
     List<SyncDatasourceDTO> listByType(@PathVariable("type") String type) throws DEException;
 
     @GetMapping("/table/list/{dsId}")
     List<DBTableDTO> getTableList(@PathVariable("dsId") String dsId) throws DEException;
-
-
 
 
 }
