@@ -21,6 +21,7 @@ import {
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { deepCopy } from '@/utils/utils'
+import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 
 const { t } = useI18n()
 
@@ -29,7 +30,10 @@ const { t } = useI18n()
  */
 export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties: EditorProperty[] = [...MAP_EDITOR_PROPERTY, 'bubble-animate']
-  propertyInner = MAP_EDITOR_PROPERTY_INNER
+  propertyInner = {
+    ...MAP_EDITOR_PROPERTY_INNER,
+    'tooltip-selector': [...MAP_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel']
+  }
   axis = MAP_AXIS_TYPE
   axisConfig: AxisConfig = {
     xAxis: {
@@ -100,7 +104,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options = this.setupOptions(chart, options, context)
 
     const tooltip = deepCopy(options.tooltip)
-    options = { ...options, tooltip: false }
+    options = { ...options, tooltip: { ...tooltip, showComponent: false } }
     const view = new Choropleth(container, options)
     const dotLayer = this.getDotLayer(chart, geoJson, drawOption)
     dotLayer.options = { ...dotLayer.options, tooltip }
@@ -127,6 +131,10 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
             extra: { adcode: adcode }
           }
         })
+      })
+      dotLayer.once('loaded', () => {
+        chart.container = container
+        configCarouselTooltip(chart, view, chart.data?.data || [], null)
       })
     })
     return view
@@ -179,7 +187,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         opacity: 1
       },
       state: {
-        active: true
+        active: { color: 'rgba(30,90,255,1)' }
       },
       tooltip: {}
     }

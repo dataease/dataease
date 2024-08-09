@@ -35,6 +35,7 @@ import {
   LIST_CLASS
 } from '@antv/l7plot-component/dist/esm/legend/category/constants'
 import substitute from '@antv/util/esm/substitute'
+import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 
 const { t } = useI18n()
 
@@ -46,7 +47,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
     'basic-style-selector': ['colors', 'alpha', 'areaBorderColor', 'zoom', 'gradient-color'],
-    'legend-selector': ['icon', 'fontSize', 'color']
+    'legend-selector': ['icon', 'fontSize', 'color'],
+    'tooltip-selector': [...MAP_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel']
   }
   axis = MAP_AXIS_TYPE
   axisConfig: AxisConfig = {
@@ -161,6 +163,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           }
         })
       })
+      chart.container = container
+      configCarouselTooltip(chart, view, data, null)
     })
     return view
   }
