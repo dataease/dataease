@@ -1267,6 +1267,7 @@ const conversionPrecision = [
     >
       <el-checkbox
         :effect="themes"
+        size="small"
         @change="changeLabelAttr('conversionTag')"
         v-model="state.labelForm.conversionTag.show"
       >
