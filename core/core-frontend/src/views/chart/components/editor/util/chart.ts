@@ -334,7 +334,12 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   color: '#909399',
   tooltipFormatter: formatterItem,
   backgroundColor: '#ffffff',
-  seriesTooltipFormatter: []
+  seriesTooltipFormatter: [],
+  carousel: {
+    enable: false,
+    stayTime: 3,
+    intervalTime: 0
+  }
 }
 export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
   row: {

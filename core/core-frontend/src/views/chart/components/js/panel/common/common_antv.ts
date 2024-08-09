@@ -893,7 +893,8 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
     domStyles: {
       'l7plot-tooltip': {
         'background-color': tooltip.backgroundColor,
-        'font-size': `${tooltip.fontSize}px`
+        'font-size': `${tooltip.fontSize}px`,
+        'line-height': 1.6
       },
       'l7plot-tooltip__name': {
         color: tooltip.color
