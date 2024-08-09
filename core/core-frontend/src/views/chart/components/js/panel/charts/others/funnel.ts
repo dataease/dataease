@@ -1,8 +1,10 @@
 import type { FunnelOptions, Funnel as G2Funnel } from '@antv/g2plot/esm/plots/funnel'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
-import { flow, setUpSingleDimensionSeriesColor } from '@/views/chart/components/js/util'
+import { flow, parseJson, setUpSingleDimensionSeriesColor } from '@/views/chart/components/js/util'
 import { getPadding } from '../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
+import { Datum } from '@antv/g2plot/esm/types/common'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
 
@@ -23,7 +25,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'seriesColor'],
-    'label-selector': ['fontSize', 'color', 'hPosition', 'labelFormatter'],
+    'label-selector': ['fontSize', 'color', 'hPosition', 'showQuota', 'conversionTag'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'title-selector': [
       'show',
@@ -64,7 +66,6 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
       xField: 'field',
       yField: 'value',
       appendPadding: getPadding(chart),
-      conversionTag: false,
       interactions: [
         {
           type: 'legend-active',
@@ -111,15 +112,58 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
   }
 
   protected configLabel(chart: Chart, options: FunnelOptions): FunnelOptions {
-    const tmpOptions = super.configLabel(chart, options)
-    if (!tmpOptions.label) {
-      return tmpOptions
+    let label
+    let conversionTag
+    let customAttr: DeepPartial<ChartAttr>
+    if (chart.customAttr) {
+      customAttr = parseJson(chart.customAttr)
+      const showQuota = customAttr.label.showQuota
+      const l = customAttr.label
+      if (customAttr.label?.show) {
+        // label
+        if (showQuota) {
+          label = {
+            position: l.position,
+            layout: [{ type: 'limit-in-canvas' }],
+            style: {
+              fill: l.color,
+              fontSize: l.fontSize
+            },
+            formatter: function (param: Datum) {
+              return valueFormatter(param.value, l.quotaLabelFormatter)
+            }
+          }
+          const position = label.position
+          if (position === 'right') {
+            label.offsetX = -40
+          }
+        }
+        // 转化率
+        const conversionTagAtt = parseJson(chart.customAttr).label.conversionTag
+        if (conversionTagAtt && conversionTagAtt.show) {
+          conversionTag = {
+            style: {
+              fill: l.color,
+              fontSize: l.fontSize
+            },
+            formatter: datum => {
+              const rate = (
+                (datum['$$conversion$$'][1] / datum['$$conversion$$'][0]) *
+                100
+              ).toFixed(conversionTagAtt.precision)
+              return `${conversionTagAtt.text ?? ''}${rate}%`
+            }
+          }
+        }
+      }
+      return {
+        ...options,
+        label,
+        conversionTag,
+        maxSize: conversionTag ? 0.8 : 1
+      }
     }
-    const position = tmpOptions.label.position
-    if (position === 'right') {
-      tmpOptions.label.offsetX = -40
-    }
-    return tmpOptions
+    return options
   }
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
@@ -142,7 +186,13 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     }
     customAttr.label = {
       ...label,
-      show: true
+      show: true,
+      showQuota: true,
+      conversionTag: {
+        show: false,
+        precision: 2,
+        text: '转化率'
+      }
     }
     const { legend } = customStyle
     legend.show = false

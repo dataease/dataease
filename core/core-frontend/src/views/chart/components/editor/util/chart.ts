@@ -324,7 +324,12 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
   showDimension: true,
   showQuota: false,
   showProportion: true,
-  seriesLabelFormatter: []
+  seriesLabelFormatter: [],
+  conversionTag: {
+    show: false,
+    precision: 2,
+    text: '转化率'
+  }
 }
 export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
