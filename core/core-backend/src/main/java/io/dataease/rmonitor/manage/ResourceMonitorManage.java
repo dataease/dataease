@@ -1,5 +1,6 @@
 package io.dataease.rmonitor.manage;
 
+import io.dataease.constant.DataSourceType;
 import io.dataease.exception.DEException;
 import io.dataease.rmonitor.bo.PerMonitorCheckBO;
 import io.dataease.rmonitor.bo.PerMonitorNodeBO;
@@ -45,6 +46,7 @@ public class ResourceMonitorManage {
             List<PerMonitorNodeBO> dsBos = dsFreeResources.stream().map(node -> {
                 PerMonitorNodeBO bo = BeanUtils.copyBean(new PerMonitorNodeBO(), node);
                 bo.setLeaf(!StringUtils.equals("folder", node.getType()));
+                bo.setExtraFlag(DataSourceType.valueOf(node.getType()).getFlag());
                 return bo;
             }).collect(Collectors.toList());
             List<PerMonitorNodeBO> dsTree = TreeUtils.mergeTree(dsBos, PerMonitorNodeBO.class, false);
@@ -79,7 +81,7 @@ public class ResourceMonitorManage {
     }
 
     private String convertBusiFlag(String key) {
-        if (StringUtils.equals("dashboard", key)){
+        if (StringUtils.equals("dashboard", key)) {
             return "panel";
         } else if (StringUtils.equals("dataV", key)) {
             return "screen";
