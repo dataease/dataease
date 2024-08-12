@@ -2780,6 +2780,9 @@ export default {
     status: '数据状态',
     base_setting: '基本设置',
     threshold_setting: '告警设置',
-    name: '告警名称'
+    name: '告警名称',
+    grid_title: '告警管理',
+    grid: '告警列表',
+    record: '告警记录'
   }
 }
