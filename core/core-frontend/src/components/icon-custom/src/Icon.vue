@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 
 import _401 from '@/assets/svg/401.svg'
+import icon_notification_filled from '@/assets/svg/icon_notification_filled.svg'
 import calculate from '@/assets/svg/calculate.svg'
 import _403 from '@/assets/svg/403.svg'
 import APIDs from '@/assets/svg/API-ds.svg'
@@ -221,8 +222,6 @@ import emailTask from '@/assets/svg/email-task.svg'
 import embedded from '@/assets/svg/embedded.svg'
 import association from '@/assets/svg/association.svg'
 import threshold from '@/assets/svg/threshold.svg'
-import threshold_full from '@/assets/svg/threshold_full.svg'
-import clock from '@/assets/svg/clock.svg'
 import example from '@/assets/svg/example.svg'
 import exclamationmark from '@/assets/svg/exclamationmark.svg'
 import exclamationmark2 from '@/assets/svg/exclamationmark2.svg'
@@ -674,6 +673,7 @@ import icon_file_doc_colorful from '@/assets/svg/icon_file-doc_colorful.svg'
 import icon_font from '@/assets/svg/icon_font.svg'
 const iconMap = {
   '401': _401,
+  icon_notification_filled,
   '403': _403,
   'API-ds': APIDs,
   'Apache Hive': Apache_Hive,
@@ -891,8 +891,6 @@ const iconMap = {
   embedded: embedded,
   association: association,
   threshold: threshold,
-  threshold_full: threshold_full,
-  clock,
   example: example,
   exclamationmark: exclamationmark,
   exclamationmark2: exclamationmark2,
