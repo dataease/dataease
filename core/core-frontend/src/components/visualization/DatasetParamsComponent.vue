@@ -1,29 +1,21 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
-import DeUpload from '@/components/visualization/common/DeUpload.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import { ElMessage } from 'element-plus-secondary'
 const { t } = useI18n()
 const loading = ref(false)
-
-const rules = {
-  name: [
-    {
-      required: true,
-      message: t('commons.input_content'),
-      trigger: 'change'
-    },
-    {
-      max: 50,
-      message: t('commons.char_can_not_more_50'),
-      trigger: 'change'
-    }
-  ]
-}
 const subject = ref()
 const subjectDialogShow = ref(false)
-const optType = ref('new')
+const dvMainStore = dvMainStoreWithOut()
+const { canvasViewInfo } = storeToRefs(dvMainStore)
 
+const state = reactive({
+  viewId: null
+})
 const curDataSetParamsInfo = ref([])
 
 const resetForm = () => {
@@ -31,53 +23,87 @@ const resetForm = () => {
   subjectDialogShow.value = false
 }
 const subjectForm = ref(null)
-const title = computed(() => (optType.value === 'new' ? '新建主题' : '编辑主题'))
+const rules = ref({})
 
-const optInit = (subjectItem, opt) => {
-  optType.value = opt
-  subjectDialogShow.value = true
-  curDataSetParamsInfo.value = subjectItem
+const optInit = item => {
+  if (item) {
+    state.viewId = item.id
+    const chartInfo = canvasViewInfo.value[state.viewId]
+    curDataSetParamsInfo.value = deepCopy(chartInfo.calParams)
+    subjectDialogShow.value = true
+  }
 }
 
 const saveSubject = () => {
-  subject.value.validate(result => {
-    if (result) {
-      emits('finish', subjectForm.value)
-    }
-  })
+  if (disabledCheck.value) {
+    ElMessage.error('请输入正确参数')
+    return
+  }
+  canvasViewInfo.value[state.viewId]['calParams'] = curDataSetParamsInfo.value
+  useEmitt().emitter.emit('calcData-' + state.viewId, canvasViewInfo.value[state.viewId])
+  resetForm()
+}
+
+const disabledCheck = computed(() => {
+  return (
+    !curDataSetParamsInfo.value ||
+    (curDataSetParamsInfo.value &&
+      curDataSetParamsInfo.value.filter(item => item.value === null || item.value === undefined)
+        .length > 0)
+  )
+})
+
+const statesCheck = () => {
+  return subjectDialogShow.value
+}
+
+const handleDialogClick = e => {
+  e.preventDefault()
+  e.stopPropagation()
 }
 
 defineExpose({
   optInit,
+  statesCheck,
   resetForm
 })
 
 const emits = defineEmits(['finish'])
-const onImgChange = imgUrl => {
-  subjectForm.value.coverUrl = imgUrl
-}
 </script>
 
 <template>
   <el-dialog
     v-loading="loading"
-    :title="title"
+    title="计算参数输入"
     v-model="subjectDialogShow"
     width="400px"
     :before-close="resetForm"
+    @click="handleDialogClick"
   >
     <el-form
+      v-if="subjectDialogShow"
       label-position="top"
-      require-asterisk-position="right"
       ref="subject"
       :model="subjectForm"
       :rules="rules"
     >
-      <el-form-item v-for="paramsItem in curDataSetParamsInfo" class="form-item" prop="name">
+      <el-form-item
+        v-for="paramsItem in curDataSetParamsInfo"
+        :key="paramsItem"
+        class="form-item"
+        :prop="'value_' + paramsItem.name"
+      >
         <template #label>
-          <label class="m-label"> {{ paramsItem.name }} </label>
+          <label class="m-label">
+            计算字段[{{ paramsItem.name }}] <span style="color: red">*</span>
+          </label>
         </template>
-        <el-input v-model="paramsItem.value" />
+        <el-input-number
+          style="width: 100%"
+          v-model="paramsItem.value"
+          placeholder="请输入一个数字"
+          controls-position="right"
+        />
       </el-form-item>
     </el-form>
     <template #footer>

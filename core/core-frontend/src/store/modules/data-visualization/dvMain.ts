@@ -1189,8 +1189,12 @@ export const dvMainStore = defineStore('dataVisualization', {
         mobileLayout: false
       }
     },
-    setViewDataDetails(viewId, dataInfo) {
-      this.canvasViewDataInfo[viewId] = dataInfo
+    setViewDataDetails(viewId, chartDataInfo) {
+      this.canvasViewDataInfo[viewId] = chartDataInfo.data
+      const viewInfo = this.canvasViewInfo[viewId]
+      if (viewInfo.tableId !== chartDataInfo.tableId) {
+        this.canvasViewInfo[viewId]['calcParams'] = chartDataInfo.calcParams || null
+      }
     },
     getViewDataDetails(viewId) {
       return this.canvasViewDataInfo[viewId]

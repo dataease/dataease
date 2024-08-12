@@ -31,6 +31,7 @@
         :show-position="showPosition"
         :canvas-id="canvasId"
         @userViewEnlargeOpen="userViewEnlargeOpen"
+        @datasetParamsInit="datasetParamsInit"
         @linkJumpSetOpen="linkJumpSetOpen"
         @linkageSetOpen="linkageSetOpen"
       ></component-edit-bar>
@@ -132,6 +133,7 @@ const {
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
+  'datasetParamsInit',
   'onStartResize',
   'onStartMove',
   'onDragging',
@@ -322,6 +324,10 @@ const isActive = () => {
 
 const userViewEnlargeOpen = opt => {
   emit('userViewEnlargeOpen', opt)
+}
+
+const datasetParamsInit = opt => {
+  emit('datasetParamsInit', opt)
 }
 
 const getPointStyle = point => {

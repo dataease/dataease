@@ -17,9 +17,11 @@ import { XpackComponent } from '@/components/plugin'
 import PopArea from '@/custom-component/pop-area/Component.vue'
 import CanvasFilterBtn from '@/custom-component/canvas-filter-btn/Component.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
+const customDatasetParamsRef = ref(null)
 
 const props = defineProps({
   canvasStyleData: {
@@ -377,6 +379,9 @@ const popAreaAvailable = computed(
 const filterBtnShow = computed(
   () => popAreaAvailable.value && popComponentData.value && popComponentData.value.length > 0
 )
+const datasetParamsInit = item => {
+  customDatasetParamsRef.value?.optInit(item)
+}
 
 defineExpose({
   restore
@@ -428,10 +433,12 @@ defineExpose({
       :scale="mobileInPc ? 100 : scaleMin"
       :is-selector="props.isSelector"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+      @datasetParamsInit="datasetParamsInit(item)"
       @onPointClick="onPointClick"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
+  <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 

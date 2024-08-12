@@ -180,7 +180,7 @@ const calcData = async (view, callback) => {
               dynamicAreaId.value = country.value + dynamicAreaId.value
             }
           }
-          dvMainStore.setViewDataDetails(view.id, chartData.value)
+          dvMainStore.setViewDataDetails(view.id, res)
           if (
             !res.drill &&
             !res.chartExtRequest?.filter?.length &&
