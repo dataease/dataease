@@ -10,6 +10,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import CommonStyleSet from '@/custom-component/common/CommonStyleSet.vue'
 import CommonEvent from '@/custom-component/common/CommonEvent.vue'
+import TabCarouselSetting from '@/custom-component/common/TabCarouselSetting.vue'
 const snapshotStore = snapshotStoreWithOut()
 
 const { t } = useI18n()
@@ -102,6 +103,10 @@ const eventsShow = computed(() => {
   )
 })
 
+const carouselShow = computed(() => {
+  return element.value.component === 'DeTabs' && element.value.carousel
+})
+
 const backgroundCustomShow = computed(() => {
   return (
     dashboardActive.value ||
@@ -173,6 +178,11 @@ const stopEvent = e => {
       >
         <common-event :themes="themes" :events-info="element.events"></common-event>
       </el-collapse-item>
+      <TabCarouselSetting
+        v-if="carouselShow"
+        :element="element"
+        :themes="themes"
+      ></TabCarouselSetting>
     </el-collapse>
   </div>
 </template>

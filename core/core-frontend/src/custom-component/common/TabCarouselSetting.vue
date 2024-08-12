@@ -32,7 +32,7 @@ const onSettingChange = () => {
     :themes="themes"
     v-model="carouselInfo.enable"
     name="carouselInfo"
-    title="轮询"
+    title="轮播"
   >
     <el-row class="custom-row">
       <el-form label-position="top">
@@ -41,10 +41,10 @@ const onSettingChange = () => {
           :class="'form-item-' + themes"
           style="width: 50%; margin-bottom: 8px"
         >
-          <span style="font-size: 12px">轮询时间</span>
+          <span style="font-size: 12px">轮播时间</span>
           <el-tooltip class="item" :effect="themes" placement="top">
             <template #content>
-              <div>Tab轮询退出编辑模式才开生效</div>
+              <div>Tab轮播退出编辑模式才开生效</div>
             </template>
             <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
               <Icon name="icon_info_outlined" />
