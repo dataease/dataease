@@ -51,12 +51,16 @@ export class IndicatorChartView extends AbstractChartView {
     ],
     'function-cfg': ['emptyDataStrategy']
   }
-  axis: AxisType[] = ['yAxis', 'filter']
+  axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   axisConfig: AxisConfig = {
+    xAxis: {
+      name: `日期 / ${t('chart.dimension')}`,
+      limit: 1,
+      type: 'd'
+    },
     yAxis: {
       name: `${t('chart.quota')}`,
-      limit: 1,
-      type: 'q'
+      limit: 1
     }
   }
   constructor() {
