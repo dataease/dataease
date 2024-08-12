@@ -124,7 +124,11 @@ const positionComponentShow = computed(() => {
 })
 
 const eventsShow = computed(() => {
-  return !batchOptStatus.value && chart.value.type.includes('rich-text') && props.eventInfo
+  return (
+    !batchOptStatus.value &&
+    ['indicator', 'rich-text'].includes(chart.value.type) &&
+    props.eventInfo
+  )
 })
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)

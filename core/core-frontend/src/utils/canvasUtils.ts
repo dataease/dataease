@@ -173,7 +173,9 @@ export function historyAdaptor(
     }
     // 组件事件适配
     componentItem.events =
-      componentItem.events && componentItem.events.checked !== undefined
+      componentItem.events &&
+      componentItem.events.checked !== undefined &&
+      componentItem.events.type !== 'displayChange'
         ? componentItem.events
         : deepCopy(BASE_EVENTS)
     componentItem['category'] = componentItem['category'] || 'base'
