@@ -60,7 +60,7 @@
       effect="dark"
       placement="top"
       content="输入计算数据"
-      v-if="barShowCheck('datasetParams')"
+      v-if="barShowCheck('datasetParams') && datasetParamsSetShow"
     >
       <span>
         <el-icon class="bar-base-icon" @click="datasetParamsInit">
@@ -199,6 +199,7 @@ import { ElMessage, ElTooltip, ElButton } from 'element-plus-secondary'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
 import { XpackComponent } from '@/components/plugin'
+import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -206,6 +207,7 @@ const customTabsSortRef = ref(null)
 const authShow = computed(() => !dvInfo.value.weight || dvInfo.value.weight > 3)
 const emits = defineEmits([
   'userViewEnlargeOpen',
+  'datasetParamsInit',
   'closePreview',
   'showViewDetails',
   'amRemoveItem',
@@ -434,6 +436,7 @@ const deleteComponent = () => {
 
 const datasetParamsInit = () => {
   // do init
+  emits('datasetParamsInit')
 }
 
 const copyComponent = () => {
@@ -561,6 +564,10 @@ const initCurFields = () => {
   }
 }
 // 富文本-End
+
+const datasetParamsSetShow = computed(() => {
+  return canvasViewInfo.value[element.value.id]?.calParams?.length > 0
+})
 
 onMounted(() => {
   if (element.value.component === 'UserView') {

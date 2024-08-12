@@ -45,6 +45,7 @@ import DragInfo from '@/components/visualization/common/DragInfo.vue'
 import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
 import PopArea from '@/custom-component/pop-area/Component.vue'
+import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -203,6 +204,7 @@ const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate', 'backgroundColor']
 const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const userViewEnlargeRef = ref(null)
+const customDatasetParamsRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
 const mainDomId = ref('editor-' + canvasId.value)
@@ -1346,6 +1348,10 @@ const userViewEnlargeOpen = (opt, item) => {
   )
 }
 
+const datasetParamsInit = item => {
+  customDatasetParamsRef.value?.optInit(item)
+}
+
 const initSnapshotTimer = () => {
   snapshotTimer.value = setInterval(() => {
     snapshotStore.snapshotCatchToStore()
@@ -1531,6 +1537,7 @@ defineExpose({
       @onDragging="onDragging($event, item, index)"
       @onResizing="onResizing($event, item, index)"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+      @datasetParamsInit="datasetParamsInit(item)"
       @linkJumpSetOpen="linkJumpSetOpen(item)"
       @linkageSetOpen="linkageSetOpen(item)"
     >
@@ -1596,6 +1603,7 @@ defineExpose({
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
     <link-jump-set ref="linkJumpRef"></link-jump-set>
     <linkage-set ref="linkageRef"></linkage-set>
+    <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
   </div>
 </template>
 

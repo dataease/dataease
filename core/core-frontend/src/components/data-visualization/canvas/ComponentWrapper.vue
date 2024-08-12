@@ -90,7 +90,7 @@ const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, se
   toRefs(props)
 let currentInstance
 const component = ref(null)
-const emits = defineEmits(['userViewEnlargeOpen', 'onPointClick'])
+const emits = defineEmits(['userViewEnlargeOpen', 'datasetParamsInit', 'onPointClick'])
 
 const htmlToImage = () => {
   setTimeout(() => {
@@ -254,6 +254,7 @@ const deepScale = computed(() => scale.value / 100)
       :show-position="showPosition"
       :class="{ 'wrapper-edit-bar-active': active }"
       @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
+      @datasetParamsInit="() => emits('datasetParamsInit')"
     ></component-edit-bar>
     <component-selector
       v-if="
