@@ -10,6 +10,7 @@ import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
+import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -56,6 +57,9 @@ public class ChartViewManege {
 
     @Resource
     private ExtChartViewMapper extChartViewMapper;
+
+    @Resource
+    private DatasetTableFieldManage datasetTableFieldManage;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -111,7 +115,14 @@ public class ChartViewManege {
     public List<ChartViewDTO> listBySceneId(Long sceneId) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
         wrapper.eq("scene_id", sceneId);
-        return transChart(coreChartViewMapper.selectList(wrapper));
+        List<ChartViewDTO> chartViewDTOS = transChart(coreChartViewMapper.selectList(wrapper));
+        for (ChartViewDTO dto : chartViewDTOS) {
+            QueryWrapper<CoreDatasetTableField> wp = new QueryWrapper<>();
+            wp.eq("dataset_group_id", dto.getTableId());
+            List<CoreDatasetTableField> coreDatasetTableFields = coreDatasetTableFieldMapper.selectList(wp);
+            dto.setCalParams(Utils.getParams(datasetTableFieldManage.transDTO(coreDatasetTableFields)));
+        }
+        return chartViewDTOS;
     }
 
     public List<ChartViewDTO> transChart(List<CoreChartView> list) {
