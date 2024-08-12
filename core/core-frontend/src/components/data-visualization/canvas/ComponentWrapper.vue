@@ -3,16 +3,18 @@ import { getStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 import { ref, onMounted, toRefs, getCurrentInstance, computed, nextTick } from 'vue'
 import findComponent from '@/utils/components'
-import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
+import { downloadCanvas2, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import ComponentSelector from '@/components/visualization/ComponentSelector.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Board from '@/components/de-board/Board.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
 const dvMainStore = dvMainStoreWithOut()
+const downLoading = ref(false)
 
 const props = defineProps({
   active: {
@@ -92,10 +94,17 @@ let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen', 'datasetParamsInit', 'onPointClick'])
 
+const viewDemoInnerId = computed(() => 'enlarge-inner-content-' + config.value.id)
 const htmlToImage = () => {
+  downLoading.value = true
   setTimeout(() => {
     const vueDom = componentWrapperInnerRef.value
-    downloadCanvas('img', vueDom, '图表')
+    activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value / 100)
+    downloadCanvas2('img', vueDom, '图表', () => {
+      // do callback
+      removeActiveWatermark(viewDemoInnerId.value)
+      downLoading.value = false
+    })
   }, 200)
 }
 
@@ -243,6 +252,9 @@ const deepScale = computed(() => scale.value / 100)
     :class="showPosition + '-' + config.component"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
+    v-loading="downLoading"
+    element-loading-text="导出中..."
+    element-loading-background="rgba(255, 255, 255, 1)"
   >
     <component-edit-bar
       v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard' && !props.isSelector"
@@ -264,7 +276,12 @@ const deepScale = computed(() => scale.value / 100)
       "
       :resource-id="config.id"
     />
-    <div class="wrapper-inner" ref="componentWrapperInnerRef" :style="componentBackgroundStyle">
+    <div
+      class="wrapper-inner"
+      ref="componentWrapperInnerRef"
+      :id="viewDemoInnerId"
+      :style="componentBackgroundStyle"
+    >
       <!--边框背景-->
       <Board
         v-if="svgInnerEnable"

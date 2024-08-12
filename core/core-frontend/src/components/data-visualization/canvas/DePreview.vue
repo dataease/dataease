@@ -10,8 +10,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { isDashboard, isMainCanvas, refreshOtherComponent } from '@/utils/canvasUtils'
-import { activeWatermark } from '@/components/watermark/watermark'
-import { personInfoApi } from '@/api/user'
+import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import router from '@/router'
 import { XpackComponent } from '@/components/plugin'
 import PopArea from '@/custom-component/pop-area/Component.vue'
@@ -267,31 +266,7 @@ const refreshDataV = () => {
 
 const initWatermark = (waterDomId = 'preview-canvas-main') => {
   if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
-    if (userInfo.value && userInfo.value.model !== 'lose') {
-      activeWatermark(
-        dvInfo.value.watermarkInfo.settingContent,
-        userInfo.value,
-        waterDomId,
-        canvasId.value,
-        dvInfo.value.selfWatermarkStatus,
-        scaleMin.value / 100
-      )
-    } else {
-      const method = personInfoApi
-      method().then(res => {
-        userInfo.value = res.data
-        if (userInfo.value && userInfo.value.model !== 'lose') {
-          activeWatermark(
-            dvInfo.value.watermarkInfo.settingContent,
-            userInfo.value,
-            waterDomId,
-            canvasId.value,
-            dvInfo.value.selfWatermarkStatus,
-            scaleMin.value / 100
-          )
-        }
-      })
-    }
+    activeWatermarkCheckUser(waterDomId, canvasId.value, scaleMin.value / 100)
   }
 }
 
@@ -335,7 +310,8 @@ const userViewEnlargeOpen = (opt, item) => {
     canvasStyleData.value,
     canvasViewInfo.value[item.id],
     item,
-    opt
+    opt,
+    { scale: scaleMin.value / 100 }
   )
 }
 const handleMouseDown = () => {

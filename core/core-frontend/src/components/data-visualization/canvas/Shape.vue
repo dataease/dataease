@@ -4,6 +4,9 @@
     :class="{ 'shape-group-area': isGroupArea }"
     ref="shapeInnerRef"
     :id="domId"
+    v-loading="downLoading"
+    element-loading-text="导出中..."
+    element-loading-background="rgba(255, 255, 255, 1)"
     @dblclick="handleDbClick"
   >
     <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
@@ -38,6 +41,7 @@
       <div
         class="shape-inner"
         ref="componentInnerRef"
+        :id="viewDemoInnerId"
         :style="componentBackgroundStyle"
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
@@ -101,7 +105,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
+import { downloadCanvas2, imgUrlTrans } from '@/utils/imgUtils'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -109,6 +113,7 @@ import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
 import { isGroupCanvas, isMainCanvas } from '@/utils/canvasUtils'
 import Board from '@/components/de-board/Board.vue'
+import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -117,6 +122,8 @@ const parentNode = ref(null)
 const shapeInnerRef = ref(null)
 const componentInnerRef = ref(null)
 const componentEditBarRef = ref(null)
+const downLoading = ref(false)
+const viewDemoInnerId = computed(() => 'enlarge-inner-shape-' + element.value.id)
 
 const {
   curComponent,
@@ -953,8 +960,14 @@ const dragCollision = computed(() => {
 })
 
 const htmlToImage = () => {
+  downLoading.value = true
   setTimeout(() => {
-    downloadCanvas('img', componentInnerRef.value, '图表')
+    activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value)
+    downloadCanvas2('img', componentInnerRef.value, '图表', () => {
+      // do callback
+      removeActiveWatermark(viewDemoInnerId.value)
+      downLoading.value = false
+    })
   }, 200)
 }
 

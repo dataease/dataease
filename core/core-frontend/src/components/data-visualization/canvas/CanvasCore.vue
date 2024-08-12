@@ -42,8 +42,7 @@ import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 import DragInfo from '@/components/visualization/common/DragInfo.vue'
-import { activeWatermark } from '@/components/watermark/watermark'
-import { personInfoApi } from '@/api/user'
+import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import PopArea from '@/custom-component/pop-area/Component.vue'
 import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 
@@ -241,32 +240,7 @@ const initWatermark = (waterDomId = 'editor-canvas-main') => {
       dvInfo.value.watermarkInfo.settingContent &&
       isMainCanvas(canvasId.value)
     ) {
-      const scale = dashboardActive.value ? 1 : curScale.value
-      if (userInfo.value && userInfo.value.model !== 'lose') {
-        activeWatermark(
-          dvInfo.value.watermarkInfo.settingContent,
-          userInfo.value,
-          waterDomId,
-          canvasId.value,
-          dvInfo.value.selfWatermarkStatus,
-          scale
-        )
-      } else {
-        const method = personInfoApi
-        method().then(res => {
-          userInfo.value = res.data
-          if (userInfo.value && userInfo.value.model !== 'lose') {
-            activeWatermark(
-              dvInfo.value.watermarkInfo.settingContent,
-              userInfo.value,
-              waterDomId,
-              canvasId.value,
-              dvInfo.value.selfWatermarkStatus,
-              scale
-            )
-          }
-        })
-      }
+      activeWatermarkCheckUser(waterDomId, canvasId.value, curScale.value)
     }
   } catch (e) {
     console.warn('Watermarks are not supported!')
@@ -1344,7 +1318,8 @@ const userViewEnlargeOpen = (opt, item) => {
     canvasStyleData.value,
     canvasViewInfo.value[item.id],
     item,
-    opt
+    opt,
+    { scale: curBaseScale.value }
   )
 }
 
