@@ -58,7 +58,7 @@ watch(
   { deep: false }
 )
 const yAxis = computed(() => {
-  if (props.chart.type.includes('chart-mix')) {
+  if (props.chart.type.includes('chart-mix') || props.chart.type.includes('bidirectional-bar')) {
     return union(
       defaultTo(
         map(props.chart.yAxis, y => {
@@ -1274,7 +1274,7 @@ const conversionPrecision = [
         转化率
       </el-checkbox>
     </el-form-item>
-    <div style="padding-left: 22px">
+    <div style="padding-left: 22px" v-if="showProperty('conversionTag')">
       <el-row :gutter="8">
         <el-col :span="12">
           <el-form-item label="保留小数" class="form-item" :class="'form-item-' + themes">
