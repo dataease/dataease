@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { computed, toRefs } from 'vue'
 import { ElFormItem, ElIcon } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import Icon from '../../components/icon-custom/src/Icon.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
 
 const snapshotStore = snapshotStoreWithOut()
 
@@ -16,9 +18,15 @@ const props = withDefaults(
   }
 )
 const { themes, eventsInfo } = toRefs(props)
+const isDashboard = dvMainStore.dvInfo.type === 'dashboard'
 
-const curSupportEvents = ['jump', 'showHidden', 'refreshDataV']
-
+const curSupportEvents = computed(() => {
+  if (isDashboard) {
+    return ['jump', 'refreshDataV']
+  } else {
+    return ['jump', 'showHidden', 'refreshDataV']
+  }
+})
 const onEventChange = () => {
   snapshotStore.recordSnapshotCache('renderChart')
 }
