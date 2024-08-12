@@ -7,6 +7,16 @@ import { Scene } from '@antv/l7-scene'
 import { deepCopy } from '@/utils/utils'
 
 export const configCarouselTooltip = (chart, view, data, scene) => {
+  if (['bubble-map', 'map'].includes(chart.type)) {
+    data = view.source.data.dataArray
+      ?.filter(i => i.value)
+      .reduce((acc, current) => {
+        if (!acc.some(obj => obj.adcode === current.adcode)) {
+          acc.push(current)
+        }
+        return acc
+      }, [])
+  }
   if (carouselManagerInstances[chart.container]) {
     const instances = carouselManagerInstances[chart.container]
     instances.update(scene, chart, view, data)
