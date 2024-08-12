@@ -221,6 +221,8 @@ import emailTask from '@/assets/svg/email-task.svg'
 import embedded from '@/assets/svg/embedded.svg'
 import association from '@/assets/svg/association.svg'
 import threshold from '@/assets/svg/threshold.svg'
+import threshold_full from '@/assets/svg/threshold_full.svg'
+import clock from '@/assets/svg/clock.svg'
 import example from '@/assets/svg/example.svg'
 import exclamationmark from '@/assets/svg/exclamationmark.svg'
 import exclamationmark2 from '@/assets/svg/exclamationmark2.svg'
@@ -889,6 +891,8 @@ const iconMap = {
   embedded: embedded,
   association: association,
   threshold: threshold,
+  threshold_full: threshold_full,
+  clock,
   example: example,
   exclamationmark: exclamationmark,
   exclamationmark2: exclamationmark2,
