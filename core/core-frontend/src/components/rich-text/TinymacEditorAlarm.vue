@@ -4,7 +4,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, toRefs, watch } from 'vue'
+import { ref, toRefs, watch, onMounted, onBeforeUnmount } from 'vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { formatDataEaseBi } from '@/utils/url'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
@@ -28,7 +29,6 @@ import 'tinymce/plugins/pagebreak'
 import { propTypes } from '@/utils/propTypes'
 const props = defineProps({
   modelValue: String,
-  inline: propTypes.bool.def(false),
   fieldList: propTypes.arrayOf(
     propTypes.shape({
       deType: propTypes.number,
@@ -39,7 +39,7 @@ const props = defineProps({
   )
 })
 const myValue = ref()
-const { modelValue, inline } = toRefs(props)
+const { modelValue } = toRefs(props)
 myValue.value = modelValue
 watch(
   () => props.modelValue,
@@ -69,9 +69,9 @@ const init = ref({
     'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
   // 工具栏
   toolbar:
-    'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link | splitDateButton lineheight| formatselect |' +
+    'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough | splitDateButton lineheight| formatselect |' +
     'alignleft aligncenter alignright | bullist numlist |' +
-    ' blockquote subscript superscript removeformat | table image media ',
+    ' blockquote subscript superscript removeformat | table image media link',
   toolbar_location: '/',
   font_formats:
     '阿里巴巴普惠体=阿里巴巴普惠体 3.0 55 Regular L3;微软雅黑=Microsoft YaHei;宋体=SimSun;黑体=SimHei;仿宋=FangSong;华文黑体=STHeiti;华文楷体=STKaiti;华文宋体=STSong;华文仿宋=STFangsong;Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings',
@@ -79,7 +79,7 @@ const init = ref({
   menubar: false,
   placeholder: '',
   outer_placeholder: '双击输入文字',
-  inline: inline.value,
+  inline: false,
   branding: true,
   setup: editor => {
     const emoticons = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -161,7 +161,32 @@ const fieldSelect = name => {
   ed.insertContent(value)
   ed.insertContent(attachValue)
 }
-viewInit()
+const moreBarElementClick = () => {
+  if (!moreBarElement) return
+  moreBarElement.nextSibling.querySelector('.tox-tbtn').click()
+}
+
+useEmitt({
+  name: 'moreBarElementClick',
+  callback: moreBarElementClick
+})
+
+let moreBarElement = null
+onMounted(() => {
+  setTimeout(() => {
+    moreBarElement = document.querySelectorAll(
+      '.de-tinymce-container_alarm .tox-toolbar__primary .tox-toolbar__group'
+    )[4]
+  }, 1000)
+})
+
+onBeforeUnmount(() => {
+  moreBarElement = null
+})
+
+defineExpose({
+  viewInit
+})
 </script>
 
 <style lang="less">
@@ -192,43 +217,9 @@ viewInit()
     height: 24px !important;
   }
 }
-
+</style>
+<style>
 .tox {
-  border-radius: 4px !important;
-  border-bottom: 1px solid #ccc !important;
-  z-index: 3000 !important;
-  .tox-collection__item-icon {
-    height: 14px !important;
-    width: 14px !important;
-  }
-}
-.tox-tbtn {
-  height: auto !important;
-}
-.tox-collection__item-label {
-  p {
-    color: #1a1a1a !important;
-  }
-  h1 {
-    color: #1a1a1a !important;
-  }
-  h2 {
-    color: #1a1a1a !important;
-  }
-  h3 {
-    color: #1a1a1a !important;
-  }
-  h4 {
-    color: #1a1a1a !important;
-  }
-  h5 {
-    color: #1a1a1a !important;
-  }
-  h6 {
-    color: #1a1a1a !important;
-  }
-  pre {
-    color: #1a1a1a !important;
-  }
+  z-index: 2213 !important;
 }
 </style>

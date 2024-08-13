@@ -11,6 +11,8 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import CommonStyleSet from '@/custom-component/common/CommonStyleSet.vue'
 import CommonEvent from '@/custom-component/common/CommonEvent.vue'
 import TabCarouselSetting from '@/custom-component/common/TabCarouselSetting.vue'
+import CommonBorderSetting from '@/custom-component/common/CommonBorderSetting.vue'
+import CollapseSwitchItem from '../../components/collapse-switch-item/src/CollapseSwitchItem.vue'
 const snapshotStore = snapshotStoreWithOut()
 
 const { t } = useI18n()
@@ -92,6 +94,10 @@ const colorPickerWidth = computed(() => {
   } else {
     return 197
   }
+})
+
+const borderSettingShow = computed(() => {
+  return !!element.value.style['borderStyle']
 })
 
 // 暂时关闭
@@ -178,6 +184,20 @@ const stopEvent = e => {
       >
         <common-event :themes="themes" :events-info="element.events"></common-event>
       </el-collapse-item>
+      <collapse-switch-item
+        v-if="element && borderSettingShow"
+        v-model="element.style.borderActive"
+        :themes="themes"
+        title="边框"
+        name="borderSetting"
+        class="common-style-area"
+      >
+        <common-border-setting
+          :style-info="element.style"
+          :themes="themes"
+          @onStyleAttrChange="onStyleAttrChange"
+        ></common-border-setting>
+      </collapse-switch-item>
       <TabCarouselSetting
         v-if="carouselShow"
         :element="element"

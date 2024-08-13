@@ -376,6 +376,7 @@ export default {
       commit_time: 'Commit Time',
       confirm_delete: 'Confirm delete?',
       add_data: 'Add Data',
+      batch_upload: 'Upload Data',
       download_template: 'Download Template',
       insert_data: 'Insert Data',
       update_data: 'Update Data',

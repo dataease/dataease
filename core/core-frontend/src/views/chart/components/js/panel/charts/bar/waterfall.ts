@@ -11,6 +11,7 @@ import { isEmpty } from 'lodash-es'
 export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
   properties: EditorProperty[] = [
     'background-overall-component',
+    'border-style',
     'basic-style-selector',
     'label-selector',
     'tooltip-selector',
@@ -21,6 +22,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
+    'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gradient'],
     'label-selector': ['fontSize', 'color', 'vPosition', 'labelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],

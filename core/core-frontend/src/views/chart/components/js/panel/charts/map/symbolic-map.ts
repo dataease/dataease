@@ -22,6 +22,7 @@ const { t } = useI18n()
 export class SymbolicMap extends L7ChartView<Scene, L7Config> {
   properties: EditorProperty[] = [
     'background-overall-component',
+    'border-style',
     'basic-style-selector',
     'title-selector',
     'label-selector',

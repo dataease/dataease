@@ -1,10 +1,16 @@
 <script lang="ts" setup>
-import { propTypes } from '@/utils/propTypes'
-defineProps({
-  name: propTypes.string.def(''),
-  size: propTypes.number.def(0),
-  showDel: propTypes.bool.def(false)
-})
+const props = withDefaults(
+  defineProps<{
+    name?: string
+    size?: number
+    showDel?: boolean
+  }>(),
+  {
+    name: '',
+    size: 0,
+    showDel: false
+  }
+)
 
 const emits = defineEmits(['del'])
 const del = () => {

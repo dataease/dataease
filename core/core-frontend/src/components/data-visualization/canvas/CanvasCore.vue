@@ -202,6 +202,18 @@ const height = ref(0)
 const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate', 'backgroundColor']
 const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+const commonFilterAttrsFilterBorder = [
+  'width',
+  'height',
+  'top',
+  'left',
+  'rotate',
+  'borderActive',
+  'borderWidth',
+  'borderRadius',
+  'borderStyle',
+  'borderColor'
+]
 const userViewEnlargeRef = ref(null)
 const customDatasetParamsRef = ref(null)
 const linkJumpRef = ref(null)
@@ -515,7 +527,7 @@ const handleContextMenu = e => {
 }
 
 const getComponentStyle = style => {
-  return getStyle(style, commonFilterAttrs)
+  return getStyle(style, style.borderActive ? commonFilterAttrs : commonFilterAttrsFilterBorder)
 }
 
 const getSvgComponentStyle = style => {

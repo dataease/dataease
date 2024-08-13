@@ -16,6 +16,7 @@ const { t } = useI18n()
 export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   properties: EditorProperty[] = [
     'background-overall-component',
+    'border-style',
     'basic-style-selector',
     'x-axis-selector',
     'y-axis-selector',
