@@ -9,6 +9,7 @@ import _403 from '@/assets/svg/403.svg'
 import APIDs from '@/assets/svg/API-ds.svg'
 import Apache_Hive from '@/assets/svg/Apache Hive.svg'
 import Checkbox from '@/assets/svg/Checkbox.svg'
+import clock from '@/assets/svg/clock.svg'
 import DM from '@/assets/svg/DM.svg'
 import DataEase from '@/assets/svg/DataEase.svg'
 import Elasticsearch from '@/assets/svg/Elasticsearch.svg'
@@ -1340,7 +1341,8 @@ const iconMap = {
   'word-cloud': wordCloud,
   calculate,
   'icon_file-doc_colorful': icon_file_doc_colorful,
-  icon_font
+  icon_font,
+  clock
 }
 
 const props = defineProps({

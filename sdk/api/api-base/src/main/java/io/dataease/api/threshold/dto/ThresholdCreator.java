@@ -20,9 +20,7 @@ public class ThresholdCreator extends BaseReciDTO implements Serializable {
 
     private Integer rateType = 1;
 
-    private Integer rateValue = 1;
-
-    private Long rateTime;
+    private String rateValue;
 
     private Long resourceId;
 
@@ -40,5 +38,5 @@ public class ThresholdCreator extends BaseReciDTO implements Serializable {
 
     private String msgContent;
 
-    private Boolean repeat = true;
+    private Boolean repeatSend = true;
 }

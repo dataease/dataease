@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
@@ -242,6 +243,10 @@ public class ChartViewManege {
         QueryWrapper<CoreDatasetTableField> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("chart_id", chartId);
         coreDatasetTableFieldMapper.delete(queryWrapper);
+    }
+
+    public ChartBaseVO chartBaseInfo(Long id) {
+        return extChartViewMapper.queryChart(id);
     }
 
     public DatasetTableFieldDTO createCountField(Long id) {
