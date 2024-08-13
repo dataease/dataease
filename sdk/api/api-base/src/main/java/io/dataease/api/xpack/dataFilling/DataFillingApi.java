@@ -28,22 +28,26 @@ public interface DataFillingApi {
     @PostMapping("tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request) throws DEException;
 
-    @DePermit({"#p0+':read'"})
     @GetMapping("/get/{id}")
     DataFillingDTO get(@PathVariable("id") Long id);
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/move")
     DataFillingDTO move(@RequestBody DataFillingDTO dataFillingDTO);
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/save")
     DataFillingDTO save(@RequestBody DataFillingDTO dataFillingDTO) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/rename")
     DataFillingDTO rename(@RequestBody DataFillingDTO dataFillingDTO);
 
+    @DePermit({"#p0+':manage'"})
     @GetMapping("delete/{id}")
     void delete(@PathVariable("id") Long id);
 
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/datasource/list")
     List<SimpleDatasourceDTO> listDatasourceList();
 
@@ -53,44 +57,54 @@ public interface DataFillingApi {
     @PostMapping("/form/{id}/tableData")
     DataFillFormTableDataResponse tableData(@PathVariable("id") Long id, @RequestBody DataFillFormTableDataRequest request) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/form/{formId}/delete/{id}")
     void deleteRowData(@PathVariable("formId") Long formId, @PathVariable("id") Long id) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/batch-delete")
     void batchDeleteRowData(@PathVariable("formId") Long formId, @RequestBody List<Long> ids) throws Exception;
 
     @PostMapping("/form/{formId}/rowData/save")
     DataFillFormTableDataResponse saveRowData(@PathVariable("formId") Long formId, @RequestBody Map<String, Object> data) throws Exception;
 
-
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/task/info/{taskId}")
     TaskInfoVO info(@PathVariable("taskId") Long taskId);
 
-
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/task/save")
     Long save(@RequestBody TaskInfoVO task);
 
+    @DePermit({"#p0+':read'"})
     @PostMapping("/task/logMsg")
     String logMsg(@RequestBody ReportInstanceMsgRequest request);
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/task/page/{goPage}/{pageSize}")
     IPage<ReportGridVO> taskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfTaskInfoRequest request);
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/sub-task/page/{goPage}/{pageSize}")
     IPage<DfSubTaskVo> subTaskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfSubTaskInfoRequest request);
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/task/delete")
     void batchDeleteTask(@RequestBody List<Long> ids) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/task/{id}/stop")
     void stopTask(@PathVariable("id") Long id) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/task/{id}/start")
     void startTask(@PathVariable("id") Long id) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/sub-task/delete")
     void batchDeleteSubTask(@RequestBody List<Long> ids) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/sub-task/{id}/users/list/{type}")
     List<Map<String, Object>> listSubTaskUser(@PathVariable("id") Long id, @PathVariable("type") String type) throws Exception;
 
@@ -103,17 +117,20 @@ public interface DataFillingApi {
     @PostMapping("/user-task/saveData/{id}")
     DataFillFormTableDataResponse saveFormRowData(@PathVariable("id") Long id, @RequestBody Map<String, Object> data) throws Exception;
 
-
+    @DePermit({"#p0+':read'"})
     @PostMapping("/log/page/{goPage}/{pageSize}")
-    IPage<DfCommitLog> taskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfCommitLogRequest request);
+    IPage<DfCommitLog> logPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfCommitLogRequest request);
 
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/uploadFile")
     DfExcelData excelUpload(@RequestParam("file") MultipartFile file, @PathVariable("formId") Long formId) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/form/{formId}/excelTemplate")
     void excelTemplate(@PathVariable("formId") Long formId);
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/confirmUpload")
     void confirmUpload(@PathVariable("formId") Long formId, @RequestBody Map<String, String> data);
 }
