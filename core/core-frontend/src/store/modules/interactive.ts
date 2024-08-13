@@ -7,7 +7,6 @@ import type { BusiTreeRequest, BusiTreeNode } from '@/models/tree/TreeNode'
 import { pathValid } from '@/store/modules/permission'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { listDataFillingForms } from '@/api/data-filling'
 const appStore = useAppStoreWithOut()
 const { wsCache } = useCache()
 export interface InnerInteractive {
@@ -22,9 +21,9 @@ interface InteractiveState {
   data: Record<number, InnerInteractive>
 }
 
-const apiMap = [queryTreeApi, queryTreeApi, getDatasetTree, listDatasources, listDataFillingForms]
+const apiMap = [queryTreeApi, queryTreeApi, getDatasetTree, listDatasources]
 
-const busiFlagMap = ['dashboard', 'dataV', 'dataset', 'datasource', 'data-filling']
+const busiFlagMap = ['dashboard', 'dataV', 'dataset', 'datasource']
 
 export const interactiveStore = defineStore('interactive', {
   state: (): InteractiveState => ({
