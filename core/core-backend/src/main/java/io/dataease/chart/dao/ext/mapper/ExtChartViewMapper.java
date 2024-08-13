@@ -1,5 +1,6 @@
 package io.dataease.chart.dao.ext.mapper;
 
+import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,4 +15,19 @@ public interface ExtChartViewMapper {
             select id, scene_id as pid, title, type from core_chart_view where type != 'VQuery' and scene_id = #{resourceId}
             """)
     List<ViewSelectorVO> queryViewOption(@Param("resourceId") Long resourceId);
+
+    @Select("""
+                select 
+                    ccv.id as chart_id,
+                    ccv.title as chart_name,
+                    ccv.type as chart_type,
+                    ccv.table_id,
+                    dvi.id as resource_id,
+                    dvi.name as resource_name,
+                    dvi.type as resource_type
+                from core_chart_view ccv 
+                    left join data_visualization_info dvi on dvi.id = ccv.scene_id
+                where ccv.id = #{id}
+            """)
+    ChartBaseVO queryChart(@Param("id") Long id);
 }

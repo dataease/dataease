@@ -21,4 +21,6 @@ public class ThresholdGridRequest implements Serializable {
 
     private List<Long> timeList;
 
+    private Long chartId;
+
 }

@@ -143,7 +143,7 @@
             </el-dropdown-item>
           </template>
           <xpack-component
-            :chart-id="element.id"
+            :chart="element"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
           />
           <el-dropdown-item divided @click="deleteComponent" v-if="barShowCheck('delete')"

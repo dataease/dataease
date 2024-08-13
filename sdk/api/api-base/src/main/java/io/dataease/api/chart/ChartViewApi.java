@@ -1,6 +1,7 @@
 package io.dataease.api.chart;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
@@ -55,4 +56,7 @@ public interface ChartViewApi {
     @Operation(summary = "清空当前视图计算字段")
     @PostMapping("deleteFieldByChart/{chartId}")
     void deleteFieldByChart(@PathVariable Long chartId);
+
+    @GetMapping("/chartBaseInfo/{id}")
+    ChartBaseVO chartBaseInfo(@PathVariable("id") Long id);
 }
