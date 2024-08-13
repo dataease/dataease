@@ -5,7 +5,12 @@ import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 
 export const commonStyle = {
   rotate: 0,
-  opacity: 1
+  opacity: 1,
+  borderActive: false,
+  borderWidth: 1,
+  borderRadius: 5,
+  borderStyle: 'solid',
+  borderColor: '#cccccc'
 }
 
 // 轮询设置
@@ -466,11 +471,8 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      borderWidth: 1,
-      borderRadius: 5,
-      borderStyle: 'solid',
-      borderColor: '#cccccc',
-      backgroundColor: 'rgba(236,231,231,0.1)'
+      backgroundColor: 'rgba(236,231,231,0.1)',
+      borderActive: true
     }
   },
   {
