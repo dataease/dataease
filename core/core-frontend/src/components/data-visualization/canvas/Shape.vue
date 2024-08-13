@@ -64,7 +64,11 @@
         :style="getPointStyle(item)"
         @mousedown="handleMouseDownOnPoint(item, $event)"
       ></div>
-      <div class="shape-shadow" v-show="batchOptFlag" @mousedown="batchSelected"></div>
+      <div
+        class="shape-shadow"
+        v-show="batchOptFlag && element.component !== 'DeTabs'"
+        @mousedown="batchSelected"
+      ></div>
       <template v-if="boardMoveActive">
         <div
           v-show="!element.editing"
@@ -441,12 +445,7 @@ const handleInnerMouseDownOnShape = e => {
   if (!canvasActive.value) {
     return
   }
-  if (batchOptFlag.value) {
-    componentEditBarRef.value.batchOptCheckOut()
-    e.stopPropagation()
-    e.preventDefault()
-    return
-  }
+  batchSelected(e)
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(element)) {
     areaDataPush(element.value)
