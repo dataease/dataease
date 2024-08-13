@@ -397,10 +397,13 @@ const calcData = (view: Chart, callback) => {
     state.viewDataInfo = {}
     state.totalItems = 0
     const curViewInfo = canvasViewInfo.value[element.value.id]
-    curViewInfo['curFields'] = []
-    dvMainStore.setViewDataDetails(element.value.id, state.viewDataInfo)
+    if (curViewInfo) {
+      curViewInfo['curFields'] = []
+      dvMainStore.setViewDataDetails(element.value.id, state.viewDataInfo)
+      initReady.value = true
+      initCurFields(curViewInfo)
+    }
     initReady.value = true
-    initCurFields(curViewInfo)
     callback?.()
     nextTick(() => {
       initReady.value = true
