@@ -13,14 +13,14 @@ const { canvasStyleData } = storeToRefs(dvMainStore)
 const props = withDefaults(
   defineProps<{
     themes?: EditorTheme
-    element: any
+    styleInfo: any
   }>(),
   {
     themes: 'dark'
   }
 )
 const emits = defineEmits(['onStyleAttrChange'])
-const { themes, element } = toRefs(props)
+const { themes, styleInfo } = toRefs(props)
 const state = reactive({
   fontSize: [],
   isSetting: false,
@@ -38,16 +38,16 @@ const borderStyleList = [
 ]
 
 const styleInit = () => {
-  if (element.value) {
+  if (styleInfo.value) {
     Object.keys(styleMounted.value).forEach(key => {
       styleMounted.value[key] = Math.round(
-        (element.value.style[key] * 100) / canvasStyleData.value.scale
+        (styleInfo.value[key] * 100) / canvasStyleData.value.scale
       )
     })
   }
 }
 
-const styleForm = computed<any>(() => element.value.style)
+const styleForm = computed<any>(() => styleInfo.value)
 
 const changeStyle = params => {
   snapshotStore.recordSnapshotCache()
@@ -55,18 +55,16 @@ const changeStyle = params => {
 }
 
 const changeStylePre = key => {
-  changeStyle({ key: key, value: element.value.style[key] })
+  changeStyle({ key: key, value: styleInfo.value[key] })
 }
 
 const sizeChange = key => {
-  element.value.style[key] = Math.round(
-    (styleMounted.value[key] * canvasStyleData.value.scale) / 100
-  )
-  changeStyle({ key: key, value: element.value.style[key] })
+  styleInfo.value[key] = (styleMounted.value[key] * canvasStyleData.value.scale) / 100
+  changeStyle({ key: key, value: styleInfo.value[key] })
 }
 
 watch(
-  () => element.value,
+  () => styleInfo.value,
   () => {
     styleInit()
   },
@@ -80,52 +78,85 @@ watch(
 <template>
   <el-row class="custom-row">
     <el-form label-position="top">
-      <el-form-item label="颜色" class="form-item" :class="'form-item-' + themes">
-        <el-color-picker
-          title="颜色"
-          v-model="styleForm.borderColor"
-          class="color-picker-style"
-          :triggerWidth="50"
-          is-custom
-          :predefine="state.predefineColors"
-          @change="changeStylePre('borderColor')"
+      <el-row style="display: flex">
+        <el-form-item
+          style="width: 70px"
+          label="颜色"
+          class="form-item"
+          :class="'form-item-' + themes"
         >
-        </el-color-picker>
-      </el-form-item>
-      <el-form-item label="圆角" class="form-item" :class="'form-item-' + themes">
-        <el-input-number
-          title="圆角"
-          v-model="styleForm.borderRadio"
-          class="color-picker-style"
-          @change="sizeChange('borderWidth')"
+          <el-color-picker
+            title="颜色"
+            v-model="styleForm.borderColor"
+            class="color-picker-style"
+            :triggerWidth="65"
+            is-custom
+            :predefine="state.predefineColors"
+            @change="changeStylePre('borderColor')"
+          >
+          </el-color-picker>
+        </el-form-item>
+        <el-form-item
+          style="width: 150px"
+          label="圆角"
+          class="form-item"
+          :class="'form-item-' + themes"
         >
-        </el-input-number>
-      </el-form-item>
-      <el-form-item label="样式" class="form-item" :class="'form-item-' + themes">
-        <el-select
-          :effect="themes"
-          v-model="styleForm.borderStyle"
-          size="small"
-          @change="changeStylePre('borderStyle')"
+          <el-input-number
+            title="圆角"
+            :effect="themes"
+            :min="0"
+            :max="200"
+            controls-position="right"
+            v-model="styleMounted.borderRadius"
+            class="color-picker-style"
+            @change="sizeChange('borderRadius')"
+          >
+          </el-input-number>
+        </el-form-item>
+      </el-row>
+      <el-row style="display: flex">
+        <el-form-item
+          style="width: 70px"
+          label="样式"
+          class="form-item"
+          :class="'form-item-' + themes"
         >
-          <el-option
-            class="custom-style-option"
-            v-for="option in borderStyleList"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="线宽" class="form-item" :class="'form-item-' + themes">
-        <el-input-number
-          title="线宽"
-          v-model="styleForm.borderWidth"
-          class="color-picker-style"
-          @change="sizeChange('borderWidth')"
+          <el-select
+            :effect="themes"
+            v-model="styleForm.borderStyle"
+            size="small"
+            style="width: 65px"
+            @change="changeStylePre('borderStyle')"
+          >
+            <el-option
+              class="custom-style-option"
+              v-for="option in borderStyleList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          style="width: 150px"
+          label="线宽"
+          class="form-item"
+          :class="'form-item-' + themes"
         >
-        </el-input-number>
-      </el-form-item>
+          <el-input-number
+            title="线宽"
+            :min="0"
+            :max="50"
+            :effect="themes"
+            controls-position="right"
+            v-model="styleMounted.borderWidth"
+            class="color-picker-style"
+            @change="sizeChange('borderWidth')"
+          >
+          </el-input-number>
+        </el-form-item>
+      </el-row>
     </el-form>
   </el-row>
 </template>

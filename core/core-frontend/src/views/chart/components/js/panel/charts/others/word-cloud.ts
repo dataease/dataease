@@ -19,6 +19,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   properties: EditorProperty[] = [
     'basic-style-selector',
     'background-overall-component',
+    'border-style',
     'title-selector',
     'tooltip-selector',
     'misc-selector',
@@ -27,6 +28,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
+    'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
     'title-selector': [
       'title',

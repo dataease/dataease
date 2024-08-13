@@ -350,7 +350,6 @@ const state = reactive({
 
 const styleColorKeyArray = [
   { value: 'color', label: '颜色', width: 90, icon: 'dv-style-color' },
-  { value: 'borderColor', label: '边框颜色', width: 90, icon: 'dv-style-borderColor' },
   {
     value: 'headFontColor',
     label: '头部字体颜色',
@@ -387,34 +386,6 @@ const fontSizeList = computed(() => {
   }
   return arr
 })
-
-const borderWidthList = computed(() => {
-  const arr = []
-  for (let i = 0; i <= 20; i = i + 1) {
-    arr.push({
-      name: i + '',
-      value: i
-    })
-  }
-  return arr
-})
-
-const borderRadiusList = computed(() => {
-  const arr = []
-  for (let i = 0; i <= 50; i = i + 1) {
-    arr.push({
-      name: i + '',
-      value: i
-    })
-  }
-  return arr
-})
-
-const borderStyleList = [
-  { name: '实线', value: 'solid' },
-  { name: '虚线', value: 'dashed' },
-  { name: '点线', value: 'dotted' }
-]
 
 const styleOptionKeyArrayPre = [
   {
@@ -466,27 +437,6 @@ const styleOptionKeyArray = [
     customOption: opacitySizeList,
     width: '90px',
     icon: 'dv-style-opacity'
-  },
-  {
-    value: 'borderWidth',
-    label: '边框宽度',
-    customOption: borderWidthList.value,
-    width: '90px',
-    icon: 'dv-style-borderSize'
-  },
-  {
-    value: 'borderRadius',
-    label: '圆角',
-    customOption: borderRadiusList.value,
-    width: '90px',
-    icon: 'dv-style-borderRadius'
-  },
-  {
-    value: 'borderStyle',
-    label: '边框样式',
-    customOption: borderStyleList,
-    width: '90px',
-    icon: 'dv-style-borderStyle'
   }
 ]
 

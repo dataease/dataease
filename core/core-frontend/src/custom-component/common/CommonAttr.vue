@@ -97,7 +97,7 @@ const colorPickerWidth = computed(() => {
 })
 
 const borderSettingShow = computed(() => {
-  return !!element.value.style['borderActive']
+  return !!element.value.style['borderStyle']
 })
 
 // 暂时关闭
@@ -186,14 +186,14 @@ const stopEvent = e => {
       </el-collapse-item>
       <collapse-switch-item
         v-if="element && borderSettingShow"
-        v-model="element.value.style.borderActive"
+        v-model="element.style.borderActive"
         :themes="themes"
         title="边框"
         name="borderSetting"
         class="common-style-area"
       >
         <common-border-setting
-          :element="element"
+          :style-info="element.style"
           :themes="themes"
           @onStyleAttrChange="onStyleAttrChange"
         ></common-border-setting>

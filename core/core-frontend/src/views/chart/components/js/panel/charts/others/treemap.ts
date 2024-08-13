@@ -16,6 +16,7 @@ const { t } = useI18n()
 export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
   properties: EditorProperty[] = [
     'background-overall-component',
+    'border-style',
     'basic-style-selector',
     'title-selector',
     'legend-selector',
@@ -26,6 +27,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
+    'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'seriesColor'],
     'label-selector': ['fontSize', 'color', 'showDimension', 'showQuota', 'showProportion'],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],

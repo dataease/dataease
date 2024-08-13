@@ -2,6 +2,7 @@ import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 
 export const CHART_MIX_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
+  'border-style',
   'dual-basic-style-selector',
   'x-axis-selector',
   'dual-y-axis-selector',
@@ -16,6 +17,7 @@ export const CHART_MIX_EDITOR_PROPERTY: EditorProperty[] = [
 ]
 export const CHART_MIX_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
+  'border-style': ['all'],
   'label-selector': ['fontSize', 'color'],
   'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'show'],
   'dual-basic-style-selector': [

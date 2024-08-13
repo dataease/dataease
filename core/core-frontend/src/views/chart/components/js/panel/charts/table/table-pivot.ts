@@ -14,6 +14,7 @@ const { t } = useI18n()
  */
 export class TablePivot extends S2ChartView<PivotSheet> {
   properties: EditorProperty[] = [
+    'border-style',
     'background-overall-component',
     'basic-style-selector',
     'table-header-selector',
