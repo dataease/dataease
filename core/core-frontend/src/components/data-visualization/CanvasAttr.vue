@@ -12,12 +12,13 @@ import OverallSetting from '@/components/dashboard/subject-setting/dashboard-sty
 import CanvasBackground from '@/components/visualization/component-background/CanvasBackground.vue'
 import SeniorStyleSetting from '@/components/dashboard/subject-setting/dashboard-style/SeniorStyleSetting.vue'
 import Icon from '../icon-custom/src/Icon.vue'
+import CanvasBaseSetting from '@/components/visualization/CanvasBaseSetting.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
 let canvasAttrInit = false
 
-const canvasAttrActiveNames = ref(['size', 'background', 'color'])
+const canvasAttrActiveNames = ref(['size', 'baseSetting', 'background', 'color'])
 
 const screenAdaptorList = [
   { label: '宽度优先', value: 'widthFirst' },
@@ -145,6 +146,9 @@ onMounted(() => {
             </el-form-item>
           </el-row>
         </el-form>
+      </el-collapse-item>
+      <el-collapse-item effect="dark" title="基础配置" name="baseSetting">
+        <canvas-base-setting themes="dark"></canvas-base-setting>
       </el-collapse-item>
       <el-collapse-item effect="dark" title="背景" name="background">
         <canvas-background themes="dark"></canvas-background>

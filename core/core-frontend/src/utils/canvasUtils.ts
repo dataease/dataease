@@ -198,6 +198,10 @@ export function historyAdaptor(
   canvasStyleResult['scaleHeight'] = canvasStyleResult['scale']
   canvasStyleResult['popupAvailable'] =
     canvasStyleResult['popupAvailable'] === undefined ? true : canvasStyleResult['popupAvailable'] //兼容弹框区域开关
+  canvasStyleResult['popupButtonAvailable'] =
+    canvasStyleResult['popupButtonAvailable'] === undefined
+      ? true
+      : canvasStyleResult['popupButtonAvailable'] //兼容弹框区域按钮开关
   const reportFilterInfo = canvasInfo.reportFilterInfo
   canvasDataResult.forEach(componentItem => {
     historyItemAdaptor(componentItem, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)
