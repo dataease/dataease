@@ -13,6 +13,7 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const {
+  multiplexingStyleAdapt,
   curComponent,
   curComponentIndex,
   curMultiplexingComponents,
@@ -52,13 +53,17 @@ export const copyStore = defineStore('copy', {
           // dashboard 平铺2个
           const xPositionOffset = index % 2
           const yPositionOffset = index % 2
-          newComponent.sizeX = pcMatrixCount.value.x / 2
-          newComponent.sizeY = 14
+          if (!(copyFrom === 'multiplexing' && !multiplexingStyleAdapt.value)) {
+            newComponent.sizeX = pcMatrixCount.value.x / 2
+            newComponent.sizeY = 14
+            // dataV 数据大屏
+            newComponent.style.width = ((canvasStyleData.value.width / 3) * scale) / 100
+            newComponent.style.height = ((canvasStyleData.value.height / 3) * scale) / 100
+          }
+          // dataV 数据大屏
           newComponent.x = newComponent.sizeX * xPositionOffset + 1
           newComponent.y = 200
           // dataV 数据大屏
-          newComponent.style.width = (width * scale) / 400
-          newComponent.style.height = (height * scale) / 400
           newComponent.style.left = 0
           newComponent.style.top = 0
         }
