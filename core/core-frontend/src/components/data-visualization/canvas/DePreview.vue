@@ -353,7 +353,11 @@ const popAreaAvailable = computed(
 )
 
 const filterBtnShow = computed(
-  () => popAreaAvailable.value && popComponentData.value && popComponentData.value.length > 0
+  () =>
+    popAreaAvailable.value &&
+    popComponentData.value &&
+    popComponentData.value.length > 0 &&
+    canvasStyleData.value.popupButtonAvailable
 )
 const datasetParamsInit = item => {
   customDatasetParamsRef.value?.optInit(item)
