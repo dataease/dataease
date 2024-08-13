@@ -8,7 +8,25 @@ import { isNumber } from 'lodash-es'
 import { copyContent, SortTooltip } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
-
+class ImageCell extends TableDataCell {
+  protected drawTextShape(): void {
+    const img = new Image()
+    const { x, y, width, height, fieldValue } = this.meta
+    img.src = fieldValue as string
+    img.onload = () => {
+      !this.cfg.children && (this.cfg.children = [])
+      this.textShape = this.addShape('image', {
+        attrs: {
+          x,
+          y,
+          width,
+          height,
+          img
+        }
+      })
+    }
+  }
+}
 /**
  * 明细表
  */
@@ -127,13 +145,16 @@ export class TableInfo extends S2ChartView<TableSheet> {
         }
         return new TableColCell(node, sheet, config)
       }
-      s2Options.dataCell = viewMeta => {
-        if (viewMeta.colIndex === 0) {
-          viewMeta.fieldValue =
-            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
-        }
-        return new TableDataCell(viewMeta, viewMeta?.spreadsheet)
+    }
+    s2Options.dataCell = viewMeta => {
+      const deType = axisMap[viewMeta.valueField]?.deType
+      if (deType === 7) {
+        return new ImageCell(viewMeta, viewMeta?.spreadsheet)
       }
+      if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
+        viewMeta.fieldValue = pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+      }
+      return new TableDataCell(viewMeta, viewMeta?.spreadsheet)
     }
     // tooltip
     this.configTooltip(chart, s2Options)

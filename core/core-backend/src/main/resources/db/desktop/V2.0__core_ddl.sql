@@ -136,7 +136,7 @@ CREATE TABLE `core_dataset_table_field`
     `group_type`       varchar(50)  DEFAULT NULL COMMENT '维度/指标标识 d:维度，q:指标',
     `type`             varchar(255) NOT NULL COMMENT '原始字段类型',
     `size`             int          DEFAULT NULL,
-    `de_type`          int          NOT NULL COMMENT 'dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制',
+    `de_type`          int          NOT NULL COMMENT 'dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制，7-URL',
     `de_extract_type`  int          NOT NULL COMMENT 'de记录的原始类型',
     `ext_field`        int          DEFAULT NULL COMMENT '是否扩展字段 0原始 1复制 2计算字段...',
     `checked`          tinyint(1)   DEFAULT '1' COMMENT '是否选中',

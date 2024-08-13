@@ -198,7 +198,7 @@ onMounted(() => {
           </el-icon>
           <el-icon>
             <Icon
-              :className="`field-icon-${fieldType[item.deType]}`"
+              :className="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
               :name="`field_${fieldType[item.deType]}`"
             />
           </el-icon>

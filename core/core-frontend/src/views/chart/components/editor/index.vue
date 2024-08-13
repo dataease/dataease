@@ -2986,7 +2986,9 @@ const deleteChartFieldItem = id => {
                     >
                       <el-icon>
                         <Icon
-                          :class-name="`field-icon-${fieldType[element.deType]}`"
+                          :class-name="`field-icon-${
+                            fieldType[[2, 3].includes(element.deType) ? 2 : 0]
+                          }`"
                           :name="`field_${fieldType[element.deType]}`"
                         />
                       </el-icon>
@@ -3059,7 +3061,9 @@ const deleteChartFieldItem = id => {
                         >
                           <el-icon>
                             <Icon
-                              :class-name="`field-icon-${fieldType[ele.deType]}`"
+                              :class-name="`field-icon-${
+                                fieldType[[2, 3].includes(ele.deType) ? 2 : 0]
+                              }`"
                               :name="`field_${fieldType[ele.deType]}`"
                             />
                           </el-icon>
