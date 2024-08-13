@@ -22,7 +22,7 @@ export const BASE_EVENTS = {
     { key: 'jump', label: '跳转' },
     { key: 'download', label: '下载' },
     { key: 'share', label: '分享' },
-    { key: 'showHidden', label: '弹框区域' },
+    { key: 'showHidden', label: '弹窗区域' },
     { key: 'refreshDataV', label: '刷新' },
     { key: 'refreshView', label: '刷新图表' }
   ],
