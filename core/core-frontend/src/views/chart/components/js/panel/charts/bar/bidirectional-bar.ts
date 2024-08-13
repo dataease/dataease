@@ -49,6 +49,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
   axis: AxisType[] = ['xAxis', 'yAxis', 'yAxisExt', 'filter', 'drill', 'extLabel', 'extTooltip']
   properties: EditorProperty[] = [
     'background-overall-component',
+    'border-style',
     'basic-style-selector',
     'x-axis-selector',
     'dual-y-axis-selector',
@@ -62,6 +63,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
   ]
   propertyInner = {
     'background-overall-component': ['all'],
+    'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gradient', 'layout'],
     'x-axis-selector': ['position', 'axisLabel', 'axisLine', 'splitLine'],
     'y-axis-selector': [

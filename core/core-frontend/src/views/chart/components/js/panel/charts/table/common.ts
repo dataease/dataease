@@ -1,5 +1,6 @@
 export const TABLE_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
+  'border-style',
   'basic-style-selector',
   'table-header-selector',
   'table-cell-selector',
@@ -12,6 +13,7 @@ export const TABLE_EDITOR_PROPERTY: EditorProperty[] = [
   'linkage'
 ]
 export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
+  'border-style': ['all'],
   'background-overall-component': ['all'],
   'basic-style-selector': ['tableColumnMode', 'tableBorderColor', 'tableScrollBarColor', 'alpha'],
   'table-header-selector': [

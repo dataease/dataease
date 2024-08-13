@@ -1053,6 +1053,10 @@ const onBackgroundChange = val => {
   curComponent.value.commonBackground = val
 }
 
+const onStyleAttrChange = val => {
+  curComponent.value.style[val.property] = val.value
+}
+
 const onAssistLineChange = val => {
   view.value.senior.assistLineCfg = val.data
   if (val.requestData) {
@@ -2776,6 +2780,7 @@ const deleteChartFieldItem = id => {
                         :property-inner-all="chartViewInstance.propertyInner"
                         :selector-spec="chartViewInstance.selectorSpec"
                         :common-background-pop="curComponent?.commonBackground"
+                        :common-border-pop="curComponent?.style"
                         :event-info="curComponent?.events"
                         :chart="view"
                         :themes="themes"
@@ -2794,6 +2799,7 @@ const deleteChartFieldItem = id => {
                         @onIndicatorNameChange="onIndicatorNameChange"
                         @onLegendChange="onLegendChange"
                         @onBackgroundChange="onBackgroundChange"
+                        @onStyleAttrChange="onStyleAttrChange"
                         @onBasicStyleChange="onBasicStyleChange"
                         @onTableHeaderChange="onTableHeaderChange"
                         @onTableCellChange="onTableCellChange"

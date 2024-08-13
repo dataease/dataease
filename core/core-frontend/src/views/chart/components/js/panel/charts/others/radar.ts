@@ -13,6 +13,7 @@ const { t } = useI18n()
 export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
   properties: EditorProperty[] = [
     'background-overall-component',
+    'border-style',
     'basic-style-selector',
     'label-selector',
     'tooltip-selector',
