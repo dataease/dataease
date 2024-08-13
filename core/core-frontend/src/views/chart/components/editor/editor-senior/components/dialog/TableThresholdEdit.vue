@@ -178,7 +178,7 @@ const init = () => {
 }
 const initOptions = item => {
   if (item.field) {
-    if (item.field.deType === 0 || item.field.deType === 5) {
+    if ([0, 5, 7].includes(item.field.deType)) {
       item.options = JSON.parse(JSON.stringify(textOptions))
     } else if (item.field.deType === 1) {
       item.options = JSON.parse(JSON.stringify(dateOptions))
@@ -270,7 +270,9 @@ init()
               >
                 <el-icon style="margin-right: 8px">
                   <Icon
-                    :className="`field-icon-${fieldType[fieldOption.deType]}`"
+                    :className="`field-icon-${
+                      fieldType[[2, 3].includes(fieldOption.deType) ? 2 : 0]
+                    }`"
                     :name="`field_${fieldType[fieldOption.deType]}`"
                   />
                 </el-icon>

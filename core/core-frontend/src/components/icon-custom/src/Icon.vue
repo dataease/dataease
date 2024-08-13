@@ -232,6 +232,7 @@ import field_location from '@/assets/svg/field_location.svg'
 import field_text from '@/assets/svg/field_text.svg'
 import field_time from '@/assets/svg/field_time.svg'
 import field_value from '@/assets/svg/field_value.svg'
+import field_url from '@/assets/svg/field_url.svg'
 import filterCenter from '@/assets/svg/filter-center.svg'
 import filterHCenter from '@/assets/svg/filter-h-center.svg'
 import filterHLeft from '@/assets/svg/filter-h-left.svg'
@@ -901,6 +902,7 @@ const iconMap = {
   field_text: field_text,
   field_time: field_time,
   field_value: field_value,
+  field_url: field_url,
   'filter-center': filterCenter,
   'filter-h-center': filterHCenter,
   'filter-h-left': filterHLeft,
