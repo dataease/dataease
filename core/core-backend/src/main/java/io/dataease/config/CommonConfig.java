@@ -1,7 +1,7 @@
 package io.dataease.config;
 
 import com.fit2cloud.autoconfigure.QuartzAutoConfiguration;
-import io.dataease.commons.utils.CommonThreadPool;
+import io.dataease.utils.CommonThreadPool;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

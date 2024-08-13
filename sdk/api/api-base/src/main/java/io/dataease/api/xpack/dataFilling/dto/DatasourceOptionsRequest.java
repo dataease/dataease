@@ -1,8 +1,10 @@
 package io.dataease.api.xpack.dataFilling.dto;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
-@Getter
+@Data
+@Accessors(chain = true)
 public class DatasourceOptionsRequest {
 
     private String optionTable;

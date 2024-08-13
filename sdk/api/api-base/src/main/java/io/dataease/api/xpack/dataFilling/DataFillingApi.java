@@ -12,10 +12,8 @@ import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -110,4 +108,12 @@ public interface DataFillingApi {
     IPage<DfCommitLog> taskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfCommitLogRequest request);
 
 
+    @PostMapping("/form/{formId}/uploadFile")
+    DfExcelData excelUpload(@RequestParam("file") MultipartFile file, @PathVariable("formId") Long formId) throws Exception;
+
+    @GetMapping("/form/{formId}/excelTemplate")
+    void excelTemplate(@PathVariable("formId") Long formId);
+
+    @PostMapping("/form/{formId}/confirmUpload")
+    void confirmUpload(@PathVariable("formId") Long formId, @RequestBody Map<String, String> data);
 }

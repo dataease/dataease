@@ -2707,6 +2707,7 @@ export default {
       commit_time: '提交时间',
       confirm_delete: '确认删除?',
       add_data: '添加数据',
+      batch_upload: '批量上传',
       download_template: '下载模板',
       insert_data: '插入数据',
       update_data: '更新数据',

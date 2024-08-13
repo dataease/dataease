@@ -1,6 +1,5 @@
-package io.dataease.commons.utils;
+package io.dataease.utils;
 
-import io.dataease.utils.LogUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
