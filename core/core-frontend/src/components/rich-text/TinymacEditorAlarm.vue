@@ -163,6 +163,7 @@ const fieldSelect = name => {
 }
 const moreBarElementClick = () => {
   if (!moreBarElement) return
+  if (!document.querySelector('.tox.tox-tinymce-aux')?.children.length) return
   moreBarElement.nextSibling.querySelector('.tox-tbtn').click()
 }
 
