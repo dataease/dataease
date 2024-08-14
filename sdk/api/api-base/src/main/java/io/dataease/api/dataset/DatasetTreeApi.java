@@ -60,6 +60,10 @@ public interface DatasetTreeApi {
     @PostMapping("move")
     DatasetNodeDTO move(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("perDelete/{id}")
+    boolean perDelete(@PathVariable("id") Long id);
+
     @Operation(summary = "删除数据集")
     @DePermit({"#p0+':manage'"})
     @PostMapping("delete/{id}")

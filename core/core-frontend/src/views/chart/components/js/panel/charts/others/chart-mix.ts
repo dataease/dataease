@@ -279,6 +279,25 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       ...options
     }
     const basicStyle = parseJson(chart.customAttr).basicStyle as MixChartBasicStyle
+
+    const { seriesColor } = basicStyle
+    if (seriesColor?.length) {
+      const seriesMap = seriesColor.reduce((p, n) => {
+        p[n.id] = n
+        return p
+      }, {})
+      const { yAxis } = chart
+      yAxis?.forEach((axis, index) => {
+        const curAxisColor = seriesMap[axis.id]
+        if (curAxisColor) {
+          if (index + 1 > basicStyle.colors.length) {
+            basicStyle.colors.push(curAxisColor.color)
+          } else {
+            basicStyle.colors[index] = curAxisColor.color
+          }
+        }
+      })
+    }
     //左轴
     const color = basicStyle.colors.map(ele => {
       const tmp = hexColorToRGBA(ele, basicStyle.alpha)
@@ -568,10 +587,6 @@ export class GroupColumnLineMix extends ColumnLineMix {
   axis: AxisType[] = [...this['axis'], 'xAxisExt']
   propertyInner = {
     ...CHART_MIX_EDITOR_PROPERTY_INNER,
-    'dual-basic-style-selector': [
-      ...CHART_MIX_EDITOR_PROPERTY_INNER['dual-basic-style-selector'],
-      'seriesColor'
-    ],
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
@@ -683,10 +698,6 @@ export class StackColumnLineMix extends ColumnLineMix {
   axis: AxisType[] = [...this['axis'], 'extStack']
   propertyInner = {
     ...CHART_MIX_EDITOR_PROPERTY_INNER,
-    'dual-basic-style-selector': [
-      ...CHART_MIX_EDITOR_PROPERTY_INNER['dual-basic-style-selector'],
-      'seriesColor'
-    ],
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
