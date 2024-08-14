@@ -49,6 +49,11 @@ public class DatasetTreeServer implements DatasetTreeApi {
         return datasetGroupManage.move(dto);
     }
 
+    @Override
+    public boolean perDelete(Long id) {
+        return datasetGroupManage.perDelete(id);
+    }
+
     @DeLog(id = "#p0", ot = LogOT.DELETE, st = LogST.DATASET)
     @Override
     public void delete(Long id) {
