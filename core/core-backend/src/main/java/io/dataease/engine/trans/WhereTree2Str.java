@@ -107,6 +107,14 @@ public class WhereTree2Str {
                 whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 1) {
+                // 如果都是时间类型，把date和time类型进行字符串拼接
+                if (isCross) {
+                    if (StringUtils.equalsIgnoreCase(field.getType(), "date")) {
+                        originName = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, originName, "' 00:00:00'"), SQLConstants.DEFAULT_DATE_FORMAT);
+                    } else if (StringUtils.equalsIgnoreCase(field.getType(), "time")) {
+                        originName = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, "'1970-01-01 '", originName), SQLConstants.DEFAULT_DATE_FORMAT);
+                    }
+                }
                 whereName = originName;
             }
         } else if (field.getDeType() == 2 || field.getDeType() == 3) {

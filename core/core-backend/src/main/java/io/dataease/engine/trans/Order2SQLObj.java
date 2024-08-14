@@ -1,13 +1,13 @@
 package io.dataease.engine.trans;
 
 import io.dataease.api.chart.dto.DeSortField;
-import io.dataease.extensions.datasource.dto.CalParam;
-import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.CalParam;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
 import org.apache.commons.lang3.ObjectUtils;
@@ -58,6 +58,14 @@ public class Order2SQLObj {
             if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
                 fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField);
             } else {
+                // 如果都是时间类型，把date和time类型进行字符串拼接
+                if (isCross) {
+                    if (StringUtils.equalsIgnoreCase(f.getType(), "date")) {
+                        originField = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, originField, "' 00:00:00'"), SQLConstants.DEFAULT_DATE_FORMAT);
+                    } else if (StringUtils.equalsIgnoreCase(f.getType(), "time")) {
+                        originField = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, "'1970-01-01 '", originField), SQLConstants.DEFAULT_DATE_FORMAT);
+                    }
+                }
                 fieldName = originField;
             }
         } else if (Objects.equals(f.getDeExtractType(), DeTypeConstants.DE_STRING)) {

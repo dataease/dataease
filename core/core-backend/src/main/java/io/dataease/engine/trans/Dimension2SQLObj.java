@@ -52,7 +52,7 @@ public class Dimension2SQLObj {
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
-                xFields.add(getXFields(x, originField, fieldAlias));
+                xFields.add(getXFields(x, originField, fieldAlias, isCross));
 
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
@@ -69,12 +69,20 @@ public class Dimension2SQLObj {
         meta.setXFieldsDialect(fieldsDialect);
     }
 
-    public static SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
+    public static SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias, boolean isCross) {
         String fieldName = "";
         if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_TIME)) {
             if (Objects.equals(x.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(x.getDeType(), DeTypeConstants.DE_FLOAT)) {
                 fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField);
             } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_TIME)) {
+                // 如果都是时间类型，把date和time类型进行字符串拼接
+                if (isCross) {
+                    if (StringUtils.equalsIgnoreCase(x.getType(), "date")) {
+                        originField = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, originField, "' 00:00:00'"), SQLConstants.DEFAULT_DATE_FORMAT);
+                    } else if (StringUtils.equalsIgnoreCase(x.getType(), "time")) {
+                        originField = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, "'1970-01-01 '", originField), SQLConstants.DEFAULT_DATE_FORMAT);
+                    }
+                }
                 String format = Utils.transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                     fieldName = String.format(format,
