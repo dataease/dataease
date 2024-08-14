@@ -67,6 +67,10 @@ public interface DatasourceApi {
     DatasourceDTO validate(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
     @DePermit({"#p0+':manage'"})
+    @PostMapping("/perDelete/{datasourceId}")
+    boolean perDelete(@PathVariable("datasourceId") Long datasourceId);
+
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/delete/{datasourceId}")
     void delete(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
