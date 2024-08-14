@@ -170,10 +170,10 @@ const initOpenHandler = newWindow => {
                     >PDF</el-dropdown-item
                   >
                   <el-dropdown-item style="width: 118px" @click="downloadAsAppTemplate('template')"
-                    >模板</el-dropdown-item
+                    >样式模板</el-dropdown-item
                   >
                   <el-dropdown-item style="width: 118px" @click="downloadAsAppTemplate('app')"
-                    >应用</el-dropdown-item
+                    >应用模板</el-dropdown-item
                   >
                   <el-dropdown-item @click="download('img')">{{
                     t('chart.image')

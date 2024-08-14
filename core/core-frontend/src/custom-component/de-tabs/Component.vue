@@ -116,7 +116,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
-import { canvasChangeAdaptor, findComponentIndexById } from '@/utils/canvasUtils'
+import { canvasChangeAdaptor, findComponentIndexById, isDashboard } from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -281,14 +281,16 @@ const componentMoveIn = component => {
       if (refInstance) {
         const matrixBase = refInstance.getBaseMatrixSize() //矩阵基础大小
         canvasChangeAdaptor(component, matrixBase)
+        component.x = 1
+        component.y = 200
+        component.style.left = 0
+        component.style.top = 0
         tabItem.componentData.push(component)
-        nextTick(() => {
-          component.x = 1
-          component.y = 1
-          component.style.left = 0
-          component.style.top = 0
-          refInstance.addItemBox(component) //在适当的时候初始化布局组件
-        })
+        if (isDashboard()) {
+          nextTick(() => {
+            refInstance.addItemBox(component) //在适当的时候初始化布局组件
+          })
+        }
       }
     }
   })
