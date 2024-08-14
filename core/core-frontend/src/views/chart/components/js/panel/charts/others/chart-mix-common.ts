@@ -29,7 +29,8 @@ export const CHART_MIX_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'lineSymbolSize',
     'lineSmooth',
     'radiusColumnBar',
-    'subSeriesColor'
+    'subSeriesColor',
+    'seriesColor'
   ],
   'x-axis-selector': [
     'name',
