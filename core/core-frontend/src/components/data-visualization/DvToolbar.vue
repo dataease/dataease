@@ -28,6 +28,7 @@ import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -331,6 +332,9 @@ const fullScreenPreview = () => {
             title="媒体"
           >
             <media-group></media-group>
+          </component-group>
+          <component-group is-label :base-width="115" icon-name="dv-tab" title="Tab">
+            <tabs-group :dv-model="dvModel"></tabs-group>
           </component-group>
           <component-group is-label :base-width="215" icon-name="dv-more-com" title="更多">
             <more-com-group></more-com-group>

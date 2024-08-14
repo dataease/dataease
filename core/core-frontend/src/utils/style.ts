@@ -2,6 +2,7 @@ import { sin, cos } from '@/utils/translate'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { isMainCanvas } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 export function getShapeStyle(style) {
   const result = {}
@@ -181,7 +182,7 @@ export function getComponentRotatedStyle(style) {
   return style
 }
 
-export function getCanvasStyle(canvasStyleData) {
+export function getCanvasStyle(canvasStyleData, canvasId = 'canvasMain') {
   const {
     backgroundColorSelect,
     background,
@@ -191,27 +192,30 @@ export function getCanvasStyle(canvasStyleData) {
     mobileSetting
   } = canvasStyleData
   const style = { fontSize: fontSize + 'px', color: canvasStyleData.color }
-  // 仪表板默认色#f5f6f7 大屏默认配色 #1a1a1a
-  let colorRGBA = dvMainStore.dvInfo.type === 'dashboard' ? '#f5f6f7' : '#1a1a1a'
-  if (backgroundColorSelect && backgroundColor) {
-    colorRGBA = backgroundColor
-  }
-  if (backgroundImageEnable) {
-    style['background'] = `url(${imgUrlTrans(background)}) no-repeat ${colorRGBA}`
-  } else {
-    style['background-color'] = colorRGBA
-  }
+  if (isMainCanvas(canvasId)) {
+    // 仪表板默认色#f5f6f7 大屏默认配色 #1a1a1a
+    let colorRGBA = dvMainStore.dvInfo.type === 'dashboard' ? '#f5f6f7' : '#1a1a1a'
+    if (backgroundColorSelect && backgroundColor) {
+      colorRGBA = backgroundColor
+    }
+    if (backgroundImageEnable) {
+      style['background'] = `url(${imgUrlTrans(background)}) no-repeat ${colorRGBA}`
+    } else {
+      style['background-color'] = colorRGBA
+    }
 
-  if (dvMainStore.mobileInPc && mobileSetting?.customSetting) {
-    const { backgroundColorSelect, color, backgroundImageEnable, background } = mobileSetting
-    if (backgroundColorSelect && backgroundImageEnable && typeof background === 'string') {
-      style['background'] = `url(${imgUrlTrans(background)}) no-repeat ${color}`
-    } else if (backgroundColorSelect) {
-      style['background-color'] = color
-    } else if (backgroundImageEnable) {
-      style['background'] = `url(${imgUrlTrans(background)}) no-repeat`
+    if (dvMainStore.mobileInPc && mobileSetting?.customSetting) {
+      const { backgroundColorSelect, color, backgroundImageEnable, background } = mobileSetting
+      if (backgroundColorSelect && backgroundImageEnable && typeof background === 'string') {
+        style['background'] = `url(${imgUrlTrans(background)}) no-repeat ${color}`
+      } else if (backgroundColorSelect) {
+        style['background-color'] = color
+      } else if (backgroundImageEnable) {
+        style['background'] = `url(${imgUrlTrans(background)}) no-repeat`
+      }
     }
   }
+
   return style
 }
 
