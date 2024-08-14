@@ -2,7 +2,7 @@
   <div
     v-if="state.tabShow"
     style="width: 100%; height: 100%"
-    :class="headClass"
+    :class="[headClass, `ed-tabs-${curThemes}`]"
     class="custom-tabs-head"
     ref="tabComponentRef"
   >
@@ -26,6 +26,7 @@
             <span :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
             <el-dropdown
               v-if="isEditMode"
+              :effect="curThemes"
               style="line-height: 4 !important"
               trigger="click"
               @command="handleCommand"
@@ -180,7 +181,7 @@ const noBorderColor = ref('none')
 let currentInstance
 
 const isEditMode = computed(() => editMode.value === 'edit' && isEdit.value && !mobileInPc.value)
-
+const curThemes = isDashboard() ? 'light' : 'dark'
 const calcTabLength = () => {
   setTimeout(() => {
     if (element.value.propValue.length > 1) {
@@ -456,9 +457,20 @@ onBeforeMount(() => {
 :deep(.ed-tabs__content) {
   height: calc(100% - 46px) !important;
 }
-:deep(.ed-tabs__new-tab) {
-  margin-right: 25px;
-  background-color: #fff;
+.ed-tabs-dark {
+  :deep(.ed-tabs__new-tab) {
+    margin-right: 25px;
+    color: #fff;
+  }
+  :deep(.el-dropdown-link) {
+    color: #fff;
+  }
+}
+.ed-tabs-light {
+  :deep(.ed-tabs__new-tab) {
+    margin-right: 25px;
+    background-color: #fff;
+  }
 }
 .el-tab-pane-custom {
   width: 100%;

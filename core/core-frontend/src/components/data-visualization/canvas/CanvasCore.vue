@@ -576,7 +576,7 @@ const editStyle = computed(() => {
     }
   } else {
     const result = {
-      ...getCanvasStyle(canvasStyleData.value),
+      ...getCanvasStyle(canvasStyleData.value, canvasId.value),
       width: changeStyleWithScale(canvasStyleData.value.width) + 'px',
       height: changeStyleWithScale(canvasStyleData.value.height) + 'px'
     }

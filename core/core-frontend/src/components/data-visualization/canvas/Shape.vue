@@ -530,7 +530,7 @@ const handleMouseDownOnShape = e => {
       contentDisplay.value = true
     }
     // 仪表板进行Tab碰撞检查
-    dashboardActive.value && tabMoveInCheck()
+    tabMoveInCheck()
     // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
     if (
       dashboardActive.value &&
