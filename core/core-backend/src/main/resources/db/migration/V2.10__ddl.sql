@@ -38,6 +38,7 @@ CREATE TABLE `xpack_threshold_info`
     `repeat_send`      tinyint(1)   NOT NULL DEFAULT '1' COMMENT '是否重复发送',
     `status`           tinyint(1)   NOT NULL DEFAULT '0' COMMENT '数据状态',
     `creator`          bigint       NOT NULL COMMENT '创建者ID',
+    `creator_name`     varchar(255) NOT NULL COMMENT '创建人名称',
     `create_time`      bigint       NOT NULL COMMENT '创建时间',
     `oid`              bigint       NOT NULL COMMENT '所属组织',
     PRIMARY KEY (`id`)
