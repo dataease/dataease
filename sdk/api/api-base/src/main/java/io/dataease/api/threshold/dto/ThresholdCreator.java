@@ -1,5 +1,7 @@
 package io.dataease.api.threshold.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,6 +14,7 @@ public class ThresholdCreator extends BaseReciDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = -4085895087749460947L;
 
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     private String name;
@@ -22,10 +25,12 @@ public class ThresholdCreator extends BaseReciDTO implements Serializable {
 
     private String rateValue;
 
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long resourceId;
 
     private String resourceType;
 
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long chartId;
 
     private String chartType;
