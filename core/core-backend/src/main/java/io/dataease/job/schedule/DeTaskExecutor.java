@@ -44,11 +44,10 @@ public class DeTaskExecutor {
         jobDataMap.put("taskId", taskId);
         jobDataMap.put("threshold", taskId);
         Date end = null;
-        if (CronUtils.taskExpire(endTime)) {
-            return;
-        }
         if (ObjectUtils.isNotEmpty(endTime)) end = new Date(endTime);
-        scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), end, jobDataMap);
+        Date startDate = new Date();
+        if (ObjectUtils.isNotEmpty(startTime)) startDate = new Date(startTime);
+        scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, startDate, end, jobDataMap);
     }
 
     public void addOrUpdateTask(Long taskId, String cron, Long startTime, Long endTime) {
