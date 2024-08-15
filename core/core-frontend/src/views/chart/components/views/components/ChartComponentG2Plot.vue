@@ -313,6 +313,10 @@ const action = param => {
     emitter.emit('map-default-range', param)
     return
   }
+  if (param.from === 'word-cloud') {
+    emitter.emit('word-cloud-default-data-range', param)
+    return
+  }
   state.pointParam = param.data
   // 点击
   pointClickTrans()

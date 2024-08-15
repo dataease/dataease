@@ -318,29 +318,32 @@ export function recursionTransObj(template, infoObj, scale, terminal) {
   for (const templateKey in template) {
     // 如果是数组 进行赋值计算
     if (template[templateKey] instanceof Array) {
-      template[templateKey].forEach(templateProp => {
-        if (
-          infoObj[templateKey] &&
-          (infoObj[templateKey][templateProp] || infoObj[templateKey].length)
-        ) {
-          // 移动端特殊属性值设置
-          if (terminal === 'mobile' && mobileSpecialProps[templateProp] !== undefined) {
-            infoObj[templateKey][templateProp] = mobileSpecialProps[templateProp]
-          } else {
-            // 数组依次设置
-            if (infoObj[templateKey] instanceof Array) {
-              infoObj[templateKey].forEach(v => {
-                v[templateProp] = getScaleValue(v[templateProp], scale)
-              })
+      // 词云图的大小区间，不需要缩放
+      template[templateKey]
+        .filter(field => field !== 'wordSizeRange')
+        .forEach(templateProp => {
+          if (
+            infoObj[templateKey] &&
+            (infoObj[templateKey][templateProp] || infoObj[templateKey].length)
+          ) {
+            // 移动端特殊属性值设置
+            if (terminal === 'mobile' && mobileSpecialProps[templateProp] !== undefined) {
+              infoObj[templateKey][templateProp] = mobileSpecialProps[templateProp]
             } else {
-              infoObj[templateKey][templateProp] = getScaleValue(
-                infoObj[templateKey][templateProp],
-                scale
-              )
+              // 数组依次设置
+              if (infoObj[templateKey] instanceof Array) {
+                infoObj[templateKey].forEach(v => {
+                  v[templateProp] = getScaleValue(v[templateProp], scale)
+                })
+              } else {
+                infoObj[templateKey][templateProp] = getScaleValue(
+                  infoObj[templateKey][templateProp],
+                  scale
+                )
+              }
             }
           }
-        }
-      })
+        })
     } else if (typeof template[templateKey] === 'string') {
       // 一级字段为字符串直接赋值
       infoObj[templateKey] = getScaleValue(infoObj[templateKey], scale)

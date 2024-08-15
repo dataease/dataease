@@ -5,6 +5,7 @@ import { DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { ElMessage, ElRow } from 'element-plus-secondary'
 import { fieldType } from '@/utils/attr'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const { t } = useI18n()
 
@@ -18,6 +19,10 @@ const props = withDefaults(
   { themes: 'dark' }
 )
 
+useEmitt({
+  name: 'word-cloud-default-data-range',
+  callback: args => wordCloudDefaultDataRange(args)
+})
 const emit = defineEmits(['onMiscChange'])
 
 watch(
@@ -175,7 +180,11 @@ const isValidField = field => {
 }
 
 const showProperty = prop => props.propertyInner?.includes(prop)
-
+const wordCloudDefaultDataRange = args => {
+  state.miscForm.wordCloudAxisValueRange.max = args.data.max
+  state.miscForm.wordCloudAxisValueRange.min = args.data.min
+  state.miscForm.wordCloudAxisValueRange.fieldId = props.chart.yAxis?.[0]?.id
+}
 onMounted(() => {
   initField()
   init()
@@ -561,35 +570,109 @@ onMounted(() => {
     <!--liquid-end-->
 
     <!-- word-cloud start -->
-    <el-form-item
-      v-show="showProperty('wordSizeRange')"
-      class="form-item"
-      :label="t('chart.word_size_range')"
-      :class="'form-item-' + themes"
-    >
-      <el-slider
-        v-model="state.miscForm.wordSizeRange"
-        range
-        size="small"
-        :effect="themes"
-        :min="1"
-        :max="100"
-        @change="changeMisc('wordSizeRange')"
-      />
-    </el-form-item>
-    <el-form-item
-      v-show="showProperty('wordSpacing')"
-      class="form-item form-item-slider"
-      :label="t('chart.word_spacing')"
-      :class="'form-item-' + themes"
-    >
-      <el-slider
-        v-model="state.miscForm.wordSpacing"
-        :min="0"
-        :max="20"
-        @change="changeMisc('wordSpacing')"
-      />
-    </el-form-item>
+    <template v-if="showProperty('wordCloudAxisValueRange')">
+      <div style="display: flex; flex-direction: row; justify-content: space-between">
+        <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">
+          {{ t('chart.axis_value') }}
+          <el-tooltip class="item" :effect="toolTip" placement="top">
+            <template #content><span v-html="t('chart.axis_tip')"></span></template>
+            <span style="vertical-align: middle">
+              <el-icon style="cursor: pointer">
+                <Icon name="icon_info_outlined" />
+              </el-icon>
+            </span>
+          </el-tooltip>
+        </label>
+
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            :effect="props.themes"
+            v-model="state.miscForm.wordCloudAxisValueRange.auto"
+            @change="changeMisc()"
+          >
+            {{ t('chart.axis_auto') }}
+          </el-checkbox>
+        </el-form-item>
+      </div>
+      <template
+        v-if="
+          showProperty('wordCloudAxisValueRange') && !state.miscForm.wordCloudAxisValueRange.auto
+        "
+      >
+        <el-row :gutter="8">
+          <el-col :span="12">
+            <el-form-item
+              class="form-item"
+              :class="'form-item-' + themes"
+              :label="t('chart.axis_value_max')"
+            >
+              <el-input-number
+                controls-position="right"
+                :effect="props.themes"
+                v-model="state.miscForm.wordCloudAxisValueRange.max"
+                @change="changeMisc()"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              class="form-item"
+              :class="'form-item-' + themes"
+              :label="t('chart.axis_value_min')"
+            >
+              <el-input-number
+                :effect="props.themes"
+                controls-position="right"
+                v-model="state.miscForm.wordCloudAxisValueRange.min"
+                @change="changeMisc()"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </template>
+    </template>
+    <div class="alpha-setting" v-if="showProperty('wordSizeRange')">
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+        {{ t('chart.word_size_range') }}
+      </label>
+      <el-row style="flex: 1" :gutter="8">
+        <el-col :span="24">
+          <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+            <el-slider
+              v-model="state.miscForm.wordSizeRange"
+              range
+              :effect="themes"
+              :min="1"
+              :max="100"
+              @change="changeMisc()"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
+
+    <div class="alpha-setting" v-if="showProperty('wordSpacing')">
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+        {{ t('chart.word_spacing') }}
+      </label>
+      <el-row style="flex: 1" :gutter="8">
+        <el-col :span="24">
+          <el-form-item
+            v-show="showProperty('wordSpacing')"
+            class="form-item alpha-slider"
+            :class="'form-item-' + themes"
+          >
+            <el-slider
+              v-model="state.miscForm.wordSpacing"
+              :min="0"
+              :max="20"
+              @change="changeMisc()"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
     <!-- word-cloud end -->
   </el-form>
 </template>
@@ -626,6 +709,36 @@ onMounted(() => {
 .invalid-field {
   :deep(.ed-input__wrapper) {
     box-shadow: 0 0 0 1px rgb(245, 74, 69) inset !important;
+  }
+}
+
+.alpha-setting {
+  display: flex;
+  width: 100%;
+
+  .alpha-slider {
+    padding: 0 8px;
+    :deep(.ed-slider__button-wrapper) {
+      --ed-slider-button-wrapper-size: 36px;
+      --ed-slider-button-size: 16px;
+    }
+  }
+
+  .alpha-label {
+    padding-right: 8px;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    height: 32px;
+    line-height: 32px;
+    display: inline-flex;
+    align-items: flex-start;
+
+    min-width: 56px;
+
+    &.dark {
+      color: #a6a6a6;
+    }
   }
 }
 </style>
