@@ -13,14 +13,19 @@ class ImageCell extends TableDataCell {
     const img = new Image()
     const { x, y, width, height, fieldValue } = this.meta
     img.src = fieldValue as string
+    img.setAttribute('crossOrigin', 'anonymous')
     img.onload = () => {
       !this.cfg.children && (this.cfg.children = [])
+      const { width: imgWidth, height: imgHeight } = img
+      const ratio = Math.max(imgWidth / width, imgHeight / height)
+      const imgShowWidth = imgWidth / ratio
+      const imgShowHeight = imgHeight / ratio
       this.textShape = this.addShape('image', {
         attrs: {
-          x,
-          y,
-          width,
-          height,
+          x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
+          y: y + (imgShowHeight < height ? (height - imgShowHeight) / 2 : 0),
+          width: imgShowWidth,
+          height: imgShowHeight,
           img
         }
       })
@@ -118,12 +123,21 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
 
     const customAttr = parseJson(chart.customAttr)
+    const style = this.configStyle(chart)
+    // 自适应列宽模式下，URL 字段的宽度固定为 120
+    if (customAttr.basicStyle.tableColumnMode === 'adapt') {
+      const urlFields = fields.filter(field => axisMap[field.dataeaseName]?.deType === 7)
+      style.colCfg.widthByFieldValue = urlFields?.reduce((p, n) => {
+        p[n.chartShowName ?? n.name] = 120
+        return p
+      }, {})
+    }
     // options
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
-      style: this.configStyle(chart),
+      style,
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom,

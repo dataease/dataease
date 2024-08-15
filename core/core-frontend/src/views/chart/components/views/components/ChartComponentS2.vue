@@ -107,7 +107,9 @@ const state = reactive({
   totalItems: 0,
   showPage: false,
   pageStyle: 'simple',
-  currentPageSize: 0
+  currentPageSize: 0,
+  imgEnlarge: false,
+  imgSrc: ''
 })
 // 图表数据不用全响应式
 let chartData = shallowRef<Partial<Chart['data']>>({
@@ -408,6 +410,16 @@ const trackClick = trackAction => {
       if (mobileInPc.value && !inMobile.value) return
       emit('onJumpClick', jumpParam)
       break
+    case 'enlarge':
+      if (view.value.type === 'table-info') {
+        param.data.dimensionList?.forEach(d => {
+          if (d.id === state.curActionId) {
+            state.imgSrc = d.value
+            state.imgEnlarge = true
+          }
+        })
+      }
+      break
     default:
       break
   }
@@ -490,6 +502,14 @@ const trackMenuCalc = itemId => {
     !trackMenuInfo.includes('jump')
   ) {
     trackMenuInfo = ['linkageAndDrill']
+  }
+  // 明细表 URL 字段图片放大
+  if (view.value.type === 'table-info') {
+    view.value.xAxis?.forEach(axis => {
+      if (axis.id === itemId) {
+        trackMenuInfo.push('enlarge')
+      }
+    })
   }
   return trackMenuInfo
 }
@@ -651,6 +671,11 @@ const tablePageClass = computed(() => {
     </el-row>
     <chart-error v-if="isError" :err-msg="errMsg" />
   </div>
+  <el-dialog v-model="state.imgEnlarge" append-to-body>
+    <div class="enlarge-image">
+      <img :src="state.imgSrc" />
+    </div>
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -695,5 +720,15 @@ const tablePageClass = computed(() => {
       background: transparent !important;
     }
   }
+}
+</style>
+<style lang="less">
+.enlarge-image {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  flex-direction: row;
+  justify-content: center;
 }
 </style>
