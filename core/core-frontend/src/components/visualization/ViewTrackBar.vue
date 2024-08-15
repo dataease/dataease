@@ -35,7 +35,8 @@ const state = reactive({
     drill: t('visualization.drill'),
     linkage: t('visualization.linkage'),
     linkageAndDrill: t('visualization.linkage_and_drill'),
-    jump: t('visualization.jump')
+    jump: t('visualization.jump'),
+    enlarge: t('visualization.enlarge')
   }
 })
 
