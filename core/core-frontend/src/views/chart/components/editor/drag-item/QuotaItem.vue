@@ -426,12 +426,7 @@ onMounted(() => {
                 >
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('sum')"
                   >
                     <span
@@ -446,12 +441,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('avg')"
                   >
                     <span
@@ -466,12 +456,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('max')"
                   >
                     <span
@@ -486,12 +471,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('min')"
                   >
                     <span
@@ -506,12 +486,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('stddev_pop')"
                   >
                     <span
@@ -526,12 +501,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('var_pop')"
                   >
                     <span
