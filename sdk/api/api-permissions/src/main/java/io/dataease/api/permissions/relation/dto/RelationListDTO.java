@@ -28,4 +28,6 @@ public class RelationListDTO implements Serializable {
     private String dvName;
     private String dvCreator;
     private Long dvUpdateTime;
+
+    private String type;
 }
