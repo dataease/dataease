@@ -35,7 +35,7 @@ export function changeComponentsSizeWithScale(scale, changeAttrs = needToChangeA
         )
         // 如果是分组组件 则要进行分组内部组件groupStyle进行深度计算
         // 计算逻辑 Group 中样式 * groupComponent.groupStyle[sonKey].
-        if (component.component === 'Group') {
+        if (['Group', 'DeTabs'].includes(component.component)) {
           try {
             groupSizeStyleAdaptor(component)
           } catch (e) {

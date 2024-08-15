@@ -29,10 +29,9 @@ import {
   findDragComponent,
   findNewComponent,
   isDashboard,
-  isGroupCanvas,
+  isGroupOrTabCanvas,
   isMainCanvas,
-  isSameCanvas,
-  isTabCanvas
+  isSameCanvas
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -570,7 +569,7 @@ const getTextareaHeight = (element, text) => {
 }
 
 const editStyle = computed(() => {
-  if (dashboardActive.value || isGroupCanvas(canvasId.value) || isTabCanvas(canvasId.value)) {
+  if (dashboardActive.value || isGroupOrTabCanvas(canvasId.value)) {
     return {
       width: '100%',
       height: '100%'
