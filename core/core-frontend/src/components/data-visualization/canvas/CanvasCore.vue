@@ -29,7 +29,7 @@ import {
   findDragComponent,
   findNewComponent,
   isDashboard,
-  isGroupCanvas,
+  isGroupOrTabCanvas,
   isMainCanvas,
   isSameCanvas
 } from '@/utils/canvasUtils'
@@ -569,7 +569,7 @@ const getTextareaHeight = (element, text) => {
 }
 
 const editStyle = computed(() => {
-  if (dashboardActive.value || isGroupCanvas(canvasId.value)) {
+  if (dashboardActive.value || isGroupOrTabCanvas(canvasId.value)) {
     return {
       width: '100%',
       height: '100%'

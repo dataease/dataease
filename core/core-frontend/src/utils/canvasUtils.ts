@@ -489,8 +489,16 @@ export function isSameCanvas(item, canvasId) {
   return item.canvasId === canvasId
 }
 
+export function isGroupOrTabCanvas(canvasId) {
+  return isGroupCanvas(canvasId) || isTabCanvas(canvasId)
+}
+
 export function isGroupCanvas(canvasId) {
   return canvasId && canvasId.includes('Group')
+}
+
+export function isTabCanvas(canvasId) {
+  return canvasId && canvasId.includes('tab')
 }
 
 export function findComponentIndexById(componentId, componentDataMatch = componentData.value) {

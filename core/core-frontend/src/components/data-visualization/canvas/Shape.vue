@@ -114,8 +114,8 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
-import { groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
-import { isGroupCanvas, isMainCanvas } from '@/utils/canvasUtils'
+import { dataVTabComponentAdd, groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
+import { isGroupCanvas, isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
 import Board from '@/components/de-board/Board.vue'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 const dvMainStore = dvMainStoreWithOut()
@@ -541,9 +541,18 @@ const handleMouseDownOnShape = e => {
     }
 
     //如果当前组件是Group分组 则要进行内部组件深度计算
-    element.value.component === 'Group' && groupSizeStyleAdaptor(element.value)
+    if (['DeTabs', 'Group'].includes(element.value.component)) {
+      groupSizeStyleAdaptor(element.value)
+    }
     //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
-    if (isGroupCanvas(canvasId.value)) {
+    if (isGroupCanvas(canvasId.value) || isTabCanvas(canvasId.value)) {
+      groupStyleRevert(element.value, {
+        width: parentNode.value.offsetWidth,
+        height: parentNode.value.offsetHeight
+      })
+    }
+    //如果当前画布是Tab内部画布 则对应组件定位在resize时要还原到groupStyle中
+    if (isTabCanvas(canvasId.value)) {
       groupStyleRevert(element.value, {
         width: parentNode.value.offsetWidth,
         height: parentNode.value.offsetHeight
@@ -730,8 +739,10 @@ const handleMouseDownOnPoint = (point, e) => {
     // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)
     element.value['resizing'] = true
-    //如果当前组件是Group分组 则要进行内部组件深度计算
-    element.value.component === 'Group' && groupSizeStyleAdaptor(element.value)
+    //如果当前组件是Group分组或者Tab 则要进行内部组件深度计算
+    if (['DeTabs', 'Group'].includes(element.value.component)) {
+      groupSizeStyleAdaptor(element.value)
+    }
     //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
     if (isGroupCanvas(canvasId.value)) {
       groupStyleRevert(element.value, {

@@ -160,8 +160,8 @@ const onPositionChange = key => {
     )
   }
 
-  if (curComponent.value.component === 'Group') {
-    //如果当前组件是Group分组 则要进行内部组件深度计算
+  if (['Group', 'DeTabs'].includes(curComponent.value.component)) {
+    //如果当前组件是Group分组或者Tab 则要进行内部组件深度计算
     groupSizeStyleAdaptor(curComponent.value)
   }
 

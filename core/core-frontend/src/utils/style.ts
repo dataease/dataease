@@ -182,7 +182,7 @@ export function getComponentRotatedStyle(style) {
   return style
 }
 
-export function getCanvasStyle(canvasStyleData, canvasId = 'canvasMain') {
+export function getCanvasStyle(canvasStyleData, canvasId = 'canvas-main') {
   const {
     backgroundColorSelect,
     background,
@@ -236,17 +236,25 @@ export function createGroupStyle(groupComponent) {
   })
 }
 
-export function groupSizeStyleAdaptor(groupComponent) {
-  const parentStyle = groupComponent.style
-  groupComponent.propValue.forEach(component => {
-    // 分组还原逻辑
-    // 当发上分组缩放是，要将内部组件按照比例转换
-    const styleScale = component.groupStyle
-    component.style.left = parentStyle.width * styleScale.left
-    component.style.top = parentStyle.height * styleScale.top
-    component.style.width = parentStyle.width * styleScale.width
-    component.style.height = parentStyle.height * styleScale.height
+function dataVTabSizeStyleAdaptor(tabComponent) {
+  const parentStyleAdaptor = { ...tabComponent.style }
+  parentStyleAdaptor.height = parentStyleAdaptor.height - 48
+  tabComponent.propValue.forEach(tabItem => {
+    tabItem.componentData.forEach(tabComponent => {
+      tabComponent.linkageFilters = []
+      groupItemStyleAdaptor(tabComponent, parentStyleAdaptor)
+    })
   })
+}
+
+function groupItemStyleAdaptor(component, parentStyle) {
+  // 分组还原逻辑
+  // 当发上分组缩放是，要将内部组件按照比例转换
+  const styleScale = component.groupStyle
+  component.style.left = parentStyle.width * styleScale.left
+  component.style.top = parentStyle.height * styleScale.top
+  component.style.width = parentStyle.width * styleScale.width
+  component.style.height = parentStyle.height * styleScale.height
 }
 
 export function groupStyleRevert(innerComponent, parentStyle) {
@@ -255,4 +263,25 @@ export function groupStyleRevert(innerComponent, parentStyle) {
   innerComponent.groupStyle.top = innerStyle.top / parentStyle.height
   innerComponent.groupStyle.width = innerStyle.width / parentStyle.width
   innerComponent.groupStyle.height = innerStyle.height / parentStyle.height
+}
+
+export function groupSizeStyleAdaptor(groupComponent) {
+  if (groupComponent.component === 'Group') {
+    const parentStyle = groupComponent.style
+    groupComponent.propValue.forEach(component => {
+      groupItemStyleAdaptor(component, parentStyle)
+    })
+  } else {
+    dataVTabSizeStyleAdaptor(groupComponent)
+  }
+}
+
+export function dataVTabComponentAdd(innerComponent, parentStyle) {
+  //do dataVTabComponentAdd
+  innerComponent.style.top = 0
+  innerComponent.style.left = 0
+  const parentStyleAdaptor = { ...parentStyle }
+  // 去掉tab头部高度
+  parentStyleAdaptor.height = parentStyleAdaptor.height - 48
+  groupStyleRevert(innerComponent, parentStyleAdaptor)
 }

@@ -122,6 +122,7 @@ import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
+import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
 const dvMainStore = dvMainStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
@@ -275,23 +276,31 @@ const componentMoveIn = component => {
       //获取主画布当前组件的index
       const curIndex = findComponentIndexById(component.id)
       // 从主画布中移除
-      eventBus.emit('removeMatrixItem-canvas-main', curIndex)
-      dvMainStore.setCurComponent({ component: null, index: null })
-      component.canvasId = element.value.id + '--' + tabItem.name
-      const refInstance = currentInstance.refs['tabCanvas_' + index][0]
-      if (refInstance) {
-        const matrixBase = refInstance.getBaseMatrixSize() //矩阵基础大小
-        canvasChangeAdaptor(component, matrixBase)
-        component.x = 1
-        component.y = 200
-        component.style.left = 0
-        component.style.top = 0
-        tabItem.componentData.push(component)
-        if (isDashboard()) {
-          nextTick(() => {
-            refInstance.addItemBox(component) //在适当的时候初始化布局组件
-          })
+      if (isDashboard()) {
+        eventBus.emit('removeMatrixItem-canvas-main', curIndex)
+        dvMainStore.setCurComponent({ component: null, index: null })
+        component.canvasId = element.value.id + '--' + tabItem.name
+        const refInstance = currentInstance.refs['tabCanvas_' + index][0]
+        if (refInstance) {
+          const matrixBase = refInstance.getBaseMatrixSize() //矩阵基础大小
+          canvasChangeAdaptor(component, matrixBase)
+          component.x = 1
+          component.y = 200
+          component.style.left = 0
+          component.style.top = 0
+          tabItem.componentData.push(component)
+          if (isDashboard()) {
+            nextTick(() => {
+              refInstance.addItemBox(component) //在适当的时候初始化布局组件
+            })
+          }
         }
+      } else {
+        // 从主画布删除
+        dvMainStore.deleteComponent(curIndex)
+        dvMainStore.setCurComponent({ component: null, index: null })
+        component.canvasId = element.value.id + '--' + tabItem.name
+        dataVTabComponentAdd(component, element.value.style)
       }
     }
   })
@@ -305,8 +314,21 @@ const componentMoveOut = component => {
   eventBus.emit('removeMatrixItemById-' + component.canvasId, component.id)
   dvMainStore.setCurComponent({ component: null, index: null })
   // 主画布中添加
-  eventBus.emit('moveOutFromTab-canvas-main', component)
+  if (isDashboard()) {
+    eventBus.emit('moveOutFromTab-canvas-main', component)
+  } else {
+    addToMain(component)
+  }
   reloadLinkage()
+}
+
+const addToMain = component => {
+  component.canvasId = 'canvas-main'
+  dvMainStore.addComponent({
+    component,
+    index: undefined,
+    isFromGroup: true
+  })
 }
 
 const moveActive = computed(() => {
@@ -441,6 +463,11 @@ onMounted(() => {
   eventBus.on('onTabSortChange-' + element.value.id, reShow)
   currentInstance = getCurrentInstance()
   initCarousel()
+  if (isDashboard()) {
+    nextTick(() => {
+      groupSizeStyleAdaptor(element.value)
+    })
+  }
 })
 
 onBeforeMount(() => {
