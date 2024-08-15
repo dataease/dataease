@@ -8,9 +8,9 @@ import {
   flow,
   getDynamicColorScale,
   getGeoJsonFile,
-  setMapChartDefaultMaxAndMinValueByData,
   hexColorToRGBA,
-  parseJson
+  parseJson,
+  getMaxAndMinValueByData
 } from '@/views/chart/components/js/util'
 import {
   handleGeoJson,
@@ -81,7 +81,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     if (!misc.mapAutoLegend && legend.show) {
       let minValue = misc.mapLegendMin
       let maxValue = misc.mapLegendMax
-      setMapChartDefaultMaxAndMinValueByData(sourceData, maxValue, minValue, (max, min) => {
+      getMaxAndMinValueByData(sourceData, 'value', maxValue, minValue, (max, min) => {
         maxValue = max
         minValue = min
         action({
@@ -202,7 +202,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     let maxValue = misc.mapLegendMax
     if (legend.show) {
       let mapLegendNumber = misc.mapLegendNumber
-      setMapChartDefaultMaxAndMinValueByData(sourceData, maxValue, minValue, (max, min) => {
+      getMaxAndMinValueByData(sourceData, 'value', maxValue, minValue, (max, min) => {
         maxValue = max
         minValue = min
         mapLegendNumber = 9

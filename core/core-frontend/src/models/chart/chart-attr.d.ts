@@ -705,6 +705,28 @@ declare interface ChartMiscAttr {
       }
     }
   }
+
+  /**
+   * 词云图轴值配置
+   */
+  wordCloudAxisValueRange: {
+    /**
+     * 自动轴值
+     */
+    auto: boolean
+    /**
+     * 最小值
+     */
+    min: number
+    /**
+     * 最大值
+     */
+    max: number
+    /**
+     * 轴值字段
+     */
+    fieldId: string
+  }
 }
 /**
  * 动态极值配置

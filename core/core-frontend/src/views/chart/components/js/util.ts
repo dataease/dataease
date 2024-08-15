@@ -609,24 +609,26 @@ export const filterChartDataByRange = (data: any[], maxValue: number, minValue: 
 }
 
 /**
- * 获取地图默认最大最小值根据数据
+ * 获取数据最大最小值
  * @param data
+ * @param field 值字段
  * @param maxValue
  * @param minValue
  * @param callback
  */
-export const setMapChartDefaultMaxAndMinValueByData = (
+export const getMaxAndMinValueByData = (
   data: any[],
+  field: string,
   maxValue: number,
   minValue: number,
   callback: (max: number, min: number) => void
 ) => {
   if (minValue === 0 && maxValue === 0) {
     const maxResult = data.reduce((max, current) => {
-      return current.value > max ? current.value : max
+      return current[field] > max ? current[field] : max
     }, Number.MIN_SAFE_INTEGER)
     const minResult = data.reduce((min, current) => {
-      return current.value < min ? current.value : min
+      return current[field] < min ? current[field] : min
     }, Number.MAX_SAFE_INTEGER)
     callback(maxResult, minResult)
   }

@@ -298,6 +298,12 @@ export const DEFAULT_MISC: ChartMiscAttr = {
         speed: 0.01
       }
     }
+  },
+  wordCloudAxisValueRange: {
+    auto: true,
+    min: 0,
+    max: 0,
+    fieldId: undefined
   }
 }
 
