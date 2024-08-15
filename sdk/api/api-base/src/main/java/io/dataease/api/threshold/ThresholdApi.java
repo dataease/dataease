@@ -63,4 +63,7 @@ public interface ThresholdApi {
     @PostMapping("/instancePager/{goPage}/{pageSize}")
     IPage<ThresholdInstanceVO> instancePager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ThresholdInstanceRequest request);
 
+    @Operation(summary = "预览信息")
+    @PostMapping("/preview")
+    String preview(@RequestBody ThresholdPreviewRequest request);
 }

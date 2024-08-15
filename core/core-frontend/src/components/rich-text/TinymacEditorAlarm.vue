@@ -7,7 +7,6 @@
 import { ref, toRefs, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { formatDataEaseBi } from '@/utils/url'
-import { guid } from '@/views/visualized/data/dataset/form/util'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue' // 编辑器引入
 import 'tinymce/themes/silver/theme' // 编辑器主题
@@ -126,6 +125,7 @@ const init = ref({
       fetch: callback => {
         const items = props.fieldList.map(ele => {
           return {
+            id: ele.id,
             icon: iconMap[ele.deType],
             type: 'choiceitem',
             text: ele.name,
@@ -144,11 +144,12 @@ const fieldSelect = name => {
   const ed = tinymce.editors[tinymceId]
   const obj = props.fieldList.find(ele => ele.name === name)
   const field = {
+    id: obj.id,
     name: obj.name,
     backgroundColor: obj.groupType === 'd' ? '#3370FF33' : '#00D6B933',
     color: obj.groupType === 'd' ? '#2B5FD9' : '#04B49C'
   }
-  const fieldId = 'changeText-' + guid()
+  const fieldId = 'changeText-' + field.id || ''
   const value =
     `<span style="background: ${field.backgroundColor};color: ${field.color}" id="` +
     fieldId +
