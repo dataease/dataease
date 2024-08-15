@@ -235,7 +235,8 @@ onMounted(() => {
             @click.prevent
             v-if="
               !chart.type.includes('chart-mix') ||
-              (chart.type.includes('chart-mix') && type === 'dimension')
+              (chart.type.includes('chart-mix') &&
+                (type === 'dimension' || type === 'dimensionStack'))
             "
           >
             <el-dropdown
@@ -321,7 +322,8 @@ onMounted(() => {
             v-if="item.deType === 1"
             :divided="
               !chart.type.includes('chart-mix') ||
-              (chart.type.includes('chart-mix') && type === 'dimension')
+              (chart.type.includes('chart-mix') &&
+                (type === 'dimension' || type === 'dimensionStack'))
             "
           >
             <el-dropdown
@@ -519,7 +521,8 @@ onMounted(() => {
             class="menu-item-padding"
             :divided="
               !chart.type.includes('chart-mix') ||
-              (chart.type.includes('chart-mix') && type === 'dimension')
+              (chart.type.includes('chart-mix') &&
+                (type === 'dimension' || type === 'dimensionStack'))
             "
             :command="beforeClickItem('rename')"
           >
