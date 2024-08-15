@@ -96,7 +96,9 @@ const createFilter = (queryString: string) => {
     return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
   }
 }
-
+const changeNameType = element => {
+  element.value = ''
+}
 const activeName = inject('api-active-name')
 const options = [
   {
@@ -118,12 +120,12 @@ const options = [
 ]
 const timeFunLists = [
   {
-    label: '当天（yyyy-MM-DD）',
-    value: 'currentDay yyyy-MM-DD'
+    label: '当天（yyyy-MM-dd）',
+    value: 'currentDay yyyy-MM-dd'
   },
   {
-    label: '当天（yyyy/MM/DD）',
-    value: 'currentDay yyyy/MM/DD'
+    label: '当天（yyyy/MM/dd）',
+    value: 'currentDay yyyy/MM/dd'
   }
 ]
 </script>
@@ -173,7 +175,7 @@ const timeFunLists = [
               />
             </el-col>
             <el-col :span="3" v-if="activeName === 'table'">
-              <el-select v-model="element.nameType">
+              <el-select v-model="element.nameType" @change="changeNameType(element)">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -224,7 +226,7 @@ const timeFunLists = [
                 v-model="element.value"
                 :disabled="isReadOnly"
                 class="input-with-autocomplete"
-                :placeholder="valueText"
+                :placeholder="element.nameType === 'fixed' ? '值' : '可用${参数名}，使用参数'"
                 value-key="name"
                 highlight-first-item
               />
