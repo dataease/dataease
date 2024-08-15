@@ -383,6 +383,7 @@ import icon_moreVertical_outlined from '@/assets/svg/icon_more-vertical_outlined
 import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
 import icon_newItem_outlined from '@/assets/svg/icon_new-item_outlined.svg'
 import icon_number_outlined from '@/assets/svg/icon_number_outlined.svg'
+import icon_url_outlined from '@/assets/svg/icon_url_outlined.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import icon_ordeList_outlined from '@/assets/svg/icon_orde-list_outlined.svg'
 import icon_organization_outlined from '@/assets/svg/icon_organization_outlined.svg'
@@ -1054,6 +1055,7 @@ const iconMap = {
   icon_more_outlined: icon_more_outlined,
   'icon_new-item_outlined': icon_newItem_outlined,
   icon_number_outlined: icon_number_outlined,
+  icon_url_outlined: icon_url_outlined,
   'icon_operation-analysis_outlined': icon_operationAnalysis_outlined,
   'icon_orde-list_outlined': icon_ordeList_outlined,
   icon_organization_outlined: icon_organization_outlined,

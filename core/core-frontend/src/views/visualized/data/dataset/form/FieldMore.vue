@@ -70,6 +70,11 @@ const options = computed(() => {
           label: t('data_set.numeric_value_decimal'),
           icon: 'icon_number_outlined',
           value: 'float'
+        },
+        {
+          label: 'URL',
+          icon: 'icon_url_outlined',
+          value: 'url'
         }
       ]
     },
@@ -147,13 +152,13 @@ const handleChange = () => {
       <template #default="{ data }">
         <div class="flex-align-center icon">
           <el-icon v-if="data.icon">
-            <icon
+            <Icon
               :className="
-                ['text', 'location', 'value', 'float', 'time'].includes(data.value) &&
+                ['text', 'location', 'value', 'float', 'time', 'url'].includes(data.value) &&
                 `field-icon-${fieldType[['float', 'value'].includes(data.value) ? 2 : 0]}`
               "
               :name="data.icon"
-            ></icon>
+            ></Icon>
           </el-icon>
           <span>
             {{ data.label }}
@@ -199,6 +204,9 @@ const handleChange = () => {
       border-right: none;
       &:nth-child(2) {
         margin-top: 32px;
+        > div {
+          height: 210px;
+        }
       }
       &:nth-child(3) {
         margin-top: 64px;

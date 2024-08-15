@@ -274,7 +274,7 @@ public class ChartViewManege {
             dto.setDatePattern("date_sub");
             dto.setChartType("bar");
 
-            if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1) {
+            if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1 || dto.getDeType() == 7) {
                 dto.setSummary("count");
             } else {
                 dto.setSummary("sum");
