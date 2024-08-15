@@ -72,6 +72,10 @@ const querySearch = (queryString, cb) => {
     : suggestions.value
   cb(results)
 }
+
+const changeNameType = element => {
+  element.value = ''
+}
 const createFilter = (queryString: string) => {
   return restaurant => {
     return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
@@ -98,12 +102,12 @@ const options = [
 
 const timeFunLists = [
   {
-    label: '当天（yyyy-MM-DD）',
-    value: 'currentDay yyyy-MM-DD'
+    label: '当天（yyyy-MM-dd）',
+    value: 'currentDay yyyy-MM-dd'
   },
   {
-    label: '当天（yyyy/MM/DD）',
-    value: 'currentDay yyyy/MM/DD'
+    label: '当天（yyyy/MM/dd）',
+    value: 'currentDay yyyy/MM/dd'
   }
 ]
 </script>
@@ -137,7 +141,7 @@ const timeFunLists = [
               />
             </el-col>
             <el-col :span="3" v-if="activeName === 'table'">
-              <el-select v-model="element.nameType">
+              <el-select v-model="element.nameType" @change="changeNameType(element)">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
