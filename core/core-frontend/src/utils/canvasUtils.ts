@@ -493,6 +493,10 @@ export function isGroupCanvas(canvasId) {
   return canvasId && canvasId.includes('Group')
 }
 
+export function isTabCanvas(canvasId) {
+  return canvasId && canvasId.includes('tab')
+}
+
 export function findComponentIndexById(componentId, componentDataMatch = componentData.value) {
   let indexResult = -1
   componentDataMatch.forEach((component, index) => {

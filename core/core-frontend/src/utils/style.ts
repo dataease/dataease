@@ -182,7 +182,7 @@ export function getComponentRotatedStyle(style) {
   return style
 }
 
-export function getCanvasStyle(canvasStyleData, canvasId = 'canvasMain') {
+export function getCanvasStyle(canvasStyleData, canvasId = 'canvas-main') {
   const {
     backgroundColorSelect,
     background,
