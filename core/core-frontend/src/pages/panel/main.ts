@@ -193,6 +193,7 @@ class DataEaseBi {
     this.pid = null
     this.chartId = null
     this.resourceId = null
+    this.vm = null
     console.log('this.vm2', this.vm)
   }
 }
