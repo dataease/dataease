@@ -8,6 +8,7 @@ import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
@@ -246,7 +247,16 @@ public class ChartViewManege {
     }
 
     public ChartBaseVO chartBaseInfo(Long id) {
-        return extChartViewMapper.queryChart(id);
+        ChartBasePO po = extChartViewMapper.queryChart(id);
+        ChartBaseVO vo = BeanUtils.copyBean(new ChartBaseVO(), po);
+        TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {};
+        vo.setXAxis(JsonUtil.parseList(po.getXAxis(), tokenType));
+        vo.setXAxisExt(JsonUtil.parseList(po.getXAxisExt(), tokenType));
+        vo.setYAxis(JsonUtil.parseList(po.getYAxis(), tokenType));
+        vo.setYAxisExt(JsonUtil.parseList(po.getYAxisExt(), tokenType));
+        vo.setExtStack(JsonUtil.parseList(po.getExtStack(), tokenType));
+        vo.setExtBubble(JsonUtil.parseList(po.getExtBubble(), tokenType));
+        return vo;
     }
 
     public DatasetTableFieldDTO createCountField(Long id) {
