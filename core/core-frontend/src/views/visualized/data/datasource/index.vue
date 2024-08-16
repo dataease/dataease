@@ -1,15 +1,23 @@
 <script lang="tsx" setup>
-import { computed, unref, reactive, ref, shallowRef, nextTick, watch, onMounted } from 'vue'
+import { computed, h, unref, reactive, ref, shallowRef, nextTick, watch, onMounted } from 'vue'
 import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
-import { ElIcon, ElMessageBox, ElMessage, ElScrollbar, ElAside } from 'element-plus-secondary'
+import {
+  ElIcon,
+  ElButton,
+  ElMessageBox,
+  ElMessage,
+  ElScrollbar,
+  ElAside
+} from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
+import relationChart from '@/components/relation-chart/index.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { fieldType } from '@/utils/attr'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { getHidePwById, listSyncRecord, uploadFile } from '@/api/datasource'
+import { getHidePwById, listSyncRecord, uploadFile, perDeleteDatasource } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
@@ -738,6 +746,7 @@ const handleDatasourceTree = (cmd: string, data?: Tree) => {
     creatDsFolder.value.createInit(cmd, data || {})
   }
 }
+const relationChartRef = ref()
 const operation = (cmd: string, data: Tree, nodeType: string) => {
   if (cmd === 'copy') {
     handleCopy(data)
@@ -758,18 +767,69 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
     } else {
       delete options.tip
     }
-    ElMessageBox.confirm(
-      nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.this_data_source'),
-      options as ElMessageBoxOptions
-    ).then(() => {
-      deleteById(data.id as number).then(() => {
-        if (data.id === nodeInfo.id) {
-          Object.assign(nodeInfo, cloneDeep(defaultInfo))
+
+    if (nodeType !== 'folder') {
+      perDeleteDatasource(data.id).then(res => {
+        if (res === true) {
+          const onClick = () => {
+            relationChartRef.value.getChartData({
+              queryType: 'datasource',
+              num: data.id,
+              label: data.name
+            })
+          }
+
+          ElMessageBox.confirm('', {
+            confirmButtonType: 'danger',
+            type: 'warning',
+            autofocus: false,
+            confirmButtonText: '确定',
+            showClose: false,
+            dangerouslyUseHTMLString: true,
+            message: h('div', null, [
+              h('p', { style: 'margin-bottom: 8px;' }, '确定删除该数据源吗？'),
+              h('p', { class: 'tip' }, '有数据集正在使用此数据源，删除后数据集不可用，确认删除？'),
+              h(
+                ElButton,
+                { text: true, onClick: onClick, style: 'margin-left: -4px;' },
+                '查看血缘关系'
+              )
+            ])
+          }).then(() => {
+            deleteById(data.id as number).then(() => {
+              if (data.id === nodeInfo.id) {
+                Object.assign(nodeInfo, cloneDeep(defaultInfo))
+              }
+              listDs()
+              ElMessage.success(t('dataset.delete_success'))
+            })
+          })
+        } else {
+          ElMessageBox.confirm(
+            t('datasource.this_data_source'),
+            options as ElMessageBoxOptions
+          ).then(() => {
+            deleteById(data.id as number).then(() => {
+              if (data.id === nodeInfo.id) {
+                Object.assign(nodeInfo, cloneDeep(defaultInfo))
+              }
+              listDs()
+              ElMessage.success(t('dataset.delete_success'))
+            })
+          })
         }
-        listDs()
-        ElMessage.success(t('dataset.delete_success'))
       })
-    })
+    } else {
+      ElMessageBox.confirm('确定删除该文件夹吗', options as ElMessageBoxOptions).then(() => {
+        deleteById(data.id as number).then(() => {
+          if (data.id === nodeInfo.id) {
+            Object.assign(nodeInfo, cloneDeep(defaultInfo))
+          }
+          listDs()
+          ElMessage.success(t('dataset.delete_success'))
+        })
+      })
+    }
   } else {
     creatDsFolder.value.createInit(nodeType, data, cmd)
   }
@@ -1661,6 +1721,7 @@ const getMenuList = (val: boolean) => {
         </span>
       </template>
     </el-dialog>
+    <relationChart ref="relationChartRef"></relationChart>
 
     <XpackComponent
       jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
