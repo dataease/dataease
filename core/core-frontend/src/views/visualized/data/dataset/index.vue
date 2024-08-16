@@ -1,11 +1,13 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, shallowRef, computed, watch, onBeforeMount, nextTick, unref } from 'vue'
+import { ref, reactive, shallowRef, computed, watch, onBeforeMount, nextTick, unref, h } from 'vue'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import relationChart from '@/components/relation-chart/index.vue'
 import {
   ElIcon,
+  ElButton,
   ElMessageBox,
   ElMessage,
   type ElMessageBoxOptions,
@@ -18,7 +20,7 @@ import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { useRouter, useRoute } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
-import { delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
+import { delDatasetTree, getDatasetPreview, barInfoApi, perDelete } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import DatasetDetail from './DatasetDetail.vue'
@@ -352,7 +354,7 @@ const handleClick = (tabName: TabPaneName) => {
       break
   }
 }
-
+const relationChartRef = ref()
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'copy') {
     if (isDataEaseBi.value) {
@@ -384,17 +386,65 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
       delete options.tip
     }
 
-    ElMessageBox.confirm(
-      nodeType === 'folder'
-        ? t('data_set.delete_this_folder')
-        : t('datasource.delete_this_dataset'),
-      options as ElMessageBoxOptions
-    ).then(() => {
-      delDatasetTree(data.id).then(() => {
-        getData()
-        ElMessage.success(t('dataset.delete_success'))
+    if (nodeType !== 'folder') {
+      perDelete(data.id).then(res => {
+        if (res === true) {
+          const onClick = () => {
+            relationChartRef.value.getChartData({
+              queryType: 'dataset',
+              num: data.id,
+              label: data.name
+            })
+          }
+
+          ElMessageBox.confirm('', {
+            confirmButtonType: 'danger',
+            type: 'warning',
+            autofocus: false,
+            confirmButtonText: '确定',
+            showClose: false,
+            dangerouslyUseHTMLString: true,
+            message: h('div', null, [
+              h('p', { style: 'margin-bottom: 8px;' }, '确定删除该数据集吗？'),
+              h(
+                'p',
+                { class: 'tip' },
+                '该数据集存在如下血缘关系，删除会造成相关仪表板的视图失效，确定删除？'
+              ),
+              h(
+                ElButton,
+                { text: true, onClick: onClick, style: 'margin-left: -4px;' },
+                '查看血缘关系'
+              )
+            ])
+          }).then(() => {
+            delDatasetTree(data.id).then(() => {
+              getData()
+              ElMessage.success(t('dataset.delete_success'))
+            })
+          })
+        } else {
+          ElMessageBox.confirm(
+            t('datasource.delete_this_dataset'),
+            options as ElMessageBoxOptions
+          ).then(() => {
+            delDatasetTree(data.id).then(() => {
+              getData()
+              ElMessage.success(t('dataset.delete_success'))
+            })
+          })
+        }
       })
-    })
+    } else {
+      ElMessageBox.confirm(t('data_set.delete_this_folder'), options as ElMessageBoxOptions).then(
+        () => {
+          delDatasetTree(data.id).then(() => {
+            getData()
+            ElMessage.success(t('dataset.delete_success'))
+          })
+        }
+      )
+    }
   } else {
     creatDsFolder.value.createInit(nodeType, data, cmd)
   }
@@ -846,6 +896,7 @@ const getMenuList = (val: boolean) => {
         <empty-background :description="t('deDataset.on_the_left')" img-type="select" />
       </template>
     </div>
+    <relationChart ref="relationChartRef"></relationChart>
     <de-resource-group-opt
       :cur-canvas-type="curCanvasType"
       @finish="resourceOptFinish"
