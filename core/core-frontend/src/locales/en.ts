@@ -439,7 +439,7 @@ export default {
       assigned_task: 'Assigned Task',
       task_finish_in: 'Task Finished in ',
       task_finish_in_suffix: '',
-      open_sub_task: 'Open Sub Tasks'
+      open_sub_task: 'Open Assigned Tasks'
     },
     on_the_left: 'Please select a form on the left',
     search_by_commit_name: 'Search by operator name'
