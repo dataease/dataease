@@ -267,6 +267,7 @@ init()
                 :key="fieldOption.id"
                 :label="fieldOption.name"
                 :value="fieldOption.id"
+                :disabled="chart.type === 'table-info' && fieldOption.deType === 7"
               >
                 <el-icon style="margin-right: 8px">
                   <Icon
