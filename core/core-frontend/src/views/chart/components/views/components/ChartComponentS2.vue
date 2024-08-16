@@ -506,7 +506,7 @@ const trackMenuCalc = itemId => {
   // 明细表 URL 字段图片放大
   if (view.value.type === 'table-info') {
     view.value.xAxis?.forEach(axis => {
-      if (axis.id === itemId) {
+      if (axis.id === itemId && axis.deType === 7) {
         trackMenuInfo.push('enlarge')
       }
     })

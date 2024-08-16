@@ -67,6 +67,7 @@ declare interface Chart {
   seriesFieldObjs?: any[]
   flowMapStartName?: Axis[]
   flowMapEndName?: Axis[]
+  showPosition: string
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>

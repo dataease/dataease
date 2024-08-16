@@ -18,8 +18,9 @@ class ImageCell extends TableDataCell {
       !this.cfg.children && (this.cfg.children = [])
       const { width: imgWidth, height: imgHeight } = img
       const ratio = Math.max(imgWidth / width, imgHeight / height)
-      const imgShowWidth = imgWidth / ratio
-      const imgShowHeight = imgHeight / ratio
+      // 不铺满，部分留白
+      const imgShowWidth = (imgWidth / ratio) * 0.8
+      const imgShowHeight = (imgHeight / ratio) * 0.8
       this.textShape = this.addShape('image', {
         attrs: {
           x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
@@ -162,7 +163,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
     s2Options.dataCell = viewMeta => {
       const deType = axisMap[viewMeta.valueField]?.deType
-      if (deType === 7) {
+      if (deType === 7 && chart.showPosition !== 'dialog') {
         return new ImageCell(viewMeta, viewMeta?.spreadsheet)
       }
       if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {

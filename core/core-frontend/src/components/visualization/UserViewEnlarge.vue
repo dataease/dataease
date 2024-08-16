@@ -189,7 +189,8 @@ const DETAIL_CHART_ATTR: DeepPartial<ChartObj> = {
     scrollCfg: {
       open: false
     }
-  }
+  },
+  showPosition: 'dialog'
 }
 
 const state = reactive({
@@ -200,7 +201,8 @@ const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
     scrollCfg: {
       open: false
     }
-  }
+  },
+  showPosition: 'dialog'
 }
 
 const authShow = computed(() => editMode.value === 'edit' || dvInfo.value.weight > 3)
