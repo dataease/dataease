@@ -168,20 +168,14 @@ class DataEaseBi {
   }
 
   destroy() {
-    import('@/store/modules/user').then(res => {
-      const userStore = res.userStore()
-      userStore.setUser()
-    })
     const embeddedStore = useEmbedded()
     embeddedStore.setType(null)
     embeddedStore.setBusiFlag(null)
     embeddedStore.setOuterParams(null)
     embeddedStore.setToken(null)
     embeddedStore.setBaseUrl(null)
-    embeddedStore.setDvId(null)
-    embeddedStore.setPid(null)
     embeddedStore.setChartId(null)
-    embeddedStore.setResourceId(null)
+    embeddedStore.clearState()
     console.log('this.vm1', this.vm)
     this.vm.unmount()
     this.type = null
