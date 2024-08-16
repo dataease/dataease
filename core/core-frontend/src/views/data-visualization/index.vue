@@ -146,7 +146,6 @@ const handleNew = newComponentInfo => {
 }
 
 const handleDrop = e => {
-  console.log('===handleDrop2')
   e.preventDefault()
   e.stopPropagation()
   const componentInfo = e.dataTransfer.getData('id')

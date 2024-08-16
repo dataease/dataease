@@ -91,8 +91,6 @@ watch(
 )
 
 const init = () => {
-  console.log('relativeToCurrentRange')
-
   const {
     timeNum,
     relativeToCurrentType,
