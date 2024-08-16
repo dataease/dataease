@@ -13,6 +13,7 @@ import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.FieldUtil;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,25 @@ public class IndicatorHandler extends NumericalChartHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
+        ChartViewFieldDTO chartViewFieldDTO = yAxis.get(0);
+        ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
+        boolean isYoy = org.apache.commons.lang3.StringUtils.isNotEmpty(compareCalc.getType())
+                && !org.apache.commons.lang3.StringUtils.equalsIgnoreCase(compareCalc.getType(), "none");
+        if (isYoy) {
+            xAxis.clear();
+            // 设置维度字段，从同环比中获取用户选择的字段
+            xAxis.addAll(allFields.stream().filter(i-> StringUtils.endsWithIgnoreCase(i.getId().toString(),yAxis.get(0).getCompareCalc().getField().toString())).toList());
+            xAxis.get(0).setSort("desc");
+            if(StringUtils.endsWithIgnoreCase("month_mom",compareCalc.getType())){
+                xAxis.get(0).setDateStyle("y_M");
+            }
+            if(StringUtils.endsWithIgnoreCase("day_mom",compareCalc.getType())){
+                xAxis.get(0).setDateStyle("y_M_d");
+            }
+            if(StringUtils.endsWithIgnoreCase("year_mom",compareCalc.getType())){
+                xAxis.get(0).setDateStyle("y");
+            }
+        }
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams());
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);

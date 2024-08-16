@@ -17,6 +17,14 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  dimensionData: {
+    type: Array,
+    required: false
+  },
+  quotaData: {
+    type: Array,
+    required: false
   }
 })
 
@@ -35,6 +43,10 @@ watch(
   },
   { deep: true }
 )
+
+const isIndicator = () => {
+  return chart.value.type === 'indicator'
+}
 
 // 过滤xaxis，extStack所有日期字段
 const initFieldList = () => {
@@ -60,6 +72,11 @@ const initFieldList = () => {
     })
 
     t1.push(...t2)
+  }
+  if (isIndicator) {
+    t1.length = 0
+    t1.push(...props.dimensionData.filter(ele => ele.deType === 1))
+    t1.push(...props.quotaData.filter(ele => ele.deType === 1))
   }
 
   state.fieldList = t1
@@ -92,6 +109,15 @@ const initCompareType = () => {
   } else {
     state.compareList = []
   }
+  if (isIndicator) {
+    state.compareList = [
+      { name: 'day_mom', value: 'day_mom' },
+      { name: 'month_mom', value: 'month_mom' },
+      { name: 'year_mom', value: 'year_mom' },
+      { name: 'month_yoy', value: 'month_yoy' },
+      { name: 'year_yoy', value: 'year_yoy' }
+    ]
+  }
   // 如果没有选中一个同环比类型，则默认选中第一个
   if (
     (!compareItem.value.compareCalc.type ||
@@ -100,6 +126,14 @@ const initCompareType = () => {
     state.compareList.length > 0
   ) {
     compareItem.value.compareCalc.type = state.compareList[0].value
+  }
+}
+
+const fieldFormatter = field => {
+  if (isIndicator) {
+    return field.name
+  } else {
+    return field.name + '(' + t('chart.' + field.dateStyle) + ')'
   }
 }
 
@@ -119,7 +153,7 @@ initCompareType()
           <el-option
             v-for="field in state.fieldList"
             :key="field.id"
-            :label="field.name + '(' + t('chart.' + field.dateStyle) + ')'"
+            :label="fieldFormatter(field)"
             :value="field.id"
           />
         </el-select>
@@ -150,7 +184,7 @@ initCompareType()
       </el-form-item>
 
       <el-form-item :label="t('chart.tip')">
-        <span class="exp-style">
+        <span class="exp-style" style="padding-top: 2px">
           当对比日期需要过滤时，请使用过滤组件实现过滤；使用视图过滤器，仪表板下钻和联动等功能，会导致结果不一致
         </span>
       </el-form-item>
@@ -159,14 +193,15 @@ initCompareType()
 </template>
 
 <style lang="less" scoped>
-.el-form-item {
+.ed-form-item {
   margin-bottom: 10px !important;
 }
-.compare-form :deep(.el-form-item__label) {
+.compare-form :deep(.ed-form-item__label) {
   font-size: 12px !important;
   font-weight: 400 !important;
+  padding-top: 8px !important;
 }
-.compare-form :deep(.el-radio__label) {
+.compare-form :deep(.ed-radio__label) {
   font-size: 12px !important;
   font-weight: 400 !important;
 }

@@ -3351,7 +3351,12 @@ const deleteChartFieldItem = id => {
       width="600px"
       class="dialog-css"
     >
-      <compare-edit :compare-item="state.quotaItemCompare" :chart="view" />
+      <compare-edit
+        :compare-item="state.quotaItemCompare"
+        :chart="view"
+        :dimension-data="dimensionData"
+        :quota-data="quotaData"
+      />
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeQuotaEditCompare">{{ t('chart.cancel') }} </el-button>

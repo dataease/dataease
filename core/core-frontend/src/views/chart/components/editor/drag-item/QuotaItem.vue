@@ -91,6 +91,11 @@ const showValueFormatter = computed<boolean>(() => {
 })
 
 const isEnableCompare = () => {
+  // 指标卡开放同环比配置
+  if (chart.value.type === 'indicator') {
+    state.disableEditCompare = false
+    return
+  }
   let xAxis = null
   if (Object.prototype.toString.call(chart.value.xAxis) === '[object Array]') {
     xAxis = JSON.parse(JSON.stringify(chart.value.xAxis))
