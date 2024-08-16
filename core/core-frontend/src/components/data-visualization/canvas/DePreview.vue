@@ -21,6 +21,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
 const customDatasetParamsRef = ref(null)
+const emits = defineEmits(['onResetLayout'])
 
 const props = defineProps({
   canvasStyleData: {
@@ -213,6 +214,7 @@ const resetLayout = () => {
           scaleMinHeight
         )
       }
+      emits('onResetLayout')
     }
   })
 }

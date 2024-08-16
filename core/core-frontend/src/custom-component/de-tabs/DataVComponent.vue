@@ -394,12 +394,6 @@ const borderActiveColor = computed(() => {
   }
 })
 
-const onResetLayout = () => {
-  if (!isDashboard()) {
-    groupSizeStyleAdaptor(element.value)
-  }
-}
-
 const titleValid = computed(() => {
   return !!state.textarea && !!state.textarea.trim()
 })
