@@ -539,7 +539,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       if (item.linkageFilters && item.linkageFilters.length > 0) {
         const historyLinkageFiltersLength = item.linkageFilters.length
         const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
-        console.log('===newList= ' + JSON.stringify(newList))
         item.linkageFilters.splice(0, item.linkageFilters.length)
         // 重新push 可保证数组指针不变 可以watch到
         if (newList.length > 0) {

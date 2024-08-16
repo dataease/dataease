@@ -355,7 +355,7 @@ const editCursor = () => {
       plugins: 'table',
       setup: function (editor) {
         editor.on('init', function () {
-          console.log('====init====')
+          console.info('====init====')
         })
       }
     })

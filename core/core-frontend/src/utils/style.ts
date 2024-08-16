@@ -239,7 +239,6 @@ export function createGroupStyle(groupComponent) {
 function dataVTabSizeStyleAdaptor(tabComponent) {
   const parentStyleAdaptor = { ...tabComponent.style }
   parentStyleAdaptor.height = parentStyleAdaptor.height - 48
-  console.log('canvasId=tabs' + JSON.stringify(parentStyleAdaptor))
   tabComponent.propValue.forEach(tabItem => {
     tabItem.componentData.forEach(tabComponent => {
       groupItemStyleAdaptor(tabComponent, parentStyleAdaptor)
