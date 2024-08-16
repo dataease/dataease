@@ -2770,7 +2770,7 @@ export default {
       assigned_task: '已下发任务',
       task_finish_in: '在任务下发',
       task_finish_in_suffix: '内完成填报',
-      open_sub_task: '查看子任务'
+      open_sub_task: '查看已下发任务'
     },
     on_the_left: '请在左侧选择表单',
     search_by_commit_name: '根据操作人名称搜索'

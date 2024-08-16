@@ -340,7 +340,7 @@ export default {
       assigned_task: '已下發任務',
       task_finish_in: '在任務下發',
       task_finish_in_suffix: '內完成填報',
-      open_sub_task: '查看子任務'
+      open_sub_task: '查看已下發任務'
     },
     on_the_left: '請在左側選擇表單',
     search_by_commit_name: '根據操作人名稱搜索'
