@@ -176,7 +176,6 @@ class DataEaseBi {
     embeddedStore.setBaseUrl(null)
     embeddedStore.setChartId(null)
     embeddedStore.clearState()
-    console.log('this.vm1', this.vm)
     this.vm.unmount()
     this.type = null
     this.token = null
@@ -188,7 +187,6 @@ class DataEaseBi {
     this.chartId = null
     this.resourceId = null
     this.vm = null
-    console.log('this.vm2', this.vm)
   }
 }
 
