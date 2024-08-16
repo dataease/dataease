@@ -1,7 +1,7 @@
 package io.dataease.chart.dao.ext.mapper;
 
-import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
+import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -24,10 +24,16 @@ public interface ExtChartViewMapper {
                     ccv.table_id,
                     dvi.id as resource_id,
                     dvi.name as resource_name,
-                    dvi.type as resource_type
+                    dvi.type as resource_type,
+                    ccv.x_axis,
+                    ccv.x_axis_ext,
+                    ccv.y_axis,
+                    ccv.y_axis_ext,
+                    ccv.ext_stack,
+                    ccv.ext_bubble
                 from core_chart_view ccv 
                     left join data_visualization_info dvi on dvi.id = ccv.scene_id
                 where ccv.id = #{id}
             """)
-    ChartBaseVO queryChart(@Param("id") Long id);
+    ChartBasePO queryChart(@Param("id") Long id);
 }
