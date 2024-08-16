@@ -463,11 +463,9 @@ onMounted(() => {
   eventBus.on('onTabSortChange-' + element.value.id, reShow)
   currentInstance = getCurrentInstance()
   initCarousel()
-  if (isDashboard()) {
-    nextTick(() => {
-      groupSizeStyleAdaptor(element.value)
-    })
-  }
+  nextTick(() => {
+    groupSizeStyleAdaptor(element.value)
+  })
 })
 
 onBeforeMount(() => {
