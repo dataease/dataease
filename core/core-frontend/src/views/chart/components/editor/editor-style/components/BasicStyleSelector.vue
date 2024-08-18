@@ -11,6 +11,8 @@ import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { SERIES_NUMBER_FIELD } from '@antv/s2'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { isNumber } from 'mathjs'
+import { ElMessage } from 'element-plus-secondary'
 
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
@@ -167,9 +169,25 @@ const changeFieldColumn = () => {
 }
 const changeFieldColumnWidth = () => {
   const { basicStyleForm, fieldColumnWidth } = state
+  let { width } = fieldColumnWidth
+  let validate = true
+  width = parseFloat(width)
+  if (isNaN(width) || !isNumber(width)) {
+    validate = false
+  }
+  if (width < 0 || width > 200) {
+    validate = false
+  }
   const fieldWidth = basicStyleForm.tableFieldWidth?.find(
     i => i.fieldId === fieldColumnWidth.fieldId
   )
+  if (!validate) {
+    ElMessage.warning('宽度需要在 0-200 之间')
+    if (fieldWidth) {
+      fieldColumnWidth.width = fieldWidth.width
+    }
+    return
+  }
   if (fieldWidth) {
     fieldWidth.width = fieldColumnWidth.width
     changeBasicStyle('tableFieldWidth')
@@ -745,8 +763,6 @@ onMounted(() => {
         v-model.number="state.fieldColumnWidth.width"
         type="number"
         class="basic-input-number"
-        :min="0"
-        :max="100"
         :effect="themes"
         :disabled="batchOptStatus"
         @change="changeFieldColumnWidth()"

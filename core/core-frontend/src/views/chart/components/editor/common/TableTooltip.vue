@@ -74,6 +74,7 @@ const sort = (type?) => {
 </template>
 <style scoped>
 .sort-btn {
+  font-size: 14px;
   cursor: pointer;
 }
 </style>
