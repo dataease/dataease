@@ -66,7 +66,7 @@
             :dv-info="dvInfo"
             :cur-gap="curPreviewGap"
             :component-data="tabItem.componentData"
-            :canvas-style-data="canvasStyleData"
+            :canvas-style-data="{}"
             :canvas-view-info="canvasViewInfo"
             :canvas-id="element.id + '--' + tabItem.name"
             :preview-active="editableTabsValue === tabItem.name"
@@ -289,11 +289,9 @@ const componentMoveIn = component => {
           component.style.left = 0
           component.style.top = 0
           tabItem.componentData.push(component)
-          if (isDashboard()) {
-            nextTick(() => {
-              refInstance.addItemBox(component) //在适当的时候初始化布局组件
-            })
-          }
+          nextTick(() => {
+            refInstance.addItemBox(component) //在适当的时候初始化布局组件
+          })
         }
       } else {
         // 从主画布删除
@@ -310,7 +308,9 @@ const componentMoveIn = component => {
 }
 
 const componentMoveOut = component => {
-  canvasChangeAdaptor(component, bashMatrixInfo.value, true)
+  if (isDashboard()) {
+    canvasChangeAdaptor(component, bashMatrixInfo.value, true)
+  }
   // 从Tab画布中移除
   eventBus.emit('removeMatrixItemById-' + component.canvasId, component.id)
   dvMainStore.setCurComponent({ component: null, index: null })
@@ -324,6 +324,9 @@ const componentMoveOut = component => {
 }
 
 const addToMain = component => {
+  const { left, top } = element.value.style
+  component.style.left = component.style.left + left
+  component.style.top = component.style.top + top
   component.canvasId = 'canvas-main'
   dvMainStore.addComponent({
     component,
