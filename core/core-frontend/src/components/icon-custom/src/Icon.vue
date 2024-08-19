@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 
 import _401 from '@/assets/svg/401.svg'
+import icon_file_font_colorful from '@/assets/svg/icon_file-font_colorful.svg'
 import relation_arrow_icon from '@/assets/svg/relation_arrow_icon.svg'
 import icon_data_visualization from '@/assets/svg/icon_data-visualization.svg'
 import icon_notification_filled from '@/assets/svg/icon_notification_filled.svg'
@@ -679,6 +680,7 @@ import icon_file_doc_colorful from '@/assets/svg/icon_file-doc_colorful.svg'
 import icon_font from '@/assets/svg/icon_font.svg'
 const iconMap = {
   '401': _401,
+  icon_file_font_colorful,
   relation_arrow_icon,
   icon_data_visualization,
   icon_notification_filled,

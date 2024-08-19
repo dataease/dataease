@@ -1,7 +1,12 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import UploadDetail from './UploadDetail.vue'
 const fontKeyword = ref('')
 const fontList = ref([1, 2, 3, 4, 5])
+const uploadDetail = ref()
+const uploadFont = (title, isRename?: boolean) => {
+  uploadDetail.value.init(title, isRename)
+}
 </script>
 
 <template>
@@ -33,14 +38,15 @@ const fontList = ref([1, 2, 3, 4, 5])
           更新时间：2022-04-20 20:35:08 <span class="line"></span> 字库文件：-
         </div>
         <div class="font-upload_btn">
-          <el-button secondary>上传字库文件</el-button>
+          <el-button @click="uploadFont('添加字体')" secondary>上传字库文件</el-button>
           <el-button secondary>设为默认字体</el-button>
-          <el-button secondary>重命名</el-button>
+          <el-button @click="uploadFont('重命名', true)" secondary>重命名</el-button>
           <el-button secondary>删除</el-button>
         </div>
       </div>
     </div>
   </div>
+  <UploadDetail ref="uploadDetail"></UploadDetail>
 </template>
 
 <style lang="less" scoped>
