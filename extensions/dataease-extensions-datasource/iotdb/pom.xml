@@ -3,23 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>dataease-extensions</artifactId>
+        <artifactId>dataease-extensions-datasource</artifactId>
         <groupId>io.dataease</groupId>
         <version>${dataease.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>iotdb</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>iotdb</module>
-        <module>maxcompute</module>
-        <module>presto</module>
-        <module>dm</module>
-        <module>mongo</module>
-        <module>kylin</module>
-        <module>kingbase</module>
+        <module>iotdb-frontend</module>
+        <module>iotdb-backend</module>
     </modules>
-
-    <artifactId>dataease-extensions-datasource</artifactId>
-
 
 </project>
