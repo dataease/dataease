@@ -187,6 +187,7 @@ const stopEvent = e => {
       <collapse-switch-item
         v-if="element && borderSettingShow"
         v-model="element.style.borderActive"
+        @modelChange="val => onStyleAttrChange({ key: 'borderActive', value: val })"
         :themes="themes"
         title="边框"
         name="borderSetting"
