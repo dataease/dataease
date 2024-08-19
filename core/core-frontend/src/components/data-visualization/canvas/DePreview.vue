@@ -101,7 +101,7 @@ const dashboardActive = computed(() => {
 
 // 大屏是否保持宽高比例 非全屏 full 都需要保持宽高比例
 const dataVKeepRadio = computed(() => {
-  return canvasStyleData.value.screenAdaptor !== 'full'
+  return canvasStyleData.value?.screenAdaptor !== 'full'
 })
 const isReport = computed(() => {
   return !!router.currentRoute.value.query?.report
@@ -205,12 +205,13 @@ const resetLayout = () => {
           : outerScale.value * 100
       } else {
         // 需要保持宽高比例时 高度伸缩和宽度伸缩保持一致 否则 高度伸缩单独计算
+        // tip 当当前画布是tab时 使用的事 outerScale.value 因为 canvasStyleData.value为 {} 此处取数逻辑需进一步优化
         const scaleMinHeight = dataVKeepRadio.value ? scaleMin.value : scaleHeightPoint.value
         changeRefComponentsSizeWithScalePoint(
           baseComponentData.value,
           canvasStyleData.value,
-          scaleMin.value,
-          scaleMinHeight
+          scaleMin.value || outerScale.value * 100,
+          scaleMinHeight || outerScale.value * 100
         )
         scaleMin.value = isMainCanvas(canvasId.value) ? scaleMin.value : outerScale.value * 100
       }

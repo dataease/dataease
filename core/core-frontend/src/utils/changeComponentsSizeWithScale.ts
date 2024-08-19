@@ -33,18 +33,18 @@ export function changeComponentsSizeWithScale(scale, changeAttrs = needToChangeA
           getOriginStyle(component.style[key], canvasStyleData.value.scale),
           scale
         )
-        // 如果是分组组件 则要进行分组内部组件groupStyle进行深度计算
-        // 计算逻辑 Group 中样式 * groupComponent.groupStyle[sonKey].
-        if (['Group', 'DeTabs'].includes(component.component)) {
-          try {
-            groupSizeStyleAdaptor(component)
-          } catch (e) {
-            // 旧Group适配
-            console.error('group adaptor error:' + e)
-          }
-        }
       }
     })
+    // 如果是分组组件 则要进行分组内部组件groupStyle进行深度计算
+    // 计算逻辑 Group 中样式 * groupComponent.groupStyle[sonKey].
+    if (['Group', 'DeTabs'].includes(component.component)) {
+      try {
+        groupSizeStyleAdaptor(component)
+      } catch (e) {
+        // 旧Group适配
+        console.error('group adaptor error:' + e)
+      }
+    }
   })
 
   dvMainStore.setComponentData(componentDataCopy)
