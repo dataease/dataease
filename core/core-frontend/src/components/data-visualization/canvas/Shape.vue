@@ -114,7 +114,7 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
-import { dataVTabComponentAdd, groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
+import { groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
 import { isGroupCanvas, isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
 import Board from '@/components/de-board/Board.vue'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
@@ -551,14 +551,6 @@ const handleMouseDownOnShape = e => {
         height: parentNode.value.offsetHeight
       })
     }
-    //如果当前画布是Tab内部画布 则对应组件定位在resize时要还原到groupStyle中
-    if (isTabCanvas(canvasId.value)) {
-      groupStyleRevert(element.value, {
-        width: parentNode.value.offsetWidth,
-        height: parentNode.value.offsetHeight
-      })
-    }
-
     // 防止首次组件在tab旁边无法触发矩阵移动
     if (isFirst) {
       isFirst = false
@@ -744,7 +736,7 @@ const handleMouseDownOnPoint = (point, e) => {
       groupSizeStyleAdaptor(element.value)
     }
     //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
-    if (isGroupCanvas(canvasId.value)) {
+    if (isGroupCanvas(canvasId.value) || isTabCanvas(canvasId.value)) {
       groupStyleRevert(element.value, {
         width: parentNode.value.offsetWidth,
         height: parentNode.value.offsetHeight
