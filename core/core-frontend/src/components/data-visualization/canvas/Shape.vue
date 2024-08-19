@@ -115,7 +115,7 @@ import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
-import { isGroupCanvas, isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
+import { isDashboard, isGroupCanvas, isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
 import Board from '@/components/de-board/Board.vue'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 const dvMainStore = dvMainStoreWithOut()
@@ -489,6 +489,10 @@ const handleMouseDownOnShape = e => {
   const pos = { ...defaultStyle.value }
   const startY = e.clientY
   const startX = e.clientX
+
+  const offsetY = e.offsetY
+  const offsetX = e.offsetX
+
   // 如果直接修改属性，值的类型会变为字符串，所以要转为数值型
   const startTop = Number(pos['top'])
   const startLeft = Number(pos['left'])
@@ -502,6 +506,10 @@ const handleMouseDownOnShape = e => {
   //当前组件宽高 定位
   const componentWidth = shapeInnerRef.value.offsetWidth
   const componentHeight = shapeInnerRef.value.offsetHeight
+  let outerTabDom = isTabCanvas(canvasId.value)
+    ? document.getElementById('shape-id-' + canvasId.value.split('--')[0])
+    : null
+  const curDom = document.getElementById(domId.value)
   const move = moveEvent => {
     hasMove = true
     const curX = moveEvent.clientX
@@ -511,6 +519,7 @@ const handleMouseDownOnShape = e => {
     pos['top'] = top
     pos['left'] = left
     // 非主画布非分组画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px)
+    // 大屏和仪表板暂时做位置算法区分 仪表板暂时使用curX 因为缩放的影响 大屏使用 tab位置 + 组件位置（相对内部画布）+初始触发点
     if (
       !isMainCanvas(canvasId.value) &&
       !isGroupCanvas(canvasId.value) &&
@@ -518,8 +527,14 @@ const handleMouseDownOnShape = e => {
     ) {
       contentDisplay.value = false
       dvMainStore.setMousePointShadowMap({
-        mouseX: curX,
-        mouseY: curY,
+        mouseX:
+          !isDashboard() && outerTabDom
+            ? outerTabDom.offsetLeft + curDom.offsetLeft + offsetX
+            : curX,
+        mouseY:
+          !isDashboard() && outerTabDom
+            ? outerTabDom.offsetTop + curDom.offsetTop + offsetY + 100
+            : curY,
         width: componentWidth,
         height: componentHeight
       })
