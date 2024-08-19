@@ -192,14 +192,6 @@ const resetLayout = () => {
       //div容器获取tableBox.value.clientWidth
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
-      console.log(
-        '===canvasId=' +
-          canvasId.value +
-          ';canvasWidth =' +
-          canvasWidth +
-          ';canvasHeight =' +
-          canvasHeight
-      )
       scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
       scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
       scaleMin.value = isDashboard()
@@ -220,6 +212,7 @@ const resetLayout = () => {
           scaleMin.value,
           scaleMinHeight
         )
+        scaleMin.value = isMainCanvas(canvasId.value) ? scaleMin.value : outerScale.value * 100
       }
       renderReady.value = true
       emits('onResetLayout')

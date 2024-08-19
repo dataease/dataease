@@ -17,7 +17,10 @@ export function getShapeStyle(style) {
   return result
 }
 
-export function getShapeItemStyle(item, { dvModel, cellWidth, cellHeight, curGap }) {
+export function getShapeItemStyle(
+  item,
+  { dvModel, cellWidth, cellHeight, curGap, showPosition = 'preview' }
+) {
   let result = {}
   if (dvModel === 'dashboard' && !item['isPlayer']) {
     result = {
@@ -27,11 +30,7 @@ export function getShapeItemStyle(item, { dvModel, cellWidth, cellHeight, curGap
       left: cellWidth * (item.x - 1) + 'px',
       top: cellHeight * (item.y - 1) + 'px'
     }
-  } else if (
-    dvModel === 'dataV' &&
-    isTabCanvas(item.canvasId) &&
-    dvMainStore.editMode === 'preview'
-  ) {
+  } else if (dvModel === 'dataV' && isTabCanvas(item.canvasId) && showPosition === 'preview') {
     result = {
       padding: curGap + 'px!important',
       width: toPercent(item.groupStyle.width),

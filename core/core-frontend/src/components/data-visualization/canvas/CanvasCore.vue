@@ -539,7 +539,8 @@ const getShapeItemShowStyle = item => {
     dvModel: dvInfo.value.type,
     cellWidth: cellWidth.value,
     cellHeight: cellHeight.value,
-    curGap: curGap.value
+    curGap: curGap.value,
+    showPosition: 'edit'
   })
 }
 

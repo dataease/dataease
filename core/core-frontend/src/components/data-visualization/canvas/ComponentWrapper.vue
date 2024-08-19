@@ -16,6 +16,20 @@ const componentEditBarRef = ref(null)
 const dvMainStore = dvMainStoreWithOut()
 const downLoading = ref(false)
 
+const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+const commonFilterAttrsFilterBorder = [
+  'width',
+  'height',
+  'top',
+  'left',
+  'rotate',
+  'borderActive',
+  'borderWidth',
+  'borderRadius',
+  'borderStyle',
+  'borderColor'
+]
+
 const props = defineProps({
   active: {
     type: Boolean,
@@ -144,7 +158,7 @@ const getComponentStyleDefault = style => {
   if (config.value.component.includes('Svg')) {
     return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'backgroundColor'])
   } else {
-    return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+    return getStyle(style, style.borderActive ? commonFilterAttrs : commonFilterAttrsFilterBorder)
   }
 }
 

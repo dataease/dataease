@@ -338,6 +338,7 @@ watch(
           <collapse-switch-item
             v-if="showProperties('border-style') && commonBorderPop"
             v-model="commonBorderPop.borderActive"
+            @modelChange="val => onStyleAttrChange({ key: 'borderActive', value: val })"
             :themes="themes"
             title="边框"
             name="borderSetting"
