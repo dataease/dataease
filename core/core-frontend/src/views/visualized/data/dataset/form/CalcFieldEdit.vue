@@ -446,22 +446,22 @@ initFunction()
             </div>
             <div v-else class="class-na">{{ t('dataset.na') }}</div>
           </div>
+          <div class="quota-btn_de">
+            <span>{{ t('chart.quota') }}</span>
+            <el-tooltip
+              effect="dark"
+              :content="disableCaParams ? '仅支持添加一个计算参数。' : '添加计算参数'"
+              placement="top"
+            >
+              <el-icon class="hover-icon_quota" @click="addParmasToQuota">
+                <Icon
+                  :class="[`field-icon-${fieldType[0]}`, disableCaParams && 'not-allow']"
+                  name="icon_adjustment_outlined"
+                ></Icon>
+              </el-icon>
+            </el-tooltip>
+          </div>
           <div class="field-height">
-            <div style="display: flex; align-items: center; justify-content: space-between">
-              <span>{{ t('chart.quota') }}</span>
-              <el-tooltip
-                effect="dark"
-                :content="disableCaParams ? '仅支持添加一个计算参数。' : '添加计算参数'"
-                placement="top"
-              >
-                <el-icon class="hover-icon_quota" @click="addParmasToQuota">
-                  <Icon
-                    :class="[`field-icon-${fieldType[0]}`, disableCaParams && 'not-allow']"
-                    name="calculate"
-                  ></Icon>
-                </el-icon>
-              </el-tooltip>
-            </div>
             <div v-if="state.quotaData.length" class="field-list">
               <span
                 v-for="item in state.quotaData"
@@ -471,7 +471,7 @@ initFunction()
                 @click="insertFieldToCodeMirror('[' + item.name + ']')"
               >
                 <el-icon v-if="!item.groupType">
-                  <Icon name="calculate"></Icon>
+                  <Icon name="icon_adjustment_outlined"></Icon>
                 </el-icon>
                 <el-icon v-else>
                   <Icon
@@ -670,31 +670,68 @@ initFunction()
     border-radius: 4px;
   }
 }
+.hover-icon_quota {
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  position: relative;
+
+  &[aria-expanded='true'] {
+    &::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: rgba(31, 35, 41, 0.1);
+      border-radius: 4px;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
+    }
+  }
+
+  &:hover {
+    &::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: rgba(31, 35, 41, 0.1);
+      border-radius: 4px;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
+    }
+  }
+
+  &:active {
+    &::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: rgba(31, 35, 41, 0.2);
+      border-radius: 4px;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
+    }
+  }
+}
+
+.quota-btn_de {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: -12px;
+  color: #1f2329;
+}
 .field-height {
   height: calc(50% - 41px);
   margin-top: 12px;
   overflow-y: auto;
   & > :nth-child(1) {
     color: #1f2329;
-  }
-
-  .hover-icon_quota {
-    cursor: pointer;
-    height: 20px !important;
-    width: 20px !important;
-    border-radius: 4px;
-
-    &[aria-expanded='true'] {
-      background: rgba(31, 35, 41, 0.1);
-    }
-
-    &:hover {
-      background: rgba(31, 35, 41, 0.1);
-    }
-
-    &:active {
-      background: rgba(31, 35, 41, 0.2);
-    }
   }
 
   .not-allow {
