@@ -115,7 +115,7 @@ public class YoyChartHandler extends DefaultChartHandler {
             yoyData.addAll(resultData);
             var result = this.buildNormalResult(view, formatResult, filterResult, yoyData);
             expandedResult.setData(result);
-            expandedResult.setOriginData(originData);
+            expandedResult.setOriginData(resultData);
             expandedResult.setQuerySql(originSql);
         }
         return expandedResult;
