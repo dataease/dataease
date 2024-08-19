@@ -292,6 +292,8 @@ export default {
       option: 'Option',
       form_setting: 'Form Setting',
       input_limit_50: 'No more than 50 characters',
+      input_limit_max: 'No more than {0} characters',
+      input_limit_min: 'No less than {0} characters',
       confirm_delete: 'Confirm delete? (The tables created in database will not be deleted)',
       list: 'Form List',
       record: 'Fill Record',
@@ -389,6 +391,7 @@ export default {
       data_not_found: '] Not Found'
     },
     task: {
+      finish_rate_hint: 'Finished Rate = Finished Task Count / Assigned Task Count * 100%',
       distribute_frequency: 'Distribute Frequency',
       one_time: 'One Time',
       interval: 'Interval',

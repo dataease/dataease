@@ -2622,6 +2622,8 @@ export default {
       component_setting: '组件设置',
       hint: '提示词',
       input_limit_50: '不超过50个字符',
+      input_limit_max: '不超过{0}个字符',
+      input_limit_min: '不少于{0}个字符',
       option: '选项',
       form_setting: '表单设置',
       confirm_delete: '确认删除？(不会删除已创建的数据库表)',
@@ -2720,6 +2722,7 @@ export default {
       data_not_found: ']的数据不存在'
     },
     task: {
+      finish_rate_hint: '填报完成率=已填报数据条数/下发填报条数*100%',
       distribute_frequency: '发送频率',
       one_time: '仅下发一次',
       interval: '定期下发',

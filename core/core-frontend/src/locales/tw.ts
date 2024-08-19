@@ -192,6 +192,8 @@ export default {
       component_setting: '組件設置',
       hint: '提示詞',
       input_limit_50: '不超過50個字符',
+      input_limit_max: '不超過{0}個字符',
+      input_limit_min: '不少于{0}個字符',
       option: '選項',
       form_setting: '表單設置',
       confirm_delete: '確認刪除？(不會刪除已創建的數據庫表)',
@@ -290,6 +292,7 @@ export default {
       data_not_found: ']的數據不存在'
     },
     task: {
+      finish_rate_hint: '填報完成率=已填報數據條數/下發填報條數*100%',
       distribute_frequency: '發送頻率',
       one_time: '僅下發一次',
       interval: '定期下發',
