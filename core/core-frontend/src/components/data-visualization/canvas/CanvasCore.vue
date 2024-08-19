@@ -855,14 +855,16 @@ function removeItemById(componentId) {
 function removeItem(index) {
   let item = componentData.value[index]
   if (item && isSameCanvas(item, canvasId.value)) {
-    removeItemFromPositionBox(item)
-    let belowItems = findBelowItems(item)
-    _.forEach(belowItems, function (upItem) {
-      let canGoUpRows = canItemGoUp(upItem)
-      if (canGoUpRows > 0) {
-        moveItemUp(upItem, canGoUpRows)
-      }
-    })
+    if (isDashboard()) {
+      removeItemFromPositionBox(item)
+      let belowItems = findBelowItems(item)
+      _.forEach(belowItems, function (upItem) {
+        let canGoUpRows = canItemGoUp(upItem)
+        if (canGoUpRows > 0) {
+          moveItemUp(upItem, canGoUpRows)
+        }
+      })
+    }
     let checkedFields = []
     if (item.innerType === 'VQuery') {
       ;(item.propValue || []).forEach(ele => {

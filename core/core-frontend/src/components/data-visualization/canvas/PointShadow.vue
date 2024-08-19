@@ -15,7 +15,7 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { mousePointShadowMap } = storeToRefs(dvMainStore)
+const { mousePointShadowMap, canvasStyleData } = storeToRefs(dvMainStore)
 defineProps({
   canvasId: {
     type: String,
@@ -25,6 +25,7 @@ defineProps({
 
 const tipsStyleInfo = computed(() => {
   return {
+    fontSize: (16 * canvasStyleData.value.scale) / 100 + 'px',
     width: mousePointShadowMap.value.width + 'px',
     height: mousePointShadowMap.value.height + 'px'
   }
@@ -58,6 +59,7 @@ const styleInfo = computed(() => {
 .point-shadow-tips {
   left: 0px;
   top: 0px;
+  overflow: hidden;
   box-sizing: border-box;
   z-index: 10001;
   display: flex;
