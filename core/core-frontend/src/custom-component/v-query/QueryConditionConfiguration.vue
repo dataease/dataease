@@ -1536,7 +1536,7 @@ defineExpose({
             v-model="curComponent.checkedFields"
             @change="handleCheckedFieldsChangeTree"
           >
-            <div v-for="field in fields" :key="field.componentId" class="list-item">
+            <div v-for="field in fields" :key="field.componentId" class="list-item_field_de">
               <el-checkbox :label="field.componentId"
                 ><el-icon class="component-type">
                   <Icon :name="canvasViewInfo[field.componentId].type"></Icon> </el-icon
@@ -2261,7 +2261,7 @@ defineExpose({
           font-size: 20px;
           color: var(--ed-color-primary);
         }
-        .list-item {
+        .list-item_field_de {
           height: 32px;
           display: flex;
           align-items: center;
