@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, toRefs, watch } from 'vue'
+import { computed, reactive, toRefs, watch } from 'vue'
 import {
   compareYearList,
   compareMonthList,
@@ -44,9 +44,9 @@ watch(
   { deep: true }
 )
 
-const isIndicator = () => {
+const isIndicator = computed(() => {
   return chart.value.type === 'indicator'
-}
+})
 
 // 过滤xaxis，extStack所有日期字段
 const initFieldList = () => {
@@ -73,7 +73,7 @@ const initFieldList = () => {
 
     t1.push(...t2)
   }
-  if (isIndicator) {
+  if (isIndicator.value) {
     t1.length = 0
     t1.push(...props.dimensionData.filter(ele => ele.deType === 1))
     t1.push(...props.quotaData.filter(ele => ele.deType === 1))
@@ -109,7 +109,7 @@ const initCompareType = () => {
   } else {
     state.compareList = []
   }
-  if (isIndicator) {
+  if (isIndicator.value) {
     state.compareList = [
       { name: 'day_mom', value: 'day_mom' },
       { name: 'month_mom', value: 'month_mom' },
@@ -130,7 +130,7 @@ const initCompareType = () => {
 }
 
 const fieldFormatter = field => {
-  if (isIndicator) {
+  if (isIndicator.value) {
     return field.name
   } else {
     return field.name + '(' + t('chart.' + field.dateStyle) + ')'
