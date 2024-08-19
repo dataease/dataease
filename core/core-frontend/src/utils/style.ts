@@ -1,8 +1,8 @@
-import { sin, cos } from '@/utils/translate'
+import { sin, cos, toPercent } from '@/utils/translate'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { isMainCanvas } from '@/utils/canvasUtils'
+import { isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 export function getShapeStyle(style) {
   const result = {}
@@ -26,6 +26,18 @@ export function getShapeItemStyle(item, { dvModel, cellWidth, cellHeight, curGap
       height: cellHeight * item.sizeY + 'px',
       left: cellWidth * (item.x - 1) + 'px',
       top: cellHeight * (item.y - 1) + 'px'
+    }
+  } else if (
+    dvModel === 'dataV' &&
+    isTabCanvas(item.canvasId) &&
+    dvMainStore.editMode === 'preview'
+  ) {
+    result = {
+      padding: curGap + 'px!important',
+      width: toPercent(item.groupStyle.width),
+      height: toPercent(item.groupStyle.height),
+      top: toPercent(item.groupStyle.top),
+      left: toPercent(item.groupStyle.left)
     }
   } else {
     result = {

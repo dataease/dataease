@@ -94,8 +94,7 @@ const cellHeight = ref(10)
 const userViewEnlargeRef = ref(null)
 const searchCount = ref(0)
 const refreshTimer = ref(null)
-const userInfo = ref(null)
-
+const renderReady = ref(false)
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
@@ -193,6 +192,14 @@ const resetLayout = () => {
       //div容器获取tableBox.value.clientWidth
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
+      console.log(
+        '===canvasId=' +
+          canvasId.value +
+          ';canvasWidth =' +
+          canvasWidth +
+          ';canvasHeight =' +
+          canvasHeight
+      )
       scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
       scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
       scaleMin.value = isDashboard()
@@ -214,6 +221,7 @@ const resetLayout = () => {
           scaleMinHeight
         )
       }
+      renderReady.value = true
       emits('onResetLayout')
     }
   })
@@ -398,26 +406,28 @@ defineExpose({
       :canvas-style-data="canvasStyleData"
       :component-data="baseComponentData"
     ></canvas-opt-bar>
-    <ComponentWrapper
-      v-for="(item, index) in baseComponentData"
-      v-show="item.isShow"
-      :active="item.id === (curComponent || {})['id']"
-      :canvas-id="canvasId"
-      :canvas-style-data="canvasStyleData"
-      :dv-info="dvInfo"
-      :canvas-view-info="canvasViewInfo"
-      :view-info="canvasViewInfo[item.id]"
-      :key="index"
-      :config="item"
-      :style="getShapeItemShowStyle(item)"
-      :show-position="showPosition"
-      :search-count="searchCount"
-      :scale="mobileInPc ? 100 : scaleMin"
-      :is-selector="props.isSelector"
-      @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
-      @datasetParamsInit="datasetParamsInit(item)"
-      @onPointClick="onPointClick"
-    />
+    <template v-if="renderReady">
+      <ComponentWrapper
+        v-for="(item, index) in baseComponentData"
+        v-show="item.isShow"
+        :active="item.id === (curComponent || {})['id']"
+        :canvas-id="canvasId"
+        :canvas-style-data="canvasStyleData"
+        :dv-info="dvInfo"
+        :canvas-view-info="canvasViewInfo"
+        :view-info="canvasViewInfo[item.id]"
+        :key="index"
+        :config="item"
+        :style="getShapeItemShowStyle(item)"
+        :show-position="showPosition"
+        :search-count="searchCount"
+        :scale="mobileInPc ? 100 : scaleMin"
+        :is-selector="props.isSelector"
+        @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+        @datasetParamsInit="datasetParamsInit(item)"
+        @onPointClick="onPointClick"
+      />
+    </template>
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
   <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
