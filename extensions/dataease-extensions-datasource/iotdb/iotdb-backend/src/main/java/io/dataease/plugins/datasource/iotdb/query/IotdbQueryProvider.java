@@ -1,4 +1,4 @@
-package io.dataease.plugins.datasource.kingbase.query;
+package io.dataease.plugins.datasource.iotdb.query;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +24,7 @@ import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeIt
 import io.dataease.plugins.datasource.entity.Dateformat;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.entity.PageInfo;
-import io.dataease.plugins.datasource.kingbase.provider.KingbaseConfig;
+import io.dataease.plugins.datasource.iotdb.provider.IotdbConfig;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 import static io.dataease.plugins.common.constants.datasource.SQLConstants.TABLE_ALIAS_PREFIX;
 
 @Component()
-public class KingbaseQueryProvider extends QueryProvider {
+public class IotdbQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
     private static final Gson json = new Gson();
@@ -124,7 +124,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                                  List<DeSortField> sortFields, Long limit, String keyword) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
 
@@ -138,10 +138,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(f.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             f.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             f.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
@@ -149,31 +149,31 @@ public class KingbaseQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
                     if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originField);
+                        fieldName = String.format(IotdbConstants.UNIX_TIMESTAMP, originField);
                     } else {
                         fieldName = originField;
                     }
                 } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format(KingbaseConstants.CAST, originField,
-                                KingbaseConstants.DEFAULT_INT_FORMAT);
+                        fieldName = String.format(IotdbConstants.CAST, originField,
+                                IotdbConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(KingbaseConstants.CAST, originField,
-                                KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(IotdbConstants.CAST, originField,
+                                IotdbConstants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        fieldName = String.format(KingbaseConstants.STR_TO_DATE, originField,
+                        fieldName = String.format(IotdbConstants.STR_TO_DATE, originField,
                                 StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat()
-                                        : KingbaseConstants.DEFAULT_DATE_FORMAT);
+                                        : IotdbConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
                 } else {
                     if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        String cast = String.format(KingbaseConstants.CAST, originField, "bigint");
-                        fieldName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                        String cast = String.format(IotdbConstants.CAST, originField, "bigint");
+                        fieldName = String.format(IotdbConstants.FROM_UNIXTIME, cast);
                     } else if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format(KingbaseConstants.CAST, originField,
-                                KingbaseConstants.DEFAULT_INT_FORMAT);
+                        fieldName = String.format(IotdbConstants.CAST, originField,
+                                IotdbConstants.DEFAULT_INT_FORMAT);
                     } else {
                         fieldName = originField;
                     }
@@ -235,37 +235,37 @@ public class KingbaseQueryProvider extends QueryProvider {
             // 解析origin name中有关联的字段生成sql表达式
             originField = calcFieldRegex(f.getOriginName(), tableObj);
         } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-            originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+            originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
         } else {
-            originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+            originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
         }
         String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, index);
         String fieldName = "";
         // 处理横轴字段
         if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
             if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                fieldName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originField);
+                fieldName = String.format(IotdbConstants.UNIX_TIMESTAMP, originField);
             } else {
                 fieldName = originField;
             }
         } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
             if (f.getDeType() == DeTypeConstants.DE_INT) {
-                fieldName = String.format(KingbaseConstants.CAST, originField, KingbaseConstants.DEFAULT_INT_FORMAT);
+                fieldName = String.format(IotdbConstants.CAST, originField, IotdbConstants.DEFAULT_INT_FORMAT);
             } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                fieldName = String.format(KingbaseConstants.CAST, originField, KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(IotdbConstants.CAST, originField, IotdbConstants.DEFAULT_FLOAT_FORMAT);
             } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                fieldName = String.format(KingbaseConstants.STR_TO_DATE, originField,
+                fieldName = String.format(IotdbConstants.STR_TO_DATE, originField,
                         StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat()
-                                : KingbaseConstants.DEFAULT_DATE_FORMAT);
+                                : IotdbConstants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
             }
         } else {
             if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                String cast = String.format(KingbaseConstants.CAST, originField, "bigint");
-                fieldName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                String cast = String.format(IotdbConstants.CAST, originField, "bigint");
+                fieldName = String.format(IotdbConstants.FROM_UNIXTIME, cast);
             } else if (f.getDeType() == DeTypeConstants.DE_INT) {
-                fieldName = String.format(KingbaseConstants.CAST, originField, KingbaseConstants.DEFAULT_INT_FORMAT);
+                fieldName = String.format(IotdbConstants.CAST, originField, IotdbConstants.DEFAULT_INT_FORMAT);
             } else {
                 fieldName = originField;
             }
@@ -335,7 +335,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                          List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         setSchema(tableObj, ds);
@@ -349,10 +349,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
@@ -379,10 +379,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
@@ -440,7 +440,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
+                .tableName(String.format(IotdbConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -456,7 +456,7 @@ public class KingbaseQueryProvider extends QueryProvider {
     public String getSQLRangeBar(String table, List<ChartViewFieldDTO> baseXAxis, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         setSchema(tableObj, ds);
@@ -480,10 +480,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                         // 解析origin name中有关联的字段生成sql表达式
                         originField = calcFieldRegex(x.getOriginName(), tableObj);
                     } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                        originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                        originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                                 x.getOriginName());
                     } else {
-                        originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                        originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                                 x.getOriginName());
                     }
                     String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
@@ -506,23 +506,23 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
 
                 if (ifAggregate) {
                     if (i == baseXAxis.size()) {// 起止时间
-                        String fieldName = String.format(KingbaseConstants.AGG_FIELD, "min", originField);
+                        String fieldName = String.format(IotdbConstants.AGG_FIELD, "min", originField);
                         yFields.add(getXFields(x, fieldName, fieldAlias));
 
                         yWheres.add(getYWheres(x, originField, fieldAlias));
 
                     } else if (i == baseXAxis.size() + 1) {
-                        String fieldName = String.format(KingbaseConstants.AGG_FIELD, "max", originField);
+                        String fieldName = String.format(IotdbConstants.AGG_FIELD, "max", originField);
 
                         yFields.add(getXFields(x, fieldName, fieldAlias));
 
@@ -594,7 +594,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
+                .tableName(String.format(IotdbConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -637,7 +637,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                                      ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         setSchema(tableObj, ds);
@@ -651,16 +651,16 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(KingbaseConstants.CAST,
-                                String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                        originField = String.format(IotdbConstants.CAST,
+                                String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                                         x.getOriginName()),
-                                KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                                IotdbConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
-                        originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                        originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                                 x.getOriginName());
                     }
                 }
@@ -713,7 +713,7 @@ public class KingbaseQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("previewSql");
         st.add("isGroup", false);
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
+                .tableName(String.format(IotdbConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(orders))
@@ -762,7 +762,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                               ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         setSchema(tableObj, ds);
@@ -779,10 +779,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
@@ -809,10 +809,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
@@ -870,7 +870,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
+                .tableName(String.format(IotdbConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -901,7 +901,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                                 ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         setSchema(tableObj, ds);
@@ -933,10 +933,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
@@ -969,10 +969,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
@@ -1030,7 +1030,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
+                .tableName(String.format(IotdbConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -1067,7 +1067,7 @@ public class KingbaseQueryProvider extends QueryProvider {
         // 字段汇总 排序等
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         setSchema(tableObj, ds);
@@ -1082,10 +1082,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 } else {
-                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
@@ -1138,7 +1138,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
+                .tableName(String.format(IotdbConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -1172,8 +1172,8 @@ public class KingbaseQueryProvider extends QueryProvider {
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
         if (isTable) {
             String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-            String tableWithSchema = String.format(KingbaseConstants.KEYWORD_TABLE, schema) + "."
-                    + String.format(KingbaseConstants.KEYWORD_TABLE, sql);
+            String tableWithSchema = String.format(IotdbConstants.KEYWORD_TABLE, schema) + "."
+                    + String.format(IotdbConstants.KEYWORD_TABLE, sql);
             return "SELECT COUNT(*) from " + tableWithSchema;
         } else {
             return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
@@ -1217,29 +1217,29 @@ public class KingbaseQueryProvider extends QueryProvider {
             // 解析origin name中有关联的字段生成sql表达式
             originName = calcFieldRegex(field.getOriginName(), tableObj);
         } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-            originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
         } else {
-            originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
         }
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(KingbaseConstants.STR_TO_DATE, originName,
+                whereName = String.format(IotdbConstants.STR_TO_DATE, originName,
                         StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat()
-                                : KingbaseConstants.DEFAULT_DATE_FORMAT);
+                                : IotdbConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                String cast = String.format(KingbaseConstants.CAST, originName, "bigint");
-                whereName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                String cast = String.format(IotdbConstants.CAST, originName, "bigint");
+                whereName = String.format(IotdbConstants.FROM_UNIXTIME, cast);
             }
             if (field.getDeExtractType() == 1) {
                 whereName = originName;
             }
         } else if (field.getDeType() == 2 || field.getDeType() == 3) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(KingbaseConstants.CAST, originName, KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                whereName = String.format(IotdbConstants.CAST, originName, IotdbConstants.DEFAULT_FLOAT_FORMAT);
             }
             if (field.getDeExtractType() == 1) {
-                whereName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originName);
+                whereName = String.format(IotdbConstants.UNIX_TIMESTAMP, originName);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 whereName = originName;
@@ -1275,7 +1275,7 @@ public class KingbaseQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
                 whereValue = "'%" + value + "'";
             } else {
-                whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value);
+                whereValue = String.format(IotdbConstants.WHERE_VALUE_VALUE, value);
             }
             SQLObj build = SQLObj.builder()
                     .whereField(whereName)
@@ -1299,29 +1299,29 @@ public class KingbaseQueryProvider extends QueryProvider {
             // 解析origin name中有关联的字段生成sql表达式
             originName = calcFieldRegex(field.getOriginName(), tableObj);
         } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-            originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
         } else {
-            originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
         }
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(KingbaseConstants.STR_TO_DATE, originName,
+                whereName = String.format(IotdbConstants.STR_TO_DATE, originName,
                         StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat()
-                                : KingbaseConstants.DEFAULT_DATE_FORMAT);
+                                : IotdbConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                String cast = String.format(KingbaseConstants.CAST, originName, "bigint");
-                whereName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                String cast = String.format(IotdbConstants.CAST, originName, "bigint");
+                whereName = String.format(IotdbConstants.FROM_UNIXTIME, cast);
             }
             if (field.getDeExtractType() == 1) {
                 whereName = originName;
             }
         } else if (field.getDeType() == 2 || field.getDeType() == 3) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(KingbaseConstants.CAST, originName, KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                whereName = String.format(IotdbConstants.CAST, originName, IotdbConstants.DEFAULT_FLOAT_FORMAT);
             }
             if (field.getDeExtractType() == 1) {
-                whereName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originName);
+                whereName = String.format(IotdbConstants.UNIX_TIMESTAMP, originName);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 whereName = originName;
@@ -1357,7 +1357,7 @@ public class KingbaseQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
                 whereValue = "'%" + value + "'";
             } else {
-                whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value);
+                whereValue = String.format(IotdbConstants.WHERE_VALUE_VALUE, value);
             }
             SQLObj build = SQLObj.builder()
                     .whereField(whereName)
@@ -1371,8 +1371,8 @@ public class KingbaseQueryProvider extends QueryProvider {
     @Override
     public String convertTableToSql(String tableName, Datasource ds) {
         String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-        schema = String.format(KingbaseConstants.KEYWORD_TABLE, schema);
-        return createSQLPreview("SELECT * FROM " + schema + "." + String.format(KingbaseConstants.KEYWORD_TABLE,
+        schema = String.format(IotdbConstants.KEYWORD_TABLE, schema);
+        return createSQLPreview("SELECT * FROM " + schema + "." + String.format(IotdbConstants.KEYWORD_TABLE,
                         tableName),
                 null);
     }
@@ -1435,32 +1435,32 @@ public class KingbaseQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                         field.getOriginName());
             } else {
-                originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                         field.getOriginName());
             }
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(KingbaseConstants.STR_TO_DATE, originName,
+                    whereName = String.format(IotdbConstants.STR_TO_DATE, originName,
                             StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat()
-                                    : KingbaseConstants.DEFAULT_DATE_FORMAT);
+                                    : IotdbConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    String cast = String.format(KingbaseConstants.CAST, originName, "bigint");
-                    whereName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                    String cast = String.format(IotdbConstants.CAST, originName, "bigint");
+                    whereName = String.format(IotdbConstants.FROM_UNIXTIME, cast);
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(KingbaseConstants.CAST, originName,
-                            KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(IotdbConstants.CAST, originName,
+                            IotdbConstants.DEFAULT_FLOAT_FORMAT);
                 }
                 if (field.getDeExtractType() == 1) {
-                    whereName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originName);
+                    whereName = String.format(IotdbConstants.UNIX_TIMESTAMP, originName);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     whereName = originName;
@@ -1494,7 +1494,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {
-                        whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value);
+                        whereValue = String.format(IotdbConstants.WHERE_VALUE_VALUE, value);
                     }
                     list.add(SQLObj.builder()
                             .whereField(whereName)
@@ -1539,10 +1539,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originName = calcFieldRegex(field.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                    originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             field.getOriginName());
                 } else {
-                    originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             field.getOriginName());
                 }
 
@@ -1550,23 +1550,23 @@ public class KingbaseQueryProvider extends QueryProvider {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5
                             || field.getDeExtractType() == 1) {
-                        String timestamp = String.format(KingbaseConstants.STR_TO_DATE, originName,
+                        String timestamp = String.format(IotdbConstants.STR_TO_DATE, originName,
                                 StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat()
-                                        : KingbaseConstants.DEFAULT_DATE_FORMAT);
+                                        : IotdbConstants.DEFAULT_DATE_FORMAT);
                         if (request.getOperator().equals("between")) {
                             whereName = timestamp;
                         } else {
-                            whereName = String.format(KingbaseConstants.DATE_FORMAT, timestamp, format);
+                            whereName = String.format(IotdbConstants.DATE_FORMAT, timestamp, format);
                         }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3
                             || field.getDeExtractType() == 4) {
-                        String cast = String.format(KingbaseConstants.CAST, originName, "bigint");
-                        String timestamp = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                        String cast = String.format(IotdbConstants.CAST, originName, "bigint");
+                        String timestamp = String.format(IotdbConstants.FROM_UNIXTIME, cast);
                         if (request.getOperator().equals("between")) {
                             whereName = timestamp;
                         } else {
-                            whereName = String.format(KingbaseConstants.DATE_FORMAT, timestamp, format);
+                            whereName = String.format(IotdbConstants.DATE_FORMAT, timestamp, format);
                         }
                     }
                     if (field.getDeExtractType() == 1) {
@@ -1574,11 +1574,11 @@ public class KingbaseQueryProvider extends QueryProvider {
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(KingbaseConstants.CAST, originName,
-                                KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                        whereName = String.format(IotdbConstants.CAST, originName,
+                                IotdbConstants.DEFAULT_FLOAT_FORMAT);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originName);
+                        whereName = String.format(IotdbConstants.UNIX_TIMESTAMP, originName);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3
                             || field.getDeExtractType() == 4) {
@@ -1615,16 +1615,16 @@ public class KingbaseQueryProvider extends QueryProvider {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format(KingbaseConstants.WHERE_BETWEEN, startTime, endTime);
+                    whereValue = String.format(IotdbConstants.WHERE_BETWEEN, startTime, endTime);
                 } else {
-                    whereValue = String.format(KingbaseConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                    whereValue = String.format(IotdbConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
                 // 过滤空数据
                 if (StringUtils.equals(value.get(0), SQLConstants.EMPTY_SIGN)) {
-                    whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, "") + " or " + whereName + " is null ";
+                    whereValue = String.format(IotdbConstants.WHERE_VALUE_VALUE, "") + " or " + whereName + " is null ";
                 } else {
-                    whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value.get(0));
+                    whereValue = String.format(IotdbConstants.WHERE_VALUE_VALUE, value.get(0));
                 }
             }
             list.add(SQLObj.builder()
@@ -1680,10 +1680,10 @@ public class KingbaseQueryProvider extends QueryProvider {
         String fieldName = "";
         if (x.getDeExtractType() == DeTypeConstants.DE_TIME) {
             if (x.getDeType() == 2 || x.getDeType() == 3) {
-                fieldName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originField);
+                fieldName = String.format(IotdbConstants.UNIX_TIMESTAMP, originField);
             } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(KingbaseConstants.DATE_FORMAT, originField, format);
+                fieldName = String.format(IotdbConstants.DATE_FORMAT, originField, format);
             } else {
                 fieldName = originField;
             }
@@ -1691,23 +1691,23 @@ public class KingbaseQueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
-                    fieldName = String.format(KingbaseConstants.DATE_FORMAT,
-                            String.format(KingbaseConstants.STR_TO_DATE, originField,
+                    fieldName = String.format(IotdbConstants.DATE_FORMAT,
+                            String.format(IotdbConstants.STR_TO_DATE, originField,
                                     StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat()
-                                            : KingbaseConstants.DEFAULT_DATE_FORMAT),
+                                            : IotdbConstants.DEFAULT_DATE_FORMAT),
                             format);
                 } else {
-                    String cast = String.format(KingbaseConstants.CAST, originField, "bigint");
-                    String from_unixtime = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
-                    fieldName = String.format(KingbaseConstants.DATE_FORMAT, from_unixtime, format);
+                    String cast = String.format(IotdbConstants.CAST, originField, "bigint");
+                    String from_unixtime = String.format(IotdbConstants.FROM_UNIXTIME, cast);
+                    fieldName = String.format(IotdbConstants.DATE_FORMAT, from_unixtime, format);
                 }
             } else {
                 if (x.getDeType() == DeTypeConstants.DE_INT) {
-                    fieldName = String.format(KingbaseConstants.CAST, originField,
-                            KingbaseConstants.DEFAULT_INT_FORMAT);
+                    fieldName = String.format(IotdbConstants.CAST, originField,
+                            IotdbConstants.DEFAULT_INT_FORMAT);
                 } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
-                    fieldName = String.format(KingbaseConstants.CAST, originField,
-                            KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                    fieldName = String.format(IotdbConstants.CAST, originField,
+                            IotdbConstants.DEFAULT_FLOAT_FORMAT);
                 } else {
                     fieldName = originField;
                 }
@@ -1722,31 +1722,31 @@ public class KingbaseQueryProvider extends QueryProvider {
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-            fieldName = KingbaseConstants.AGG_COUNT;
+            fieldName = IotdbConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
-                fieldName = String.format(KingbaseConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+                fieldName = String.format(IotdbConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
             } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
-                fieldName = String.format(KingbaseConstants.GROUP_CONCAT, originField);
+                fieldName = String.format(IotdbConstants.GROUP_CONCAT, originField);
             } else {
-                fieldName = String.format(KingbaseConstants.AGG_FIELD, y.getSummary(), originField);
+                fieldName = String.format(IotdbConstants.AGG_FIELD, y.getSummary(), originField);
             }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg")
                     || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(KingbaseConstants.CAST, originField,
-                        y.getDeType() == DeTypeConstants.DE_INT ? KingbaseConstants.DEFAULT_INT_FORMAT
-                                : KingbaseConstants.DEFAULT_FLOAT_FORMAT);
-                String agg = String.format(KingbaseConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(KingbaseConstants.CAST, agg, KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(IotdbConstants.CAST, originField,
+                        y.getDeType() == DeTypeConstants.DE_INT ? IotdbConstants.DEFAULT_INT_FORMAT
+                                : IotdbConstants.DEFAULT_FLOAT_FORMAT);
+                String agg = String.format(IotdbConstants.AGG_FIELD, y.getSummary(), cast);
+                fieldName = String.format(IotdbConstants.CAST, agg, IotdbConstants.DEFAULT_FLOAT_FORMAT);
             } else {
-                String cast = String.format(KingbaseConstants.CAST, originField,
-                        y.getDeType() == DeTypeConstants.DE_INT ? KingbaseConstants.DEFAULT_INT_FORMAT
-                                : KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(IotdbConstants.CAST, originField,
+                        y.getDeType() == DeTypeConstants.DE_INT ? IotdbConstants.DEFAULT_INT_FORMAT
+                                : IotdbConstants.DEFAULT_FLOAT_FORMAT);
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
-                    fieldName = String.format(KingbaseConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                    fieldName = String.format(IotdbConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
                 } else {
-                    fieldName = String.format(KingbaseConstants.AGG_FIELD, y.getSummary(), cast);
+                    fieldName = String.format(IotdbConstants.AGG_FIELD, y.getSummary(), cast);
                 }
             }
         }
@@ -1776,7 +1776,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, f.getValue());
+                    whereValue = String.format(IotdbConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
                 list.add(SQLObj.builder()
                         .whereField(fieldAlias)
@@ -1810,7 +1810,7 @@ public class KingbaseQueryProvider extends QueryProvider {
         List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
         for (DatasetTableField ele : calcFields) {
             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
         }
         return originField;
     }
@@ -1826,15 +1826,15 @@ public class KingbaseQueryProvider extends QueryProvider {
     @Override
     public String sqlForPreview(String table, Datasource ds) {
         String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-        schema = String.format(KingbaseConstants.KEYWORD_TABLE, schema);
-        return "SELECT * FROM " + schema + "." + String.format(KingbaseConstants.KEYWORD_TABLE, table);
+        schema = String.format(IotdbConstants.KEYWORD_TABLE, schema);
+        return "SELECT * FROM " + schema + "." + String.format(IotdbConstants.KEYWORD_TABLE, table);
     }
 
     public void setSchema(SQLObj tableObj, Datasource ds) {
         if (ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")) {
-            KingbaseConfig kingbaseConfig = json.fromJson(ds.getConfiguration(), KingbaseConfig.class);
-            String schema = kingbaseConfig.getSchema();
-            String database = kingbaseConfig.getDataBase();
+            IotdbConfig ioTDBConfig = json.fromJson(ds.getConfiguration(), IotdbConfig.class);
+            String schema = ioTDBConfig.getSchema();
+            String database = ioTDBConfig.getDataBase();
             tableObj.setTableName(database + "." + schema + "." + tableObj.getTableName());
         }
     }

@@ -10,7 +10,7 @@ function resolve (dir) {
 module.exports = {
   mode: 'development',
   entry: {
-    'kingbase': resolve('/src/views/kingbase.vue')
+    'iotdb': resolve('/src/views/iotdb.vue')
   },
   output: {
     path: resolve('/static/'),

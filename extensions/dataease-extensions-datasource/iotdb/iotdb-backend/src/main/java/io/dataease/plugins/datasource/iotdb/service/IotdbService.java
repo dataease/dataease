@@ -1,4 +1,4 @@
-package io.dataease.plugins.datasource.kingbase.service;
+package io.dataease.plugins.datasource.iotdb.service;
 
 import io.dataease.plugins.common.constants.DatabaseClassification;
 import io.dataease.plugins.common.constants.DatasourceCalculationMode;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class KingbaseService extends DatasourceService {
+public class IotdbService extends DatasourceService {
 
 
     /**
@@ -21,7 +21,7 @@ public class KingbaseService extends DatasourceService {
     @Override
     public List<String> components() {
         List<String> result = new ArrayList<>();
-        result.add("kingbase");
+        result.add("iotdb");
         return result;
     }
 
@@ -40,7 +40,7 @@ public class KingbaseService extends DatasourceService {
     public List<StaticResource> staticResources() {
         List<StaticResource> results = new ArrayList<>();
         StaticResource staticResource = new StaticResource();
-        staticResource.setName("kingbase");
+        staticResource.setName("iotdb");
         staticResource.setSuffix("jpg");
         results.add(staticResource);
         results.add(pluginSvg());
@@ -52,7 +52,7 @@ public class KingbaseService extends DatasourceService {
      */
     @Override
     public DataSourceType getDataSourceType() {
-        DataSourceType dataSourceType = new DataSourceType("kingbase", "KingBase", true, "",
+        DataSourceType dataSourceType = new DataSourceType("iotdb", "iotdb", true, "",
                 DatasourceCalculationMode.DIRECT, true);
         dataSourceType.setKeywordPrefix("\"");
         dataSourceType.setKeywordSuffix("\"");
@@ -65,7 +65,7 @@ public class KingbaseService extends DatasourceService {
 
     private StaticResource pluginSvg() {
         StaticResource staticResource = new StaticResource();
-        staticResource.setName("kingbase-backend");
+        staticResource.setName("iotdb-backend");
         staticResource.setSuffix("svg");
         return staticResource;
     }

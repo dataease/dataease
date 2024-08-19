@@ -1,4 +1,4 @@
-package io.dataease.plugins.datasource.kingbase.provider;
+package io.dataease.plugins.datasource.iotdb.provider;
 
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import lombok.Getter;
@@ -9,9 +9,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class KingbaseConfig extends JdbcConfiguration {
+public class IotdbConfig extends JdbcConfiguration {
 
-    private String driver = "com.kingbase8.Driver";//驱动类名
+    private String driver = "org.apache.iotdb.jdbc.IoTDBDriver";//驱动类名
     private String extraParams;
 
 
@@ -19,7 +19,7 @@ public class KingbaseConfig extends JdbcConfiguration {
      * JDBC 拼接
      */
     public String getJdbc() {
-        return "jdbc:kingbase8://HOST:PORT/DATABASE"
+        return "jdbc:iotdb://HOST:PORT/DATABASE"
                 .replace("HOST", getHost().trim())
                 .replace("PORT", getPort().toString())
                 .replace("DATABASE", getDataBase().trim());

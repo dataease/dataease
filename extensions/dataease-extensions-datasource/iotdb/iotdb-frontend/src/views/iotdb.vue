@@ -68,7 +68,7 @@ import messages from '@/de-base/lang/messages'
 import dePwd from "./dePwd.vue";
 
 export default {
-  name: "kingbase",
+  name: "iotdb",
   components: {dePwd},
   props: {
     method: String,

@@ -1,4 +1,4 @@
-package io.dataease.plugins.datasource.kingbase.provider;
+package io.dataease.plugins.datasource.iotdb.provider;
 
 import com.google.gson.Gson;
 import io.dataease.plugins.common.base.domain.DeDriver;
@@ -21,13 +21,13 @@ import java.util.*;
 
 
 @Component()
-public class KingbaseDsProvider extends DefaultJdbcProvider {
+public class IotdbDsProvider extends DefaultJdbcProvider {
     @Resource
     private DeDriverMapper deDriverMapper;
 
     @Override
     public String getType() {
-        return "kingbase";
+        return "iotdb";
     }
 
     @Override
@@ -40,14 +40,14 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
      */
     @Override
     public Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
-        KingbaseConfig kingbaseConfig = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(),
-                KingbaseConfig.class);
+        IotdbConfig ioTDBConfig = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(),
+                IotdbConfig.class);
 
-        String username = kingbaseConfig.getUsername();
-        String password = kingbaseConfig.getPassword();
-        String defaultDriver = kingbaseConfig.getDriver();
-        String customDriver = kingbaseConfig.getCustomDriver();
-        String url = kingbaseConfig.getJdbc();
+        String username = ioTDBConfig.getUsername();
+        String password = ioTDBConfig.getPassword();
+        String defaultDriver = ioTDBConfig.getDriver();
+        String customDriver = ioTDBConfig.getCustomDriver();
+        String url = ioTDBConfig.getJdbc();
         Properties props = new Properties();
         DeDriver deDriver = null;
 
@@ -230,13 +230,13 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
      */
     @Override
     public String getTablesSql(DatasourceRequest datasourceRequest) throws Exception {
-        KingbaseConfig kingbaseConfig = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(),
-                KingbaseConfig.class);
-        if (StringUtils.isEmpty(kingbaseConfig.getSchema())) {
+        IotdbConfig ioTDBConfig = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(),
+                IotdbConfig.class);
+        if (StringUtils.isEmpty(ioTDBConfig.getSchema())) {
             throw new Exception("Database schema is empty.");
         }
         return ("select tablename from pg_tables where schemaname = 'SCHEMA' ").replaceAll("SCHEMA",
-                kingbaseConfig.getSchema());
+                ioTDBConfig.getSchema());
     }
 
     /**
@@ -244,6 +244,6 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
      */
     @Override
     public String getSchemaSql(DatasourceRequest datasourceRequest) {
-        return "SELECT nspname FROM pg_namespace";
+        return "show timeseries";
     }
 }

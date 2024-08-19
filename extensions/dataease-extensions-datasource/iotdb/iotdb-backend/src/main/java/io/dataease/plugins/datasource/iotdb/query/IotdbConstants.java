@@ -1,10 +1,10 @@
-package io.dataease.plugins.datasource.kingbase.query;
+package io.dataease.plugins.datasource.iotdb.query;
 
 
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 
 
-public class KingbaseConstants extends SQLConstants {
+public class IotdbConstants extends SQLConstants {
 
     public static final String KEYWORD_TABLE = "%s";
 
