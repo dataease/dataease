@@ -1,12 +1,12 @@
 {
     "name":"IoTDB 数据源插件",
     "free":0,
-    "store":"iotdb",
+    "store":"default",
     "cost":0,
     "category":"datasource",
     "descript":"Apache IoTDB 数据源插件",
     "version":"1.18.0",
-    "creator":"DATAEASE",
+    "creator":"Timecho",
     "moduleName":"iotdb-backend",
     "require":"1.18.0",
     "dsType":"iotdb"

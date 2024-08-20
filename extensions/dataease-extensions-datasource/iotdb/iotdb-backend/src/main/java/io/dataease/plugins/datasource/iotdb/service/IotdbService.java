@@ -41,7 +41,7 @@ public class IotdbService extends DatasourceService {
         List<StaticResource> results = new ArrayList<>();
         StaticResource staticResource = new StaticResource();
         staticResource.setName("iotdb");
-        staticResource.setSuffix("jpg");
+        staticResource.setSuffix("png");
         results.add(staticResource);
         results.add(pluginSvg());
         return results;
@@ -52,7 +52,7 @@ public class IotdbService extends DatasourceService {
      */
     @Override
     public DataSourceType getDataSourceType() {
-        DataSourceType dataSourceType = new DataSourceType("iotdb", "iotdb", true, "",
+        DataSourceType dataSourceType = new DataSourceType("iotdb", "Apache IoTDB", true, "",
                 DatasourceCalculationMode.DIRECT, true);
         dataSourceType.setKeywordPrefix("\"");
         dataSourceType.setKeywordSuffix("\"");
@@ -66,7 +66,7 @@ public class IotdbService extends DatasourceService {
     private StaticResource pluginSvg() {
         StaticResource staticResource = new StaticResource();
         staticResource.setName("iotdb-backend");
-        staticResource.setSuffix("svg");
+        staticResource.setSuffix("png");
         return staticResource;
     }
 }

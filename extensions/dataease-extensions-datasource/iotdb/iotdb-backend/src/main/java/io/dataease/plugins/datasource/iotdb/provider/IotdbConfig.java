@@ -19,9 +19,8 @@ public class IotdbConfig extends JdbcConfiguration {
      * JDBC 拼接
      */
     public String getJdbc() {
-        return "jdbc:iotdb://HOST:PORT/DATABASE"
+        return "jdbc:iotdb://HOST:PORT/"
                 .replace("HOST", getHost().trim())
-                .replace("PORT", getPort().toString())
-                .replace("DATABASE", getDataBase().trim());
+                .replace("PORT", getPort().toString());
     }
 }
