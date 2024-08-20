@@ -260,7 +260,7 @@ const dfsDatasetTree = (ds, id) => {
 }
 
 onBeforeMount(() => {
-  nodeInfo.id = (route.params.id as string) || ''
+  nodeInfo.id = (route.params.id as string) || (route.query.id as string) || ''
   loadInit()
   getData()
 })
