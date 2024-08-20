@@ -141,19 +141,19 @@ export default {
       }
       this.$emit('execute-axios', param)
     },
-    getSchema() {
-      this.$refs["DsForm"].validate(valid => {
-        if (valid) {
-          const data = JSON.parse(JSON.stringify(this.form))
-          data.configuration = JSON.stringify(data.configuration)
-          // this.executeAxios('/datasource/getSchema/', 'post', data, res => {
-          //   this.schemas = res.data
-          // })
-        } else {
-          return false
-        }
-      })
-    },
+    // getSchema() {
+    //   this.$refs["DsForm"].validate(valid => {
+    //     if (valid) {
+    //       const data = JSON.parse(JSON.stringify(this.form))
+    //       data.configuration = JSON.stringify(data.configuration)
+    //       // this.executeAxios('/datasource/getSchema/', 'post', data, res => {
+    //       //   this.schemas = res.data
+    //       // })
+    //     } else {
+    //       return false
+    //     }
+    //   })
+    // },
     validate() {
       let status = null;
       this.$refs["DsForm"].validate((val) => {
@@ -163,11 +163,11 @@ export default {
           status = false
         }
       })
-
-      if (!this.form.configuration.schema) {
-        this.$message.error(this.$t('please_choose_schema'))
-        status = false
-      }
+      //
+      // if (!this.form.configuration.schema) {
+      //   this.$message.error(this.$t('please_choose_schema'))
+      //   status = false
+      // }
       return status
     }
   }
