@@ -17,3 +17,9 @@ export function getPanelRelationship(id) {
     url: `/relation/dv/${id}`
   })
 }
+
+export function resourceCheckPermission(id) {
+  return request.post({
+    url: `/resource/checkPermission/${id}`
+  })
+}
