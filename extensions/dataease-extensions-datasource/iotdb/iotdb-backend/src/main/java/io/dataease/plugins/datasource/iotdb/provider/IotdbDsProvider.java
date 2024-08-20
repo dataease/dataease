@@ -3,6 +3,7 @@ package io.dataease.plugins.datasource.iotdb.provider;
 import com.google.gson.Gson;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.mapper.DeDriverMapper;
+import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
@@ -13,6 +14,8 @@ import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,6 +27,65 @@ import java.util.*;
 public class IotdbDsProvider extends DefaultJdbcProvider {
     @Resource
     private DeDriverMapper deDriverMapper;
+
+    @Override
+    public List<String[]> getData(DatasourceRequest dsr) throws Exception {
+        List<String[]> list = new LinkedList<>();
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(dsr.getDatasource().getConfiguration(), JdbcConfiguration.class);
+        int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
+        try (Connection connection = getConnectionFromPool(dsr); Statement stat = getStatement(connection, queryTimeout); ResultSet rs = stat.executeQuery(dsr.getQuery())) {
+            list = getDataResult(rs);
+            if (dsr.isPageable() && (dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.db2.name()))) {
+                Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize() : list.size();
+                list = list.subList((dsr.getPage() - 1) * dsr.getPageSize(), realSize);
+            }
+
+        } catch (SQLException e) {
+            DataEaseException.throwException("SQL ERROR" + e.getMessage());
+        } catch (Exception e) {
+            DataEaseException.throwException("Data source connection exception: " + e.getMessage());
+        }
+        return list;
+    }
+
+    /**
+     * device 查数据 - 已适配
+     * @param datasourceRequest
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
+        Map<String, List> result = new HashMap<>();
+        List<String[]> dataList;
+        List<TableField> fieldList;
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+        int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = getStatement(connection, queryTimeout); ResultSet resultSet = stat.executeQuery(datasourceRequest.getQuery())) {
+            if (resultSet != null) {
+                fieldList = new ArrayList<>();
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                for (int i = 0; i < columnCount; i++) {
+                    TableField tableField = new TableField();
+                    tableField.setFieldName(metaData.getColumnLabel(i + 1));
+                    tableField.setRemarks(metaData.getColumnLabel(i + 1));
+                    tableField.setFieldType(metaData.getColumnTypeName(i + 1));
+                    tableField.setFieldSize(metaData.getPrecision(i + 1));
+                    fieldList.add(tableField);
+                }
+                result.put("fieldList", fieldList);
+                dataList = getDataResult(resultSet);
+                result.put("dataList", dataList);
+            }
+            return result;
+        } catch (SQLException e) {
+            DataEaseException.throwException(e);
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        }
+        return new HashMap<>();
+    }
 
     @Override
     public String getType() {
@@ -103,6 +165,32 @@ public class IotdbDsProvider extends DefaultJdbcProvider {
         return conn;
     }
 
+    public List<String[]> getDataResult(ResultSet rs) throws Exception {
+        List<String[]> list = new LinkedList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        while (rs.next()) {
+            String[] row = new String[columnCount];
+            for (int j = 0; j < columnCount; j++) {
+                int columnType = metaData.getColumnType(j + 1);
+                switch (columnType) {
+                    case Types.DATE:
+                        if (rs.getDate(j + 1) != null) {
+                            row[j] = rs.getDate(j + 1).toString();
+                        }
+                        break;
+                    case Types.BOOLEAN:
+                        row[j] = rs.getBoolean(j + 1) ? "1" : "0";
+                        break;
+                    default:
+                        row[j] = rs.getString(j + 1);
+                        break;
+                }
+            }
+            list.add(row);
+        }
+        return list;
+    }
     /**
      * 获取表名称
      */
@@ -135,29 +223,27 @@ public class IotdbDsProvider extends DefaultJdbcProvider {
     }
 
     /**
-     * 获取表字段信息
+     * 获取表字段信息 - 已适配
      */
     @Override
     public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
-
         List<TableField> list = new LinkedList<>();
-        try (Connection connection = getConnectionFromPool(datasourceRequest)) {
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            String tableNamePattern = datasourceRequest.getTable();
-            String schemaPattern = "%";
-            ResultSet resultSet = databaseMetaData.getColumns(null, schemaPattern, tableNamePattern, "%");
-            while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME");
-                if (tableName.equals(datasourceRequest.getTable())) {
-                    TableField tableField = getTableFiled(resultSet, datasourceRequest);
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+        int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
+        try (Connection con = getConnection(datasourceRequest); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery("show timeseries "+datasourceRequest.getTable()+".*")) {
+            if (resultSet != null) {
+                while (resultSet.next()) {
+                    final ResultSetMetaData metaData = resultSet.getMetaData();
+                    final TableField tableField = new TableField();
+                    tableField.setFieldName(resultSet.getString(1));
+                    tableField.setFieldType(resultSet.getString(4));
+                    tableField.setRemarks(resultSet.getString(1));
+                    tableField.setFieldSize(metaData.getPrecision(1));
                     list.add(tableField);
                 }
             }
-            resultSet.close();
-        } catch (SQLException e) {
-            DataEaseException.throwException(e);
         } catch (Exception e) {
-            DataEaseException.throwException("Data source connection exception: " + e.getMessage());
+            DataEaseException.throwException(e);
         }
         return list;
     }
@@ -209,7 +295,7 @@ public class IotdbDsProvider extends DefaultJdbcProvider {
     }
 
     /**
-     * 检验数据源状态
+     * 检验数据源状态 - 已适配
      */
     @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
@@ -226,21 +312,15 @@ public class IotdbDsProvider extends DefaultJdbcProvider {
     }
 
     /**
-     * 显示对应的表的 SQL 语句
+     * 显示对应的表的 SQL 语句 - 已适配
      */
     @Override
     public String getTablesSql(DatasourceRequest datasourceRequest) throws Exception {
-        IotdbConfig ioTDBConfig = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(),
-                IotdbConfig.class);
-        if (StringUtils.isEmpty(ioTDBConfig.getSchema())) {
-            throw new Exception("Database schema is empty.");
-        }
-        return ("select tablename from pg_tables where schemaname = 'SCHEMA' ").replaceAll("SCHEMA",
-                ioTDBConfig.getSchema());
+        return "show devices";
     }
 
     /**
-     * 获取所有的用户
+     * 获取所有的字段 - 已适配
      */
     @Override
     public String getSchemaSql(DatasourceRequest datasourceRequest) {

@@ -107,7 +107,10 @@ public class IotdbQueryProvider extends QueryProvider {
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp   " + " LIMIT 1000 offset 0";
+        if(sql.contains(" limit ") || sql.contains(" LIMIT ")){
+            sql += " LIMIT 1000 offset 0";
+        }
+        return sql;
     }
 
     @Override
@@ -1825,9 +1828,7 @@ public class IotdbQueryProvider extends QueryProvider {
 
     @Override
     public String sqlForPreview(String table, Datasource ds) {
-        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-        schema = String.format(IotdbConstants.KEYWORD_TABLE, schema);
-        return "SELECT * FROM " + schema + "." + String.format(IotdbConstants.KEYWORD_TABLE, table);
+        return "SELECT * FROM "+table;
     }
 
     public void setSchema(SQLObj tableObj, Datasource ds) {

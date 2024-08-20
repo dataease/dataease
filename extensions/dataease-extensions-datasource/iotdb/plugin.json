@@ -1,7 +1,7 @@
 {
     "name":"IoTDB 数据源插件",
     "free":0,
-    "store":"default",
+    "store":"Timecho",
     "cost":0,
     "category":"datasource",
     "descript":"Apache IoTDB 数据源插件",
