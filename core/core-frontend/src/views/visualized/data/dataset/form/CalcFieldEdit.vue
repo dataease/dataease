@@ -46,7 +46,8 @@ const fields = [
     label: t('dataset.value') + '(' + t('dataset.float') + ')',
     value: 3
   },
-  { label: t('dataset.location'), value: 5 }
+  { label: t('dataset.location'), value: 5 },
+  { label: 'URL', value: 7 }
 ]
 
 const defaultForm = {
