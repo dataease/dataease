@@ -81,7 +81,9 @@ const loadThemeStyle = () => {
         class="drill-item"
         @click="drillJump(index + 1)"
       >
-        <span :style="{ color: textColor }">{{ filter.value[0] }}</span>
+        <span class="item-name" :style="{ color: textColor }" :title="filter.value[0]">{{
+          filter.value[0]
+        }}</span>
       </el-breadcrumb-item>
     </el-breadcrumb>
   </div>
@@ -96,6 +98,13 @@ const loadThemeStyle = () => {
 }
 .drill-item {
   cursor: pointer;
+  .item-name {
+    max-width: 200px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 .drill {
   z-index: 1;
