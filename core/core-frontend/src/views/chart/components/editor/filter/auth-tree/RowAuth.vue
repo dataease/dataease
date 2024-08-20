@@ -93,6 +93,69 @@ const errorDetected = ({
     }
   }
 }
+
+const getTimeValue = dynamicTimeSetting => {
+  const relativeToCurrentTypeMap = {
+    year: '年',
+    month: '月',
+    date: '日',
+    datetime: '日'
+  }
+  let timeValue = ''
+  const {
+    timeGranularity,
+    timeNum,
+    relativeToCurrentType,
+    around,
+    arbitraryTime,
+    relativeToCurrent
+  } = dynamicTimeSetting || {}
+  if (relativeToCurrent !== 'custom') {
+    timeValue = [
+      {
+        label: '今年',
+        value: 'thisYear'
+      },
+      {
+        label: '去年',
+        value: 'lastYear'
+      },
+      {
+        label: '本月',
+        value: 'thisMonth'
+      },
+      {
+        label: '上月',
+        value: 'lastMonth'
+      },
+      {
+        label: '今天',
+        value: 'today'
+      },
+      {
+        label: '昨天',
+        value: 'yesterday'
+      },
+      {
+        label: '月初',
+        value: 'monthBeginning'
+      },
+      {
+        label: '年初',
+        value: 'yearBeginning'
+      }
+    ].find(ele => ele.value === relativeToCurrent).label
+    return timeValue
+  }
+  timeValue = `${timeNum}${relativeToCurrentTypeMap[relativeToCurrentType]}${
+    around === 'f' ? '前' : '后'
+  }`
+  if (timeGranularity === 'datetime') {
+    timeValue += new Date(arbitraryTime).toLocaleString().split(' ')[1]
+  }
+
+  return timeValue
+}
 const dfsInit = arr => {
   const elementList = []
   arr.forEach(ele => {
@@ -104,7 +167,6 @@ const dfsInit = arr => {
     } else {
       const {
         enumValue,
-        timeValue,
         filterTypeTime,
         dynamicTimeSetting,
         fieldId,
@@ -119,7 +181,7 @@ const dfsInit = arr => {
         fieldId,
         filterType,
         term,
-        timeValue,
+        timeValue: getTimeValue(dynamicTimeSetting),
         filterTypeTime,
         dynamicTimeSetting,
         value,
@@ -162,7 +224,7 @@ const dfsSubmit = arr => {
         name,
         timeValue
       } = ele
-      errorDetected({ deType, enumValue, filterType, term, value, name, timeValue })
+      errorDetected({ deType, enumValue, filterType, term, value, name, timeValue, filterTypeTime })
       if (fieldId) {
         items.push({
           enumValue: enumValue ? enumValue.split(',') : [],
