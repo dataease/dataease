@@ -45,7 +45,10 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   }
   axis: AxisType[] = [...CHART_MIX_AXIS_TYPE, 'xAxisExtRight', 'yAxisExt']
   axisConfig = {
-    ...this['axisConfig'],
+    xAxis: {
+      name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
+      type: 'd'
+    },
     yAxis: {
       name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.column_quota')}`,
       limit: 1,
@@ -595,10 +598,10 @@ export class GroupColumnLineMix extends ColumnLineMix {
   }
   axisConfig = {
     ...this['axisConfig'],
-    yAxis: {
-      name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.column_quota')}`,
-      limit: 1,
-      type: 'q'
+    xAxisExt: {
+      name: `${t('chart.chart_group')} / ${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1
     }
   }
 
@@ -706,10 +709,10 @@ export class StackColumnLineMix extends ColumnLineMix {
   }
   axisConfig = {
     ...this['axisConfig'],
-    yAxis: {
-      name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.column_quota')}`,
-      limit: 1,
-      type: 'q'
+    extStack: {
+      name: `${t('chart.stack_item')} / ${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1
     }
   }
 
