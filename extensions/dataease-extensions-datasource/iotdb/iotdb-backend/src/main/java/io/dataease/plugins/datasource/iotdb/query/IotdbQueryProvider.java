@@ -111,11 +111,12 @@ public class IotdbQueryProvider extends QueryProvider {
 
         setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
+        boolean hasTime = false;
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
                 if(f.getOriginName().equals("Time")) {
-                    DataEaseException.throwException(f.getDataeaseName());
+                    hasTime = true;
                     continue;
                 }// skip Time 字段
                 String originField;
@@ -416,18 +417,18 @@ public class IotdbQueryProvider extends QueryProvider {
             st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
-        ST st = stg.getInstanceOf("querySql");
-        SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(IotdbConstants.BRACKETS, sql))
-//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
-                .build();
-        if (CollectionUtils.isNotEmpty(aggWheres))
-            st.add("filters", aggWheres);
-        if (CollectionUtils.isNotEmpty(orders))
-            st.add("orders", orders);
-        if (ObjectUtils.isNotEmpty(tableSQL))
-            st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+//        ST st = stg.getInstanceOf("querySql");
+//        SQLObj tableSQL = SQLObj.builder()
+//                .tableName(String.format(IotdbConstants.BRACKETS, sql))
+////                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .build();
+//        if (CollectionUtils.isNotEmpty(aggWheres))
+//            st.add("filters", aggWheres);
+//        if (CollectionUtils.isNotEmpty(orders))
+//            st.add("orders", orders);
+//        if (ObjectUtils.isNotEmpty(tableSQL))
+//            st.add("table", tableSQL);
+        return sqlLimit(sql, view);
     }
 
     @Override
@@ -561,23 +562,23 @@ public class IotdbQueryProvider extends QueryProvider {
             st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
-        ST st = stg.getInstanceOf("querySql");
-        SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(IotdbConstants.BRACKETS, sql))
-//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
-                .build();
-        if (CollectionUtils.isNotEmpty(aggWheres))
-            st.add("filters", aggWheres);
-        if (CollectionUtils.isNotEmpty(orders))
-            st.add("orders", orders);
-        if (ObjectUtils.isNotEmpty(tableSQL))
-            st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+//        ST st = stg.getInstanceOf("querySql");
+//        SQLObj tableSQL = SQLObj.builder()
+//                .tableName(String.format(IotdbConstants.BRACKETS, sql))
+////                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .build();
+//        if (CollectionUtils.isNotEmpty(aggWheres))
+//            st.add("filters", aggWheres);
+//        if (CollectionUtils.isNotEmpty(orders))
+//            st.add("orders", orders);
+//        if (ObjectUtils.isNotEmpty(tableSQL))
+//            st.add("table", tableSQL);
+        return sqlLimit(sql, view);
     }
 
     @Override
     public String getSQLAsTmpRangeBar(String table, List<ChartViewFieldDTO> baseXAxis, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, ChartViewWithBLOBs view) {
-        return getSQLRangeBar("(" + table + ")", baseXAxis, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extStack, null, view);
+        return getSQLRangeBar(table, baseXAxis, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extStack, null, view);
     }
 
     @Override
@@ -676,17 +677,17 @@ public class IotdbQueryProvider extends QueryProvider {
             st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
-        ST st = stg.getInstanceOf("previewSql");
-        st.add("isGroup", false);
-        SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(IotdbConstants.BRACKETS, sql))
-//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
-                .build();
-        if (CollectionUtils.isNotEmpty(orders))
-            st.add("orders", orders);
-        if (ObjectUtils.isNotEmpty(tableSQL))
-            st.add("table", tableSQL);
-        return st.render();
+//        ST st = stg.getInstanceOf("previewSql");
+//        st.add("isGroup", false);
+//        SQLObj tableSQL = SQLObj.builder()
+//                .tableName(String.format(IotdbConstants.BRACKETS, sql))
+////                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .build();
+//        if (CollectionUtils.isNotEmpty(orders))
+//            st.add("orders", orders);
+//        if (ObjectUtils.isNotEmpty(tableSQL))
+//            st.add("table", tableSQL);
+        return sql;
     }
 
     @Override
@@ -706,7 +707,7 @@ public class IotdbQueryProvider extends QueryProvider {
                                        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                                        List<ChartExtFilterRequest> extFilterRequestList, Datasource ds,
                                        ChartViewWithBLOBs view) {
-        return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree,
+        return getSQLTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree,
                 extFilterRequestList, ds, view);
     }
 
@@ -715,7 +716,7 @@ public class IotdbQueryProvider extends QueryProvider {
                               FilterTreeObj fieldCustomFilter,
                               List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                               List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
-        return getSQL("(" + sqlFix(sql) + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree,
+        return getSQL(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree,
                 extFilterRequestList, null, view);
     }
 
@@ -826,18 +827,18 @@ public class IotdbQueryProvider extends QueryProvider {
             st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
-        ST st = stg.getInstanceOf("querySql");
-        SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(IotdbConstants.BRACKETS, sql))
-//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
-                .build();
-        if (CollectionUtils.isNotEmpty(aggWheres))
-            st.add("filters", aggWheres);
-        if (CollectionUtils.isNotEmpty(orders))
-            st.add("orders", orders);
-        if (ObjectUtils.isNotEmpty(tableSQL))
-            st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+//        ST st = stg.getInstanceOf("querySql");
+//        SQLObj tableSQL = SQLObj.builder()
+//                .tableName(String.format(IotdbConstants.BRACKETS, sql))
+////                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .build();
+//        if (CollectionUtils.isNotEmpty(aggWheres))
+//            st.add("filters", aggWheres);
+//        if (CollectionUtils.isNotEmpty(orders))
+//            st.add("orders", orders);
+//        if (ObjectUtils.isNotEmpty(tableSQL))
+//            st.add("table", tableSQL);
+        return sqlLimit(sql, view);
     }
 
     @Override
@@ -978,18 +979,18 @@ public class IotdbQueryProvider extends QueryProvider {
             st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
-        ST st = stg.getInstanceOf("querySql");
-        SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(IotdbConstants.BRACKETS, sql))
-//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
-                .build();
-        if (CollectionUtils.isNotEmpty(aggWheres))
-            st.add("filters", aggWheres);
-        if (CollectionUtils.isNotEmpty(orders))
-            st.add("orders", orders);
-        if (ObjectUtils.isNotEmpty(tableSQL))
-            st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+//        ST st = stg.getInstanceOf("querySql");
+//        SQLObj tableSQL = SQLObj.builder()
+//                .tableName(String.format(IotdbConstants.BRACKETS, sql))
+////                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .build();
+//        if (CollectionUtils.isNotEmpty(aggWheres))
+//            st.add("filters", aggWheres);
+//        if (CollectionUtils.isNotEmpty(orders))
+//            st.add("orders", orders);
+//        if (ObjectUtils.isNotEmpty(tableSQL))
+//            st.add("table", tableSQL);
+        return sqlLimit(sql, view);
     }
 
     @Override
@@ -1081,18 +1082,18 @@ public class IotdbQueryProvider extends QueryProvider {
             st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
-        ST st = stg.getInstanceOf("querySql");
-        SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(IotdbConstants.BRACKETS, sql))
-//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
-                .build();
-        if (CollectionUtils.isNotEmpty(aggWheres))
-            st.add("filters", aggWheres);
-        if (CollectionUtils.isNotEmpty(orders))
-            st.add("orders", orders);
-        if (ObjectUtils.isNotEmpty(tableSQL))
-            st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+//        ST st = stg.getInstanceOf("querySql");
+//        SQLObj tableSQL = SQLObj.builder()
+//                .tableName(String.format(IotdbConstants.BRACKETS, sql))
+////                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .build();
+//        if (CollectionUtils.isNotEmpty(aggWheres))
+//            st.add("filters", aggWheres);
+//        if (CollectionUtils.isNotEmpty(orders))
+//            st.add("orders", orders);
+//        if (ObjectUtils.isNotEmpty(tableSQL))
+//            st.add("table", tableSQL);
+        return sqlLimit(sql, view);
     }
 
     @Override
@@ -1100,7 +1101,7 @@ public class IotdbQueryProvider extends QueryProvider {
                                      FilterTreeObj fieldCustomFilter,
                                      List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                                      List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
-        return getSQLSummary("(" + sqlFix(sql) + ")", yAxis, fieldCustomFilter, rowPermissionsTree,
+        return getSQLSummary(sql, yAxis, fieldCustomFilter, rowPermissionsTree,
                 extFilterRequestList, view, null);
     }
 
@@ -1110,18 +1111,21 @@ public class IotdbQueryProvider extends QueryProvider {
         if (sql.lastIndexOf(";") == (sql.length() - 1)) {
             sql = sql.substring(0, sql.length() - 1);
         }
-        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0 ";
-        return tmpSql;
+        return sql;
     }
 
+    @Override
+    public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+       return getTotalCount(isTable,sql,ds);
+    }
+
+    @Override
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
         if (isTable) {
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-            String tableWithSchema = String.format(IotdbConstants.KEYWORD_TABLE, schema) + "."
-                    + String.format(IotdbConstants.KEYWORD_TABLE, sql);
-            return "SELECT COUNT(*) from " + tableWithSchema;
+            String table = sql;
+            return "SELECT count_time(*) from " + table;
         } else {
-            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
+            return "SELECT count_time(*) from "+ sql.substring(sql.toLowerCase().indexOf(" from "));
         }
     }
 
@@ -1133,11 +1137,8 @@ public class IotdbQueryProvider extends QueryProvider {
             return stringBuilder.toString();
         }).toArray(String[]::new);
         if (ds != null) {
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-            String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "."
-                    + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
             return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_PAGE_SIZE OFFSET DE_OFFSET ",
-                    StringUtils.join(array, ","), tableWithSchema);
+                    StringUtils.join(array, ","), table);
         } else {
             return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_PAGE_SIZE OFFSET DE_OFFSET ",
                     StringUtils.join(array, ","), table);
@@ -1146,7 +1147,7 @@ public class IotdbQueryProvider extends QueryProvider {
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP ", fields, null);
+        return createRawQuerySQL(sql, fields, null);
     }
 
     @Override
@@ -1311,10 +1312,8 @@ public class IotdbQueryProvider extends QueryProvider {
 
     @Override
     public String convertTableToSql(String tableName, Datasource ds) {
-        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-        schema = String.format(IotdbConstants.KEYWORD_TABLE, schema);
-        return createSQLPreview("SELECT * FROM " + schema + "." + String.format(IotdbConstants.KEYWORD_TABLE,
-                        tableName),
+        if(tableName.toLowerCase().trim().startsWith("select")) return tableName;
+        return createSQLPreview("SELECT * FROM " + tableName,
                 null);
     }
 
@@ -1758,14 +1757,11 @@ public class IotdbQueryProvider extends QueryProvider {
 
     @Override
     public String sqlForPreview(String table, Datasource ds) {
-        return "SELECT * FROM "+table;
+        if(table.toLowerCase().trim().startsWith("select")) return table;
+        return "SELECT * FROM " + table;
     }
 
     public void setSchema(SQLObj tableObj, Datasource ds) {
-        if (ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")) {
-            IotdbConfig ioTDBConfig = json.fromJson(ds.getConfiguration(), IotdbConfig.class);
-            tableObj.setTableName(tableObj.getTableName());
-        }
     }
 
     public List<Dateformat> dateformat() {

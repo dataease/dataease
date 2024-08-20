@@ -41,7 +41,7 @@ public class IotdbDsProvider extends DefaultJdbcProvider {
             }
 
         } catch (SQLException e) {
-            DataEaseException.throwException("SQL ERROR" + e.getMessage());
+            DataEaseException.throwException(new Exception("SQL ERROR："+ dsr.getQuery() + "Message："+ e.getMessage(),e));
         } catch (Exception e) {
             DataEaseException.throwException("Data source connection exception: " + e.getMessage());
         }
@@ -231,6 +231,12 @@ public class IotdbDsProvider extends DefaultJdbcProvider {
         JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
         int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
         try (Connection con = getConnection(datasourceRequest); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery("show timeseries "+datasourceRequest.getTable()+".*")) {
+            final TableField tableTimeField = new TableField();
+            tableTimeField.setFieldName("Time");
+            tableTimeField.setFieldType("Time");
+            tableTimeField.setRemarks("Time");
+            tableTimeField.setFieldSize(13);
+            list.add(tableTimeField);
             if (resultSet != null) {
                 while (resultSet.next()) {
                     final ResultSetMetaData metaData = resultSet.getMetaData();
@@ -317,6 +323,13 @@ public class IotdbDsProvider extends DefaultJdbcProvider {
     private List<TableField> fetchResultField(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
         List<TableField> fieldList = new ArrayList<>();
         ResultSetMetaData metaData = rs.getMetaData();
+        TableField timeField = new TableField();
+        timeField.setFieldName("Time");
+        timeField.setRemarks("Time");
+        timeField.setFieldType("Time");
+        timeField.setType(0);
+        timeField.setFieldSize(13);
+        fieldList.add(timeField);
         int columnCount = metaData.getColumnCount();
         for (int j = 0; j < columnCount; j++) {
             String f = metaData.getColumnName(j + 1);
