@@ -26,7 +26,7 @@ const sysParamsIlns = sysParamsEnum.map(_ => {
   return { value: `\${sysParams.${_}}`, label: `auth.sysParams_type.${toLine(_)}` }
 })
 
-const fieldEnums = ['text', 'time', 'value', 'value', 'value', 'location']
+const fieldEnums = ['text', 'time', 'value', 'value', 'value', 'location', 'binary', 'url']
 
 export {
   textOptions,

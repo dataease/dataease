@@ -153,7 +153,8 @@ const fieldOptionsText = [
   {
     label: t('dataset.value') + '(' + t('dataset.float') + ')',
     value: 3
-  }
+  },
+  { label: 'URL', value: 7 }
 ]
 
 const ruleFormRef = ref<FormInstance>()
@@ -349,7 +350,7 @@ const handleFieldMore = (ele, type) => {
     dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
     quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
   }
-  const arr = ['text', 'time', 'value', 'float', 'value', 'location']
+  const arr = ['text', 'time', 'value', 'float', 'value', 'location', 'binary', 'url']
   if (arr.includes(type as string)) {
     ele.deType = arr.indexOf(type)
     ele.dateFormat = ''
@@ -2595,6 +2596,9 @@ const getDsIconName = data => {
 }
 
 .cascader-panel {
+  .ed-scrollbar__wrap {
+    height: 210px;
+  }
   .ed-cascader-node__label {
     display: flex;
     align-items: center;
@@ -2688,6 +2692,11 @@ const getDsIconName = data => {
   .ed-dialog__footer {
     padding-top: 24px;
     border: 1px solid rgba(31, 35, 41, 0.15);
+  }
+}
+.cascader-panel {
+  .ed-scrollbar__wrap {
+    height: 210px;
   }
 }
 </style>

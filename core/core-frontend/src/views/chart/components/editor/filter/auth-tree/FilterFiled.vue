@@ -172,7 +172,7 @@ const initEnumOptions = () => {
   }
   const { deType, filterType, fieldId } = item.value
   // 查找枚举值
-  if (filterType === 'enum' && [0, 5].includes(deType)) {
+  if (filterType === 'enum' && [0, 5, 7].includes(deType)) {
     multFieldValuesForPermissions({ fieldIds: [fieldId] }).then(res => {
       enumList.value = optionData(res.data)
     })
