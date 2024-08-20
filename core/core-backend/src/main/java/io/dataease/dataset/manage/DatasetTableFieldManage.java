@@ -10,6 +10,7 @@ import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
@@ -23,6 +24,7 @@ import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -44,6 +46,8 @@ public class DatasetTableFieldManage {
     private DatasetSQLManage datasetSQLManage;
     @Resource
     private DatasetGroupManage datasetGroupManage;
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
 
     public void save(CoreDatasetTableField coreDatasetTableField) {
         checkNameLength(coreDatasetTableField.getName());
@@ -258,7 +262,7 @@ public class DatasetTableFieldManage {
                 .filter(ele -> {
                     boolean flag = true;
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                        String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, fields, true, null, Utils.mergeParam(Utils.getParams(fields), null));
+                        String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, fields, true, null, Utils.mergeParam(Utils.getParams(fields), null), pluginManage);
                         for (String func : FunctionConstant.AGG_FUNC) {
                             if (Utils.matchFunction(func, originField)) {
                                 flag = false;

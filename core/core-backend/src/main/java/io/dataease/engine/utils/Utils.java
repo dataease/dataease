@@ -3,12 +3,15 @@ package io.dataease.engine.utils;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.DsTypeDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.ObjectUtils;
@@ -27,13 +30,13 @@ public class Utils {
     }
 
     // 解析计算字段
-    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, Map<String, String> paramMap) {
+    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, Map<String, String> paramMap, PluginManageApi pluginManage) {
         try {
             int i = 0;
-            DatasourceConfiguration.DatasourceType datasourceType = null;
+            DsTypeDTO datasourceType = null;
             if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
                 Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
-                datasourceType = DatasourceConfiguration.DatasourceType.valueOf(next.getValue().getType());
+                datasourceType = getDs(pluginManage, next.getValue().getType());
             }
             return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType, paramMap);
         } catch (Exception e) {
@@ -42,13 +45,13 @@ public class Utils {
         return null;
     }
 
-    public static String calcSimpleFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, String> dsTypeMap) {
+    public static String calcSimpleFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, String> dsTypeMap, PluginManageApi pluginManage) {
         try {
             int i = 0;
-            DatasourceConfiguration.DatasourceType datasourceType = null;
+            DsTypeDTO datasourceType = null;
             if (dsTypeMap != null && dsTypeMap.entrySet().iterator().hasNext()) {
                 Map.Entry<Long, String> next = dsTypeMap.entrySet().iterator().next();
-                datasourceType = DatasourceConfiguration.DatasourceType.valueOf(next.getValue());
+                datasourceType = getDs(pluginManage, next.getValue());
             }
             return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType, null);
         } catch (Exception e) {
@@ -57,7 +60,7 @@ public class Utils {
         return null;
     }
 
-    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i, boolean isCross, DatasourceConfiguration.DatasourceType datasourceType, Map<String, String> paramMap) throws Exception {
+    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i, boolean isCross, DsTypeDTO datasourceType, Map<String, String> paramMap) throws Exception {
         try {
             i++;
             if (i > 100) {
@@ -440,5 +443,31 @@ public class Utils {
             }
         }
         return map;
+    }
+
+    private static DsTypeDTO getDs(PluginManageApi pluginManage, String type) {
+        DsTypeDTO dto = new DsTypeDTO();
+        try {
+            DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(type);
+            dto.setType(type);
+            dto.setName(datasourceType.getName());
+            dto.setCatalog(datasourceType.getCatalog());
+            dto.setPrefix(datasourceType.getPrefix());
+            dto.setSuffix(datasourceType.getSuffix());
+            return dto;
+        } catch (Exception e) {
+            List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
+            for (XpackPluginsDatasourceVO vo : xpackPluginsDatasourceVOS) {
+                if (StringUtils.equalsIgnoreCase(vo.getType(), type)) {
+                    dto.setType(type);
+                    dto.setName(vo.getName());
+                    dto.setCatalog(vo.getCategory());
+                    dto.setPrefix(vo.getPrefix());
+                    dto.setSuffix(vo.getSuffix());
+                    return dto;
+                }
+            }
+        }
+        return null;
     }
 }

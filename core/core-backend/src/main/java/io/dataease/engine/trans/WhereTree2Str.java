@@ -4,6 +4,7 @@ import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -22,7 +23,7 @@ import java.util.*;
  * @Author Junjun
  */
 public class WhereTree2Str {
-    public static void transFilterTrees(SQLMeta meta, List<DataSetRowPermissionsTreeDTO> requestList, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam) {
+    public static void transFilterTrees(SQLMeta meta, List<DataSetRowPermissionsTreeDTO> requestList, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -40,7 +41,7 @@ public class WhereTree2Str {
             if (ObjectUtils.isEmpty(tree)) {
                 continue;
             }
-            String treeExp = transTreeToWhere(tableObj, tree, originFields, fieldsDialect, isCross, dsMap, fieldParam, chartParam);
+            String treeExp = transTreeToWhere(tableObj, tree, originFields, fieldsDialect, isCross, dsMap, fieldParam, chartParam, pluginManage);
             if (StringUtils.isNotEmpty(treeExp)) {
                 res.add(treeExp);
             }
@@ -49,7 +50,7 @@ public class WhereTree2Str {
         meta.setWhereTreesDialect(fieldsDialect);
     }
 
-    private static String transTreeToWhere(SQLObj tableObj, DatasetRowPermissionsTreeObj tree, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam) {
+    private static String transTreeToWhere(SQLObj tableObj, DatasetRowPermissionsTreeObj tree, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
         if (ObjectUtils.isEmpty(tree)) {
             return null;
         }
@@ -62,10 +63,10 @@ public class WhereTree2Str {
                 String exp = null;
                 if (StringUtils.equalsIgnoreCase(item.getType(), "item")) {
                     // 单个item拼接SQL，最后根据logic汇总
-                    exp = transTreeItem(tableObj, item, originFields, fieldsDialect, isCross, dsMap, fieldParam, chartParam);
+                    exp = transTreeItem(tableObj, item, originFields, fieldsDialect, isCross, dsMap, fieldParam, chartParam, pluginManage);
                 } else if (StringUtils.equalsIgnoreCase(item.getType(), "tree")) {
                     // 递归tree
-                    exp = transTreeToWhere(tableObj, item.getSubTree(), originFields, fieldsDialect, isCross, dsMap, fieldParam, chartParam);
+                    exp = transTreeToWhere(tableObj, item.getSubTree(), originFields, fieldsDialect, isCross, dsMap, fieldParam, chartParam, pluginManage);
                 }
                 if (StringUtils.isNotEmpty(exp)) {
                     list.add(exp);
@@ -75,7 +76,7 @@ public class WhereTree2Str {
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" " + logic + " ", list) + ")" : null;
     }
 
-    public static String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam) {
+    public static String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
         String res = null;
         DatasetTableFieldDTO field = item.getField();
         if (ObjectUtils.isEmpty(field)) {
@@ -86,7 +87,7 @@ public class WhereTree2Str {
         String originName;
         if (ObjectUtils.isNotEmpty(field.getExtField()) && Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
             // 解析origin name中有关联的字段生成sql表达式
-            String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap);
+            String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
             // 给计算字段处加一个占位符，后续SQL方言转换后再替换
             originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
             fieldsDialect.put(originName, calcFieldExp);
