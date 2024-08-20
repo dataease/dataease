@@ -41,7 +41,7 @@ public class IotdbService extends DatasourceService {
         List<StaticResource> results = new ArrayList<>();
         StaticResource staticResource = new StaticResource();
         staticResource.setName("iotdb");
-        staticResource.setSuffix("png");
+        staticResource.setSuffix("jpg");
         results.add(staticResource);
         results.add(pluginSvg());
         return results;
@@ -66,7 +66,7 @@ public class IotdbService extends DatasourceService {
     private StaticResource pluginSvg() {
         StaticResource staticResource = new StaticResource();
         staticResource.setName("iotdb-backend");
-        staticResource.setSuffix("png");
+        staticResource.setSuffix("svg");
         return staticResource;
     }
 }
