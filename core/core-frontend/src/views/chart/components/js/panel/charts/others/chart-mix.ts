@@ -547,6 +547,14 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
           }
         }
       }
+      const size = Math.sqrt(o.legend.pageNavigator?.text?.style?.fontSize ?? 16)
+      o.legend.marker.style = style => {
+        const fill = style.fill ?? style.stroke
+        return {
+          r: size < 4 ? 4 : size,
+          fill
+        }
+      }
     }
     return o
   }
