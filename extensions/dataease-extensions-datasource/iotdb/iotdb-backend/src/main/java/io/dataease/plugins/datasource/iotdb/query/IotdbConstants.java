@@ -19,8 +19,8 @@ public class IotdbConstants extends SQLConstants {
     public static final String FROM_UNIXTIME = "to_timestamp(%s)";
     public static final String CAST = "CAST(%s AS %s)";
     public static final String DEFAULT_DATE_FORMAT = "YYYY-MM-DD HH24:MI:SS";
-    public static final String DEFAULT_INT_FORMAT = "numeric(38,0)";
-    public static final String DEFAULT_FLOAT_FORMAT = "numeric(38,8)";
+    public static final String DEFAULT_INT_FORMAT = "INT64";
+    public static final String DEFAULT_FLOAT_FORMAT = "DOUBLE";
     public static final String WHERE_VALUE_NULL = "(NULL,'')";
     public static final String WHERE_VALUE_VALUE = "'%s'";
     public static final String AGG_COUNT = "COUNT(*)";
@@ -28,5 +28,5 @@ public class IotdbConstants extends SQLConstants {
     public static final String WHERE_BETWEEN = "'%s' AND '%s'";
     public static final String BRACKETS = "(%s)";
     public static final String GROUP_CONCAT = "to_char(listagg(%s,',' ) within GROUP (order by (%s)))";
-    public static final String NAME = "kingbase";
+    public static final String NAME = "iotdb";
 }

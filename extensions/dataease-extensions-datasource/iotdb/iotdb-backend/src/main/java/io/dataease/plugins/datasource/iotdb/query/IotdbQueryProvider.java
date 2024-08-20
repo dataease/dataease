@@ -16,6 +16,7 @@ import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.datasource.DeSortField;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.chart.filter.FilterTreeItem;
 import io.dataease.plugins.common.request.chart.filter.FilterTreeObj;
@@ -44,8 +45,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static io.dataease.plugins.common.constants.datasource.SQLConstants.TABLE_ALIAS_PREFIX;
-
 @Component()
 public class IotdbQueryProvider extends QueryProvider {
     @Resource
@@ -54,52 +53,21 @@ public class IotdbQueryProvider extends QueryProvider {
 
     @Override
     public Integer transFieldType(String field) {
-        field = field.toLowerCase();
+        field = field.toUpperCase();
         switch (field) {
-            case "bpchar":
-            case "varchar":
-            case "text":
-            case "tsquery":
-            case "tsvector":
-            case "uuid":
-            case "xml":
-            case "json":
-            case "bit":
-            case "jsonb":
-            case "cidr":
-            case "inet":
-            case "macaddr":
-            case "txid_snapshot":
-            case "box":
-            case "circle":
-            case "line":
-            case "lseg":
-            case "path":
-            case "point":
-            case "polygon":
-            case "bool":
-            case "interval":
-                return DeTypeConstants.DE_STRING;// 文本
-            case "date":
-            case "time":
-            case "timestamp":
-            case "timestamptz":
+            case "DATE":
+            case "TIME":
+            case "TIMESTAMT":
+            case "TIMESTAMPTZ":
                 return DeTypeConstants.DE_TIME;// 时间
-            case "int2":
-            case "int4":
-            case "int8":
-            case "INTEGER":
-            case "BIGINT":
-                return DeTypeConstants.DE_INT;// 整型
-            case "numeric":
-            case "float4":
-            case "float8":
-            case "money":
-                return DeTypeConstants.DE_FLOAT;// 浮点
-            case "TINYINT":
-                return DeTypeConstants.DE_BOOL;// 布尔
-            case "bytea":
-                return DeTypeConstants.DE_BINARY;// 二进制
+            case "INT32":
+            case "INT64":
+                return DeTypeConstants.DE_INT;
+            case "FLOAT":
+            case "DOUBLE":
+                    return DeTypeConstants.DE_FLOAT;// 浮点
+            case "BOOLEAN":
+                return DeTypeConstants.DE_BOOL;// 整型
             default:
                 return DeTypeConstants.DE_STRING;
         }
@@ -120,15 +88,25 @@ public class IotdbQueryProvider extends QueryProvider {
         return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null, null, null);
     }
 
+//    public static void main(String[] args) {
+//        List<DatasetTableField> fields = new ArrayList<>();
+//        DatasetTableField field = new DatasetTableField();
+//        field.setId("4816cd10-5c69-474d-9ebb-c241691e1b0e");
+//        field.setTableId("931cdd77-c582-4e74-8b19-b16b354f6acb");
+//        field.setOriginName("root.stock.Legacy.0700HK.L1_BidPrice");
+//        field.setName("root.stock.Legacy.0700HK.L1_BidPrice");
+//        field.setDataeaseName("C_5f71a7ce3b02773ac2a9e5b3cb32e49d");
+//        fields.add(field);
+//        System.out.println(new IotdbQueryProvider().createQuerySQL("root.stock.Legacy.0700HK", fields ,false, new Datasource(), null, null));
+//    }
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds,
                                  FilterTreeObj fieldCustomFilter,
                                  List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                                  List<DeSortField> sortFields, Long limit, String keyword) {
+        if(table.toLowerCase().trim().startsWith("select")) return table;
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .tableName(table)
                 .build();
 
         setSchema(tableObj, ds);
@@ -136,16 +114,16 @@ public class IotdbQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
+                if(f.getOriginName().equals("Time")) {
+                    DataEaseException.throwException(f.getDataeaseName());
+                    continue;
+                }// skip Time 字段
                 String originField;
                 if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(f.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            f.getOriginName());
                 } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            f.getOriginName());
+                    originField = f.getOriginName().replace(tableObj.getTableName()+".","");
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
@@ -189,6 +167,7 @@ public class IotdbQueryProvider extends QueryProvider {
             }
         }
 
+        //STGroup stg = new STGroupFile("/Users/source/dataease/core/backend/src/main/resources/sql/sqlTemplate.stg");
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
@@ -237,10 +216,8 @@ public class IotdbQueryProvider extends QueryProvider {
         if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
             // 解析origin name中有关联的字段生成sql表达式
             originField = calcFieldRegex(f.getOriginName(), tableObj);
-        } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-            originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
         } else {
-            originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+            originField = f.getOriginName().replace(tableObj.getTableName()+".","");
         }
         String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, index);
         String fieldName = "";
@@ -285,7 +262,7 @@ public class IotdbQueryProvider extends QueryProvider {
                                       List<DeSortField> sortFields,
                                       Long limit,
                                       String keyword) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree,
+        return createQuerySQL(sql, fields, isGroup, null, fieldCustomFilter, rowPermissionsTree,
                 sortFields, limit, keyword);
     }
 
@@ -293,7 +270,7 @@ public class IotdbQueryProvider extends QueryProvider {
     public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup,
                                       FilterTreeObj fieldCustomFilter,
                                       List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree);
+        return createQuerySQL(sql, fields, isGroup, null, fieldCustomFilter, rowPermissionsTree);
     }
 
     @Override
@@ -301,8 +278,9 @@ public class IotdbQueryProvider extends QueryProvider {
                                            Integer realSize, boolean isGroup, Datasource ds,
                                            FilterTreeObj fieldCustomFilter,
                                            List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree) + " LIMIT " + realSize
+        String sql = createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree) + " LIMIT " + realSize
                 + " offset " + (page - 1) * pageSize;
+        return sql;
     }
 
     @Override
@@ -310,8 +288,10 @@ public class IotdbQueryProvider extends QueryProvider {
                                          Integer realSize, boolean isGroup,
                                          FilterTreeObj fieldCustomFilter,
                                          List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter, rowPermissionsTree) + " LIMIT " + realSize
-                + " offset " + (page - 1) * pageSize;
+        if(!sql.toLowerCase().contains(" limit ")){
+            return sql + " LIMIT " + realSize + " offset " + (page - 1) * pageSize;
+        }
+        return sql;
     }
 
     @Override
@@ -327,8 +307,10 @@ public class IotdbQueryProvider extends QueryProvider {
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup,
                                           FilterTreeObj fieldCustomFilter,
                                           List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter, rowPermissionsTree) + " LIMIT " + limit
-                + " offset 0";
+        if (!sql.toLowerCase().contains(" limit ")){
+            return sql + " LIMIT " + limit + " offset 0";
+        }
+        return sql;
     }
 
     @Override
@@ -336,10 +318,9 @@ public class IotdbQueryProvider extends QueryProvider {
                          FilterTreeObj fieldCustomFilter,
                          List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                          List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        if(table.toLowerCase().trim().startsWith("select")) return table;
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .tableName(table)
                 .build();
         setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
@@ -351,13 +332,10 @@ public class IotdbQueryProvider extends QueryProvider {
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
                 } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
+                    originField = x.getOriginName().replace(tableObj.getTableName()+".","");
                 }
+                if(originField.equals("Time")) continue;
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -381,13 +359,10 @@ public class IotdbQueryProvider extends QueryProvider {
                 if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            y.getOriginName());
                 } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            y.getOriginName());
+                    originField = y.getOriginName().replace(tableObj.getTableName()+".","");
                 }
+                if(originField.equals("Time")) continue;
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -444,7 +419,7 @@ public class IotdbQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(IotdbConstants.BRACKETS, sql))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
             st.add("filters", aggWheres);
@@ -458,9 +433,7 @@ public class IotdbQueryProvider extends QueryProvider {
     @Override
     public String getSQLRangeBar(String table, List<ChartViewFieldDTO> baseXAxis, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .tableName(table)
                 .build();
         setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
@@ -482,13 +455,10 @@ public class IotdbQueryProvider extends QueryProvider {
                     if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                         // 解析origin name中有关联的字段生成sql表达式
                         originField = calcFieldRegex(x.getOriginName(), tableObj);
-                    } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                        originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                                x.getOriginName());
                     } else {
-                        originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                                x.getOriginName());
+                        originField = x.getOriginName().replace(tableObj.getTableName()+".","");
                     }
+                    if(originField.equals("Time")) continue;
                     String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                     // 处理纵轴字段
                     yFields.add(getYFields(x, originField, fieldAlias));
@@ -508,12 +478,8 @@ public class IotdbQueryProvider extends QueryProvider {
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
                 } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
+                    originField = x.getOriginName().replace(tableObj.getTableName()+".","");
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
 
@@ -598,7 +564,7 @@ public class IotdbQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(IotdbConstants.BRACKETS, sql))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
             st.add("filters", aggWheres);
@@ -628,7 +594,7 @@ public class IotdbQueryProvider extends QueryProvider {
             return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds,
                     view) + limit;
         } else {
-            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree,
+            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree,
                     extFilterRequestList, ds, view) + limit;
         }
     }
@@ -638,10 +604,9 @@ public class IotdbQueryProvider extends QueryProvider {
                                      List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                                      List<ChartExtFilterRequest> extFilterRequestList, Datasource ds,
                                      ChartViewWithBLOBs view) {
+        if(table.toLowerCase().trim().startsWith("select")) return table;
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .tableName(table)
                 .build();
         setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
@@ -654,19 +619,17 @@ public class IotdbQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
+                    originField = x.getOriginName().replace(tableObj.getTableName()+".","");
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
                         originField = String.format(IotdbConstants.CAST,
-                                String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                                        x.getOriginName()),
+                                x.getOriginName().replace(tableObj.getTableName()+".",""),
                                 IotdbConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
-                        originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                                x.getOriginName());
+                        originField = x.getOriginName().replace(tableObj.getTableName()+".","");
                     }
                 }
+                if(originField.equals("Time")) continue;
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -717,7 +680,7 @@ public class IotdbQueryProvider extends QueryProvider {
         st.add("isGroup", false);
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(IotdbConstants.BRACKETS, sql))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(orders))
             st.add("orders", orders);
@@ -764,9 +727,7 @@ public class IotdbQueryProvider extends QueryProvider {
                               Datasource ds,
                               ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .tableName(table)
                 .build();
         setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
@@ -781,13 +742,10 @@ public class IotdbQueryProvider extends QueryProvider {
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
-                } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
+                }else {
+                    originField = x.getOriginName().replace(tableObj.getTableName()+".","");
                 }
+                if(originField.equals("Time")) continue;
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -811,13 +769,10 @@ public class IotdbQueryProvider extends QueryProvider {
                 if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            y.getOriginName());
                 } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            y.getOriginName());
+                    originField = y.getOriginName().replace(tableObj.getTableName()+".","");
                 }
+                if(originField.equals("Time")) continue;
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -874,7 +829,7 @@ public class IotdbQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(IotdbConstants.BRACKETS, sql))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
             st.add("filters", aggWheres);
@@ -903,9 +858,7 @@ public class IotdbQueryProvider extends QueryProvider {
                                 Datasource ds,
                                 ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .tableName(table)
                 .build();
         setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
@@ -935,13 +888,10 @@ public class IotdbQueryProvider extends QueryProvider {
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
                 } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            x.getOriginName());
+                    originField = x.getOriginName().replace(tableObj.getTableName()+".","");
                 }
+                if(originField.equals("Time")) continue;
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -971,13 +921,10 @@ public class IotdbQueryProvider extends QueryProvider {
                 if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            y.getOriginName());
                 } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            y.getOriginName());
+                    originField = y.getOriginName().replace(tableObj.getTableName()+".","");
                 }
+                if(originField.equals("Time")) continue;
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -1034,7 +981,7 @@ public class IotdbQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(IotdbConstants.BRACKETS, sql))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
             st.add("filters", aggWheres);
@@ -1069,9 +1016,7 @@ public class IotdbQueryProvider extends QueryProvider {
                                 Datasource ds) {
         // 字段汇总 排序等
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(IotdbConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .tableName(table)
                 .build();
         setSchema(tableObj, ds);
         List<SQLObj> yFields = new ArrayList<>();
@@ -1081,16 +1026,13 @@ public class IotdbQueryProvider extends QueryProvider {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
                 String originField;
-                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
-                    // 解析origin name中有关联的字段生成sql表达式
+                // 解析origin name中有关联的字段生成sql表达式
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2)
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            y.getOriginName());
-                } else {
-                    originField = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            y.getOriginName());
+                else {
+                    originField = y.getOriginName().replace(tableObj.getTableName()+".","");
                 }
+                if(originField.equals("Time")) continue;
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -1142,7 +1084,7 @@ public class IotdbQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(IotdbConstants.BRACKETS, sql))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+//                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
             st.add("filters", aggWheres);
@@ -1219,10 +1161,8 @@ public class IotdbQueryProvider extends QueryProvider {
         if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
             // 解析origin name中有关联的字段生成sql表达式
             originName = calcFieldRegex(field.getOriginName(), tableObj);
-        } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-            originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
         } else {
-            originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            originName = field.getOriginName().replace(tableObj.getTableName()+".","");
         }
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -1301,10 +1241,8 @@ public class IotdbQueryProvider extends QueryProvider {
         if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
             // 解析origin name中有关联的字段生成sql表达式
             originName = calcFieldRegex(field.getOriginName(), tableObj);
-        } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-            originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
         } else {
-            originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            originName = field.getOriginName().replace(tableObj.getTableName()+".","");
         }
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -1437,12 +1375,8 @@ public class IotdbQueryProvider extends QueryProvider {
             if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
-            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                        field.getOriginName());
             } else {
-                originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                        field.getOriginName());
+                originName = field.getOriginName().replace(tableObj.getTableName()+".","");
             }
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -1541,12 +1475,8 @@ public class IotdbQueryProvider extends QueryProvider {
                 if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originName = calcFieldRegex(field.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                    originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            field.getOriginName());
                 } else {
-                    originName = String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            field.getOriginName());
+                    originName = field.getOriginName().replace(tableObj.getTableName()+".","");
                 }
 
                 if (field.getDeType() == 1) {
@@ -1813,7 +1743,7 @@ public class IotdbQueryProvider extends QueryProvider {
         List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
         for (DatasetTableField ele : calcFields) {
             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(IotdbConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    ele.getOriginName().replace(tableObj.getTableName()+".",""));
         }
         return originField;
     }
@@ -1834,9 +1764,7 @@ public class IotdbQueryProvider extends QueryProvider {
     public void setSchema(SQLObj tableObj, Datasource ds) {
         if (ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")) {
             IotdbConfig ioTDBConfig = json.fromJson(ds.getConfiguration(), IotdbConfig.class);
-            String schema = ioTDBConfig.getSchema();
-            String database = ioTDBConfig.getDataBase();
-            tableObj.setTableName(database + "." + schema + "." + tableObj.getTableName());
+            tableObj.setTableName(tableObj.getTableName());
         }
     }
 
