@@ -127,7 +127,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     const style = this.configStyle(chart)
     // 自适应列宽模式下，URL 字段的宽度固定为 120
     if (customAttr.basicStyle.tableColumnMode === 'adapt') {
-      const urlFields = fields.filter(field => axisMap[field.dataeaseName]?.deType === 7)
+      const urlFields = fields.filter(field => field.deType === 7)
       style.colCfg.widthByFieldValue = urlFields?.reduce((p, n) => {
         p[n.chartShowName ?? n.name] = 120
         return p
@@ -162,8 +162,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
       }
     }
     s2Options.dataCell = viewMeta => {
-      const deType = axisMap[viewMeta.valueField]?.deType
-      if (deType === 7 && chart.showPosition !== 'dialog') {
+      const field = fields.filter(f => f.dataeaseName === viewMeta.valueField)?.[0]
+      if (field?.deType === 7 && chart.showPosition !== 'dialog') {
         return new ImageCell(viewMeta, viewMeta?.spreadsheet)
       }
       if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
