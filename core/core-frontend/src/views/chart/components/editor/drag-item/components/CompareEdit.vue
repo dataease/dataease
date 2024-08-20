@@ -185,7 +185,7 @@ initCompareType()
 
       <el-form-item :label="t('chart.tip')">
         <span class="exp-style" style="padding-top: 2px">
-          当对比日期需要过滤时，请使用过滤组件实现过滤；使用视图过滤器，仪表板下钻和联动等功能，会导致结果不一致
+          当对比日期需要过滤时，请使用过滤组件实现过滤；使用图表过滤器，仪表板下钻和联动等功能，会导致结果不一致
         </span>
       </el-form-item>
     </el-form>

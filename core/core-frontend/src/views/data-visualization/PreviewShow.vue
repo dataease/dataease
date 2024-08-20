@@ -125,7 +125,7 @@ const downloadAsAppTemplate = downloadType => {
 const downLoadToAppPre = () => {
   const result = checkTemplate()
   if (result && result.length > 0) {
-    ElMessage.warning(`当前仪表板中[${result}]属于模版视图，无法导出，请先设置数据集！`)
+    ElMessage.warning(`当前仪表板中[${result}]属于模版图表，无法导出，请先设置数据集！`)
   } else {
     appExportFormRef.value.init({
       appName: state.dvInfo.name,

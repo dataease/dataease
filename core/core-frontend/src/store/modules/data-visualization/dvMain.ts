@@ -967,10 +967,10 @@ export const dvMainStore = defineStore('dataVisualization', {
 
             targetInfoList.forEach(targetInfo => {
               const targetInfoArray = targetInfo.split('#')
-              const targetViewId = targetInfoArray[0] // 目标视图
+              const targetViewId = targetInfoArray[0] // 目标图表
               if (element.component === 'UserView' && element.id === targetViewId) {
-                // 如果目标视图 和 当前循环组件id相等 则进行条件增减
-                const targetFieldId = targetInfoArray[1] // 目标视图列ID
+                // 如果目标图表 和 当前循环组件id相等 则进行条件增减
+                const targetFieldId = targetInfoArray[1] // 目标图表列ID
                 const condition = {
                   fieldId: targetFieldId,
                   operator: operator,

@@ -113,7 +113,7 @@ export default {
     successful_go_to: '导出成功，前往',
     failed_go_to: '导出失败，前往',
     data_set: '数据集',
-    view: '视图',
+    view: '图表',
     organization: '所属组织',
     download: '下载',
     re_export: '重新导出',

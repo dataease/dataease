@@ -153,7 +153,7 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
 }
 // 图表对象不用响应式
 let myChart: SpreadSheet = null
-// 实际渲染的视图信息，适应缩放
+// 实际渲染的图表信息，适应缩放
 let actualChart: ChartObj
 const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
   chartData.value = chartDataInfo

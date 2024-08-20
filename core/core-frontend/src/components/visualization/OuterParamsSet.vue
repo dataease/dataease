@@ -331,7 +331,7 @@ const nodeClick = data => {
   state.curNodeId = data.paramsInfoId
 }
 
-// 获取当前视图字段 关联仪表板的视图信息列表
+// 获取当前图表字段 关联仪表板的图表信息列表
 const getPanelViewList = dvId => {
   viewDetailList(dvId).then(rsp => {
     state.viewIdFieldArrayMap = {}

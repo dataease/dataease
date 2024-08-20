@@ -409,7 +409,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
               h(
                 'p',
                 { class: 'tip' },
-                '该数据集存在如下血缘关系，删除会造成相关仪表板的视图失效，确定删除？'
+                '该数据集存在如下血缘关系，删除会造成相关仪表板的图表失效，确定删除？'
               ),
               h(
                 ElButton,
