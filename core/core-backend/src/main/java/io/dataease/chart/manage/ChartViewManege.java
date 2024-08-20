@@ -19,6 +19,7 @@ import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
@@ -33,6 +34,7 @@ import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -62,6 +64,8 @@ public class ChartViewManege {
 
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -188,7 +192,7 @@ public class ChartViewManege {
                     BeanUtils.copyBean(dto, e);
                     return dto;
                 }).collect(Collectors.toList());
-                String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, f, true, null, Utils.mergeParam(Utils.getParams(f), null));
+                String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, f, true, null, Utils.mergeParam(Utils.getParams(f), null), pluginManage);
                 for (String func : FunctionConstant.AGG_FUNC) {
                     if (Utils.matchFunction(func, originField)) {
                         ele.setSummary("");

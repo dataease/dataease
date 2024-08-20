@@ -5,6 +5,7 @@ import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
@@ -23,7 +24,7 @@ import java.util.Objects;
  */
 public class Order2SQLObj {
 
-    public static void getOrders(SQLMeta meta, List<DeSortField> sortFields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam) {
+    public static void getOrders(SQLMeta meta, List<DeSortField> sortFields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
         SQLObj tableObj = meta.getTable();
         List<SQLObj> xOrders = meta.getXOrders() == null ? new ArrayList<>() : meta.getXOrders();
         if (ObjectUtils.isEmpty(tableObj)) {
@@ -33,19 +34,19 @@ public class Order2SQLObj {
             int step = originFields.size();
             for (int i = step; i < (step + sortFields.size()); i++) {
                 DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i, originFields, isCross, dsMap, fieldParam, chartParam);
+                SQLObj order = buildSortField(deSortField, tableObj, i, originFields, isCross, dsMap, fieldParam, chartParam, pluginManage);
                 xOrders.add(order);
             }
             meta.setXOrders(xOrders);
         }
     }
 
-    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam) {
+    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
         Map<String, String> paramMap = Utils.mergeParam(fieldParam, chartParam);
         String originField;
         if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_CALC)) {
             // 解析origin name中有关联的字段生成sql表达式
-            originField = Utils.calcFieldRegex(f.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap);
+            originField = Utils.calcFieldRegex(f.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
         } else if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_COPY)) {
             originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getDataeaseName());
         } else {
