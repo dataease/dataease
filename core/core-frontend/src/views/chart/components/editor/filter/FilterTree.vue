@@ -2,6 +2,7 @@
 import { ElMessage } from 'element-plus-secondary'
 import { inject, computed, ref, nextTick, provide } from 'vue'
 import RowAuth from '@/views/chart/components/editor/filter/auth-tree/RowAuth.vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 const emits = defineEmits(['filter-data'])
 const filedList = inject('filedList', () => [])
@@ -21,6 +22,7 @@ provide('filedList', computedFiledList)
 const closeFilter = () => {
   dialogVisible.value = false
 }
+const snapshotStore = snapshotStoreWithOut()
 
 const submit = () => {
   rowAuth.value.submit()
@@ -38,6 +40,7 @@ const changeFilter = val => {
   }
   dfsTreeDelete(items)
   emits('filter-data', { logic, items })
+  snapshotStore.recordSnapshotCache()
   dialogVisible.value = false
 }
 
