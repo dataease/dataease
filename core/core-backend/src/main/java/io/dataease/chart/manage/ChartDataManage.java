@@ -589,6 +589,11 @@ public class ChartDataManage {
         // get all fields
         List<ChartViewFieldDTO> allFields = getAllChartFields(view);
 
+        // 针对分组切换堆叠时会遇到的问题
+        if (StringUtils.equalsIgnoreCase(view.getType(), "bar-stack") || StringUtils.equalsIgnoreCase(view.getType(), "chart-mix-stack")) {
+            view.setXAxisExt(new ArrayList<>());
+        }
+
         List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxisExt = new ArrayList<>(view.getXAxisExt());
