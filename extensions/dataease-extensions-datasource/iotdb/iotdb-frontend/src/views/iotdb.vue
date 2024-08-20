@@ -20,9 +20,9 @@
             <el-input :placeholder="$t('enter_the_port')" v-model="form.configuration.port" autocomplete="off"/>
           </el-form-item>
 
-          <el-form-item :label="$t('dataBase')" prop="configuration.dataBase">
-            <el-input v-model="form.configuration.dataBase" autocomplete="off"/>
-          </el-form-item>
+<!--          <el-form-item :label="$t('dataBase')" prop="configuration.dataBase">-->
+<!--            <el-input v-model="form.configuration.dataBase" autocomplete="off"/>-->
+<!--          </el-form-item>-->
 
           <el-form-item :label="$t('username')" prop="configuration.username">
             <el-input :placeholder="$t('one_user_name')" v-model="form.configuration.username" autocomplete="off"/>
@@ -32,18 +32,18 @@
             <dePwd :placeholder="$t('input_a_password')" v-model="form.configuration.password"/>
           </el-form-item>
 
-          <el-form-item class="schema-label" :label="$t('schema')">
-            <template slot="label">
-              {{ $t("schema") }}
-              <el-button type="text" icon="el-icon-plus" size="small" @click="getSchema()">{{ $t('get_schema') }}
-              </el-button>
-            </template>
-            <el-select v-model="form.configuration.schema" filterable
-                       :placeholder="$t('please_select')"
-                       class="de-select">
-              <el-option v-for="item in schemas" :key="item" :label="item" :value="item"/>
-            </el-select>
-          </el-form-item>
+<!--          <el-form-item class="schema-label" :label="$t('schema')">-->
+<!--            <template slot="label">-->
+<!--              {{ $t("schema") }}-->
+<!--              <el-button type="text" icon="el-icon-plus" size="small" @click="getSchema()">{{ $t('get_schema') }}-->
+<!--              </el-button>-->
+<!--            </template>-->
+<!--            <el-select v-model="form.configuration.schema" filterable-->
+<!--                       :placeholder="$t('please_select')"-->
+<!--                       class="de-select">-->
+<!--              <el-option v-for="item in schemas" :key="item" :label="item" :value="item"/>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
 
           <el-form-item :label="$t('query_timeout')">
             <el-input
@@ -109,7 +109,6 @@ export default {
       rule: {
         'configuration.host': [{required: true, message: this.$t('commons.required'), trigger: 'blur'}],
         'configuration.port': [{required: true, message: this.$t('commons.required'), trigger: 'blur'}],
-        'configuration.dataBase': [{required: true, message: this.$t('commons.required'), trigger: 'blur'}],
         'configuration.username': [{required: true, message: this.$t('commons.required'), trigger: 'blur'}],
         'configuration.password': [{required: true, message: this.$t('commons.required'), trigger: 'blur'}]
       },
@@ -147,9 +146,9 @@ export default {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
           data.configuration = JSON.stringify(data.configuration)
-          this.executeAxios('/datasource/getSchema/', 'post', data, res => {
-            this.schemas = res.data
-          })
+          // this.executeAxios('/datasource/getSchema/', 'post', data, res => {
+          //   this.schemas = res.data
+          // })
         } else {
           return false
         }
