@@ -13,9 +13,8 @@ import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -23,6 +22,7 @@ import java.sql.*;
 import java.util.*;
 
 
+@Slf4j
 @Component()
 public class IotdbDsProvider extends DefaultJdbcProvider {
     @Resource
@@ -294,6 +294,53 @@ public class IotdbDsProvider extends DefaultJdbcProvider {
         return tableField;
     }
 
+    /**
+     * 更新SQL数据集update - 已适配
+     * @param datasourceRequest
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<TableField> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
+        log.info(datasourceRequest.getQuery());
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())) {
+            return fetchResultField(rs, datasourceRequest);
+        } catch (SQLException e) {
+            DataEaseException.throwException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            DataEaseException.throwException(e.getMessage());
+        }
+        return new ArrayList<>();
+    }
+
+    private List<TableField> fetchResultField(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
+        List<TableField> fieldList = new ArrayList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        for (int j = 0; j < columnCount; j++) {
+            String f = metaData.getColumnName(j + 1);
+            String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
+            String t = metaData.getColumnTypeName(j + 1);
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && l.contains(".")) {
+                l = l.split("\\.")[1];
+            }
+            TableField field = new TableField();
+            field.setFieldName(l);
+            field.setRemarks(l);
+            field.setFieldType(t);
+            field.setType(metaData.getColumnType(j + 1));
+            field.setFieldSize(metaData.getPrecision(j+1));
+            if (t.equalsIgnoreCase("LONG")) {
+                field.setFieldSize(65533);
+            } //oracle LONG
+            if (StringUtils.isNotEmpty(t) && t.toLowerCase().contains("date") && field.getFieldSize() < 50) {
+                field.setFieldSize(50);
+            }
+            fieldList.add(field);
+        }
+        return fieldList;
+    }
     /**
      * 检验数据源状态 - 已适配
      */
