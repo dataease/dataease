@@ -54,10 +54,10 @@ public class IotdbService extends DatasourceService {
     public DataSourceType getDataSourceType() {
         DataSourceType dataSourceType = new DataSourceType("iotdb", "Apache IoTDB", true, "",
                 DatasourceCalculationMode.DIRECT, true);
-        dataSourceType.setKeywordPrefix("\"");
-        dataSourceType.setKeywordSuffix("\"");
-        dataSourceType.setAliasPrefix("\"");
-        dataSourceType.setAliasSuffix("\"");
+        dataSourceType.setKeywordPrefix("`");
+        dataSourceType.setKeywordSuffix("`");
+        dataSourceType.setAliasPrefix("");
+        dataSourceType.setAliasSuffix("");
         dataSourceType.setDatabaseClassification(DatabaseClassification.OLTP);
         dataSourceType.setSurpportVersions("12");
         return dataSourceType;
