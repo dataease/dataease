@@ -58,6 +58,7 @@ const defaultForm = {
   deType: 0, // 字段类型
   extField: 2,
   id: '',
+  params: [],
   checked: true
 }
 
@@ -149,6 +150,7 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
 let quotaDataList = []
 let dimensionDataList = []
 const initEdit = (obj, dimensionData, quotaData) => {
+  formQuota.id = null
   Object.assign(fieldForm, { ...defaultForm, ...obj })
   state.dimensionData = dimensionData
   state.quotaData = quotaData.concat(fieldForm.params || [])
