@@ -1,12 +1,15 @@
 package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetTreeApi;
+import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.dataset.manage.DatasetGroupManage;
+import io.dataease.exportCenter.manage.ExportCenterManage;
+import io.dataease.exportCenter.server.ExportCenterServer;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.log.DeLog;
@@ -23,6 +26,8 @@ import java.util.List;
 public class DatasetTreeServer implements DatasetTreeApi {
     @Resource
     private DatasetGroupManage datasetGroupManage;
+    @Resource
+    private ExportCenterManage exportCenterManage;
 
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
@@ -93,6 +98,11 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @Override
     public List<DatasetTableDTO> detailWithPerm(List<Long> ids) throws Exception {
         return datasetGroupManage.getDetailWithPerm(ids);
+    }
+
+    @Override
+    public void exportDataset(DataSetExportRequest request) throws Exception {
+        exportCenterManage.addTask(request.getId(), "dataset", request);
     }
 
 }

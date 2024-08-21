@@ -947,7 +947,7 @@ public class CalciteProvider extends Provider {
                 if (database.contains(".")) {
                     sql = "select * from " + datasourceRequest.getTable() + " limit 0 offset 0 ";
                 } else {
-                    sql = String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", database);
+                    sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT  FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND   TABLE_NAME = '%s'", database, datasourceRequest.getTable());
                 }
                 break;
             case mysql:

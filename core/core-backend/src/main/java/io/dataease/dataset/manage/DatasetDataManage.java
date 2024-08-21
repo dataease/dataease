@@ -81,7 +81,7 @@ public class DatasetDataManage {
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
-    private static final List<String> notFullDs = List.of("mysql", "mariadb", "Excel", "API");
+    public static final List<String> notFullDs = List.of("mysql", "mariadb", "Excel", "API");
 
     public List<DatasetTableFieldDTO> getTableFields(DatasetTableDTO datasetTableDTO) throws Exception {
         List<DatasetTableFieldDTO> list = null;
