@@ -96,7 +96,7 @@ public class ExtWhere2Str {
                             whereName = String.format(SQLConstants.UNIX_TIMESTAMP, originName);
                         }
                         if (field.getDeExtractType() == 2 || field.getDeExtractType() == 4) {
-                            whereName = originName;
+                            whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
                         }
                         if (field.getDeExtractType() == 3) {
                             whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
