@@ -1,6 +1,7 @@
 package io.dataease.visualization.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.api.dataset.vo.CoreDatasetGroupVO;
 import io.dataease.api.visualization.VisualizationOuterParamsApi;
 import io.dataease.api.visualization.dto.VisualizationOuterParamsDTO;
 import io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO;
@@ -92,5 +93,10 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     public VisualizationOuterParamsBaseResponse getOuterParamsInfo(String visualizationId) {
         List<VisualizationOuterParamsInfoDTO> result = extOuterParamsMapper.getVisualizationOuterParamsInfo(visualizationId);
         return new VisualizationOuterParamsBaseResponse(Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(VisualizationOuterParamsInfoDTO::getSourceInfo, VisualizationOuterParamsInfoDTO::getTargetInfoList)));
+    }
+
+    @Override
+    public List<CoreDatasetGroupVO> queryDsWithVisualizationId(String visualizationId) {
+        return extOuterParamsMapper.queryDsWithVisualizationId(visualizationId);
     }
 }
