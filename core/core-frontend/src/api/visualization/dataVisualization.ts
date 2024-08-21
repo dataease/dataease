@@ -107,3 +107,11 @@ export const export2AppCheck = params => {
     loading: true
   })
 }
+
+export const queryOuterParamsDsInfo = async dvId => {
+  return request.get({
+    url: '/dataVisualization/queryDsWithVisualizationId/' + dvId,
+    method: 'get',
+    loading: false
+  })
+}

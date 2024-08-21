@@ -28,6 +28,13 @@
     </collection>
   </resultMap>
 
+  <resultMap id="BaseDsResultMapDTO" type="io.dataease.api.dataset.vo.CoreDatasetGroupVO">
+    <collection property="datasetFields" ofType="io.dataease.api.dataset.vo.CoreDatasetTableFieldVO"
+                column="{dataset_group_id=id}"
+                select="getDsFieldInfo">
+    </collection>
+  </resultMap>
+
   <resultMap id="OuterParamsInfoMap" type="io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO" extends="BaseResultMapParamsInfo">
     <collection property="targetViewInfoList" ofType="io.dataease.visualization.dao.auto.entity.VisualizationOuterParamsTargetViewInfo">
       <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
@@ -115,5 +122,23 @@
             and popi.checked=1
     </select>
 
+      <select id="queryDsWithVisualizationId"  resultMap="BaseDsResultMapDTO">
+          SELECT DISTINCT
+          	cdg.*
+          FROM
+          	core_dataset_group cdg
+          	INNER JOIN core_chart_view ccv ON cdg.id = ccv.table_id
+          	INNER JOIN data_visualization_info dvi ON ccv.scene_id = dvi.id
+          WHERE
+          	ccv.scene_id = #{visualizationId}
+          	AND dvi.id = #{visualizationId}
+          	AND FIND_IN_SET(
+          	ccv.id,
+          	dvi.component_data)
+      </select>
+
+       <select id="getDsFieldInfo"  resultType="io.dataease.api.dataset.vo.CoreDatasetTableFieldVO">
+          select cdtf.*,cdtf.id as attachId from core_dataset_table_field cdtf where cdtf.dataset_group_id = #{dataset_group_id}
+      </select>
 
 </mapper>

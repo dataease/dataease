@@ -13,7 +13,7 @@
         <el-row class="preview">
           <el-col :span="8" style="height: 100%; overflow-y: hidden">
             <el-row class="tree-head">
-              <span class="head-text">参数列表DS</span>
+              <span class="head-text">参数列表</span>
               <span class="head-filter">
                 <el-button type="primary" icon="Plus" text @click="addOuterParamsInfo"> </el-button>
               </span>
@@ -182,7 +182,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import generateID from '@/utils/generateID'
 import { queryWithVisualizationId, updateOuterParamsSet } from '@/api/visualization/outerParams'
-import { viewDetailList } from '@/api/visualization/dataVisualization'
+import { queryOuterParamsDsInfo, viewDetailList } from '@/api/visualization/dataVisualization'
 import checkArrayRepeat from '@/utils/check'
 import HandleMore from '@/components/handle-more/src/HandleMore.vue'
 import { fieldType } from '@/utils/attr'
@@ -219,6 +219,7 @@ const state = reactive({
     checked: false,
     outerParamsInfoArray: []
   },
+  baseDatasetInfo: [],
   outerParamsInfoArray: [],
   mapOuterParamsInfoArray: {},
   panelList: [],
@@ -284,7 +285,7 @@ const getFieldArray = id => {
   return state.viewIdFieldArrayMap[id]
 }
 
-const initParams = () => {
+const initParams = async () => {
   // 获取当前仪表板外部跳转信息
   queryWithVisualizationId(dvInfo.value.id).then(rsp => {
     state.outerParams = rsp.data
@@ -299,6 +300,9 @@ const initParams = () => {
         // nodeClick(firstNode)
       })
     }
+  })
+  await queryOuterParamsDsInfo(dvInfo.value.id).then(rsp => {
+    state.baseDatasetInfo = rsp.data
   })
   getPanelViewList(dvInfo.value.id)
 }
