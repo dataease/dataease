@@ -426,7 +426,13 @@ const delFieldById = arr => {
     const [targetId] = delId
     delId.shift()
     allfields.value = allfields.value.filter(ele => ele.id !== targetId)
-    const allfieldsId = allfields.value.map(ele => ele.id)
+    const paramsId = allfields.value.reduce((pre, next) => {
+      if (next.extField === 2) {
+        pre = [...pre, ...(next.params || []).map(element => element.id)]
+      }
+      return pre
+    }, [])
+    const allfieldsId = allfields.value.map(ele => ele.id).concat(paramsId)
     allfields.value = allfields.value.filter(ele => {
       if (ele.extField !== 2) return true
       const idMap = ele.originName.match(/\[(.+?)\]/g)
