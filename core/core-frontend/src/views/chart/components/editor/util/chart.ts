@@ -1183,6 +1183,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'table-pivot',
         title: t('chart.chart_table_pivot'),
         icon: 'table-pivot'
+      },
+      {
+        render: 'antv',
+        category: 'table',
+        value: 't-heatmap',
+        title: t('chart.chart_table_heatmap'),
+        icon: 't-heatmap'
       }
     ]
   },

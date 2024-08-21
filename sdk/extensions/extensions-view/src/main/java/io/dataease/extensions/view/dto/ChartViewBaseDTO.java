@@ -224,4 +224,6 @@ public class ChartViewBaseDTO implements Serializable {
      */
     private List<CalParam> calParams;
 
+    private List<ChartViewFieldDTO> extColor;
+
 }

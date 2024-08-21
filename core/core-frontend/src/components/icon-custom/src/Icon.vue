@@ -679,6 +679,9 @@ import icon_single_line_outlined from '@/assets/svg/icon_single-line_outlined.sv
 import icon_todo_outlined from '@/assets/svg/icon_todo_outlined.svg'
 import icon_file_doc_colorful from '@/assets/svg/icon_file-doc_colorful.svg'
 import icon_font from '@/assets/svg/icon_font.svg'
+import tHeatmap from '@/assets/svg/t-heatmap.svg'
+import tHeatmapDark from '@/assets/svg/t-heatmap-dark.svg'
+import tHeatmapOrigin from '@/assets/svg/t-heatmap-origin.svg'
 const iconMap = {
   '401': _401,
   icon_adjustment_outlined,
@@ -1356,7 +1359,10 @@ const iconMap = {
   calculate,
   'icon_file-doc_colorful': icon_file_doc_colorful,
   icon_font,
-  clock
+  clock,
+  't-heatmap': tHeatmap,
+  't-heatmap-dark': tHeatmapDark,
+  't-heatmap-origin': tHeatmapOrigin
 }
 
 const props = defineProps({
