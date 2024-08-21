@@ -960,8 +960,14 @@ const init = (queryId: string) => {
     .then(([dq, p]) => {
       dq.filter(ele => !!ele).forEach(ele => {
         ele.activelist = 'dimensionList'
-        ele.fields.parameterList = p.filter(itx => itx.datasetGroupId === ele.id)
+        ele.fields.parameterList = p.filter(
+          itx => itx.datasetGroupId === ele.id && !itx.params?.length
+        )
         ele.hasParameter = !!ele.fields.parameterList.length
+        ele.fields.dimensionList = (ele.fields.dimensionList || []).filter(
+          itx => !itx.params?.length
+        )
+        ele.fields.quotaList = (ele.fields.quotaList || []).filter(itx => !itx.params?.length)
         datasetMap[ele.id] = ele
       })
       fields.value = datasetFieldList.value
