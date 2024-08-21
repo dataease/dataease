@@ -49,6 +49,7 @@
             popi.param_name,
             ifnull( popi.checked, 0 ) AS checked,
             poptvi.target_view_id,
+            poptvi.target_ds_id,
             poptvi.target_field_id
         FROM
             visualization_outer_params pop

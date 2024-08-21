@@ -57,3 +57,7 @@ CREATE TABLE `xpack_threshold_instance`
 );
 
 
+ALTER TABLE `visualization_outer_params_target_view_info`
+    MODIFY COLUMN `target_view_id` varchar(50) NULL DEFAULT NULL COMMENT '联动视图ID/联动过滤项ID' ,
+    ADD COLUMN `target_ds_id` varchar(50) NULL COMMENT '联动数据集id/联动过滤组件id' ;
+

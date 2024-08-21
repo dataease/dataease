@@ -10,6 +10,9 @@ public interface VisualizationOuterParamsApi {
     @GetMapping("/queryWithVisualizationId/{dvId}")
     VisualizationOuterParamsDTO queryWithVisualizationId(@PathVariable("dvId") String dvId);
 
+    @GetMapping("/queryWithVisualizationId/{dvId}")
+    VisualizationOuterParamsDTO queryWithVisualizationIdDS(@PathVariable("dvId") String dvId);
+
     @PostMapping("/updateOuterParamsSet")
     void updateOuterParamsSet(@RequestBody VisualizationOuterParamsDTO OuterParamsDTO);
 
