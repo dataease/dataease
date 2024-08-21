@@ -223,12 +223,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.name = data.name
       this.foot = data.foot
       this.footContent = data.footContent
+      if (isDataEaseBi) return
       if (this.name) {
         document.title = this.name
       } else {
         document.title = 'DataEase'
       }
-      if (isDataEaseBi) return
       const link = document.querySelector('link[rel="icon"]')
       if (link) {
         if (this.web) {
