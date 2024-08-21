@@ -80,8 +80,8 @@ public interface DataFillingApi {
     @PostMapping("/task/logMsg")
     String logMsg(@RequestBody ReportInstanceMsgRequest request);
 
-    @PostMapping("/task/page/{goPage}/{pageSize}")
-    IPage<ReportGridVO> taskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfTaskInfoRequest request);
+    @PostMapping("/form/{formId}/task/page/{goPage}/{pageSize}")
+    IPage<ReportGridVO> taskPager(@PathVariable("formId") Long formId, @PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfTaskInfoRequest request);
 
     @PostMapping("/sub-task/page/{goPage}/{pageSize}")
     IPage<DfSubTaskVo> subTaskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfSubTaskInfoRequest request);
