@@ -252,6 +252,7 @@ public class ChartViewManege {
 
     public ChartBaseVO chartBaseInfo(Long id) {
         ChartBasePO po = extChartViewMapper.queryChart(id);
+        if (ObjectUtils.isEmpty(po)) return null;
         ChartBaseVO vo = BeanUtils.copyBean(new ChartBaseVO(), po);
         TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {};
         vo.setXAxis(JsonUtil.parseList(po.getXAxis(), tokenType));
