@@ -13,7 +13,7 @@
         <el-row class="preview">
           <el-col :span="8" style="height: 100%; overflow-y: hidden">
             <el-row class="tree-head">
-              <span class="head-text">参数列表DS</span>
+              <span class="head-text">参数列表</span>
               <span class="head-filter">
                 <el-button type="primary" icon="Plus" text @click="addOuterParamsInfo"> </el-button>
               </span>
