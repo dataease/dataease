@@ -9,6 +9,7 @@ import io.dataease.api.chart.request.ChartExcelRequestInner;
 import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
@@ -79,6 +80,8 @@ public class ExportCenterManage {
     private CoreChartViewMapper coreChartViewMapper;
     @Autowired
     private WsService wsService;
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
     @Resource
     private SysParameterManage sysParameterManage;
     @Value("${export.core.size:10}")
@@ -378,9 +381,10 @@ public class ExportCenterManage {
                 }
                 SQLMeta sqlMeta = new SQLMeta();
                 Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-                Field2SQLObj.field2sqlObj(sqlMeta, allFields, allFields, crossDs, dsMap, Utils.getParams(allFields), null);
-                WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null);
-                Order2SQLObj.getOrders(sqlMeta, dto.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null);
+                Field2SQLObj.field2sqlObj(sqlMeta, allFields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+                WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+                Order2SQLObj.getOrders(sqlMeta, dto.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+
                 String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
                 Long totalCount = datasetDataManage.getDatasetTotal(dto, replaceSql, null);
                 totalCount = totalCount > limit ? limit : totalCount;
