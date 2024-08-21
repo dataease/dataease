@@ -3,7 +3,7 @@ import {
   AntVDrawOptions,
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
-import type {
+import {
   S2Theme,
   SpreadSheet,
   Style,

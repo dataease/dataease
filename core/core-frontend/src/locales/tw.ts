@@ -277,6 +277,7 @@ export default {
       commit_time: '提交時間',
       confirm_delete: '確認刪除?',
       add_data: '添加數據',
+      batch_upload: '批量上傳',
       download_template: '下載模板',
       insert_data: '插入數據',
       update_data: '更新數據',
@@ -339,7 +340,7 @@ export default {
       assigned_task: '已下發任務',
       task_finish_in: '在任務下發',
       task_finish_in_suffix: '內完成填報',
-      open_sub_task: '查看子任務'
+      open_sub_task: '查看已下發任務'
     },
     on_the_left: '請在左側選擇表單',
     search_by_commit_name: '根據操作人名稱搜索'

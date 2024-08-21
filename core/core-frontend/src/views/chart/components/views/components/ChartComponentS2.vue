@@ -107,7 +107,9 @@ const state = reactive({
   totalItems: 0,
   showPage: false,
   pageStyle: 'simple',
-  currentPageSize: 0
+  currentPageSize: 0,
+  imgEnlarge: false,
+  imgSrc: ''
 })
 // 图表数据不用全响应式
 let chartData = shallowRef<Partial<Chart['data']>>({
@@ -136,7 +138,7 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
         } else {
           chartData.value = res?.data as Partial<Chart['data']>
           state.totalItems = res?.totalItems
-          dvMainStore.setViewDataDetails(view.id, chartData.value)
+          dvMainStore.setViewDataDetails(view.id, res)
           emit('onDrillFilters', res?.drillFilters)
           renderChart(res as unknown as Chart, resetPageInfo)
         }
@@ -200,7 +202,7 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
   const pageInfo = state.pageInfo
   pageInfo.pageSize = customAttr.basicStyle.tablePageSize ?? 20
-  if (state.totalItems > state.pageInfo.pageSize || state.pageStyle !== 'general') {
+  if (state.totalItems > state.pageInfo.pageSize || state.pageStyle === 'general') {
     pageInfo.total = state.totalItems
     state.showPage = true
   } else {
@@ -408,6 +410,16 @@ const trackClick = trackAction => {
       if (mobileInPc.value && !inMobile.value) return
       emit('onJumpClick', jumpParam)
       break
+    case 'enlarge':
+      if (view.value.type === 'table-info') {
+        param.data.dimensionList?.forEach(d => {
+          if (d.id === state.curActionId) {
+            state.imgSrc = d.value
+            state.imgEnlarge = true
+          }
+        })
+      }
+      break
     default:
       break
   }
@@ -491,6 +503,14 @@ const trackMenuCalc = itemId => {
   ) {
     trackMenuInfo = ['linkageAndDrill']
   }
+  // 明细表 URL 字段图片放大
+  if (view.value.type === 'table-info') {
+    view.value.xAxis?.forEach(axis => {
+      if (axis.id === itemId && axis.deType === 7) {
+        trackMenuInfo.push('enlarge')
+      }
+    })
+  }
   return trackMenuInfo
 }
 
@@ -561,10 +581,14 @@ onMounted(() => {
   resizeObserver.observe(document.getElementById(containerId))
 })
 onBeforeUnmount(() => {
-  myChart?.facet.timer?.stop()
-  myChart?.destroy()
-  myChart = null
-  resizeObserver?.disconnect()
+  try {
+    myChart?.facet.timer?.stop()
+    myChart?.destroy()
+    myChart = null
+    resizeObserver?.disconnect()
+  } catch (e) {
+    console.log(e)
+  }
 })
 
 const autoStyle = computed(() => {
@@ -647,6 +671,11 @@ const tablePageClass = computed(() => {
     </el-row>
     <chart-error v-if="isError" :err-msg="errMsg" />
   </div>
+  <el-dialog v-model="state.imgEnlarge" append-to-body>
+    <div class="enlarge-image">
+      <img :src="state.imgSrc" />
+    </div>
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -691,5 +720,15 @@ const tablePageClass = computed(() => {
       background: transparent !important;
     }
   }
+}
+</style>
+<style lang="less">
+.enlarge-image {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  flex-direction: row;
+  justify-content: center;
 }
 </style>

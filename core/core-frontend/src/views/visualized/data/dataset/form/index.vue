@@ -138,7 +138,8 @@ const fieldOptions = [
   {
     label: t('dataset.value') + '(' + t('dataset.float') + ')',
     value: 3
-  }
+  },
+  { label: 'URL', value: 7 }
 ]
 
 const fieldOptionsText = [
@@ -738,6 +739,9 @@ const getIconName = (type: number) => {
   }
   if (type === 5) {
     return 'location'
+  }
+  if (type === 7) {
+    return 'url'
   }
 }
 
@@ -1632,7 +1636,9 @@ const getDsIconName = data => {
                       <ElIcon style="margin-right: 6px">
                         <Icon
                           :name="`field_${fieldType[column.deType]}`"
-                          :className="`field-icon-${fieldType[column.deType]}`"
+                          :className="`field-icon-${
+                            fieldType[[2, 3].includes(column.deType) ? 2 : 0]
+                          }`"
                         ></Icon>
                       </ElIcon>
                       <span class="ellipsis" :title="column.title" style="width: 120px">

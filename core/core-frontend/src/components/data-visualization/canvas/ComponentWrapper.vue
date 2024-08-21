@@ -3,16 +3,32 @@ import { getStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 import { ref, onMounted, toRefs, getCurrentInstance, computed, nextTick } from 'vue'
 import findComponent from '@/utils/components'
-import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
+import { downloadCanvas2, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import ComponentSelector from '@/components/visualization/ComponentSelector.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Board from '@/components/de-board/Board.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
 const dvMainStore = dvMainStoreWithOut()
+const downLoading = ref(false)
+
+const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+const commonFilterAttrsFilterBorder = [
+  'width',
+  'height',
+  'top',
+  'left',
+  'rotate',
+  'borderActive',
+  'borderWidth',
+  'borderRadius',
+  'borderStyle',
+  'borderColor'
+]
 
 const props = defineProps({
   active: {
@@ -90,12 +106,19 @@ const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, se
   toRefs(props)
 let currentInstance
 const component = ref(null)
-const emits = defineEmits(['userViewEnlargeOpen', 'onPointClick'])
+const emits = defineEmits(['userViewEnlargeOpen', 'datasetParamsInit', 'onPointClick'])
 
+const viewDemoInnerId = computed(() => 'enlarge-inner-content-' + config.value.id)
 const htmlToImage = () => {
+  downLoading.value = true
   setTimeout(() => {
     const vueDom = componentWrapperInnerRef.value
-    downloadCanvas('img', vueDom, '图表')
+    activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value / 100)
+    downloadCanvas2('img', vueDom, '图表', () => {
+      // do callback
+      removeActiveWatermark(viewDemoInnerId.value)
+      downLoading.value = false
+    })
   }, 200)
 }
 
@@ -135,7 +158,7 @@ const getComponentStyleDefault = style => {
   if (config.value.component.includes('Svg')) {
     return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'backgroundColor'])
   } else {
-    return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+    return getStyle(style, style.borderActive ? commonFilterAttrs : commonFilterAttrsFilterBorder)
   }
 }
 
@@ -209,12 +232,12 @@ const onPointClick = param => {
 
 const eventEnable = computed(
   () =>
-    (['Picture', 'CanvasIcon', 'CircleShape', 'SvgTriangle', 'RectShape', 'ScrollText'].includes(
+    ['Picture', 'CanvasIcon', 'CircleShape', 'SvgTriangle', 'RectShape', 'ScrollText'].includes(
       config.value.component
     ) ||
-      config.value.innerType === 'rich-text') &&
-    config.value.events &&
-    config.value.events.checked
+    (['indicator', 'rich-text'].includes(config.value.innerType) &&
+      config.value.events &&
+      config.value.events.checked)
 )
 
 const onWrapperClick = e => {
@@ -243,17 +266,21 @@ const deepScale = computed(() => scale.value / 100)
     :class="showPosition + '-' + config.component"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
+    v-loading="downLoading"
+    element-loading-text="导出中..."
+    element-loading-background="rgba(255, 255, 255, 1)"
   >
     <component-edit-bar
       v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard' && !props.isSelector"
       class="wrapper-edit-bar"
       ref="componentEditBarRef"
-      :class="{ 'wrapper-edit-bar-active': active }"
       :canvas-id="canvasId"
       :index="index"
       :element="config"
       :show-position="showPosition"
+      :class="{ 'wrapper-edit-bar-active': active }"
       @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
+      @datasetParamsInit="() => emits('datasetParamsInit')"
     ></component-edit-bar>
     <component-selector
       v-if="
@@ -263,7 +290,12 @@ const deepScale = computed(() => scale.value / 100)
       "
       :resource-id="config.id"
     />
-    <div class="wrapper-inner" ref="componentWrapperInnerRef" :style="componentBackgroundStyle">
+    <div
+      class="wrapper-inner"
+      ref="componentWrapperInnerRef"
+      :id="viewDemoInnerId"
+      :style="componentBackgroundStyle"
+    >
       <!--边框背景-->
       <Board
         v-if="svgInnerEnable"

@@ -3,7 +3,6 @@ import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import TabCarouselSetting from '@/custom-component/common/TabCarouselSetting.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -27,11 +26,6 @@ const { curComponent } = storeToRefs(dvMainStore)
       :background-color-picker-width="197"
       :background-border-select-width="197"
     >
-      <TabCarouselSetting
-        v-if="curComponent && curComponent.carousel"
-        :element="curComponent"
-        :themes="themes"
-      ></TabCarouselSetting>
     </CommonAttr>
   </div>
 </template>

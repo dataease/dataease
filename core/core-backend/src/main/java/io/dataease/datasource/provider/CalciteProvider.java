@@ -1,7 +1,6 @@
 package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
@@ -16,10 +15,7 @@ import io.dataease.extensions.datasource.provider.ExtendedJdbcClassLoader;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.i18n.Translator;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.CommonBeanFactory;
-import io.dataease.utils.JsonUtil;
-import io.dataease.utils.LogUtil;
+import io.dataease.utils.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;

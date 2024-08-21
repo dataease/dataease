@@ -2,8 +2,10 @@ package io.dataease.exception;
 
 import io.dataease.result.ResultCode;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
+@Accessors(chain = true)
 public class DEException extends RuntimeException {
 
     private int code;

@@ -2,7 +2,7 @@
 import { computed, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
-import { ElIcon, ElSpace } from 'element-plus-secondary'
+import { ElFormItem, ElIcon, ElInput, ElSpace } from 'element-plus-secondary'
 import { formatterType, unitType } from '../../../js/formatter'
 import { defaultsDeep, cloneDeep, intersection, union, defaultTo, map } from 'lodash-es'
 import { includesAny } from '../../util/StringUtils'
@@ -58,7 +58,7 @@ watch(
   { deep: false }
 )
 const yAxis = computed(() => {
-  if (props.chart.type.includes('chart-mix')) {
+  if (props.chart.type.includes('chart-mix') || props.chart.type.includes('bidirectional-bar')) {
     return union(
       defaultTo(
         map(props.chart.yAxis, y => {
@@ -231,7 +231,8 @@ const state = reactive<{ labelForm: ChartLabelAttr | any }>({
   labelForm: {
     quotaLabelFormatter: DEFAULT_LABEL.quotaLabelFormatter,
     seriesLabelFormatter: [],
-    labelFormatter: DEFAULT_LABEL.labelFormatter
+    labelFormatter: DEFAULT_LABEL.labelFormatter,
+    conversionTag: DEFAULT_LABEL.conversionTag
   }
 })
 
@@ -255,6 +256,9 @@ const init = () => {
   }
 }
 const checkLabelContent = contentProp => {
+  if (chartType.value === 'funnel') {
+    return false
+  }
   const propIntersection = intersection(props.propertyInner, [
     'showDimension',
     'showQuota',
@@ -373,6 +377,11 @@ onMounted(() => {
 const isGroupBar = computed(() => {
   return props.chart.type === 'bar-group'
 })
+const conversionPrecision = [
+  { name: t('chart.reserve_zero'), value: 0 },
+  { name: t('chart.reserve_one'), value: 1 },
+  { name: t('chart.reserve_two'), value: 2 }
+]
 </script>
 
 <template>
@@ -1251,6 +1260,55 @@ const isGroupBar = computed(() => {
         {{ t('chart.show_gap') }}
       </el-checkbox>
     </el-form-item>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('conversionTag')"
+    >
+      <el-checkbox
+        :effect="themes"
+        size="small"
+        @change="changeLabelAttr('conversionTag')"
+        v-model="state.labelForm.conversionTag.show"
+      >
+        转化率
+      </el-checkbox>
+    </el-form-item>
+    <div style="padding-left: 22px" v-if="showProperty('conversionTag')">
+      <el-row :gutter="8">
+        <el-col :span="12">
+          <el-form-item label="保留小数" class="form-item" :class="'form-item-' + themes">
+            <el-select
+              size="small"
+              style="width: 108px"
+              :effect="themes"
+              :disabled="!state.labelForm.conversionTag.show"
+              v-model.number="state.labelForm.conversionTag.precision"
+              @change="changeLabelAttr('conversionTag')"
+            >
+              <el-option
+                v-for="option in conversionPrecision"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="转化率名称" class="form-item" :class="'form-item-' + themes">
+            <el-input
+              :effect="themes"
+              v-model="state.labelForm.conversionTag.text"
+              size="small"
+              maxlength="100"
+              :disabled="!state.labelForm.conversionTag.show"
+              @blur="changeLabelAttr('conversionTag')"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
   </el-form>
 </template>
 

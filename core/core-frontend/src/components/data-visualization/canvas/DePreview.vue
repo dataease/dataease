@@ -3,23 +3,25 @@ import { getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { computed, nextTick, ref, toRefs, watch, onBeforeUnmount, onMounted } from 'vue'
-import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
+import { changeRefComponentsSizeWithScalePoint } from '@/utils/changeComponentsSizeWithScale'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { isDashboard, isMainCanvas, refreshOtherComponent } from '@/utils/canvasUtils'
-import { activeWatermark } from '@/components/watermark/watermark'
-import { personInfoApi } from '@/api/user'
+import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import router from '@/router'
 import { XpackComponent } from '@/components/plugin'
 import PopArea from '@/custom-component/pop-area/Component.vue'
 import CanvasFilterBtn from '@/custom-component/canvas-filter-btn/Component.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
+const customDatasetParamsRef = ref(null)
+const emits = defineEmits(['onResetLayout'])
 
 const props = defineProps({
   canvasStyleData: {
@@ -83,8 +85,8 @@ const {
   outerScale
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
-const scaleWidth = ref(100)
-const scaleHeight = ref(100)
+const scaleWidthPoint = ref(100)
+const scaleHeightPoint = ref(100)
 const scaleMin = ref(100)
 const previewCanvas = ref(null)
 const cellWidth = ref(10)
@@ -92,10 +94,14 @@ const cellHeight = ref(10)
 const userViewEnlargeRef = ref(null)
 const searchCount = ref(0)
 const refreshTimer = ref(null)
-const userInfo = ref(null)
-
+const renderReady = ref(false)
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
+})
+
+// 大屏是否保持宽高比例 非全屏 full 都需要保持宽高比例
+const dataVKeepRadio = computed(() => {
+  return canvasStyleData.value.screenAdaptor !== 'full'
 })
 const isReport = computed(() => {
   return !!router.currentRoute.value.query?.report
@@ -117,8 +123,15 @@ const canvasStyle = computed(() => {
         ? downloadStatus.value
           ? getDownloadStatusMainHeight()
           : '100%'
-        : changeStyleWithScale(canvasStyleData.value?.height, scaleMin.value) + 'px'
+        : !canvasStyleData.value?.screenAdaptor ||
+          canvasStyleData.value?.screenAdaptor === 'widthFirst'
+        ? changeStyleWithScale(canvasStyleData.value?.height, scaleMin.value) + 'px'
+        : '100%'
     }
+    style['width'] =
+      !dashboardActive.value && canvasStyleData.value?.screenAdaptor === 'heightFirst'
+        ? changeStyleWithScale(canvasStyleData.value?.width, scaleHeightPoint.value) + 'px'
+        : '100%'
   }
   if (!dashboardActive.value) {
     style['overflow-y'] = 'hidden'
@@ -179,11 +192,11 @@ const resetLayout = () => {
       //div容器获取tableBox.value.clientWidth
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
-      scaleWidth.value = Math.floor((canvasWidth * 100) / canvasStyleData.value.width)
-      scaleHeight.value = Math.floor((canvasHeight * 100) / canvasStyleData.value.height)
+      scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
+      scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
       scaleMin.value = isDashboard()
-        ? Math.min(scaleWidth.value, scaleHeight.value)
-        : (canvasWidth * 100) / canvasStyleData.value.width
+        ? Math.floor(Math.min(scaleWidthPoint.value, scaleHeightPoint.value))
+        : scaleWidthPoint.value
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
@@ -191,12 +204,18 @@ const resetLayout = () => {
           ? scaleMin.value * 1.2
           : outerScale.value * 100
       } else {
-        changeRefComponentsSizeWithScale(
+        // 需要保持宽高比例时 高度伸缩和宽度伸缩保持一致 否则 高度伸缩单独计算
+        const scaleMinHeight = dataVKeepRadio.value ? scaleMin.value : scaleHeightPoint.value
+        changeRefComponentsSizeWithScalePoint(
           baseComponentData.value,
           canvasStyleData.value,
-          scaleMin.value
+          scaleMin.value,
+          scaleMinHeight
         )
+        scaleMin.value = isMainCanvas(canvasId.value) ? scaleMin.value : outerScale.value * 100
       }
+      renderReady.value = true
+      emits('onResetLayout')
     }
   })
 }
@@ -250,31 +269,7 @@ const refreshDataV = () => {
 
 const initWatermark = (waterDomId = 'preview-canvas-main') => {
   if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
-    if (userInfo.value && userInfo.value.model !== 'lose') {
-      activeWatermark(
-        dvInfo.value.watermarkInfo.settingContent,
-        userInfo.value,
-        waterDomId,
-        canvasId.value,
-        dvInfo.value.selfWatermarkStatus,
-        scaleMin.value / 100
-      )
-    } else {
-      const method = personInfoApi
-      method().then(res => {
-        userInfo.value = res.data
-        if (userInfo.value && userInfo.value.model !== 'lose') {
-          activeWatermark(
-            dvInfo.value.watermarkInfo.settingContent,
-            userInfo.value,
-            waterDomId,
-            canvasId.value,
-            dvInfo.value.selfWatermarkStatus,
-            scaleMin.value / 100
-          )
-        }
-      })
-    }
+    activeWatermarkCheckUser(waterDomId, canvasId.value, scaleMin.value / 100)
   }
 }
 
@@ -318,7 +313,8 @@ const userViewEnlargeOpen = (opt, item) => {
     canvasStyleData.value,
     canvasViewInfo.value[item.id],
     item,
-    opt
+    opt,
+    { scale: scaleMin.value / 100 }
   )
 }
 const handleMouseDown = () => {
@@ -360,8 +356,15 @@ const popAreaAvailable = computed(
 )
 
 const filterBtnShow = computed(
-  () => popAreaAvailable.value && popComponentData.value && popComponentData.value.length > 0
+  () =>
+    popAreaAvailable.value &&
+    popComponentData.value &&
+    popComponentData.value.length > 0 &&
+    canvasStyleData.value.popupButtonAvailable
 )
+const datasetParamsInit = item => {
+  customDatasetParamsRef.value?.optInit(item)
+}
 
 defineExpose({
   restore
@@ -396,27 +399,31 @@ defineExpose({
       :canvas-style-data="canvasStyleData"
       :component-data="baseComponentData"
     ></canvas-opt-bar>
-    <ComponentWrapper
-      v-for="(item, index) in baseComponentData"
-      v-show="item.isShow"
-      :active="item.id === (curComponent || {})['id']"
-      :canvas-id="canvasId"
-      :canvas-style-data="canvasStyleData"
-      :dv-info="dvInfo"
-      :canvas-view-info="canvasViewInfo"
-      :view-info="canvasViewInfo[item.id]"
-      :key="index"
-      :config="item"
-      :style="getShapeItemShowStyle(item)"
-      :show-position="showPosition"
-      :search-count="searchCount"
-      :scale="mobileInPc ? 100 : scaleMin"
-      :is-selector="props.isSelector"
-      @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
-      @onPointClick="onPointClick"
-    />
+    <template v-if="renderReady">
+      <ComponentWrapper
+        v-for="(item, index) in baseComponentData"
+        v-show="item.isShow"
+        :active="item.id === (curComponent || {})['id']"
+        :canvas-id="canvasId"
+        :canvas-style-data="canvasStyleData"
+        :dv-info="dvInfo"
+        :canvas-view-info="canvasViewInfo"
+        :view-info="canvasViewInfo[item.id]"
+        :key="index"
+        :config="item"
+        :style="getShapeItemShowStyle(item)"
+        :show-position="showPosition"
+        :search-count="searchCount"
+        :scale="mobileInPc ? 100 : scaleMin"
+        :is-selector="props.isSelector"
+        @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+        @datasetParamsInit="datasetParamsInit(item)"
+        @onPointClick="onPointClick"
+      />
+    </template>
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
+  <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 

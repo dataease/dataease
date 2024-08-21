@@ -87,7 +87,7 @@ public class DataSourceManage {
     public void checkName(DatasourceDTO dto) {
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(dto.getPid())) {
-            wrapper.eq("pid", dto.getPid());
+            wrapper.eq("pid", dto.getPid().equals(0L) ? AuthUtils.getUser().getDefaultOid() : dto.getPid());
         }
         if (StringUtils.isNotEmpty(dto.getName())) {
             wrapper.eq("name", dto.getName());

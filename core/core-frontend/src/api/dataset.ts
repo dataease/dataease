@@ -120,6 +120,22 @@ export const delDatasetTree = async (id): Promise<IResponse> => {
   })
 }
 
+export const exportDatasetData = async (data): Promise<IResponse> => {
+  return request.post({
+    url: '/datasetTree/exportDataset',
+    method: 'post',
+    data: data,
+    loading: true,
+    responseType: 'blob'
+  })
+}
+
+export const perDelete = async (id): Promise<boolean> => {
+  return request.post({ url: `/datasetTree/perDelete/${id}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
 export const getDatasourceList = async (): Promise<IResponse> => {
   return request.post({ url: '/datasource/tree', data: { busiFlag: 'datasource' } }).then(res => {
     return res?.data

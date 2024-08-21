@@ -92,9 +92,13 @@ public abstract class Provider {
      */
     public abstract void hidePW(DatasourceDTO datasourceDTO);
 
-    public abstract void exec(DatasourceRequest datasourceRequest) throws DEException;
+    public void exec(DatasourceRequest datasourceRequest) {
 
-    public abstract int executeUpdate(DatasourceRequest datasourceRequest) throws DEException;
+    }
+
+    public int executeUpdate(DatasourceRequest datasourceRequest) {
+        return 0;
+    }
 
 
     @Getter

@@ -26,4 +26,6 @@ public class FilterTreeItem implements Serializable {
     private DynamicTimeSetting dynamicTimeSetting;
     // tree
     private FilterTreeObj subTree;
+
+    private String valueType;
 }

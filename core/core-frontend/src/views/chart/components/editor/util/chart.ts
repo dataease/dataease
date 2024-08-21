@@ -298,6 +298,12 @@ export const DEFAULT_MISC: ChartMiscAttr = {
         speed: 0.01
       }
     }
+  },
+  wordCloudAxisValueRange: {
+    auto: true,
+    min: 0,
+    max: 0,
+    fieldId: undefined
   }
 }
 
@@ -324,7 +330,12 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
   showDimension: true,
   showQuota: false,
   showProportion: true,
-  seriesLabelFormatter: []
+  seriesLabelFormatter: [],
+  conversionTag: {
+    show: false,
+    precision: 2,
+    text: '转化率'
+  }
 }
 export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
@@ -334,7 +345,12 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   color: '#909399',
   tooltipFormatter: formatterItem,
   backgroundColor: '#ffffff',
-  seriesTooltipFormatter: []
+  seriesTooltipFormatter: [],
+  carousel: {
+    enable: false,
+    stayTime: 3,
+    intervalTime: 0
+  }
 }
 export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
   row: {

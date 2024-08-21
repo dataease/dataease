@@ -5,7 +5,12 @@ import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 
 export const commonStyle = {
   rotate: 0,
-  opacity: 1
+  opacity: 1,
+  borderActive: false,
+  borderWidth: 1,
+  borderRadius: 5,
+  borderStyle: 'solid',
+  borderColor: '#cccccc'
 }
 
 // 轮询设置
@@ -22,7 +27,7 @@ export const BASE_EVENTS = {
     { key: 'jump', label: '跳转' },
     { key: 'download', label: '下载' },
     { key: 'share', label: '分享' },
-    { key: 'showHidden', label: '弹框区域' },
+    { key: 'showHidden', label: '弹窗区域' },
     { key: 'refreshDataV', label: '刷新' },
     { key: 'refreshView', label: '刷新图表' }
   ],
@@ -224,7 +229,9 @@ export const commonAttr = {
     'picture',
     'frameLinks',
     'videoLinks',
-    'streamLinks'
+    'streamLinks',
+    'carouselInfo',
+    'events'
   ], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
@@ -464,11 +471,8 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      borderWidth: 1,
-      borderRadius: 5,
-      borderStyle: 'solid',
-      borderColor: '#cccccc',
-      backgroundColor: 'rgba(236,231,231,0.1)'
+      backgroundColor: 'rgba(236,231,231,0.1)',
+      borderActive: true
     }
   },
   {

@@ -91,6 +91,11 @@ const showValueFormatter = computed<boolean>(() => {
 })
 
 const isEnableCompare = () => {
+  // 指标卡开放同环比配置
+  if (chart.value.type === 'indicator') {
+    state.disableEditCompare = false
+    return
+  }
   let xAxis = null
   if (Object.prototype.toString.call(chart.value.xAxis) === '[object Array]') {
     xAxis = JSON.parse(JSON.stringify(chart.value.xAxis))
@@ -118,7 +123,6 @@ const isEnableCompare = () => {
   // 暂时只支持类别轴/维度的时间类型字段
   if (
     t1.length > 0 &&
-    chart.value.type !== 'indicator' &&
     chart.value.type !== 'label' &&
     chart.value.type !== 'gauge' &&
     chart.value.type !== 'liquid'
@@ -293,7 +297,7 @@ onMounted(() => {
           </el-icon>
           <el-icon>
             <Icon
-              :className="`field-icon-${fieldType[item.deType]}`"
+              :className="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
               :name="`field_${fieldType[item.deType]}`"
             />
           </el-icon>
@@ -427,12 +431,7 @@ onMounted(() => {
                 >
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('sum')"
                   >
                     <span
@@ -447,12 +446,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('avg')"
                   >
                     <span
@@ -467,12 +461,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('max')"
                   >
                     <span
@@ -487,12 +476,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('min')"
                   >
                     <span
@@ -507,12 +491,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('stddev_pop')"
                   >
                     <span
@@ -527,12 +506,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="
-                      item.id !== '-1' &&
-                      item.deType !== 0 &&
-                      item.deType !== 1 &&
-                      item.deType !== 5
-                    "
+                    v-if="item.id !== '-1' && ![0, 1, 5, 7].includes(item.deType)"
                     :command="beforeSummary('var_pop')"
                   >
                     <span

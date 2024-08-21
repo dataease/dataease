@@ -2707,6 +2707,7 @@ export default {
       commit_time: '提交时间',
       confirm_delete: '确认删除?',
       add_data: '添加数据',
+      batch_upload: '批量上传',
       download_template: '下载模板',
       insert_data: '插入数据',
       update_data: '更新数据',
@@ -2769,7 +2770,7 @@ export default {
       assigned_task: '已下发任务',
       task_finish_in: '在任务下发',
       task_finish_in_suffix: '内完成填报',
-      open_sub_task: '查看子任务'
+      open_sub_task: '查看已下发任务'
     },
     on_the_left: '请在左侧选择表单',
     search_by_commit_name: '根据操作人名称搜索'
@@ -2780,6 +2781,9 @@ export default {
     status: '数据状态',
     base_setting: '基本设置',
     threshold_setting: '告警设置',
-    name: '告警名称'
+    name: '告警名称',
+    grid_title: '告警管理',
+    grid: '告警列表',
+    record: '告警记录'
   }
 }

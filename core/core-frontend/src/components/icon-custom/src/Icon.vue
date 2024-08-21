@@ -3,11 +3,16 @@ import { computed } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 
 import _401 from '@/assets/svg/401.svg'
+import icon_file_font_colorful from '@/assets/svg/icon_file-font_colorful.svg'
+import relation_arrow_icon from '@/assets/svg/relation_arrow_icon.svg'
+import icon_data_visualization from '@/assets/svg/icon_data-visualization.svg'
+import icon_notification_filled from '@/assets/svg/icon_notification_filled.svg'
 import calculate from '@/assets/svg/calculate.svg'
 import _403 from '@/assets/svg/403.svg'
 import APIDs from '@/assets/svg/API-ds.svg'
 import Apache_Hive from '@/assets/svg/Apache Hive.svg'
 import Checkbox from '@/assets/svg/Checkbox.svg'
+import clock from '@/assets/svg/clock.svg'
 import DM from '@/assets/svg/DM.svg'
 import DataEase from '@/assets/svg/DataEase.svg'
 import Elasticsearch from '@/assets/svg/Elasticsearch.svg'
@@ -219,6 +224,9 @@ import editIn from '@/assets/svg/edit-in.svg'
 import edit from '@/assets/svg/edit.svg'
 import emailTask from '@/assets/svg/email-task.svg'
 import embedded from '@/assets/svg/embedded.svg'
+import association from '@/assets/svg/association.svg'
+import threshold from '@/assets/svg/threshold.svg'
+import threshold_full from '@/assets/svg/threshold_full.svg'
 import example from '@/assets/svg/example.svg'
 import exclamationmark from '@/assets/svg/exclamationmark.svg'
 import exclamationmark2 from '@/assets/svg/exclamationmark2.svg'
@@ -229,6 +237,7 @@ import field_location from '@/assets/svg/field_location.svg'
 import field_text from '@/assets/svg/field_text.svg'
 import field_time from '@/assets/svg/field_time.svg'
 import field_value from '@/assets/svg/field_value.svg'
+import field_url from '@/assets/svg/field_url.svg'
 import filterCenter from '@/assets/svg/filter-center.svg'
 import filterHCenter from '@/assets/svg/filter-h-center.svg'
 import filterHLeft from '@/assets/svg/filter-h-left.svg'
@@ -377,6 +386,7 @@ import icon_moreVertical_outlined from '@/assets/svg/icon_more-vertical_outlined
 import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
 import icon_newItem_outlined from '@/assets/svg/icon_new-item_outlined.svg'
 import icon_number_outlined from '@/assets/svg/icon_number_outlined.svg'
+import icon_url_outlined from '@/assets/svg/icon_url_outlined.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import icon_ordeList_outlined from '@/assets/svg/icon_orde-list_outlined.svg'
 import icon_organization_outlined from '@/assets/svg/icon_organization_outlined.svg'
@@ -667,8 +677,13 @@ import icon_radio_outlined from '@/assets/svg/icon_radio_outlined.svg'
 import icon_single_line_outlined from '@/assets/svg/icon_single-line_outlined.svg'
 import icon_todo_outlined from '@/assets/svg/icon_todo_outlined.svg'
 import icon_file_doc_colorful from '@/assets/svg/icon_file-doc_colorful.svg'
+import icon_font from '@/assets/svg/icon_font.svg'
 const iconMap = {
   '401': _401,
+  icon_file_font_colorful,
+  relation_arrow_icon,
+  icon_data_visualization,
+  icon_notification_filled,
   '403': _403,
   'API-ds': APIDs,
   'Apache Hive': Apache_Hive,
@@ -884,6 +899,9 @@ const iconMap = {
   edit: edit,
   'email-task': emailTask,
   embedded: embedded,
+  association: association,
+  threshold: threshold,
+  threshold_full,
   example: example,
   exclamationmark: exclamationmark,
   exclamationmark2: exclamationmark2,
@@ -894,6 +912,7 @@ const iconMap = {
   field_text: field_text,
   field_time: field_time,
   field_value: field_value,
+  field_url: field_url,
   'filter-center': filterCenter,
   'filter-h-center': filterHCenter,
   'filter-h-left': filterHLeft,
@@ -1042,6 +1061,7 @@ const iconMap = {
   icon_more_outlined: icon_more_outlined,
   'icon_new-item_outlined': icon_newItem_outlined,
   icon_number_outlined: icon_number_outlined,
+  icon_url_outlined: icon_url_outlined,
   'icon_operation-analysis_outlined': icon_operationAnalysis_outlined,
   'icon_orde-list_outlined': icon_ordeList_outlined,
   icon_organization_outlined: icon_organization_outlined,
@@ -1332,7 +1352,9 @@ const iconMap = {
   'word-cloud-origin': wordCloudOrigin,
   'word-cloud': wordCloud,
   calculate,
-  'icon_file-doc_colorful': icon_file_doc_colorful
+  'icon_file-doc_colorful': icon_file_doc_colorful,
+  icon_font,
+  clock
 }
 
 const props = defineProps({

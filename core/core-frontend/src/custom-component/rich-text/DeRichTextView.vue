@@ -355,7 +355,7 @@ const editCursor = () => {
       plugins: 'table',
       setup: function (editor) {
         editor.on('init', function () {
-          console.log('====init====')
+          console.info('====init====')
         })
       }
     })
@@ -377,7 +377,7 @@ const calcData = (view: Chart, callback) => {
           state.totalItems = res?.totalItems
           const curViewInfo = canvasViewInfo.value[element.value.id]
           curViewInfo['curFields'] = res.data.fields
-          dvMainStore.setViewDataDetails(element.value.id, state.data)
+          dvMainStore.setViewDataDetails(element.value.id, res)
           initReady.value = true
           initCurFields(res)
         }
@@ -397,10 +397,13 @@ const calcData = (view: Chart, callback) => {
     state.viewDataInfo = {}
     state.totalItems = 0
     const curViewInfo = canvasViewInfo.value[element.value.id]
-    curViewInfo['curFields'] = []
-    dvMainStore.setViewDataDetails(element.value.id, state.data)
+    if (curViewInfo) {
+      curViewInfo['curFields'] = []
+      dvMainStore.setViewDataDetails(element.value.id, state.viewDataInfo)
+      initReady.value = true
+      initCurFields(curViewInfo)
+    }
     initReady.value = true
-    initCurFields(curViewInfo)
     callback?.()
     nextTick(() => {
       initReady.value = true

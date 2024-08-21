@@ -29,7 +29,7 @@ import {
   findDragComponent,
   findNewComponent,
   isDashboard,
-  isGroupCanvas,
+  isGroupOrTabCanvas,
   isMainCanvas,
   isSameCanvas
 } from '@/utils/canvasUtils'
@@ -42,9 +42,9 @@ import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 import DragInfo from '@/components/visualization/common/DragInfo.vue'
-import { activeWatermark } from '@/components/watermark/watermark'
-import { personInfoApi } from '@/api/user'
+import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import PopArea from '@/custom-component/pop-area/Component.vue'
+import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -202,7 +202,20 @@ const height = ref(0)
 const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate', 'backgroundColor']
 const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+const commonFilterAttrsFilterBorder = [
+  'width',
+  'height',
+  'top',
+  'left',
+  'rotate',
+  'borderActive',
+  'borderWidth',
+  'borderRadius',
+  'borderStyle',
+  'borderColor'
+]
 const userViewEnlargeRef = ref(null)
+const customDatasetParamsRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
 const mainDomId = ref('editor-' + canvasId.value)
@@ -239,32 +252,7 @@ const initWatermark = (waterDomId = 'editor-canvas-main') => {
       dvInfo.value.watermarkInfo.settingContent &&
       isMainCanvas(canvasId.value)
     ) {
-      const scale = dashboardActive.value ? 1 : curScale.value
-      if (userInfo.value && userInfo.value.model !== 'lose') {
-        activeWatermark(
-          dvInfo.value.watermarkInfo.settingContent,
-          userInfo.value,
-          waterDomId,
-          canvasId.value,
-          dvInfo.value.selfWatermarkStatus,
-          scale
-        )
-      } else {
-        const method = personInfoApi
-        method().then(res => {
-          userInfo.value = res.data
-          if (userInfo.value && userInfo.value.model !== 'lose') {
-            activeWatermark(
-              dvInfo.value.watermarkInfo.settingContent,
-              userInfo.value,
-              waterDomId,
-              canvasId.value,
-              dvInfo.value.selfWatermarkStatus,
-              scale
-            )
-          }
-        })
-      }
+      activeWatermarkCheckUser(waterDomId, canvasId.value, curScale.value)
     }
   } catch (e) {
     console.warn('Watermarks are not supported!')
@@ -539,7 +527,7 @@ const handleContextMenu = e => {
 }
 
 const getComponentStyle = style => {
-  return getStyle(style, commonFilterAttrs)
+  return getStyle(style, style.borderActive ? commonFilterAttrs : commonFilterAttrsFilterBorder)
 }
 
 const getSvgComponentStyle = style => {
@@ -551,7 +539,8 @@ const getShapeItemShowStyle = item => {
     dvModel: dvInfo.value.type,
     cellWidth: cellWidth.value,
     cellHeight: cellHeight.value,
-    curGap: curGap.value
+    curGap: curGap.value,
+    showPosition: 'edit'
   })
 }
 
@@ -581,14 +570,14 @@ const getTextareaHeight = (element, text) => {
 }
 
 const editStyle = computed(() => {
-  if (dashboardActive.value || isGroupCanvas(canvasId.value)) {
+  if (dashboardActive.value || isGroupOrTabCanvas(canvasId.value)) {
     return {
       width: '100%',
       height: '100%'
     }
   } else {
     const result = {
-      ...getCanvasStyle(canvasStyleData.value),
+      ...getCanvasStyle(canvasStyleData.value, canvasId.value),
       width: changeStyleWithScale(canvasStyleData.value.width) + 'px',
       height: changeStyleWithScale(canvasStyleData.value.height) + 'px'
     }
@@ -1342,8 +1331,13 @@ const userViewEnlargeOpen = (opt, item) => {
     canvasStyleData.value,
     canvasViewInfo.value[item.id],
     item,
-    opt
+    opt,
+    { scale: curBaseScale.value }
   )
+}
+
+const datasetParamsInit = item => {
+  customDatasetParamsRef.value?.optInit(item)
 }
 
 const initSnapshotTimer = () => {
@@ -1531,6 +1525,7 @@ defineExpose({
       @onDragging="onDragging($event, item, index)"
       @onResizing="onResizing($event, item, index)"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+      @datasetParamsInit="datasetParamsInit(item)"
       @linkJumpSetOpen="linkJumpSetOpen(item)"
       @linkageSetOpen="linkageSetOpen(item)"
     >
@@ -1596,6 +1591,7 @@ defineExpose({
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
     <link-jump-set ref="linkJumpRef"></link-jump-set>
     <linkage-set ref="linkageRef"></linkage-set>
+    <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
   </div>
 </template>
 

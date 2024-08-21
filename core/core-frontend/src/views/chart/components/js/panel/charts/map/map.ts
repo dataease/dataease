@@ -8,9 +8,9 @@ import {
   flow,
   getDynamicColorScale,
   getGeoJsonFile,
-  setMapChartDefaultMaxAndMinValueByData,
   hexColorToRGBA,
-  parseJson
+  parseJson,
+  getMaxAndMinValueByData
 } from '@/views/chart/components/js/util'
 import {
   handleGeoJson,
@@ -35,6 +35,7 @@ import {
   LIST_CLASS
 } from '@antv/l7plot-component/dist/esm/legend/category/constants'
 import substitute from '@antv/util/esm/substitute'
+import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 
 const { t } = useI18n()
 
@@ -46,7 +47,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
     'basic-style-selector': ['colors', 'alpha', 'areaBorderColor', 'zoom', 'gradient-color'],
-    'legend-selector': ['icon', 'fontSize', 'color']
+    'legend-selector': ['icon', 'fontSize', 'color'],
+    'tooltip-selector': [...MAP_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel']
   }
   axis = MAP_AXIS_TYPE
   axisConfig: AxisConfig = {
@@ -79,7 +81,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     if (!misc.mapAutoLegend && legend.show) {
       let minValue = misc.mapLegendMin
       let maxValue = misc.mapLegendMax
-      setMapChartDefaultMaxAndMinValueByData(sourceData, maxValue, minValue, (max, min) => {
+      getMaxAndMinValueByData(sourceData, 'value', maxValue, minValue, (max, min) => {
         maxValue = max
         minValue = min
         action({
@@ -161,6 +163,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           }
         })
       })
+      chart.container = container
+      configCarouselTooltip(chart, view, data, null)
     })
     return view
   }
@@ -198,7 +202,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     let maxValue = misc.mapLegendMax
     if (legend.show) {
       let mapLegendNumber = misc.mapLegendNumber
-      setMapChartDefaultMaxAndMinValueByData(sourceData, maxValue, minValue, (max, min) => {
+      getMaxAndMinValueByData(sourceData, 'value', maxValue, minValue, (max, min) => {
         maxValue = max
         minValue = min
         mapLegendNumber = 9

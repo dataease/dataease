@@ -180,7 +180,7 @@ const calcData = async (view, callback) => {
               dynamicAreaId.value = country.value + dynamicAreaId.value
             }
           }
-          dvMainStore.setViewDataDetails(view.id, chartData.value)
+          dvMainStore.setViewDataDetails(view.id, res)
           if (
             !res.drill &&
             !res.chartExtRequest?.filter?.length &&
@@ -234,18 +234,22 @@ const renderChart = async (view, callback?) => {
 }
 let myChart = null
 const renderG2Plot = async (chart, chartView: G2PlotChartView<any, any>) => {
-  myChart?.destroy()
-  myChart = await chartView.drawChart({
-    chartObj: myChart,
-    container: containerId,
-    chart: chart,
-    scale: 1,
-    action,
-    quadrantDefaultBaseline
-  })
-  myChart?.render()
-  if (linkageActiveHistory.value) {
-    linkageActive()
+  try {
+    myChart?.destroy()
+    myChart = await chartView.drawChart({
+      chartObj: myChart,
+      container: containerId,
+      chart: chart,
+      scale: 1,
+      action,
+      quadrantDefaultBaseline
+    })
+    myChart?.render()
+    if (linkageActiveHistory.value) {
+      linkageActive()
+    }
+  } catch (e) {
+    console.error('renderG2Plot error', e)
   }
 }
 
@@ -311,6 +315,10 @@ const pointClickTrans = () => {
 const action = param => {
   if (param.from === 'map') {
     emitter.emit('map-default-range', param)
+    return
+  }
+  if (param.from === 'word-cloud') {
+    emitter.emit('word-cloud-default-data-range', param)
     return
   }
   state.pointParam = param.data
@@ -530,8 +538,12 @@ onMounted(() => {
   resizeObserver.observe(containerDom)
 })
 onBeforeUnmount(() => {
-  myChart?.destroy()
-  resizeObserver?.disconnect()
+  try {
+    myChart?.destroy()
+    resizeObserver?.disconnect()
+  } catch (e) {
+    console.log(e)
+  }
 })
 </script>
 

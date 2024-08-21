@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { storeToRefs } from 'pinia'
+import { ElScrollbar } from 'element-plus-secondary'
 
 const dvMainStore = dvMainStoreWithOut()
 const { fullscreenFlag } = storeToRefs(dvMainStore)
 const dePreviewRef = ref(null)
 const dataInitState = ref(true)
-defineProps({
+const props = defineProps({
   canvasStylePreview: {
     required: true,
     type: Object
@@ -46,14 +47,36 @@ const restore = () => {
   dePreviewRef.value.restore()
 }
 
+const contentInnerClass = computed(() => {
+  //屏幕适配方式 widthFirst=宽度优先(默认) heightFirst=高度优先 full=铺满全屏 keepSize=不缩放
+  if (props.canvasStylePreview.screenAdaptor === 'heightFirst') {
+    return 'preview-content-inner-height-first'
+  } else if (props.canvasStylePreview.screenAdaptor === 'full') {
+    return 'preview-content-inner-full'
+  } else {
+    return 'preview-content-inner-width-first'
+  }
+})
+
+const outerStyle = computed(() => {
+  return {
+    flexDirection: props.canvasStylePreview.screenAdaptor === 'heightFirst' ? 'row' : 'column'
+  }
+})
+
 defineExpose({
   restore
 })
 </script>
 
 <template>
-  <div id="de-preview-content" :class="{ 'de-screen-full': fullscreenFlag }" class="content-outer">
-    <div class="content-inner">
+  <div
+    id="de-preview-content"
+    :class="{ 'de-screen-full': fullscreenFlag }"
+    :style="outerStyle"
+    class="content-outer"
+  >
+    <div class="content-inner" :class="contentInnerClass">
       <de-preview
         ref="dePreviewRef"
         v-if="canvasStylePreview && dataInitState"
@@ -79,11 +102,5 @@ defineExpose({
   align-items: center;
   flex-direction: column;
   justify-content: center; /* 上下居中 */
-  .content-inner {
-    width: 100%;
-    height: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
 }
 </style>

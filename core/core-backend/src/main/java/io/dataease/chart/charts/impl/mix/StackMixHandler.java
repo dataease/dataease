@@ -31,7 +31,9 @@ public class StackMixHandler extends MixHandler {
         axisMap.put(ChartAxis.yAxisExt, view.getYAxisExt());
         //去除除了x轴以外的排序
         axisMap.forEach((k, v) -> {
-            v.forEach(x -> x.setSort("none"));
+            if (!ChartAxis.extStack.equals(k)) {
+                v.forEach(x -> x.setSort("none"));
+            }
         });
         axisMap.put(ChartAxis.extLabel, view.getExtLabel());
         axisMap.put(ChartAxis.extTooltip, view.getExtTooltip());

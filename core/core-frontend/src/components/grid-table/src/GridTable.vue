@@ -35,6 +35,9 @@ const handleListeners = () => {
 const toggleRowSelection = row => {
   table.value.toggleRowSelection(row, true)
 }
+const toggleAllSelection = () => {
+  table.value.toggleAllSelection()
+}
 const clearSelection = () => {
   table.value.clearSelection()
 }
@@ -111,6 +114,7 @@ watch(
 defineExpose({
   toggleRowSelection,
   clearSelection,
+  toggleAllSelection,
   multipleSelectionAll
 })
 </script>

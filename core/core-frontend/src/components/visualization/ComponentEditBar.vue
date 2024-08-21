@@ -56,6 +56,18 @@
         </el-icon>
       </span>
     </el-tooltip>
+    <el-tooltip
+      effect="dark"
+      placement="top"
+      content="输入计算数据"
+      v-if="barShowCheck('datasetParams') && datasetParamsSetShow"
+    >
+      <span>
+        <el-icon class="bar-base-icon" @click="datasetParamsInit">
+          <Icon name="icon_params_setting"></Icon>
+        </el-icon>
+      </span>
+    </el-tooltip>
 
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
       <el-checkbox
@@ -130,7 +142,10 @@
               </el-dropdown>
             </el-dropdown-item>
           </template>
-          <xpack-component jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg==" />
+          <xpack-component
+            :chart="element"
+            jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
+          />
           <el-dropdown-item divided @click="deleteComponent" v-if="barShowCheck('delete')"
             >删除</el-dropdown-item
           >
@@ -161,7 +176,6 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-
     <el-popover v-if="selectFieldShow" width="200" trigger="click" @mousedown="fieldsAreaDown">
       <template #reference>
         <el-icon class="bar-base-icon"> <Icon name="database"></Icon></el-icon>
@@ -188,6 +202,7 @@ import { ElMessage, ElTooltip, ElButton } from 'element-plus-secondary'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
 import { XpackComponent } from '@/components/plugin'
+import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -195,6 +210,7 @@ const customTabsSortRef = ref(null)
 const authShow = computed(() => !dvInfo.value.weight || dvInfo.value.weight > 3)
 const emits = defineEmits([
   'userViewEnlargeOpen',
+  'datasetParamsInit',
   'closePreview',
   'showViewDetails',
   'amRemoveItem',
@@ -206,6 +222,7 @@ const { emitter } = useEmitt()
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
   canvas: [
+    'datasetParams',
     'enlarge',
     'details',
     'setting',
@@ -216,7 +233,7 @@ const positionBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  preview: ['enlarge', 'details', 'download', 'unLinkage', 'previewDownload'],
+  preview: ['enlarge', 'details', 'download', 'unLinkage', 'previewDownload', 'datasetParams'],
   multiplexing: ['multiplexing'],
   batchOpt: ['batchOpt'],
   linkage: ['linkage']
@@ -225,6 +242,7 @@ const positionBarShow = {
 // bar所属组件类型可以显示的功能按钮
 const componentTypeBarShow = {
   UserView: [
+    'datasetParams',
     'enlarge',
     'details',
     'setting',
@@ -419,6 +437,11 @@ const deleteComponent = () => {
   snapshotStore.recordSnapshotCache()
 }
 
+const datasetParamsInit = () => {
+  // do init
+  emits('datasetParamsInit')
+}
+
 const copyComponent = () => {
   copyStore.copy()
   copyStore.paste(false)
@@ -544,6 +567,10 @@ const initCurFields = () => {
   }
 }
 // 富文本-End
+
+const datasetParamsSetShow = computed(() => {
+  return canvasViewInfo.value[element.value.id]?.calParams?.length > 0
+})
 
 onMounted(() => {
   if (element.value.component === 'UserView') {

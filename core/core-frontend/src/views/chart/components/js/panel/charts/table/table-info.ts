@@ -8,7 +8,31 @@ import { isNumber } from 'lodash-es'
 import { copyContent, SortTooltip } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
-
+class ImageCell extends TableDataCell {
+  protected drawTextShape(): void {
+    const img = new Image()
+    const { x, y, width, height, fieldValue } = this.meta
+    img.src = fieldValue as string
+    img.setAttribute('crossOrigin', 'anonymous')
+    img.onload = () => {
+      !this.cfg.children && (this.cfg.children = [])
+      const { width: imgWidth, height: imgHeight } = img
+      const ratio = Math.max(imgWidth / width, imgHeight / height)
+      // 不铺满，部分留白
+      const imgShowWidth = (imgWidth / ratio) * 0.8
+      const imgShowHeight = (imgHeight / ratio) * 0.8
+      this.textShape = this.addShape('image', {
+        attrs: {
+          x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
+          y: y + (imgShowHeight < height ? (height - imgShowHeight) / 2 : 0),
+          width: imgShowWidth,
+          height: imgShowHeight,
+          img
+        }
+      })
+    }
+  }
+}
 /**
  * 明细表
  */
@@ -100,12 +124,21 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
 
     const customAttr = parseJson(chart.customAttr)
+    const style = this.configStyle(chart)
+    // 自适应列宽模式下，URL 字段的宽度固定为 120
+    if (customAttr.basicStyle.tableColumnMode === 'adapt') {
+      const urlFields = fields.filter(field => axisMap[field.dataeaseName]?.deType === 7)
+      style.colCfg.widthByFieldValue = urlFields?.reduce((p, n) => {
+        p[n.chartShowName ?? n.name] = 120
+        return p
+      }, {})
+    }
     // options
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
-      style: this.configStyle(chart),
+      style,
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom,
@@ -127,13 +160,16 @@ export class TableInfo extends S2ChartView<TableSheet> {
         }
         return new TableColCell(node, sheet, config)
       }
-      s2Options.dataCell = viewMeta => {
-        if (viewMeta.colIndex === 0) {
-          viewMeta.fieldValue =
-            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
-        }
-        return new TableDataCell(viewMeta, viewMeta?.spreadsheet)
+    }
+    s2Options.dataCell = viewMeta => {
+      const deType = axisMap[viewMeta.valueField]?.deType
+      if (deType === 7 && chart.showPosition !== 'dialog') {
+        return new ImageCell(viewMeta, viewMeta?.spreadsheet)
       }
+      if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
+        viewMeta.fieldValue = pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+      }
+      return new TableDataCell(viewMeta, viewMeta?.spreadsheet)
     }
     // tooltip
     this.configTooltip(chart, s2Options)

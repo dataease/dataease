@@ -198,7 +198,7 @@ onMounted(() => {
           </el-icon>
           <el-icon>
             <Icon
-              :className="`field-icon-${fieldType[item.deType]}`"
+              :className="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
               :name="`field_${fieldType[item.deType]}`"
             />
           </el-icon>
@@ -235,7 +235,8 @@ onMounted(() => {
             @click.prevent
             v-if="
               !chart.type.includes('chart-mix') ||
-              (chart.type.includes('chart-mix') && type === 'dimension')
+              (chart.type.includes('chart-mix') &&
+                (type === 'dimension' || type === 'dimensionStack'))
             "
           >
             <el-dropdown
@@ -321,7 +322,8 @@ onMounted(() => {
             v-if="item.deType === 1"
             :divided="
               !chart.type.includes('chart-mix') ||
-              (chart.type.includes('chart-mix') && type === 'dimension')
+              (chart.type.includes('chart-mix') &&
+                (type === 'dimension' || type === 'dimensionStack'))
             "
           >
             <el-dropdown
@@ -412,6 +414,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
+                    v-if="!chart.type.includes('bar-range')"
                     :command="beforeDateStyle('H_m_s')"
                     divided
                   >
@@ -428,6 +431,7 @@ onMounted(() => {
                   <el-dropdown-item
                     class="menu-item-padding"
                     :command="beforeDateStyle('y_M_d_H_m')"
+                    :divided="chart.type.includes('bar-range')"
                   >
                     <span
                       class="sub-menu-content"
@@ -517,7 +521,8 @@ onMounted(() => {
             class="menu-item-padding"
             :divided="
               !chart.type.includes('chart-mix') ||
-              (chart.type.includes('chart-mix') && type === 'dimension')
+              (chart.type.includes('chart-mix') &&
+                (type === 'dimension' || type === 'dimensionStack'))
             "
             :command="beforeClickItem('rename')"
           >

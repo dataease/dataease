@@ -4,6 +4,9 @@
     :class="{ 'shape-group-area': isGroupArea }"
     ref="shapeInnerRef"
     :id="domId"
+    v-loading="downLoading"
+    element-loading-text="导出中..."
+    element-loading-background="rgba(255, 255, 255, 1)"
     @dblclick="handleDbClick"
   >
     <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
@@ -31,12 +34,14 @@
         :show-position="showPosition"
         :canvas-id="canvasId"
         @userViewEnlargeOpen="userViewEnlargeOpen"
+        @datasetParamsInit="datasetParamsInit"
         @linkJumpSetOpen="linkJumpSetOpen"
         @linkageSetOpen="linkageSetOpen"
       ></component-edit-bar>
       <div
         class="shape-inner"
         ref="componentInnerRef"
+        :id="viewDemoInnerId"
         :style="componentBackgroundStyle"
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
@@ -59,7 +64,11 @@
         :style="getPointStyle(item)"
         @mousedown="handleMouseDownOnPoint(item, $event)"
       ></div>
-      <div class="shape-shadow" v-show="batchOptFlag" @mousedown="batchSelected"></div>
+      <div
+        class="shape-shadow"
+        v-show="batchOptFlag && element.component !== 'DeTabs'"
+        @mousedown="batchSelected"
+      ></div>
       <template v-if="boardMoveActive">
         <div
           v-show="!element.editing"
@@ -100,14 +109,15 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
+import { downloadCanvas2, imgUrlTrans } from '@/utils/imgUtils'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
-import { isGroupCanvas, isMainCanvas } from '@/utils/canvasUtils'
+import { isDashboard, isGroupCanvas, isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
 import Board from '@/components/de-board/Board.vue'
+import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -116,6 +126,8 @@ const parentNode = ref(null)
 const shapeInnerRef = ref(null)
 const componentInnerRef = ref(null)
 const componentEditBarRef = ref(null)
+const downLoading = ref(false)
+const viewDemoInnerId = computed(() => 'enlarge-inner-shape-' + element.value.id)
 
 const {
   curComponent,
@@ -132,6 +144,7 @@ const {
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
+  'datasetParamsInit',
   'onStartResize',
   'onStartMove',
   'onDragging',
@@ -324,6 +337,10 @@ const userViewEnlargeOpen = opt => {
   emit('userViewEnlargeOpen', opt)
 }
 
+const datasetParamsInit = opt => {
+  emit('datasetParamsInit', opt)
+}
+
 const getPointStyle = point => {
   let { width, height } = defaultStyle.value
   const { sizeX, sizeY } = element.value
@@ -428,12 +445,7 @@ const handleInnerMouseDownOnShape = e => {
   if (!canvasActive.value) {
     return
   }
-  if (batchOptFlag.value) {
-    componentEditBarRef.value.batchOptCheckOut()
-    e.stopPropagation()
-    e.preventDefault()
-    return
-  }
+  batchSelected(e)
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(element)) {
     areaDataPush(element.value)
@@ -477,6 +489,10 @@ const handleMouseDownOnShape = e => {
   const pos = { ...defaultStyle.value }
   const startY = e.clientY
   const startX = e.clientX
+
+  const offsetY = e.offsetY
+  const offsetX = e.offsetX
+
   // 如果直接修改属性，值的类型会变为字符串，所以要转为数值型
   const startTop = Number(pos['top'])
   const startLeft = Number(pos['left'])
@@ -490,6 +506,10 @@ const handleMouseDownOnShape = e => {
   //当前组件宽高 定位
   const componentWidth = shapeInnerRef.value.offsetWidth
   const componentHeight = shapeInnerRef.value.offsetHeight
+  let outerTabDom = isTabCanvas(canvasId.value)
+    ? document.getElementById('shape-id-' + canvasId.value.split('--')[0])
+    : null
+  const curDom = document.getElementById(domId.value)
   const move = moveEvent => {
     hasMove = true
     const curX = moveEvent.clientX
@@ -499,6 +519,7 @@ const handleMouseDownOnShape = e => {
     pos['top'] = top
     pos['left'] = left
     // 非主画布非分组画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px)
+    // 大屏和仪表板暂时做位置算法区分 仪表板暂时使用curX 因为缩放的影响 大屏使用 tab位置 + 组件位置（相对内部画布）+初始触发点
     if (
       !isMainCanvas(canvasId.value) &&
       !isGroupCanvas(canvasId.value) &&
@@ -506,8 +527,14 @@ const handleMouseDownOnShape = e => {
     ) {
       contentDisplay.value = false
       dvMainStore.setMousePointShadowMap({
-        mouseX: curX,
-        mouseY: curY,
+        mouseX:
+          !isDashboard() && outerTabDom
+            ? outerTabDom.offsetLeft + curDom.offsetLeft + offsetX
+            : curX,
+        mouseY:
+          !isDashboard() && outerTabDom
+            ? outerTabDom.offsetTop + curDom.offsetTop + offsetY + 100
+            : curY,
         width: componentWidth,
         height: componentHeight
       })
@@ -518,7 +545,7 @@ const handleMouseDownOnShape = e => {
       contentDisplay.value = true
     }
     // 仪表板进行Tab碰撞检查
-    dashboardActive.value && tabMoveInCheck()
+    tabMoveInCheck()
     // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
     if (
       dashboardActive.value &&
@@ -529,15 +556,16 @@ const handleMouseDownOnShape = e => {
     }
 
     //如果当前组件是Group分组 则要进行内部组件深度计算
-    element.value.component === 'Group' && groupSizeStyleAdaptor(element.value)
+    if (['DeTabs', 'Group'].includes(element.value.component)) {
+      groupSizeStyleAdaptor(element.value)
+    }
     //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
-    if (isGroupCanvas(canvasId.value)) {
+    if (isGroupCanvas(canvasId.value) || isTabCanvas(canvasId.value)) {
       groupStyleRevert(element.value, {
         width: parentNode.value.offsetWidth,
         height: parentNode.value.offsetHeight
       })
     }
-
     // 防止首次组件在tab旁边无法触发矩阵移动
     if (isFirst) {
       isFirst = false
@@ -718,10 +746,12 @@ const handleMouseDownOnPoint = (point, e) => {
     // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)
     element.value['resizing'] = true
-    //如果当前组件是Group分组 则要进行内部组件深度计算
-    element.value.component === 'Group' && groupSizeStyleAdaptor(element.value)
+    //如果当前组件是Group分组或者Tab 则要进行内部组件深度计算
+    if (['DeTabs', 'Group'].includes(element.value.component)) {
+      groupSizeStyleAdaptor(element.value)
+    }
     //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
-    if (isGroupCanvas(canvasId.value)) {
+    if (isGroupCanvas(canvasId.value) || isTabCanvas(canvasId.value)) {
       groupStyleRevert(element.value, {
         width: parentNode.value.offsetWidth,
         height: parentNode.value.offsetHeight
@@ -947,8 +977,14 @@ const dragCollision = computed(() => {
 })
 
 const htmlToImage = () => {
+  downLoading.value = true
   setTimeout(() => {
-    downloadCanvas('img', componentInnerRef.value, '图表')
+    activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value)
+    downloadCanvas2('img', componentInnerRef.value, '图表', () => {
+      // do callback
+      removeActiveWatermark(viewDemoInnerId.value)
+      downLoading.value = false
+    })
   }, 200)
 }
 

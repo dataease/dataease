@@ -3,7 +3,12 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import type { WordCloud as G2WordCloud, WordCloudOptions } from '@antv/g2plot/esm/plots/word-cloud'
-import { flow, parseJson } from '@/views/chart/components/js/util'
+import {
+  filterChartDataByRange,
+  flow,
+  getMaxAndMinValueByData,
+  parseJson
+} from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -19,6 +24,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   properties: EditorProperty[] = [
     'basic-style-selector',
     'background-overall-component',
+    'border-style',
     'title-selector',
     'tooltip-selector',
     'misc-selector',
@@ -27,6 +33,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
+    'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
     'title-selector': [
       'title',
@@ -40,7 +47,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
       'letterSpace',
       'fontShadow'
     ],
-    'misc-selector': ['wordSizeRange', 'wordSpacing'],
+    'misc-selector': ['wordSizeRange', 'wordSpacing', 'wordCloudAxisValueRange'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter', 'show']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
@@ -56,12 +63,35 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
       limit: 1
     }
   }
+  setDataRange = (action, maxValue, minValue) => {
+    action({
+      from: 'word-cloud',
+      data: {
+        max: maxValue,
+        min: minValue
+      }
+    })
+  }
   async drawChart(drawOptions: G2PlotDrawOptions<G2WordCloud>): Promise<G2WordCloud> {
     const { chart, container, action } = drawOptions
     if (chart?.data) {
       // data
-      const data = chart.data.data
+      let data = chart.data.data
       const { misc } = parseJson(chart.customAttr)
+      let minValue = 0
+      let maxValue = 0
+      if (
+        !misc.wordCloudAxisValueRange?.auto &&
+        misc.wordCloudAxisValueRange?.fieldId === chart.yAxis[0].id
+      ) {
+        minValue = misc.wordCloudAxisValueRange.min
+        maxValue = misc.wordCloudAxisValueRange.max
+      }
+      getMaxAndMinValueByData(data ?? [], 'value', maxValue, minValue, (max, min) => {
+        maxValue = max
+        minValue = min
+      })
+      data = filterChartDataByRange(data ?? [], maxValue, minValue)
       // options
       const initOptions: WordCloudOptions = {
         data: data,
@@ -82,6 +112,12 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
       const options = this.setupOptions(chart, initOptions)
       const { WordCloud: G2WordCloud } = await import('@antv/g2plot/esm/plots/word-cloud')
       const newChart = new G2WordCloud(container, options)
+      newChart.on('click', () => {
+        this.setDataRange(action, maxValue, minValue)
+      })
+      newChart.on('afterrender', () => {
+        this.setDataRange(action, maxValue, minValue)
+      })
       newChart.on('point:click', param => {
         action({ x: param.x, y: param.y, data: { data: param.data.data.datum } })
       })

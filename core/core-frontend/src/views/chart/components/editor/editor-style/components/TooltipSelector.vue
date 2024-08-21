@@ -808,6 +808,57 @@ onMounted(() => {
         {{ t('chart.show_gap') }}
       </el-checkbox>
     </el-form-item>
+    <div class="carousel" v-if="showProperty('carousel')">
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          :effect="themes"
+          @change="changeTooltipAttr('carousel')"
+          v-model="state.tooltipForm.carousel.enable"
+        >
+          开启轮播
+        </el-checkbox>
+      </el-form-item>
+      <el-row :gutter="8">
+        <el-col :span="12">
+          <el-form-item
+            label="停留时长（秒）"
+            class="form-item w100"
+            :class="'form-item-' + themes"
+          >
+            <el-input-number
+              style="width: 100%"
+              :effect="themes"
+              controls-position="right"
+              size="middle"
+              :min="0"
+              :max="600"
+              :disabled="!state.tooltipForm.carousel.enable"
+              @change="changeTooltipAttr('carousel')"
+              v-model="state.tooltipForm.carousel.stayTime"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item
+            label="轮播间隔（秒）"
+            class="form-item w100"
+            :class="'form-item-' + themes"
+          >
+            <el-input-number
+              style="width: 100%"
+              :effect="themes"
+              controls-position="right"
+              size="middle"
+              :min="0"
+              :max="600"
+              :disabled="!state.tooltipForm.carousel.enable"
+              @change="changeTooltipAttr('carousel')"
+              v-model="state.tooltipForm.carousel.intervalTime"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
   </el-form>
 </template>
 

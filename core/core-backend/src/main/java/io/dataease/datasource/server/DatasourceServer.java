@@ -13,8 +13,8 @@ import io.dataease.api.ds.vo.ApiDefinition;
 import io.dataease.api.ds.vo.CoreDatasourceTaskLogDTO;
 import io.dataease.api.ds.vo.ExcelFileData;
 import io.dataease.api.ds.vo.ExcelSheetData;
+import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.TaskStatus;
-import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.dataset.manage.DatasetDataManage;
@@ -70,6 +70,7 @@ import java.util.stream.Collectors;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RIGHTNOW;
+import static io.dataease.result.ResultCode.DS_RESOURCE_UNCHECKED;
 
 
 @RestController
@@ -107,6 +108,8 @@ public class DatasourceServer implements DatasourceApi {
 
     @Autowired(required = false)
     private PluginManageApi pluginManage;
+    @Autowired(required = false)
+    private RelationApi relationManage;
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -626,6 +629,22 @@ public class DatasourceServer implements DatasourceApi {
         datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
         datasourceDTO.setCreator(coreUserManage.getUserName(Long.valueOf(datasourceDTO.getCreateBy())));
         return datasourceDTO;
+    }
+
+    @Override
+    public boolean perDelete(Long id) {
+        if (LicenseUtil.licenseValid()) {
+            try {
+                relationManage.checkAuth();
+            } catch (Exception e) {
+                return false;
+            }
+            Long count = relationManage.getDsResource(id);
+            if (count > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Transactional

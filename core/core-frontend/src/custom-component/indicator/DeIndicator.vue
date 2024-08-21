@@ -361,7 +361,7 @@ const calcData = (view, callback) => {
           chartData.value = res?.data as Partial<Chart['data']>
           emit('onDrillFilters', res?.drillFilters)
 
-          dvMainStore.setViewDataDetails(view.id, chartData.value)
+          dvMainStore.setViewDataDetails(view.id, res)
           renderChart(res)
         }
         callback?.()

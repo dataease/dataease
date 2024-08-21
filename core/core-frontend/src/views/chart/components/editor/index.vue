@@ -1053,6 +1053,10 @@ const onBackgroundChange = val => {
   curComponent.value.commonBackground = val
 }
 
+const onStyleAttrChange = val => {
+  curComponent.value.style[val.property] = val.value
+}
+
 const onAssistLineChange = val => {
   view.value.senior.assistLineCfg = val.data
   if (val.requestData) {
@@ -2776,6 +2780,7 @@ const deleteChartFieldItem = id => {
                         :property-inner-all="chartViewInstance.propertyInner"
                         :selector-spec="chartViewInstance.selectorSpec"
                         :common-background-pop="curComponent?.commonBackground"
+                        :common-border-pop="curComponent?.style"
                         :event-info="curComponent?.events"
                         :chart="view"
                         :themes="themes"
@@ -2794,6 +2799,7 @@ const deleteChartFieldItem = id => {
                         @onIndicatorNameChange="onIndicatorNameChange"
                         @onLegendChange="onLegendChange"
                         @onBackgroundChange="onBackgroundChange"
+                        @onStyleAttrChange="onStyleAttrChange"
                         @onBasicStyleChange="onBasicStyleChange"
                         @onTableHeaderChange="onTableHeaderChange"
                         @onTableCellChange="onTableCellChange"
@@ -2980,7 +2986,9 @@ const deleteChartFieldItem = id => {
                     >
                       <el-icon>
                         <Icon
-                          :class-name="`field-icon-${fieldType[element.deType]}`"
+                          :class-name="`field-icon-${
+                            fieldType[[2, 3].includes(element.deType) ? 2 : 0]
+                          }`"
                           :name="`field_${fieldType[element.deType]}`"
                         />
                       </el-icon>
@@ -3053,7 +3061,9 @@ const deleteChartFieldItem = id => {
                         >
                           <el-icon>
                             <Icon
-                              :class-name="`field-icon-${fieldType[ele.deType]}`"
+                              :class-name="`field-icon-${
+                                fieldType[[2, 3].includes(ele.deType) ? 2 : 0]
+                              }`"
                               :name="`field_${fieldType[ele.deType]}`"
                             />
                           </el-icon>
@@ -3341,7 +3351,12 @@ const deleteChartFieldItem = id => {
       width="600px"
       class="dialog-css"
     >
-      <compare-edit :compare-item="state.quotaItemCompare" :chart="view" />
+      <compare-edit
+        :compare-item="state.quotaItemCompare"
+        :chart="view"
+        :dimension-data="dimensionData"
+        :quota-data="quotaData"
+      />
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeQuotaEditCompare">{{ t('chart.cancel') }} </el-button>

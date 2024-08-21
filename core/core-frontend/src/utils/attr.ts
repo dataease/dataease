@@ -99,8 +99,17 @@ export const selectKey = ['textAlign', 'borderStyle', 'verticalAlign']
 
 export const horizontalPosition = ['headHorizontalPosition']
 
-export const fieldType = ['text', 'time', 'value', 'value', 'value', 'location']
-export const fieldTypeText = ['文本', '时间', '数值', '数值(小数)', '数值', '地理位置']
+export const fieldType = ['text', 'time', 'value', 'value', 'value', 'location', 'binary', 'url']
+export const fieldTypeText = [
+  '文本',
+  '时间',
+  '数值',
+  '数值(小数)',
+  '数值',
+  '地理位置',
+  '文件',
+  'URL'
+]
 
 export const optionMap = {
   textAlign: textAlignOptions,

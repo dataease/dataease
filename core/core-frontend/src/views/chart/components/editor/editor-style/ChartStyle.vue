@@ -27,6 +27,7 @@ import QuadrantSelector from '@/views/chart/components/editor/editor-style/compo
 import FlowMapLineSelector from '@/views/chart/components/editor/editor-style/components/FlowMapLineSelector.vue'
 import FlowMapPointSelector from '@/views/chart/components/editor/editor-style/components/FlowMapPointSelector.vue'
 import CommonEvent from '@/custom-component/common/CommonEvent.vue'
+import CommonBorderSetting from '@/custom-component/common/CommonBorderSetting.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
@@ -40,6 +41,10 @@ const state = {
 
 const props = defineProps({
   commonBackgroundPop: {
+    type: Object,
+    required: false
+  },
+  commonBorderPop: {
     type: Object,
     required: false
   },
@@ -90,8 +95,15 @@ const props = defineProps({
   }
 })
 
-const { chart, themes, properties, propertyInnerAll, commonBackgroundPop, selectorSpec } =
-  toRefs(props)
+const {
+  chart,
+  themes,
+  properties,
+  propertyInnerAll,
+  commonBackgroundPop,
+  commonBorderPop,
+  selectorSpec
+} = toRefs(props)
 const emit = defineEmits([
   'onColorChange',
   'onMiscChange',
@@ -104,6 +116,7 @@ const emit = defineEmits([
   'onLegendChange',
   'onBasicStyleChange',
   'onBackgroundChange',
+  'onStyleAttrChange',
   'onTableHeaderChange',
   'onTableCellChange',
   'onTableTotalChange',
@@ -124,7 +137,11 @@ const positionComponentShow = computed(() => {
 })
 
 const eventsShow = computed(() => {
-  return !batchOptStatus.value && chart.value.type.includes('rich-text') && props.eventInfo
+  return (
+    !batchOptStatus.value &&
+    ['indicator', 'rich-text'].includes(chart.value.type) &&
+    props.eventInfo
+  )
 })
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
@@ -186,6 +203,10 @@ const onBasicStyleChange = (val, prop) => {
 
 const onBackgroundChange = (val, prop) => {
   state.initReady && emit('onBackgroundChange', val, prop)
+}
+
+const onStyleAttrChange = ({ key, value }) => {
+  state.initReady && emit('onStyleAttrChange', { custom: 'style', property: key, value: value })
 }
 
 const onTableHeaderChange = (val, prop) => {
@@ -314,6 +335,21 @@ watch(
               component-position="component"
             />
           </el-collapse-item>
+          <collapse-switch-item
+            v-if="showProperties('border-style') && commonBorderPop"
+            v-model="commonBorderPop.borderActive"
+            @modelChange="val => onStyleAttrChange({ key: 'borderActive', value: val })"
+            :themes="themes"
+            title="边框"
+            name="borderSetting"
+            class="common-style-area"
+          >
+            <common-border-setting
+              :style-info="commonBorderPop"
+              :themes="themes"
+              @onStyleAttrChange="onStyleAttrChange"
+            ></common-border-setting>
+          </collapse-switch-item>
           <el-collapse-item :effect="themes" name="events" title="事件" v-if="eventsShow">
             <common-event :themes="themes" :events-info="eventInfo"></common-event>
           </el-collapse-item>

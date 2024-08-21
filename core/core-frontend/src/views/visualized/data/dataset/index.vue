@@ -1,11 +1,25 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, shallowRef, computed, watch, onBeforeMount, nextTick, unref } from 'vue'
+import {
+  ref,
+  reactive,
+  shallowRef,
+  computed,
+  watch,
+  onBeforeMount,
+  nextTick,
+  unref,
+  h,
+  provide,
+  inject
+} from 'vue'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import relationChart from '@/components/relation-chart/index.vue'
 import {
   ElIcon,
+  ElButton,
   ElMessageBox,
   ElMessage,
   type ElMessageBoxOptions,
@@ -18,7 +32,13 @@ import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { useRouter, useRoute } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
-import { delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
+import {
+  delDatasetTree,
+  getDatasetPreview,
+  barInfoApi,
+  perDelete,
+  exportDatasetData
+} from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import DatasetDetail from './DatasetDetail.vue'
@@ -28,6 +48,7 @@ import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import treeSort from '@/utils/treeSortUtils'
+import RowAuth from '@/views/chart/components/editor/filter/auth-tree/RowAuth.vue'
 
 import {
   DEFAULT_CANVAS_STYLE_DATA_LIGHT,
@@ -38,6 +59,8 @@ import { timestampFormatDate } from './form/util'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { XpackComponent } from '@/components/plugin'
 import { useCache } from '@/hooks/web/useCache'
+import { RefreshLeft } from '@element-plus/icons-vue'
+const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
 interface Field {
@@ -59,10 +82,39 @@ interface Node {
 }
 const appStore = useAppStoreWithOut()
 const rootManage = ref(false)
+const showExport = ref(false)
+const rowAuth = ref()
+const exportDatasetLoading = ref(false)
+const exportForm = ref({})
+const table = ref({})
+const exportFormRef = ref()
+const exportFormRules = {
+  name: [
+    {
+      required: true,
+      message: t('commons.input_content'),
+      trigger: 'change'
+    },
+    {
+      max: 50,
+      message: t('commons.char_can_not_more_50'),
+      trigger: 'change'
+    }
+  ]
+}
+const computedFiledList = computed(() => {
+  return allFields.reduce((pre, next) => {
+    if (next.id !== '-1') {
+      pre[next.id] = next
+    }
+    return pre
+  }, {})
+})
+provide('filedList', computedFiledList)
+
 const nickName = ref('')
 const router = useRouter()
 const route = useRoute()
-const { t } = useI18n()
 const state = reactive({
   datasetTree: [] as BusiTreeNode[],
   curSortType: 'time_desc'
@@ -283,6 +335,82 @@ const handleNodeClick = (data: BusiTreeNode) => {
   })
 }
 
+const exportDataset = () => {
+  showExport.value = true
+  exportForm.value.name = nodeInfo.name
+  exportForm.value.expressionTree = ''
+  nextTick(() => {
+    rowAuth.value.init({})
+    rowAuth.value.relationList = []
+    rowAuth.value.logic = 'or'
+  })
+}
+
+const closeExport = () => {
+  showExport.value = false
+}
+
+const save = ({ logic, items, errorMessage }) => {
+  table.value.id = nodeInfo.id
+  table.value.row = 100000
+  table.value.filename = exportForm.value.name
+  if (errorMessage) {
+    ElMessage.error(errorMessage)
+    return
+  }
+  table.value.expressionTree = JSON.stringify({ items, logic })
+  exportDatasetLoading.value = true
+  exportDatasetData(table.value)
+    .then(res => {
+      openMessageLoading(exportData)
+    })
+    .finally(() => {
+      exportDatasetLoading.value = false
+      showExport.value = false
+    })
+}
+
+const exportDatasetRequest = () => {
+  exportFormRef.value.validate(valid => {
+    if (valid) {
+      rowAuth.value.submit()
+    } else {
+      return false
+    }
+  })
+}
+
+const exportData = () => {
+  useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
+}
+
+const openMessageLoading = cb => {
+  const iconClass = `el-icon-loading`
+  const customClass = `de-message-loading de-message-export`
+  ElMessage({
+    message: h('p', null, [
+      '后台导出中,可前往',
+      h(
+        ElButton,
+        {
+          text: true,
+          size: 'small',
+          class: 'btn-text',
+          onClick: () => {
+            cb()
+          }
+        },
+        t('data_export.export_center')
+      ),
+      '查看进度，进行下载'
+    ]),
+    iconClass,
+    icon: h(RefreshLeft),
+    showClose: true,
+    customClass
+  })
+}
+
 const editorDataset = () => {
   handleEdit(nodeInfo.id)
 }
@@ -352,7 +480,7 @@ const handleClick = (tabName: TabPaneName) => {
       break
   }
 }
-
+const relationChartRef = ref()
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'copy') {
     if (isDataEaseBi.value) {
@@ -384,17 +512,65 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
       delete options.tip
     }
 
-    ElMessageBox.confirm(
-      nodeType === 'folder'
-        ? t('data_set.delete_this_folder')
-        : t('datasource.delete_this_dataset'),
-      options as ElMessageBoxOptions
-    ).then(() => {
-      delDatasetTree(data.id).then(() => {
-        getData()
-        ElMessage.success(t('dataset.delete_success'))
+    if (nodeType !== 'folder') {
+      perDelete(data.id).then(res => {
+        if (res === true) {
+          const onClick = () => {
+            relationChartRef.value.getChartData({
+              queryType: 'dataset',
+              num: data.id,
+              label: data.name
+            })
+          }
+
+          ElMessageBox.confirm('', {
+            confirmButtonType: 'danger',
+            type: 'warning',
+            autofocus: false,
+            confirmButtonText: '确定',
+            showClose: false,
+            dangerouslyUseHTMLString: true,
+            message: h('div', null, [
+              h('p', { style: 'margin-bottom: 8px;' }, '确定删除该数据集吗？'),
+              h(
+                'p',
+                { class: 'tip' },
+                '该数据集存在如下血缘关系，删除会造成相关仪表板的视图失效，确定删除？'
+              ),
+              h(
+                ElButton,
+                { text: true, onClick: onClick, style: 'margin-left: -4px;' },
+                '查看血缘关系'
+              )
+            ])
+          }).then(() => {
+            delDatasetTree(data.id).then(() => {
+              getData()
+              ElMessage.success(t('dataset.delete_success'))
+            })
+          })
+        } else {
+          ElMessageBox.confirm(
+            t('datasource.delete_this_dataset'),
+            options as ElMessageBoxOptions
+          ).then(() => {
+            delDatasetTree(data.id).then(() => {
+              getData()
+              ElMessage.success(t('dataset.delete_success'))
+            })
+          })
+        }
       })
-    })
+    } else {
+      ElMessageBox.confirm(t('data_set.delete_this_folder'), options as ElMessageBoxOptions).then(
+        () => {
+          delDatasetTree(data.id).then(() => {
+            getData()
+            ElMessage.success(t('dataset.delete_success'))
+          })
+        }
+      )
+    }
   } else {
     creatDsFolder.value.createInit(nodeType, data, cmd)
   }
@@ -746,6 +922,12 @@ const getMenuList = (val: boolean) => {
                 </template>
                 {{ t('visualization.edit') }}
               </el-button>
+              <el-button type="primary" @click="exportDataset">
+                <template #icon>
+                  <Icon name="el-icon-download"></Icon>
+                </template>
+                数据集导出
+              </el-button>
             </div>
           </div>
           <div class="tab-border">
@@ -846,6 +1028,7 @@ const getMenuList = (val: boolean) => {
         <empty-background :description="t('deDataset.on_the_left')" img-type="select" />
       </template>
     </div>
+    <relationChart ref="relationChartRef"></relationChart>
     <de-resource-group-opt
       :cur-canvas-type="curCanvasType"
       @finish="resourceOptFinish"
@@ -853,6 +1036,43 @@ const getMenuList = (val: boolean) => {
     ></de-resource-group-opt>
     <creat-ds-group @finish="getData()" ref="creatDsFolder"></creat-ds-group>
   </div>
+  <!--导出数据集弹框-->
+  <el-dialog
+    v-if="showExport"
+    v-model="showExport"
+    width="800px"
+    class="de-dialog-form form-tree-cont"
+    :title="$t('dataset.export_dataset')"
+    append-to-body
+  >
+    <el-form
+      ref="exportFormRef"
+      class="de-form-item"
+      :model="exportForm"
+      :rules="exportFormRules"
+      :before-close="closeExport"
+    >
+      <el-form-item :label="$t('dataset.filename')" prop="name">
+        <el-input v-model.trim="exportForm.name" :placeholder="$t('dataset.pls_input_filename')" />
+      </el-form-item>
+      <el-form-item :label="$t('dataset.export_filter')" prop="expressionTree">
+        <div class="tree-cont">
+          <div class="content">
+            <RowAuth @save="save" ref="rowAuth" />
+          </div>
+        </div>
+      </el-form-item>
+    </el-form>
+    <span class="tip">提示：最多支持导出10万条数据</span>
+    <template v-slot:footer>
+      <div class="dialog-footer">
+        <el-button secondary @click="closeExport">{{ $t('dataset.cancel') }} </el-button>
+        <el-button v-loading="exportDatasetLoading" type="primary" @click="exportDatasetRequest"
+          >{{ $t('dataset.confirm') }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -861,7 +1081,21 @@ const getMenuList = (val: boolean) => {
 .ed-table {
   --ed-table-header-bg-color: #f5f6f7;
 }
+.form-tree-cont {
+  .tree-cont {
+    height: 200px;
+    width: 100%;
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--deBorderBase, #dcdfe6);
+    overflow: auto;
 
+    .content {
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
 .filter-icon-span {
   border: 1px solid #bbbfc4;
   width: 32px;

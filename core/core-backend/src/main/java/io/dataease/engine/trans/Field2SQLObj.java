@@ -56,14 +56,14 @@ public class Field2SQLObj {
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
-                xFields.add(getXFields(x, originField, fieldAlias));
+                xFields.add(getXFields(x, originField, fieldAlias, isCross));
             }
         }
         meta.setXFields(xFields);
         meta.setXFieldsDialect(fieldsDialect);
     }
 
-    public static SQLObj getXFields(DatasetTableFieldDTO f, String originField, String fieldAlias) {
+    public static SQLObj getXFields(DatasetTableFieldDTO f, String originField, String fieldAlias, boolean isCross) {
         String fieldName = "";
         if (originField != null) {
             // 处理横轴字段
@@ -71,6 +71,14 @@ public class Field2SQLObj {
                 if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
                     fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField);
                 } else {
+                    // 如果都是时间类型，把date和time类型进行字符串拼接
+                    if (isCross) {
+                        if (StringUtils.equalsIgnoreCase(f.getType(), "date")) {
+                            originField = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, originField, "' 00:00:00'"), SQLConstants.DEFAULT_DATE_FORMAT);
+                        } else if (StringUtils.equalsIgnoreCase(f.getType(), "time")) {
+                            originField = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, "'1970-01-01 '", originField), SQLConstants.DEFAULT_DATE_FORMAT);
+                        }
+                    }
                     fieldName = originField;
                 }
             } else if (Objects.equals(f.getDeExtractType(), DeTypeConstants.DE_STRING)) {

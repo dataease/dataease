@@ -1,5 +1,6 @@
 export const SANKEY_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
+  'border-style',
   'basic-style-selector',
   'label-selector',
   'tooltip-selector',
@@ -10,6 +11,7 @@ export const SANKEY_EDITOR_PROPERTY: EditorProperty[] = [
 
 export const SANKEY_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
+  'border-style': ['all'],
   'basic-style-selector': ['colors', 'alpha', 'gradient'],
   'label-selector': ['fontSize', 'color', 'labelFormatter'],
   'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter'],

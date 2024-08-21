@@ -539,7 +539,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       if (item.linkageFilters && item.linkageFilters.length > 0) {
         const historyLinkageFiltersLength = item.linkageFilters.length
         const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
-        console.log('===newList= ' + JSON.stringify(newList))
         item.linkageFilters.splice(0, item.linkageFilters.length)
         // 重新push 可保证数组指针不变 可以watch到
         if (newList.length > 0) {
@@ -1189,8 +1188,23 @@ export const dvMainStore = defineStore('dataVisualization', {
         mobileLayout: false
       }
     },
-    setViewDataDetails(viewId, dataInfo) {
-      this.canvasViewDataInfo[viewId] = dataInfo
+    setViewDataDetails(viewId, chartDataInfo) {
+      this.canvasViewDataInfo[viewId] = chartDataInfo.data
+      const viewInfo = this.canvasViewInfo[viewId]
+      const oldCalParams = viewInfo.calParams
+        ? viewInfo.calParams.reduce((map, params) => {
+            map[params.id] = params.value
+            return map
+          }, {})
+        : {}
+      if (chartDataInfo.calParams) {
+        chartDataInfo.calParams.forEach(paramsItem => {
+          if (oldCalParams[paramsItem.id]) {
+            paramsItem.value = oldCalParams[paramsItem.id]
+          }
+        })
+      }
+      this.canvasViewInfo[viewId]['calParams'] = chartDataInfo.calParams || null
     },
     getViewDataDetails(viewId) {
       return this.canvasViewDataInfo[viewId]

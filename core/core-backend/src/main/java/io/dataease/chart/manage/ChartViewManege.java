@@ -4,12 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
+import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -56,6 +59,9 @@ public class ChartViewManege {
 
     @Resource
     private ExtChartViewMapper extChartViewMapper;
+
+    @Resource
+    private DatasetTableFieldManage datasetTableFieldManage;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -111,7 +117,14 @@ public class ChartViewManege {
     public List<ChartViewDTO> listBySceneId(Long sceneId) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
         wrapper.eq("scene_id", sceneId);
-        return transChart(coreChartViewMapper.selectList(wrapper));
+        List<ChartViewDTO> chartViewDTOS = transChart(coreChartViewMapper.selectList(wrapper));
+        for (ChartViewDTO dto : chartViewDTOS) {
+            QueryWrapper<CoreDatasetTableField> wp = new QueryWrapper<>();
+            wp.eq("dataset_group_id", dto.getTableId());
+            List<CoreDatasetTableField> coreDatasetTableFields = coreDatasetTableFieldMapper.selectList(wp);
+            dto.setCalParams(Utils.getParams(datasetTableFieldManage.transDTO(coreDatasetTableFields)));
+        }
+        return chartViewDTOS;
     }
 
     public List<ChartViewDTO> transChart(List<CoreChartView> list) {
@@ -233,6 +246,19 @@ public class ChartViewManege {
         coreDatasetTableFieldMapper.delete(queryWrapper);
     }
 
+    public ChartBaseVO chartBaseInfo(Long id) {
+        ChartBasePO po = extChartViewMapper.queryChart(id);
+        ChartBaseVO vo = BeanUtils.copyBean(new ChartBaseVO(), po);
+        TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {};
+        vo.setXAxis(JsonUtil.parseList(po.getXAxis(), tokenType));
+        vo.setXAxisExt(JsonUtil.parseList(po.getXAxisExt(), tokenType));
+        vo.setYAxis(JsonUtil.parseList(po.getYAxis(), tokenType));
+        vo.setYAxisExt(JsonUtil.parseList(po.getYAxisExt(), tokenType));
+        vo.setExtStack(JsonUtil.parseList(po.getExtStack(), tokenType));
+        vo.setExtBubble(JsonUtil.parseList(po.getExtBubble(), tokenType));
+        return vo;
+    }
+
     public DatasetTableFieldDTO createCountField(Long id) {
         DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
         dto.setId(-1L);
@@ -258,7 +284,7 @@ public class ChartViewManege {
             dto.setDatePattern("date_sub");
             dto.setChartType("bar");
 
-            if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1) {
+            if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1 || dto.getDeType() == 7) {
                 dto.setSummary("count");
             } else {
                 dto.setSummary("sum");

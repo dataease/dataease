@@ -17,6 +17,7 @@ const DEFAULT_DATA = []
 export class StockLine extends G2PlotChartView<MixOptions, Mix> {
   properties: EditorProperty[] = [
     'background-overall-component',
+    'border-style',
     'basic-style-selector',
     'x-axis-selector',
     'y-axis-selector',
