@@ -559,7 +559,7 @@ public class DatasetGroupManage {
         }
     }
 
-    private void geFullName(Long pid, List<String> fullName) {
+    public void geFullName(Long pid, List<String> fullName) {
         CoreDatasetGroup parent = coreDatasetGroupMapper.selectById(pid);// 查找父级folder
         fullName.add(parent.getName());
         if (parent.getPid() != null && parent.getPid() != 0) {
