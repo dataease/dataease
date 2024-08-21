@@ -347,13 +347,15 @@ const drop = e => {
         checkedFieldsMap[ele.id] = componentInfo.id
       }
     })
+    // URL 字段类型换成文本字段类型
+    const displayType = componentInfo.deType === 7 ? 0 : componentInfo.deType
     list.value.push({
       ...infoFormat(componentInfo),
       auto: true,
       optionValueSource: 1,
       checkedFields,
       checkedFieldsMap,
-      displayType: `${componentInfo.deType}`
+      displayType
     })
   })
   element.value.propValue = [...list.value]
