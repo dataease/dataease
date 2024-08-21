@@ -1,26 +1,28 @@
 package io.dataease.visualization.server;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.visualization.VisualizationOuterParamsApi;
 import io.dataease.api.visualization.dto.VisualizationOuterParamsDTO;
 import io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO;
 import io.dataease.api.visualization.response.VisualizationOuterParamsBaseResponse;
+import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.VisualizationOuterParams;
 import io.dataease.visualization.dao.auto.entity.VisualizationOuterParamsInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationOuterParamsTargetViewInfo;
 import io.dataease.visualization.dao.auto.mapper.VisualizationOuterParamsInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationOuterParamsMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationOuterParamsTargetViewInfoMapper;
+import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtVisualizationOuterParamsMapper;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,10 +43,16 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     @Resource
     private VisualizationOuterParamsTargetViewInfoMapper outerParamsTargetViewInfoMapper;
 
+
     @Override
     public VisualizationOuterParamsDTO queryWithVisualizationId(String visualizationId) {
         VisualizationOuterParamsDTO visualizationOuterParamsDTO =  extOuterParamsMapper.queryWithVisualizationId(visualizationId);
         return visualizationOuterParamsDTO;
+    }
+
+    @Override
+    public VisualizationOuterParamsDTO queryWithVisualizationIdDS(String dvId) {
+        return null;
     }
 
     @Override
