@@ -316,7 +316,8 @@ const boardMoveActive = computed(() => {
     'table-normal',
     'table-pivot',
     'symbolic-map',
-    'heat-map'
+    'heat-map',
+    't-heatmap'
   ]
   return element.value.isPlugin || CHARTS.includes(element.value.innerType)
 })

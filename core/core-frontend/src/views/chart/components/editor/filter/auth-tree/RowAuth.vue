@@ -144,7 +144,7 @@ const getTimeValue = dynamicTimeSetting => {
         label: '年初',
         value: 'yearBeginning'
       }
-    ].find(ele => ele.value === relativeToCurrent).label
+    ].find(ele => ele.value === relativeToCurrent)?.label
     return timeValue
   }
   timeValue = `${timeNum}${relativeToCurrentTypeMap[relativeToCurrentType]}${
