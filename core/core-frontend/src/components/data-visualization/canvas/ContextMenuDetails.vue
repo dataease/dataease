@@ -11,6 +11,7 @@ import { ElDivider } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { getCurInfo } from '@/store/modules/data-visualization/common'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
@@ -245,6 +246,11 @@ const editQueryCriteria = () => {
           <li @click="downComponent">下移一层</li>
           <li @click="topComponent">置于顶层</li>
           <li @click="bottomComponent">置于底层</li>
+          <xpack-component
+            :chart="curComponent"
+            is-screen
+            jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
+          />
           <li
             @click="categoryChange('hidden')"
             v-show="

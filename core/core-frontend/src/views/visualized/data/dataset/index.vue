@@ -924,7 +924,7 @@ const getMenuList = (val: boolean) => {
               </el-button>
               <el-button type="primary" @click="exportDataset">
                 <template #icon>
-                  <Icon name="el-icon-download"></Icon>
+                  <Icon name="dv-preview-download"></Icon>
                 </template>
                 数据集导出
               </el-button>
@@ -1048,6 +1048,7 @@ const getMenuList = (val: boolean) => {
     <el-form
       ref="exportFormRef"
       class="de-form-item"
+      @submit.prevent
       :model="exportForm"
       :rules="exportFormRules"
       :before-close="closeExport"

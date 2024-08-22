@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class IndicatorHandler extends YoyChartHandler {
@@ -36,23 +37,19 @@ public class IndicatorHandler extends YoyChartHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
-        ChartViewFieldDTO chartViewFieldDTO = yAxis.get(0);
-        ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
+        ChartViewFieldDTO yAxisChartViewFieldDTO = yAxis.get(0);
+        ChartFieldCompareDTO compareCalc = yAxisChartViewFieldDTO.getCompareCalc();
         boolean isYoy = org.apache.commons.lang3.StringUtils.isNotEmpty(compareCalc.getType())
                 && !org.apache.commons.lang3.StringUtils.equalsIgnoreCase(compareCalc.getType(), "none");
         if (isYoy) {
             xAxis.clear();
             // 设置维度字段，从同环比中获取用户选择的字段
-            xAxis.addAll(allFields.stream().filter(i -> org.springframework.util.StringUtils.endsWithIgnoreCase(i.getId().toString(), yAxis.get(0).getCompareCalc().getField().toString())).toList());
+            xAxis.addAll(allFields.stream().filter(i -> org.springframework.util.StringUtils.endsWithIgnoreCase(i.getId().toString(), compareCalc.getField().toString())).toList());
             xAxis.get(0).setSort("desc");
-            if (org.springframework.util.StringUtils.endsWithIgnoreCase("month_mom", compareCalc.getType())) {
-                xAxis.get(0).setDateStyle("y_M");
-            }
-            if (org.springframework.util.StringUtils.endsWithIgnoreCase("day_mom", compareCalc.getType())) {
+            if(Objects.isNull(compareCalc.getCustom())){
                 xAxis.get(0).setDateStyle("y_M_d");
-            }
-            if (org.springframework.util.StringUtils.endsWithIgnoreCase("year_mom", compareCalc.getType())) {
-                xAxis.get(0).setDateStyle("y");
+            }else{
+                xAxis.get(0).setDateStyle(compareCalc.getCustom().getTimeType());
             }
         }
         formatResult.getAxisMap().put(ChartAxis.xAxis, xAxis);

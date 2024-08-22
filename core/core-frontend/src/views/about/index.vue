@@ -81,7 +81,10 @@ const setLicense = lic => {
     dynamicCardClass.value = 'about-card-medium'
   }
 }
-
+const removeDistributeModule = () => {
+  const key = 'xpack-model-distributed'
+  localStorage.removeItem(key)
+}
 const importLic = file => {
   const reader = new FileReader()
   reader.onload = function (e) {
@@ -93,6 +96,7 @@ const importLic = file => {
   reader.readAsText(file)
 }
 const validateHandler = (param, success) => {
+  removeDistributeModule()
   validateApi(param).then(success)
 }
 const getLicense = result => {

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import VanCellGroup from 'vant/es/cell-group'
+import mobileWholeBg from '@/assets/img/bg-mobile.png'
 import mobileDeTop from '@/assets/img/mobile-de-top.png'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { showToast } from 'vant'
 import { loginApi, queryDekey } from '@/api/login'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -22,6 +24,7 @@ const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
 const router = useRouter()
+const appearanceStore = useAppearanceStoreWithOut()
 
 const username = ref('')
 const password = ref('')
@@ -55,7 +58,18 @@ const inputFocus = ref('')
 const handleFocus = val => {
   inputFocus.value = val
 }
+const mobileLogin = ref('')
+const mobileLoginBg = ref('')
+const loadAppearance = () => {
+  if (appearanceStore.getMobileLogin) {
+    mobileLogin.value = appearanceStore.getMobileLogin
+  }
 
+  if (appearanceStore.getMobileLoginBg) {
+    mobileLoginBg.value = appearanceStore.getMobileLoginBg
+  }
+}
+loadAppearance()
 const handleBlur = () => {
   inputFocus.value = ''
 }
@@ -101,8 +115,9 @@ const usernameEndValidate = ({ status, message }) => {
 
 <template>
   <div class="de-mobile-login" v-loading="duringLogin">
+    <img class="mobile-login_bg" :src="mobileLoginBg ? mobileLoginBg : mobileWholeBg" alt="" />
     <div class="mobile-login-content">
-      <img width="120" height="31" :src="mobileDeTop" alt="" />
+      <img width="120" height="31" :src="mobileLogin ? mobileLogin : mobileDeTop" alt="" />
       <div class="mobile-login-welcome">用户登录</div>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
@@ -157,7 +172,13 @@ const usernameEndValidate = ({ status, message }) => {
   position: relative;
   background-size: contain;
   background-repeat: no-repeat;
-  background-image: url(../../../assets/img/bg-mobile.png);
+
+  .mobile-login_bg {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+  }
 
   .mobile-login-content {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, #ffffff 58.86%);
@@ -170,6 +191,7 @@ const usernameEndValidate = ({ status, message }) => {
     width: 100%;
     height: 70%;
     padding: 24px 16px;
+    z-index: 10;
     --van-cell-group-inset-padding: 0;
     --van-cell-group-inset-radius: 0;
     --van-cell-group-background: transparent;
