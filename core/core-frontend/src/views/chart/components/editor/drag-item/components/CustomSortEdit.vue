@@ -101,7 +101,7 @@ init()
 
 <style lang="less" scoped>
 .drag-list {
-  height: 100%;
+  height: 50vh;
 }
 
 .item-dimension {

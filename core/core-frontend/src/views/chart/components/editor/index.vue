@@ -4660,7 +4660,7 @@ span {
 }
 
 .custom_sort_dialog {
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 100px);
   min-height: 152px;
 
   display: flex;

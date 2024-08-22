@@ -8,13 +8,11 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import { cloneDeep } from 'lodash-es'
 import {
-  getLegend,
   getPadding,
   getXAxis,
   getYAxis
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { Datum } from '@antv/g2plot/esm/types/common'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -53,7 +51,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       'fontShadow'
     ],
     'legend-selector': ['orient', 'color', 'fontSize', 'hPosition', 'vPosition'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor']
+    'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'extColor', 'filter']
   axisConfig: AxisConfig = {
@@ -114,7 +112,8 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
           type: 'cat'
         },
         [xFieldExt]: {
-          type: 'cat'
+          type: 'cat',
+          values: [...new Set(data.map(i => i[[xFieldExt]]))].reverse()
         }
       },
       legend: {
@@ -162,10 +161,10 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
         data: {
           data: {
             ...param.data.data,
-            value: quotaList[0].value,
-            name: dimensionList[0].id,
+            value: dimensionList[1].value,
+            name: dimensionList[1].id,
             dimensionList: dimensionList,
-            quotaList: quotaList
+            quotaList: [dimensionList[1]]
           }
         }
       })
@@ -200,24 +199,30 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       // tooltip
       if (customAttr.tooltip) {
         const extColor = deepCopy(chart.extColor)
+        const xAxisExt = deepCopy(chart.xAxisExt)
+        const tooltipFiledList = [xAxisExt, extColor]
         const t = JSON.parse(JSON.stringify(customAttr.tooltip))
         if (t.show) {
           tooltip = {
             showTitle: true,
             customItems(originalItems) {
-              const name = extColor[0]?.chartShowName
-                ? extColor[0]?.chartShowName
-                : extColor[0]?.name
-              let value = originalItems[0].value
-              if (!isNaN(Number(value))) {
-                value = valueFormatter(originalItems[0].value, extColor[0]?.formatterCfg)
+              const items = []
+              const createItem = (fieldObj, items, originalItems) => {
+                const name = fieldObj?.chartShowName ? fieldObj?.chartShowName : fieldObj?.name
+                let value = originalItems[0].data[fieldObj.dataeaseName]
+                if (!isNaN(Number(value))) {
+                  value = valueFormatter(value, fieldObj?.formatterCfg)
+                }
+                items.push({
+                  ...originalItems[0],
+                  name: name,
+                  value: value
+                })
               }
-              const newItems = {
-                ...originalItems[0],
-                name: name,
-                value: value
-              }
-              return [newItems]
+              tooltipFiledList.forEach(field => {
+                createItem(field[0], items, originalItems)
+              })
+              return items
             }
           }
         } else {
@@ -233,12 +238,18 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
 
   protected configXAxis(chart: Chart, options: HeatmapOptions): HeatmapOptions {
     const xAxis = getXAxis(chart, options)
-    return { ...options, xAxis: { ...xAxis, grid: null } }
+    return {
+      ...options,
+      xAxis: xAxis ? { ...xAxis, grid: null } : false
+    }
   }
 
   protected configYAxis(chart: Chart, options: HeatmapOptions): HeatmapOptions {
     const yAxis = getYAxis(chart)
-    return { ...options, yAxis: { ...yAxis, grid: null } }
+    return {
+      ...options,
+      yAxis: yAxis ? { ...yAxis, grid: null } : false
+    }
   }
 
   protected configLegend(chart: Chart, options: HeatmapOptions): HeatmapOptions {
@@ -305,6 +316,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
 
   protected setupOptions(chart: Chart, options: HeatmapOptions): HeatmapOptions {
     return flow(
+      this.configTheme,
       this.configXAxis,
       this.configYAxis,
       this.configBasicStyle,
