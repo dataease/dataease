@@ -68,3 +68,5 @@ alter table `core_chart_view`
 alter table `core_chart_view`
     add ext_color longtext comment '颜色维度field';
 
+update visualization_outer_params_target_view_info tvi INNER JOIN core_chart_view ccv on tvi.target_view_id = ccv.id
+    set tvi.target_ds_id = ccv.table_id
