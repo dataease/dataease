@@ -16,6 +16,7 @@ interface AppearanceState {
   mobileLoginBg?: string
   help?: string
   showAi?: string
+  showCopilot?: string
   showDoc?: string
   showAbout?: string
   bg?: string
@@ -43,6 +44,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       help: '',
       showDoc: '0',
       showAi: '0',
+      showCopilot: '0',
       showAbout: '0',
       bg: '',
       login: '',
@@ -133,6 +135,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     getShowAi(): boolean {
       return isBtnShow(this.showAi)
     },
+    getShowCopilot(): boolean {
+      return isBtnShow(this.showCopilot)
+    },
     getShowDoc(): boolean {
       return isBtnShow(this.showDoc)
     },
@@ -203,6 +208,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.mobileLoginBg = data.mobileLoginBg
       this.help = data.help
       this.showAi = data.showAi
+      this.showCopilot = data.showCopilot
       this.showDoc = data.showDoc
       this.showAbout = data.showAbout
       this.navigateBg = data.navigateBg
