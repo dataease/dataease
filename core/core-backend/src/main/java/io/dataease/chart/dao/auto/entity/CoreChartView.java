@@ -137,7 +137,7 @@ public class CoreChartView implements Serializable {
     private Long updateTime;
 
     /**
-     * 缩略图 
+     * 缩略图
      */
     private String snapshot;
 
@@ -205,6 +205,16 @@ public class CoreChartView implements Serializable {
      * 区间条形图开启时间纬度开启聚合
      */
     private Boolean aggregate;
+
+    private String flowMapStartName;
+
+    private String flowMapEndName;
+
+    /**
+     * 颜色维度field
+     */
+    private String extColor;
+
 
     public Long getId() {
         return id;
@@ -510,6 +520,30 @@ public class CoreChartView implements Serializable {
         this.aggregate = aggregate;
     }
 
+    public String getFlowMapStartName() {
+        return flowMapStartName;
+    }
+
+    public void setFlowMapStartName(String flowMapStartName) {
+        this.flowMapStartName = flowMapStartName;
+    }
+
+    public String getFlowMapEndName() {
+        return flowMapEndName;
+    }
+
+    public void setFlowMapEndName(String flowMapEndName) {
+        this.flowMapEndName = flowMapEndName;
+    }
+
+    public String getExtColor() {
+        return extColor;
+    }
+
+    public void setExtColor(String extColor) {
+        this.extColor = extColor;
+    }
+
     @Override
     public String toString() {
         return "CoreChartView{" +
@@ -551,6 +585,9 @@ public class CoreChartView implements Serializable {
         ", copyFrom = " + copyFrom +
         ", copyId = " + copyId +
         ", aggregate = " + aggregate +
+        ", flowMapStartName=" + flowMapStartName +
+        ", flowMapEndName=" + flowMapEndName +
+        ", extColor=" + extColor +
         "}";
     }
 }
