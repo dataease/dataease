@@ -329,6 +329,9 @@ public class ChartViewManege {
         record.setDrillFields(objectMapper.writeValueAsString(dto.getDrillFields()));
         record.setCustomFilter(objectMapper.writeValueAsString(dto.getCustomFilter()));
         record.setViewFields(objectMapper.writeValueAsString(dto.getViewFields()));
+        record.setFlowMapStartName(objectMapper.writeValueAsString(dto.getFlowMapStartName()));
+        record.setFlowMapEndName(objectMapper.writeValueAsString(dto.getFlowMapEndName()));
+        record.setExtColor(objectMapper.writeValueAsString(dto.getExtColor()));
 
         return record;
     }
@@ -354,6 +357,9 @@ public class ChartViewManege {
         dto.setDrillFields(JsonUtil.parseList(record.getDrillFields(), tokenType));
         dto.setCustomFilter(JsonUtil.parseObject(record.getCustomFilter(), FilterTreeObj.class));
         dto.setViewFields(JsonUtil.parseList(record.getViewFields(), tokenType));
+        dto.setFlowMapStartName(JsonUtil.parseList(record.getFlowMapStartName(), tokenType));
+        dto.setFlowMapEndName(JsonUtil.parseList(record.getFlowMapEndName(), tokenType));
+        dto.setExtColor(JsonUtil.parseList(record.getExtColor(), tokenType));
 
         return dto;
 

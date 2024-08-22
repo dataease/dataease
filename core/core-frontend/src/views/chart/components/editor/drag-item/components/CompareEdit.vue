@@ -28,7 +28,7 @@ const props = defineProps({
   }
 })
 
-const {compareItem, chart} = toRefs(props)
+const { compareItem, chart } = toRefs(props)
 
 const state = reactive({
   fieldList: [],
@@ -37,9 +37,9 @@ const state = reactive({
 })
 
 const dateFormatterList = [
-  {name: '年', value: 'y'},
-  {name: '年月', value: 'y_M'},
-  {name: '年月日', value: 'y_M_d'}
+  { name: '年', value: 'y' },
+  { name: '年月', value: 'y_M' },
+  { name: '年月日', value: 'y_M_d' }
 ]
 
 const changeDateFormatter = () => {
@@ -47,7 +47,7 @@ const changeDateFormatter = () => {
   if (checkedField && checkedField.length > 0) {
     checkedField[0].dateStyle = state.dateFormatter
     if (!compareItem.value.compareCalc.custom) {
-      compareItem.value.compareCalc.custom = {timeType: 'y_M_d'}
+      compareItem.value.compareCalc.custom = { timeType: 'y_M_d' }
     }
     compareItem.value.compareCalc.custom.timeType = state.dateFormatter
   }
@@ -69,7 +69,7 @@ watch(
     initCompareType()
     initDateFormatter()
   },
-  {deep: true}
+  { deep: true }
 )
 
 const isIndicator = computed(() => {
@@ -193,9 +193,8 @@ initDateFormatter()
       </el-form-item>
       <el-form-item :label="t('chart.compare_type')">
         <el-radio-group v-model="compareItem.compareCalc.type">
-          <el-radio v-for="radio in state.compareList" :key="radio.value" :label="radio.value">{{
-              t('chart.' + radio.value)
-            }}
+          <el-radio v-for="radio in state.compareList" :key="radio.value" :label="radio.value"
+            >{{ t('chart.' + radio.value) }}
           </el-radio>
         </el-radio-group>
       </el-form-item>
@@ -209,10 +208,10 @@ initDateFormatter()
 
       <el-form-item :label="t('chart.compare_calc_expression')">
         <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style"
-        >本期数据 - 上期数据</span
+          >本期数据 - 上期数据</span
         >
         <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style"
-        >(本期数据 / |上期数据| - 1) * 100%</span
+          >(本期数据 / |上期数据| - 1) * 100%</span
         >
       </el-form-item>
 
