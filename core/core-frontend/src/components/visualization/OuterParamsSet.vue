@@ -407,11 +407,6 @@ const paramsCheckedAdaptor = (outerParamsInfo, newBaseFilterInfo, newBaseDataset
   }
   outerParamsInfo['filterInfo'] = newBaseFilterInfo
   outerParamsInfo['datasetInfo'] = newBaseDatasetInfo
-  console.log('outerParamsInfo=' + JSON.stringify(outerParamsInfo))
-  console.log('newBaseFilterInfo=' + JSON.stringify(newBaseFilterInfo))
-  console.log('newBaseDatasetInfo=' + JSON.stringify(newBaseDatasetInfo))
-  console.log('dsFieldIdSelected=' + JSON.stringify(dsFieldIdSelected))
-  console.log('viewMatchIds=' + JSON.stringify(viewMatchIds))
 }
 
 const cancel = () => {
