@@ -33,11 +33,16 @@
                 column="{dataset_group_id=id}"
                 select="getDsFieldInfo">
     </collection>
+    <collection property="datasetViews" ofType="io.dataease.api.chart.vo.ChartBaseVO"
+                column="{dataset_group_id=id,visualizationId = visualizationId}"
+                select="getViewInfo">
+    </collection>
   </resultMap>
 
   <resultMap id="OuterParamsInfoMap" type="io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO" extends="BaseResultMapParamsInfo">
     <collection property="targetViewInfoList" ofType="io.dataease.visualization.dao.auto.entity.VisualizationOuterParamsTargetViewInfo">
       <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
+      <result column="target_ds_id" jdbcType="VARCHAR" property="targetDsId"/>
       <result column="target_field_id" jdbcType="VARCHAR" property="targetFieldId"/>
     </collection>
   </resultMap>
@@ -124,21 +129,32 @@
 
       <select id="queryDsWithVisualizationId"  resultMap="BaseDsResultMapDTO">
           SELECT DISTINCT
-          	cdg.*
+          	cdg.*,#{visualizationId} as visualizationId
           FROM
           	core_dataset_group cdg
-          	INNER JOIN core_chart_view ccv ON cdg.id = ccv.table_id
+          	INNER JOIN core_chart_view ccv ON cdg.id = ccv.table_id and ccv.type != 'VQuery'
           	INNER JOIN data_visualization_info dvi ON ccv.scene_id = dvi.id
           WHERE
           	ccv.scene_id = #{visualizationId}
           	AND dvi.id = #{visualizationId}
-          	AND FIND_IN_SET(
-          	ccv.id,
-          	dvi.component_data)
+          	AND LOCATE(ccv.id, dvi.component_data)
       </select>
 
        <select id="getDsFieldInfo"  resultType="io.dataease.api.dataset.vo.CoreDatasetTableFieldVO">
           select cdtf.*,cdtf.id as attachId from core_dataset_table_field cdtf where cdtf.dataset_group_id = #{dataset_group_id}
+      </select>
+
+      <select id="getViewInfo"  resultType="io.dataease.api.chart.vo.ChartBaseVO">
+           SELECT DISTINCT
+          	ccv.id as chartId,ccv.title as chartName,ccv.type as chartType
+          FROM
+          	core_chart_view ccv
+          	INNER JOIN data_visualization_info dvi ON ccv.scene_id = dvi.id
+          WHERE
+          	ccv.table_id = #{dataset_group_id}
+          	AND ccv.type != 'VQuery'
+          	AND dvi.id = #{visualizationId}
+          	AND LOCATE(ccv.id, dvi.component_data)
       </select>
 
 </mapper>
