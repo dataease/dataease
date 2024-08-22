@@ -112,7 +112,8 @@ public class DatasetDataManage {
                 sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             } else {
                 // parser sql params and replace default value
-                String originSql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList(), pluginManage);
+                String originSql = provider.replaceComment(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())));
+                originSql = SqlparserUtils.handleVariableDefaultValue(originSql, datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList(), pluginManage);
                 // add sql table schema
 
                 sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
@@ -344,13 +345,16 @@ public class DatasetDataManage {
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
+        Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
 
         // parser sql params and replace default value
-        String originSql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, true, null, false, dsMap, pluginManage);
+
+        String originSql = provider.replaceComment(new String(Base64.getDecoder().decode(dto.getSql())));
+        originSql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(originSql), dto.getSqlVariableDetails(), true, true, null, false, dsMap, pluginManage);
 
         // sql 作为临时表，外层加上limit
         String sql;
-        Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
+
         if (Utils.isNeedOrder(List.of(datasourceSchemaDTO.getType()))) {
             // 先根据sql获取表字段
             String sqlField = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
