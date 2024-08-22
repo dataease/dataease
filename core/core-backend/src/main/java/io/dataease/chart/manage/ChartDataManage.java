@@ -621,7 +621,8 @@ public class ChartDataManage {
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")
                 || StringUtils.containsIgnoreCase(view.getType(), "group")
                 || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
-                || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")) {
+                || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
+                || StringUtils.equalsIgnoreCase(view.getType(), "t-heatmap")) {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
