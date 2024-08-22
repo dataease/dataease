@@ -72,7 +72,16 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       limit: 1
     }
   }
-
+  protected getDefaultLength = (chart, l) => {
+    const containerDom = document.getElementById(chart.container)
+    const containerHeight = containerDom?.clientHeight || 100
+    const containerWidth = containerDom?.clientWidth || 100
+    let defaultLength = containerHeight - containerHeight * 0.5
+    if (l.orient !== 'vertical') {
+      defaultLength = containerWidth - containerWidth * 0.5
+    }
+    return defaultLength
+  }
   async drawChart(drawOptions: G2PlotDrawOptions<Heatmap>): Promise<Heatmap> {
     const { chart, container, action } = drawOptions
     const xAxis = deepCopy(chart.xAxis)
@@ -84,8 +93,6 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     const xField = xAxis[0].dataeaseName
     const xFieldExt = xAxisExt[0].dataeaseName
     const extColorField = extColor[0].dataeaseName
-    const containerDom = document.getElementById(container)
-    const containerHeight = containerDom?.clientHeight || 100
     // data
     const data = cloneDeep(chart.data.tableRow)
     data.forEach(i => {
@@ -114,13 +121,13 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
         layout: 'vertical',
         position: 'right',
         slidable: true,
-        maxHeight: containerHeight - containerHeight * 0.2,
         label: {
           align: 'left',
           spacing: 10
         }
       }
     }
+    chart.container = container
     const options = this.setupOptions(chart, initOptions)
     const { Heatmap } = await import('@antv/g2plot/esm/plots/heatmap')
     const newChart = new Heatmap(container, options)
@@ -166,18 +173,10 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     newChart.on('afterrender', ev => {
       const l = JSON.parse(JSON.stringify(parseJson(chart.customStyle).legend))
       if (l.show) {
-        const extColor = deepCopy(chart.extColor)
-        const containerDom = document.getElementById(container)
-        const containerHeight = containerDom?.clientHeight || 100
-        const containerWidth = containerDom?.clientWidth || 100
-        let defaultLength = getLegend(chart)
-        if (l.orient === 'vertical') {
-          defaultLength = containerHeight - containerHeight * 0.5
-        } else {
-          defaultLength = containerWidth - containerWidth * 0.5
+        const rail = ev.view.getController('legend').option[extColor[0].dataeaseName]?.['rail']
+        if (rail) {
+          rail.defaultLength = this.getDefaultLength(chart, l)
         }
-        ev.view.getController('legend').option[extColor[0].dataeaseName]['rail'].defaultLength =
-          defaultLength
       }
     })
     return newChart
@@ -251,12 +250,16 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       tmpOptions.legend.minWidth = 10
       tmpOptions.legend.maxHeight = 600
       tmpOptions.legend.maxWidth = 600
+      const containerDom = document.getElementById(chart.container)
+      const containerHeight = containerDom?.clientHeight || 100
+      const containerWidth = containerDom?.clientWidth || 100
+      let defaultLength = containerHeight - containerHeight * 0.5
       if (l.orient === 'vertical') {
         tmpOptions.legend.offsetY = -5
+      } else {
+        defaultLength = containerWidth - containerWidth * 0.5
       }
-      tmpOptions.legend.rail = {
-        defaultLength: 100
-      }
+      tmpOptions.legend.rail = { defaultLength: defaultLength }
       tmpOptions.legend.label = {
         spacing: 10,
         style: {
@@ -272,6 +275,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     chart.customStyle.legend.orient = 'vertical'
     chart.customStyle.legend.vPosition = 'center'
     chart.customStyle.legend.hPosition = 'right'
+    chart.customStyle.legend.rail = { defaultLength: 100 }
     return chart
   }
 
