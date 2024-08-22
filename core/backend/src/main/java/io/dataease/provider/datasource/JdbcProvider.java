@@ -829,9 +829,6 @@ public class JdbcProvider extends DefaultJdbcProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", db2Configuration.getSchema());
-            case iotdb:
-                return "show databases";
-
             default:
                 return "show tables;";
         }
