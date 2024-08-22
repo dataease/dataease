@@ -57,7 +57,7 @@ export default {
           })
         },
         error => {
-          console.log('连接失败: ' + error)
+          console.error('连接失败: ' + error)
         }
       )
     }
@@ -66,10 +66,10 @@ export default {
       if (stompClient && stompClient.connected) {
         stompClient.disconnect(
           function () {
-            console.log('断开连接')
+            console.info('断开连接')
           },
           function (error) {
-            console.log('断开连接失败: ' + error)
+            console.info('断开连接失败: ' + error)
           }
         )
       }

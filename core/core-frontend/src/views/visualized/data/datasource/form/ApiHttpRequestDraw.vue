@@ -186,7 +186,7 @@ const showApiData = () => {
           originFieldItem.jsonFields = response.data.jsonFields
         })
         .catch(error => {
-          console.log(error?.message)
+          console.warn(error?.message)
         })
       loading.value = false
     } else {
@@ -295,7 +295,7 @@ const next = () => {
         .catch(error => {
           disabledNext.value = false
           formLoading.value = false
-          console.log(error?.message)
+          console.warn(error?.message)
         })
     }
   })

@@ -205,7 +205,6 @@ const submitForm = async () => {
         .post({ url: '/engine/save', data: data })
         .then(res => {
           if (res !== undefined) {
-            console.log(res)
             ElMessage.success(t('common.save_success'))
             emits('saved')
             reset()

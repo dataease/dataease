@@ -542,7 +542,7 @@ onBeforeUnmount(() => {
     myChart?.destroy()
     resizeObserver?.disconnect()
   } catch (e) {
-    console.log(e)
+    console.warn(e)
   }
 })
 </script>
