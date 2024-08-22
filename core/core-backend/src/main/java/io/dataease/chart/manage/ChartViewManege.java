@@ -26,6 +26,7 @@ import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.i18n.Translator;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -97,6 +98,9 @@ public class ChartViewManege {
     public void delete(Long id) {
         coreChartViewMapper.deleteById(id);
     }
+
+    @XpackInteract(value = "chartViewManage")
+    public void disuse(List<Long> chartIdList) {}
 
     @Transactional
     public void deleteBySceneId(Long sceneId, List<Long> chartIds) {

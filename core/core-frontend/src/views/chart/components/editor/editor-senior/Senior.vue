@@ -20,6 +20,7 @@ import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '../util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import BubbleAnimateCfg from '@/views/chart/components/editor/editor-senior/components/BubbleAnimateCfg.vue'
+import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 
 const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData } = storeToRefs(dvMainStore)
@@ -281,6 +282,13 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
               @onThresholdChange="onThresholdChange"
             />
           </collapse-switch-item>
+
+          <xpack-component
+            v-if="chart.id"
+            :chart="chart"
+            :themes="themes"
+            jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9TZW5pb3JIYW5kbGVy"
+          />
 
           <collapse-switch-item
             v-if="showProperties('linkage')"

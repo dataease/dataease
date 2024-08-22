@@ -754,16 +754,22 @@ public class ChartDataManage {
 
     public void saveChartViewFromVisualization(String checkData, Long sceneId, Map<Long, ChartViewDTO> chartViewsInfo) {
         if (!MapUtils.isEmpty(chartViewsInfo)) {
+            List<Long> disuseChartIdList = new ArrayList<>();
             chartViewsInfo.forEach((key, chartViewDTO) -> {
-                if (checkData.indexOf(chartViewDTO.getId() + "") > -1) {
+                if (checkData.contains(chartViewDTO.getId() + "")) {
                     try {
                         chartViewDTO.setSceneId(sceneId);
                         chartViewManege.save(chartViewDTO);
                     } catch (Exception e) {
                         DEException.throwException(e);
                     }
+                } else {
+                    disuseChartIdList.add(chartViewDTO.getId());
                 }
             });
+            if (CollectionUtils.isNotEmpty(disuseChartIdList)) {
+                chartViewManege.disuse(disuseChartIdList);
+            }
         }
     }
 }
