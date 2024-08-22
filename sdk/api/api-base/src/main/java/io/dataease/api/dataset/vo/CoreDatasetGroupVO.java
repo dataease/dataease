@@ -2,6 +2,7 @@ package io.dataease.api.dataset.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.api.chart.vo.ChartBaseVO;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -88,4 +89,6 @@ public class CoreDatasetGroupVO implements Serializable {
     private String unionSql;
 
     private List<CoreDatasetTableFieldVO> datasetFields = new ArrayList<>();
+
+    private List<ChartBaseVO> datasetViews = new ArrayList<>();
 }

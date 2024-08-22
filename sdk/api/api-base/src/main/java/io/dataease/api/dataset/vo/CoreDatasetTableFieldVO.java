@@ -3,10 +3,12 @@ package io.dataease.api.dataset.vo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
 public class CoreDatasetTableFieldVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -121,4 +123,10 @@ public class CoreDatasetTableFieldVO implements Serializable {
 
     // 附加ID 兼容自定义参数ID
     private String attachId;
+
+    public CoreDatasetTableFieldVO(String attachId, String name,  Integer deType) {
+        this.attachId = attachId;
+        this.name = name;
+        this.deType = deType;
+    }
 }
