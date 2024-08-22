@@ -37,7 +37,8 @@ import {
   getDatasetPreview,
   barInfoApi,
   perDelete,
-  exportDatasetData
+  exportDatasetData,
+  exportLimit
 } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
@@ -85,6 +86,7 @@ const rootManage = ref(false)
 const showExport = ref(false)
 const rowAuth = ref()
 const exportDatasetLoading = ref(false)
+const limit = ref('10万')
 const exportForm = ref({})
 const table = ref({})
 const exportFormRef = ref()
@@ -313,6 +315,7 @@ onBeforeMount(() => {
   nodeInfo.id = (route.params.id as string) || (route.query.id as string) || ''
   loadInit()
   getData()
+  getLimit()
 })
 
 const columns = shallowRef([])
@@ -678,6 +681,12 @@ const loadInit = () => {
   }
 }
 
+const getLimit = () => {
+  exportLimit().then(res => {
+    limit.value = res
+  })
+}
+
 const sortTypeTip = computed(() => {
   return sortList.find(ele => ele.value === state.curSortType).name
 })
@@ -916,17 +925,17 @@ const getMenuList = (val: boolean) => {
                 <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
                 >{{ t('data_set.new_data_screen') }}
               </el-button>
+              <el-button secondary @click="exportDataset">
+                <template #icon>
+                  <Icon name="icon_download_outlined"></Icon>
+                </template>
+                数据集导出
+              </el-button>
               <el-button type="primary" @click="editorDataset" v-if="nodeInfo.weight >= 7">
                 <template #icon>
                   <Icon name="icon_edit_outlined"></Icon>
                 </template>
                 {{ t('visualization.edit') }}
-              </el-button>
-              <el-button type="primary" @click="exportDataset">
-                <template #icon>
-                  <Icon name="el-icon-download"></Icon>
-                </template>
-                数据集导出
               </el-button>
             </div>
           </div>
@@ -1063,7 +1072,7 @@ const getMenuList = (val: boolean) => {
         </div>
       </el-form-item>
     </el-form>
-    <span class="tip">提示：最多支持导出10万条数据</span>
+    <span class="tip">提示：最多支持导出{{ limit }}条数据</span>
     <template v-slot:footer>
       <div class="dialog-footer">
         <el-button secondary @click="closeExport">{{ $t('dataset.cancel') }} </el-button>

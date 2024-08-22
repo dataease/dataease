@@ -47,4 +47,8 @@ public class ExportCenterServer implements ExportCenterApi {
     public void retry(String id) {
         exportCenterManage.retry(id);
     }
+
+    public String exportLimit() {
+        return exportCenterManage.exportLimit();
+    }
 }
