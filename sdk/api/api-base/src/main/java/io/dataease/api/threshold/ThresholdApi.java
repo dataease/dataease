@@ -66,4 +66,8 @@ public interface ThresholdApi {
     @Operation(summary = "预览信息")
     @PostMapping("/preview")
     String preview(@RequestBody ThresholdPreviewRequest request);
+
+    @Operation(summary = "视图是否设置了阈值告警")
+    @GetMapping("/anyThreshold/{chartId}")
+    boolean anyThreshold(@PathVariable("chartId") Long chartId);
 }
