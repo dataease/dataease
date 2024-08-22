@@ -127,7 +127,6 @@ const onMapMappingChange = val => {
 }
 
 const onBubbleAnimateChange = val => {
-  console.log(val)
   emit('onBubbleAnimateChange', val)
 }
 

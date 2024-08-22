@@ -855,7 +855,6 @@ const onAreaChange = val => {
 
 const onTypeChange = (render, type) => {
   const viewConf = getViewConfig(type)
-  console.log(view.value)
   if (viewConf.isPlugin) {
     view.value.plugin = {
       isPlugin: true,
