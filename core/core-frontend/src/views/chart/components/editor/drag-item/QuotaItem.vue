@@ -402,7 +402,7 @@ onMounted(() => {
           </el-dropdown-item>-->
           <el-dropdown-item
             @click.prevent
-            v-if="!item.chartId && chart.type !== 'table-info' && item.summary !== ''"
+            v-if="chart.type !== 'table-info' && item.summary !== ''"
           >
             <el-dropdown
               :effect="themes"
