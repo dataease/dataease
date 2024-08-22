@@ -71,9 +71,9 @@
           <el-col :span="16" class="preview-show">
             <el-row v-if="state.curNodeId">
               <el-row class="new-params-title"> 选择参数关联组件 </el-row>
-              <el-row class="new-params-filter" v-if="state.outerParamsInfo?.filterInfo.length">
+              <el-row class="new-params-filter" v-if="state.outerParamsInfo?.filterInfo?.length">
                 <div style="display: flex" class="inner-content">
-                  <div style="width: 16px">
+                  <div style="width: 16px; margin-top: 2px">
                     <div class="expand-custom">
                       <el-icon @click="() => (state.filterExpand = !state.filterExpand)"
                         ><CaretBottom v-show="state.filterExpand" />
@@ -95,7 +95,7 @@
                     <div style="width: 16px"></div>
                     <div style="flex: 1; line-height: 32px">
                       <Icon style="margin-top: 4px" class-name="view-type-icon" name="filter" />
-                      <span>{{ baseFilter.label }}</span>
+                      <span>{{ findFilterName(baseFilter.id) }}</span>
                     </div>
                     <div style="flex: 1">
                       <el-select
@@ -103,7 +103,7 @@
                         filterable
                         style="width: 100%"
                         placeholder="请选择查询条件"
-                        @change="viewInfoOnChange(targetViewInfo)"
+                        clearable
                       >
                         <el-option
                           v-for="item in baseFilter.propValue"
@@ -118,9 +118,9 @@
                   </div>
                 </div>
               </el-row>
-              <el-row class="new-params-ds" v-if="state.outerParamsInfo?.datasetInfo.length">
+              <el-row class="new-params-ds" v-if="state.outerParamsInfo?.datasetInfo?.length">
                 <div style="display: flex" class="inner-content">
-                  <div style="width: 16px">
+                  <div style="width: 16px; margin-top: 2px">
                     <div class="expand-custom">
                       <el-icon @click="() => (state.datasetExpand = !state.datasetExpand)"
                         ><CaretBottom v-show="state.datasetExpand" />
@@ -131,7 +131,7 @@
                   <div style="flex: 1">图表</div>
                   <div style="flex: 1">关联字段或参数</div>
                 </div>
-                <div class="outer-filter-content">
+                <div class="outer-dataset-content">
                   <div
                     v-show="state.datasetExpand"
                     class="inner-dataset-content"
@@ -139,23 +139,30 @@
                     :key="index"
                   >
                     <div style="display: flex; width: 100%">
-                      <div style="width: 16px">
-                        <el-icon
-                          @click="() => (baseDatasetInfo.viewExpand = !baseDatasetInfo.viewExpand)"
-                          ><CaretBottom v-show="baseDatasetInfo.viewExpand" />
-                          <CaretRight v-show="!baseDatasetInfo.viewExpand" />
-                        </el-icon>
+                      <div style="width: 16px; margin-top: 7px">
+                        <div class="expand-custom">
+                          <el-icon
+                            @click="
+                              () => (baseDatasetInfo.viewExpand = !baseDatasetInfo.viewExpand)
+                            "
+                            ><CaretBottom v-show="baseDatasetInfo.viewExpand" />
+                            <CaretRight v-show="!baseDatasetInfo.viewExpand" />
+                          </el-icon>
+                        </div>
                       </div>
-                      <div style="flex: 1; line-height: 32px">
-                        <el-icon>
-                          <Icon name="icon_dataset" />
-                        </el-icon>
+                      <div style="flex: 1; display: flex; line-height: 32px">
+                        <div style="width: 16px; margin-top: 2px; margin-right: 4px">
+                          <el-icon>
+                            <Icon name="icon_dataset" />
+                          </el-icon>
+                        </div>
                         <span>{{ baseDatasetInfo.name }}</span>
                       </div>
                       <div style="flex: 1">
                         <el-select
                           v-model="baseDatasetInfo.fieldIdSelected"
                           filterable
+                          clearable
                           style="width: 100%"
                           placeholder="请选择"
                         >
@@ -177,27 +184,38 @@
                     </div>
 
                     <div class="ds-view-content" v-show="baseDatasetInfo.viewExpand">
-                      <div style="width: 100%">
-                        <span>选择关联的图表</span>
-                        <el-checkbox
-                          v-model="baseDatasetInfo.checkAll"
-                          :indeterminate="baseDatasetInfo.checkAllIsIndeterminate"
-                          @change="batchSelectChange($event, baseDatasetInfo)"
-                          >全选</el-checkbox
-                        >
+                      <div style="display: flex; width: 100%; height: 22px">
+                        <div class="ds-content-title">选择关联的图表</div>
+                        <div class="custom-view-diver"></div>
+                        <div>
+                          <el-checkbox
+                            style="margin-top: -4px"
+                            v-model="baseDatasetInfo.checkAll"
+                            :indeterminate="baseDatasetInfo.checkAllIsIndeterminate"
+                            @change="batchSelectChange($event, baseDatasetInfo)"
+                            >全选</el-checkbox
+                          >
+                        </div>
                       </div>
                       <div style="display: flex; width: 100%">
                         <div
-                          style="width: 50%"
+                          style="display: flex; width: 50%; line-height: 32px"
                           v-for="viewInfo in baseDatasetInfo.datasetViews"
                           :key="viewInfo"
                         >
-                          <el-checkbox v-model="viewInfo.checked" />
-                          <Icon
-                            class-name="view-type-icon"
-                            style="margin: 0 4px"
-                            :name="viewInfo.chartType"
-                          />
+                          <div>
+                            <el-checkbox
+                              v-model="viewInfo.checked"
+                              @change="datasetInfoChange(baseDatasetInfo)"
+                            />
+                          </div>
+                          <div>
+                            <Icon
+                              class-name="view-type-icon"
+                              style="margin: 0 4px"
+                              :name="viewInfo.chartType"
+                            />
+                          </div>
                           <span style="font-size: 12px"> {{ viewInfo.chartName }}</span>
                         </div>
                       </div>
@@ -372,6 +390,18 @@ const initParams = async () => {
   getPanelViewList(dvInfo.value.id)
 }
 
+const datasetInfoChange = datasetInfo => {
+  let viewCheckCount = 0
+  datasetInfo.datasetViews.forEach(dsView => {
+    if (dsView['checked']) {
+      viewCheckCount++
+    }
+  })
+  datasetInfo['checkAll'] = viewCheckCount === datasetInfo.datasetViews.length
+  datasetInfo['checkAllIsIndeterminate'] =
+    viewCheckCount > 0 && viewCheckCount < datasetInfo.datasetViews.length
+}
+
 const paramsCheckedAdaptor = (outerParamsInfo, newBaseFilterInfo, newBaseDatasetInfo) => {
   const dsFieldIdSelected = {}
   const viewMatchIds = []
@@ -414,14 +444,36 @@ const cancel = () => {
 }
 
 const save = () => {
-  if (checkArrayRepeat(state.outerParams.outerParamsInfoArray, 'paramName')) {
-    ElMessage.warning({
-      message: t('visualization.repeat_params'),
-      showClose: true
+  const outerParamsCopy = deepCopy(state.outerParams)
+  console.log('targetViewInfoList0==' + outerParamsCopy)
+  outerParamsCopy.outerParamsInfoArray?.forEach(outerParamsInfo => {
+    outerParamsInfo.targetViewInfoList = []
+    outerParamsInfo.filterInfo?.forEach(baseFilterInfo => {
+      // 存在过滤器选项被选
+      if (baseFilterInfo.filterSelected) {
+        outerParamsInfo.targetViewInfoList.push({
+          targetViewId: baseFilterInfo.filterSelected,
+          targetDsId: baseFilterInfo.id,
+          targetFieldId: 'empty'
+        })
+      }
     })
-    return
-  }
-  updateOuterParamsSet(state.outerParams).then(() => {
+    console.log('targetViewInfoList1==' + outerParamsInfo.targetViewInfoList)
+    outerParamsInfo.datasetInfo?.forEach(baseDatasetInfo => {
+      // 存在数据集字段被选中
+      if (baseDatasetInfo.fieldIdSelected) {
+        baseDatasetInfo.datasetViews?.forEach(dsView => {
+          outerParamsInfo.targetViewInfoList.push({
+            targetViewId: dsView.chartId,
+            targetDsId: baseDatasetInfo.id,
+            targetFieldId: baseDatasetInfo.fieldIdSelected
+          })
+        })
+      }
+    })
+    console.log('targetViewInfoList2==' + outerParamsInfo.targetViewInfoList)
+  })
+  updateOuterParamsSet(outerParamsCopy).then(() => {
     ElMessage({
       message: t('commons.save_success'),
       type: 'success',
@@ -501,6 +553,9 @@ const addOuterParamsInfo = () => {
   state.outerParams.checked = true
   const outerParamsInfo = deepCopy(state.defaultOuterParamsInfo)
   outerParamsInfo['paramsInfoId'] = generateID()
+  const newBaseFilterInfo = deepCopy(state.baseFilterInfo)
+  const newBaseDatasetInfo = deepCopy(state.baseDatasetInfo)
+  paramsCheckedAdaptor(outerParamsInfo, newBaseFilterInfo, newBaseDatasetInfo)
   state.outerParamsInfoArray.push(outerParamsInfo)
   state.mapOuterParamsInfoArray[outerParamsInfo.paramsInfoId] = outerParamsInfo
   curEditDataId.value = outerParamsInfo['paramsInfoId']
@@ -528,6 +583,10 @@ const batchSelectChange = (value, baseDatasetInfo) => {
 const optInit = () => {
   state.outerParamsSetVisible = true
   initParams()
+}
+
+const findFilterName = id => {
+  return dvMainStore.canvasViewInfo[id]?.title
 }
 
 defineExpose({
@@ -602,6 +661,8 @@ defineExpose({
 .preview-show {
   border-left: 1px solid #e6e6e6;
   background-size: 100% 100% !important;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .view-type-icon {
@@ -648,6 +709,11 @@ defineExpose({
 
 .outer-filter-content {
   width: 100%;
+}
+
+.outer-dataset-content {
+  width: 100%;
+  padding-left: 16px;
 }
 
 .inner-filter-content {
@@ -794,6 +860,7 @@ defineExpose({
   height: 16px;
   border-radius: 4px;
   padding: 0px 1px;
+  color: rgba(100, 106, 115, 1);
   &:hover {
     background: rgba(31, 35, 41, 0.1);
     cursor: pointer;
@@ -801,10 +868,23 @@ defineExpose({
 }
 
 .ds-view-content {
-  width: 100%;
+  width: calc(100% - 16px);
   border-radius: 4px;
-  margin-top: 8px;
+  margin: 8px 16px 0 16px;
   padding: 12px;
   background: rgba(245, 246, 247, 1);
+}
+
+.ds-content-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(100, 106, 115, 1);
+}
+
+.custom-view-diver {
+  width: 1px;
+  margin: 4px 4px;
+  height: 14px;
+  background: rgba(31, 35, 41, 0.15);
 }
 </style>
