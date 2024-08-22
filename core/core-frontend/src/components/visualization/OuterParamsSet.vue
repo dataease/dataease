@@ -166,11 +166,24 @@
                           style="width: 100%"
                           placeholder="请选择"
                         >
+                          <template #header>
+                            <el-tabs
+                              stretch
+                              class="params-select--header"
+                              v-model="baseDatasetInfo.activelist"
+                            >
+                              <el-tab-pane label="字段" name="dimensionList"></el-tab-pane>
+                              <el-tab-pane label="参数" name="parameterList"></el-tab-pane>
+                            </el-tabs>
+                          </template>
                           <el-option
-                            v-for="item in baseDatasetInfo.datasetFields"
-                            :key="item.id"
+                            v-for="item in findFields(
+                              baseDatasetInfo.activelist,
+                              baseDatasetInfo.datasetFields
+                            )"
+                            :key="item.attachId"
                             :label="item.name"
-                            :value="item.id"
+                            :value="item.attachId"
                           >
                             <Icon
                               style="width: 14px; height: 14px"
@@ -231,10 +244,8 @@
         </el-row>
       </el-row>
       <el-row class="root-class">
-        <el-button size="small" @click="cancel()">{{ t('commons.cancel') }} </el-button>
-        <el-button type="primary" size="small" @click="save()"
-          >{{ t('commons.confirm') }}
-        </el-button>
+        <el-button @click="cancel()">{{ t('commons.cancel') }} </el-button>
+        <el-button type="primary" @click="save()">{{ t('commons.confirm') }} </el-button>
       </el-row>
     </el-row>
   </el-dialog>
@@ -390,6 +401,14 @@ const initParams = async () => {
   getPanelViewList(dvInfo.value.id)
 }
 
+const findFields = (type, datasetFields) => {
+  if (type === 'parameterList') {
+    return datasetFields.filter(field => field.attachId.indexOf('DE') > -1)
+  } else {
+    return datasetFields.filter(field => field.attachId.indexOf('DE') === -1)
+  }
+}
+
 const datasetInfoChange = datasetInfo => {
   let viewCheckCount = 0
   datasetInfo.datasetViews.forEach(dsView => {
@@ -428,6 +447,11 @@ const paramsCheckedAdaptor = (outerParamsInfo, newBaseFilterInfo, newBaseDataset
       datasetInfo['checkAll'] = viewCheckCount === datasetInfo.datasetViews.length
       datasetInfo['checkAllIsIndeterminate'] =
         viewCheckCount > 0 && viewCheckCount < datasetInfo.datasetViews.length
+      if (datasetInfo['fieldIdSelected'] && datasetInfo['fieldIdSelected'].indexOf('DE') > -1) {
+        datasetInfo['activelist'] = 'parameterList'
+      } else {
+        datasetInfo['activelist'] = 'dimensionList'
+      }
     })
   }
   if (newBaseFilterInfo) {
@@ -445,7 +469,6 @@ const cancel = () => {
 
 const save = () => {
   const outerParamsCopy = deepCopy(state.outerParams)
-  console.log('targetViewInfoList0==' + outerParamsCopy)
   outerParamsCopy.outerParamsInfoArray?.forEach(outerParamsInfo => {
     outerParamsInfo.targetViewInfoList = []
     outerParamsInfo.filterInfo?.forEach(baseFilterInfo => {
@@ -458,7 +481,6 @@ const save = () => {
         })
       }
     })
-    console.log('targetViewInfoList1==' + outerParamsInfo.targetViewInfoList)
     outerParamsInfo.datasetInfo?.forEach(baseDatasetInfo => {
       // 存在数据集字段被选中
       if (baseDatasetInfo.fieldIdSelected) {
@@ -471,7 +493,6 @@ const save = () => {
         })
       }
     })
-    console.log('targetViewInfoList2==' + outerParamsInfo.targetViewInfoList)
   })
   updateOuterParamsSet(outerParamsCopy).then(() => {
     ElMessage({
