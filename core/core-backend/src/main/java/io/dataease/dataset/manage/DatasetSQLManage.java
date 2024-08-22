@@ -66,23 +66,35 @@ public class DatasetSQLManage {
 
     private List<SqlVariableDetails> filterParameters(ChartExtRequest chartExtRequest, Long datasetTableId) {
         List<SqlVariableDetails> parameters = new ArrayList<>();
+        if (chartExtRequest != null && ObjectUtils.isNotEmpty(chartExtRequest.getOuterParamsFilters())) {
+            for (ChartExtFilterDTO filterDTO : chartExtRequest.getOuterParamsFilters()) {
+                if (CollectionUtils.isEmpty(filterDTO.getValue())) {
+                    continue;
+                }
+                filterParametersAdaptor(parameters,filterDTO,datasetTableId);
+            }
+        }
         if (chartExtRequest != null && ObjectUtils.isNotEmpty(chartExtRequest.getFilter())) {
             for (ChartExtFilterDTO filterDTO : chartExtRequest.getFilter()) {
                 if (CollectionUtils.isEmpty(filterDTO.getValue())) {
                     continue;
                 }
-                if (ObjectUtils.isNotEmpty(filterDTO.getParameters())) {
-                    for (SqlVariableDetails parameter : filterDTO.getParameters()) {
-                        if (parameter.getDatasetTableId().equals(datasetTableId)) {
-                            parameter.setValue(filterDTO.getValue());
-                            parameter.setOperator(filterDTO.getOperator());
-                            parameters.add(parameter);
-                        }
-                    }
-                }
+                filterParametersAdaptor(parameters,filterDTO,datasetTableId);
             }
         }
         return parameters;
+    }
+
+    private void filterParametersAdaptor(List<SqlVariableDetails> parameters,ChartExtFilterDTO filterDTO,Long datasetTableId){
+        if (ObjectUtils.isNotEmpty(filterDTO.getParameters())) {
+            for (SqlVariableDetails parameter : filterDTO.getParameters()) {
+                if (parameter.getDatasetTableId().equals(datasetTableId)) {
+                    parameter.setValue(filterDTO.getValue());
+                    parameter.setOperator(filterDTO.getOperator());
+                    parameters.add(parameter);
+                }
+            }
+        }
     }
 
     public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO, ChartExtRequest chartExtRequest) throws Exception {
