@@ -533,7 +533,8 @@ const defaultForm = {
   description: '',
   type: 'API',
   apiConfiguration: [],
-  paramsConfiguration: []
+  paramsConfiguration: [],
+  enableDataFill: false
 }
 const form = reactive<Form>(cloneDeep(defaultForm))
 const defaultForm2 = {
@@ -859,6 +860,8 @@ defineExpose({
 
 <style lang="less">
 .datasource-drawer-fullscreen {
+  z-index: 1000 !important;
+
   .ed-drawer__body {
     padding: 0;
   }
