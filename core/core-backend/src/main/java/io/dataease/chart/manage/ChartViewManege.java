@@ -26,6 +26,7 @@ import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.i18n.Translator;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -97,6 +98,9 @@ public class ChartViewManege {
     public void delete(Long id) {
         coreChartViewMapper.deleteById(id);
     }
+
+    @XpackInteract(value = "chartViewManage")
+    public void disuse(List<Long> chartIdList) {}
 
     @Transactional
     public void deleteBySceneId(Long sceneId, List<Long> chartIds) {
@@ -252,6 +256,7 @@ public class ChartViewManege {
 
     public ChartBaseVO chartBaseInfo(Long id) {
         ChartBasePO po = extChartViewMapper.queryChart(id);
+        if (ObjectUtils.isEmpty(po)) return null;
         ChartBaseVO vo = BeanUtils.copyBean(new ChartBaseVO(), po);
         TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {};
         vo.setXAxis(JsonUtil.parseList(po.getXAxis(), tokenType));
@@ -324,6 +329,9 @@ public class ChartViewManege {
         record.setDrillFields(objectMapper.writeValueAsString(dto.getDrillFields()));
         record.setCustomFilter(objectMapper.writeValueAsString(dto.getCustomFilter()));
         record.setViewFields(objectMapper.writeValueAsString(dto.getViewFields()));
+        record.setFlowMapStartName(objectMapper.writeValueAsString(dto.getFlowMapStartName()));
+        record.setFlowMapEndName(objectMapper.writeValueAsString(dto.getFlowMapEndName()));
+        record.setExtColor(objectMapper.writeValueAsString(dto.getExtColor()));
 
         return record;
     }
@@ -349,6 +357,9 @@ public class ChartViewManege {
         dto.setDrillFields(JsonUtil.parseList(record.getDrillFields(), tokenType));
         dto.setCustomFilter(JsonUtil.parseObject(record.getCustomFilter(), FilterTreeObj.class));
         dto.setViewFields(JsonUtil.parseList(record.getViewFields(), tokenType));
+        dto.setFlowMapStartName(JsonUtil.parseList(record.getFlowMapStartName(), tokenType));
+        dto.setFlowMapEndName(JsonUtil.parseList(record.getFlowMapEndName(), tokenType));
+        dto.setExtColor(JsonUtil.parseList(record.getExtColor(), tokenType));
 
         return dto;
 

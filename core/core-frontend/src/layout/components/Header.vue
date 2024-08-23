@@ -146,10 +146,18 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
-      <el-icon style="margin: 0 10px" class="ai-icon copilot-icon" v-if="!showOverlayCopilot">
+      <el-icon
+        style="margin: 0 10px"
+        class="ai-icon copilot-icon"
+        v-if="!showOverlayCopilot && appearanceStore.getShowCopilot"
+      >
         <Icon name="copilot" @click="handleCopilotClick" />
       </el-icon>
-      <Copilot @confirm="copilotConfirm" v-if="showOverlayCopilot" class="copilot-icon-tips" />
+      <Copilot
+        @confirm="copilotConfirm"
+        v-if="showOverlayCopilot && appearanceStore.getShowCopilot"
+        class="copilot-icon-tips"
+      />
 
       <el-icon
         style="margin: 0 10px"
@@ -181,7 +189,7 @@ onMounted(() => {
         :base-url="aiBaseUrl"
       ></ai-component>
       <div v-if="showOverlay && appearanceStore.getShowAi" class="overlay"></div>
-      <div v-if="showOverlayCopilot" class="overlay"></div>
+      <div v-if="showOverlayCopilot && appearanceStore.getShowCopilot" class="overlay"></div>
     </div>
   </el-header>
   <ExportExcel ref="ExportExcelRef"></ExportExcel>

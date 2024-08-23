@@ -247,7 +247,10 @@ const openOuterParamsSet = () => {
     ElMessage.warning('请先保存当前页面')
     return
   }
-  outerParamsSetRef.value.optInit()
+  //设置需要先触发保存
+  canvasSave(() => {
+    outerParamsSetRef.value.optInit()
+  })
 }
 
 const multiplexingCanvasOpen = () => {

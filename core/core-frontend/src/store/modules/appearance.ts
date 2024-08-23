@@ -12,8 +12,11 @@ interface AppearanceState {
   customColor?: string
   navigateBg?: string
   navigate?: string
+  mobileLogin?: string
+  mobileLoginBg?: string
   help?: string
   showAi?: string
+  showCopilot?: string
   showDoc?: string
   showAbout?: string
   bg?: string
@@ -36,9 +39,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       customColor: '',
       navigateBg: '',
       navigate: '',
+      mobileLogin: '',
+      mobileLoginBg: '',
       help: '',
       showDoc: '0',
       showAi: '0',
+      showCopilot: '0',
       showAbout: '0',
       bg: '',
       login: '',
@@ -57,6 +63,18 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     getNavigate(): string {
       if (this.navigate) {
         return baseUrl + this.navigate
+      }
+      return null
+    },
+    getMobileLogin(): string {
+      if (this.mobileLogin) {
+        return baseUrl + this.mobileLogin
+      }
+      return null
+    },
+    getMobileLoginBg(): string {
+      if (this.mobileLoginBg) {
+        return baseUrl + this.mobileLoginBg
       }
       return null
     },
@@ -117,6 +135,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     getShowAi(): boolean {
       return isBtnShow(this.showAi)
     },
+    getShowCopilot(): boolean {
+      return isBtnShow(this.showCopilot)
+    },
     getShowDoc(): boolean {
       return isBtnShow(this.showDoc)
     },
@@ -127,6 +148,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
   actions: {
     setNavigate(data: string) {
       this.navigate = data
+    },
+    setMobileLogin(data: string) {
+      this.mobileLogin = data
+    },
+    setMobileLoginBg(data: string) {
+      this.mobileLoginBg = data
     },
     setHelp(data: string) {
       this.help = data
@@ -177,8 +204,11 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         return
       }
       this.navigate = data.navigate
+      this.mobileLogin = data.mobileLogin
+      this.mobileLoginBg = data.mobileLoginBg
       this.help = data.help
       this.showAi = data.showAi
+      this.showCopilot = data.showCopilot
       this.showDoc = data.showDoc
       this.showAbout = data.showAbout
       this.navigateBg = data.navigateBg

@@ -1057,6 +1057,7 @@ const getMenuList = (val: boolean) => {
     <el-form
       ref="exportFormRef"
       class="de-form-item"
+      @submit.prevent
       :model="exportForm"
       :rules="exportFormRules"
       :before-close="closeExport"

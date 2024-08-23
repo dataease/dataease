@@ -1116,6 +1116,7 @@ export default {
     table_column_fixed: '固定列宽',
     table_column_custom: '自定义',
     chart_table_pivot: '透视表',
+    chart_table_heatmap: '热力图',
     table_pivot_row: '数据行',
     field_error_tips:
       '该字段所对应的数据集原始字段发生变更（包括维度、指标，字段类型，字段被删除等），建议重新编辑',
@@ -2787,6 +2788,8 @@ export default {
     name: '告警名称',
     grid_title: '告警管理',
     grid: '告警列表',
-    record: '告警记录'
+    record: '告警记录',
+    module_name: '阈值告警',
+    setting: '阈值告警设置'
   }
 }

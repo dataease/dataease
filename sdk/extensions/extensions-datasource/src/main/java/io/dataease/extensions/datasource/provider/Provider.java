@@ -180,6 +180,11 @@ public abstract class Provider {
         return s;
     }
 
+    public String replaceComment(String s) {
+        String regex = "/\\*[\\s\\S]*?\\*/|-- .*";
+        return s.replaceAll(regex, " ");
+    }
+
     public SqlDialect getDialect(DatasourceSchemaDTO coreDatasource) {
         SqlDialect sqlDialect = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());

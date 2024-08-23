@@ -68,6 +68,8 @@ declare interface Chart {
   flowMapStartName?: Axis[]
   flowMapEndName?: Axis[]
   showPosition: string
+
+  extColor: Axis[]
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>

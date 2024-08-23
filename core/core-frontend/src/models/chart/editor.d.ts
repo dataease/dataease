@@ -57,7 +57,7 @@ declare type AxisType =
   | 'area'
   | 'flowMapStartName'
   | 'flowMapEndName'
-  | 'flowMapColor'
+  | 'extColor'
 /**
  * 轴配置
  */

@@ -413,6 +413,8 @@ const dimensionItemRemove = item => {
     view.value.flowMapStartName.splice(item.index, 1)
   } else if (item.removeType === 'flowMapEndName') {
     view.value.flowMapEndName.splice(item.index, 1)
+  } else if (item.removeType === 'extColor') {
+    view.value.extColor.splice(item.index, 1)
   }
 }
 
@@ -524,7 +526,12 @@ const onCustomFlowMapEndNameSort = item => {
   customSortAxis.value = 'flowMapEndName'
   customSort()
 }
-
+const onCustomExtColorSort = item => {
+  recordSnapshotInfo('render')
+  state.customSortField = view.value.extColor[item.index]
+  customSortAxis.value = 'extColor'
+  customSort()
+}
 const onMove = e => {
   recordSnapshotInfo('calcData')
   state.moveId = e.draggedContext.element.id
@@ -798,6 +805,10 @@ const addFlowMapEndName = e => {
   addAxis(e, 'flowMapEndName')
 }
 
+const addExtColor = e => {
+  addAxis(e, 'extColor')
+}
+
 const onAxisChange = (e, axis: AxisType) => {
   if (e.removed) {
     const { element } = e.removed
@@ -844,7 +855,6 @@ const onAreaChange = val => {
 
 const onTypeChange = (render, type) => {
   const viewConf = getViewConfig(type)
-  console.log(view.value)
   if (viewConf.isPlugin) {
     view.value.plugin = {
       isPlugin: true,
@@ -1110,6 +1120,11 @@ const onChangeFlowMapPointForm = val => {
   renderChart(view.value)
 }
 
+const onChangExtColorForm = val => {
+  view.value.extColor = val
+  renderChart(view.value)
+}
+
 const showRename = val => {
   recordSnapshotInfo('render')
   state.itemForm = JSON.parse(JSON.stringify(val))
@@ -1135,6 +1150,7 @@ const removeItems = (
     | 'drillFields'
     | 'flowMapStartName'
     | 'flowMapEndName'
+    | 'extColor'
 ) => {
   recordSnapshotInfo('calcData')
   let axis = []
@@ -1169,6 +1185,9 @@ const removeItems = (
       break
     case 'flowMapEndName':
       axis = view.value.flowMapEndName?.splice(0)
+      break
+    case 'extColor':
+      axis = view.value.extColor?.splice(0)
       break
   }
   axis?.length && emitter.emit('removeAxis', { axisType: _type, axis, editType: 'remove' })
@@ -1222,6 +1241,11 @@ const saveRename = ref => {
           axisType = 'flowMapEndName'
           axis = view.value.flowMapEndName[index]
           view.value.flowMapEndName[index].chartShowName = chartShowName
+          break
+        case 'extColor':
+          axisType = 'extColor'
+          axis = view.value.extColor[index]
+          view.value.extColor[index].chartShowName = chartShowName
           break
         default:
           break
@@ -2128,6 +2152,64 @@ const deleteChartFieldItem = id => {
                             </template>
                           </draggable>
                           <drag-placeholder :drag-list="view.extStack" />
+                        </div>
+                      </el-row>
+
+                      <el-row v-if="showAxis('extColor')" class="padding-lr drag-data">
+                        <div class="form-draggable-title">
+                          <span>
+                            {{ chartViewInstance.axisConfig.extColor.name }}
+                          </span>
+                          <el-tooltip
+                            :effect="toolTip"
+                            placement="top"
+                            :content="t('common.delete')"
+                          >
+                            <el-icon
+                              class="remove-icon"
+                              :class="{ 'remove-icon--dark': themes === 'dark' }"
+                              size="14px"
+                              @click="removeItems('extColor')"
+                            >
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div
+                          class="qw"
+                          @drop="$event => drop($event, 'extColor')"
+                          @dragenter="dragEnter"
+                          @dragover="$event => dragOver($event)"
+                        >
+                          <draggable
+                            :list="view.extColor"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            :class="{ dark: themes === 'dark' }"
+                            @add="addExtColor"
+                            @change="e => onAxisChange(e, 'extColor')"
+                          >
+                            <template #item="{ element, index }">
+                              <dimension-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                :themes="props.themes"
+                                type="extColor"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onCustomExtColorSort"
+                                @valueFormatter="valueFormatter"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :themes="themes" :drag-list="view.extColor" />
                         </div>
                       </el-row>
 
@@ -4578,7 +4660,7 @@ span {
 }
 
 .custom_sort_dialog {
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 100px);
   min-height: 152px;
 
   display: flex;

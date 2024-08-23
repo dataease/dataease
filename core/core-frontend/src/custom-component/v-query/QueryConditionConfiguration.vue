@@ -330,6 +330,9 @@ const setType = () => {
       if (!(field?.deType === 1 && curComponent.value.displayType === '7')) {
         curComponent.value.displayType = `${[3, 4].includes(field?.deType) ? 2 : field?.deType}`
       }
+      if (field?.deType === 7) {
+        curComponent.value.displayType = '0'
+      }
       if (
         displayType !== curComponent.value.displayType &&
         !([3, 4].includes(+displayType) && +curComponent.value.displayType === 2)
@@ -1848,7 +1851,8 @@ defineExpose({
                       v-for="ele in curComponent.dataset.fields.filter(
                         ele =>
                           ele.deType === +curComponent.displayType ||
-                          ([3, 4].includes(ele.deType) && +curComponent.displayType === 2)
+                          ([3, 4].includes(ele.deType) && +curComponent.displayType === 2) ||
+                          (ele.deType === 7 && +curComponent.displayType === 0)
                       )"
                       :key="ele.id"
                       :label="ele.name"
@@ -1899,7 +1903,8 @@ defineExpose({
                       v-for="ele in curComponent.dataset.fields.filter(
                         ele =>
                           ele.deType === +curComponent.displayType ||
-                          ([3, 4].includes(ele.deType) && +curComponent.displayType === 2)
+                          ([3, 4].includes(ele.deType) && +curComponent.displayType === 2) ||
+                          (ele.deType === 7 && +curComponent.displayType === 0)
                       )"
                       :key="ele.id"
                       :label="ele.name"

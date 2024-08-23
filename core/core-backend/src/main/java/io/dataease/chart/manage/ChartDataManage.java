@@ -144,6 +144,7 @@ public class ChartDataManage {
         // 过滤来自仪表板的条件
         List<ChartExtFilterDTO> extFilterList = new ArrayList<>();
         //组件过滤条件
+        List<SqlVariableDetails> sqlVariables = datasetGroupManage.getSqlParams(Collections.singletonList(view.getTableId()));
         if (ObjectUtils.isNotEmpty(chartExtRequest.getFilter())) {
             for (ChartExtFilterDTO request : chartExtRequest.getFilter()) {
                 // 解析多个fieldId,fieldId是一个逗号分隔的字符串
@@ -153,7 +154,6 @@ public class ChartDataManage {
                 }
 
                 boolean hasParameters = false;
-                List<SqlVariableDetails> sqlVariables = datasetGroupManage.getSqlParams(Collections.singletonList(view.getTableId()));
                 if (CollectionUtils.isNotEmpty(sqlVariables)) {
                     for (SqlVariableDetails parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
                         String parameterId = StringUtils.endsWith(parameter.getId(), START_END_SEPARATOR) ? parameter.getId().split(START_END_SEPARATOR)[0] : parameter.getId();
@@ -234,18 +234,35 @@ public class ChartDataManage {
         //联动过滤条件和外部参数过滤条件全部加上
         if (ObjectUtils.isNotEmpty(filters)) {
             for (ChartExtFilterDTO request : filters) {
-                DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(Long.valueOf(request.getFieldId()));
-                request.setDatasetTableField(datasetTableField);
-                request.setFilterType(2);
-                // 相同数据集
-                if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
-                    if (ObjectUtils.isNotEmpty(request.getViewIds())) {
-                        if (request.getViewIds().contains(view.getId())) {
+                // 包含 DE 的为数据集参数
+                if(request.getFieldId().contains("DE")){
+                    // 组装sql 参数原始数据
+                    if (CollectionUtils.isNotEmpty(sqlVariables)) {
+                        for(SqlVariableDetails sourceVariables : sqlVariables){
+                            if(sourceVariables.getId().equals(request.getFieldId())){
+                                if(CollectionUtils.isEmpty(request.getParameters())){
+                                    request.setParameters(new ArrayList<>());
+                                }
+                                request.getParameters().add(sourceVariables);
+                            }
+                        }
+
+                    }
+                }else {
+                    DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(Long.valueOf(request.getFieldId()));
+                    request.setDatasetTableField(datasetTableField);
+                    request.setFilterType(2);
+                    // 相同数据集
+                    if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
+                        if (ObjectUtils.isNotEmpty(request.getViewIds())) {
+                            if (request.getViewIds().contains(view.getId())) {
+                                extFilterList.add(request);
+                            }
+                        } else {
                             extFilterList.add(request);
                         }
-                    } else {
-                        extFilterList.add(request);
                     }
+
                 }
             }
         }
@@ -604,7 +621,8 @@ public class ChartDataManage {
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")
                 || StringUtils.containsIgnoreCase(view.getType(), "group")
                 || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
-                || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")) {
+                || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
+                || StringUtils.equalsIgnoreCase(view.getType(), "t-heatmap")) {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
@@ -754,16 +772,22 @@ public class ChartDataManage {
 
     public void saveChartViewFromVisualization(String checkData, Long sceneId, Map<Long, ChartViewDTO> chartViewsInfo) {
         if (!MapUtils.isEmpty(chartViewsInfo)) {
+            List<Long> disuseChartIdList = new ArrayList<>();
             chartViewsInfo.forEach((key, chartViewDTO) -> {
-                if (checkData.indexOf(chartViewDTO.getId() + "") > -1) {
+                if (checkData.contains(chartViewDTO.getId() + "")) {
                     try {
                         chartViewDTO.setSceneId(sceneId);
                         chartViewManege.save(chartViewDTO);
                     } catch (Exception e) {
                         DEException.throwException(e);
                     }
+                } else {
+                    disuseChartIdList.add(chartViewDTO.getId());
                 }
             });
+            if (CollectionUtils.isNotEmpty(disuseChartIdList)) {
+                chartViewManege.disuse(disuseChartIdList);
+            }
         }
     }
 }

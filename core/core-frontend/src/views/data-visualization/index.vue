@@ -526,6 +526,7 @@ eventBus.on('handleNew', handleNew)
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   />
+  <xpack-component jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9UaHJlc2hvbGREaWFsb2c=" />
   <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
   <dv-preview
     v-if="fullscreenFlag"

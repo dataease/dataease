@@ -160,7 +160,9 @@
         FROM data_visualization_info
         where data_visualization_info.delete_flag = 0
           and data_visualization_info.id = #{dvId}
-          and data_visualization_info.type = #{dvType}
+          <if test="dvType">
+            and data_visualization_info.type = #{dvType}
+          </if>
     </select>
 
     <select id="findRecent" resultType="io.dataease.visualization.dao.ext.po.VisualizationResourcePO">

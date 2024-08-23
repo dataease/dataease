@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -66,4 +63,12 @@ public interface ThresholdApi {
     @Operation(summary = "预览信息")
     @PostMapping("/preview")
     String preview(@RequestBody ThresholdPreviewRequest request);
+
+    @Operation(summary = "视图是否设置了阈值告警")
+    @GetMapping("/anyThreshold/{chartId}")
+    boolean anyThreshold(@PathVariable("chartId") Long chartId);
+
+    @Operation(summary = "根据视图ID删除")
+    @GetMapping("/deleteWithChart/{chartId}")
+    void deleteWithChart(@PathVariable("chartId") Long chartId);
 }
