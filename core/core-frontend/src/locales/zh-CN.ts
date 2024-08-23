@@ -2606,8 +2606,8 @@ export default {
     form_manage: '表单管理',
     my_job: '我的填报',
     form: {
-      special_characters_are_not_supported: '不支持特殊字符',
       mobile_number_format_is_incorrect: '手机号码格式不正确',
+      email_format_is_incorrect: '邮箱格式不正确',
       name: '名称',
       rename: '重命名',
       untitled: '未命名表单',
