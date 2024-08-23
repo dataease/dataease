@@ -104,6 +104,7 @@ const props = defineProps({
 const { element, editMode, active, disabled, showPosition } = toRefs(props)
 
 const state = reactive({
+  emptyValue: '-',
   data: null,
   viewDataInfo: null,
   totalItems: 0,
@@ -229,7 +230,7 @@ const assignment = content => {
       if (dataRowFiledName.value.includes(itm)) {
         const ele = itm.slice(1, -1)
         let value = dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
-        let targetValue = !!value ? value : '-'
+        let targetValue = !!value ? value : state.emptyValue
         if (thresholdStyleInfo && thresholdStyleInfo[ele]) {
           const thresholdStyle = thresholdStyleInfo[ele]
           targetValue = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${targetValue}</span>`
@@ -362,8 +363,16 @@ const editCursor = () => {
   }, 100)
 }
 
+const updateEmptyValue = view => {
+  state.emptyValue =
+    view?.senior?.functionCfg?.emptyDataStrategy === 'custom'
+      ? view.senior.functionCfg.emptyDataCustomValue || ''
+      : '-'
+}
+
 const calcData = (view: Chart, callback) => {
   isError.value = false
+  updateEmptyValue(view)
   if (view.tableId || view['dataFrom'] === 'template') {
     const v = JSON.parse(JSON.stringify(view))
     getData(v)
@@ -483,6 +492,7 @@ const initCurFields = chartDetails => {
 // 初始化此处不必刷新
 const renderChart = viewInfo => {
   //do renderView
+  updateEmptyValue(viewInfo)
   initCurFieldsChange()
   eventBus.emit('initCurFields-' + element.value.id)
 }

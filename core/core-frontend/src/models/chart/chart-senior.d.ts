@@ -57,6 +57,10 @@ declare interface ChartFunctionCfg {
    */
   emptyDataStrategy: string
   /**
+   * 自定义值
+   */
+  emptyDataCustomValue: string
+  /**
    * 空值字段控制
    */
   emptyDataFieldCtrl: []
