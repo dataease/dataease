@@ -59,6 +59,14 @@ public class SqlparserUtils {
         Statement statement = CCJSqlParserUtil.parse(tmpSql);
         Select select = (Select) statement;
 
+        if(CollectionUtils.isNotEmpty(select.getWithItemsList())){
+            for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {
+                WithItem withItem = iter.next();
+                ParenthesedSelect parenthesedSelect = (ParenthesedSelect) withItem.getSelect();
+                parenthesedSelect.setSelect((Select) CCJSqlParserUtil.parse(removeVariables(parenthesedSelect.getSelect().toString(), dsType)));
+            }
+        }
+
         if (select.getSelectBody() instanceof PlainSelect) {
             return handlePlainSelect((PlainSelect) select.getSelectBody(), select, dsType);
         } else {
@@ -70,7 +78,7 @@ public class SqlparserUtils {
                     result.append(" ").append(setOperationList.getOperations().get(i).toString()).append(" ");
                 }
             }
-            return result.toString();
+            return select.toString();
         }
     }
 
@@ -411,35 +419,6 @@ public class SqlparserUtils {
         return sql.contains(SubstitutedParams);
     }
 
-
-    public static String removeVariables(final String sql) {
-        String tmpSql = sql;
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(sql);
-        boolean hasVariables = false;
-        while (matcher.find()) {
-            hasVariables = true;
-            tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
-        }
-        if (!hasVariables && !tmpSql.contains(SubstitutedParams)) {
-            return tmpSql;
-        }
-
-        SqlParser.Config config =
-                SqlParser.config()
-                        .withLex(Lex.JAVA)
-                        .withIdentifierMaxLength(256);
-        SqlParser sqlParser = SqlParser.create(tmpSql, config);
-        SqlNode sqlNode;
-        try {
-            sqlNode = sqlParser.parseStmt();
-        } catch (SqlParseException e) {
-            throw new RuntimeException("使用 Calcite 进行语法分析发生了异常", e);
-        }
-        // 递归遍历语法树
-        getDependencies(sqlNode, false);
-        return sqlNode.toString();
-    }
 
     private static void getDependencies(SqlNode sqlNode, Boolean fromOrJoin) {
         if (sqlNode == null) {

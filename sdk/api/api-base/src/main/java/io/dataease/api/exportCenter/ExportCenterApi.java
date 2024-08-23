@@ -38,4 +38,7 @@ public interface ExportCenterApi {
     @PostMapping("/retry/{id}")
     public void  retry(@PathVariable String id);
 
+    @PostMapping("/exportLimit")
+    public String  exportLimit();
+
 }

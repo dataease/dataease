@@ -142,6 +142,10 @@ public class ExportCenterManage {
         }
     }
 
+    public String exportLimit() {
+        return String.valueOf(limit);
+    }
+
     public void download(String id, HttpServletResponse response) throws Exception {
         CoreExportTask exportTask = exportTaskMapper.selectById(id);
         OutputStream outputStream = response.getOutputStream();
@@ -266,6 +270,9 @@ public class ExportCenterManage {
     private void setExportFromName(ExportTaskDTO exportTaskDTO) {
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
             exportTaskDTO.setExportFromName(coreChartViewMapper.selectById(exportTaskDTO.getExportFrom()).getTitle());
+        }
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("dataset")) {
+            exportTaskDTO.setExportFromName(coreDatasetGroupMapper.selectById(exportTaskDTO.getExportFrom()).getName());
         }
     }
 

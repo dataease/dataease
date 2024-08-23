@@ -648,8 +648,8 @@ defineExpose({
                   <template #prefix>
                     <el-icon>
                       <Icon
-                        :name="`field_${fieldType[scope.row.deType]}`"
-                        :className="`field-icon-${fieldType[scope.row.deType]}`"
+                        :name="`field_${fieldType[scope.row.deExtractType]}`"
+                        :className="`field-icon-${fieldType[scope.row.deExtractType]}`"
                       ></Icon>
                     </el-icon>
                   </template>
@@ -662,8 +662,8 @@ defineExpose({
                     <span style="float: left">
                       <el-icon>
                         <Icon
-                          :name="`field_${fieldType[scope.row.deType]}`"
-                          :className="`field-icon-${fieldType[scope.row.deType]}`"
+                          :name="`field_${fieldType[item.value]}`"
+                          :className="`field-icon-${fieldType[item.value]}`"
                         ></Icon>
                       </el-icon>
                     </span>

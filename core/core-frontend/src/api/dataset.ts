@@ -130,6 +130,12 @@ export const exportDatasetData = async (data): Promise<IResponse> => {
   })
 }
 
+export const exportLimit = async (): Promise<boolean> => {
+  return request.post({ url: `/exportCenter/exportLimit`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
 export const perDelete = async (id): Promise<boolean> => {
   return request.post({ url: `/datasetTree/perDelete/${id}`, data: {} }).then(res => {
     return res?.data
