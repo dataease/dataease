@@ -11,7 +11,7 @@
     <el-row style="height: 550px">
       <el-row v-loading="state.loading">
         <el-row class="preview">
-          <el-col :span="8" style="height: 100%; overflow-y: hidden">
+          <el-col :span="8" class="preview-left">
             <el-row class="tree-head">
               <span class="head-text">参数列表</span>
               <span class="head-filter">
@@ -158,7 +158,7 @@
                         </div>
                         <span>{{ baseDatasetInfo.name }}</span>
                       </div>
-                      <div style="flex: 1">
+                      <div style="flex: 1; margin-left: -16px">
                         <el-select
                           v-model="baseDatasetInfo.fieldIdSelected"
                           filterable
@@ -168,7 +168,6 @@
                         >
                           <template #header>
                             <el-tabs
-                              stretch
                               class="params-select--header"
                               v-model="baseDatasetInfo.activelist"
                             >
@@ -210,9 +209,9 @@
                           >
                         </div>
                       </div>
-                      <div style="display: flex; width: 100%">
+                      <div style="display: flex; flex-wrap: wrap; width: 100%">
                         <div
-                          style="display: flex; width: 50%; line-height: 32px"
+                          class="view-item"
                           v-for="viewInfo in baseDatasetInfo.datasetViews"
                           :key="viewInfo"
                         >
@@ -635,6 +634,7 @@ defineExpose({
   line-height: 40px;
   font-size: 12px;
   color: #3d4d66;
+  border-bottom: 1px solid #e6e6e6;
   .head-text {
     margin-left: 16px;
     font-weight: 500;
@@ -696,6 +696,7 @@ defineExpose({
   height: 100%;
   width: 100%;
   overflow-y: auto;
+  background: none;
 }
 
 .custom-tree-node {
@@ -907,5 +908,28 @@ defineExpose({
   margin: 4px 4px;
   height: 14px;
   background: rgba(31, 35, 41, 0.15);
+}
+
+.preview-left {
+  background: rgba(245, 246, 247, 1);
+  height: 100%;
+  overflow-y: hidden;
+}
+
+.view-item {
+  display: flex;
+  width: 50%;
+  line-height: 32px;
+}
+
+.ed-select-dropdown__header {
+  padding: 0 8px;
+  .params-select--header {
+    --ed-tabs-header-height: 32px;
+    .ed-tabs__item {
+      font-weight: 400;
+      font-size: 15px;
+    }
+  }
 }
 </style>
