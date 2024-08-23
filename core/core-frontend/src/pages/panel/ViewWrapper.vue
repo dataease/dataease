@@ -88,7 +88,6 @@ onBeforeMount(async () => {
 
       viewInfo.value = canvasViewInfoPreview[embeddedStore.chartId]
       console.log(embeddedStore.chartId, 'embeddedStore.chartId')
-
       ;(
         (canvasDataResult as unknown as Array<{
           id: string

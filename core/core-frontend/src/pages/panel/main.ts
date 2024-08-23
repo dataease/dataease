@@ -91,6 +91,7 @@ const setupAll = async (
   embeddedStore.setBaseUrl(baseUrl)
   embeddedStore.setDvId(dvId)
   embeddedStore.setPid(pid)
+  console.log(chartId, 'chartId')
   embeddedStore.setChartId(chartId)
   embeddedStore.setResourceId(resourceId)
   const directive = await import('@/directive')
