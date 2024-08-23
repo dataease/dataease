@@ -216,6 +216,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.customColor = data.customColor
       if (this.themeColor === 'custom' && this.customColor) {
         document.documentElement.style.setProperty('--ed-color-primary', this.customColor)
+        document.documentElement.style.setProperty('--van-blue', this.customColor)
         document.documentElement.style.setProperty(
           '--ed-color-primary-light-5',
           colorFunctions
