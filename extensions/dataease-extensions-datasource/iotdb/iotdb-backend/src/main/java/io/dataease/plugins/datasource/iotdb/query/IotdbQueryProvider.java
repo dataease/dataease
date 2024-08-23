@@ -88,17 +88,6 @@ public class IotdbQueryProvider extends QueryProvider {
         return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null, null, null);
     }
 
-//    public static void main(String[] args) {
-//        List<DatasetTableField> fields = new ArrayList<>();
-//        DatasetTableField field = new DatasetTableField();
-//        field.setId("4816cd10-5c69-474d-9ebb-c241691e1b0e");
-//        field.setTableId("931cdd77-c582-4e74-8b19-b16b354f6acb");
-//        field.setOriginName("root.stock.Legacy.0700HK.L1_BidPrice");
-//        field.setName("root.stock.Legacy.0700HK.L1_BidPrice");
-//        field.setDataeaseName("C_5f71a7ce3b02773ac2a9e5b3cb32e49d");
-//        fields.add(field);
-//        System.out.println(new IotdbQueryProvider().createQuerySQL("root.stock.Legacy.0700HK", fields ,false, new Datasource(), null, null));
-//    }
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds,
                                  FilterTreeObj fieldCustomFilter,
@@ -167,8 +156,6 @@ public class IotdbQueryProvider extends QueryProvider {
                         .build());
             }
         }
-
-        //STGroup stg = new STGroupFile("/Users/source/dataease/core/backend/src/main/resources/sql/sqlTemplate.stg");
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
