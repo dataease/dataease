@@ -70,7 +70,6 @@ import java.util.stream.Collectors;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RIGHTNOW;
-import static io.dataease.result.ResultCode.DS_RESOURCE_UNCHECKED;
 
 
 @RestController
@@ -530,7 +529,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<DatasourceDTO> innerList(List<Long> ids) throws DEException {
+    public List<DatasourceDTO> innerList(List<Long> ids, List<String> types) throws DEException {
         List<DatasourceDTO> list = new ArrayList<>();
         LambdaQueryWrapper<CoreDatasource> queryWrapper = new LambdaQueryWrapper<>();
         if (ids != null) {
@@ -540,9 +539,20 @@ public class DatasourceServer implements DatasourceApi {
                 queryWrapper.in(CoreDatasource::getId, ids);
             }
         }
+        if (types != null) {
+            if (types.isEmpty()) {
+                return list;
+            } else {
+                queryWrapper.in(CoreDatasource::getType, types);
+            }
+        }
         List<CoreDatasource> dsList = datasourceMapper.selectList(queryWrapper);
         for (CoreDatasource datasource : dsList) {
-            list.add(convertCoreDatasource(datasource.getId(), false, datasource));
+            try {
+                list.add(convertCoreDatasource(datasource.getId(), false, datasource));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return list;
     }
