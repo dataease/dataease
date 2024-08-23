@@ -38,7 +38,16 @@ router.beforeEach(async (to, from, next) => {
     done()
     loadDone()
     if (to.name === 'link') {
-      window.location.href = window.origin + '/mobile.html#' + to.path
+      let linkQuery = ''
+      if (Object.keys(to.query)) {
+        const tempQuery = Object.keys(to.query)
+          .map(key => key + '=' + to.query[key])
+          .join('&')
+        if (tempQuery) {
+          linkQuery = '?' + tempQuery
+        }
+      }
+      window.location.href = window.origin + '/mobile.html#' + to.path + linkQuery
     } else if (to.path === '/dvCanvas') {
       next('/notSupport')
     } else if (
