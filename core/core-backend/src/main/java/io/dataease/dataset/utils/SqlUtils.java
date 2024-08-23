@@ -21,7 +21,7 @@ public class SqlUtils {
 
     public static String addSchema(String sql, String schema) {
         if (sql.trim().endsWith(";")) {
-            sql = sql.substring(0, sql.length() - 1);
+            sql = sql.trim().substring(0, sql.length() - 1);
         }
 
         SqlParser.Config config =
