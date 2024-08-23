@@ -348,7 +348,7 @@ const drop = e => {
       }
     })
     // URL 字段类型换成文本字段类型
-    const displayType = componentInfo.deType === 7 ? 0 : componentInfo.deType
+    const displayType = componentInfo.deType === 7 ? 0 : `${componentInfo.deType}`
     list.value.push({
       ...infoFormat(componentInfo),
       auto: true,
