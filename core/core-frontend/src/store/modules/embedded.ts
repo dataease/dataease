@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
+import { cloneDeep } from 'lodash-es'
+
 interface AppState {
   type: string
   token: string
@@ -197,5 +199,6 @@ export const userStore = defineStore('embedded', {
 })
 
 export const useEmbedded = () => {
+  console.log('cloneDeep', cloneDeep(store))
   return userStore(store)
 }
