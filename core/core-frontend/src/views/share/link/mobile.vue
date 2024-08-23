@@ -3,13 +3,23 @@
     <LinkError v-if="!loading && !linkExist" />
     <Exp v-else-if="!loading && linkExp" />
     <PwdTips v-else-if="!loading && !pwdValid" />
-    <PreviewCanvas v-else :class="{ 'hidden-link': loading }" ref="pcanvas" public-link-status />
+    <TicketError
+      v-else-if="!loading && (!state.ticketValidVO.ticketValid || state.ticketValidVO.ticketExp)"
+    />
+    <PreviewCanvas
+      v-else
+      :class="{ 'hidden-link': loading }"
+      ref="pcanvas"
+      public-link-status
+      :ticket-args="state.ticketValidVO.args"
+    />
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, nextTick, ref } from 'vue'
+import { onMounted, nextTick, ref, reactive } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import PreviewCanvas from '@/views/data-visualization/PreviewCanvasMobile.vue'
+import TicketError from './TicketError.vue'
 import { ProxyInfo, shareProxy } from './ShareProxy'
 import Exp from './exp.vue'
 import router from '@/router/mobile'
@@ -22,6 +32,13 @@ const pwdValid = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const pcanvas = ref(null)
 const curType = ref('')
+const state = reactive({
+  ticketValidVO: {
+    ticketValid: false,
+    ticketExp: false,
+    args: ''
+  }
+})
 onMounted(async () => {
   const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
   curType.value = proxyInfo.type || 'dashboard'
@@ -34,6 +51,7 @@ onMounted(async () => {
   linkExist.value = true
   linkExp.value = !!proxyInfo.exp
   pwdValid.value = !!proxyInfo.pwdValid
+  state.ticketValidVO = proxyInfo.ticketValidVO
   nextTick(() => {
     if (curType.value === 'dashboard') {
       const method = pcanvas?.value?.loadCanvasDataAsync
