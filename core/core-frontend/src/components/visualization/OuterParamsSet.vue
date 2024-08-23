@@ -835,7 +835,7 @@ defineExpose({
 }
 
 :deep(.ed-tree--highlight-current .ed-tree-node.is-current > .ed-tree-node__content) {
-  background-color: rgba(51, 112, 255, 0.1) !important;
+  background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1)) !important;
 }
 
 .tree-content ::deep(.ed-input__inner) {
