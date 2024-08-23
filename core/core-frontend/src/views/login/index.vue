@@ -163,11 +163,11 @@ const showLoginErrorMsg = () => {
     return
   }
   if (loginErrorMsg.value.startsWith('token is Expired')) {
-    ElMessage.error('token已过期，请重新登录！')
+    ElMessage.error('登录信息已过期，请重新登录！')
     return
   }
   if (loginErrorMsg.value.startsWith('token is destroyed')) {
-    ElMessage.error('token已销毁，请重新登录！')
+    ElMessage.error('登录信息已销毁，请重新登录！')
     return
   }
   if (loginErrorMsg.value.startsWith('user_disable')) {
