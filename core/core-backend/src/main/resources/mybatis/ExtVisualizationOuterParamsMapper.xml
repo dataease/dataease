@@ -141,7 +141,7 @@
       </select>
 
        <select id="getDsFieldInfo"  resultType="io.dataease.api.dataset.vo.CoreDatasetTableFieldVO">
-          select cdtf.*,cdtf.id as attachId from core_dataset_table_field cdtf where cdtf.dataset_group_id = #{dataset_group_id}
+          select cdtf.*,cdtf.id as attachId from core_dataset_table_field cdtf where cdtf.dataset_group_id = #{dataset_group_id} order by cdtf.de_type, cdtf.origin_name
       </select>
 
       <select id="getViewInfo"  resultType="io.dataease.api.chart.vo.ChartBaseVO">
