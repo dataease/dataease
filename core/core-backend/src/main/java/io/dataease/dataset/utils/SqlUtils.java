@@ -20,8 +20,9 @@ public class SqlUtils {
     public static Logger logger = LoggerFactory.getLogger(SqlUtils.class);
 
     public static String addSchema(String sql, String schema) {
-        if (sql.trim().endsWith(";")) {
-            sql = sql.trim().substring(0, sql.length() - 1);
+        sql = sql.trim();
+        if (sql.endsWith(";")) {
+            sql = sql.substring(0, sql.length() - 1);
         }
 
         SqlParser.Config config =

@@ -481,8 +481,9 @@ public class SqlparserUtils {
         if (StringUtils.isEmpty(sql)) {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
-        if (sql.trim().endsWith(";")) {
-            sql = sql.trim().substring(0, sql.length() - 1);
+        sql = sql.trim();
+        if (sql.endsWith(";")) {
+            sql = sql.substring(0, sql.length() - 1);
         }
 
         if (StringUtils.isNotEmpty(sqlVariableDetails)) {
