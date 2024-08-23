@@ -117,9 +117,7 @@ const backgroundCustomShow = computed(() => {
   return (
     dashboardActive.value ||
     (!dashboardActive.value &&
-      !['CanvasBoard', 'CanvasIcon', 'Picture', 'CircleShape', 'RectShape'].includes(
-        element.value.component
-      ))
+      !['CanvasBoard', 'CanvasIcon', 'CircleShape', 'RectShape'].includes(element.value.component))
   )
 })
 onMounted(() => {
