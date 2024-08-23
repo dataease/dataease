@@ -729,6 +729,7 @@ export const DEFAULT_FUNCTION_CFG: ChartFunctionCfg = {
   sliderFillBg: '#BCD6F1',
   sliderTextColor: '#999999',
   emptyDataStrategy: 'breakLine',
+  emptyDataCustomValue: '',
   emptyDataFieldCtrl: []
 }
 export const DEFAULT_ASSIST_LINE_CFG: ChartAssistLineCfg = {
