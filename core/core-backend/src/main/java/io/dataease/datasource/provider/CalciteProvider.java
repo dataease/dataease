@@ -273,6 +273,9 @@ public class CalciteProvider extends Provider {
     }
 
     private boolean isDorisCatalog(DatasourceRequest datasourceRequest) {
+        if (!datasourceRequest.getDatasource().getType().equalsIgnoreCase("doris")) {
+            return false;
+        }
         DatasourceConfiguration configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
         String database = "";
         if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
@@ -284,7 +287,7 @@ public class CalciteProvider extends Provider {
             String[] databasePrams = matcher.group(3).split("\\?");
             database = databasePrams[0];
         }
-        return datasourceRequest.getDatasource().getType().equalsIgnoreCase("doris") && database.contains(".");
+        return database.contains(".");
     }
 
     @Override
