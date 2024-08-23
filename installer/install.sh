@@ -111,6 +111,7 @@ function prepare_de_run_base() {
 
    if [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
       sed -i -e "s/^      DE_MYSQL_HOST/      ${DE_MYSQL_HOST}/g" docker-compose.yml
+      sed -i -e "s/^      DE_PORT/      ${DE_PORT}/g" docker-compose.yml
       sed -i -e "s/^. DE_MYSQL_HOST/  ${DE_MYSQL_HOST}/g" docker-compose-mysql.yml
    else
       sed -i -e "/^    depends_on/,+2d" docker-compose.yml
