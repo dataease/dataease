@@ -396,8 +396,8 @@ onMounted(() => {
         align-items: center;
         justify-content: center;
         &:hover {
-          background-color: rgba(51, 112, 255, 0.1);
-          color: var(--primary);
+          background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+          color: var(--ed-color-primary);
           cursor: pointer;
         }
       }
