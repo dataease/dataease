@@ -451,7 +451,7 @@ public class CopilotManage {
         if (type.equals("oracle") || type.equals("sqlServer")) {
             try {
                 if (copilotSQL.trim().endsWith(";")) {
-                    copilotSQL = copilotSQL.substring(0, copilotSQL.length() - 1);
+                    copilotSQL = copilotSQL.trim().substring(0, copilotSQL.length() - 1);
                 }
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
                 datasourceSchemaDTO.setType(type);

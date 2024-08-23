@@ -19,9 +19,7 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 import net.sf.jsqlparser.util.deparser.SelectDeParser;
-import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.*;
-import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.util.SqlShuttle;
 import org.apache.commons.collections4.CollectionUtils;
@@ -59,7 +57,7 @@ public class SqlparserUtils {
         Statement statement = CCJSqlParserUtil.parse(tmpSql);
         Select select = (Select) statement;
 
-        if(CollectionUtils.isNotEmpty(select.getWithItemsList())){
+        if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
             for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {
                 WithItem withItem = iter.next();
                 ParenthesedSelect parenthesedSelect = (ParenthesedSelect) withItem.getSelect();
@@ -484,7 +482,7 @@ public class SqlparserUtils {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
         if (sql.trim().endsWith(";")) {
-            sql = sql.substring(0, sql.length() - 1);
+            sql = sql.trim().substring(0, sql.length() - 1);
         }
 
         if (StringUtils.isNotEmpty(sqlVariableDetails)) {
