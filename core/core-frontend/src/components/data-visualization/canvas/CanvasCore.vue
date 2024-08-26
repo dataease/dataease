@@ -491,6 +491,7 @@ const getSelectArea = () => {
 }
 
 const handleContextMenu = e => {
+  console.log('====handleContextMenu===')
   // 仪表板和预览状态不显示菜单和组创建
   if (dashboardActive.value || editMode.value === 'preview') {
     return
@@ -514,7 +515,7 @@ const handleContextMenu = e => {
 
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
-    if (['VQuery'].includes(curComponent.value.component)) {
+    if (curComponent.value && ['VQuery'].includes(curComponent.value.component)) {
       left = left * curBaseScale.value + 150
       top = top * curBaseScale.value + curComponent.value.style.top * (1 - curBaseScale.value)
     }
