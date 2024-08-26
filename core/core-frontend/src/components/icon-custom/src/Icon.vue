@@ -245,6 +245,7 @@ import filterHLeft from '@/assets/svg/filter-h-left.svg'
 import filterHRight from '@/assets/svg/filter-h-right.svg'
 import filterTop from '@/assets/svg/filter-top.svg'
 import filter from '@/assets/svg/filter.svg'
+import filterParams from '@/assets/svg/filter-params.svg'
 import flowMapDark from '@/assets/svg/flow-map-dark.svg'
 import flowMapOrigin from '@/assets/svg/flow-map-origin.svg'
 import flowMap from '@/assets/svg/flow-map.svg'
@@ -923,6 +924,7 @@ const iconMap = {
   'filter-h-left': filterHLeft,
   'filter-h-right': filterHRight,
   'filter-top': filterTop,
+  'filter-params': filterParams,
   filter: filter,
   'flow-map-dark': flowMapDark,
   'flow-map-origin': flowMapOrigin,
