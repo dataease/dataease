@@ -609,28 +609,22 @@ public class ChartDataBuild {
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] row = data.get(i1);
 
+            AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
             StringBuilder a = new StringBuilder();
             if (isDrill) {
                 a.append(row[xAxis.size() - 1]);
             } else {
-                for (int i = 0; i < xAxis.size(); i++) {
-                    if (i == xAxis.size() - 1) {
+                for (int i = 0; i < xAxisBase.size(); i++) {
+                    if (i == xAxisBase.size() - 1) {
                         a.append(row[i]);
                     } else {
                         a.append(row[i]).append("\n");
                     }
                 }
             }
-
-            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
-            int size = xAxis.size() + extStack.size() + yAxis.size();
-            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
-
-            int i = xAxis.size();
-            AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
             axisChartDataDTO.setField(a.toString());
             axisChartDataDTO.setName(a.toString());
-            String category = row[xAxis.size()];
+            String category = row[xAxisBase.size()];
             axisChartDataDTO.setCategory(category);
             if (category != null) {
                 categories.add(category);
@@ -645,17 +639,12 @@ public class ChartDataBuild {
                 chartDimensionDTO.setValue(row[k]);
                 dimensionList.add(chartDimensionDTO);
             }
-            ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
-            chartDimensionDTO.setId(extStack.get(0).getId());
-            chartDimensionDTO.setValue(row[xAxis.size()]);
-            dimensionList.add(chartDimensionDTO);
             axisChartDataDTO.setDimensionList(dimensionList);
 
-            int j = i - xAxis.size();
-            int valueIndex = xAxis.size() + extStack.size();
             if (ObjectUtils.isNotEmpty(yAxis)) {
+                int valueIndex = xAxis.size();
                 ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
-                chartQuotaDTO.setId(yAxis.get(j).getId());
+                chartQuotaDTO.setId(yAxis.get(0).getId());
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
@@ -663,14 +652,13 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
             } else {
                 axisChartDataDTO.setQuotaList(quotaList);
                 axisChartDataDTO.setValue(new BigDecimal(0));
             }
-
-            series.get(j).getData().add(axisChartDataDTO);
+            series.get(0).getData().add(axisChartDataDTO);
         }
+
         if (CollectionUtils.isNotEmpty(series)) {
             series.get(0).setCategories(categories);
         }
