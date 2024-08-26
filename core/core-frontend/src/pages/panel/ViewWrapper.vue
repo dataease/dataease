@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onBeforeMount, reactive } from 'vue'
+import { ref, onBeforeMount, reactive, inject } from 'vue'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -13,6 +13,7 @@ import { XpackComponent } from '@/components/plugin'
 const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
+const chartId = inject('embeddedParams') as string
 const config = ref()
 const viewInfo = ref()
 const userViewEnlargeRef = ref()
@@ -86,8 +87,8 @@ onBeforeMount(async () => {
         dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult)
       }
 
-      viewInfo.value = canvasViewInfoPreview[embeddedStore.chartId]
-      console.log(embeddedStore.chartId, 'embeddedStore.chartId')
+      console.log('chartId', chartId)
+      viewInfo.value = canvasViewInfoPreview[chartId]
       ;(
         (canvasDataResult as unknown as Array<{
           id: string
@@ -95,14 +96,14 @@ onBeforeMount(async () => {
           propValue: Array<{ id: string }>
         }>) || []
       ).some(ele => {
-        if (ele.id === embeddedStore.chartId) {
+        if (ele.id === chartId) {
           config.value = ele
           return true
         }
 
         if (ele.component === 'Group') {
           return (ele.propValue || []).some(itx => {
-            if (itx.id === embeddedStore.chartId) {
+            if (itx.id === chartId) {
               config.value = itx
               return true
             }
