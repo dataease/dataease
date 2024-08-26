@@ -147,6 +147,29 @@ export function historyItemAdaptor(
   if (componentItem.component === 'Picture') {
     componentItem.style['adaptation'] = componentItem.style['adaptation'] || 'adaptation'
   }
+  // 样式设置
+  componentItem.style['adaptation'] = componentItem.style['adaptation'] || 'adaptation'
+  if (componentItem.style['borderActive'] === undefined) {
+    componentItem.style['borderActive'] = false
+    componentItem.style['borderWidth'] = 1
+    componentItem.style['borderRadius'] = 5
+    componentItem.style['borderStyle'] = 'solid'
+    componentItem.style['borderColor'] = '#cccccc'
+  } else {
+    componentItem.style['borderWidth'] =
+      componentItem.style['borderWidth'] === undefined ? 1 : componentItem.style['borderWidth']
+    componentItem.style['borderRadius'] =
+      componentItem.style['borderRadius'] === undefined ? 5 : componentItem.style['borderRadius']
+    componentItem.style['borderStyle'] =
+      componentItem.style['borderStyle'] === undefined
+        ? 'solid'
+        : componentItem.style['borderStyle']
+    componentItem.style['borderColor'] =
+      componentItem.style['borderColor'] === undefined
+        ? '#cccccc'
+        : componentItem.style['borderColor']
+  }
+
   // public
   componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
   componentItem['multiDimensional'] =
