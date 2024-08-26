@@ -70,3 +70,16 @@ alter table `core_chart_view`
 
 update visualization_outer_params_target_view_info tvi INNER JOIN core_chart_view ccv on tvi.target_view_id = ccv.id
     set tvi.target_ds_id = ccv.table_id
+
+
+DROP TABLE IF EXISTS `core_font`;
+CREATE TABLE `core_font`
+(
+    `id`                bigint       NOT NULL COMMENT 'ID',
+    `name`              varchar(255) NOT NULL COMMENT '字体名称',
+    `file_name`         varchar(255) NOT NULL COMMENT '文件名称',
+    `file_trans_name`   varchar(255) NOT NULL COMMENT '文件转换名称',
+    `is_default`         tinyint(1)       NOT NULL COMMENT '是否默认',
+    `is_BuiltIn`         tinyint(1)       NOT NULL COMMENT '是否内置',
+    PRIMARY KEY (`id`)
+);
