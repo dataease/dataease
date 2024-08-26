@@ -2,10 +2,10 @@ package io.dataease.chart.manage;
 
 import io.dataease.api.chart.request.ThresholdCheckRequest;
 import io.dataease.api.chart.vo.ThresholdCheckVO;
-import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.extensions.view.filter.FilterTreeItem;
 import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.utils.DateUtils;
@@ -25,17 +25,49 @@ import java.util.stream.Collectors;
 @Component("chartViewThresholdManage")
 public class ChartViewThresholdManage {
 
-    @Resource
-    private DatasetTableFieldManage datasetTableFieldManage;
 
     @Resource
     private ChartViewManege chartViewManege;
 
-    public String convertThresholdRules(Long tableId, String thresholdRules) {
-        List<DatasetTableFieldDTO> fieldList = datasetTableFieldManage.selectByDatasetGroupId(tableId);
+    public String convertThresholdRules(Long chartId, String thresholdRules) {
+        ChartViewDTO details = chartViewManege.getDetails(chartId);
+        return convertThresholdRules(details, thresholdRules);
+    }
+
+    private String convertThresholdRules(ChartViewDTO chart, String thresholdRules) {
+        List<DatasetTableFieldDTO> fieldList = chartFields(chart);
         FilterTreeObj filterTreeObj = JsonUtil.parseObject(thresholdRules, FilterTreeObj.class);
         Map<String, DatasetTableFieldDTO> fieldMap = fieldList.stream().collect(Collectors.toMap(item -> item.getId().toString(), item -> item));
         return convertTree(filterTreeObj, fieldMap);
+    }
+
+    private List<DatasetTableFieldDTO> chartFields(ChartViewDTO details) {
+        List<DatasetTableFieldDTO> result = new ArrayList<>();
+        List<ChartViewFieldDTO> xAxis = details.getXAxis();
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            result.addAll(xAxis);
+        }
+        List<ChartViewFieldDTO> xAxisExt = details.getXAxisExt();
+        if (CollectionUtils.isNotEmpty(xAxisExt)) {
+            result.addAll(xAxisExt);
+        }
+        List<ChartViewFieldDTO> yAxis = details.getYAxis();
+        if (CollectionUtils.isNotEmpty(yAxis)) {
+            result.addAll(yAxis);
+        }
+        List<ChartViewFieldDTO> yAxisExt = details.getYAxisExt();
+        if (CollectionUtils.isNotEmpty(yAxisExt)) {
+            result.addAll(yAxisExt);
+        }
+        List<ChartViewFieldDTO> extStack = details.getExtStack();
+        if (CollectionUtils.isNotEmpty(extStack)) {
+            result.addAll(extStack);
+        }
+        List<ChartViewFieldDTO> extBubble = details.getExtBubble();
+        if (CollectionUtils.isNotEmpty(extBubble)) {
+            result.addAll(extBubble);
+        }
+        return result;
     }
 
     private String convertTree(FilterTreeObj filterTreeObj, Map<String, DatasetTableFieldDTO> fieldMap) {
@@ -73,7 +105,26 @@ public class ChartViewThresholdManage {
             String enumValueText = String.join(",", enumValue);
             return fieldName + " 属于 " + "( " + enumValueText + " )";
         } else {
-            return fieldName + " " + translateTerm(item.getTerm()) + " " + item.getValue();
+            String valueType = item.getValueType();
+            return fieldName + " " + translateTerm(item.getTerm()) + " " + formatFieldValue(item.getValue(), valueType);
+        }
+    }
+
+    private String formatFieldValue(String value, String valueType) {
+        if (StringUtils.isBlank(valueType)) {
+            valueType = "fixed";
+        }
+        if (StringUtils.equals("fixed", valueType)) {
+            return value;
+        }
+        if (StringUtils.equals("max", value)) {
+            return "最大值";
+        } else if (StringUtils.equals("min", value)) {
+            return "最小值";
+        } else if (StringUtils.equals("average", value)) {
+            return "平均值";
+        } else {
+            return value;
         }
     }
 
@@ -88,11 +139,11 @@ public class ChartViewThresholdManage {
             case "in" -> "属于";
             case "not in" -> "不属于";
             case "like" -> "包含";
-            case "not like" -> "不包含";
+            case "not_like" -> "不包含";
             case "null" -> "为空";
-            case "not null" -> "不为空";
+            case "not_null" -> "不为空";
             case "empty" -> "空字符串";
-            case "not empty" -> "非字符串";
+            case "not_empty" -> "非字符串";
             case "between" -> "范围是";
             default -> " 等于 ";
         };
@@ -123,6 +174,9 @@ public class ChartViewThresholdManage {
         try {
             ChartViewDTO chart = chartViewManege.getChart(chartId);
             Map<String, Object> data = chart.getData();
+            thresholdTemplate = thresholdTemplate.replace("[检测时间]", DateUtils.time2String(System.currentTimeMillis()));
+            String s = convertThresholdRules(chart, thresholdRules);
+            thresholdTemplate = convertStyle(thresholdTemplate.replace("[触发告警]", s));
             List<Map<String, Object>> tableRow = (List<Map<String, Object>>) data.get("tableRow");
             List<DatasetTableFieldDTO> fields = (List<DatasetTableFieldDTO>) data.get("fields");
             Map<Long, DatasetTableFieldDTO> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableFieldDTO::getId, item -> item));
@@ -131,7 +185,7 @@ public class ChartViewThresholdManage {
             if (CollectionUtils.isEmpty(rows)) {
                 return new ThresholdCheckVO(false, null, null, null);
             }
-            String regex = "<span[^>]*id=\"changeText-(\\d+)(?!0$)(?!1$)\"[^>]*>.*?</span>";
+            String regex = "<span[^>]*id=\"changeText-(-?\\d+)(?!0$)(?!1$)\"[^>]*>.*?</span>";
             Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
             Matcher matcher = pattern.matcher(thresholdTemplate);
             StringBuilder sb = new StringBuilder();
@@ -150,11 +204,7 @@ public class ChartViewThresholdManage {
             matcher.appendTail(sb);
 
             // 输出替换后的HTML内容
-            String msgContent = sb.toString();
-            msgContent = msgContent.replace("[检测时间]", DateUtils.time2String(System.currentTimeMillis()));
-            Long tableId = chart.getTableId();
-            String s = convertThresholdRules(tableId, thresholdRules);
-            String result = convertStyle(msgContent.replace("[触发告警]", s));
+            String result = sb.toString();
             return new ThresholdCheckVO(true, result, null, null);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), new Throwable(e));
@@ -162,7 +212,50 @@ public class ChartViewThresholdManage {
         }
     }
 
+    private void chartDynamicMap(List<Map<String, Object>> rows, FilterTreeObj conditionTree, Map<Long, DatasetTableFieldDTO> fieldMap) {
+        List<FilterTreeItem> items = conditionTree.getItems();
+        items.forEach(item -> {
+            if (!StringUtils.equals("item", item.getType())) {
+                chartDynamicMap(rows, item.getSubTree(), fieldMap);
+            } else {
+                Long fieldId = item.getFieldId();
+                DatasetTableFieldDTO fieldDTO = fieldMap.get(fieldId);
+                if ((Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_FLOAT)) && StringUtils.equals("dynamic", item.getValueType())) {
+                    item.setField(fieldDTO);
+                    item.setValue(formatValue(rows, item));
+                }
+            }
+        });
+    }
+
+    private String formatValue(List<Map<String, Object>> rows, FilterTreeItem item) {
+        DatasetTableFieldDTO field = item.getField();
+        String dataeaseName = field.getDataeaseName();
+        String value = item.getValue();
+        float tempFVal = 0f;
+        int validLen = 0;
+
+        for (Map<String, Object> row : rows) {
+            Object o = row.get(dataeaseName);
+            if (ObjectUtils.isEmpty(o)) continue;
+            float fvalue = Float.parseFloat(o.toString());
+            if (StringUtils.equals("min", value)) {
+                tempFVal = Math.min(tempFVal, fvalue);
+            } else if (StringUtils.equals("max", value)) {
+                tempFVal = Math.max(tempFVal, fvalue);
+            } else if (StringUtils.equals("average", value)) {
+                tempFVal += fvalue;
+                validLen++;
+            }
+        }
+        if (StringUtils.equals("average", value)) {
+            return validLen == 0 ? "0f" : String.valueOf((tempFVal / validLen));
+        }
+        return String.valueOf(tempFVal);
+    }
+
     public List<Map<String, Object>> filterRows(List<Map<String, Object>> rows, FilterTreeObj conditionTree, Map<Long, DatasetTableFieldDTO> fieldMap) {
+        chartDynamicMap(rows, conditionTree, fieldMap);
         List<Map<String, Object>> filteredRows = new ArrayList<>();
         for (Map<String, Object> row : rows) {
             if (matchesConditionTree(row, conditionTree, fieldMap)) {
