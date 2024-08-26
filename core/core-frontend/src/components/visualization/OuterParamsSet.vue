@@ -73,7 +73,7 @@
               <el-row class="new-params-title"> 选择参数关联组件 </el-row>
               <el-row class="new-params-filter" v-if="state.outerParamsInfo?.filterInfo?.length">
                 <div style="display: flex" class="inner-content">
-                  <div style="width: 16px; margin-top: 2px">
+                  <div style="width: 16px; margin-top: 2px" class="expand-custom-outer">
                     <div class="expand-custom">
                       <el-icon @click="() => (state.filterExpand = !state.filterExpand)"
                         ><CaretBottom v-show="state.filterExpand" />
@@ -94,7 +94,11 @@
                   >
                     <div style="width: 16px"></div>
                     <div style="flex: 1; line-height: 32px">
-                      <Icon style="margin-top: 4px" class-name="view-type-icon" name="filter" />
+                      <Icon
+                        style="margin-top: 4px"
+                        class-name="view-type-icon"
+                        name="filter-params"
+                      />
                       <span>{{ findFilterName(baseFilter.id) }}</span>
                     </div>
                     <div style="flex: 1">
@@ -120,7 +124,7 @@
               </el-row>
               <el-row class="new-params-ds" v-if="state.outerParamsInfo?.datasetInfo?.length">
                 <div style="display: flex" class="inner-content">
-                  <div style="width: 16px; margin-top: 2px">
+                  <div style="width: 16px; margin-top: 2px" class="expand-custom-outer">
                     <div class="expand-custom">
                       <el-icon @click="() => (state.datasetExpand = !state.datasetExpand)"
                         ><CaretBottom v-show="state.datasetExpand" />
@@ -139,7 +143,7 @@
                     :key="index"
                   >
                     <div style="display: flex; width: 100%">
-                      <div style="width: 16px; margin-top: 7px">
+                      <div style="width: 16px; margin-top: 7px" class="expand-custom-outer">
                         <div class="expand-custom">
                           <el-icon
                             @click="
@@ -909,7 +913,7 @@ defineExpose({
 
 .custom-view-diver {
   width: 1px;
-  margin: 4px 4px;
+  margin: 4px 8px;
   height: 14px;
   background: rgba(31, 35, 41, 0.15);
 }
@@ -935,5 +939,9 @@ defineExpose({
       font-size: 15px;
     }
   }
+}
+
+.expand-custom-outer {
+  margin-right: 4px;
 }
 </style>
