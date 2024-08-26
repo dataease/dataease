@@ -80,6 +80,26 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     }
     return defaultLength
   }
+  protected sortData = (fieldObj, data) => {
+    const { deType, sort, customSort } = fieldObj
+
+    if (sort === 'desc') {
+      if (deType === 0) {
+        return data.sort().reverse()
+      } else {
+        return data.sort((a, b) => b - a)
+      }
+    } else if (sort === 'asc') {
+      if (deType === 0) {
+        return data.sort()
+      } else {
+        return data.sort((a, b) => a - b)
+      }
+    }
+
+    // 如果没有指定排序方式，直接返回原始数据或 customSort
+    return customSort && customSort.length > 0 ? customSort : data
+  }
   async drawChart(drawOptions: G2PlotDrawOptions<Heatmap>): Promise<Heatmap> {
     const { chart, container, action } = drawOptions
     const xAxis = deepCopy(chart.xAxis)
@@ -100,6 +120,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
         }
       })
     })
+
     // options
     const initOptions: HeatmapOptions = {
       data: data,
@@ -109,11 +130,12 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       appendPadding: getPadding(chart),
       meta: {
         [xField]: {
-          type: 'cat'
+          type: 'cat',
+          values: this.sortData(xAxis[0], [...new Set(data.map(i => i[[xField]]))])
         },
         [xFieldExt]: {
           type: 'cat',
-          values: [...new Set(data.map(i => i[[xFieldExt]]))].reverse()
+          values: this.sortData(xAxisExt[0], [...new Set(data.map(i => i[[xFieldExt]]))]).reverse()
         }
       },
       legend: {
@@ -136,18 +158,10 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       }
       const pointData = param.data.data
       const dimensionList = []
-      const quotaList = []
-      chart.data.fields.forEach((item, index) => {
+      chart.data.fields.forEach(item => {
         Object.keys(pointData).forEach(key => {
           if (key.startsWith('f_') && item.dataeaseName === key) {
             dimensionList.push({
-              id: item.id,
-              dataeaseName: item.dataeaseName,
-              value: pointData[key]
-            })
-          }
-          if (!key.startsWith('f_')) {
-            quotaList.push({
               id: item.id,
               dataeaseName: item.dataeaseName,
               value: pointData[key]
@@ -183,7 +197,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
 
   protected configBasicStyle(chart: Chart, options: HeatmapOptions): HeatmapOptions {
     const basicStyle = parseJson(chart.customAttr).basicStyle
-    const color = basicStyle.colors?.map((ele, index) => {
+    const color = basicStyle.colors?.map(ele => {
       return hexColorToRGBA(ele, basicStyle.alpha)
     })
     return {
