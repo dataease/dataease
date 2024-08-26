@@ -8,6 +8,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
+  marginTop: {
+    type: String,
+    default: '0'
+  },
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
@@ -17,7 +21,11 @@ const props = defineProps({
 
 <template>
   <div>
-    <div v-if="!props.dragList || props.dragList.length === 0" class="drag-placeholder-style">
+    <div
+      v-if="!props.dragList || props.dragList.length === 0"
+      :style="'margin-top:' + props.marginTop"
+      class="drag-placeholder-style"
+    >
       <span
         class="drag-placeholder-style-span"
         :class="{ 'drag-placeholder-style-span--dark': themes === 'dark' }"
