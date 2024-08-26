@@ -9,12 +9,21 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import jakarta.servlet.ServletOutputStream;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.core.io.ResourceLoader;
+
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +34,8 @@ public class FontManage {
     private static String path = "/opt/dataease2.0/data/font/";
     @Resource
     private CoreFontMapper coreFontMapper;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     public List<FontDto> list(FontDto fontDto) {
         QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
@@ -80,6 +91,38 @@ public class FontManage {
     public String upload(MultipartFile file) {
         String fileUuid = UUID.randomUUID().toString();
         return saveFile(file, fileUuid);
+    }
+
+    public void download(Long id, HttpServletResponse response) {
+        CoreFont coreFont = coreFontMapper.selectById(id);
+        try {
+            response.setContentType("application/x-download");
+            response.setHeader("Content-Disposition", "attachment;filename=" + coreFont.getFileTransName());
+            try (ServletOutputStream out = response.getOutputStream();
+                 InputStream stream = new FileInputStream(path + coreFont.getFileTransName())) {
+                byte buff[] = new byte[1024];
+                int length;
+                while ((length = stream.read(buff)) > 0) {
+                    out.write(buff, 0, length);
+                }
+                out.flush();
+            }
+        } catch (IOException e) {
+            DEException.throwException(e.getMessage());
+        }
+    }
+
+    public List<FontDto> defaultFont() {
+        QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("isDefault", 1);
+        List<CoreFont> coreFonts = coreFontMapper.selectList(queryWrapper);
+        List<FontDto> fontDtos = new ArrayList<>();
+        for (CoreFont coreFont : coreFonts) {
+            FontDto dto = new FontDto();
+            BeanUtils.copyBean(dto, coreFont);
+            fontDtos.add(dto);
+        }
+        return fontDtos;
     }
 
     private static String saveFile(MultipartFile file, String fileNameUUID) throws DEException {
