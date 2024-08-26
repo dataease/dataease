@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-08-23
+ * @since 2024-08-26
  */
 @TableName("core_font")
 public class CoreFont implements Serializable {
@@ -40,6 +40,11 @@ public class CoreFont implements Serializable {
      * 是否默认
      */
     private Boolean isDefault;
+
+    /**
+     * 更新时间
+     */
+    private Long updateTime;
 
     /**
      * 是否内置
@@ -86,6 +91,14 @@ public class CoreFont implements Serializable {
         this.isDefault = isDefault;
     }
 
+    public Long getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
+    }
+
     public Boolean getIsBuiltin() {
         return isBuiltin;
     }
@@ -102,6 +115,7 @@ public class CoreFont implements Serializable {
         ", fileName = " + fileName +
         ", fileTransName = " + fileTransName +
         ", isDefault = " + isDefault +
+        ", updateTime = " + updateTime +
         ", isBuiltin = " + isBuiltin +
         "}";
     }
