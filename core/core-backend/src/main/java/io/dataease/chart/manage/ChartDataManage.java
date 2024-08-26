@@ -87,6 +87,9 @@ public class ChartDataManage {
         if (ObjectUtils.isNotEmpty(AuthUtils.getUser())) {
             chartExtRequest.setUser(AuthUtils.getUser().getUserId());
         }
+        if (view.getChartExtRequest() == null) {
+            view.setChartExtRequest(chartExtRequest);
+        }
 
         //excel导出，如果是从仪表板获取图表数据，则仪表板的查询模式，查询结果的数量，覆盖图表对应的属性
         if (view.getIsExcelExport()) {

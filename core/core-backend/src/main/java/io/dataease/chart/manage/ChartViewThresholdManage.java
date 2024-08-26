@@ -8,7 +8,9 @@ import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.filter.FilterTreeItem;
 import io.dataease.extensions.view.filter.FilterTreeObj;
+import io.dataease.utils.DateUtils;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -101,41 +103,63 @@ public class ChartViewThresholdManage {
         return " 或 ";
     }
 
+    private String convertStyle(String htmlString) {
+        String regex = "<span\\s+id=\"(changeText-0|changeText-1)\"\\s+style=\"([^\"]*)\">";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(htmlString);
+        if (matcher.find()) {
+            String styleAttribute = matcher.group();
+            String newStyle = styleAttribute.replace("background: #3370FF33", "background: #FFFFFF")
+                    .replace("color: #2b5fd9", "color: #000000");
+            return matcher.replaceAll(Matcher.quoteReplacement(newStyle));
+        }
+        return htmlString;
+    }
 
     public ThresholdCheckVO checkThreshold(ThresholdCheckRequest request) throws Exception {
         String thresholdTemplate = request.getThresholdTemplate();
         String thresholdRules = request.getThresholdRules();
         Long chartId = request.getChartId();
-        ChartViewDTO chart = chartViewManege.getChart(chartId);
-        Map<String, Object> data = chart.getData();
-        List<Map<String, Object>> tableRow = (List<Map<String, Object>>) data.get("tableRow");
-        List<DatasetTableFieldDTO> fields = (List<DatasetTableFieldDTO>) data.get("fields");
-        Map<Long, DatasetTableFieldDTO> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableFieldDTO::getId, item -> item));
-        FilterTreeObj filterTreeObj = JsonUtil.parseObject(thresholdRules, FilterTreeObj.class);
-        List<Map<String, Object>> rows = filterRows(tableRow, filterTreeObj, fieldMap);
-        if (CollectionUtils.isEmpty(rows)) {
-            return new ThresholdCheckVO(false, null, null, null);
-        }
-        String regex = "<span[^>]*id=\"changeText-(\\d+)(?!0$)(?!1$)\"[^>]*>.*?</span>";
-        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(thresholdTemplate);
-        StringBuilder sb = new StringBuilder();
-        while (matcher.find()) {
-            long id = Long.parseLong(matcher.group(1));
-            // 根据id从map中获取替换文本
-            DatasetTableFieldDTO fieldDTO = fieldMap.get(id);
-            String fieldDTOName = fieldDTO.getName();
-            String dataeaseName = fieldDTO.getDataeaseName();
-            List<String> valueList = rows.stream().map(row -> row.get(dataeaseName).toString()).collect(Collectors.toList());
-            String replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
-            // 替换文本
-            matcher.appendReplacement(sb, replacement);
-        }
-        matcher.appendTail(sb);
+        try {
+            ChartViewDTO chart = chartViewManege.getChart(chartId);
+            Map<String, Object> data = chart.getData();
+            List<Map<String, Object>> tableRow = (List<Map<String, Object>>) data.get("tableRow");
+            List<DatasetTableFieldDTO> fields = (List<DatasetTableFieldDTO>) data.get("fields");
+            Map<Long, DatasetTableFieldDTO> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableFieldDTO::getId, item -> item));
+            FilterTreeObj filterTreeObj = JsonUtil.parseObject(thresholdRules, FilterTreeObj.class);
+            List<Map<String, Object>> rows = filterRows(tableRow, filterTreeObj, fieldMap);
+            if (CollectionUtils.isEmpty(rows)) {
+                return new ThresholdCheckVO(false, null, null, null);
+            }
+            String regex = "<span[^>]*id=\"changeText-(\\d+)(?!0$)(?!1$)\"[^>]*>.*?</span>";
+            Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+            Matcher matcher = pattern.matcher(thresholdTemplate);
+            StringBuilder sb = new StringBuilder();
+            while (matcher.find()) {
+                long id = Long.parseLong(matcher.group(1));
+                // 根据id从map中获取替换文本
+                DatasetTableFieldDTO fieldDTO = fieldMap.get(id);
+                if (ObjectUtils.isEmpty(fieldDTO)) continue;
+                String fieldDTOName = fieldDTO.getName();
+                String dataeaseName = fieldDTO.getDataeaseName();
+                List<String> valueList = rows.stream().map(row -> row.get(dataeaseName).toString()).collect(Collectors.toList());
+                String replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
+                // 替换文本
+                matcher.appendReplacement(sb, replacement);
+            }
+            matcher.appendTail(sb);
 
-        // 输出替换后的HTML内容
-        String result = sb.toString();
-        return new ThresholdCheckVO(true, result, null, null);
+            // 输出替换后的HTML内容
+            String msgContent = sb.toString();
+            msgContent = msgContent.replace("[检测时间]", DateUtils.time2String(System.currentTimeMillis()));
+            Long tableId = chart.getTableId();
+            String s = convertThresholdRules(tableId, thresholdRules);
+            String result = convertStyle(msgContent.replace("[触发告警]", s));
+            return new ThresholdCheckVO(true, result, null, null);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), new Throwable(e));
+            return new ThresholdCheckVO(false, null, e.getMessage(), null);
+        }
     }
 
     public List<Map<String, Object>> filterRows(List<Map<String, Object>> rows, FilterTreeObj conditionTree, Map<Long, DatasetTableFieldDTO> fieldMap) {
