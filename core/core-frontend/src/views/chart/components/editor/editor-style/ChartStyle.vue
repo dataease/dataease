@@ -205,6 +205,15 @@ const onBackgroundChange = (val, prop) => {
   state.initReady && emit('onBackgroundChange', val, prop)
 }
 
+const onActiveChange = val => {
+  state.initReady &&
+    emit('onStyleAttrChange', {
+      custom: 'style',
+      property: 'active',
+      value: commonBorderPop.value.borderActive
+    })
+}
+
 const onStyleAttrChange = ({ key, value }) => {
   state.initReady && emit('onStyleAttrChange', { custom: 'style', property: key, value: value })
 }
@@ -338,9 +347,9 @@ watch(
           <collapse-switch-item
             v-if="showProperties('border-style') && commonBorderPop"
             v-model="commonBorderPop.borderActive"
-            @modelChange="val => onStyleAttrChange({ key: 'borderActive', value: val })"
+            @modelChange="val => onActiveChange(val)"
             :themes="themes"
-            title="边框"
+            :title="'边框'"
             name="borderSetting"
             class="common-style-area"
           >
