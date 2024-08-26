@@ -7,10 +7,8 @@ import io.dataease.api.font.dto.FontDto;
 import io.dataease.exception.DEException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -46,4 +44,9 @@ public interface FontApi {
     @PostMapping("/uploadFile")
     String upload(@RequestParam("file") MultipartFile file) throws DEException;
 
+    @GetMapping("/download/{id}")
+    void download(@PathVariable("id") Long id, HttpServletResponse response) throws DEException;\
+
+    @GetMapping("/defaultFont")
+    List<FontDto> defaultFont() throws DEException;
 }

@@ -5,6 +5,7 @@ import io.dataease.api.font.dto.FontDto;
 import io.dataease.exception.DEException;
 import jakarta.annotation.Resource;
 import io.dataease.font.manage.FontManage;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,5 +47,15 @@ public class FontServer implements FontApi {
     @Override
     public String upload(MultipartFile file) throws DEException {
         return fontManage.upload(file);
+    }
+
+    @Override
+    public void download(Long id, HttpServletResponse response) throws DEException {
+        fontManage.download(id, response);
+    }
+
+    @Override
+    public List<FontDto> defaultFont() throws DEException {
+        return fontManage.defaultFont();
     }
 }

@@ -68,6 +68,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/geo/")
                 || StringUtils.startsWithAny(requestURI, "/websocket")
                 || StringUtils.startsWithAny(requestURI, "/map/")
+                || StringUtils.startsWithAny(requestURI, "/typeface/download")
                 || StringUtils.startsWithAny(requestURI, "/communicate/down/");
     }
 }
