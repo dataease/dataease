@@ -173,6 +173,15 @@ const showCustomSort = item => {
   }
   return !item.chartId && (item.deType === 0 || item.deType === 5)
 }
+const showSort = () => {
+  const isExtColor = props.type === 'extColor'
+  const isChartMix = props.chart.type.includes('chart-mix')
+  const isDimensionOrDimensionStack = props.type === 'dimension' || props.type === 'dimensionStack'
+  if (isExtColor) {
+    return false
+  }
+  return !isChartMix || isDimensionOrDimensionStack
+}
 onMounted(() => {
   getItemTagType()
 })
@@ -186,7 +195,7 @@ onMounted(() => {
         :class="['editor-' + props.themes, `${themes}_icon-right`]"
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
-        <span style="display: flex; color: #646a73">
+        <span v-if="type !== 'extColor'" style="display: flex; color: #646a73">
           <el-icon v-if="'asc' === item.sort">
             <Icon name="icon_sort-a-to-z_outlined" />
           </el-icon>
@@ -196,6 +205,14 @@ onMounted(() => {
           <el-icon v-if="'custom_sort' === item.sort">
             <Icon name="icon_sort_outlined" />
           </el-icon>
+          <el-icon>
+            <Icon
+              :className="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
+              :name="`field_${fieldType[item.deType]}`"
+            />
+          </el-icon>
+        </span>
+        <span v-if="type === 'extColor'" style="display: flex; color: #646a73">
           <el-icon>
             <Icon
               :className="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
@@ -231,14 +248,7 @@ onMounted(() => {
           class="drop-style"
           :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
         >
-          <el-dropdown-item
-            @click.prevent
-            v-if="
-              !chart.type.includes('chart-mix') ||
-              (chart.type.includes('chart-mix') &&
-                (type === 'dimension' || type === 'dimensionStack'))
-            "
-          >
+          <el-dropdown-item @click.prevent v-if="showSort()">
             <el-dropdown
               :effect="themes"
               popper-class="data-dropdown_popper_mr9"

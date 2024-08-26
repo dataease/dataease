@@ -1120,11 +1120,6 @@ const onChangeFlowMapPointForm = val => {
   renderChart(view.value)
 }
 
-const onChangExtColorForm = val => {
-  view.value.extColor = val
-  renderChart(view.value)
-}
-
 const showRename = val => {
   recordSnapshotInfo('render')
   state.itemForm = JSON.parse(JSON.stringify(val))
