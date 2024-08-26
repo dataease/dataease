@@ -659,12 +659,14 @@ export function baseTablePivot(container, chart, action, headerAction, tableData
     data: newData,
     sortParams: sortParams
   }
-
   // options
   const s2Options = {
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
-    style: getSize(chart),
+    style: {
+      hierarchyCollapse: true,
+      ...getSize(chart)
+    },
     totals: totalCfg,
     conditions: getConditions(chart),
     tooltip: {
@@ -676,7 +678,8 @@ export function baseTablePivot(container, chart, action, headerAction, tableData
         position: 'absolute',
         padding: '4px 2px'
       }
-    }
+    },
+    hierarchyType: customAttr.size.tableLayoutMode ?? 'grid'
   }
 
   // 开始渲染

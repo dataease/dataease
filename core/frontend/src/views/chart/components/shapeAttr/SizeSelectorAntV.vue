@@ -164,6 +164,22 @@
         <!--radar-end-->
         <!--table-begin-->
         <el-form-item
+          v-if="showProperty('tableLayoutMode')"
+          :label="$t('chart.table_layout_mode')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="sizeForm.tableLayoutMode"
+            class="column-radio"
+            @change="changeBarSizeCase('tableLayoutMode')"
+          >
+            <el-radio label="grid"><span>{{ $t('chart.table_layout_grid') }}</span></el-radio>
+            <el-radio label="tree">
+              <span>{{ $t('chart.table_layout_tree') }}</span>
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
           v-if="showProperty('tableItemFontSize')"
           :label="$t('chart.table_item_fontsize')"
           class="form-item"
@@ -1833,6 +1849,7 @@ export default {
           this.sizeForm.tableColumnFreezeTail = this.sizeForm.tableColumnFreezeTail ?? DEFAULT_SIZE.tableColumnFreezeTail
           this.sizeForm.tableRowFreezeHead = this.sizeForm.tableRowFreezeHead ?? DEFAULT_SIZE.tableRowFreezeHead
           this.sizeForm.summaryLabel = this.sizeForm.summaryLabel ?? DEFAULT_SIZE.summaryLabel
+          this.sizeForm.tableLayoutMode = this.sizeForm.tableLayoutMode ?? DEFAULT_SIZE.tableLayoutMode
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
           this.sizeForm.showTableHeader = this.sizeForm.showTableHeader !== false
