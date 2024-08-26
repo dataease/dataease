@@ -45,7 +45,7 @@ const setToDefault = item => {
   })
 }
 
-const cancleDefault = item => {
+const cancelDefault = item => {
   item.isDefault = 0
   edit(item).then(() => {
     ElMessage.success('取消成功')
@@ -104,7 +104,7 @@ onMounted(() => {
           <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
             >设为默认字体</el-button
           >
-          <el-button v-if="ele.isDefault" @click="cancleDefault(ele)" secondary
+          <el-button v-if="ele.isDefault" @click="cancelDefault(ele)" secondary
             >取消默认字体</el-button
           >
           <el-button @click="uploadFont('重命名', 'rename', ele)" secondary>重命名</el-button>
