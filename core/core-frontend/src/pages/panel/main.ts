@@ -78,6 +78,7 @@ const setupAll = async (
   resourceId: string
 ): Promise<App<Element>> => {
   const app = createApp(AppElement, { componentName: type })
+  app.provide('embeddedParams', chartId)
   await setupI18n(app)
   setupStore(app)
   setupRouter(app)
@@ -91,8 +92,6 @@ const setupAll = async (
   embeddedStore.setBaseUrl(baseUrl)
   embeddedStore.setDvId(dvId)
   embeddedStore.setPid(pid)
-  console.log(chartId, 'chartId')
-  embeddedStore.setChartId(chartId)
   embeddedStore.setResourceId(resourceId)
   const directive = await import('@/directive')
   directive.installDirective(app)
