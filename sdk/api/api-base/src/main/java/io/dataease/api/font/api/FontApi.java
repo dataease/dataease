@@ -45,7 +45,7 @@ public interface FontApi {
     String upload(@RequestParam("file") MultipartFile file) throws DEException;
 
     @GetMapping("/download/{id}")
-    void download(@PathVariable("id") Long id, HttpServletResponse response) throws DEException;\
+    void download(@PathVariable("id") Long id, HttpServletResponse response) throws DEException;
 
     @GetMapping("/defaultFont")
     List<FontDto> defaultFont() throws DEException;
