@@ -204,6 +204,7 @@
                             style="margin-top: -4px"
                             v-model="baseDatasetInfo.checkAll"
                             :indeterminate="baseDatasetInfo.checkAllIsIndeterminate"
+                            :disabled="!baseDatasetInfo.fieldIdSelected"
                             @change="batchSelectChange($event, baseDatasetInfo)"
                             >全选</el-checkbox
                           >
@@ -218,6 +219,7 @@
                           <div>
                             <el-checkbox
                               v-model="viewInfo.checked"
+                              :disabled="!baseDatasetInfo.fieldIdSelected"
                               @change="datasetInfoChange(baseDatasetInfo)"
                             />
                           </div>
@@ -484,11 +486,13 @@ const save = () => {
       // 存在数据集字段被选中
       if (baseDatasetInfo.fieldIdSelected) {
         baseDatasetInfo.datasetViews?.forEach(dsView => {
-          outerParamsInfo.targetViewInfoList.push({
-            targetViewId: dsView.chartId,
-            targetDsId: baseDatasetInfo.id,
-            targetFieldId: baseDatasetInfo.fieldIdSelected
-          })
+          if (dsView.checked) {
+            outerParamsInfo.targetViewInfoList.push({
+              targetViewId: dsView.chartId,
+              targetDsId: baseDatasetInfo.id,
+              targetFieldId: baseDatasetInfo.fieldIdSelected
+            })
+          }
         })
       }
     })
@@ -601,8 +605,8 @@ const batchSelectChange = (value, baseDatasetInfo) => {
 }
 
 const optInit = () => {
-  state.outerParamsSetVisible = true
   initParams()
+  state.outerParamsSetVisible = true
 }
 
 const findFilterName = id => {
