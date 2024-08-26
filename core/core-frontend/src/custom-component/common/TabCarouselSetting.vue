@@ -23,7 +23,23 @@ const carouselInfo = computed(() => {
 })
 
 const onSettingChange = () => {
+  // 如果输入值小于1，强制设置为1
+  if (!carouselInfo.value.time || carouselInfo.value.time < 1) {
+    carouselInfo.value.time = 1
+  }
   snapshotStore.recordSnapshotCache('renderChart')
+}
+
+const handleInput = value => {
+  // 使用正则表达式过滤掉小数点和非数字字符，只保留正整数
+  const integerValue = String(value).replace(/[^0-9]/g, '')
+
+  carouselInfo.value.time = integerValue ? parseInt(integerValue, 10) : null
+
+  // 如果输入值小于1，强制设置为1
+  if (carouselInfo.value.time < 1) {
+    carouselInfo.value.time = 1
+  }
 }
 </script>
 
@@ -41,7 +57,7 @@ const onSettingChange = () => {
           :class="'form-item-' + themes"
           style="width: 50%; margin-bottom: 8px"
         >
-          <span style="font-size: 12px">轮播时间</span>
+          <span style="font-size: 12px">轮播时间（秒）</span>
           <el-tooltip class="item" :effect="themes" placement="top">
             <template #content>
               <div>Tab轮播退出编辑模式才开生效</div>
@@ -51,17 +67,18 @@ const onSettingChange = () => {
             </el-icon>
           </el-tooltip>
 
-          <el-input
+          <el-input-number
             v-model="carouselInfo.time"
             :effect="themes"
-            type="number"
             :min="1"
             :max="3600"
+            :step="1"
             :disabled="!carouselInfo.enable"
+            controls-position="right"
+            @input="handleInput"
             @change="onSettingChange"
           >
-            <template #append> 秒 </template>
-          </el-input>
+          </el-input-number>
         </el-form-item>
       </el-form>
     </el-row>
