@@ -863,16 +863,18 @@ public class DatasourceServer implements DatasourceApi {
                 for (ExcelSheetData sheet : excelFileData.getSheets()) {
                     for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
                         if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName()) || isCsv(file.getOriginalFilename())) {
-                            List<String> fieldNames = sheet.getFields().stream().map(TableField::getName).collect(Collectors.toList());
-                            List<String> fieldTypes = sheet.getFields().stream().map(TableField::getFieldType).collect(Collectors.toList());
-                            Collections.sort(fieldNames);
-                            Collections.sort(fieldTypes);
+                            List<TableField> newTableFields = sheet.getFields();
+                            newTableFields.sort((o1, o2) -> {
+                                return o1.getName().compareTo(o2.getName());
+                            });
+
                             datasourceRequest.setTable(datasetTableDTO.getTableName());
-                            List<String> oldFieldNames = ExcelUtils.getTableFields(datasourceRequest).stream().map(TableField::getName).collect(Collectors.toList());
-                            List<String> oldFieldTypes = ExcelUtils.getTableFields(datasourceRequest).stream().map(TableField::getFieldType).collect(Collectors.toList());
-                            Collections.sort(oldFieldNames);
-                            Collections.sort(oldFieldTypes);
-                            if (fieldNames.equals(oldFieldNames) && fieldTypes.equals(oldFieldTypes)) {
+                            List<TableField> oldTableFields = ExcelUtils.getTableFields(datasourceRequest);
+                            oldTableFields.sort((o1, o2) -> {
+                                return o1.getName().compareTo(o2.getName());
+                            });
+
+                            if (isEqual(newTableFields, oldTableFields)) {
                                 sheet.setDeTableName(datasetTableDTO.getTableName());
                                 excelSheetDataList.add(sheet);
                             }
@@ -896,6 +898,34 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
         return excelFileData;
+    }
+
+    private boolean isEqual(List<TableField> newTableFields, List<TableField> oldTableFields) {
+        boolean isEqual = true;
+        if (CollectionUtils.isEmpty(newTableFields) || CollectionUtils.isEmpty(oldTableFields)) {
+            isEqual = false;
+        }
+        for (int i = 0; i < newTableFields.size(); i++) {
+            if (!newTableFields.get(i).getName().equals(oldTableFields.get(i).getName())) {
+                isEqual = false;
+                break;
+            }
+            if (!newTableFields.get(i).getFieldType().equals(oldTableFields.get(i).getFieldType())) {
+                if (oldTableFields.get(i).getFieldType().equals("TEXT")) {
+                    continue;
+                }
+                if (oldTableFields.get(i).getFieldType().equals("DOUBLE")) {
+                    if (newTableFields.get(i).getFieldType().equals("LONG")) {
+                        continue;
+                    }
+                }
+                isEqual = false;
+                break;
+            }
+        }
+
+        return isEqual;
+
     }
 
     private boolean isCsv(String fileName) {

@@ -1,11 +1,11 @@
-package io.dataease.api.typeface.dto;
+package io.dataease.api.font.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 @Data
-public class SysTypefaceDto {
+public class FontDto {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
@@ -28,5 +28,7 @@ public class SysTypefaceDto {
      * 是否默认
      */
     private Boolean isDefault;
+
+    private Boolean isBuiltin;
 }
 

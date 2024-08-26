@@ -1,12 +1,39 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+
 import UploadDetail from './UploadDetail.vue'
+import { changeDefault, deleteById, list } from '@/api/font'
 const fontKeyword = ref('')
-const fontList = ref([1, 2, 3, 4, 5])
+const fontList = ref([])
+
+// const fontList = ref([1, 2, 3, 4, 5])
 const uploadDetail = ref()
 const uploadFont = (title, isRename?: boolean) => {
   uploadDetail.value.init(title, isRename)
 }
+
+const listFont = () => {
+  list({}).then(res => {
+    fontList.value = res
+  })
+}
+
+const deleteFont = item => {
+  deleteById(item.id).then(res => {
+    listFont()
+  })
+}
+
+const setToDefault = item => {
+  item.isDefault = 1
+  changeDefault(item).then(res => {
+    fontList.value = res
+  })
+}
+
+onMounted(() => {
+  listFont()
+})
 </script>
 
 <template>
@@ -39,9 +66,9 @@ const uploadFont = (title, isRename?: boolean) => {
         </div>
         <div class="font-upload_btn">
           <el-button @click="uploadFont('添加字体')" secondary>上传字库文件</el-button>
-          <el-button secondary>设为默认字体</el-button>
+          <el-button @click="setToDefault(ele)" secondary>设为默认字体</el-button>
           <el-button @click="uploadFont('重命名', true)" secondary>重命名</el-button>
-          <el-button secondary>删除</el-button>
+          <el-button @click="deleteFont(ele)" secondary>删除</el-button>
         </div>
       </div>
     </div>
