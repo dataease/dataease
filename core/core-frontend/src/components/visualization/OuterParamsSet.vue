@@ -695,7 +695,7 @@ defineExpose({
 }
 
 .view-type-icon {
-  color: var(--ed-color-primary);
+  color: #3370ff;
   width: 22px;
   height: 14px;
 }
