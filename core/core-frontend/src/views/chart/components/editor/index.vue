@@ -23,7 +23,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
 import draggable from 'vuedraggable'
 import DimensionItem from './drag-item/DimensionItem.vue'
-import { fieldType } from '@/utils/attr'
+import { fieldType, fieldTypeCalculated } from '@/utils/attr'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterTree from './filter/FilterTree.vue'
@@ -1452,6 +1452,13 @@ const confirmEditCalc = () => {
     getFields(view.value.tableId, view.value.id, view.value.type)
     closeEditCalc()
   })
+}
+
+const getIconName = (deType, extField, dimension = false) => {
+  if (extField === 2) {
+    return `${fieldTypeCalculated[deType]}${dimension ? '' : '_1'}`
+  }
+  return `field_${fieldType[deType]}`
 }
 
 const chartFieldEdit = param => {
@@ -3069,7 +3076,7 @@ const deleteChartFieldItem = id => {
                           :class-name="`field-icon-${
                             fieldType[[2, 3].includes(element.deType) ? 2 : 0]
                           }`"
-                          :name="`field_${fieldType[element.deType]}`"
+                          :name="getIconName(element.deType, element.extField)"
                         />
                       </el-icon>
                       <span
@@ -3221,7 +3228,7 @@ const deleteChartFieldItem = id => {
                       <el-icon>
                         <Icon
                           :class-name="`field-icon-${fieldType[element.deType]}`"
-                          :name="`field_${fieldType[element.deType]}`"
+                          :name="getIconName(element.deType, element.extField, true)"
                         ></Icon>
                       </el-icon>
                       <span

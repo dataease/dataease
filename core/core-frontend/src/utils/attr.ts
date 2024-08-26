@@ -100,6 +100,16 @@ export const selectKey = ['textAlign', 'borderStyle', 'verticalAlign']
 export const horizontalPosition = ['headHorizontalPosition']
 
 export const fieldType = ['text', 'time', 'value', 'value', 'value', 'location', 'binary', 'url']
+export const fieldTypeCalculated = [
+  'icon_text_calculated_outlined',
+  'icon_calendar_calculated_outlined',
+  'icon_number_calculated_outlined',
+  'icon_number_calculated_outlined',
+  'icon_number_calculated_outlined',
+  'icon_local_calculated_outlined',
+  'binary',
+  'url'
+]
 export const fieldTypeText = [
   '文本',
   '时间',
