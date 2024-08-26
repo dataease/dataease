@@ -8,6 +8,7 @@ import { LINE_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/ch
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import type { Options } from '@antv/g2plot/esm'
+import { MixOptions } from '@antv/g2plot'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -19,6 +20,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     'background-overall-component',
     'border-style',
     'basic-style-selector',
+    'legend-selector',
     'x-axis-selector',
     'y-axis-selector',
     'title-selector',
@@ -39,7 +41,8 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
       'axisLine',
       'splitLine',
       'axisLabelFormatter'
-    ]
+    ],
+    'legend-selector': ['fontSize', 'color', 'show']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'extLabel', 'extTooltip']
   axisConfig = {
@@ -244,8 +247,8 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
               ['L', x - width - 1 / 2, y + height / 2],
               ['Z'],
               // 中线
-              ['M', x, y + width + 2],
-              ['L', x, x - width - 1]
+              ['M', x, y + 10 / 2],
+              ['L', x, y - 10 / 2]
             ]
           },
           style: { fill: 'red', stroke: 'red', lineWidth: 2 }
@@ -613,6 +616,41 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     }
     return options
   }
+  protected configLegend(chart: Chart, options: MixOptions): MixOptions {
+    let legend = {}
+    let customStyle: CustomStyle
+    const stockPlot = options.plots.filter(item => item.type === 'stock')[0]
+    if (chart.customStyle) {
+      customStyle = parseJson(chart.customStyle)
+      // legend
+      if (customStyle.legend) {
+        const l = JSON.parse(JSON.stringify(customStyle.legend))
+        if (l.show) {
+          legend = {
+            ...stockPlot.options.legend,
+            itemName: {
+              style: {
+                fill: l.color,
+                fontSize: l.fontSize
+              }
+            }
+          }
+        } else {
+          legend = false
+        }
+      }
+    }
+    const newPlots = []
+    const stockOption = {
+      ...stockPlot.options,
+      legend: legend
+    }
+    newPlots.push({ ...stockPlot, options: stockOption })
+    return {
+      ...options,
+      plots: newPlots
+    }
+  }
 
   protected setupOptions(chart: Chart, options: MixOptions): MixOptions {
     return flow(
@@ -621,6 +659,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
       this.configXAxis,
       this.configYAxis,
       this.configTooltip,
+      this.configLegend,
       this.customConfigEmptyDataStrategy
     )(chart, options)
   }

@@ -2264,7 +2264,10 @@ const deleteChartFieldItem = id => {
                                 />
                               </template>
                             </draggable>
-                            <drag-placeholder :drag-list="view.yAxis" />
+                            <drag-placeholder
+                              :margin-top="view.type === 'stock-line' ? '9px' : '0'"
+                              :drag-list="view.yAxis"
+                            />
                           </div>
                         </el-row>
                         <!-- xAxisExtRight -->
