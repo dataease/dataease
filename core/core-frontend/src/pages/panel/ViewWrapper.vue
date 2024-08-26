@@ -86,8 +86,6 @@ onBeforeMount(async () => {
       if (attachParams) {
         dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult)
       }
-
-      console.log('chartId', chartId)
       viewInfo.value = canvasViewInfoPreview[chartId]
       ;(
         (canvasDataResult as unknown as Array<{
