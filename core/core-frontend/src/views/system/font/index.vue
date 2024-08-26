@@ -3,7 +3,9 @@ import { onMounted, ref } from 'vue'
 
 import UploadDetail from './UploadDetail.vue'
 import { deleteById, edit, list } from '@/api/font'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import { templateDelete } from '@/api/template'
 const fontKeyword = ref('')
 const fontList = ref([])
 
@@ -19,9 +21,20 @@ const listFont = () => {
 }
 
 const deleteFont = item => {
-  deleteById(item.id).then(() => {
-    ElMessage.success('删除成功')
-    listFont()
+  if (item.isDefault) {
+    ElMessage.warning('请先将其他字体设置为默认字体，再进行删除。')
+    return
+  }
+  ElMessageBox.confirm('当前字体被删除后，使用该字体的组件将会使用默认字体，确定删除?', {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    deleteById(item.id).then(() => {
+      ElMessage.success('删除成功')
+      listFont()
+    })
   })
 }
 
@@ -32,7 +45,7 @@ const setToDefault = item => {
   })
 }
 
-const cancleDefault = item => {
+const cancelDefault = item => {
   item.isDefault = 0
   edit(item).then(() => {
     ElMessage.success('取消成功')
@@ -76,13 +89,22 @@ onMounted(() => {
           <span class="line"></span> 字库文件： {{ ele.fileName }}
         </div>
         <div class="font-upload_btn">
-          <el-button @click="uploadFont('上传字库文件', 'uploadFile', ele)" secondary
+          <el-button
+            v-if="!ele.fileTransName"
+            @click="uploadFont('上传字库文件', 'uploadFile', ele)"
+            secondary
             >上传字库文件</el-button
+          >
+          <el-button
+            v-if="ele.fileTransName"
+            @click="uploadFont('替换字库文件', 'uploadFile', ele)"
+            secondary
+            >替换字库文件</el-button
           >
           <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
             >设为默认字体</el-button
           >
-          <el-button v-if="ele.isDefault" @click="cancleDefault(ele)" secondary
+          <el-button v-if="ele.isDefault" @click="cancelDefault(ele)" secondary
             >取消默认字体</el-button
           >
           <el-button @click="uploadFont('重命名', 'rename', ele)" secondary>重命名</el-button>
