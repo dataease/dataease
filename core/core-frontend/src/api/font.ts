@@ -26,14 +26,21 @@ export const edit = (data = {}) => {
   })
 }
 
-export const changeDefault = (data = {}) => {
-  return request.post({ url: '/typeface/changeDefault', data }).then(res => {
-    return res?.data
-  })
-}
-
 export const deleteById = id => {
   return request.post({ url: '/typeface/delete/' + id, data: {} }).then(res => {
     return res?.data
   })
+}
+
+export const uploadFontFile = async (data): Promise<IResponse> => {
+  return request
+    .post({
+      url: '/typeface/uploadFile',
+      data,
+      loading: true,
+      headersType: 'multipart/form-data;'
+    })
+    .then(res => {
+      return res
+    })
 }
