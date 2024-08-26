@@ -510,6 +510,9 @@ export const exportExcelDownload = (chart, callBack?) => {
       ...request,
       multiInfo: [req1, req2]
     }
+    if (chart.downloadType === 'dataset') {
+      delete request.multiInfo
+    }
   } else {
     const req = getExcelDownloadRequest(chart.data)
     request = {
