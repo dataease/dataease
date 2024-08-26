@@ -4,6 +4,7 @@ import { uploadFontFile } from '@/api/font'
 import FontInfo from './FontInfo.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { edit } from '@/api/font'
+import { cloneDeep } from 'lodash-es'
 const state = reactive({
   fileList: null
 })
@@ -36,14 +37,22 @@ const uploadExcel = () => {
 const dialogTitle = ref('')
 const dialogVisible = ref(false)
 const action = ref('')
-const ruleForm = reactive({
-  name: ''
-})
+const defaultForm = {
+  id: null,
+  name: '',
+  fileName: '',
+  fileTransName: '',
+  isDefault: 0,
+  isBuiltin: 0,
+  updateTime: 0
+}
+const ruleForm = reactive(cloneDeep(defaultForm))
 
 const init = (val, type, item) => {
   dialogTitle.value = val || '添加字体'
   action.value = type
   dialogVisible.value = true
+  Object.assign(ruleForm, cloneDeep(defaultForm))
   Object.assign(ruleForm, JSON.parse(JSON.stringify(item)))
 }
 
@@ -76,7 +85,7 @@ const emits = defineEmits(['finish'])
 const confirm = () => {
   ruleFormRef.value.validate(val => {
     if (val) {
-      if (action.value !== 'rename') {
+      if (action.value === 'uploadFile') {
         if (uploadFile.value === '') {
           ElMessage.error('请上传字库文件')
           return
@@ -86,12 +95,12 @@ const confirm = () => {
         }
       }
       edit(ruleForm).then(res => {
-        ElMessage.success('成功')
+        ElMessage.success(dialogTitle.value + '成功')
         dialogVisible.value = false
+        Object.assign(ruleForm, cloneDeep(defaultForm))
+        state.fileList = null
         emits('finish')
       })
-      state.fileList = null
-      dialogVisible.value = false
     }
   })
 }
