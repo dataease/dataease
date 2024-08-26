@@ -10,7 +10,7 @@ public class ThresholdPreviewRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 3609209252630995739L;
 
-    private Long tableId;
+    private Long chartId;
 
     private String thresholdRules;
 
