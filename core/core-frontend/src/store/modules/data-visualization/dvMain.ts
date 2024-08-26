@@ -939,106 +939,136 @@ export const dvMainStore = defineStore('dataVisualization', {
         const trackInfo = this.nowPanelOuterParamsInfo
         for (let index = 0; index < curComponentData.length; index++) {
           const element = curComponentData[index]
-          if (!['UserView', 'VQuery'].includes(element.component)) continue
-          const currentFilters = element.outerParamsFilters || [] // 外部参数信息
-
-          // 外部参数 可能会包含多个参数
-          Object.keys(params).forEach(function (sourceInfo) {
-            // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
-            let paramValue = params[sourceInfo]
-            let paramValueStr = params[sourceInfo]
-            const parmaValueSource = params[sourceInfo]
-            let operator = 'in'
-            if (paramValue && !Array.isArray(paramValue)) {
-              paramValue = [paramValue]
-              operator = 'eq'
-            } else if (paramValue && Array.isArray(paramValue)) {
-              paramValueStr = ''
-              paramValue.forEach((innerValue, index) => {
-                if (index === 0) {
-                  paramValueStr = innerValue
-                } else {
-                  paramValueStr = paramValueStr + ',' + innerValue
-                }
+          if (['UserView', 'VQuery'].includes(element.component)) {
+            this.trackOuterFilterCursor(element, params, preActiveComponentIds, trackInfo, source)
+            this.componentData[index] = element
+          } else if (element.component === 'Group') {
+            element.propValue.forEach((groupItem, index) => {
+              this.trackOuterFilterCursor(
+                groupItem,
+                params,
+                preActiveComponentIds,
+                trackInfo,
+                source
+              )
+              element.propValue[index] = groupItem
+            })
+          } else if (element.component === 'DeTabs') {
+            element.propValue.forEach(tabItem => {
+              tabItem.componentData.forEach((tabComponent, index) => {
+                this.trackOuterFilterCursor(
+                  tabComponent,
+                  params,
+                  preActiveComponentIds,
+                  trackInfo,
+                  source
+                )
+                tabItem.componentData[index] = tabComponent
               })
+            })
+          }
+        }
+      }
+    },
+    trackOuterFilterCursor(element, params, preActiveComponentIds, trackInfo, source) {
+      if (!['UserView', 'VQuery'].includes(element.component)) {
+        return
+      }
+      const currentFilters = element.outerParamsFilters || [] // 外部参数信息
+      // 外部参数 可能会包含多个参数
+      Object.keys(params).forEach(function (sourceInfo) {
+        // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
+        let paramValue = params[sourceInfo]
+        let paramValueStr = params[sourceInfo]
+        const parmaValueSource = params[sourceInfo]
+        let operator = 'in'
+        if (paramValue && !Array.isArray(paramValue)) {
+          paramValue = [paramValue]
+          operator = 'eq'
+        } else if (paramValue && Array.isArray(paramValue)) {
+          paramValueStr = ''
+          paramValue.forEach((innerValue, index) => {
+            if (index === 0) {
+              paramValueStr = innerValue
+            } else {
+              paramValueStr = paramValueStr + ',' + innerValue
             }
-            // 获取所有目标联动信息
-            const targetInfoList = trackInfo[sourceInfo] || []
+          })
+        }
+        // 获取所有目标联动信息
+        const targetInfoList = trackInfo[sourceInfo] || []
 
-            targetInfoList.forEach(targetInfo => {
-              const targetInfoArray = targetInfo.split('#')
-              const targetViewId = targetInfoArray[0] // 目标图表
-              if (element.component === 'UserView' && element.id === targetViewId) {
-                // 如果目标图表 和 当前循环组件id相等 则进行条件增减
-                const targetFieldId = targetInfoArray[1] // 目标图表列ID
-                const condition = {
-                  fieldId: targetFieldId,
-                  operator: operator,
-                  value: paramValue,
-                  viewIds: [targetViewId]
-                }
-                let j = currentFilters.length
-                while (j--) {
-                  const filter = currentFilters[j]
-                  // 兼容性准备 viewIds 只会存放一个值
-                  if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
-                    currentFilters.splice(j, 1)
-                  }
-                }
-                // 不存在该条件 且 条件有效 直接保存该条件
-                // !filterExist && vValid && currentFilters.push(condition)
-                currentFilters.push(condition)
-                preActiveComponentIds.push(element.id)
+        targetInfoList.forEach(targetInfo => {
+          const targetInfoArray = targetInfo.split('#')
+          const targetViewId = targetInfoArray[0] // 目标图表
+          if (element.component === 'UserView' && element.id === targetViewId) {
+            // 如果目标图表 和 当前循环组件id相等 则进行条件增减
+            const targetFieldId = targetInfoArray[1] // 目标图表列ID
+            const condition = {
+              fieldId: targetFieldId,
+              operator: operator,
+              value: paramValue,
+              viewIds: [targetViewId]
+            }
+            let j = currentFilters.length
+            while (j--) {
+              const filter = currentFilters[j]
+              // 兼容性准备 viewIds 只会存放一个值
+              if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                currentFilters.splice(j, 1)
               }
-              if (element.component === 'VQuery') {
-                element.propValue.forEach(filterItem => {
-                  if (filterItem.id === targetViewId) {
-                    let queryParams = paramValue
-                    if (!['1', '7'].includes(filterItem.displayType)) {
-                      // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
-                      queryParams = paramValue.map(number => String(number))
-                    }
-                    filterItem.defaultValueCheck = true
-                    filterItem.timeType = 'fixed'
-                    if (['0', '2'].includes(filterItem.displayType)) {
-                      // 0 文本类型 1 数字类型
-                      if (filterItem.multiple) {
-                        // multiple === true 多选
-                        filterItem.selectValue = queryParams
-                        filterItem.defaultValue = queryParams
-                      } else {
-                        // 单选
-                        filterItem.selectValue = queryParams[0]
-                        filterItem.defaultValue = queryParams[0]
-                      }
-                    } else if (filterItem.displayType === '1') {
-                      // 1 时间类型
-                      filterItem.selectValue = queryParams[0]
-                      filterItem.defaultValue = queryParams[0]
-                    } else if (filterItem.displayType === '7') {
-                      // 7 时间范围类型
-                      filterItem.selectValue = queryParams
-                      filterItem.defaultValue = queryParams
-                    } else if (filterItem.displayType === '8') {
-                      // 8 文本搜索
-                      filterItem.conditionValueF = parmaValueSource + ''
-                      filterItem.defaultConditionValueF = parmaValueSource + ''
-                    }
+            }
+            // 不存在该条件 且 条件有效 直接保存该条件
+            // !filterExist && vValid && currentFilters.push(condition)
+            currentFilters.push(condition)
+            preActiveComponentIds.push(element.id)
+          }
+          if (element.component === 'VQuery') {
+            element.propValue.forEach(filterItem => {
+              if (filterItem.id === targetViewId) {
+                let queryParams = paramValue
+                if (!['1', '7'].includes(filterItem.displayType)) {
+                  // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
+                  queryParams = paramValue.map(number => String(number))
+                }
+                filterItem.defaultValueCheck = true
+                filterItem.timeType = 'fixed'
+                if (['0', '2'].includes(filterItem.displayType)) {
+                  // 0 文本类型 1 数字类型
+                  if (filterItem.multiple) {
+                    // multiple === true 多选
+                    filterItem.selectValue = queryParams
+                    filterItem.defaultValue = queryParams
+                  } else {
+                    // 单选
+                    filterItem.selectValue = queryParams[0]
+                    filterItem.defaultValue = queryParams[0]
                   }
-                })
+                } else if (filterItem.displayType === '1') {
+                  // 1 时间类型
+                  filterItem.selectValue = queryParams[0]
+                  filterItem.defaultValue = queryParams[0]
+                } else if (filterItem.displayType === '7') {
+                  // 7 时间范围类型
+                  filterItem.selectValue = queryParams
+                  filterItem.defaultValue = queryParams
+                } else if (filterItem.displayType === '8') {
+                  // 8 文本搜索
+                  filterItem.conditionValueF = parmaValueSource + ''
+                  filterItem.defaultConditionValueF = parmaValueSource + ''
+                }
               }
             })
-            if (element.component === 'UserView') {
-              element['outerParamsFilters'] = currentFilters
-            }
-            curComponentData[index] = element
-          })
-        }
-        if (source === 'outer') {
-          preActiveComponentIds.forEach(viewId => {
-            useEmitt().emitter.emit('query-data-' + viewId)
-          })
-        }
+          }
+        })
+      })
+      if (element.component === 'UserView') {
+        element['outerParamsFilters'] = currentFilters
+      }
+      if (source === 'outer') {
+        preActiveComponentIds.forEach(viewId => {
+          useEmitt().emitter.emit('query-data-' + viewId)
+        })
       }
     },
     trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {

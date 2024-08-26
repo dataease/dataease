@@ -378,6 +378,20 @@ const initParams = async () => {
   componentData.value.forEach(componentItem => {
     if (componentItem.component === 'VQuery') {
       state.baseFilterInfo.push(componentItem)
+    } else if (componentItem.component === 'Group') {
+      componentItem.propValue.forEach(groupItem => {
+        if (groupItem.component === 'VQuery') {
+          state.baseFilterInfo.push(groupItem)
+        }
+      })
+    } else if (componentItem.component === 'DeTabs') {
+      componentItem.propValue.forEach(tabItem => {
+        tabItem.componentData.forEach(tabComponent => {
+          if (tabComponent.component === 'VQuery') {
+            state.baseFilterInfo.push(tabComponent)
+          }
+        })
+      })
     }
   })
   // 同步基础数据集信息
