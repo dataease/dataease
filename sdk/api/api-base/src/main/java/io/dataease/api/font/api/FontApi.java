@@ -40,10 +40,10 @@ public interface FontApi {
     public void delete(@PathVariable("id") Long id);
 
     @Operation(summary = "变更默认设置")
-    @PostMapping("/changeDefault/")
+    @PostMapping("/setDefault/")
     public void changeDefault(@RequestBody FontDto fontDto);
 
     @PostMapping("/uploadFile")
-    void upload(@RequestParam("file") MultipartFile file, @RequestParam("id") long fontID) throws DEException;
+    String upload(@RequestParam("file") MultipartFile file) throws DEException;
 
 }

@@ -28,7 +28,7 @@ public class FontDto {
      * 是否默认
      */
     private Boolean isDefault;
-
+    private Long updateTime;
     private Boolean isBuiltin;
 }
 

@@ -44,7 +44,7 @@ public class FontServer implements FontApi {
     }
 
     @Override
-    public void upload(MultipartFile file, long fontID) throws DEException {
-        fontManage.upload(file, fontID);
+    public String upload(MultipartFile file) throws DEException {
+        return fontManage.upload(file);
     }
 }

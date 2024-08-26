@@ -2,14 +2,14 @@
 import { onMounted, ref } from 'vue'
 
 import UploadDetail from './UploadDetail.vue'
-import { changeDefault, deleteById, list } from '@/api/font'
+import { deleteById, edit, list } from '@/api/font'
+import { ElMessage } from 'element-plus-secondary'
 const fontKeyword = ref('')
 const fontList = ref([])
 
-// const fontList = ref([1, 2, 3, 4, 5])
 const uploadDetail = ref()
-const uploadFont = (title, isRename?: boolean) => {
-  uploadDetail.value.init(title, isRename)
+const uploadFont = (title, type, item) => {
+  uploadDetail.value.init(title, type, item)
 }
 
 const listFont = () => {
@@ -19,15 +19,23 @@ const listFont = () => {
 }
 
 const deleteFont = item => {
-  deleteById(item.id).then(res => {
+  deleteById(item.id).then(() => {
+    ElMessage.success('删除成功')
     listFont()
   })
 }
 
 const setToDefault = item => {
   item.isDefault = 1
-  changeDefault(item).then(res => {
-    fontList.value = res
+  edit(item).then(() => {
+    ElMessage.success('设置成功')
+  })
+}
+
+const cancleDefault = item => {
+  item.isDefault = 0
+  edit(item).then(() => {
+    ElMessage.success('取消成功')
   })
 }
 
@@ -49,7 +57,7 @@ onMounted(() => {
           </template>
         </el-input>
 
-        <el-button type="primary">
+        <el-button type="primary" @click="uploadFont('新建字体', 'create', {})">
           <template #icon>
             <Icon name="icon_add_outlined"></Icon>
           </template>
@@ -59,21 +67,31 @@ onMounted(() => {
     </div>
     <div class="font-content_list">
       <div class="font-content_item" v-for="ele in fontList" :key="ele">
-        <span class="font-default">默认字体</span>
-        <div class="font-name">PingFang <span class="font-type"> 系统内置 </span></div>
+        <span v-if="ele.isDefault" class="font-default">默认字体</span>
+        <div class="font-name">
+          {{ ele.name }} <span v-if="ele.isBuiltin" class="font-type"> 系统内置 </span>
+        </div>
         <div class="font-update_time">
-          更新时间：2022-04-20 20:35:08 <span class="line"></span> 字库文件：-
+          更新时间： {{ new Date(ele.updateTime).toLocaleString() }}
+          <span class="line"></span> 字库文件： {{ ele.fileName }}
         </div>
         <div class="font-upload_btn">
-          <el-button @click="uploadFont('添加字体')" secondary>上传字库文件</el-button>
-          <el-button @click="setToDefault(ele)" secondary>设为默认字体</el-button>
-          <el-button @click="uploadFont('重命名', true)" secondary>重命名</el-button>
+          <el-button @click="uploadFont('上传字库文件', 'uploadFile', ele)" secondary
+            >上传字库文件</el-button
+          >
+          <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
+            >设为默认字体</el-button
+          >
+          <el-button v-if="ele.isDefault" @click="cancleDefault(ele)" secondary
+            >取消默认字体</el-button
+          >
+          <el-button @click="uploadFont('重命名', 'rename', ele)" secondary>重命名</el-button>
           <el-button @click="deleteFont(ele)" secondary>删除</el-button>
         </div>
       </div>
     </div>
   </div>
-  <UploadDetail ref="uploadDetail"></UploadDetail>
+  <UploadDetail @finish="listFont" ref="uploadDetail"></UploadDetail>
 </template>
 
 <style lang="less" scoped>

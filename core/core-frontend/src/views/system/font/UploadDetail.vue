@@ -1,19 +1,24 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
-import { uploadFile } from '@/api/datasource'
+import { uploadFontFile } from '@/api/font'
 import FontInfo from './FontInfo.vue'
 import { ElMessage } from 'element-plus-secondary'
+import { edit } from '@/api/font'
 const state = reactive({
   fileList: null
 })
 const loading = ref(false)
 const upload = ref()
+const uploadFile = ref('')
+const fileName = ref('')
 const uploadExcel = () => {
   const formData = new FormData()
   formData.append('file', state.fileList.raw)
+  fileName.value = state.fileList.raw.name
   loading.value = true
-  return uploadFile(formData)
-    .then(() => {
+  return uploadFontFile(formData)
+    .then(res => {
+      uploadFile.value = res.data
       upload.value?.clearFiles()
       loading.value = false
     })
@@ -30,16 +35,17 @@ const uploadExcel = () => {
 }
 const dialogTitle = ref('')
 const dialogVisible = ref(false)
-const isRename = ref(false)
-
-const init = (val, rename) => {
-  dialogTitle.value = val || '添加字体'
-  isRename.value = rename || false
-  dialogVisible.value = true
-}
+const action = ref('')
 const ruleForm = reactive({
   name: ''
 })
+
+const init = (val, type, item) => {
+  dialogTitle.value = val || '添加字体'
+  action.value = type
+  dialogVisible.value = true
+  Object.assign(ruleForm, JSON.parse(JSON.stringify(item)))
+}
 
 const fontDel = () => {
   state.fileList = null
@@ -65,9 +71,25 @@ const uploadFail = response => {
   myError.replace('Error: ', '')
 }
 
+const emits = defineEmits(['finish'])
+
 const confirm = () => {
   ruleFormRef.value.validate(val => {
     if (val) {
+      if (action.value !== 'rename') {
+        if (uploadFile.value === '') {
+          ElMessage.error('请上传字库文件')
+          return
+        } else {
+          ruleForm.fileTransName = uploadFile.value
+          ruleForm.fileName = fileName.value
+        }
+      }
+      edit(ruleForm).then(res => {
+        ElMessage.success('成功')
+        dialogVisible.value = false
+        emits('finish')
+      })
       state.fileList = null
       dialogVisible.value = false
     }
@@ -85,10 +107,10 @@ const confirm = () => {
       label-width="auto"
       class="demo-ruleForm"
     >
-      <el-form-item label="字体名称" prop="name">
+      <el-form-item v-if="action !== 'uploadFile'" label="字体名称" prop="name">
         <el-input placeholder="请输入字体名称" v-model="ruleForm.name" />
       </el-form-item>
-      <el-form-item v-if="!isRename" label="字库文件">
+      <el-form-item v-if="action !== 'rename'" label="字库文件">
         <el-upload
           action=""
           :multiple="false"
