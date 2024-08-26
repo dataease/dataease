@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-08-23
+ * @since 2024-08-26
  */
 @Mapper
 public interface CoreFontMapper extends BaseMapper<CoreFont> {
