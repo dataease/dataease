@@ -110,6 +110,7 @@ export const DEFAULT_SIZE = {
     show: false
   },
   tableFieldWidth: [],
+  tableLayoutMode: 'grid',
   gaugeMinType: 'fix', // fix or dynamic
   gaugeMinField: {
     id: '',
