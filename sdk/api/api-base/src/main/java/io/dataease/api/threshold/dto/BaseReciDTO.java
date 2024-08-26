@@ -13,9 +13,9 @@ public class BaseReciDTO implements Serializable {
 
     private List<Integer> reciFlagList;
 
-    private List<Long> uidList;
+    private List<String> uidList;
 
-    private List<Long> ridList;
+    private List<String> ridList;
 
     private List<String> emailList;
 
