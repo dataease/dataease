@@ -85,7 +85,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
           .reduce((sum, item) => sum + item[yAxisDataeaseName], 0)
         result.push({
           [xAxisDataeaseName]: data[i][xAxisDataeaseName],
-          value: parseFloat((sum / dayCount).toFixed(2))
+          value: parseFloat((sum / dayCount).toFixed(3))
         })
       }
     }
@@ -306,6 +306,34 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
         marker: { symbol: 'hyphen', style: { stroke: colors[index - 1], lineWidth: 2 } }
       })
     }
+    const axis = chart.xAxis ?? []
+    let dateFormat: string
+    const dateSplit = axis[0]?.datePattern === 'date_split' ? '/' : '-'
+    switch (axis[0]?.dateStyle) {
+      case 'y':
+        dateFormat = 'YYYY'
+        break
+      case 'y_M':
+        dateFormat = 'YYYY' + dateSplit + 'MM'
+        break
+      case 'y_M_d':
+        dateFormat = 'YYYY' + dateSplit + 'MM' + dateSplit + 'DD'
+        break
+      // case 'H_m_s':
+      //   dateFormat = 'HH:mm:ss'
+      //   break
+      case 'y_M_d_H':
+        dateFormat = 'YYYY' + dateSplit + 'MM' + dateSplit + 'DD' + ' HH'
+        break
+      case 'y_M_d_H_m':
+        dateFormat = 'YYYY' + dateSplit + 'MM' + dateSplit + 'DD' + ' HH:mm'
+        break
+      case 'y_M_d_H_m_s':
+        dateFormat = 'YYYY' + dateSplit + 'MM' + dateSplit + 'DD' + ' HH:mm:ss'
+        break
+      default:
+        dateFormat = 'YYYY-MM-dd HH:mm:ss'
+    }
     const option = this.setupOptions(chart, {
       data,
       slider: {
@@ -318,6 +346,11 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
           top: true,
 
           options: {
+            meta: {
+              [xAxisDataeaseName]: {
+                mask: dateFormat
+              }
+            },
             stockStyle: {
               stroke: 'black',
               lineWidth: 0.5
@@ -405,6 +438,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
 
   protected configTooltip(chart: Chart, options: MixOptions): MixOptions {
     const tooltipAttr = parseJson(chart.customAttr).tooltip
+    const xAxis = chart.xAxis
     const newPlots = []
     const linePlotList = options.plots.filter(item => item.type === 'line')
     linePlotList.forEach(item => {
@@ -431,6 +465,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
         const fieldObj = showFiled.find(q => q.dataeaseName === item.name)
         const displayName = fieldObj?.chartShowName || fieldObj?.name || item.name
         const formattedName = displayName.startsWith('ma') ? displayName.toUpperCase() : displayName
+        tooltipAttr.tooltipFormatter.decimalCount = 3
         const formattedValue = valueFormatter(item.value, tooltipAttr.tooltipFormatter)
 
         return {
@@ -493,7 +528,13 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
         showCrosshairs: true,
         showNil: true,
         crosshairs: {
-          follow: false
+          follow: true,
+          text: (axisType, value, data) => {
+            if (axisType === 'y') {
+              return { content: value ? value.toFixed(0) : value }
+            }
+            return { content: data[0].title, position: 'end' }
+          }
         },
         showContent: true,
         customItems: customTooltipItems,
@@ -605,7 +646,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     const updateValues = (strategy: 'breakLine' | 'setZero', data: any[]) => {
       data.forEach(obj => {
         Object.keys(obj).forEach(key => {
-          if (obj[key] === null) {
+          if (key.startsWith('f_') && obj[key] === null) {
             obj[key] = strategy === 'breakLine' ? null : 0
           }
         })
@@ -645,6 +686,10 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
       ...stockPlot.options,
       legend: legend
     }
+    const linePlotList = options.plots.filter(item => item.type === 'line')
+    linePlotList.forEach(item => {
+      newPlots.push(item)
+    })
     newPlots.push({ ...stockPlot, options: stockOption })
     return {
       ...options,
