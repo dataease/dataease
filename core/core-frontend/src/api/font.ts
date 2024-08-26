@@ -32,6 +32,12 @@ export const deleteById = id => {
   })
 }
 
+export const defaultFont = () => {
+  return request.get({ url: '/typeface/defaultFont' }).then(res => {
+    return res?.data
+  })
+}
+
 export const uploadFontFile = async (data): Promise<IResponse> => {
   return request
     .post({
