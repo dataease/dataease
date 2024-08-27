@@ -74,6 +74,7 @@
             :preview-active="editableTabsValue === tabItem.name"
             :show-position="showPosition"
             :outer-scale="scale"
+            :outer-search-count="searchCount"
           ></de-preview>
         </el-tab-pane>
       </template>
@@ -164,10 +165,24 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 1
+  },
+  // 仪表板刷新计时器
+  searchCount: {
+    type: Number,
+    required: false,
+    default: 0
   }
 })
-const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, scale } =
-  toRefs(props)
+const {
+  element,
+  isEdit,
+  showPosition,
+  canvasStyleData,
+  canvasViewInfo,
+  dvInfo,
+  scale,
+  searchCount
+} = toRefs(props)
 
 const state = reactive({
   activeTabName: '',
