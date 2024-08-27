@@ -7,6 +7,7 @@ export const getCurInfo = () => {
   if (curComponent.value) {
     const curComponentId = curComponent.value.id
     let curIndex = 0
+    let curTabIndex = 0
     let curComponentData = componentData.value
     componentData.value.forEach((component, index) => {
       if (curComponentId === component.id) {
@@ -20,9 +21,21 @@ export const getCurInfo = () => {
           }
         })
       }
+      if (component.component === 'DeTabs') {
+        component.propValue.forEach((tabItem, tabIndex) => {
+          curTabIndex = tabIndex
+          tabItem.componentData.forEach((tabComponent, subIndex) => {
+            if (curComponentId === tabComponent.id) {
+              curIndex = subIndex
+              curComponentData = tabItem.componentData
+            }
+          })
+        })
+      }
     })
     return {
       index: curIndex,
+      tabIndex: curTabIndex,
       componentData: curComponentData
     }
   }
