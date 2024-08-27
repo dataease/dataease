@@ -471,6 +471,9 @@ export class CarouselManager {
     const buildTooltip = () => {
       const customAttr = this.chart.customAttr ? parseJson(this.chart.customAttr) : null
       if (customAttr?.tooltip?.show) {
+        if (!this.popup) {
+          return undefined
+        }
         const { tooltip } = deepCopy(customAttr)
         let showFields = tooltip.showFields || []
         if (!tooltip.showFields || tooltip.showFields.length === 0) {

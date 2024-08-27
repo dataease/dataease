@@ -4,13 +4,12 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { ElFormItem, ElIcon, ElInput, ElSpace } from 'element-plus-secondary'
 import { formatterType, unitType } from '../../../js/formatter'
-import { defaultsDeep, cloneDeep, intersection, union, defaultTo, map } from 'lodash-es'
+import { defaultsDeep, cloneDeep, intersection, union, defaultTo, map, isEmpty } from 'lodash-es'
 import { includesAny } from '../../util/StringUtils'
 import { fieldType } from '@/utils/attr'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
-import { useEmitt } from '@/hooks/web/useEmitt'
 
 const { t } = useI18n()
 
@@ -43,12 +42,6 @@ const dvMainStore = dvMainStoreWithOut()
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
-const changeDataset = () => {
-  if (showProperty('showFields')) {
-    state.labelForm.showFields = []
-    emit('onLabelChange', { data: state.labelForm }, 'showFields')
-  }
-}
 const { batchOptStatus } = storeToRefs(dvMainStore)
 watch(
   [() => props.chart.customAttr.label, () => props.chart.customAttr.label.show],
@@ -363,16 +356,31 @@ const allFields = computed(() => {
 const defaultPlaceholder = computed(() => {
   if (state.labelForm.showFields && state.labelForm.showFields.length > 0) {
     return state.labelForm.showFields
-      .map(field => {
+      .filter(field => !isEmpty(field))
+      ?.map(field => {
         return '${' + field.split('@')[1] + '}'
       })
       .join(',')
   }
   return ''
 })
+watch(
+  () => allFields.value,
+  () => {
+    let result = []
+    state.labelForm.showFields?.forEach(field => {
+      if (allFields.value?.map(i => i.value).includes(field)) {
+        result.push(field)
+      }
+    })
+    state.labelForm.showFields = result
+    if (allFields.value.length > 0) {
+      changeLabelAttr('showFields')
+    }
+  }
+)
 onMounted(() => {
   init()
-  useEmitt({ name: 'dataset-change', callback: changeDataset })
 })
 const isGroupBar = computed(() => {
   return props.chart.type === 'bar-group'

@@ -1764,25 +1764,24 @@ public class ChartDataBuild {
         Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> "(" + StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), ")-de-(") + ")"));
 
         tableRow.forEach(row -> {
+            BigDecimal rowValue = new BigDecimal(row.get(yAxis.get(0).getDataeaseName()).toString());
             String key = xAxis.stream().map(x -> String.format(format, row.get(x.getDataeaseName()).toString())).collect(Collectors.joining("-de-"));
             List<String[]> detailFieldValueList = groupDataList.get(key);
             List<Map<String, Object>> detailValueMapList = Optional.ofNullable(detailFieldValueList).orElse(new ArrayList<>()).stream().map((detailArr -> {
                 Map<String, Object> temp = new HashMap<>();
                 for (int i = 0; i < realDetailFields.size(); i++) {
                     ChartViewFieldDTO realDetailField = realDetailFields.get(i);
-                    temp.put(realDetailField.getDataeaseName(), detailArr[detailIndex + i]);
+                    if(StringUtils.equalsIgnoreCase(yAxis.get(0).getDataeaseName(),realDetailField.getDataeaseName())){
+                        temp.put(realDetailField.getDataeaseName(), rowValue);
+                    }else{
+                        temp.put(realDetailField.getDataeaseName(), detailArr[detailIndex + i]);
+                    }
                 }
                 return temp;
             })).collect(Collectors.toList());
             //详情只要一个
             row.put("details", !detailValueMapList.isEmpty() ?Collections.singletonList(detailValueMapList.getFirst()):detailValueMapList);
         });
-
-        ChartViewFieldDTO detailFieldDTO = new ChartViewFieldDTO();
-        detailFieldDTO.setId(IDUtils.snowID());
-        detailFieldDTO.setName("detail");
-        detailFieldDTO.setDataeaseName("detail");
-        fields.add(detailFieldDTO);
         map.put("fields", fields);
         map.put("detailFields", realDetailFields);
         map.put("tableRow", tableRow);
