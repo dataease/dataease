@@ -160,7 +160,7 @@ const state = reactive({
     id: ''
   },
   // 禁止移入Tab中的组件
-  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs'],
+  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs', 'Group'],
   // 当画布在tab中是 宽度左右拓展的余量
   parentWidthTabOffset: 40,
   canvasChangeTips: 'none',
@@ -431,7 +431,7 @@ const areaDataPush = component => {
     !component.isLock &&
     component.isShow &&
     component.canvasId === 'canvas-main' &&
-    !['Group', 'GroupArea'].includes(component.component)
+    !['Group', 'GroupArea', 'DeTabs'].includes(component.component)
   ) {
     areaData.value.components.push(component)
   }
