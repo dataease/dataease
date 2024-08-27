@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import '../../assets/font/index.css'
 import '@/style/index.less'
 import 'normalize.css/normalize.css'
 import '@antv/s2/dist/style.min.css'

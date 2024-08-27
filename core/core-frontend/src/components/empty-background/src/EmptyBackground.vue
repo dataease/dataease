@@ -55,7 +55,7 @@ const getAssetsFile = {
   color: var(--N600, #646a73);
   text-align: center;
   /* 正文-字号 14，行高 22，字重适中（Regular），用于列表Feed会话 */
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  font-family: var(--de-custom_font, 'PingFang');
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

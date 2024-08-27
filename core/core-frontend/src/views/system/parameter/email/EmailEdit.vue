@@ -139,7 +139,7 @@ defineExpose({
     }
 
     .pwd {
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
@@ -158,7 +158,7 @@ defineExpose({
       padding: 0 20px;
       color: #1f2329;
       text-align: center;
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-style: normal;
       font-weight: 400;

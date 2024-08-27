@@ -641,8 +641,7 @@ defineExpose({
         border-radius: 0;
         box-shadow: none;
         height: 26px;
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei,
-          sans-serif;
+        font-family: var(--de-custom_font, 'PingFang');
         word-wrap: break-word;
         text-align: left;
         color: rgba(0, 0, 0, 0.65);

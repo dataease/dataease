@@ -152,7 +152,7 @@ const del = (index, child) => {
     z-index: 10;
 
     .operate-title {
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei, sans-serif;
+      font-family: var(--de-custom_font, 'PingFang');
       word-wrap: break-word;
       box-sizing: border-box;
       color: rgba(0, 0, 0, 0.65);

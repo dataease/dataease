@@ -1229,7 +1229,7 @@ const getMenuList = (val: boolean) => {
         width: 100%;
         display: flex;
         align-items: center;
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 16px;
         font-weight: 500;
 
@@ -1275,7 +1275,7 @@ const getMenuList = (val: boolean) => {
 
     .preview-num {
       color: var(--deTextSecondary, #606266);
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;

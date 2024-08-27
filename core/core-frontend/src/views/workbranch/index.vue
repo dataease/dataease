@@ -465,7 +465,7 @@ initMarketTemplate()
         .name-role {
           margin-bottom: 4px;
           color: #1f2329;
-          font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+          font-family: var(--de-custom_font, 'PingFang');
           font-style: normal;
           .name {
             font-size: 16px;
@@ -495,7 +495,7 @@ initMarketTemplate()
       }
 
       .item {
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-style: normal;
         display: flex;
         flex-direction: column;
@@ -532,7 +532,7 @@ initMarketTemplate()
       .label {
         color: #1f2329;
         font-feature-settings: 'clig' off, 'liga' off;
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 16px;
         font-style: normal;
         font-weight: 500;
@@ -566,7 +566,7 @@ initMarketTemplate()
 
           .name {
             color: #1f2329;
-            font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+            font-family: var(--de-custom_font, 'PingFang');
             font-size: 14px;
             font-style: normal;
             font-weight: 400;
@@ -624,7 +624,7 @@ initMarketTemplate()
       .label {
         color: #1f2329;
         font-feature-settings: 'clig' off, 'liga' off;
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 16px;
         font-style: normal;
         font-weight: 500;
@@ -673,7 +673,7 @@ initMarketTemplate()
           display: inline-flex;
           align-items: center;
           padding: 0 8px;
-          font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+          font-family: var(--de-custom_font, 'PingFang');
           font-size: 12px;
           font-style: normal;
           font-weight: 400;

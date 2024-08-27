@@ -476,7 +476,7 @@ const tips = computed(() => {
     margin-left: 8px;
     border-radius: 8px;
     .question-or-title {
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
@@ -510,7 +510,7 @@ const tips = computed(() => {
     }
 
     .is-welcome {
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;

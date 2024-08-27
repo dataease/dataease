@@ -36,7 +36,7 @@ defineExpose({
 
   .update-records-time {
     color: #646a73;
-    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -52,7 +52,7 @@ defineExpose({
 
   .name {
     color: #1f2329;
-    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 16px;
     font-style: normal;
     font-weight: 500;

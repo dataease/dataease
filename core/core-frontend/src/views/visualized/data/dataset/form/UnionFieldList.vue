@@ -137,7 +137,7 @@ watch(
 .field-block-style {
   height: 100%;
   width: 100%;
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  font-family: var(--de-custom_font, 'PingFang');
   .field-block-body {
     height: 327px;
     overflow-y: auto;

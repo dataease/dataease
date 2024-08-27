@@ -493,7 +493,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
       .title-dataset_select {
         width: 100%;
         margin: 16px 16px 12px 16px;
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 14px;
         font-weight: 500;
         line-height: 22px;
@@ -547,7 +547,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
             position: sticky;
             top: 0px;
             height: 49px;
-            font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+            font-family: var(--de-custom_font, 'PingFang');
             font-style: normal;
             font-weight: 500;
             font-size: 14px;

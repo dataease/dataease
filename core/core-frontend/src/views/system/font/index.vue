@@ -1,13 +1,11 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-
 import UploadDetail from './UploadDetail.vue'
-import { deleteById, edit, list } from '@/api/font'
+import { deleteById, edit, list, defaultFont } from '@/api/font'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
-import { useI18n } from '@/hooks/web/useI18n'
-import { templateDelete } from '@/api/template'
 const fontKeyword = ref('')
 const fontList = ref([])
+const basePath = import.meta.env.VITE_API_BASEPATH
 
 const uploadDetail = ref()
 const uploadFont = (title, type, item) => {
@@ -34,6 +32,7 @@ const deleteFont = item => {
     deleteById(item.id).then(() => {
       ElMessage.success('删除成功')
       listFont()
+      getDefaultFont()
     })
   })
 }
@@ -42,6 +41,30 @@ const setToDefault = item => {
   item.isDefault = 1
   edit(item).then(() => {
     ElMessage.success('设置成功')
+    getDefaultFont()
+  })
+}
+const setDefaultFont = (url, name) => {
+  let fontStyleElement = document.querySelector('#de-custom_font')
+  if (!fontStyleElement && name) {
+    fontStyleElement = document.createElement('style')
+    fontStyleElement.setAttribute('id', 'de-custom_font')
+    document.querySelector('head').appendChild(fontStyleElement)
+  }
+  fontStyleElement.innerHTML = name
+    ? `@font-face {
+              font-family: '${name}';
+              src: url(${url});
+              font-weight: normal;
+              font-style: normal;
+              }`
+    : ''
+  document.documentElement.style.setProperty('--de-custom_font', `${name ? name : ''}`)
+}
+const getDefaultFont = () => {
+  defaultFont().then(res => {
+    const [font] = res || []
+    setDefaultFont(`${basePath}/typeface/download/${font?.id}`, font?.name)
   })
 }
 
@@ -49,6 +72,7 @@ const cancelDefault = item => {
   item.isDefault = 0
   edit(item).then(() => {
     ElMessage.success('取消成功')
+    getDefaultFont()
   })
 }
 
@@ -84,7 +108,7 @@ onMounted(() => {
         <div class="font-name">
           {{ ele.name }} <span v-if="ele.isBuiltin" class="font-type"> 系统内置 </span>
         </div>
-        <div class="font-update_time">
+        <div :title="ele.fileName" class="font-update_time">
           更新时间： {{ new Date(ele.updateTime).toLocaleString() }}
           <span class="line"></span> 字库文件： {{ ele.fileName }}
         </div>
@@ -194,6 +218,9 @@ onMounted(() => {
         color: #646a73;
         display: flex;
         align-items: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         .line {
           width: 1px;
           height: 14px;

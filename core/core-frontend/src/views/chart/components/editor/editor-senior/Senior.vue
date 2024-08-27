@@ -446,7 +446,7 @@ span {
 }
 
 .label-dark {
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  font-family: var(--de-custom_font, 'PingFang');
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
