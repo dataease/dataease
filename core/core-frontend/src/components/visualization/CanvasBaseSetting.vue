@@ -9,7 +9,7 @@
           @change="onPopButtonChange"
         >
           <div style="display: flex; line-height: 14px">
-            显示弹窗区筛选按钮
+            <span style="margin-right: 4px">显示弹窗区筛选按钮</span>
             <el-tooltip class="item" :effect="themes" placement="bottom">
               <template #content>
                 <div>预览时启用</div>
