@@ -133,9 +133,6 @@ const canvasStyle = computed(() => {
         ? changeStyleWithScale(canvasStyleData.value?.width, scaleHeightPoint.value) + 'px'
         : '100%'
   }
-  if (!dashboardActive.value) {
-    style['overflow-y'] = 'hidden'
-  }
   return style
 })
 
