@@ -114,7 +114,7 @@ public class FontManage {
 
     public List<FontDto> defaultFont() {
         QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("isDefault", 1);
+        queryWrapper.eq("is_default", 1);
         List<CoreFont> coreFonts = coreFontMapper.selectList(queryWrapper);
         List<FontDto> fontDtos = new ArrayList<>();
         for (CoreFont coreFont : coreFonts) {
