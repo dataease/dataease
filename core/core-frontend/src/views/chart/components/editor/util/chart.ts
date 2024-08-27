@@ -33,8 +33,8 @@ export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
       lineConfig: {
         mapLineAnimate: true,
         mapLineGradient: false,
-        mapLineSourceColor: '#146C94',
-        mapLineTargetColor: '#576CBC'
+        mapLineSourceColor: '#1E90FF',
+        mapLineTargetColor: '#90EE90'
       }
     },
     nameFontColor: '#000000',
