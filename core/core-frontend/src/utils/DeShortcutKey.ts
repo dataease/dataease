@@ -5,6 +5,7 @@ import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { storeToRefs } from 'pinia'
+import { getCurInfo } from '@/store/modules/data-visualization/common'
 
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -235,7 +236,10 @@ function preview() {
 
 function deleteComponent() {
   if (curComponent.value) {
-    dvMainStore.deleteComponentById(curComponent.value.id)
+    const curInfo = getCurInfo()
+    if (curInfo) {
+      dvMainStore.deleteComponent(curInfo.index, curInfo.componentData)
+    }
   } else if (areaData.value.components.length) {
     areaData.value.components.forEach(component => {
       dvMainStore.deleteComponentById(component.id)
