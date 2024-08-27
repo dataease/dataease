@@ -974,7 +974,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       if (!['UserView', 'VQuery'].includes(element.component)) {
         return
       }
-      const currentFilters = element.outerParamsFilters || [] // 外部参数信息
+      const currentFilters = [] // 外部参数信息
       // 外部参数 可能会包含多个参数
       Object.keys(params).forEach(function (sourceInfo) {
         // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
