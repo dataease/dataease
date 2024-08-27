@@ -7,7 +7,7 @@ import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
 import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
-import { defaultTo, partition, map, includes } from 'lodash-es'
+import { defaultTo, partition, map, includes, isEmpty } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -94,10 +94,6 @@ const changeDataset = () => {
       })
     }
   })
-  if (showProperty('showFields')) {
-    state.tooltipForm.showFields = []
-    emit('onTooltipChange', { data: state.tooltipForm }, 'showFields')
-  }
 }
 
 const AXIS_PROP: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']
@@ -380,11 +376,17 @@ const updateAxis = (form: AxisEditForm) => {
   })
 }
 const allFields = computed(() => {
-  return defaultTo(props.allFields, [])
+  return defaultTo(props.allFields, []).map(item => ({
+    key: item.dataeaseName,
+    name: item.name,
+    value: `${item.dataeaseName}@${item.name}`,
+    disabled: false
+  }))
 })
 const defaultPlaceholder = computed(() => {
   if (state.tooltipForm.showFields && state.tooltipForm.showFields.length > 0) {
     return state.tooltipForm.showFields
+      .filter(field => !isEmpty(field))
       .map(field => {
         const v = field.split('@')
         return v[1] + ': ${' + field.split('@')[1] + '}'
@@ -393,6 +395,21 @@ const defaultPlaceholder = computed(() => {
   }
   return ''
 })
+watch(
+  () => allFields.value,
+  () => {
+    let result = []
+    state.tooltipForm.showFields?.forEach(field => {
+      if (allFields.value?.map(i => i.value).includes(field)) {
+        result.push(field)
+      }
+    })
+    state.tooltipForm.showFields = result
+    if (allFields.value.length > 0) {
+      changeTooltipAttr('showFields')
+    }
+  }
+)
 onMounted(() => {
   init()
   useEmitt({ name: 'addAxis', callback: updateSeriesTooltipFormatter })
@@ -482,9 +499,9 @@ onMounted(() => {
         >
           <el-option
             v-for="option in allFields"
-            :key="option.dataeaseName"
+            :key="option.key"
             :label="option.name"
-            :value="option.dataeaseName + '@' + option.name"
+            :value="option.value"
           />
         </el-select>
       </el-form-item>

@@ -521,6 +521,10 @@ export const exportExcelDownload = (chart, callBack?) => {
     }
   }
 
+  if (chart.type.includes('symbolic-map')) {
+    request.detailFields = []
+  }
+
   const linkStore = useLinkStoreWithOut()
 
   if (isDataEaseBi.value || appStore.getIsIframe) {
