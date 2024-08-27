@@ -16,7 +16,9 @@
                 :effect="themes"
                 v-model="styleForm[styleOptionKey.value]"
                 size="small"
-                @change="changeStyle"
+                @change="
+                  changeStyle({ key: styleOptionKey.value, value: styleForm[styleOptionKey.value] })
+                "
               >
                 <template #prefix>
                   <el-icon :class="{ 'dark-icon': themes === 'dark' }">
@@ -56,7 +58,9 @@
                 :triggerWidth="styleColorKey.width"
                 is-custom
                 :predefine="state.predefineColors"
-                @change="changeStyle"
+                @change="
+                  changeStyle({ key: styleColorKey.value, value: styleForm[styleColorKey.value] })
+                "
               >
               </el-color-picker>
             </el-form-item>
@@ -486,7 +490,7 @@ const checkItalic = () => {
 
 function setPosition(key, p: 'left' | 'center' | 'right') {
   styleForm.value[key] = p
-  changeStyle({ key: key, p })
+  changeStyle({ key: key, value: p })
 }
 
 watch(
