@@ -6,7 +6,7 @@ import {
   L7Wrapper
 } from '@/views/chart/components/js/panel/types/impl/l7'
 import { MAP_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/map/common'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { deepCopy } from '@/utils/utils'
 import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
@@ -307,7 +307,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
    * @returns {string}
    */
   buildTooltipContent = (tooltip, fieldData, showFields) => {
-    let content = ''
+    let content = ``
     if (tooltip.customContent) {
       content = tooltip.customContent
       showFields.forEach(field => {
@@ -320,7 +320,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
         }</span><br>`
       })
     }
-    return content
+    return content.replace(/\n/g, '<br>')
   }
 
   /**
@@ -393,9 +393,5 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       mapStyle: 'normal'
     }
     return chart
-  }
-
-  protected setupOptions(chart: Chart, config: L7Config): L7Config {
-    return flow(this.configEmptyDataStrategy, this.configLabel)(chart, config)
   }
 }

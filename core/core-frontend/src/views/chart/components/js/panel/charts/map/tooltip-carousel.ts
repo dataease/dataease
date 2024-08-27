@@ -553,7 +553,7 @@ export class CarouselManager {
           }</span><br>`
         })
       }
-      return content
+      return content.replace(/\n/g, '<br>')
     }
     /**
      * 合并详情到 map

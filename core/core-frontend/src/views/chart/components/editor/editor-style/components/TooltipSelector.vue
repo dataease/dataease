@@ -193,7 +193,8 @@ watch(
 
 const state = reactive({
   tooltipForm: {
-    tooltipFormatter: DEFAULT_TOOLTIP.tooltipFormatter
+    tooltipFormatter: DEFAULT_TOOLTIP.tooltipFormatter,
+    carousel: DEFAULT_TOOLTIP.carousel
   } as DeepPartial<ChartTooltipAttr>
 })
 
