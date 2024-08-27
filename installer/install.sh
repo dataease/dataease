@@ -104,7 +104,7 @@ function prepare_de_run_base() {
    env | grep DE_ >.env
 
    mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
-   mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin}
+   mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin,font}
    mkdir -p ${DE_RUN_BASE}/apisix/logs
    mkdir -p ${DE_RUN_BASE}/task/logs
    chmod 777 ${DE_RUN_BASE}/apisix/logs ${DE_RUN_BASE}/data/etcd_data ${DE_RUN_BASE}/task/logs
