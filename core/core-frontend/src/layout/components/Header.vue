@@ -17,7 +17,6 @@ import { XpackComponent } from '@/components/plugin'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import AiComponent from '@/layout/components/AiComponent.vue'
 import { findBaseParams } from '@/api/aiComponent'
-import ExportExcel from '@/views/visualized/data/dataset/ExportExcel.vue'
 import AiTips from '@/layout/components/AiTips.vue'
 import Copilot from '@/layout/components/Copilot.vue'
 
@@ -49,9 +48,8 @@ const activeIndex = computed(() => {
 })
 
 const permissionStore = usePermissionStore()
-const ExportExcelRef = ref()
 const downloadClick = params => {
-  ExportExcelRef.value.init(params)
+  useEmitt().emitter.emit('data-export-center', params)
 }
 const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
 const showSystem = ref(false)
@@ -116,12 +114,6 @@ onMounted(() => {
   initShowToolbox()
   initAiBase()
   initCopilotBase()
-  useEmitt({
-    name: 'data-export-center',
-    callback: function (params) {
-      ExportExcelRef.value.init(params)
-    }
-  })
 })
 </script>
 
@@ -192,7 +184,6 @@ onMounted(() => {
       <div v-if="showOverlayCopilot && appearanceStore.getShowCopilot" class="overlay"></div>
     </div>
   </el-header>
-  <ExportExcel ref="ExportExcelRef"></ExportExcel>
 </template>
 
 <style lang="less" scoped>
