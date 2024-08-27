@@ -2219,8 +2219,26 @@ const deleteChartFieldItem = id => {
                         <!--yAxis-->
                         <el-row v-if="showAxis('yAxis')" class="padding-lr drag-data">
                           <div class="form-draggable-title">
-                            <span>
-                              {{ chartViewInstance.axisConfig.yAxis.name }}
+                            <span class="data-area-label">
+                              <span style="margin-right: 4px">
+                                {{ chartViewInstance.axisConfig.yAxis.name }}
+                              </span>
+                              <el-tooltip
+                                v-if="chartViewInstance.axisConfig.yAxis.tooltip"
+                                class="item"
+                                :effect="toolTip"
+                                placement="top"
+                              >
+                                <template #content>
+                                  <span> {{ chartViewInstance.axisConfig.yAxis.tooltip }}</span>
+                                </template>
+                                <el-icon
+                                  class="hint-icon"
+                                  :class="{ 'hint-icon--dark': themes === 'dark' }"
+                                >
+                                  <Icon name="icon_info_outlined" />
+                                </el-icon>
+                              </el-tooltip>
                             </span>
                             <el-tooltip
                               :effect="toolTip"
