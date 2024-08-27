@@ -307,7 +307,7 @@ defineExpose({
     background: #e1eaff;
     position: relative;
     padding: 9px 0 9px 40px;
-    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 400;
 

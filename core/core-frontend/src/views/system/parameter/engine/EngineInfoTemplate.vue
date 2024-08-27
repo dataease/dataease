@@ -146,7 +146,7 @@ const validateById = async () => {
 </script>
 <style lang="less">
 .de-expand-engine {
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  font-family: var(--de-custom_font, 'PingFang');
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;

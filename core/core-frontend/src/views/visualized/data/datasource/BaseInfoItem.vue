@@ -17,7 +17,7 @@ defineProps({
 <style lang="less">
 .base-info-item {
   margin-top: 16px;
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  font-family: var(--de-custom_font, 'PingFang');
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

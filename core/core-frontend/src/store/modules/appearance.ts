@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { store } from '@/store/index'
+import { defaultFont } from '@/api/font'
 import { uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import colorFunctions from 'less/lib/less/functions/color.js'
@@ -179,12 +180,37 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (this.loaded) {
         return
       }
-      document.title = ''
+
+      defaultFont().then(res => {
+        const [font] = res || []
+        setDefaultFont(`${basePath}/typeface/download/${font?.id}`, font?.name)
+        function setDefaultFont(url, name) {
+          if (!name) return
+          let fontStyleElement = document.querySelector('#de-custom_font')
+          if (!fontStyleElement) {
+            fontStyleElement = document.createElement('style')
+            fontStyleElement.setAttribute('id', 'de-custom_font')
+            document.querySelector('head').appendChild(fontStyleElement)
+          }
+          fontStyleElement.innerHTML = `@font-face {
+                font-family: '${name}';
+                src: url(${url});
+                font-weight: normal;
+                font-style: normal;
+                }`
+          document.documentElement.style.setProperty('--de-custom_font', `${name}`)
+        }
+      })
+      if (!isDataEaseBi) {
+        document.title = ''
+      }
       const res = await uiLoadApi()
       this.loaded = true
       const resData = res.data
       if (!resData?.length) {
-        document.title = 'DataEase'
+        if (!isDataEaseBi) {
+          document.title = 'DataEase'
+        }
         return
       }
       const data: AppearanceState = { loaded: false, community: true }

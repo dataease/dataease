@@ -2159,7 +2159,7 @@ const getDsIconName = data => {
 
     .name {
       color: #fff;
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 16px;
       font-weight: 400;
       display: flex;
@@ -2263,7 +2263,7 @@ const getDsIconName = data => {
       width: 240px;
       padding-bottom: 16px;
 
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+      font-family: var(--de-custom_font, 'PingFang');
       border-right: 1px solid rgba(31, 35, 41, 0.15);
 
       .select-ds {
@@ -2367,7 +2367,7 @@ const getDsIconName = data => {
         }
       }
       .sql-result {
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 14px;
         overflow-y: auto;
         box-sizing: border-box;
@@ -2492,7 +2492,7 @@ const getDsIconName = data => {
                 margin: 1px;
                 top: 1px;
                 height: 49px;
-                font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+                font-family: var(--de-custom_font, 'PingFang');
                 font-style: normal;
                 font-weight: 500;
                 font-size: 14px;

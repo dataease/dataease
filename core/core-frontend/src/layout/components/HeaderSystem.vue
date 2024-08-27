@@ -41,7 +41,7 @@ const navigate = computed(() => appearanceStore.getNavigate)
 
 <style lang="less" scoped>
 .system-header {
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  font-family: var(--de-custom_font, 'PingFang');
 
   .logo {
     width: 134px;

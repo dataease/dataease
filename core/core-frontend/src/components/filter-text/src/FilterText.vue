@@ -96,7 +96,7 @@ watch(
   display: flex;
   align-items: center;
   margin: 17px 0;
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  font-family: var(--de-custom_font, 'PingFang');
   font-weight: 400;
 
   .sum {

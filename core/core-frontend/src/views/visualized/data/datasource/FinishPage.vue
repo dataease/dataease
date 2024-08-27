@@ -87,7 +87,7 @@ const handleChange = (val: boolean) => {
     flex-direction: column;
     align-items: center;
     padding-top: 83px;
-    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+    font-family: var(--de-custom_font, 'PingFang');
     font-style: normal;
     font-weight: 400;
 
@@ -136,7 +136,7 @@ const handleChange = (val: boolean) => {
         }
 
         .info {
-          font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+          font-family: var(--de-custom_font, 'PingFang');
           font-style: normal;
           font-weight: 400;
           .name {

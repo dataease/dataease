@@ -3693,7 +3693,7 @@ const deleteChartFieldItem = id => {
         height: 35px;
         line-height: 35px;
         color: var(--ed-color-primary, #3370ff);
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 12px;
         font-style: normal;
         font-weight: 500;
@@ -3722,7 +3722,7 @@ const deleteChartFieldItem = id => {
         height: 35px;
         line-height: 35px;
         color: var(--ed-color-primary, #3370ff);
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 12px;
         font-style: normal;
         font-weight: 500;
@@ -3774,7 +3774,7 @@ const deleteChartFieldItem = id => {
         height: 35px;
         line-height: 35px;
         color: var(--ed-color-primary, #3370ff);
-        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 12px;
         font-style: normal;
         font-weight: 500;
@@ -4640,7 +4640,7 @@ span {
   margin-bottom: 16px !important;
 
   .text {
-    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -4649,7 +4649,7 @@ span {
     --ed-input-height: 32px;
 
     :deep(.ed-input__inner) {
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
@@ -4660,7 +4660,7 @@ span {
   :deep(.ed-form-item__label) {
     color: #1f2329;
 
-    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-style: normal;
     font-weight: 400;

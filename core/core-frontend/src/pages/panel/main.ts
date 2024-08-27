@@ -54,7 +54,6 @@ document.querySelector('head').appendChild = <T extends Node>(node: T) => {
   return newNode
 }
 import { App, createApp } from 'vue'
-import '../../assets/font/index.css'
 import '@/style/index.less'
 import 'normalize.css/normalize.css'
 import '@antv/s2/dist/style.min.css'

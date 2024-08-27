@@ -473,7 +473,7 @@ onMounted(() => {
 .insert-filter {
   display: inline-block;
   font-weight: 400 !important;
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  font-family: var(--de-custom_font, 'PingFang');
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
