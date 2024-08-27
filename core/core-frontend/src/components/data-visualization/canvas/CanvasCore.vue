@@ -299,8 +299,8 @@ const pointShadowShow = computed(() => {
 })
 
 const curGap = computed(() => {
-  return dashboardActive.value && canvasStyleData.value.dashboard.gap === 'yes'
-    ? canvasStyleData.value.dashboard.gapSize
+  return dashboardActive.value && canvasStyleData.value?.dashboard?.gap === 'yes'
+    ? canvasStyleData.value?.dashboard?.gapSize
     : 0
 })
 

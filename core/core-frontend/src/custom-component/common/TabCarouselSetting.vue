@@ -51,7 +51,7 @@ const handleInput = value => {
     title="轮播"
   >
     <el-row class="custom-row">
-      <el-form label-position="top">
+      <el-form label-position="top" @submit.prevent>
         <el-form-item
           class="form-item"
           :class="'form-item-' + themes"
