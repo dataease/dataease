@@ -84,7 +84,7 @@ onMounted(() => {
   <el-form ref="pointForm" :model="state.pointForm" size="small" label-position="top">
     <div style="padding-bottom: 8px">
       <el-space>
-        <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.text')">
+        <el-form-item class="form-item" :class="'form-item-' + themes" label="标注点文本">
           <el-color-picker
             :effect="themes"
             size="default"
