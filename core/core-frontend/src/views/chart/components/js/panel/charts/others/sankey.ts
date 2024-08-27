@@ -32,7 +32,7 @@ export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
     },
     xAxisExt: {
       name: `${t('chart.drag_block_type_axis_end')} / ${t('chart.dimension')}`,
-      limit: 1,
+      limit: 1000,
       type: 'd'
     },
     yAxis: {
@@ -53,7 +53,7 @@ export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
     sourceField: 'source',
     targetField: 'target',
     weightField: 'value',
-    rawFields: ['dimensionList', 'quotaList'],
+    rawFields: ['dimensionList', 'quotaList', 'path'],
     interactions: [
       {
         type: 'legend-active',
@@ -102,23 +102,33 @@ export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
     }
     // data
     const data: Array<any> = cloneDeep(chart.data.data)
-
+    const keys: string[] = chart.data.fields.map(d => d.name)
+    keys.pop()
+    const sankeyData = []
     data.forEach(d => {
-      if (d.dimensionList) {
-        if (d.dimensionList[0]) {
-          d.source = d.dimensionList[0].value
+      keys.reduce((a, b) => {
+        if (a && b) {
+          const path = d.dimensionList
+            .slice(0, -1)
+            .map(dim => dim.value)
+            .join(' -> ')
+
+          sankeyData.push({
+            source: d.dimensionList[keys.indexOf(a)].value,
+            target: d.dimensionList[keys.indexOf(b)].value,
+            value: d.value,
+            path: path
+          })
         }
-        if (d.dimensionList[1]) {
-          d.target = d.dimensionList[1].value
-        }
-      }
+        return b
+      })
     })
 
     // options
     const initOptions: SankeyOptions = {
       ...this.baseOptions,
       appendPadding: getPadding(chart),
-      data,
+      data: sankeyData,
       nodeSort: (a, b) => {
         // 这里是前端自己排序
         if (chart.yAxis && chart.yAxis[0]) {
