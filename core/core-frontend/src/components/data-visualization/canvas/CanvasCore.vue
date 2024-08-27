@@ -491,7 +491,6 @@ const getSelectArea = () => {
 }
 
 const handleContextMenu = e => {
-  console.log('====handleContextMenu===')
   // 仪表板和预览状态不显示菜单和组创建
   if (dashboardActive.value || editMode.value === 'preview') {
     return
@@ -1363,11 +1362,7 @@ const linkageSetOpen = item => {
 }
 
 const contextMenuShow = computed(() => {
-  if (curComponent.value) {
-    return curComponent.value.canvasId === canvasId.value
-  } else {
-    return isMainCanvas(canvasId.value)
-  }
+  return isMainCanvas(canvasId.value)
 })
 
 const markLineShow = computed(() => isMainCanvas(canvasId.value))
