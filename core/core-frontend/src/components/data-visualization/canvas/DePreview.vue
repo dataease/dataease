@@ -67,6 +67,11 @@ const props = defineProps({
     required: false,
     default: 1
   },
+  outerSearchCount: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   isSelector: {
     type: Boolean,
     default: false
@@ -82,7 +87,8 @@ const {
   showPosition,
   previewActive,
   downloadStatus,
-  outerScale
+  outerScale,
+  outerSearchCount
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidthPoint = ref(100)
@@ -99,6 +105,9 @@ const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
 
+const curSearchCount = computed(() => {
+  return outerSearchCount.value + searchCount.value
+})
 // 大屏是否保持宽高比例 非全屏 full 都需要保持宽高比例
 const dataVKeepRadio = computed(() => {
   return canvasStyleData.value?.screenAdaptor !== 'full'
@@ -411,7 +420,7 @@ defineExpose({
         :config="item"
         :style="getShapeItemShowStyle(item)"
         :show-position="showPosition"
-        :search-count="searchCount"
+        :search-count="curSearchCount"
         :scale="mobileInPc ? 100 : scaleMin"
         :is-selector="props.isSelector"
         @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
