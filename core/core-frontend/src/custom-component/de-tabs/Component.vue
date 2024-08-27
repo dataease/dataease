@@ -23,32 +23,34 @@
           :name="tabItem.name"
         >
           <template #label>
-            <span :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
-            <el-dropdown
-              v-if="isEditMode"
-              :effect="curThemes"
-              style="line-height: 4 !important"
-              trigger="click"
-              @command="handleCommand"
-            >
-              <span class="el-dropdown-link">
-                <el-icon v-if="isEdit"><ArrowDown /></el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
-                    编辑标题
-                  </el-dropdown-item>
+            <div @mousedown.stop>
+              <span :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
+              <el-dropdown
+                v-if="isEditMode"
+                :effect="curThemes"
+                style="line-height: 4 !important"
+                trigger="click"
+                @command="handleCommand"
+              >
+                <span class="el-dropdown-link">
+                  <el-icon v-if="isEdit"><ArrowDown /></el-icon>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
+                      编辑标题
+                    </el-dropdown-item>
 
-                  <el-dropdown-item
-                    v-if="element.propValue.length > 1"
-                    :command="beforeHandleCommand('deleteCur', tabItem)"
-                  >
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+                    <el-dropdown-item
+                      v-if="element.propValue.length > 1"
+                      :command="beforeHandleCommand('deleteCur', tabItem)"
+                    >
+                      删除
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
           <de-canvas
             v-if="isEdit && !mobileInPc"
