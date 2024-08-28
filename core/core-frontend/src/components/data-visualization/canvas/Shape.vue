@@ -431,7 +431,7 @@ const areaDataPush = component => {
     !component.isLock &&
     component.isShow &&
     component.canvasId === 'canvas-main' &&
-    !['Group', 'GroupArea', 'DeTabs'].includes(component.component)
+    !['GroupArea', 'DeTabs'].includes(component.component)
   ) {
     areaData.value.components.push(component)
   }
