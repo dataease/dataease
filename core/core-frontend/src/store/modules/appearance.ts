@@ -170,7 +170,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         }
         fontStyleElement.innerHTML = `@font-face {
             font-family: '${name}';
-            src: url(${basePath}/typeface/download/${currentFont.id});
+            src: url(${basePath}/typeface/download/${currentFont.fileTransName});
             font-weight: normal;
             font-style: normal;
             }`
@@ -205,7 +205,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       }
       defaultFont().then(res => {
         const [font] = res || []
-        setDefaultFont(`${basePath}/typeface/download/${font?.id}`, font?.name)
+        setDefaultFont(`${basePath}/typeface/download/${font?.fileTransName}`, font?.name)
         function setDefaultFont(url, name) {
           if (!name) return
           let fontStyleElement = document.querySelector('#de-custom_font')

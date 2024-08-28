@@ -86,3 +86,5 @@ CREATE TABLE `core_font`
 );
 ALTER TABLE  `core_font` ADD COLUMN `size` DOUBLE NULL AFTER `is_BuiltIn`;
 ALTER TABLE  `core_font` ADD COLUMN `size_type` varchar(255) NULL AFTER `size`;
+INSERT INTO  `core_font` (`id`, `name`, `is_default`, `update_time`, `is_BuiltIn`) VALUES ('1', 'PingFang', '1', '0', '1');
+
