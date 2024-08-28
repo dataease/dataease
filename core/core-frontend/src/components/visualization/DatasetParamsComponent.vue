@@ -86,6 +86,7 @@ const emits = defineEmits(['finish'])
       ref="subject"
       :model="subjectForm"
       :rules="rules"
+      @submit.prevent
     >
       <el-form-item
         v-for="paramsItem in curDataSetParamsInfo"
