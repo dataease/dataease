@@ -403,7 +403,11 @@ defineExpose({
       v-if="activeName === 'SUCCESS' && multipleSelection.length !== 0"
       secondary
       @click="downLoadAll"
-      ><template #icon> <Icon name="de-delete"></Icon> </template>{{ $t('data_export.download') }}
+    >
+      <template #icon>
+        <Icon name="dv-preview-download" />
+      </template>
+      {{ $t('data_export.download') }}
     </el-button>
     <el-button v-if="multipleSelection.length === 0" secondary @click="delAll"
       ><template #icon> <Icon name="de-delete"></Icon> </template>{{ $t('data_export.del_all') }}
