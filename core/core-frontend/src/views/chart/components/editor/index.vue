@@ -271,7 +271,11 @@ const getFields = (id, chartId, type) => {
 }
 
 const chartStyleShow = computed(() => {
-  return view.value.type !== 'richText'
+  return (
+    view.value.type !== 'richText' &&
+    curComponent.value &&
+    curComponent.value.component === 'UserView'
+  )
 })
 
 const chartViewInstance = computed(() => {
