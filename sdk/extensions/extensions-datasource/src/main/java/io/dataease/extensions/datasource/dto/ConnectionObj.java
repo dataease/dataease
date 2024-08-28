@@ -23,7 +23,6 @@ public class ConnectionObj implements AutoCloseable {
         }
 
         if (session != null) {
-            System.out.println("session.disconnect()");
             session.disconnect();
         }
 

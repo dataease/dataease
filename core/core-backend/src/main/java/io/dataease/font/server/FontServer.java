@@ -45,13 +45,13 @@ public class FontServer implements FontApi {
     }
 
     @Override
-    public String upload(MultipartFile file) throws DEException {
+    public FontDto upload(MultipartFile file) throws DEException {
         return fontManage.upload(file);
     }
 
     @Override
-    public void download(Long id, HttpServletResponse response) throws DEException {
-        fontManage.download(id, response);
+    public void download(String file, HttpServletResponse response) throws DEException {
+        fontManage.download(file, response);
     }
 
     @Override
