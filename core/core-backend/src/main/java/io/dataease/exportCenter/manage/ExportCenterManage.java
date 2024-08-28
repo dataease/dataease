@@ -3,6 +3,7 @@ package io.dataease.exportCenter.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.Gson;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;
@@ -10,6 +11,7 @@ import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.extensions.datasource.api.PluginManageApi;
+import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
@@ -78,22 +80,24 @@ public class ExportCenterManage {
     DataVisualizationServer dataVisualizationServer;
     @Resource
     private CoreChartViewMapper coreChartViewMapper;
+    @Resource
+    private PermissionManage permissionManage;
     @Autowired
     private WsService wsService;
     @Autowired(required = false)
     private PluginManageApi pluginManage;
     @Resource
     private SysParameterManage sysParameterManage;
-    @Value("${export.core.size:10}")
+    @Value("${dataease.export.core.size:10}")
     private int core;
-    @Value("${export.max.size:10}")
+    @Value("${dataease.export.max.size:10}")
     private int max;
 
-    @Value("${export.dataset.limit:100000}")
+    @Value("${dataease.export.dataset.limit:100000}")
     private int limit;
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     private static final String exportData_path = "/opt/dataease2.0/data/exportData/";
-    @Value("${extract.page.size:50000}")
+    @Value("${dataease.export.page.size:50000}")
     private Integer extractPageSize;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
@@ -107,8 +111,6 @@ public class ExportCenterManage {
     private CoreUserManage coreUserManage;
     @Resource
     private DatasetSQLManage datasetSQLManage;
-    @Resource
-    private PermissionManage permissionManage;
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
@@ -347,7 +349,7 @@ public class ExportCenterManage {
                     datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
                     return datasetTableFieldDTO;
                 }).collect(Collectors.toList());
-                dto.setAllFields(allFields);
+
                 Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(dto, null);
                 String sql = (String) sqlMap.get("sql");
                 if (ObjectUtils.isEmpty(allFields)) {
@@ -358,6 +360,7 @@ public class ExportCenterManage {
                 if (ObjectUtils.isEmpty(allFields)) {
                     DEException.throwException(Translator.get("i18n_no_column_permission"));
                 }
+                dto.setAllFields(allFields);
                 datasetDataManage.buildFieldName(sqlMap, allFields);
                 Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
                 DatasourceUtils.checkDsStatus(dsMap);
@@ -373,11 +376,18 @@ public class ExportCenterManage {
                     }
                     sql = Utils.replaceSchemaAlias(sql, dsMap);
                 }
-
                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
                 TokenUserBO user = AuthUtils.getUser();
                 if (user != null) {
                     rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), user.getUserId());
+                }
+                if (StringUtils.isNotEmpty(request.getExpressionTree())) {
+                    Gson gson = new Gson();
+                    DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj = gson.fromJson(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
+                    permissionManage.getField(datasetRowPermissionsTreeObj);
+                    DataSetRowPermissionsTreeDTO dataSetRowPermissionsTreeDTO = new DataSetRowPermissionsTreeDTO();
+                    dataSetRowPermissionsTreeDTO.setTree(datasetRowPermissionsTreeObj);
+                    rowPermissionsTree.add(dataSetRowPermissionsTreeDTO);
                 }
 
                 Provider provider;
@@ -410,7 +420,7 @@ public class ExportCenterManage {
                     datasourceRequest.setDsList(dsMap);
                     Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList);
                     List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
-                    if (p == 1L) {
+                    if (p == 0L) {
                         CellStyle cellStyle = wb.createCellStyle();
                         Font font = wb.createFont();
                         font.setFontHeightInPoints((short) 12);
