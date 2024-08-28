@@ -319,6 +319,7 @@ onMounted(() => {
                 <template #default="{ node, data }">
                   <div
                     class="tree-row-item"
+                    :title="node.label"
                     :class="{ dark: themes === 'dark', active: _modelValue === data.id }"
                   >
                     <div class="m-icon">
@@ -329,15 +330,7 @@ onMounted(() => {
                         <Icon name="icon_dataset" />
                       </el-icon>
                     </div>
-                    <el-tooltip
-                      :effect="toolTip"
-                      :show-after="1000"
-                      :content="node.label"
-                      placement="top"
-                      :enterable="false"
-                    >
-                      {{ node.label }}
-                    </el-tooltip>
+                    {{ node.label }}
 
                     <el-icon class="checked-item" v-if="_modelValue === data.id">
                       <Icon name="icon_done_outlined" />
