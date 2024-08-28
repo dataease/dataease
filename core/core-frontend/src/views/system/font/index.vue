@@ -8,14 +8,30 @@ const fontList = ref([])
 const basePath = import.meta.env.VITE_API_BASEPATH
 
 const uploadDetail = ref()
+const loading = ref(false)
 const uploadFont = (title, type, item) => {
   uploadDetail.value.init(title, type, item)
 }
 
 const listFont = () => {
-  list({}).then(res => {
-    fontList.value = res
-  })
+  loading.value = true
+  list({})
+    .then(res => {
+      fontList.value = [
+        {
+          name: 'PingFang',
+          id: '0',
+          isBuiltin: true,
+          updateTime: new Date(),
+          fileName: '-',
+          isDefault: Number(!(res || []).some(ele => ele.isDefault))
+        },
+        ...(res || [])
+      ]
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const deleteFont = item => {
@@ -29,20 +45,53 @@ const deleteFont = item => {
     autofocus: false,
     showClose: false
   }).then(() => {
-    deleteById(item.id).then(() => {
-      ElMessage.success('删除成功')
-      listFont()
-      getDefaultFont()
-    })
+    loading.value = true
+    deleteById(item.id)
+      .then(() => {
+        ElMessage.success('删除成功')
+        listFont()
+        getDefaultFont()
+      })
+      .finally(() => {
+        loading.value = false
+      })
   })
 }
 
 const setToDefault = item => {
-  item.isDefault = 1
-  edit(item).then(() => {
-    ElMessage.success('设置成功')
-    getDefaultFont()
-  })
+  if (item.id === '0') {
+    fontList.value.forEach(ele => {
+      if (ele.isDefault) {
+        ele.isDefault = 0
+        loading.value = true
+        edit(ele)
+          .then(() => {
+            ElMessage.success('设置成功')
+            getDefaultFont()
+          })
+          .finally(() => {
+            loading.value = false
+          })
+      }
+    })
+    item.isDefault = 1
+  } else {
+    fontList.value.forEach(ele => {
+      if (ele.id === '0' && ele.isDefault) {
+        ele.isDefault = 0
+      }
+    })
+    item.isDefault = 1
+    loading.value = true
+    edit(item)
+      .then(() => {
+        ElMessage.success('设置成功')
+        getDefaultFont()
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  }
 }
 const setDefaultFont = (url, name) => {
   let fontStyleElement = document.querySelector('#de-custom_font')
@@ -60,6 +109,7 @@ const setDefaultFont = (url, name) => {
               }`
     : ''
   document.documentElement.style.setProperty('--de-custom_font', `${name ? name : ''}`)
+  document.documentElement.style.setProperty('--van-base-font', `${name ? name : ''}`)
 }
 const getDefaultFont = () => {
   defaultFont().then(res => {
@@ -69,11 +119,21 @@ const getDefaultFont = () => {
 }
 
 const cancelDefault = item => {
-  item.isDefault = 0
-  edit(item).then(() => {
-    ElMessage.success('取消成功')
-    getDefaultFont()
+  fontList.value.forEach(ele => {
+    if (ele.id === '0') {
+      ele.isDefault = 1
+    }
   })
+  item.isDefault = 0
+  loading.value = true
+  edit(item)
+    .then(() => {
+      ElMessage.success('取消成功')
+      getDefaultFont()
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 onMounted(() => {
@@ -82,7 +142,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="font-management_system">
+  <div class="font-management_system" v-loading="loading">
     <div class="route-title">
       字体管理
       <div class="search-font">
@@ -114,25 +174,24 @@ onMounted(() => {
         </div>
         <div class="font-upload_btn">
           <el-button
-            v-if="!ele.fileTransName"
+            v-if="!ele.fileTransName && ele.id !== '0'"
             @click="uploadFont('上传字库文件', 'uploadFile', ele)"
             secondary
             >上传字库文件</el-button
           >
           <el-button
-            v-if="ele.fileTransName"
+            v-if="ele.fileTransName && ele.id !== '0'"
             @click="uploadFont('替换字库文件', 'uploadFile', ele)"
             secondary
             >替换字库文件</el-button
           >
-          <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
+          <el-button v-if="!ele.isDefault || ele.id === '0'" @click="setToDefault(ele)" secondary
             >设为默认字体</el-button
           >
-          <el-button v-if="ele.isDefault" @click="cancelDefault(ele)" secondary
+          <el-button v-if="ele.isDefault && ele.id !== '0'" @click="cancelDefault(ele)" secondary
             >取消默认字体</el-button
           >
-          <el-button @click="uploadFont('重命名', 'rename', ele)" secondary>重命名</el-button>
-          <el-button @click="deleteFont(ele)" secondary>删除</el-button>
+          <el-button v-if="ele.id !== '0'" @click="deleteFont(ele)" secondary>删除</el-button>
         </div>
       </div>
     </div>

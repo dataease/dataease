@@ -60,6 +60,7 @@ router.beforeEach(async (to, from, next) => {
   }
   await appearanceStore.setAppearance()
   if ((wsCache.get('user.token') || isDesktop) && !to.path.startsWith('/de-link/')) {
+    await appearanceStore.setFontList()
     if (!userStore.getUid) {
       await userStore.setUser()
     }
