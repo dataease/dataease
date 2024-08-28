@@ -422,7 +422,7 @@ const createGroup = () => {
     let style = { left: 0, top: 0, right: 0, bottom: 0 }
     if (component.component == 'Group') {
       component.propValue.forEach(item => {
-        const rectInfo = _$(`#component${item.id}`).getBoundingClientRect()
+        const rectInfo = _$(`#shape-id-${item.id}`).getBoundingClientRect()
         style.left = rectInfo.left - editorX.value
         style.top = rectInfo.top - editorY.value
         style.right = rectInfo.right - editorX.value
@@ -1543,23 +1543,6 @@ defineExpose({
         :request="item.request"
         @input="handleInput"
         :dv-info="dvInfo"
-        :canvas-active="canvasActive"
-      />
-      <component
-        v-else-if="item.component.includes('Svg')"
-        :is="findComponent(item.component)"
-        :id="'component' + item.id"
-        :scale="curBaseScale"
-        class="component"
-        :is-edit="true"
-        :style="getSvgComponentStyle(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :request="item.request"
-        :canvas-style-data="canvasStyleData"
-        :canvas-view-info="canvasViewInfo"
-        :dv-info="dvInfo"
-        :active="item.id === curComponentId"
         :canvas-active="canvasActive"
       />
       <component
