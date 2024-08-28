@@ -64,22 +64,12 @@ public class StaticResourceServer implements StaticResourceApi {
     }
 
     private boolean isImage(MultipartFile file) {
-        BufferedImage image = null;
-        try (InputStream input = file.getInputStream()) {
-            image = ImageIO.read(input);
-        } catch (IOException e) {
-            LogUtil.error(e.getMessage(), e);
+        if (file == null || file.isEmpty()) {
             return false;
         }
-        // 判断是否为SVG
-        if(isValidSVG(file)){
-            return true;
-        }
-        // 判断其他图片
-        if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0) {
-            return false;
-        }
-        return true;
+        String mimeType = file.getContentType();
+        // 判断是否为图片或SVG
+        return (mimeType != null && mimeType.startsWith("image/")) || isValidSVG(file);
     }
 
     public void saveFilesToServe(String staticResource) {
