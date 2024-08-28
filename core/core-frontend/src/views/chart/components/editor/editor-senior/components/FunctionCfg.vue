@@ -100,7 +100,7 @@ onMounted(() => {
 
 <template>
   <div @keydown.stop @keyup.stop style="width: 100%">
-    <el-form ref="functionForm" :model="state.functionForm" label-position="top">
+    <el-form ref="functionForm" :model="state.functionForm" label-position="top" @submit.prevent>
       <div v-if="showProperty('slider')">
         <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
           <el-checkbox
@@ -205,6 +205,7 @@ onMounted(() => {
       </el-form-item>
       <el-form-item>
         <el-input
+          :effect="themes"
           v-if="state.functionForm.emptyDataStrategy === 'custom'"
           v-model="state.functionForm['emptyDataCustomValue']"
           class="value-item"
