@@ -23,6 +23,7 @@ import {
 } from '@/custom-component/component-list'
 import { get, set } from 'lodash-es'
 import { viewFieldTimeTrans } from '@/utils/viewUtils'
+import { isMainCanvas } from '@/utils/canvasUtils'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -971,7 +972,11 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
     trackOuterFilterCursor(element, params, preActiveComponentIds, trackInfo, source) {
-      if (!['UserView', 'VQuery'].includes(element.component)) {
+      // 弹窗区域禁用时 在弹窗区域的组件不生效
+      if (
+        !['UserView', 'VQuery'].includes(element.component) ||
+        (element.category === 'hidden' && !this.canvasStyleData.popupAvailable)
+      ) {
         return
       }
       const currentFilters = [] // 外部参数信息
