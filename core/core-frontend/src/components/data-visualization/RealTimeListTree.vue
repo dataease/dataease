@@ -262,6 +262,10 @@ const areaClick = area => {
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: area })
 }
+
+const canvasChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
 </script>
 
 <template>
@@ -270,7 +274,7 @@ const areaClick = area => {
     <button hidden="true" id="close-button"></button>
     <div class="layer-area" @click="areaClick('hidden')" :class="{ activated: hiddenAreaActive }">
       <span>弹窗区域({{ popComponentData.length }})</span>
-      <el-switch v-model="canvasStyleData.popupAvailable" size="small" />
+      <el-switch v-model="canvasStyleData.popupAvailable" @change="canvasChange" size="small" />
     </div>
     <el-row class="list-wrap">
       <div class="list-container" @contextmenu="handleContextMenu">
