@@ -80,6 +80,11 @@ const setToDefault = item => {
       if (ele.id === '0' && ele.isDefault) {
         ele.isDefault = 0
       }
+
+      if (ele.id !== '0' && item.id !== ele.id && ele.isDefault) {
+        ele.isDefault = 0
+        edit(ele)
+      }
     })
     item.isDefault = 1
     loading.value = true
@@ -117,7 +122,28 @@ const getDefaultFont = () => {
     setDefaultFont(`${basePath}/typeface/download/${font?.id}`, font?.name)
   })
 }
+const uploadFilish = () => {
+  loading.value = true
+  list({})
+    .then(res => {
+      fontList.value = [
+        {
+          name: 'PingFang',
+          id: '0',
+          isBuiltin: true,
+          updateTime: new Date(),
+          fileName: '-',
+          isDefault: Number(!(res || []).some(ele => ele.isDefault))
+        },
+        ...(res || [])
+      ]
 
+      getDefaultFont()
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
 const cancelDefault = item => {
   fontList.value.forEach(ele => {
     if (ele.id === '0') {
@@ -196,7 +222,7 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <UploadDetail @finish="listFont" ref="uploadDetail"></UploadDetail>
+  <UploadDetail @finish="uploadFilish" ref="uploadDetail"></UploadDetail>
 </template>
 
 <style lang="less" scoped>
