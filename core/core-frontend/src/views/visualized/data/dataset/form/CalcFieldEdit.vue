@@ -459,6 +459,7 @@ initFunction()
               <el-icon class="hover-icon_quota" @click="addParmasToQuota">
                 <Icon
                   :class="[`field-icon-${fieldType[0]}`, disableCaParams && 'not-allow']"
+                  style="color: #646a73"
                   name="icon_adjustment_outlined"
                 ></Icon>
               </el-icon>
