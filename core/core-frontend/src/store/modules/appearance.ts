@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { store } from '@/store/index'
-import { defaultFont } from '@/api/font'
+import { defaultFont, list } from '@/api/font'
 import { uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import colorFunctions from 'less/lib/less/functions/color.js'
@@ -31,6 +31,7 @@ interface AppearanceState {
   showDemoTips?: boolean
   demoTipsContent?: string
   community: boolean
+  fontList: Array<{ name: string; id: string }>
 }
 const { wsCache } = useCache()
 export const useAppearanceStore = defineStore('appearanceStore', {
@@ -57,7 +58,8 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       loaded: false,
       showDemoTips: false,
       demoTipsContent: '',
-      community: true
+      community: true,
+      fontList: []
     }
   },
   getters: {
@@ -153,6 +155,27 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     setMobileLogin(data: string) {
       this.mobileLogin = data
     },
+    async setFontList() {
+      const res = await list()
+      this.fontList = res || []
+    },
+    setCurrentFont(name) {
+      const currentFont = this.fontList.find(ele => ele.name === name)
+      if (currentFont) {
+        let fontStyleElement = document.querySelector(`#de-custom_font${name}`)
+        if (!fontStyleElement) {
+          fontStyleElement = document.createElement('style')
+          fontStyleElement.setAttribute('id', `de-custom_font${name}`)
+          document.querySelector('head').appendChild(fontStyleElement)
+        }
+        fontStyleElement.innerHTML = `@font-face {
+            font-family: '${name}';
+            src: url(${basePath}/typeface/download/${currentFont.id});
+            font-weight: normal;
+            font-style: normal;
+            }`
+      }
+    },
     setMobileLoginBg(data: string) {
       this.mobileLoginBg = data
     },
@@ -180,7 +203,6 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (this.loaded) {
         return
       }
-
       defaultFont().then(res => {
         const [font] = res || []
         setDefaultFont(`${basePath}/typeface/download/${font?.id}`, font?.name)
@@ -199,6 +221,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
                 font-style: normal;
                 }`
           document.documentElement.style.setProperty('--de-custom_font', `${name}`)
+          document.documentElement.style.setProperty('--van-base-font', `${name}`)
         }
       })
       if (!isDataEaseBi) {

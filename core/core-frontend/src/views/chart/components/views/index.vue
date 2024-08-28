@@ -2,6 +2,7 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import router from '@/router'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -57,6 +58,7 @@ const { emitter } = useEmitt()
 
 let innerRefreshTimer = null
 const appStore = useAppStoreWithOut()
+const appearanceStore = useAppearanceStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const isIframe = computed(() => appStore.getIsIframe)
 
@@ -270,10 +272,16 @@ const initTitle = () => {
       state.title_class.textAlign = customStyle.text.hPosition as CSSProperties['textAlign']
       state.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
       state.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
+      if (!!appearanceStore.fontList.length) {
+        appearanceStore.fontList.forEach(ele => {
+          CHART_FONT_FAMILY_MAP[ele.name] = ele.name
+        })
+      }
 
       state.title_class.fontFamily = customStyle.text.fontFamily
         ? CHART_FONT_FAMILY_MAP[customStyle.text.fontFamily]
         : DEFAULT_TITLE_STYLE.fontFamily
+      appearanceStore.setCurrentFont(state.title_class.fontFamily)
       state.title_class.letterSpacing =
         (customStyle.text.letterSpace
           ? customStyle.text.letterSpace
