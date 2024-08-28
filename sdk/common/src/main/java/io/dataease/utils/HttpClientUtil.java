@@ -18,6 +18,7 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
@@ -436,6 +438,50 @@ public class HttpClientUtil {
         HttpClientConfig config = new HttpClientConfig();
         addHead(config, headMap);
         return HttpClientUtil.postFile(url, bytes, name, paramMap, config);
+    }
+
+    public static String upload(String url, File file, String name) {
+        HttpClientConfig config = new HttpClientConfig();
+        Map<String, String> param = new HashMap<>();
+        param.put("fileFlag", "media");
+        param.put("fileName", name);
+        return HttpClientUtil.postFile(url, file, param, config);
+    }
+
+    public static String postFile(String fileServer, File file, Map<String, String> param, HttpClientConfig config) {
+        CloseableHttpClient httpClient = buildHttpClient(fileServer);
+        HttpPost postRequest = new HttpPost(fileServer);
+        if (config == null) {
+            config = new HttpClientConfig();
+        }
+        postRequest.setConfig(config.buildRequestConfig());
+        Map<String, String> header = config.getHeader();
+        String fileFlag = param.get("fileFlag");
+        String fileName = param.get("fileName");
+        param.remove("fileFlag");
+        param.remove("fileName");
+        if (MapUtils.isNotEmpty(header)) {
+            for (String key : header.keySet()) {
+                postRequest.addHeader(key, header.get(key));
+            }
+        }
+        postRequest.setHeader("Content-Type", "multipart/form-data");
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setCharset(StandardCharsets.UTF_8);
+        builder.addBinaryBody(StringUtils.isNotBlank(fileFlag) ? fileFlag : "file", file, ContentType.APPLICATION_OCTET_STREAM, StringUtils.isNotBlank(fileName) ? fileName : file.getName());
+        if (MapUtils.isNotEmpty(param)) {
+            for (Map.Entry<String, String> entry : param.entrySet()) {
+                StringBody stringBody = new StringBody(entry.getValue(), ContentType.TEXT_PLAIN.withCharset("utf-8"));
+                builder.addPart(entry.getKey(), stringBody);
+            }
+        }
+        try {
+            postRequest.setEntity(builder.build());
+            return getResponseStr(httpClient.execute(postRequest), config);
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
+        }
     }
 
     private static void addHead(HttpClientConfig config, Map<String, Object> headMap) {
