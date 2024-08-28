@@ -53,7 +53,7 @@ public class ChartDataServer implements ChartDataApi {
 
     @Resource
     private VisualizationTemplateExtendDataManage extendDataManage;
-    @Value("${export.views.limit:500000}")
+    @Value("${dataease.export.views.limit:500000}")
     private Integer limit;
 
     @Resource

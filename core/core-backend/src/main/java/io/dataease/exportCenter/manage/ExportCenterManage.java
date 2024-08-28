@@ -89,7 +89,7 @@ public class ExportCenterManage {
     @Value("${export.max.size:10}")
     private int max;
 
-    @Value("${export.dataset.limit:100000}")
+    @Value("${dataease.export.dataset.limit:100000}")
     private int limit;
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     private static final String exportData_path = "/opt/dataease2.0/data/exportData/";
