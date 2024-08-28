@@ -502,7 +502,7 @@ onMounted(async () => {
     .login-form-title {
       margin-top: 20px;
       color: #1f2329;
-      font-family: PingFang SC;
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 20px;
       font-weight: 500;
       line-height: 28px;
