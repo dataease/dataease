@@ -114,7 +114,7 @@ public class FontManage {
         QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("file_trans_name", file);
         List<CoreFont> coreFonts = coreFontMapper.selectList(queryWrapper);
-        if (CollectionUtils.isNotEmpty(coreFonts)) {
+        if (CollectionUtils.isEmpty(coreFonts)) {
             DEException.throwException("不存在的字库文件");
         }
 

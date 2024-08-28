@@ -55,6 +55,7 @@ const setToDefault = item => {
     .then(() => {
       ElMessage.success('设置成功')
       getDefaultFont()
+      listFont()
     })
     .finally(() => {
       loading.value = false
@@ -81,7 +82,7 @@ const setDefaultFont = (url, name) => {
 const getDefaultFont = () => {
   defaultFont().then(res => {
     const [font] = res || []
-    setDefaultFont(`${basePath}/typeface/download/${font?.id}`, font?.name)
+    setDefaultFont(`${basePath}/typeface/download/${font?.fileTransName}`, font?.name)
   })
 }
 const uploadFilish = () => {
