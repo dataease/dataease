@@ -137,7 +137,7 @@ const save = () => {
 .mt16 {
   margin-top: 16px;
   .ed-form-item {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     :deep(label) {
       line-height: 22px !important;
     }

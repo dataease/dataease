@@ -17,17 +17,7 @@ const listFont = () => {
   loading.value = true
   list({})
     .then(res => {
-      fontList.value = [
-        {
-          name: 'PingFang',
-          id: '0',
-          isBuiltin: true,
-          updateTime: new Date(),
-          fileName: '-',
-          isDefault: Number(!(res || []).some(ele => ele.isDefault))
-        },
-        ...(res || [])
-      ]
+      fontList.value = res
     })
     .finally(() => {
       loading.value = false
@@ -59,44 +49,16 @@ const deleteFont = item => {
 }
 
 const setToDefault = item => {
-  if (item.id === '0') {
-    fontList.value.forEach(ele => {
-      if (ele.isDefault) {
-        ele.isDefault = 0
-        loading.value = true
-        edit(ele)
-          .then(() => {
-            ElMessage.success('设置成功')
-            getDefaultFont()
-          })
-          .finally(() => {
-            loading.value = false
-          })
-      }
+  item.isDefault = 1
+  loading.value = true
+  edit(item)
+    .then(() => {
+      ElMessage.success('设置成功')
+      getDefaultFont()
     })
-    item.isDefault = 1
-  } else {
-    fontList.value.forEach(ele => {
-      if (ele.id === '0' && ele.isDefault) {
-        ele.isDefault = 0
-      }
-
-      if (ele.id !== '0' && item.id !== ele.id && ele.isDefault) {
-        ele.isDefault = 0
-        edit(ele)
-      }
+    .finally(() => {
+      loading.value = false
     })
-    item.isDefault = 1
-    loading.value = true
-    edit(item)
-      .then(() => {
-        ElMessage.success('设置成功')
-        getDefaultFont()
-      })
-      .finally(() => {
-        loading.value = false
-      })
-  }
 }
 const setDefaultFont = (url, name) => {
   let fontStyleElement = document.querySelector('#de-custom_font')
@@ -126,35 +88,7 @@ const uploadFilish = () => {
   loading.value = true
   list({})
     .then(res => {
-      fontList.value = [
-        {
-          name: 'PingFang',
-          id: '0',
-          isBuiltin: true,
-          updateTime: new Date(),
-          fileName: '-',
-          isDefault: Number(!(res || []).some(ele => ele.isDefault))
-        },
-        ...(res || [])
-      ]
-
-      getDefaultFont()
-    })
-    .finally(() => {
-      loading.value = false
-    })
-}
-const cancelDefault = item => {
-  fontList.value.forEach(ele => {
-    if (ele.id === '0') {
-      ele.isDefault = 1
-    }
-  })
-  item.isDefault = 0
-  loading.value = true
-  edit(item)
-    .then(() => {
-      ElMessage.success('取消成功')
+      fontList.value = res
       getDefaultFont()
     })
     .finally(() => {
@@ -200,24 +134,21 @@ onMounted(() => {
         </div>
         <div class="font-upload_btn">
           <el-button
-            v-if="!ele.fileTransName && ele.id !== '0'"
+            v-if="!ele.fileTransName"
             @click="uploadFont('上传字库文件', 'uploadFile', ele)"
             secondary
             >上传字库文件</el-button
           >
           <el-button
-            v-if="ele.fileTransName && ele.id !== '0'"
+            v-if="ele.fileTransName"
             @click="uploadFont('替换字库文件', 'uploadFile', ele)"
             secondary
             >替换字库文件</el-button
           >
-          <el-button v-if="!ele.isDefault || ele.id === '0'" @click="setToDefault(ele)" secondary
+          <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
             >设为默认字体</el-button
           >
-          <el-button v-if="ele.isDefault && ele.id !== '0'" @click="cancelDefault(ele)" secondary
-            >取消默认字体</el-button
-          >
-          <el-button v-if="ele.id !== '0'" @click="deleteFont(ele)" secondary>删除</el-button>
+          <el-button @click="deleteFont(ele)" secondary>删除</el-button>
         </div>
       </div>
     </div>
