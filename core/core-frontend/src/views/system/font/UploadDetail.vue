@@ -10,16 +10,15 @@ const state = reactive({
 })
 const loading = ref(false)
 const upload = ref()
-const uploadFile = ref('')
-const fileName = ref('')
 const uploadExcel = () => {
   const formData = new FormData()
   formData.append('file', state.fileList.raw)
-  fileName.value = state.fileList.raw.name
+  ruleForm.fileName = state.fileList.raw.name
   loading.value = true
   return uploadFontFile(formData)
     .then(res => {
-      uploadFile.value = res.data
+      ruleForm.size = res.data.size
+      ruleForm.fileTransName = res.data.fileTransName
       upload.value?.clearFiles()
       loading.value = false
     })
@@ -42,6 +41,8 @@ const defaultForm = {
   name: '',
   fileName: '',
   fileTransName: '',
+  size: 0,
+  sizeType: '',
   isDefault: 0,
   isBuiltin: 0,
   updateTime: 0
@@ -86,12 +87,9 @@ const confirm = () => {
   ruleFormRef.value.validate(val => {
     if (val) {
       if (action.value === 'uploadFile') {
-        if (uploadFile.value === '') {
+        if (ruleForm.fileTransName === '') {
           ElMessage.error('请上传字库文件')
           return
-        } else {
-          ruleForm.fileTransName = uploadFile.value
-          ruleForm.fileName = fileName.value
         }
       }
       edit(ruleForm).then(res => {
@@ -144,8 +142,8 @@ const confirm = () => {
         <FontInfo
           @del="fontDel"
           v-show="state.fileList"
-          size="52.2M"
-          name="OsakaMono.ttf"
+          :size="ruleForm.size + ruleForm.sizeType"
+          :name="ruleForm.fileName"
         ></FontInfo>
         <el-upload
           action=""

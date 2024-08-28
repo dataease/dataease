@@ -30,5 +30,7 @@ public class FontDto {
     private Boolean isDefault;
     private Long updateTime;
     private Boolean isBuiltin;
+    private Double size;
+    private String sizeType;
 }
 

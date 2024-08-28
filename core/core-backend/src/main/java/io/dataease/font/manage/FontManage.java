@@ -1,7 +1,9 @@
 package io.dataease.font.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.api.font.dto.FontDto;
+import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.exception.DEException;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontMapper;
@@ -10,6 +12,7 @@ import io.dataease.utils.FileUtils;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +55,11 @@ public class FontManage {
     }
 
     public FontDto create(FontDto fontDto) {
+        QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name", fontDto.getName());
+        if (CollectionUtils.isNotEmpty(coreFontMapper.selectList(queryWrapper))) {
+            DEException.throwException("存在重名字库");
+        }
         fontDto.setId(IDUtils.snowID());
         CoreFont coreFont = new CoreFont();
         BeanUtils.copyBean(coreFont, fontDto);
@@ -63,6 +72,13 @@ public class FontManage {
     public FontDto edit(FontDto fontDto) {
         if (ObjectUtils.isEmpty(fontDto.getId())) {
             return create(fontDto);
+        }
+        if (fontDto.getIsDefault()) {
+            UpdateWrapper<CoreFont> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.ne("id", fontDto.getId());
+            CoreFont record = new CoreFont();
+            record.setIsDefault(false);
+            coreFontMapper.update(record, updateWrapper);
         }
         CoreFont coreFont = new CoreFont();
         BeanUtils.copyBean(coreFont, fontDto);
@@ -88,18 +104,25 @@ public class FontManage {
         coreFontMapper.update(record, queryWrapper);
     }
 
-    public String upload(MultipartFile file) {
+    public FontDto upload(MultipartFile file) {
         String fileUuid = UUID.randomUUID().toString();
         return saveFile(file, fileUuid);
     }
 
-    public void download(Long id, HttpServletResponse response) {
-        CoreFont coreFont = coreFontMapper.selectById(id);
+    public void download(String file, HttpServletResponse response) {
+
+        QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("file_trans_name", file);
+        List<CoreFont> coreFonts = coreFontMapper.selectList(queryWrapper);
+        if (CollectionUtils.isNotEmpty(coreFonts)) {
+            DEException.throwException("不存在的字库文件");
+        }
+
         try {
             response.setContentType("application/x-download");
-            response.setHeader("Content-Disposition", "attachment;filename=" + coreFont.getFileTransName());
+            response.setHeader("Content-Disposition", "attachment;filename=" + coreFonts.get(0).getFileTransName());
             try (ServletOutputStream out = response.getOutputStream();
-                 InputStream stream = new FileInputStream(path + coreFont.getFileTransName())) {
+                 InputStream stream = new FileInputStream(path + coreFonts.get(0).getFileTransName())) {
                 byte buff[] = new byte[1024];
                 int length;
                 while ((length = stream.read(buff)) > 0) {
@@ -125,8 +148,8 @@ public class FontManage {
         return fontDtos;
     }
 
-    private static String saveFile(MultipartFile file, String fileNameUUID) throws DEException {
-        String fileTransName = "";
+    private static FontDto saveFile(MultipartFile file, String fileNameUUID) throws DEException {
+        FontDto fontDto = new FontDto();
         try {
             String filename = file.getOriginalFilename();
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
@@ -136,11 +159,29 @@ public class FontManage {
             fileOutputStream.write(file.getBytes());
             fileOutputStream.flush();
             fileOutputStream.close();
-            fileTransName = fileNameUUID + "." + suffix;
+            fontDto.setFileTransName(fileNameUUID + "." + suffix);
+
+            long length = file.getSize();
+            String unit = "MB";
+            Double size = 0.0;
+            if ((double) length / 1024 / 1024 > 1) {
+                if ((double) length / 1024 / 1024 / 1024 > 1) {
+                    unit = "GB";
+                    size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024 / 1024));
+                } else {
+                    size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024));
+                }
+            } else {
+                unit = "KB";
+                size = Double.valueOf(String.format("%.2f", (double) length / 1024));
+            }
+            fontDto.setSize(size);
+            fontDto.setSizeType(unit);
+
         } catch (Exception e) {
             DEException.throwException(e);
         }
-        return fileTransName;
+        return fontDto;
     }
 
 }

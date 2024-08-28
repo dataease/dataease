@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-08-26
+ * @since 2024-08-28
  */
 @TableName("core_font")
 public class CoreFont implements Serializable {
@@ -50,6 +50,10 @@ public class CoreFont implements Serializable {
      * 是否内置
      */
     private Boolean isBuiltin;
+
+    private Double size;
+
+    private String sizeType;
 
     public Long getId() {
         return id;
@@ -107,6 +111,22 @@ public class CoreFont implements Serializable {
         this.isBuiltin = isBuiltin;
     }
 
+    public Double getSize() {
+        return size;
+    }
+
+    public void setSize(Double size) {
+        this.size = size;
+    }
+
+    public String getSizeType() {
+        return sizeType;
+    }
+
+    public void setSizeType(String sizeType) {
+        this.sizeType = sizeType;
+    }
+
     @Override
     public String toString() {
         return "CoreFont{" +
@@ -117,6 +137,8 @@ public class CoreFont implements Serializable {
         ", isDefault = " + isDefault +
         ", updateTime = " + updateTime +
         ", isBuiltin = " + isBuiltin +
+        ", size = " + size +
+        ", sizeType = " + sizeType +
         "}";
     }
 }

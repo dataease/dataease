@@ -42,10 +42,10 @@ public interface FontApi {
     public void changeDefault(@RequestBody FontDto fontDto);
 
     @PostMapping("/uploadFile")
-    String upload(@RequestParam("file") MultipartFile file) throws DEException;
+    FontDto upload(@RequestParam("file") MultipartFile file) throws DEException;
 
-    @GetMapping("/download/{id}")
-    void download(@PathVariable("id") Long id, HttpServletResponse response) throws DEException;
+    @GetMapping("/download/{file}")
+    void download(@PathVariable("file") String file, HttpServletResponse response) throws DEException;
 
     @GetMapping("/defaultFont")
     List<FontDto> defaultFont() throws DEException;

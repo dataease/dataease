@@ -84,3 +84,5 @@ CREATE TABLE `core_font`
     `is_BuiltIn`         tinyint(1)       default 0 COMMENT '是否内置',
     PRIMARY KEY (`id`)
 );
+ALTER TABLE  `core_font` ADD COLUMN `size` DOUBLE NULL AFTER `is_BuiltIn`;
+ALTER TABLE  `core_font` ADD COLUMN `size_type` varchar(255) NULL AFTER `size`;
