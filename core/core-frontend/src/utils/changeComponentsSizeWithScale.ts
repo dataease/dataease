@@ -7,9 +7,17 @@ import { groupSizeStyleAdaptor } from '@/utils/style'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, curComponentIndex, canvasStyleData } = storeToRefs(dvMainStore)
 
-const needToChangeAttrs = ['top', 'left', 'width', 'height', 'fontSize', 'letterSpacing']
+const needToChangeAttrs = [
+  'top',
+  'left',
+  'width',
+  'height',
+  'fontSize',
+  'activeFontSize',
+  'letterSpacing'
+]
 const needToChangeDirectionAttrs = {
-  width: ['left', 'width', 'fontSize', 'letterSpacing'],
+  width: ['left', 'width', 'fontSize', 'activeFontSize', 'letterSpacing'],
   height: ['top', 'height']
 }
 
@@ -26,7 +34,7 @@ export function changeComponentsSizeWithScale(scale, changeAttrs = needToChangeA
   componentDataCopy.forEach(component => {
     Object.keys(component.style).forEach(key => {
       if (changeAttrs.includes(key)) {
-        if (key === 'fontSize' && component.style[key] === '') return
+        if (['fontSize', 'activeFontSize'].includes(key) && component.style[key] === '') return
         // 根据原来的比例获取样式原来的尺寸
         // 再用原来的尺寸 * 现在的比例得出新的尺寸
         component.style[key] = format(
