@@ -706,6 +706,7 @@ const tablePageClass = computed(() => {
   height: 20px;
   display: flex;
   width: 100%;
+  font-size: 14px;
   color: var(--de-pager-color);
   :deep(.table-page-content) {
     button,
