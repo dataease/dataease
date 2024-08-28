@@ -292,31 +292,33 @@ const componentMoveIn = component => {
     if (editableTabsValue.value === tabItem.name) {
       //获取主画布当前组件的index
       const curIndex = findComponentIndexById(component.id)
-      // 从主画布中移除
-      if (isDashboard()) {
-        eventBus.emit('removeMatrixItem-canvas-main', curIndex)
-        dvMainStore.setCurComponent({ component: null, index: null })
-        component.canvasId = element.value.id + '--' + tabItem.name
-        const refInstance = currentInstance.refs['tabCanvas_' + index][0]
-        if (refInstance) {
-          const matrixBase = refInstance.getBaseMatrixSize() //矩阵基础大小
-          canvasChangeAdaptor(component, matrixBase)
-          component.x = 1
-          component.y = 200
-          component.style.left = 0
-          component.style.top = 0
+      if (curIndex > -1) {
+        // 从主画布中移除
+        if (isDashboard()) {
+          eventBus.emit('removeMatrixItem-canvas-main', curIndex)
+          dvMainStore.setCurComponent({ component: null, index: null })
+          component.canvasId = element.value.id + '--' + tabItem.name
+          const refInstance = currentInstance.refs['tabCanvas_' + index][0]
+          if (refInstance) {
+            const matrixBase = refInstance.getBaseMatrixSize() //矩阵基础大小
+            canvasChangeAdaptor(component, matrixBase)
+            component.x = 1
+            component.y = 200
+            component.style.left = 0
+            component.style.top = 0
+            tabItem.componentData.push(component)
+            nextTick(() => {
+              refInstance.addItemBox(component) //在适当的时候初始化布局组件
+            })
+          }
+        } else {
+          // 从主画布删除
+          dvMainStore.deleteComponent(curIndex)
+          dvMainStore.setCurComponent({ component: null, index: null })
+          component.canvasId = element.value.id + '--' + tabItem.name
+          dataVTabComponentAdd(component, element.value.style)
           tabItem.componentData.push(component)
-          nextTick(() => {
-            refInstance.addItemBox(component) //在适当的时候初始化布局组件
-          })
         }
-      } else {
-        // 从主画布删除
-        dvMainStore.deleteComponent(curIndex)
-        dvMainStore.setCurComponent({ component: null, index: null })
-        component.canvasId = element.value.id + '--' + tabItem.name
-        dataVTabComponentAdd(component, element.value.style)
-        tabItem.componentData.push(component)
       }
     }
   })
