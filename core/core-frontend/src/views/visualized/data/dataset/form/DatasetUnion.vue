@@ -114,6 +114,9 @@ const dfsForDsId = (arr, datasourceId) => {
     if (ele.children?.length) {
       return dfsForDsId(ele.children, datasourceId)
     }
+    if (!ele.datasourceId) {
+      return true
+    }
     return ele.datasourceId === datasourceId
   })
 }

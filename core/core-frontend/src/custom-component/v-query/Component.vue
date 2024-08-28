@@ -577,7 +577,13 @@ const autoStyle = computed(() => {
             <div class="label" :style="marginRight">
               <div class="label-wrapper" v-show="customStyle.labelShow">
                 <div class="label-wrapper-text" :style="labelStyle">
-                  <el-tooltip effect="dark" :content="ele.name" placement="top">
+                  <el-tooltip
+                    popper-class="label-wrapper-text_tooltip"
+                    effect="dark"
+                    :content="ele.name"
+                    :show-arrow="false"
+                    placement="top-start"
+                  >
                     {{ ele.name }}
                   </el-tooltip>
                 </div>
@@ -857,6 +863,10 @@ const autoStyle = computed(() => {
 }
 </style>
 <style lang="less">
+.label-wrapper-text_tooltip {
+  max-width: 200px;
+  white-space: wrap;
+}
 .load-select {
   .ed-select-dropdown__list {
     & > div {
