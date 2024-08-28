@@ -250,6 +250,18 @@ export const commonAttr = {
 // 编辑器左侧组件列表
 const list = [
   {
+    component: 'Group',
+    name: '组合',
+    label: '组合',
+    propValue: '&nbsp;',
+    icon: 'icon_graphical',
+    innerType: 'Group',
+    style: {
+      width: 200,
+      height: 200
+    }
+  },
+  {
     id: 100000001,
     component: 'GroupArea',
     name: '组合区域',
