@@ -54,13 +54,13 @@ onMounted(() => {
 .copilot-popper-tips-content {
   color: rgba(255, 255, 255, 1);
   .title {
-    font-family: PingFang SC;
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;
   }
   .content {
-    font-family: PingFang SC;
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;
