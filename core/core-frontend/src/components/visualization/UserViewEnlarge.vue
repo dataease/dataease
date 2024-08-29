@@ -369,6 +369,7 @@ const openMessageLoading = cb => {
 const htmlToImage = () => {
   downLoading.value = true
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+  const renderTime = viewInfo.value.type?.includes('table') ? 2000 : 500
   setTimeout(() => {
     initWatermark()
     toPng(viewContainer.value)
@@ -387,7 +388,7 @@ const htmlToImage = () => {
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
         console.error('oops, something went wrong!', error)
       })
-  }, 500)
+  }, renderTime)
 }
 
 const initWatermark = () => {
