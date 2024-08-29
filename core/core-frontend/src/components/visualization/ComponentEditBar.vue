@@ -89,7 +89,12 @@
       <el-checkbox v-model="state.batchOptCheckModel" @change="batchOptChange" />
     </div>
 
-    <el-dropdown trigger="click" placement="right-start" v-if="barShowCheck('setting')">
+    <el-dropdown
+      trigger="click"
+      placement="right-start"
+      v-if="barShowCheck('setting')"
+      ref="curDropdown"
+    >
       <el-icon class="bar-base-icon">
         <el-tooltip :content="t('visualization.more')" effect="dark" placement="bottom">
           <icon name="icon_more_outlined" />
@@ -145,6 +150,7 @@
           <xpack-component
             :chart="element"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
+            @close-item="closeItem"
           />
           <el-dropdown-item divided @click="deleteComponent" v-if="barShowCheck('delete')"
             >删除</el-dropdown-item
@@ -571,6 +577,11 @@ const initCurFields = () => {
 const datasetParamsSetShow = computed(() => {
   return canvasViewInfo.value[element.value.id]?.calParams?.length > 0
 })
+
+const curDropdown = ref()
+const closeItem = () => {
+  curDropdown.value.handleClose()
+}
 
 onMounted(() => {
   if (element.value.component === 'UserView') {
