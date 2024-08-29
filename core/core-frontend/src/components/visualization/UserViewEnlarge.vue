@@ -309,7 +309,7 @@ const downloadViewImage = () => {
 const downloadViewDetails = (downloadType = 'view') => {
   const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
   if (!viewDataInfo) {
-    ElMessage.error('当前无数据，无法导出')
+    ElMessage.error('当前无字段，无法导出')
     return
   }
   const chartExtRequest = dvMainStore.getLastViewRequestInfo(viewInfo.value.id)
