@@ -30,7 +30,8 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     'title-selector',
     'tooltip-selector',
     'jump-set',
-    'linkage'
+    'linkage',
+    'border-style'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
@@ -51,7 +52,8 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       'fontShadow'
     ],
     'legend-selector': ['orient', 'color', 'fontSize', 'hPosition', 'vPosition'],
-    'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor']
+    'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor'],
+    'border-style': ['all']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'extColor', 'filter']
   axisConfig: AxisConfig = {
