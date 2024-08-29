@@ -36,11 +36,14 @@ export default {
       if (window.DataEaseBi?.baseUrl) {
         prefix = window.DataEaseBi.baseUrl
       } else {
-        const href = window.location.href
-        prefix = href.substring(0, href.indexOf('#'))
+        // const href = window.location.href
+        prefix = location.origin + location.pathname
         if (env.MODE === 'dev') {
           prefix = dev.server.proxy[basePath].target + '/'
         }
+      }
+      if (!prefix.endsWith('/')) {
+        prefix += '/'
       }
       const socket = new SockJS(prefix + 'websocket?userId=' + wsCache.get('user.uid'))
       stompClient = Stomp.over(socket)
