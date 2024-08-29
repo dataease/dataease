@@ -282,8 +282,8 @@ export const DEFAULT_MISC: ChartMiscAttr = {
       mapLineWidth: 1,
       mapLineAnimateDuration: 3,
       mapLineGradient: false,
-      mapLineSourceColor: '#146C94',
-      mapLineTargetColor: '#576CBC',
+      mapLineSourceColor: '#1E90FF',
+      mapLineTargetColor: '#90EE90',
       alpha: 100
     },
     pointConfig: {

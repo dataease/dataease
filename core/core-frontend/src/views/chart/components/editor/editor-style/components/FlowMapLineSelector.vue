@@ -31,12 +31,8 @@ const flowLineTypeOptions = [
   { name: t('chart.map_line_type_arc_3d'), value: 'arc3d' }
 ]
 const state = reactive({
-  lineForm: {
-    ...JSON.parse(JSON.stringify(DEFAULT_MISC.flowMapConfig.lineConfig))
-  },
-  basicStyleForm: {
-    ...JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE))
-  }
+  lineForm: {},
+  basicStyleForm: {}
 })
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
