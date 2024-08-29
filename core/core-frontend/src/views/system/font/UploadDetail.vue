@@ -75,14 +75,14 @@ defineExpose({
 })
 
 const beforeAvatarUpload = rawFile => {
-  if (rawFile.type !== 'font/ttf') {
+  if (!rawFile.name.endsWith('.ttf')) {
     ElMessage.error('只支持上传ttf格式的字体文件!')
     return false
   }
   return true
 }
 const onChange = file => {
-  if (file.raw?.type === 'font/ttf') {
+  if (file.raw?.name.endsWith('.ttf')) {
     state.fileList = file
   }
 }
