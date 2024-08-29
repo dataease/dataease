@@ -249,7 +249,11 @@ const onWrapperClick = e => {
         dvMainStore.popAreaActiveSwitch()
       })
     } else if (config.value.events.type === 'jump') {
-      window.open(config.value.events.jump.value, '_blank')
+      try {
+        window.open(config.value.events.jump.value, '_blank')
+      } catch (e) {
+        console.info('Something wrong when try to jump: ' + config.value.events?.jump?.value)
+      }
     } else if (config.value.events.type === 'refreshDataV') {
       useEmitt().emitter.emit('componentRefresh')
     }
