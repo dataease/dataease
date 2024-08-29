@@ -1,9 +1,10 @@
 <script lang="tsx" setup>
-import { computed, onMounted, PropType, reactive, watch } from 'vue'
+import { computed, nextTick, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { ElSpace } from 'element-plus-secondary'
+import { cloneDeep } from 'lodash-es'
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
@@ -63,7 +64,11 @@ const init = () => {
       customAttr = JSON.parse(chart.customAttr)
     }
     if (customAttr.misc.flowMapConfig.lineConfig) {
-      state.pointForm = customAttr.misc.flowMapConfig.pointConfig
+      state.pointForm = cloneDeep(customAttr.misc.flowMapConfig.pointConfig)
+      nextTick(() => {
+        state.pointForm.point.color = customAttr.misc.flowMapConfig.pointConfig.point.color
+        state.pointForm.text.color = customAttr.misc.flowMapConfig.pointConfig.text.color
+      })
     } else {
       // 新增图表
       state.pointForm = {
