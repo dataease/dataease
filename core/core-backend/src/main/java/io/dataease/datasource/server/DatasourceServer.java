@@ -65,6 +65,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -850,6 +854,25 @@ public class DatasourceServer implements DatasourceApi {
         datasourceSyncManage.extractedData(null, coreDatasource, updateType, MANUAL.toString());
     }
 
+    public static <T> List<T> deepCopy(List<T> originalList) {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(originalList);
+            oos.close();
+
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bis);
+            List<T> newList = (List<T>) ois.readObject();
+            ois.close();
+
+            return newList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException {
         ExcelUtils excelUtils = new ExcelUtils();
         ExcelFileData excelFileData = excelUtils.excelSaveAndParse(file);
@@ -863,11 +886,10 @@ public class DatasourceServer implements DatasourceApi {
                 for (ExcelSheetData sheet : excelFileData.getSheets()) {
                     for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
                         if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName()) || isCsv(file.getOriginalFilename())) {
-                            List<TableField> newTableFields = sheet.getFields();
+                            List<TableField> newTableFields = deepCopy(sheet.getFields());
                             newTableFields.sort((o1, o2) -> {
                                 return o1.getName().compareTo(o2.getName());
                             });
-
                             datasourceRequest.setTable(datasetTableDTO.getTableName());
                             List<TableField> oldTableFields = ExcelUtils.getTableFields(datasourceRequest);
                             oldTableFields.sort((o1, o2) -> {
