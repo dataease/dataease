@@ -10,6 +10,9 @@ export function deepCopy(target) {
     for (const key in target) {
       if (target[key] === null || target[key] === undefined) {
         result[key] = target[key]
+      } else if (target[key] instanceof Date) {
+        // 日期特殊处理
+        result[key] = new Date(target[key])
       } else if (typeof target[key] == 'object') {
         result[key] = deepCopy(target[key])
       } else {
