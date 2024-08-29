@@ -13,12 +13,13 @@ const upload = ref()
 const uploadExcel = () => {
   const formData = new FormData()
   formData.append('file', state.fileList.raw)
-  ruleForm.fileName = state.fileList.raw.name
   loading.value = true
   return uploadFontFile(formData)
     .then(res => {
       ruleForm.size = res.data.size
+      ruleForm.sizeType = res.data.sizeType
       ruleForm.fileTransName = res.data.fileTransName
+      ruleForm.fileName = state.fileList.raw.name
       upload.value?.clearFiles()
       loading.value = false
     })
@@ -142,7 +143,7 @@ const confirm = () => {
         <FontInfo
           @del="fontDel"
           v-show="state.fileList"
-          :size="ruleForm.size + ruleForm.sizeType"
+          :size="ruleForm.size + ' ' + ruleForm.sizeType"
           :name="ruleForm.fileName"
         ></FontInfo>
         <el-upload

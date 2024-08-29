@@ -104,15 +104,8 @@ const exportFormRules = {
     }
   ]
 }
-const computedFiledList = computed(() => {
-  return allFields.reduce((pre, next) => {
-    if (next.id !== '-1') {
-      pre[next.id] = next
-    }
-    return pre
-  }, {})
-})
-provide('filedList', computedFiledList)
+const datasetTableFiled = ref([])
+provide('filedList', datasetTableFiled)
 
 const nickName = ref('')
 const router = useRouter()
@@ -342,6 +335,7 @@ const exportDataset = () => {
   showExport.value = true
   exportForm.value.name = nodeInfo.name
   exportForm.value.expressionTree = ''
+  console.log(computedFiledList)
   nextTick(() => {
     rowAuth.value.init({})
     rowAuth.value.relationList = []
@@ -461,6 +455,7 @@ const handleClick = (tabName: TabPaneName) => {
       getDatasetPreview(nodeInfo.id)
         .then(res => {
           allFields = (res?.allFields as unknown as Field[]) || []
+          datasetTableFiled.value = allFields
           columnsPreview = generateColumns((res?.data?.fields as Field[]) || [])
           dataPreview = (res?.data?.data as Array<{}>) || []
           columns.value = columnsPreview
