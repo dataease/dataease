@@ -14,6 +14,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -91,7 +92,9 @@ public class FontManage {
         CoreFont coreFont = coreFontMapper.selectById(id);
         if (coreFont != null) {
             coreFontMapper.deleteById(id);
-            FileUtils.deleteFile(path + coreFont.getFileTransName());
+            if (StringUtils.isNotEmpty(coreFont.getFileTransName())) {
+                FileUtils.deleteFile(path + coreFont.getFileTransName());
+            }
         }
 
     }
@@ -152,6 +155,9 @@ public class FontManage {
         FontDto fontDto = new FontDto();
         try {
             String filename = file.getOriginalFilename();
+            if (StringUtils.isEmpty(filename) || !filename.endsWith(".ttf")) {
+                DEException.throwException("非法格式的文件！");
+            }
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
             String filePath = path + fileNameUUID + "." + suffix;
             File f = new File(filePath);

@@ -600,7 +600,7 @@ const apiObjRules = {
 const setActiveName = val => {
   gridData.value = val.fields
   activeParamsName.value = val.name
-  activeParamsName.value = val.serialNumber
+  activeParamsID.value = val.serialNumber
 }
 
 const paramsObjRef = ref()
