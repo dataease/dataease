@@ -185,6 +185,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<DatasetGroupInfoDTO> newDsGroupInfo = new ArrayList<>();
         Map<Long,Long> dsTableIdMap = new HashMap<>();
         Map<Long,Long> dsTableFieldsIdMap = new HashMap<>();
+        List<CoreDatasetTableField> dsTableFieldsList = new ArrayList();
         Map<Long,Long> datasourceIdMap = new HashMap<>();
         Map<Long,Map<String,String>> dsTableNamesMap = new HashMap<>();
         List<Long> newDatasourceId = new ArrayList<>();
@@ -273,9 +274,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     dsDsField.setDatasetTableId(dsTableIdMap.get(dsDsField.getDatasetTableId()));
                     dsDsField.setDatasourceId(datasourceIdMap.get(dsDsField.getDatasourceId()));
                     dsDsField.setId(newId);
-                    coreDatasetTableFieldMapper.insert(dsDsField);
+                    dsTableFieldsList.add(dsDsField);
                     dsTableFieldsIdMap.put(oldId,newId);
                 });
+
+                // dsTableFields 中存在计算字段在OriginName中 也需要替换
+                dsTableFieldsList.forEach(dsTableFields ->{
+                    dsTableFieldsIdMap.forEach((key,value) ->{
+                        dsTableFields.setOriginName(dsTableFields.getOriginName().replaceAll(key.toString(),value.toString()));
+                    });
+                    coreDatasetTableFieldMapper.insert(dsTableFields);
+                });
+
 
                 // 持久化数据集
                 newDsGroupInfo.forEach(dsGroup ->{
