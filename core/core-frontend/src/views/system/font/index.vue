@@ -128,33 +128,35 @@ onMounted(() => {
         </el-button>
       </div>
     </div>
-    <div class="font-content_list">
-      <div class="font-content_item" v-for="ele in fontList" :key="ele">
-        <span v-if="ele.isDefault" class="font-default">默认字体</span>
-        <div class="font-name">
-          {{ ele.name }} <span v-if="ele.isBuiltin" class="font-type"> 系统内置 </span>
-        </div>
-        <div :title="ele.fileName" class="font-update_time">
-          更新时间： {{ new Date(ele.updateTime).toLocaleString() }}
-          <span class="line"></span> 字库文件： {{ ele.fileName }}
-        </div>
-        <div class="font-upload_btn">
-          <el-button
-            v-if="!ele.fileTransName"
-            @click="uploadFont('上传字库文件', 'uploadFile', ele)"
-            secondary
-            >上传字库文件</el-button
-          >
-          <el-button
-            v-if="ele.fileTransName"
-            @click="uploadFont('替换字库文件', 'uploadFile', ele)"
-            secondary
-            >替换字库文件</el-button
-          >
-          <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
-            >设为默认字体</el-button
-          >
-          <el-button v-if="ele.id !== '1'" @click="deleteFont(ele)" secondary>删除</el-button>
+    <div class="font-content_overflow">
+      <div class="font-content_list">
+        <div class="font-content_item" v-for="ele in fontList" :key="ele">
+          <span v-if="ele.isDefault" class="font-default">默认字体</span>
+          <div class="font-name">
+            {{ ele.name }} <span v-if="ele.isBuiltin" class="font-type"> 系统内置 </span>
+          </div>
+          <div :title="ele.fileName" class="font-update_time">
+            更新时间： {{ new Date(ele.updateTime).toLocaleString() }}
+            <span class="line"></span> 字库文件： {{ ele.fileName }}
+          </div>
+          <div class="font-upload_btn">
+            <el-button
+              v-if="!ele.fileTransName"
+              @click="uploadFont('上传字库文件', 'uploadFile', ele)"
+              secondary
+              >上传字库文件</el-button
+            >
+            <el-button
+              v-if="ele.fileTransName"
+              @click="uploadFont('替换字库文件', 'uploadFile', ele)"
+              secondary
+              >替换字库文件</el-button
+            >
+            <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
+              >设为默认字体</el-button
+            >
+            <el-button v-if="ele.id !== '1'" @click="deleteFont(ele)" secondary>删除</el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -183,12 +185,15 @@ onMounted(() => {
       }
     }
   }
+  .font-content_overflow {
+    height: calc(100vh - 146px);
+    overflow-y: auto;
+  }
   .font-content_list {
     display: flex;
     flex-wrap: wrap;
     row-gap: 16px;
     justify-content: space-between;
-
     .font-content_item {
       border-radius: 4px;
       background: #fff;
