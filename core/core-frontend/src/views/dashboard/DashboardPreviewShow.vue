@@ -140,7 +140,7 @@ const checkTemplate = () => {
   let templateViewNames = ','
   Object.keys(canvasViewDataInfo.value).forEach(key => {
     const viewInfo = canvasViewDataInfo.value[key]
-    if (viewInfo.dataFrom === 'template') {
+    if (viewInfo && viewInfo?.dataFrom === 'template') {
       templateViewNames = templateViewNames + viewInfo.title + ','
     }
   })
