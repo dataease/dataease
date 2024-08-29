@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 
 import _401 from '@/assets/svg/401.svg'
+import icon_link_calculated_outlined from '@/assets/svg/icon_link-calculated_outlined.svg'
+import icon_link_calculated_outlined_1 from '@/assets/svg/icon_link-calculated_outlined-1.svg'
 import icon_text_calculated_outlined from '@/assets/svg/icon_text-calculated_outlined.svg'
 import icon_text_calculated_outlined_1 from '@/assets/svg/icon_text-calculated_outlined-1.svg'
 import icon_number_calculated_outlined from '@/assets/svg/icon_number-calculated_outlined.svg'
@@ -693,6 +695,8 @@ import tHeatmapDark from '@/assets/svg/t-heatmap-dark.svg'
 import tHeatmapOrigin from '@/assets/svg/t-heatmap-origin.svg'
 const iconMap = {
   '401': _401,
+  icon_link_calculated_outlined,
+  icon_link_calculated_outlined_1,
   icon_text_calculated_outlined,
   icon_text_calculated_outlined_1,
   icon_number_calculated_outlined,
