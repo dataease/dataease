@@ -112,7 +112,7 @@ onMounted(() => {
     <div class="route-title">
       字体管理
       <div class="search-font">
-        <el-input v-model="fontKeyword" clearable style="width: 240px" placeholder="搜索插件名称">
+        <el-input v-model="fontKeyword" clearable style="width: 240px" placeholder="搜索字体名称">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -154,9 +154,7 @@ onMounted(() => {
           <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
             >设为默认字体</el-button
           >
-          <el-button v-if="ele.name !== 'PingFang'" @click="deleteFont(ele)" secondary
-            >删除</el-button
-          >
+          <el-button v-if="ele.id !== '1'" @click="deleteFont(ele)" secondary>删除</el-button>
         </div>
       </div>
     </div>

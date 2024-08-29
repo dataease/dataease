@@ -73,8 +73,17 @@ defineExpose({
   init
 })
 
+const beforeAvatarUpload = rawFile => {
+  if (rawFile.type !== 'font/ttf') {
+    ElMessage.error('只支持上传ttf格式的字体文件!')
+    return false
+  }
+  return true
+}
 const onChange = file => {
-  state.fileList = file
+  if (file.raw?.type === 'font/ttf') {
+    state.fileList = file
+  }
 }
 
 const uploadFail = response => {
@@ -110,6 +119,7 @@ const confirm = () => {
 <template>
   <el-dialog v-model="dialogVisible" :before-close="cancel" :title="dialogTitle" width="420">
     <el-form
+      @submit.prevent
       ref="ruleFormRef"
       :model="ruleForm"
       label-position="top"
@@ -118,7 +128,7 @@ const confirm = () => {
       class="demo-ruleForm"
     >
       <el-form-item v-if="action !== 'uploadFile'" label="字体名称" prop="name">
-        <el-input placeholder="请输入字体名称" v-model="ruleForm.name" />
+        <el-input placeholder="请输入字体名称" v-model.trim="ruleForm.name" />
       </el-form-item>
       <el-form-item v-loading="loading" v-if="action !== 'rename'" label="字库文件">
         <el-upload
@@ -128,6 +138,7 @@ const confirm = () => {
           :show-file-list="false"
           accept=".ttf"
           :on-change="onChange"
+          :before-upload="beforeAvatarUpload"
           :http-request="uploadExcel"
           :on-error="uploadFail"
           name="file"
@@ -152,6 +163,7 @@ const confirm = () => {
           action=""
           :multiple="false"
           ref="uploadAgain"
+          :before-upload="beforeAvatarUpload"
           :show-file-list="false"
           accept=".ttf"
           :on-change="onChange"
