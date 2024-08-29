@@ -476,14 +476,19 @@ const emits = defineEmits(['update:item', 'del'])
             <div class="bottom-line"></div>
           </template>
           <template v-else-if="!['null', 'empty', 'not_null', 'not_empty'].includes(item.term)">
-            <el-input
-              @click="handleClick"
+            <el-tooltip
+              class="item"
               v-if="item.deType === 1 && item.filterTypeTime === 'dynamicDate'"
-              readonly
-              class="w70 mar5"
-              size="small"
-              v-model="item.timeValue"
-            />
+              effect="light"
+              :content="item.timeValue"
+              placement="top"
+              ><el-input
+                @click="handleClick"
+                readonly
+                class="w70 mar5"
+                size="small"
+                v-model="item.timeValue"
+            /></el-tooltip>
             <el-input v-else class="w70 mar5" size="small" v-model="item.value" />
             <div class="bottom-line"></div>
           </template>

@@ -333,8 +333,9 @@ const setType = () => {
       if (field?.deType === 7) {
         curComponent.value.displayType = '0'
       }
+
       if (
-        displayType !== curComponent.value.displayType &&
+        +displayType !== +curComponent.value.displayType &&
         !([3, 4].includes(+displayType) && +curComponent.value.displayType === 2)
       ) {
         setTypeChange()
@@ -807,7 +808,7 @@ const validate = () => {
     }
 
     if (ele.displayType !== '9' && ele.optionValueSource === 1 && !ele.field.id) {
-      ElMessage.error('请选择数据集的选项值字段')
+      ElMessage.error(!ele.dataset?.id ? '请选择数据集及选项值字段' : '请选择数据集的选项值字段')
       return true
     }
 
