@@ -2,11 +2,12 @@ package io.dataease.extensions.datasource.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 
 @Data
-public class TableField {
+public class TableField implements Serializable {
     private String name;
     private String originName;
     private String type;               //SQL type from java.sql.Types
