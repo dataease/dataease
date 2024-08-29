@@ -79,7 +79,7 @@ const filterChange = (value, field, operator) => {
       exits = true
       condition['value'] = value
     }
-    if (!value?.length) {
+    if (!condition?.value?.length) {
       state.conditions.splice(len, 1)
     }
   }
