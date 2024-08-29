@@ -454,7 +454,7 @@ export async function canvasSave(callBack) {
     })
   }
   if (dsNameCheck === 'repeat') {
-    ElMessage.error('数据集名称已存在')
+    ElMessage.error('数据集分组名称已存在')
     return
   }
 
