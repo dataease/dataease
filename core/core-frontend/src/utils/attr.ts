@@ -108,7 +108,7 @@ export const fieldTypeCalculated = [
   'icon_number_calculated_outlined',
   'icon_local_calculated_outlined',
   'binary',
-  'url'
+  'icon_link_calculated_outlined'
 ]
 export const fieldTypeText = [
   '文本',
