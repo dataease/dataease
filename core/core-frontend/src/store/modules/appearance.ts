@@ -205,21 +205,27 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       }
       defaultFont().then(res => {
         const [font] = res || []
-        setDefaultFont(`${basePath}/typeface/download/${font?.fileTransName}`, font?.name)
-        function setDefaultFont(url, name) {
-          if (!name) return
+        setDefaultFont(
+          `${basePath}/typeface/download/${font?.fileTransName}`,
+          font?.name,
+          font?.fileTransName
+        )
+        function setDefaultFont(url, name, fileTransName) {
           let fontStyleElement = document.querySelector('#de-custom_font')
           if (!fontStyleElement) {
             fontStyleElement = document.createElement('style')
             fontStyleElement.setAttribute('id', 'de-custom_font')
             document.querySelector('head').appendChild(fontStyleElement)
           }
-          fontStyleElement.innerHTML = `@font-face {
+          fontStyleElement.innerHTML =
+            name && fileTransName
+              ? `@font-face {
                 font-family: '${name}';
                 src: url(${url});
                 font-weight: normal;
                 font-style: normal;
                 }`
+              : ''
           document.documentElement.style.setProperty('--de-custom_font', `${name}`)
           document.documentElement.style.setProperty('--van-base-font', `${name}`)
         }
