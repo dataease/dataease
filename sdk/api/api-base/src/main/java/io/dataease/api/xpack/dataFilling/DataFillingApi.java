@@ -67,6 +67,7 @@ public interface DataFillingApi {
     @PostMapping("/form/{formId}/batch-delete")
     void batchDeleteRowData(@PathVariable("formId") Long formId, @RequestBody List<Long> ids) throws Exception;
 
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/rowData/save")
     DataFillFormTableDataResponse saveRowData(@PathVariable("formId") Long formId, @RequestBody Map<String, Object> data) throws Exception;
 
@@ -105,8 +106,8 @@ public interface DataFillingApi {
     @GetMapping("/sub-task/{id}/users/list/{type}")
     List<Map<String, Object>> listSubTaskUser(@PathVariable("id") Long id, @PathVariable("type") String type) throws Exception;
 
-    @PostMapping("/user-task")
-    List<DfUserTaskVo> listUserTask(@RequestBody DfUserTaskRequest request) throws Exception;
+    @PostMapping("/user-task/page/{goPage}/{pageSize}")
+    IPage<DfUserTaskVo> listUserTask(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize,@RequestBody DfUserTaskRequest request) throws Exception;
 
     @GetMapping("/user-task/list/{id}")
     DfUserTaskData listUserTaskData(@PathVariable("id") Long id) throws Exception;
