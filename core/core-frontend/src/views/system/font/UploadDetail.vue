@@ -20,7 +20,6 @@ const uploadExcel = () => {
       ruleForm.size = res.data.size
       ruleForm.fileTransName = res.data.fileTransName
       upload.value?.clearFiles()
-      loading.value = false
     })
     .catch(error => {
       if (error.code === 'ECONNABORTED') {
@@ -30,6 +29,8 @@ const uploadExcel = () => {
           showClose: true
         })
       }
+    })
+    .finally(() => {
       loading.value = false
     })
 }
@@ -82,7 +83,11 @@ const uploadFail = response => {
 }
 
 const emits = defineEmits(['finish'])
-
+const cancel = () => {
+  Object.assign(ruleForm, cloneDeep(defaultForm))
+  state.fileList = null
+  dialogVisible.value = false
+}
 const confirm = () => {
   ruleFormRef.value.validate(val => {
     if (val) {
@@ -92,11 +97,9 @@ const confirm = () => {
           return
         }
       }
-      edit(ruleForm).then(res => {
+      edit(ruleForm).then(() => {
         ElMessage.success(dialogTitle.value + '成功')
-        dialogVisible.value = false
-        Object.assign(ruleForm, cloneDeep(defaultForm))
-        state.fileList = null
+        cancel()
         emits('finish')
       })
     }
@@ -105,7 +108,7 @@ const confirm = () => {
 </script>
 
 <template>
-  <el-dialog v-model="dialogVisible" :title="dialogTitle" width="420">
+  <el-dialog v-model="dialogVisible" :before-close="cancel" :title="dialogTitle" width="420">
     <el-form
       ref="ruleFormRef"
       :model="ruleForm"
@@ -117,7 +120,7 @@ const confirm = () => {
       <el-form-item v-if="action !== 'uploadFile'" label="字体名称" prop="name">
         <el-input placeholder="请输入字体名称" v-model="ruleForm.name" />
       </el-form-item>
-      <el-form-item v-if="action !== 'rename'" label="字库文件">
+      <el-form-item v-loading="loading" v-if="action !== 'rename'" label="字库文件">
         <el-upload
           action=""
           :multiple="false"
@@ -131,7 +134,7 @@ const confirm = () => {
           v-show="!state.fileList"
         >
           <template #trigger>
-            <el-button v-loading="loading" secondary>
+            <el-button secondary>
               <template #icon>
                 <Icon name="icon_upload_outlined"></Icon>
               </template>
@@ -165,8 +168,8 @@ const confirm = () => {
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirm"> 确定 </el-button>
+        <el-button @click="cancel">取消</el-button>
+        <el-button v-loading="loading" type="primary" @click="confirm"> 确定 </el-button>
       </div>
     </template>
   </el-dialog>

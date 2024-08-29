@@ -61,28 +61,33 @@ const setToDefault = item => {
       loading.value = false
     })
 }
-const setDefaultFont = (url, name) => {
+const setDefaultFont = (url, name, fileTransName) => {
   let fontStyleElement = document.querySelector('#de-custom_font')
   if (!fontStyleElement && name) {
     fontStyleElement = document.createElement('style')
     fontStyleElement.setAttribute('id', 'de-custom_font')
     document.querySelector('head').appendChild(fontStyleElement)
   }
-  fontStyleElement.innerHTML = name
-    ? `@font-face {
+  fontStyleElement.innerHTML =
+    name && fileTransName
+      ? `@font-face {
               font-family: '${name}';
               src: url(${url});
               font-weight: normal;
               font-style: normal;
               }`
-    : ''
+      : ''
   document.documentElement.style.setProperty('--de-custom_font', `${name ? name : ''}`)
   document.documentElement.style.setProperty('--van-base-font', `${name ? name : ''}`)
 }
 const getDefaultFont = () => {
   defaultFont().then(res => {
     const [font] = res || []
-    setDefaultFont(`${basePath}/typeface/download/${font?.fileTransName}`, font?.name)
+    setDefaultFont(
+      `${basePath}/typeface/download/${font?.fileTransName}`,
+      font?.name,
+      font?.fileTransName
+    )
   })
 }
 const uploadFilish = () => {
@@ -149,7 +154,9 @@ onMounted(() => {
           <el-button v-if="!ele.isDefault" @click="setToDefault(ele)" secondary
             >设为默认字体</el-button
           >
-          <el-button @click="deleteFont(ele)" secondary>删除</el-button>
+          <el-button v-if="ele.name !== 'PingFang'" @click="deleteFont(ele)" secondary
+            >删除</el-button
+          >
         </div>
       </div>
     </div>
