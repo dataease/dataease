@@ -124,7 +124,7 @@ const edit = (list, orgOptions, roleOptions, loginOptions) => {
   state.loginOptions = loginOptions || []
   state.settingList = list.map(item => {
     const pkey = item.pkey
-    if (pkey === 'basic.logLiveTime') {
+    if (pkey === 'basic.logLiveTime' || pkey === 'basic.thresholdLogLiveTime') {
       rule[pkey.split('.')[1]] = [
         {
           required: true,
@@ -272,7 +272,7 @@ defineExpose({
             type="number"
           />
         </div>
-        <div v-else-if="item.pkey === 'logLiveTime'">
+        <div v-else-if="item.pkey === 'logLiveTime' || item.pkey === 'thresholdLogLiveTime'">
           <el-input-number
             v-model="state.form[item.pkey]"
             autocomplete="off"
