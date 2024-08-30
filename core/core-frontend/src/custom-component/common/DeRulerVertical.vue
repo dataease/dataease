@@ -78,10 +78,6 @@ defineExpose({
 </template>
 
 <style scoped lang="less">
-::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-}
 .ruler-shadow-vertical {
   position: absolute;
   width: 30px;
@@ -96,6 +92,10 @@ defineExpose({
   height: 100%;
   overflow-y: auto;
   background-color: #2c2c2c;
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
 }
 
 .ruler-outer-vertical-scroll {
