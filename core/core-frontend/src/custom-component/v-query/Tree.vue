@@ -225,6 +225,7 @@ const selectStyle = computed(() => {
     @change="handleValueChange"
     :render-after-expand="false"
     show-checkbox
+    showBtn
     collapse-tags
     :showWholePath="showWholePath"
     collapse-tags-tooltip
