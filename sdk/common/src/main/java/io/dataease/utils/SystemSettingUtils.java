@@ -14,7 +14,8 @@ public class SystemSettingUtils {
                 XpackSettingConstants.DIP,
                 XpackSettingConstants.PVP,
                 XpackSettingConstants.PLATFORM_RID,
-                XpackSettingConstants.DEFAULT_LOGIN);
+                XpackSettingConstants.DEFAULT_LOGIN,
+                XpackSettingConstants.THRSHOLD_LOG_LIVE_TIME);
         return xpackSettingList.contains(pkey);
     }
 }
