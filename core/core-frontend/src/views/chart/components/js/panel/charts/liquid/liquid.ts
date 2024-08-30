@@ -118,6 +118,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
 
   protected configLabel(chart: Chart, options: LiquidOptions): LiquidOptions {
     const customAttr = parseJson(chart.customAttr)
+    const data = chart.data.series[0].data[0]
     const originVal = options.percent
     // 数值过大图表会异常，大于 1 无意义
     if (originVal > 1) {
@@ -145,7 +146,11 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
             color: label.color
           },
           formatter: () => {
-            return valueFormatter(originVal, labelFormatter)
+            if (labelFormatter.type === 'value' || labelFormatter.type === 'auto') {
+              return valueFormatter(data, labelFormatter);
+            }
+
+            return valueFormatter(options.percent, labelFormatter);
           }
         }
       }
