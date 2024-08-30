@@ -31,7 +31,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -520,5 +523,29 @@ public class HttpClientUtil {
                 logger.error("HttpClient关闭连接失败", e);
             }
         }
+    }
+
+    public static boolean isURLReachable(String urlString, Map<String, String> head) {
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000); // 设置连接超时时间，单位为毫秒
+            connection.setReadTimeout(5000); // 设置读取超时时间，单位为毫秒
+            if (MapUtils.isNotEmpty(head)) {
+                for (Map.Entry<String, String> entry : head.entrySet()) {
+                    connection.addRequestProperty(entry.getKey(), entry.getValue());
+                }
+            }
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return true; // 状态码200表示URL可达
+            } else if (StringUtils.equalsIgnoreCase("Unauthorized", connection.getResponseMessage())) {
+                LogUtil.error("apisix key error [failed to check token]");
+            }
+        } catch (IOException e) {
+            return false;
+        }
+        return false; // 如果发生异常或状态码不是200，则URL不可达
     }
 }
