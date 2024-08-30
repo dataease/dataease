@@ -88,6 +88,7 @@ export function downloadCanvas2(type, canvasDom, name, callBack?) {
         const a = document.createElement('a')
         a.setAttribute('download', name)
         a.href = dataUrl
+        document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
       } else {
@@ -123,6 +124,7 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
           const a = document.createElement('a')
           a.setAttribute('download', name)
           a.href = dataUrl
+          document.body.appendChild(a)
           a.click()
           document.body.removeChild(a)
         } else {
