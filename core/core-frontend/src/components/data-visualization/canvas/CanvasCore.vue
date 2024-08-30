@@ -337,7 +337,7 @@ let lastTask = undefined
 let isOverlay = false //是否正在交换位置
 let moveTime = 200 //移动动画时间
 
-let itemMaxY = 0
+const itemMaxY = ref(0)
 let itemMaxX = 0
 let snapshotTimer = ref(null)
 
@@ -576,10 +576,15 @@ const getTextareaHeight = (element, text) => {
 }
 
 const editStyle = computed(() => {
-  if (dashboardActive.value || isGroupOrTabCanvas(canvasId.value)) {
+  if (isGroupOrTabCanvas(canvasId.value)) {
     return {
       width: '100%',
       height: '100%'
+    }
+  } else if (dashboardActive.value) {
+    return {
+      width: '100%',
+      height: itemMaxY.value * cellHeight.value + 'px'
     }
   } else {
     const result = {
@@ -720,9 +725,9 @@ function fillPositionBox(maxY) {
     }
   }
 
-  itemMaxY = maxY
+  itemMaxY.value = maxY
   //problem
-  $(container.value).css('height', (itemMaxY + 2) * cellHeight.value + 'px')
+  $(container.value).css('height', (itemMaxY.value + 2) * cellHeight.value + 'px')
 }
 
 function removeItemFromPositionBox(item) {
@@ -770,7 +775,7 @@ function resizePlayer(item, newSize) {
     item.sizeX = itemMaxX - item.x + 1
   }
 
-  if (item.sizeY + item.y > itemMaxY) {
+  if (item.sizeY + item.y > itemMaxY.value) {
     fillPositionBox(item.y + item.sizeY)
   }
   emptyTargetCell(item)
@@ -819,7 +824,7 @@ function checkItemPosition(item, position) {
     item.sizeY = 1
   }
 
-  if (item.y + item.sizeY > itemMaxY - 1) {
+  if (item.y + item.sizeY > itemMaxY.value - 1) {
     fillPositionBox(item.y + item.sizeY - 1)
   }
 }
@@ -987,8 +992,8 @@ function setPlayerPosition(item, position) {
   let targetY = position.y || item.y
   item.x = targetX
   item.y = targetY
-  if (item.y + item.sizeY > itemMaxY) {
-    itemMaxY = item.y + item.sizeY
+  if (item.y + item.sizeY > itemMaxY.value) {
+    itemMaxY.value = item.y + item.sizeY
   }
 }
 
@@ -1092,7 +1097,7 @@ const canvasInit = () => {
   lastTask = undefined
   isOverlay = false //是否正在交换位置
   moveTime = 200 //移动动画时间
-  itemMaxY = 0
+  itemMaxY.value = 0
   itemMaxX = 0
 
   reCalcCellWidth()
@@ -1134,7 +1139,19 @@ const forceComputed = () => {
     cellHeight.value = cellHeight.value - 0.001
   })
 }
+
+const maxYCount = () => {
+  if (componentData.value.length === 0) {
+    return 1
+  } else {
+    return componentData.value
+      .filter(item => item.y)
+      .map(item => item.y + item.sizeY) // 计算每个元素的 y + sizeY
+      .reduce((max, current) => Math.max(max, current), 0)
+  }
+}
 const addItemBox = item => {
+  item.y = item.y === undefined ? maxYCount() : item.y
   syncShapeItemStyle(item, baseWidth.value, baseHeight.value)
   forceComputed()
   nextTick(() => {
