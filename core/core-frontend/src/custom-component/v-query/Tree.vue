@@ -57,6 +57,11 @@ const { config } = toRefs(props)
 
 const multiple = ref(false)
 
+const treeSelectConfirm = val => {
+  treeValue.value = val
+  handleValueChange()
+}
+
 const handleValueChange = () => {
   const value = Array.isArray(treeValue.value) ? [...treeValue.value] : treeValue.value
   if (!props.isConfig) {
@@ -222,7 +227,7 @@ const selectStyle = computed(() => {
     :data="treeOptionList"
     clearable
     v-if="multiple && !loading"
-    @change="handleValueChange"
+    @treeSelectConfirm="treeSelectConfirm"
     :render-after-expand="false"
     show-checkbox
     showBtn
