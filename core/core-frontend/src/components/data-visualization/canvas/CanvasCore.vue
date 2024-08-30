@@ -245,6 +245,12 @@ watch(
   }
 )
 
+const watermarkUpdate = () => {
+  setTimeout(() => {
+    initWatermark()
+  })
+}
+
 const initWatermark = (waterDomId = 'editor-canvas-main') => {
   try {
     if (
@@ -1459,7 +1465,8 @@ defineExpose({
   getMoveItem,
   handleMouseUp,
   handleMouseDown,
-  findPositionX
+  findPositionX,
+  watermarkUpdate
 })
 </script>
 

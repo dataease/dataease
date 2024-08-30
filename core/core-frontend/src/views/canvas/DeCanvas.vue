@@ -257,6 +257,7 @@ const scrollTo = y => {
       top: (y - 1) * baseHeight.value,
       behavior: 'smooth'
     })
+    cyGridster.value?.watermarkUpdate()
   })
 }
 
