@@ -119,7 +119,13 @@ const deleteComponent = () => {
 }
 
 const upComponent = () => {
-  layerStore.upComponent()
+  if (curComponent.value && !isGroupArea.value) {
+    layerStore.upComponent(curComponent.value.id)
+  } else if (areaData.value.components.length) {
+    areaData.value.components.forEach(component => {
+      layerStore.upComponent(component.id)
+    })
+  }
   snapshotStore.recordSnapshotCache('upComponent')
   menuOpt('upComponent')
 }
@@ -131,13 +137,25 @@ const downComponent = () => {
 }
 
 const topComponent = () => {
-  layerStore.topComponent()
+  if (curComponent.value && !isGroupArea.value) {
+    layerStore.topComponent(curComponent.value.id)
+  } else if (areaData.value.components.length) {
+    areaData.value.components.forEach(component => {
+      layerStore.topComponent(component.id)
+    })
+  }
   snapshotStore.recordSnapshotCache('topComponent')
   menuOpt('topComponent')
 }
 
 const bottomComponent = () => {
-  layerStore.bottomComponent()
+  if (curComponent.value && !isGroupArea.value) {
+    layerStore.bottomComponent(curComponent.value.id)
+  } else if (areaData.value.components.length) {
+    areaData.value.components.forEach(component => {
+      layerStore.bottomComponent(component.id)
+    })
+  }
   snapshotStore.recordSnapshotCache('bottomComponent')
   menuOpt('bottomComponent')
 }
