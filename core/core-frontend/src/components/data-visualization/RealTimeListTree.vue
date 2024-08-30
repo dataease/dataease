@@ -187,7 +187,7 @@ const popComponentData = computed(() =>
 )
 
 const baseComponentData = computed(() =>
-  componentData.value.filter(ele => ele.category !== 'hidden' && ele.component !== 'GroupArea')
+  componentData.value.filter(ele => ele?.category !== 'hidden' && ele.component !== 'GroupArea')
 )
 
 const dragOnEnd = ({ oldIndex, newIndex }) => {

@@ -59,3 +59,13 @@ export const getCurInfoById = curComponentId => {
     }
   }
 }
+
+export const componentArraySort = (sortArray, direction = 'down') => {
+  sortArray.sort((a, b) => {
+    // 在 componentData 中找到 a 和 b 的索引位置
+    const indexA = componentData.value.findIndex(item => item.id === a.id)
+    const indexB = componentData.value.findIndex(item => item.id === b.id)
+    // 按照索引位置进行排序
+    return direction === 'down' ? indexB - indexA : indexA - indexB
+  })
+}
