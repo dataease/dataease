@@ -73,4 +73,15 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/communicate/image/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/down/");
     }
+
+    public static String getBaseApiUrl(String redirect_uri) {
+        if (StringUtils.endsWith(redirect_uri, "/")) {
+            redirect_uri = redirect_uri.substring(0, redirect_uri.length() - 1);
+        }
+        String contextPath = WhitelistUtils.getContextPath();
+        if (StringUtils.isNotBlank(contextPath)) {
+            redirect_uri += contextPath;
+        }
+        return redirect_uri + AuthConstant.DE_API_PREFIX + "/";
+    }
 }
