@@ -100,6 +100,9 @@ public class Quota2SQLObj {
                 String cast = String.format(SQLConstants.CAST, originField, Objects.equals(y.getDeType(), DeTypeConstants.DE_INT) ? SQLConstants.DEFAULT_INT_FORMAT : SQLConstants.DEFAULT_FLOAT_FORMAT);
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                     fieldName = String.format(SQLConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else if (y.getSummary() == null){
+                    // 透视表自定义汇总不用聚合
+                    fieldName = cast;
                 } else {
                     fieldName = String.format(SQLConstants.AGG_FIELD, y.getSummary(), cast);
                 }
