@@ -55,6 +55,7 @@ const state = reactive({
 })
 
 const schemas = ref([])
+const loading = ref(false)
 const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)
@@ -502,7 +503,9 @@ const getDsSchema = () => {
     if (val) {
       const request = JSON.parse(JSON.stringify(form.value))
       request.configuration = Base64.encode(JSON.stringify(request.configuration))
+      loading.value = true
       getSchema(request).then(res => {
+        loading.value = false
         schemas.value = res.data
         ElMessage.success(t('commons.success'))
       })
@@ -722,6 +725,7 @@ defineExpose({
         label-width="180px"
         label-position="top"
         require-asterisk-position="right"
+        v-loading="loading"
       >
         <el-form-item
           :label="t('auth.datasource') + t('chart.name')"

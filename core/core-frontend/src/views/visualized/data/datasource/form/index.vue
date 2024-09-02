@@ -361,7 +361,9 @@ const validateDS = () => {
 }
 
 const doValidateDs = request => {
+  dsLoading.value = true
   validate(request).then(res => {
+    dsLoading.value = false
     if (res.data.type === 'API') {
       let error = 0
       const status = JSON.parse(res.data.status) as Array<{ status: string; name: string }>
