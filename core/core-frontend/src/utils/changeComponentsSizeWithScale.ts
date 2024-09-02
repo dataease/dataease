@@ -25,20 +25,22 @@ export function changeSizeWithScale(scale) {
   return changeComponentsSizeWithScale(scale)
 }
 
-export function changeSizeWithDirectionScale(scale, direction) {
-  return changeComponentsSizeWithScale(scale, needToChangeDirectionAttrs[direction])
-}
-
-export function changeComponentsSizeWithScale(scale, changeAttrs = needToChangeAttrs) {
+export function changeComponentsSizeWithScale(scale) {
   const componentDataCopy = deepCopy(componentData.value)
   componentDataCopy.forEach(component => {
     Object.keys(component.style).forEach(key => {
-      if (changeAttrs.includes(key)) {
-        if (['fontSize', 'activeFontSize'].includes(key) && component.style[key] === '') return
+      if (needToChangeDirectionAttrs.width.includes(key)) {
         // 根据原来的比例获取样式原来的尺寸
         // 再用原来的尺寸 * 现在的比例得出新的尺寸
         component.style[key] = format(
           getOriginStyle(component.style[key], canvasStyleData.value.scale),
+          scale
+        )
+      } else if (needToChangeDirectionAttrs.height.includes(key)) {
+        // 根据原来的比例获取样式原来的尺寸
+        // 再用原来的尺寸 * 现在的比例得出新的尺寸
+        component.style[key] = format(
+          getOriginStyle(component.style[key], canvasStyleData.value.scaleHeight),
           scale
         )
       }
