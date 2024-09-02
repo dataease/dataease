@@ -371,7 +371,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   public setupSubSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     const result: ChartBasicStyle['seriesColor'] = []
     const seriesSet = new Set<string>()
-    const colors = chart.customAttr.basicStyle.subColors ?? chart.customAttr.basicStyle.colors
+    const colors = chart.customAttr.basicStyle.subColors ?? CHART_MIX_DEFAULT_BASIC_STYLE.subColors
     const { yAxisExt, extBubble } = chart
     if (extBubble?.length) {
       data?.forEach(d => {
