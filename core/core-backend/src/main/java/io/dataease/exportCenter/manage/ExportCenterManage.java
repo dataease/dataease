@@ -12,6 +12,7 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
+import io.dataease.license.config.LicSt;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
@@ -116,6 +117,9 @@ public class ExportCenterManage {
     @Resource
     private DatasetDataManage datasetDataManage;
 
+    @Resource(name = "LimitConfig")
+    private LicSt limitConfig;
+
     @PostConstruct
     public void init() {
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(core);
@@ -145,7 +149,11 @@ public class ExportCenterManage {
     }
 
     public String exportLimit() {
-        return String.valueOf(limit);
+        return String.valueOf(getExportLimit());
+    }
+
+    private Long getExportLimit() {
+        return Math.min(limitConfig.ALLATORIxDEMO(),limit);
     }
 
     public void download(String id, HttpServletResponse response) throws Exception {
@@ -404,7 +412,8 @@ public class ExportCenterManage {
 
                 String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
                 Long totalCount = datasetDataManage.getDatasetTotal(dto, replaceSql, null);
-                totalCount = totalCount > limit ? limit : totalCount;
+                Long curLimit = getExportLimit();
+                totalCount = totalCount > curLimit ? curLimit : totalCount;
                 Long totalPage = (totalCount / extractPageSize) + (totalCount % extractPageSize > 0 ? 1 : 0);
 
 
