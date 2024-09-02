@@ -469,6 +469,7 @@ onMounted(async () => {
     font-style: normal;
     font-weight: 400;
     line-height: 20px;
+    word-wrap: break-word;
   }
 
   .demo-tips {
