@@ -25,7 +25,7 @@
         />
       </div>
       <div
-        v-else
+        v-else-if="showPosition === 'popEdit'"
         class="pop-area-main"
         :class="{ 'pop-area-active': areaActive }"
         :style="baseStyle"

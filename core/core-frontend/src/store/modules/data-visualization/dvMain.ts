@@ -1036,6 +1036,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                   // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
                   queryParams = paramValue.map(number => String(number))
                 }
+                filterItem.defaultMapValue = []
+                filterItem.mapValue = []
                 filterItem.defaultValueCheck = true
                 filterItem.timeType = 'fixed'
                 if (['0', '2'].includes(filterItem.displayType)) {
