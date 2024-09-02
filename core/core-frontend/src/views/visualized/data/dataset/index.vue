@@ -335,7 +335,6 @@ const exportDataset = () => {
   showExport.value = true
   exportForm.value.name = nodeInfo.name
   exportForm.value.expressionTree = ''
-  console.log(computedFiledList)
   nextTick(() => {
     rowAuth.value.init({})
     rowAuth.value.relationList = []
