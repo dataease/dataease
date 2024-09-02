@@ -2,7 +2,7 @@ version: '3'
 services:
 
   DE_MYSQL_HOST:
-    image: registry.cn-qingdao.aliyuncs.com/dataease/mysql:8.4.2
+    image: registry.cn-qingdao.aliyuncs.com/dataease/mysql:8.4.0
     container_name: ${DE_MYSQL_HOST}
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u${DE_MYSQL_USER}", "-p${DE_MYSQL_PASSWORD}", "--protocol","tcp"]
