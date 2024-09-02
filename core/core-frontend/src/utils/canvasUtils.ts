@@ -250,6 +250,11 @@ export function refreshOtherComponent(dvId, busiFlag) {
       for (let i = 0; i < componentData.value.length; i++) {
         const component = componentData.value[i]
         if (refreshIdList.includes(component.id) && canvasDataResultMap[component.id]) {
+          const { top, left, height, width } = componentData.value[i]
+          canvasDataResultMap[component.id].style.top = top
+          canvasDataResultMap[component.id].style.left = left
+          canvasDataResultMap[component.id].style.height = height
+          canvasDataResultMap[component.id].style.width = width
           componentData.value[i] = canvasDataResultMap[component.id]
         }
       }
