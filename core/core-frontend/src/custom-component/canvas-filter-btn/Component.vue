@@ -1,6 +1,6 @@
 <!-- IconSlider.vue -->
 <template>
-  <el-tooltip offset="18" effect="dark" placement="left" content="查询">
+  <el-tooltip offset="22" effect="dark" placement="left" content="查询">
     <div class="canvas-filter" @mousedown.stop @mousedup.stop>
       <div class="icon-slider" @mouseenter="slideOut" @mouseleave="slideBack">
         <div
@@ -58,7 +58,9 @@ const slideBack = () => {
   transition: transform 0.3s ease; /* 过渡动画 */
   background: rgba(26, 26, 26, 1);
   font-size: 14px;
-  border: 1px solid rgba(67, 67, 67, 1);
+  border-bottom: 1px solid rgba(67, 67, 67, 1);
+  border-left: 1px solid rgba(67, 67, 67, 1);
+  border-top: 1px solid rgba(67, 67, 67, 1);
   border-radius: 16px 0 0 16px;
   padding: 6px 0 0 6px;
   cursor: pointer;
