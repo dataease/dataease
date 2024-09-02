@@ -16,7 +16,7 @@ import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
-import io.dataease.license.config.LicSt;
+import io.dataease.license.manage.F2CLicLimitedManage;
 import io.dataease.result.ResultCode;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
@@ -60,11 +60,11 @@ public class ChartDataServer implements ChartDataApi {
     @Resource
     private DatasetFieldServer datasetFieldServer;
 
-    @Resource(name = "LimitConfig")
-    private LicSt limitConfig;
+    @Resource(name = "f2CLicLimitedManage")
+    private F2CLicLimitedManage f2CLicLimitedManage;
 
     private Integer getExportLimit() {
-        return Math.toIntExact(Math.min(limitConfig.ALLATORIxDEMO(), limit));
+        return Math.toIntExact(Math.min(f2CLicLimitedManage.checkDatasetLimit(), limit));
     }
 
     @Override

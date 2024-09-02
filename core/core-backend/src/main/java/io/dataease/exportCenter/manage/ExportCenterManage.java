@@ -12,7 +12,7 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
-import io.dataease.license.config.LicSt;
+import io.dataease.license.manage.F2CLicLimitedManage;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
@@ -117,8 +117,8 @@ public class ExportCenterManage {
     @Resource
     private DatasetDataManage datasetDataManage;
 
-    @Resource(name = "LimitConfig")
-    private LicSt limitConfig;
+    @Resource(name = "f2CLicLimitedManage")
+    private F2CLicLimitedManage f2CLicLimitedManage;
 
     @PostConstruct
     public void init() {
@@ -153,7 +153,7 @@ public class ExportCenterManage {
     }
 
     private Long getExportLimit() {
-        return Math.min(limitConfig.ALLATORIxDEMO(),limit);
+        return Math.min(f2CLicLimitedManage.checkDatasetLimit(),limit);
     }
 
     public void download(String id, HttpServletResponse response) throws Exception {
