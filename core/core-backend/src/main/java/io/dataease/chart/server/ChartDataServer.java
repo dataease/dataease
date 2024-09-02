@@ -16,6 +16,7 @@ import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
+import io.dataease.license.config.LicSt;
 import io.dataease.result.ResultCode;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
@@ -53,11 +54,18 @@ public class ChartDataServer implements ChartDataApi {
 
     @Resource
     private VisualizationTemplateExtendDataManage extendDataManage;
-    @Value("${dataease.export.views.limit:500000}")
+    @Value("${dataease.export.views.limit:100000}")
     private Integer limit;
 
     @Resource
     private DatasetFieldServer datasetFieldServer;
+
+    @Resource(name = "LimitConfig")
+    private LicSt limitConfig;
+
+    private Integer getExportLimit() {
+        return Math.toIntExact(Math.min(limitConfig.ALLATORIxDEMO(), limit));
+    }
 
     @Override
     public ChartViewDTO getData(ChartViewDTO chartViewDTO) throws Exception {
@@ -94,11 +102,12 @@ public class ChartDataServer implements ChartDataApi {
                 };
                 viewDTO.setXAxis(JsonUtil.parseList(JsonUtil.toJSONString(sourceFields).toString(),listTypeReference));
             }
+            Integer curLimit = getExportLimit();
             if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode())) {
                 Integer limitCount = viewDTO.getResultCount();
-                viewDTO.setResultCount(limitCount > limit ? limit : limitCount);
+                viewDTO.setResultCount(Math.min(curLimit,limitCount));
             } else {
-                viewDTO.setResultCount(limit);
+                viewDTO.setResultCount(curLimit);
             }
             ChartViewDTO chartViewInfo = getData(viewDTO);
             List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
