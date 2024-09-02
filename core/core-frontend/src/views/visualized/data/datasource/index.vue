@@ -884,6 +884,9 @@ const uploadExcel = editType => {
   addLoading.value = editType === 1
   return uploadFile(formData)
     .then(res => {
+      if (res?.code !== 0) {
+        return
+      }
       nodeInfo.editType = editType
       datasourceEditor.value.init(nodeInfo, nodeInfo.id, res)
     })

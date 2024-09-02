@@ -145,6 +145,10 @@ const handleTabClick = tab => {
 }
 
 const uploadFail = response => {
+  state.excelData = []
+  activeTab.value = ''
+  tabList.value = []
+  Object.assign(sheetObj, cloneDeep(defaultSheetObj))
   let myError = response.toString()
   myError.replace('Error: ', '')
 }
@@ -160,6 +164,10 @@ const handleExcelDel = () => {
 
 const uploadSuccess = response => {
   if (response?.code !== 0) {
+    state.excelData = []
+    activeTab.value = ''
+    tabList.value = []
+    Object.assign(sheetObj, cloneDeep(defaultSheetObj))
     ElMessage.warning(response.msg)
     return
   }
@@ -365,6 +373,10 @@ const uploadExcel = () => {
       loading.value = false
     })
     .catch(error => {
+      state.excelData = []
+      activeTab.value = ''
+      tabList.value = []
+      Object.assign(sheetObj, cloneDeep(defaultSheetObj))
       if (error.code === 'ECONNABORTED') {
         ElMessage({
           type: 'error',
