@@ -19,6 +19,8 @@ import io.dataease.utils.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
+import org.apache.calcite.config.CalciteConnectionProperty;
+import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
@@ -716,11 +718,12 @@ public class CalciteProvider extends Provider {
     private Connection getCalciteConnection() {
         registerDriver();
         Properties info = new Properties();
-        info.setProperty("lex", "JAVA");
-        info.setProperty("fun", "all");
-        info.setProperty("caseSensitive", "false");
+        info.setProperty(CalciteConnectionProperty.LEX.camelName(), "JAVA");
+        info.setProperty(CalciteConnectionProperty.FUN.camelName(), "all");
+        info.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), "false");
+        info.setProperty(CalciteConnectionProperty.PARSER_FACTORY.camelName(), "org.apache.calcite.sql.parser.impl.SqlParserImpl#FACTORY");
+        info.setProperty(CalciteConnectionProperty.DEFAULT_NULL_COLLATION.camelName(), NullCollation.LAST.name());
         info.setProperty("remarks", "true");
-        info.setProperty("parserFactory", "org.apache.calcite.sql.parser.impl.SqlParserImpl#FACTORY");
         Connection connection = null;
         try {
             Class.forName("org.apache.calcite.jdbc.Driver");
