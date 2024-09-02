@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import UploadDetail from './UploadDetail.vue'
 import { deleteById, edit, list, defaultFont } from '@/api/font'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -23,6 +23,12 @@ const listFont = () => {
       loading.value = false
     })
 }
+
+const fontListComputed = computed(() => {
+  return fontList.value.filter(ele => {
+    return ele.name?.toLocaleLowerCase().includes(fontKeyword.value.trim().toLocaleLowerCase())
+  })
+})
 
 const deleteFont = item => {
   if (item.isDefault) {
@@ -130,7 +136,7 @@ onMounted(() => {
     </div>
     <div class="font-content_overflow">
       <div class="font-content_list">
-        <div class="font-content_item" v-for="ele in fontList" :key="ele">
+        <div class="font-content_item" v-for="ele in fontListComputed" :key="ele">
           <span v-if="ele.isDefault" class="font-default">默认字体</span>
           <div class="font-name">
             {{ ele.name }} <span v-if="ele.isBuiltin" class="font-type"> 系统内置 </span>
