@@ -59,7 +59,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, dvInfo, element, scale, canvasViewInfo } = toRefs(props)
+const { propValue, dvInfo, element, scale, canvasViewInfo, searchCount } = toRefs(props)
 const customCanvasStyle = computed(() => {
   const result = sourceCanvasStyle
   result.scale = canvasStyleData.value.scale
@@ -112,6 +112,7 @@ onMounted(() => {
       :is-edit="isEdit"
       :element="element"
       :scale="scale"
+      :search-count="searchCount"
     >
     </canvas-group>
   </div>
