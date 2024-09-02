@@ -1,6 +1,8 @@
 server:
   tomcat:
     connection-timeout: 70000
+  servlet:
+    context-path: ${DE_CONTEXT_PATH}
 spring:
   servlet:
     multipart:
@@ -14,6 +16,12 @@ dataease:
   apisix-api:
     domain: http://apisix:9180
     key: DE_APISIX_KEY
+  export:
+    views:
+      limit: ${DE_EXPORT_VIEWS_LIMIT}
+    dataset:
+      limit: ${DE_EXPORT_DATASET_LIMIT}
+  origin-list: ${DE_ORIGIN_LIST}
 task:
   executor:
     address: http://sync-task-actuator:9001
