@@ -1748,7 +1748,7 @@ public class ChartDataBuild {
         }
     }
 
-    public static Map<String, Object> transSymbolicMapNormalWithDetail(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<String[]> data, List<ChartViewFieldDTO> detailFields, List<String[]> detailData) {
+    public static Map<String, Object> transSymbolicMapNormalWithDetail(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extBubble, List<String[]> data, List<ChartViewFieldDTO> detailFields, List<String[]> detailData) {
         int detailIndex = xAxis.size();
 
         List<ChartViewFieldDTO> realDetailFields = detailFields.subList(detailIndex, detailFields.size());
@@ -1756,22 +1756,24 @@ public class ChartDataBuild {
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(xAxis))
             fields.addAll(xAxis);
+        if (ObjectUtils.isNotEmpty(extBubble))
+            fields.addAll(extBubble);
         if (ObjectUtils.isNotEmpty(yAxis))
             fields.addAll(yAxis);
         Map<String, Object> map = transTableNormal(fields, null, data, new HashMap<>());
         List<Map<String, Object>> tableRow = (List<Map<String, Object>>) map.get("tableRow");
         final int xEndIndex = detailIndex;
         Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> "(" + StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), ")-de-(") + ")"));
-
+        String extBubbleDataeaseName = ObjectUtils.isNotEmpty(extBubble)?extBubble.get(0).getDataeaseName():"";
         tableRow.forEach(row -> {
-            BigDecimal rowValue = new BigDecimal(row.get(yAxis.get(0).getDataeaseName()).toString());
+            BigDecimal rowValue = row.get(extBubbleDataeaseName) == null ? BigDecimal.ZERO : new BigDecimal(row.get(extBubbleDataeaseName).toString());
             String key = xAxis.stream().map(x -> String.format(format, row.get(x.getDataeaseName()).toString())).collect(Collectors.joining("-de-"));
             List<String[]> detailFieldValueList = groupDataList.get(key);
             List<Map<String, Object>> detailValueMapList = Optional.ofNullable(detailFieldValueList).orElse(new ArrayList<>()).stream().map((detailArr -> {
                 Map<String, Object> temp = new HashMap<>();
                 for (int i = 0; i < realDetailFields.size(); i++) {
                     ChartViewFieldDTO realDetailField = realDetailFields.get(i);
-                    if(StringUtils.equalsIgnoreCase(yAxis.get(0).getDataeaseName(),realDetailField.getDataeaseName())){
+                    if(StringUtils.equalsIgnoreCase(extBubbleDataeaseName,realDetailField.getDataeaseName())){
                         temp.put(realDetailField.getDataeaseName(), rowValue);
                     }else{
                         temp.put(realDetailField.getDataeaseName(), detailArr[detailIndex + i]);
@@ -1782,7 +1784,15 @@ public class ChartDataBuild {
             //详情只要一个
             row.put("details", !detailValueMapList.isEmpty() ?Collections.singletonList(detailValueMapList.getFirst()):detailValueMapList);
         });
-        map.put("fields", fields);
+        // 先过滤掉所有记录数字段
+        List<ChartViewFieldDTO> filterCountAxis = fields.stream()
+                .filter(item -> !StringUtils.equalsIgnoreCase(item.getDataeaseName(), "*"))
+                .collect(Collectors.toList());
+        // 如果气泡大小是记录数，添加到字段列表中
+        if (ObjectUtils.isNotEmpty(extBubble) && "*".equals(extBubble.get(0).getDataeaseName())) {
+            filterCountAxis.addAll(yAxis);
+        }
+        map.put("fields", filterCountAxis);
         map.put("detailFields", realDetailFields);
         map.put("tableRow", tableRow);
         return map;
