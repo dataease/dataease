@@ -252,8 +252,8 @@ export default {
     file_name: '文件名',
     version: '版本',
     please_set_driverClass: '请指定驱动类',
-    please_set_surpportVersions: '请输入支持的数据库大版本',
-    surpportVersions: '支持版本'
+    please_set_supportVersions: '请输入支持的数据库大版本',
+    supportVersions: '支持版本'
   },
   login: {
     welcome: '欢迎使用',
