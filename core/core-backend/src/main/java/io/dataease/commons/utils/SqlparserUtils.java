@@ -66,6 +66,7 @@ public class SqlparserUtils {
         }
 
         if (select.getSelectBody() instanceof PlainSelect) {
+
             return handlePlainSelect((PlainSelect) select.getSelectBody(), select, dsType);
         } else {
             StringBuilder result = new StringBuilder();
@@ -84,6 +85,7 @@ public class SqlparserUtils {
         handleSelectItems(plainSelect, dsType);
         handleFromItems(plainSelect, dsType);
         handleJoins(plainSelect, dsType);
+        handleHaving(plainSelect);
         return handleWhere(plainSelect, statementSelect, dsType);
     }
 
@@ -173,6 +175,29 @@ public class SqlparserUtils {
             }
             plainSelect.setJoins(joinsList);
         }
+    }
+
+    private static String handleHaving(PlainSelect plainSelect) throws Exception {
+        Expression expr = plainSelect.getHaving();
+        StringBuilder stringBuilder = new StringBuilder();
+        BinaryExpression binaryExpression = null;
+        try {
+            binaryExpression = (BinaryExpression) expr;
+        } catch (Exception e) {
+        }
+        if (binaryExpression != null) {
+            boolean hasSubBinaryExpression = binaryExpression instanceof AndExpression || binaryExpression instanceof OrExpression;
+            if (!hasSubBinaryExpression && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && (hasVariable(binaryExpression.getLeftExpression().toString()) || hasVariable(binaryExpression.getRightExpression().toString()))) {
+                stringBuilder.append(SubstitutedSql);
+            } else {
+                expr.accept(getExpressionDeParser(stringBuilder));
+            }
+
+        } else {
+            expr.accept(getExpressionDeParser(stringBuilder));
+        }
+        plainSelect.setHaving(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
+        return plainSelect.toString();
     }
 
     private static String handleWhere(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
