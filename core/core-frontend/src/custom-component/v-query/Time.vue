@@ -364,13 +364,13 @@ const setArrValue = () => {
     const [start, end] = selectValue.value || []
     if (selectSecond.value) {
       selectValue.value = [
-        start,
+        start ? start : new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`),
         new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`)
       ]
     } else {
       selectValue.value = [
         new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`),
-        end
+        end ? end : new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`)
       ]
     }
   } else {
