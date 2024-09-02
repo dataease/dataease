@@ -630,19 +630,35 @@ export const getMaxAndMinValueByData = (
   minValue: number,
   callback: (max: number, min: number) => void
 ) => {
-  if ((minValue === 0 && maxValue === 0) || minValue === null || maxValue === null) {
+  // 定义一个辅助函数来计算最大值或最小值
+  const calculateExtreme = (isMax: boolean) => {
+    return data.reduce(
+      (extreme, current) => {
+        return isMax
+          ? current[field] > extreme
+            ? current[field]
+            : extreme
+          : current[field] < extreme
+          ? current[field]
+          : extreme
+      },
+      isMax ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER
+    )
+  }
+  if (minValue === null || maxValue === null) {
     let maxResult = maxValue
     let minResult = minValue
     if (maxResult === null) {
-      maxResult = data.reduce((max, current) => {
-        return current[field] > max ? current[field] : max
-      }, Number.MIN_SAFE_INTEGER)
+      maxResult = calculateExtreme(true)
     }
     if (minResult === null) {
-      minResult = data.reduce((min, current) => {
-        return current[field] < min ? current[field] : min
-      }, Number.MAX_SAFE_INTEGER)
+      minResult = calculateExtreme(false)
     }
+    callback(maxResult, minResult)
+  }
+  if (minValue === 0 && maxValue === 0) {
+    const maxResult = calculateExtreme(true)
+    const minResult = calculateExtreme(false)
     callback(maxResult, minResult)
   }
 }
