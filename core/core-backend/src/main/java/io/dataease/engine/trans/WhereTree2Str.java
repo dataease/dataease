@@ -32,6 +32,7 @@ public class WhereTree2Str {
             return;
         }
         List<String> res = new ArrayList<>();
+        List<String> exportFilters = new ArrayList<>();
         Map<String, String> fieldsDialect = new HashMap<>();
         // permission trees
         // 解析每个tree，然后多个tree之间用and拼接
@@ -42,11 +43,21 @@ public class WhereTree2Str {
                 continue;
             }
             String treeExp = transTreeToWhere(tableObj, tree, originFields, fieldsDialect, isCross, dsMap, fieldParam, chartParam, pluginManage);
-            if (StringUtils.isNotEmpty(treeExp)) {
+            if (StringUtils.isNotEmpty(treeExp) && !request.isExportData()) {
                 res.add(treeExp);
             }
+            if (StringUtils.isNotEmpty(treeExp) && request.isExportData()) {
+                exportFilters.add(treeExp);
+            }
         }
-        meta.setWhereTrees(CollectionUtils.isNotEmpty(res) ? "(" + String.join(" OR ", res) + ")" : null);
+        String whereSql = null;
+        if (CollectionUtils.isNotEmpty(res)) {
+            whereSql = String.join(" OR ", res);
+        }
+        if (CollectionUtils.isNotEmpty(exportFilters)) {
+            whereSql = whereSql == null ? String.join(" and ", exportFilters) : whereSql + " AND " + String.join(" and ", exportFilters);
+        }
+        meta.setWhereTrees(whereSql != null ? "(" + whereSql + ")" : null);
         meta.setWhereTreesDialect(fieldsDialect);
     }
 
@@ -180,10 +191,7 @@ public class WhereTree2Str {
                     whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                 }
             }
-            SQLObj build = SQLObj.builder()
-                    .whereField(whereName)
-                    .whereTermAndValue(whereTerm + whereValue)
-                    .build();
+            SQLObj build = SQLObj.builder().whereField(whereName).whereTermAndValue(whereTerm + whereValue).build();
             res = build.getWhereField() + " " + build.getWhereTermAndValue();
         }
         return res;

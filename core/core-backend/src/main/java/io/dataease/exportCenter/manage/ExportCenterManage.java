@@ -230,6 +230,10 @@ public class ExportCenterManage {
             ChartExcelRequest request = JsonUtil.parseObject(exportTask.getParams(), ChartExcelRequest.class);
             startViewTask(exportTask, request);
         }
+        if (exportTask.getExportFromType().equalsIgnoreCase("dataset")) {
+            DataSetExportRequest request = JsonUtil.parseObject(exportTask.getParams(), DataSetExportRequest.class);
+            startDatasetTask(exportTask, request);
+        }
     }
 
     public List<ExportTaskDTO> exportTasks(String status) {
@@ -395,6 +399,7 @@ public class ExportCenterManage {
                     permissionManage.getField(datasetRowPermissionsTreeObj);
                     DataSetRowPermissionsTreeDTO dataSetRowPermissionsTreeDTO = new DataSetRowPermissionsTreeDTO();
                     dataSetRowPermissionsTreeDTO.setTree(datasetRowPermissionsTreeObj);
+                    dataSetRowPermissionsTreeDTO.setExportData(true);
                     rowPermissionsTree.add(dataSetRowPermissionsTreeDTO);
                 }
 
