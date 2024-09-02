@@ -151,7 +151,7 @@ const switchSeriesColor = (seriesColor, index) => {
   seriesColorPickerRef.value?.hide()
   seriesColorState.curSeriesColor = cloneDeep(seriesColor)
   seriesColorState.curColorIndex = index
-  seriesColorState.seriesColorPickerId = '#series-color-picker-' + index
+  seriesColorState.seriesColorPickerId = '#series-color-picker-' + seriesColor.id
   nextTick(() => {
     seriesColorPickerRef.value?.show()
   })
@@ -462,6 +462,7 @@ const colorItemBorderColor = (index, state) => {
           class="color-list-item"
         >
           <div
+            :id="`series-color-picker-${item.id}`"
             :class="{
               active: item.id === seriesColorState.curSeriesColor?.id
             }"
@@ -486,7 +487,7 @@ const colorItemBorderColor = (index, state) => {
       </div>
     </template>
     <teleport :to="seriesColorState.seriesColorPickerId">
-      <div style="position: absolute; width: 0; height: 0; overflow: hidden">
+      <div style="position: absolute; top: 0; left: 10px; width: 0; height: 0; overflow: hidden">
         <el-color-picker
           ref="seriesColorPickerRef"
           v-model="seriesColorState.curSeriesColor.color"
@@ -581,7 +582,7 @@ const colorItemBorderColor = (index, state) => {
       cursor: pointer;
       padding: 2px;
       border: solid 1px transparent;
-
+      position: relative;
       .color-item__inner {
         width: 14px;
         height: 14px;
@@ -653,6 +654,7 @@ const colorItemBorderColor = (index, state) => {
       cursor: pointer;
       padding: 2px;
       border: solid 1px transparent;
+      position: relative;
 
       .color-item__inner {
         width: 14px;
