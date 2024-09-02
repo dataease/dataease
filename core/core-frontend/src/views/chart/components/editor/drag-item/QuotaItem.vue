@@ -604,7 +604,7 @@ onMounted(() => {
                       class="sub-menu-content"
                       :class="'yoy_label' === item.compareCalc.type ? 'content-active' : ''"
                     >
-                      {{ t('chart.yoy_label') }}...
+                      {{ t('chart.yoy_label') }}
                       <el-icon class="sub-menu-content--icon">
                         <Icon
                           name="icon_done_outlined"
