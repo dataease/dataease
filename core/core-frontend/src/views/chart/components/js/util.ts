@@ -630,13 +630,19 @@ export const getMaxAndMinValueByData = (
   minValue: number,
   callback: (max: number, min: number) => void
 ) => {
-  if (minValue === 0 && maxValue === 0) {
-    const maxResult = data.reduce((max, current) => {
-      return current[field] > max ? current[field] : max
-    }, Number.MIN_SAFE_INTEGER)
-    const minResult = data.reduce((min, current) => {
-      return current[field] < min ? current[field] : min
-    }, Number.MAX_SAFE_INTEGER)
+  if ((minValue === 0 && maxValue === 0) || minValue === null || maxValue === null) {
+    let maxResult = maxValue
+    let minResult = minValue
+    if (maxResult === null) {
+      maxResult = data.reduce((max, current) => {
+        return current[field] > max ? current[field] : max
+      }, Number.MIN_SAFE_INTEGER)
+    }
+    if (minResult === null) {
+      minResult = data.reduce((min, current) => {
+        return current[field] < min ? current[field] : min
+      }, Number.MAX_SAFE_INTEGER)
+    }
     callback(maxResult, minResult)
   }
 }
