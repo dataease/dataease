@@ -149,11 +149,14 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
               fontSize: l.fontSize
             },
             formatter: datum => {
+              if (!datum['$$conversion$$'][0]) {
+                return `${conversionTagAtt.text ?? ''} -`
+              }
               const rate = (
                 (datum['$$conversion$$'][1] / datum['$$conversion$$'][0]) *
                 100
               ).toFixed(conversionTagAtt.precision)
-              return `${conversionTagAtt.text ?? ''}${rate}%`
+              return `${conversionTagAtt.text ?? ''} ${rate}%`
             }
           }
         }
