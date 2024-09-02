@@ -9,6 +9,7 @@ import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.CommonConstants;
+import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
@@ -39,7 +40,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author Junjun
@@ -56,7 +59,8 @@ public class ChartDataServer implements ChartDataApi {
     private VisualizationTemplateExtendDataManage extendDataManage;
     @Value("${dataease.export.views.limit:100000}")
     private Integer limit;
-
+    @Resource
+    private PermissionManage permissionManage;
     @Resource
     private DatasetFieldServer datasetFieldServer;
 
@@ -92,15 +96,17 @@ public class ChartDataServer implements ChartDataApi {
             if ("dataset".equals(request.getDownloadType())) {
                 viewDTO.setType("table-info");
                 List<DatasetTableFieldDTO> sourceFields = datasetFieldServer.listByDatasetGroup(viewDTO.getTableId());
+                List<String> fileNames = permissionManage.filterColumnPermissions(sourceFields, new HashMap<>(), viewDTO.getTableId(), null).stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
+                sourceFields = sourceFields.stream().filter(datasetTableFieldDTO -> fileNames.contains(datasetTableFieldDTO.getDataeaseName())).collect(Collectors.toList());
                 dsHeader = sourceFields.stream()
                         .map(DatasetTableFieldDTO::getName)
                         .toArray(String[]::new);
                 dsTypes = sourceFields.stream()
                         .map(DatasetTableFieldDTO::getDeType)
                         .toArray(Integer[]::new);
-                TypeReference<List<ChartViewFieldDTO>> listTypeReference = new TypeReference<List<ChartViewFieldDTO>>(){
+                TypeReference<List<ChartViewFieldDTO>> listTypeReference = new TypeReference<List<ChartViewFieldDTO>>() {
                 };
-                viewDTO.setXAxis(JsonUtil.parseList(JsonUtil.toJSONString(sourceFields).toString(),listTypeReference));
+                viewDTO.setXAxis(JsonUtil.parseList(JsonUtil.toJSONString(sourceFields).toString(), listTypeReference));
             }
             Integer curLimit = getExportLimit();
             if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode())) {
