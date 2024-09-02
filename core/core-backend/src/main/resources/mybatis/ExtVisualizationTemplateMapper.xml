@@ -210,9 +210,8 @@
         	core_dataset_table_field.*
         FROM
         	core_dataset_table_field
-        	INNER JOIN core_dataset_table ON core_dataset_table_field.dataset_table_id = core_dataset_table.id
         WHERE
-         	core_dataset_table.dataset_group_id in
+        	core_dataset_table_field.dataset_group_id in
          <foreach collection="dsIds" item="dsId" index="index" open="(" close=")" separator=",">
              #{dsId}
          </foreach>
