@@ -173,8 +173,8 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
 
   setupPage(actualChart, resetPageInfo)
-  myChart?.facet.timer?.stop()
-  myChart?.facet.cancelScrollFrame()
+  myChart?.facet?.timer?.stop()
+  myChart?.facet?.cancelScrollFrame()
   myChart?.destroy()
   myChart = null
   const chartView = chartViewManager.getChartView(
@@ -220,7 +220,7 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
 }
 
 const mouseMove = () => {
-  myChart?.facet.timer?.stop()
+  myChart?.facet?.timer?.stop()
 }
 
 const mouseLeave = () => {
@@ -673,7 +673,7 @@ const tablePageClass = computed(() => {
   </div>
   <el-dialog v-model="state.imgEnlarge" append-to-body>
     <div class="enlarge-image">
-      <img :src="state.imgSrc" />
+      <img :src="state.imgSrc" style="width: 100%; height: 100%; object-fit: contain" />
     </div>
   </el-dialog>
 </template>
@@ -728,7 +728,7 @@ const tablePageClass = computed(() => {
   display: flex;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   flex-direction: row;
   justify-content: center;
 }

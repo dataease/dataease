@@ -210,6 +210,7 @@ const filedList = computed(() => {
 })
 
 provide('filedList', () => filedList.value)
+provide('quota', () => state.quota)
 watch(
   [() => view.value['tableId']],
   () => {

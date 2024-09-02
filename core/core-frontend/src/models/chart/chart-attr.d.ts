@@ -478,9 +478,13 @@ declare interface CalcTotals {
 /**
  * 汇总聚合配置
  */
-declare interface CalcTotalCfg {
+declare interface CalcTotalCfg extends Axis {
   dataeaseName: string
-  aggregation: 'MIN' | 'MAX' | 'AVG' | 'SUM' | ''
+  aggregation: 'MIN' | 'MAX' | 'AVG' | 'SUM' | 'CUSTOM' | ''
+  /**
+   * 自定义汇总表达式
+   */
+  originName: string
 }
 
 /**

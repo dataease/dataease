@@ -32,6 +32,7 @@ declare interface Chart {
       fields: ChartViewField[]
       tableRow: []
     }
+    customCalc: any
   }
   xAxis?: Axis[]
   xAxisExt?: Axis[]

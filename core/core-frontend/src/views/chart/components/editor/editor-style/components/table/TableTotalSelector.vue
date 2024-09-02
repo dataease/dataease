@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { onMounted, PropType, reactive, watch } from 'vue'
+import { onMounted, PropType, reactive, watch, ref, inject, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_TABLE_TOTAL } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
+import CustomAggrEdit from './CustomAggrEdit.vue'
 
 const { t } = useI18n()
 
@@ -31,26 +32,18 @@ const aggregations = [
   { name: t('chart.sum'), value: 'SUM' },
   { name: t('chart.avg'), value: 'AVG' },
   { name: t('chart.max'), value: 'MAX' },
-  { name: t('chart.min'), value: 'MIN' }
+  { name: t('chart.min'), value: 'MIN' },
+  { name: t('commons.custom'), value: 'CUSTOM' }
 ]
 const state = reactive({
   tableTotalForm: cloneDeep(DEFAULT_TABLE_TOTAL) as ChartTableTotalAttr,
-  rowSubTotalItem: {
-    dataeaseName: '',
-    aggregation: ''
-  } as CalcTotalCfg,
-  rowTotalItem: {
-    dataeaseName: '',
-    aggregation: ''
-  } as CalcTotalCfg,
-  colSubTotalItem: {
-    dataeaseName: '',
-    aggregation: ''
-  } as CalcTotalCfg,
-  colTotalItem: {
-    dataeaseName: '',
-    aggregation: ''
-  } as CalcTotalCfg
+  rowSubTotalItem: {} as DeepPartial<CalcTotalCfg>,
+  rowTotalItem: {} as DeepPartial<CalcTotalCfg>,
+  colSubTotalItem: {} as DeepPartial<CalcTotalCfg>,
+  colTotalItem: {} as DeepPartial<CalcTotalCfg>,
+  totalCfg: [] as CalcTotalCfg[],
+  totalCfgAttr: '',
+  totalItem: {} as DeepPartial<CalcTotalCfg>
 })
 
 const emit = defineEmits(['onTableTotalChange'])
@@ -86,7 +79,7 @@ const init = () => {
   totals.forEach(total => {
     setupTotalCfg(total.cfg, yAxis)
   })
-  const totalTupleArr: [CalcTotalCfg, CalcTotalCfg[]][] = [
+  const totalTupleArr: [DeepPartial<CalcTotalCfg>, CalcTotalCfg[]][] = [
     [state.rowTotalItem, state.tableTotalForm.row.calcTotals.cfg],
     [state.rowSubTotalItem, state.tableTotalForm.row.calcSubTotals.cfg],
     [state.colTotalItem, state.tableTotalForm.col.calcTotals.cfg],
@@ -97,6 +90,7 @@ const init = () => {
     if (!totalCfg.length) {
       total.dataeaseName = ''
       total.aggregation = ''
+      total.originName = ''
       return
     }
     const totalIndex = totalCfg.findIndex(i => i.dataeaseName === total.dataeaseName)
@@ -105,6 +99,7 @@ const init = () => {
     } else {
       total.dataeaseName = totalCfg[0].dataeaseName
       total.aggregation = totalCfg[0].aggregation
+      total.originName = totalCfg[0].originName
     }
   })
 }
@@ -114,6 +109,7 @@ const changeTotal = (totalItem, totals) => {
     const item = totals[i]
     if (item.dataeaseName === totalItem.dataeaseName) {
       totalItem.aggregation = item.aggregation
+      totalItem.originName = item.originName
       return
     }
   }
@@ -125,6 +121,9 @@ const changeTotalAggr = (totalItem, totals, colOrNum) => {
       item.aggregation = totalItem.aggregation
       break
     }
+  }
+  if (totalItem.aggregation == 'CUSTOM' && !totalItem.originName) {
+    return
   }
   changeTableTotal(colOrNum)
 }
@@ -150,9 +149,50 @@ const setupTotalCfg = (totalCfg, axis) => {
   axis.forEach(i => {
     totalCfg.push({
       dataeaseName: i.dataeaseName,
-      aggregation: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].aggregation : 'SUM'
+      aggregation: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].aggregation : 'SUM',
+      originName: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].originName : ''
     })
   })
+}
+const quota = inject('quota', () => [])
+const dimension = inject('dimension', () => [])
+const calcEdit = ref()
+const editCalcField = ref(false)
+const editField = (totalItem, totalCfg, attr) => {
+  editCalcField.value = true
+  state.totalCfg = totalCfg
+  state.totalCfgAttr = attr
+  state.totalItem = totalItem
+  nextTick(() => {
+    calcEdit.value.initEdit(
+      totalItem,
+      quota().filter(ele => ele.id !== '-1')
+    )
+  })
+}
+const closeEditCalc = () => {
+  editCalcField.value = false
+}
+const confirmEditCalc = () => {
+  calcEdit.value.setFieldForm()
+  const obj = cloneDeep(calcEdit.value.fieldForm)
+  state.totalCfg?.forEach(item => {
+    if (item.dataeaseName === obj.dataeaseName) {
+      item.originName = obj.originName
+      setFieldDefaultValue(item)
+      state.totalItem.originName = item.originName
+    }
+  })
+  closeEditCalc()
+  changeTableTotal(state.totalCfgAttr)
+}
+const setFieldDefaultValue = field => {
+  field.extField = 2
+  field.chartId = props.chart.id
+  field.datasetGroupId = props.chart.tableId
+  field.lastSyncTime = null
+  field.columnIndex = dimension().length + quota().length
+  field.deExtractType = field.deType
 }
 onMounted(() => {
   init()
@@ -232,7 +272,7 @@ onMounted(() => {
             />
           </el-select>
         </el-col>
-        <el-col :span="11" :offset="2">
+        <el-col :span="state.rowTotalItem.aggregation === 'CUSTOM' ? 8 : 11" :offset="2">
           <el-select
             :effect="themes"
             v-model="state.rowTotalItem.aggregation"
@@ -252,6 +292,19 @@ onMounted(() => {
               :value="option.value"
             />
           </el-select>
+        </el-col>
+        <el-col v-if="state.rowTotalItem.aggregation === 'CUSTOM'" :span="2" :offset="1">
+          <el-icon>
+            <Setting
+              @click="
+                editField(
+                  state.rowTotalItem,
+                  state.tableTotalForm.row.calcTotals.cfg,
+                  'row.calcTotals.cfg'
+                )
+              "
+            />
+          </el-icon>
         </el-col>
       </el-form-item>
       <el-form-item
@@ -360,7 +413,7 @@ onMounted(() => {
             />
           </el-select>
         </el-col>
-        <el-col :span="11" :offset="2">
+        <el-col :span="state.rowSubTotalItem.aggregation === 'CUSTOM' ? 8 : 11" :offset="2">
           <el-select
             :effect="themes"
             v-model="state.rowSubTotalItem.aggregation"
@@ -381,6 +434,19 @@ onMounted(() => {
               :value="option.value"
             />
           </el-select>
+        </el-col>
+        <el-col v-if="state.rowSubTotalItem.aggregation === 'CUSTOM'" :span="2" :offset="1">
+          <el-icon>
+            <Setting
+              @click="
+                editField(
+                  state.rowSubTotalItem,
+                  state.tableTotalForm.row.calcSubTotals.cfg,
+                  'row.calcSubTotals.cfg'
+                )
+              "
+            />
+          </el-icon>
         </el-col>
       </el-form-item>
     </div>
@@ -455,7 +521,7 @@ onMounted(() => {
             />
           </el-select>
         </el-col>
-        <el-col :span="11" :offset="2">
+        <el-col :span="state.colTotalItem.aggregation === 'CUSTOM' ? 8 : 11" :offset="2">
           <el-select
             :effect="themes"
             v-model="state.colTotalItem.aggregation"
@@ -475,6 +541,19 @@ onMounted(() => {
               :value="option.value"
             />
           </el-select>
+        </el-col>
+        <el-col v-if="state.colTotalItem.aggregation === 'CUSTOM'" :span="2" :offset="1">
+          <el-icon>
+            <Setting
+              @click="
+                editField(
+                  state.colTotalItem,
+                  state.tableTotalForm.col.calcTotals.cfg,
+                  'col.calcTotals.cfg'
+                )
+              "
+            />
+          </el-icon>
         </el-col>
       </el-form-item>
       <el-form-item
@@ -582,7 +661,7 @@ onMounted(() => {
             />
           </el-select>
         </el-col>
-        <el-col :span="11" :offset="2">
+        <el-col :span="state.colSubTotalItem.aggregation === 'CUSTOM' ? 8 : 11" :offset="2">
           <el-select
             :effect="themes"
             v-model="state.colSubTotalItem.aggregation"
@@ -604,9 +683,35 @@ onMounted(() => {
             />
           </el-select>
         </el-col>
+        <el-col v-if="state.colSubTotalItem.aggregation === 'CUSTOM'" :span="2" :offset="1">
+          <el-icon>
+            <Setting
+              @click="
+                editField(
+                  state.colSubTotalItem,
+                  state.tableTotalForm.col.calcSubTotals.cfg,
+                  'col.calcSubTotals.cfg'
+                )
+              "
+            />
+          </el-icon>
+        </el-col>
       </el-form-item>
     </div>
   </el-form>
+  <!--图表计算字段-->
+  <el-dialog
+    v-model="editCalcField"
+    width="1000px"
+    title="自定义聚合公式"
+    :close-on-click-modal="false"
+  >
+    <custom-aggr-edit ref="calcEdit" />
+    <template #footer>
+      <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
