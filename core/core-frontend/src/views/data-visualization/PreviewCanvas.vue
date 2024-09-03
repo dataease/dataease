@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onMounted, reactive, ref } from 'vue'
+import { nextTick, onMounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -14,9 +14,12 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
+import { downloadCanvas2 } from '@/utils/imgUtils'
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
 const embeddedStore = useEmbedded()
+const previewCanvasContainer = ref(null)
+const downloadStatus = ref(false)
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -117,6 +120,15 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     }
   )
 }
+const downloadH2 = type => {
+  downloadStatus.value = true
+  nextTick(() => {
+    const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
+    downloadCanvas2(type, vueDom, state.dvInfo.name, () => {
+      downloadStatus.value = false
+    })
+  })
+}
 
 let p = null
 const XpackLoaded = () => p(true)
@@ -125,6 +137,12 @@ onMounted(async () => {
     name: 'data-export-center',
     callback: function (params) {
       ExportExcelRef.value.init(params)
+    }
+  })
+  useEmitt({
+    name: 'canvasDownload',
+    callback: function () {
+      downloadH2('img')
     }
   })
   await new Promise(r => (p = r))
@@ -148,7 +166,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="content">
+  <div class="content" ref="previewCanvasContainer">
     <de-preview
       ref="dvPreview"
       v-if="state.canvasStylePreview"
@@ -158,6 +176,7 @@ defineExpose({
       :dv-info="state.dvInfo"
       :cur-gap="state.curPreviewGap"
       :is-selector="props.isSelector"
+      :download-status="downloadStatus"
     ></de-preview>
   </div>
   <XpackComponent

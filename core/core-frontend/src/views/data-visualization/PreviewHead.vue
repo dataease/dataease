@@ -19,7 +19,6 @@ const { t } = useI18n()
 const embeddedStore = useEmbedded()
 
 const favorited = ref(false)
-const fullScreeRef = ref(null)
 const preview = () => {
   const baseUrl = isDataEaseBi.value ? embeddedStore.baseUrl : ''
   const url = baseUrl + '#/preview?dvId=' + dvInfo.value.id
@@ -122,8 +121,11 @@ const initOpenHandler = newWindow => {
       </el-popover>
     </div>
     <div class="canvas-opt-button">
-      <de-fullscreen ref="fullScreeRef"></de-fullscreen>
-      <el-button v-if="!isIframe" secondary @click="() => fullScreeRef.toggleFullscreen()">
+      <el-button
+        v-if="!isIframe"
+        secondary
+        @click="() => useEmitt().emitter.emit('canvasFullscreen')"
+      >
         <template #icon>
           <icon name="icon_pc_fullscreen"></icon>
         </template>

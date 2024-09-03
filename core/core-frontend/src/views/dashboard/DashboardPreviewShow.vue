@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { reactive, nextTick, ref, toRefs, onBeforeMount, computed } from 'vue'
+import { reactive, nextTick, ref, toRefs, onBeforeMount, computed, onMounted } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -17,6 +17,7 @@ import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus-secondary'
 import { personInfoApi } from '@/api/user'
 import AppExportForm from '@/components/de-app/AppExportForm.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const appExportFormRef = ref(null)
 
 const dvMainStore = dvMainStoreWithOut()
@@ -68,6 +69,15 @@ const rootManage = computed(() => {
 })
 const mounted = computed(() => {
   return resourceTreeRef.value?.mounted
+})
+
+onMounted(() => {
+  useEmitt({
+    name: 'canvasDownload',
+    callback: function () {
+      downloadH2('img')
+    }
+  })
 })
 
 function createNew() {
