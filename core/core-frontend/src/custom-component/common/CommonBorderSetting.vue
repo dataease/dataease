@@ -8,7 +8,7 @@ import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 const dvMainStore = dvMainStoreWithOut()
 
 const snapshotStore = snapshotStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, curComponent } = storeToRefs(dvMainStore)
 
 const props = withDefaults(
   defineProps<{
@@ -63,6 +63,10 @@ const sizeChange = key => {
   changeStyle({ key: key, value: styleInfo.value[key] })
 }
 
+const isSvgComponent = computed(
+  () => curComponent.value && curComponent.value.component === 'SvgTriangle'
+)
+
 watch(
   () => styleInfo.value,
   () => {
@@ -78,85 +82,126 @@ watch(
 <template>
   <el-row class="custom-row">
     <el-form label-position="top">
-      <el-row style="display: flex">
-        <el-form-item
-          style="width: 70px"
-          label="颜色"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-color-picker
-            title="颜色"
-            v-model="styleForm.borderColor"
-            class="color-picker-style"
-            :triggerWidth="65"
-            is-custom
-            :predefine="state.predefineColors"
-            @change="changeStylePre('borderColor')"
+      <template v-if="isSvgComponent">
+        <el-row style="display: flex">
+          <el-form-item
+            style="width: 70px"
+            label="颜色"
+            class="form-item"
+            :class="'form-item-' + themes"
           >
-          </el-color-picker>
-        </el-form-item>
-        <el-form-item
-          style="width: 150px"
-          label="圆角"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-input-number
-            title="圆角"
-            :effect="themes"
-            :min="0"
-            :max="200"
-            controls-position="right"
-            v-model="styleMounted.borderRadius"
-            class="color-picker-style"
-            @change="sizeChange('borderRadius')"
+            <el-color-picker
+              title="颜色"
+              v-model="styleForm.borderColor"
+              class="color-picker-style"
+              :triggerWidth="65"
+              is-custom
+              :predefine="state.predefineColors"
+              @change="changeStylePre('borderColor')"
+            >
+            </el-color-picker>
+          </el-form-item>
+          <el-form-item
+            style="width: 150px"
+            label="线宽"
+            class="form-item"
+            :class="'form-item-' + themes"
           >
-          </el-input-number>
-        </el-form-item>
-      </el-row>
-      <el-row style="display: flex">
-        <el-form-item
-          style="width: 70px"
-          label="样式"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-select
-            :effect="themes"
-            v-model="styleForm.borderStyle"
-            size="small"
-            style="width: 65px"
-            @change="changeStylePre('borderStyle')"
+            <el-input-number
+              title="线宽"
+              :min="0"
+              :max="50"
+              :effect="themes"
+              controls-position="right"
+              v-model="styleMounted.borderWidth"
+              class="color-picker-style"
+              @change="sizeChange('borderWidth')"
+            >
+            </el-input-number>
+          </el-form-item>
+        </el-row>
+      </template>
+      <template v-else>
+        <el-row style="display: flex">
+          <el-form-item
+            style="width: 70px"
+            label="颜色"
+            class="form-item"
+            :class="'form-item-' + themes"
           >
-            <el-option
-              class="custom-style-option"
-              v-for="option in borderStyleList"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          style="width: 150px"
-          label="线宽"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-input-number
-            title="线宽"
-            :min="0"
-            :max="50"
-            :effect="themes"
-            controls-position="right"
-            v-model="styleMounted.borderWidth"
-            class="color-picker-style"
-            @change="sizeChange('borderWidth')"
+            <el-color-picker
+              title="颜色"
+              v-model="styleForm.borderColor"
+              class="color-picker-style"
+              :triggerWidth="65"
+              is-custom
+              :predefine="state.predefineColors"
+              @change="changeStylePre('borderColor')"
+            >
+            </el-color-picker>
+          </el-form-item>
+          <el-form-item
+            style="width: 150px"
+            label="圆角"
+            class="form-item"
+            :class="'form-item-' + themes"
           >
-          </el-input-number>
-        </el-form-item>
-      </el-row>
+            <el-input-number
+              title="圆角"
+              :effect="themes"
+              :min="0"
+              :max="200"
+              controls-position="right"
+              v-model="styleMounted.borderRadius"
+              class="color-picker-style"
+              @change="sizeChange('borderRadius')"
+            >
+            </el-input-number>
+          </el-form-item>
+        </el-row>
+        <el-row style="display: flex">
+          <el-form-item
+            style="width: 70px"
+            label="样式"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-select
+              :effect="themes"
+              v-model="styleForm.borderStyle"
+              size="small"
+              style="width: 65px"
+              @change="changeStylePre('borderStyle')"
+            >
+              <el-option
+                class="custom-style-option"
+                v-for="option in borderStyleList"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            style="width: 150px"
+            label="线宽"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-input-number
+              title="线宽"
+              :min="0"
+              :max="50"
+              :effect="themes"
+              controls-position="right"
+              v-model="styleMounted.borderWidth"
+              class="color-picker-style"
+              @change="sizeChange('borderWidth')"
+            >
+            </el-input-number>
+          </el-form-item>
+        </el-row>
+      </template>
     </el-form>
   </el-row>
 </template>

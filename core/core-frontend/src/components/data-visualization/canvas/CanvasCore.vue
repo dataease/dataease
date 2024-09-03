@@ -200,7 +200,17 @@ const start = ref({
 const width = ref(0)
 const height = ref(0)
 const isShowArea = ref(false)
-const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate', 'backgroundColor']
+const svgFilterAttrs = [
+  'width',
+  'height',
+  'top',
+  'left',
+  'rotate',
+  'backgroundColor',
+  'borderWidth',
+  'borderStyle',
+  'borderColor'
+]
 const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const commonFilterAttrsFilterBorder = [
   'width',
@@ -1567,6 +1577,23 @@ defineExpose({
         :request="item.request"
         @input="handleInput"
         :dv-info="dvInfo"
+        :canvas-active="canvasActive"
+      />
+      <component
+        v-else-if="item.component.includes('Svg')"
+        :is="findComponent(item.component)"
+        :id="'component' + item.id"
+        :scale="curBaseScale"
+        class="component"
+        :is-edit="true"
+        :style="getSvgComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :request="item.request"
+        :canvas-style-data="canvasStyleData"
+        :canvas-view-info="canvasViewInfo"
+        :dv-info="dvInfo"
+        :active="item.id === curComponentId"
         :canvas-active="canvasActive"
       />
       <component

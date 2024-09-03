@@ -156,7 +156,17 @@ const onClick = e => {
 
 const getComponentStyleDefault = style => {
   if (config.value.component.includes('Svg')) {
-    return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'backgroundColor'])
+    return getStyle(style, [
+      'top',
+      'left',
+      'width',
+      'height',
+      'rotate',
+      'backgroundColor',
+      'borderWidth',
+      'borderStyle',
+      'borderColor'
+    ])
   } else {
     return getStyle(style, style.borderActive ? commonFilterAttrs : commonFilterAttrsFilterBorder)
   }
