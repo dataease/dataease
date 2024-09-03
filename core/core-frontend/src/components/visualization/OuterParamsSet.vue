@@ -24,7 +24,7 @@
                 menu
                 ref="outerParamsInfoTree"
                 :data="state.outerParamsInfoArray"
-                node-key="id"
+                node-key="paramsInfoId"
                 highlight-current
                 :props="state.treeProp"
                 @node-click="nodeClick"
@@ -56,7 +56,7 @@
                     </span>
                     <span class="icon-more">
                       <handle-more
-                        style="margin-right: 10px"
+                        style="margin-right: 16px"
                         @handle-command="cmd => outerParamsOperation(cmd, node, data)"
                         :menu-list="state.optMenu"
                         icon-name="icon_more_outlined"
@@ -410,9 +410,10 @@ const initParams = async () => {
         state.mapOuterParamsInfoArray[outerParamsInfo.paramsInfoId] = outerParamsInfo
       })
       state.curNodeId = null
+      const firstNode = state.outerParamsInfoArray[0]
       nextTick(() => {
-        // outerParamsInfoTree.value.setCurrentKey(firstNode.paramsInfoId)
-        // nodeClick(firstNode)
+        outerParamsInfoTree.value.setCurrentKey(firstNode.paramsInfoId)
+        nodeClick(firstNode)
       })
     }
   })
@@ -581,6 +582,14 @@ const viewInfoOnChange = targetViewInfo => {
     targetViewInfo.targetFieldId = null
   }
 }
+
+const initSelected = data => {
+  nextTick(() => {
+    outerParamsInfoTree.value.setCurrentKey(data.paramsInfoId)
+    nodeClick(data)
+  })
+}
+
 const sourceFieldCheckedChange = data => {
   if (data.checked) {
     state.outerParams.checked = true
@@ -601,6 +610,7 @@ const addOuterParamsInfo = () => {
   state.outerParamsInfoArray.push(outerParamsInfo)
   state.mapOuterParamsInfoArray[outerParamsInfo.paramsInfoId] = outerParamsInfo
   curEditDataId.value = outerParamsInfo['paramsInfoId']
+  initSelected(outerParamsInfo)
 }
 
 const removeOuterParamsInfo = (node, data) => {
@@ -719,6 +729,9 @@ defineExpose({
   width: 100%;
   overflow-y: auto;
   background: none;
+  :deep(.ed-tree-node__expand-icon) {
+    display: none;
+  }
 }
 
 .custom-tree-node {
@@ -730,7 +743,7 @@ defineExpose({
 
   .icon-more {
     margin-left: auto;
-    visibility: hidden;
+    visibility: visible;
   }
 
   &:hover .icon-more {
@@ -839,8 +852,9 @@ defineExpose({
 
 .auth-span {
   float: right;
-  width: 40px;
-  margin-right: 5px;
+  width: 16px;
+  margin-right: 8px;
+  margin-left: 16px;
 }
 
 .tree-content {
