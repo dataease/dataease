@@ -75,6 +75,7 @@ const getTimeOut = () => {
 
 // 创建axios实例
 const time = getTimeOut()
+window._de_get_time_out = time
 const service: AxiosInstanceWithLoading = axios.create({
   baseURL: PATH_URL, // api 的 base_url
   timeout: time ? time * 1000 : config.request_timeout // 请求超时时间
