@@ -288,40 +288,40 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   }
   protected configLegend(chart: Chart, options: LineOptions): LineOptions {
     const optionTmp = super.configLegend(chart, options)
-    const xAxisExt = chart.xAxisExt
-    if (!optionTmp.legend || xAxisExt.length === 0 || xAxisExt[0].customSort?.length === 0) {
-      return optionTmp
-    }
-    // 图例自定义排序
-    const l = optionTmp.legend
-    const basicStyle = parseJson(chart.customAttr).basicStyle
-    const sort = xAxisExt[0].customSort ?? []
-    const legendItems = []
-    sort.forEach((item, index) => {
-      legendItems.push({
-        name: item,
-        value: item,
-        marker: {
-          symbol: l.marker.symbol,
-          style: {
-            r: 6,
-            fill: 'rgba(0,0,0,0)',
-            lineWidth: 2,
-            lineJoin: 'round',
-            stroke: basicStyle.colors[index]
+    const xAxisExt = chart.xAxisExt[0]
+    if (optionTmp.legend && xAxisExt?.customSort?.length > 0) {
+      // 图例自定义排序
+      const l = optionTmp.legend
+      const basicStyle = parseJson(chart.customAttr).basicStyle
+      const sort = xAxisExt.customSort ?? []
+      const legendItems = []
+      sort.forEach((item, index) => {
+        legendItems.push({
+          name: item,
+          value: item,
+          marker: {
+            symbol: l.marker.symbol,
+            style: {
+              r: 6,
+              fill: 'rgba(0,0,0,0)',
+              lineWidth: 2,
+              lineJoin: 'round',
+              stroke: basicStyle.colors[index % basicStyle.colors.length]
+            }
           }
-        }
+        })
       })
-    })
-    const legend = {
-      ...l,
-      custom: true,
-      items: legendItems
+      const legend = {
+        ...l,
+        custom: true,
+        items: legendItems
+      }
+      return {
+        ...optionTmp,
+        legend
+      }
     }
-    return {
-      ...optionTmp,
-      legend
-    }
+    return optionTmp
   }
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
     return flow(
