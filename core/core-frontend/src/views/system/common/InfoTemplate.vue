@@ -27,7 +27,9 @@
         </div>
         <div class="info-item-content">
           <div class="info-item-pwd" v-if="item.type === 'pwd'">
-            <span>{{ pwdItem[item.pkey]['hidden'] ? '********' : item.pval }}</span>
+            <span class="info-item-pwd-span">{{
+              pwdItem[item.pkey]['hidden'] ? '********' : item.pval
+            }}</span>
 
             <el-tooltip
               v-if="props.copyList.includes(item.pkey)"
@@ -255,11 +257,17 @@ formatLabel()
         .info-item-pwd {
           height: 22px;
           line-height: 22px;
-
+          width: 100%;
           display: flex;
           align-items: center;
           i {
             margin-left: 2px;
+          }
+          .info-item-pwd-span {
+            max-width: calc(100% - 84px);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
           }
         }
       }
