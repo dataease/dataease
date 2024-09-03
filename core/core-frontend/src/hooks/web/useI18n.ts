@@ -28,10 +28,10 @@ export const useI18n = (
 } => {
   const normalFn = {
     t: (key: string) => {
+      console.log('window.de-i18nDe', key, namespace)
       return getKey(namespace, key)
     }
   }
-  console.log('window.de-i18nDe', i18n)
 
   if (!i18n) {
     return normalFn
