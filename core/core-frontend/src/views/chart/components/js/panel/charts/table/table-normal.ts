@@ -157,6 +157,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (customAttr.tableHeader.showTableHeader === false) {
       s2Options.style.colCfg.height = 1
+      if (customAttr.tableCell.showHorizonBorder === false) {
+        s2Options.style.colCfg.height = 0
+      }
       s2Options.interaction = {
         resize: {
           colCellVertical: false
