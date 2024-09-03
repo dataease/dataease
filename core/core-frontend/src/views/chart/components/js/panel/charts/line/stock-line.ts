@@ -212,7 +212,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<Mix>): Promise<Mix> {
     const { chart, action, container } = drawOptions
-    if (!chart.data.data?.length) {
+    if (!chart.data?.data?.length) {
       return
     }
     const xAxis = chart.xAxis
