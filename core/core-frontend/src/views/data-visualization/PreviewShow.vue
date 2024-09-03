@@ -2,7 +2,7 @@
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
-import { nextTick, onBeforeMount, reactive, ref, computed } from 'vue'
+import { nextTick, onBeforeMount, reactive, ref, computed, onMounted } from 'vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { storeToRefs } from 'pinia'
@@ -18,6 +18,7 @@ import DvPreview from '@/views/data-visualization/DvPreview.vue'
 import AppExportForm from '@/components/de-app/AppExportForm.vue'
 import { personInfoApi } from '@/api/user'
 import { ElMessage } from 'element-plus-secondary'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewDataInfo } = storeToRefs(dvMainStore)
@@ -195,6 +196,15 @@ const findUserData = callback => {
     callback(rsp)
   })
 }
+
+onMounted(() => {
+  useEmitt({
+    name: 'canvasDownload',
+    callback: function () {
+      download('img')
+    }
+  })
+})
 
 defineExpose({
   getPreviewStateInfo

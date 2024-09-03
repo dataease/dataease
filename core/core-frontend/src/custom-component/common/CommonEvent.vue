@@ -22,9 +22,9 @@ const isDashboard = dvMainStore.dvInfo.type === 'dashboard'
 
 const curSupportEvents = computed(() => {
   if (isDashboard) {
-    return ['jump', 'refreshDataV']
+    return ['jump', 'refreshDataV', 'fullScreen', 'share', 'download']
   } else {
-    return ['jump', 'showHidden', 'refreshDataV']
+    return ['jump', 'showHidden', 'refreshDataV', 'fullScreen', 'download']
   }
 })
 const onEventChange = () => {
