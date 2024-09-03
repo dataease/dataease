@@ -583,7 +583,6 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configSlider,
       this.configAnalyse,
       this.configEmptyDataStrategy
     )(chart, options)
