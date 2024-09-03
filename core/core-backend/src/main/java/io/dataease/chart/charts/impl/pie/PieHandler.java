@@ -1,7 +1,5 @@
 package io.dataease.chart.charts.impl.pie;
 
-import io.dataease.chart.charts.impl.DefaultChartHandler;
-import io.dataease.chart.charts.impl.ExtQuotaChartHandler;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.extensions.view.dto.AxisFormatResult;
 import io.dataease.extensions.view.dto.ChartAxis;
@@ -15,7 +13,7 @@ public class PieHandler extends YoyChartHandler {
         chartHandlerManager.registerChartHandler(this.getRender(), "pie", this);
         chartHandlerManager.registerChartHandler(this.getRender(), "pie-rose", this);
         chartHandlerManager.registerChartHandler(this.getRender(), "pie-donut", this);
-        chartHandlerManager.registerChartHandler(this.getRender(), "pie-rose-donut", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "pie-donut-rose", this);
     }
 
     @Override
