@@ -88,8 +88,8 @@ export const DEFAULT_CANVAS_STYLE_DATA_BASE = {
   popupButtonAvailable: true, // 弹框区域显示按钮是否可用 默认为true
   screenAdaptor: 'widthFirst', // 屏幕适配方式 widthFirst=宽度优先 heightFirst=高度优先 full=铺满全屏 keepSize=不缩放
   scale: 60,
-  scaleWidth: 100,
-  scaleHeight: 100,
+  scaleWidth: 60,
+  scaleHeight: 60,
   backgroundColorSelect: true,
   backgroundImageEnable: false,
   backgroundType: 'backgroundColor', // 废弃
