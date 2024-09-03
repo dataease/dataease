@@ -505,9 +505,13 @@ export function getConditions(chart: Chart) {
     const valueColor = tableCell.tableFontColor
     const valueBgColor = enableTableCrossBG
       ? null
+      : isAlphaColor(tableCell.tableItemBgColor)
+      ? tableCell.tableItemBgColor
       : hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
     const headerValueColor = tableHeader.tableHeaderFontColor
-    const headerValueBgColor = hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
+    const headerValueBgColor = isAlphaColor(tableHeader.tableHeaderBgColor)
+      ? tableHeader.tableHeaderBgColor
+      : hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
       let defaultValueColor = valueColor
