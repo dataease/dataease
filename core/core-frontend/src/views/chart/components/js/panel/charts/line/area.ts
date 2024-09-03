@@ -97,7 +97,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Area>): Promise<G2Area> {
     const { chart, container, action } = drawOptions
-    if (!chart.data.data?.length) {
+    if (!chart.data?.data?.length) {
       clearExtremum(chart)
       return
     }
