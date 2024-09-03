@@ -72,7 +72,7 @@ export abstract class L7PlotChartView<
         if (data[i].value === null) {
           data.splice(i, 1)
         }
-        for (let j = data[i].dynamicTooltipValue?.length - 1; j >= 0; j--) {
+        for (let j = data[i]?.dynamicTooltipValue?.length - 1; j >= 0; j--) {
           if (data[i].dynamicTooltipValue[j].value === null) {
             data[i].dynamicTooltipValue.splice(j, 1)
           }
