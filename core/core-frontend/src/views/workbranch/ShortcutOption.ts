@@ -1,7 +1,6 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'
 const { t } = useI18n()
-console.log('useI18n', useI18n())
 export interface ShortcutRequest {
   keyword?: string
   type?: string

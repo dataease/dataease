@@ -309,6 +309,7 @@ initFunction()
           <el-form
             require-asterisk-position="right"
             ref="formField"
+            @keydown.stop.prevent.enter
             :model="fieldForm"
             label-position="top"
           >
@@ -434,7 +435,7 @@ initFunction()
               <span
                 v-for="item in state.dimensionData"
                 :key="item.id"
-                class="item-dimension flex-align-center ellipsis"
+                class="item-dimension flex-align-center"
                 :title="item.name"
                 @click="insertFieldToCodeMirror('[' + item.name + ']')"
               >
@@ -444,7 +445,7 @@ initFunction()
                     :className="`field-icon-${fieldType[item.deType]}`"
                   ></Icon>
                 </el-icon>
-                {{ item.name }}
+                <span class="ellipsis" :title="item.name">{{ item.name }}</span>
               </span>
             </div>
             <div v-else class="class-na">{{ t('dataset.na') }}</div>
@@ -470,8 +471,7 @@ initFunction()
               <span
                 v-for="item in state.quotaData"
                 :key="item.id"
-                class="item-quota flex-align-center ellipsis"
-                :title="item.name"
+                class="item-quota flex-align-center"
                 @click="insertFieldToCodeMirror('[' + item.name + ']')"
               >
                 <el-icon v-if="!item.groupType">
@@ -483,7 +483,7 @@ initFunction()
                     :className="`field-icon-${fieldType[item.deType]}`"
                   ></Icon>
                 </el-icon>
-                {{ item.name }}
+                <span class="ellipsis" :title="item.name">{{ item.name }}</span>
                 <div v-if="!item.groupType" class="icon-right">
                   <el-icon @click.stop="updateParmasToQuota" class="hover-icon">
                     <Icon name="icon_edit_outlined"></Icon>
@@ -564,7 +564,13 @@ initFunction()
       title="添加计算参数"
       width="500"
     >
-      <el-form label-position="top" ref="formQuotaRef" :model="formQuota" :rules="formQuotaRules">
+      <el-form
+        @keydown.stop.prevent.enter
+        label-position="top"
+        ref="formQuotaRef"
+        :model="formQuota"
+        :rules="formQuotaRules"
+      >
         <el-form-item label="参数名称" prop="name">
           <el-input style="width: 100%" v-model="formQuota.name" placeholder="请输入1-50个字符" />
         </el-form-item>
