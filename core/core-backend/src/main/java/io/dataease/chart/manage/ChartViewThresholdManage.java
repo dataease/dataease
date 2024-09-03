@@ -335,6 +335,9 @@ public class ChartViewThresholdManage {
         } else {
             String term = item.getTerm();
             if (Objects.equals(deType, DeTypeConstants.DE_STRING)) {
+                if (valueObj == null) {
+                    return StringUtils.equals(term, "null");
+                }
                 if (StringUtils.equals(term, "eq")) {
                     return StringUtils.equals(item.getValue(), valueObj.toString());
                 } else if (StringUtils.equals(term, "not_eq")) {
@@ -348,9 +351,9 @@ public class ChartViewThresholdManage {
                 } else if (StringUtils.equals(term, "not_like")) {
                     return !StringUtils.contains(item.getValue(), valueObj.toString());
                 } else if (StringUtils.equals(term, "null")) {
-                    return valueObj == null;
+                    return false;
                 } else if (StringUtils.equals(term, "not_null")) {
-                    return valueObj != null;
+                    return true;
                 } else if (StringUtils.equals(term, "empty")) {
                     return StringUtils.isBlank(valueObj.toString());
                 } else if (StringUtils.equals(term, "not_empty")) {
@@ -359,6 +362,7 @@ public class ChartViewThresholdManage {
                     return StringUtils.equals(item.getValue(), valueObj.toString());
                 }
             } else if (Objects.equals(deType, DeTypeConstants.DE_INT) || Objects.equals(deType, DeTypeConstants.DE_FLOAT)) {
+                if (valueObj == null) return false;
                 if (StringUtils.equals(term, "eq")) {
                     return StringUtils.equals(item.getValue().toString(), valueObj.toString());
                 } else if (StringUtils.equals(term, "not_eq")) {
