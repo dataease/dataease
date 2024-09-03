@@ -345,7 +345,7 @@ watch(
             />
           </el-collapse-item>
           <collapse-switch-item
-            v-if="showProperties('border-style') && commonBorderPop"
+            v-if="showProperties('border-style') && commonBorderPop && !batchOptStatus"
             v-model="commonBorderPop.borderActive"
             @modelChange="val => onActiveChange(val)"
             :themes="themes"
