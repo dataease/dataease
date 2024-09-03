@@ -1,6 +1,5 @@
 import pkg from '../package.json'
 import viteCompression from 'vite-plugin-compression'
-
 export default {
   plugins: [
     viteCompression({
@@ -20,9 +19,11 @@ export default {
         chunkFileNames: `assets/chunk/[name]-${pkg.version}-${pkg.name}.js`,
         assetFileNames: `assets/[ext]/[name]-${pkg.version}-${pkg.name}.[ext]`,
         entryFileNames: `js/[name]-${pkg.version}-${pkg.name}.js`,
-        manualChunks(id: string) {
+        manualChunks(id: string, { getModuleInfo }) {
           if (id.includes('node_modules')) {
             return id.toString().split('node_modules/')[1].split('/')[0].toString()
+          } else if (id.includes('.vue') && getModuleInfo(id).code.length < 10000) {
+            return 'vendor'
           }
         }
       }
