@@ -653,6 +653,8 @@ export async function decompressionPre(params, callBack) {
       //历史字段适配
       sourceCanvasStyle.component['seniorStyleSetting'] =
         sourceCanvasStyle.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
+      sourceCanvasStyle['scaleWidth'] = sourceCanvasStyle['scale']
+      sourceCanvasStyle['scaleHeight'] = sourceCanvasStyle['scaleHeight']
       deTemplateData = {
         canvasStyleData: sourceCanvasStyle,
         componentData: sourceComponentData,
