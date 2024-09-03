@@ -17,6 +17,7 @@ const setupAll = async () => {
   const app = createApp(App)
   installDirective(app)
   await setupI18n(app)
+  console.log('I18-loaded');
   setupStore(app)
   setupRouter(app)
   setupElementPlus(app)
