@@ -118,7 +118,13 @@ const confirm = () => {
 </script>
 
 <template>
-  <el-dialog v-model="dialogVisible" :before-close="cancel" :title="dialogTitle" width="420">
+  <el-dialog
+    class="create-dialog add-form_font_dialog"
+    v-model="dialogVisible"
+    :before-close="cancel"
+    :title="dialogTitle"
+    width="420"
+  >
     <el-form
       @submit.prevent
       ref="ruleFormRef"
@@ -187,3 +193,13 @@ const confirm = () => {
     </template>
   </el-dialog>
 </template>
+
+<style lang="less">
+.add-form_font_dialog {
+  .ed-dialog__footer {
+    border: none;
+    padding-top: 0;
+    margin-top: -2px;
+  }
+}
+</style>
