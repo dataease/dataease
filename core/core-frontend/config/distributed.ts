@@ -19,15 +19,9 @@ export default {
         chunkFileNames: `assets/chunk/[name]-${pkg.version}-${pkg.name}.js`,
         assetFileNames: `assets/[ext]/[name]-${pkg.version}-${pkg.name}.[ext]`,
         entryFileNames: `js/[name]-${pkg.version}-${pkg.name}.js`,
-        manualChunks(id: string, { getModuleInfo }) {
+        manualChunks(id: string) {
           if (id.includes('node_modules')) {
             return id.toString().split('node_modules/')[1].split('/')[0].toString()
-          } else if (
-            id.includes('.vue') &&
-            ['App.vue', 'ConfigGlobal.vue', 'ExportExcel.vue'].every(ele => !id.includes(ele)) &&
-            getModuleInfo(id).code.length < 10000
-          ) {
-            return 'vendor'
           }
         }
       }
