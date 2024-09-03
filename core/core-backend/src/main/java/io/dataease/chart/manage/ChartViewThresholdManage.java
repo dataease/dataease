@@ -67,6 +67,26 @@ public class ChartViewThresholdManage {
         if (CollectionUtils.isNotEmpty(extBubble)) {
             result.addAll(extBubble);
         }
+        List<ChartViewFieldDTO> extLabel = details.getExtLabel();
+        if (CollectionUtils.isNotEmpty(extLabel)) {
+            result.addAll(extLabel);
+        }
+        List<ChartViewFieldDTO> extTooltip = details.getExtTooltip();
+        if (CollectionUtils.isNotEmpty(extTooltip)) {
+            result.addAll(extTooltip);
+        }
+        List<ChartViewFieldDTO> extColor = details.getExtColor();
+        if (CollectionUtils.isNotEmpty(extColor)) {
+            result.addAll(extColor);
+        }
+        List<ChartViewFieldDTO> flowMapStartName = details.getFlowMapStartName();
+        if (CollectionUtils.isNotEmpty(flowMapStartName)) {
+            result.addAll(flowMapStartName);
+        }
+        List<ChartViewFieldDTO> flowMapEndName = details.getFlowMapEndName();
+        if (CollectionUtils.isNotEmpty(flowMapEndName)) {
+            result.addAll(flowMapEndName);
+        }
         return result;
     }
 

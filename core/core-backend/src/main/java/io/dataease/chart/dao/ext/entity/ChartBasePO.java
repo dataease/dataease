@@ -40,4 +40,14 @@ public class ChartBasePO implements Serializable {
 
 
     private String extBubble;
+
+    private String flowMapStartName;
+
+    private String flowMapEndName;
+
+    private String extColor;
+
+    private String extLabel;
+
+    private String extTooltip;
 }

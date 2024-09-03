@@ -30,7 +30,12 @@ public interface ExtChartViewMapper {
                     ccv.y_axis,
                     ccv.y_axis_ext,
                     ccv.ext_stack,
-                    ccv.ext_bubble
+                    ccv.ext_bubble,
+                    ccv.ext_label,
+                    ccv.ext_tooltip,
+                    ccv.flow_map_start_name,
+                    ccv.flow_map_end_name,
+                    ccv.ext_color
                 from core_chart_view ccv 
                     left join data_visualization_info dvi on dvi.id = ccv.scene_id
                 where ccv.id = #{id}
