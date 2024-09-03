@@ -236,9 +236,9 @@ const eventEnable = computed(
     (['Picture', 'CanvasIcon', 'CircleShape', 'SvgTriangle', 'RectShape', 'ScrollText'].includes(
       config.value.component
     ) ||
-      (['indicator', 'rich-text'].includes(config.value.innerType) &&
-        config.value.events &&
-        config.value.events.checked))
+      ['indicator', 'rich-text'].includes(config.value.innerType)) &&
+    config.value.events &&
+    config.value.events.checked
 )
 
 const onWrapperClick = e => {
