@@ -286,6 +286,45 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpGroupSeriesColor(chart, data)
   }
+  protected configLegend(chart: Chart, options: LineOptions): LineOptions {
+    const optionTmp = super.configLegend(chart, options)
+    const xAxisExt = chart.xAxisExt
+    if (!optionTmp.legend || xAxisExt.length === 0 || xAxisExt[0].customSort.length === 0) {
+      return optionTmp
+    }
+    // 图例自定义排序
+    const l = optionTmp.legend
+    const basicStyle = parseJson(chart.customAttr).basicStyle
+    const sort = xAxisExt[0].customSort ?? []
+    const legendItems = []
+    sort.forEach((item, index) => {
+      legendItems.push({
+        name: item,
+        value: item,
+        marker: {
+          spacing: 13,
+          symbol: l.marker.symbol,
+          style: {
+            r: 6,
+            fill: 'rgba(0,0,0,0)',
+            lineWidth: 2,
+            lineJoin: 'round',
+            stroke: basicStyle.colors[index]
+          }
+        }
+      })
+    })
+    const legend = {
+      ...l,
+      itemHeight: l.itemHeight + 4,
+      custom: true,
+      items: legendItems
+    }
+    return {
+      ...optionTmp,
+      legend
+    }
+  }
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
     return flow(
       this.configTheme,
