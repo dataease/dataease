@@ -21,6 +21,9 @@ export default {
         entryFileNames: `js/[name]-${pkg.version}-${pkg.name}.js`,
         manualChunks(id: string, { getModuleInfo }) {
           if (id.includes('node_modules')) {
+            if (getModuleInfo(id).code.length < 10000) {
+              return 'node_modules_de'
+            }
             return id.toString().split('node_modules/')[1].split('/')[0].toString()
           } else if (id.includes('.vue') && getModuleInfo(id).code.length < 10000) {
             return 'vendor'

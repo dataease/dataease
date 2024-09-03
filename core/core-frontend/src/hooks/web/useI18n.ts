@@ -31,6 +31,7 @@ export const useI18n = (
       return getKey(namespace, key)
     }
   }
+  console.log('window.I18nDe-', i18n)
 
   if (!i18n) {
     return normalFn
