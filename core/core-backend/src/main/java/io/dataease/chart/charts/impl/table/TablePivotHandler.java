@@ -19,8 +19,11 @@ import io.dataease.utils.JsonUtil;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class TablePivotHandler extends GroupChartHandler {
@@ -51,30 +54,15 @@ public class TablePivotHandler extends GroupChartHandler {
         var rowAxis = view.getXAxis();
         var colAxis = view.getXAxisExt();
         var dataMap = new HashMap<String, Object>();
-
+        var quotaIds = view.getYAxis().stream().map(ChartViewFieldDTO::getDataeaseName).collect(Collectors.toSet());
         // 行总计，列维度聚合加上自定义字段
         var row = tableTotal.getRow();
         if (row.isShowGrandTotals()) {
-            var yAxis = new ArrayList<ChartViewFieldDTO>();
-            for (TableCalcTotalCfg totalCfg : row.getCalcTotals().getCfg()) {
-                if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
-                    var field = new ChartViewFieldDTO();
-                    field.setDeType(DeTypeConstants.DE_FLOAT);
-                    BeanUtils.copyBean(field, totalCfg);
-                    field.setId(IDUtils.snowID());
-                    field.setExtField(ExtFieldConstant.EXT_CALC);
-                    yAxis.add(field);
-                }
-            }
+            var yAxis = getCustomFields(view, row.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, colAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-                datasourceRequest.setQuery(querySql);
-                logger.debug("calcite chart sql: " + querySql);
-                List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-                nullToBlank(data);
+                var result = getData(sqlMeta, colAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                var querySql = result.getT1();
+                var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
                 dataMap.put("rowTotal", tmp);
                 tmp.put("data", buildCustomCalcResult(data, colAxis, yAxis));
@@ -83,17 +71,7 @@ public class TablePivotHandler extends GroupChartHandler {
         }
         // 行小计，列维度聚合，自定义指标数 * (行维度的数量 - 1)
         if (row.isShowSubTotals()) {
-            var yAxis = new ArrayList<ChartViewFieldDTO>();
-            for (TableCalcTotalCfg totalCfg : row.getCalcSubTotals().getCfg()) {
-                if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
-                    var field = new ChartViewFieldDTO();
-                    field.setDeType(DeTypeConstants.DE_FLOAT);
-                    BeanUtils.copyBean(field, totalCfg);
-                    field.setId(IDUtils.snowID());
-                    field.setExtField(ExtFieldConstant.EXT_CALC);
-                    yAxis.add(field);
-                }
-            }
+            var yAxis = getCustomFields(view, row.getCalcSubTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
                 dataMap.put("rowSubTotal", tmpData);
@@ -105,14 +83,9 @@ public class TablePivotHandler extends GroupChartHandler {
                     var subRowAxis = rowAxis.subList(0, i + 1);
                     xAxis.addAll(subRowAxis);
                     if (!yAxis.isEmpty()) {
-                        Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                        Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                        String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                        querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-                        datasourceRequest.setQuery(querySql);
-                        logger.debug("calcite chart sql: " + querySql);
-                        List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-                        nullToBlank(data);
+                        var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                        var querySql = result.getT1();
+                        var data = result.getT2();
                         var tmp = new HashMap<String, Object>();
                         tmp.put("data", buildCustomCalcResult(data, xAxis, yAxis));
                         tmp.put("sql", Base64.getEncoder().encodeToString(querySql.getBytes()));
@@ -124,26 +97,11 @@ public class TablePivotHandler extends GroupChartHandler {
         // 列总计，行维度聚合加上自定义字段
         var col = tableTotal.getCol();
         if (col.isShowGrandTotals()) {
-            var yAxis = new ArrayList<ChartViewFieldDTO>();
-            for (TableCalcTotalCfg totalCfg : col.getCalcTotals().getCfg()) {
-                if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
-                    var field = new ChartViewFieldDTO();
-                    field.setDeType(DeTypeConstants.DE_FLOAT);
-                    BeanUtils.copyBean(field, totalCfg);
-                    field.setId(IDUtils.snowID());
-                    field.setExtField(ExtFieldConstant.EXT_CALC);
-                    yAxis.add(field);
-                }
-            }
+            var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, rowAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-                datasourceRequest.setQuery(querySql);
-                logger.debug("calcite chart sql: " + querySql);
-                List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-                nullToBlank(data);
+                var result = getData(sqlMeta, rowAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                var querySql = result.getT1();
+                var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
                 dataMap.put("colTotal", tmp);
                 tmp.put("data", buildCustomCalcResult(data, rowAxis, yAxis));
@@ -152,17 +110,7 @@ public class TablePivotHandler extends GroupChartHandler {
         }
         // 列小计，行维度聚合，自定义指标数 * (列维度的数量 - 1)
         if (col.isShowSubTotals()) {
-            var yAxis = new ArrayList<ChartViewFieldDTO>();
-            for (TableCalcTotalCfg totalCfg : col.getCalcSubTotals().getCfg()) {
-                if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
-                    var field = new ChartViewFieldDTO();
-                    field.setDeType(DeTypeConstants.DE_FLOAT);
-                    BeanUtils.copyBean(field, totalCfg);
-                    field.setId(IDUtils.snowID());
-                    field.setExtField(ExtFieldConstant.EXT_CALC);
-                    yAxis.add(field);
-                }
-            }
+            var yAxis = getCustomFields(view, col.getCalcSubTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
                 dataMap.put("colSubTotal", tmpData);
@@ -174,14 +122,9 @@ public class TablePivotHandler extends GroupChartHandler {
                     var subColAxis = colAxis.subList(0, i + 1);
                     xAxis.addAll(subColAxis);
                     if (!yAxis.isEmpty()) {
-                        Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                        Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                        String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                        querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-                        datasourceRequest.setQuery(querySql);
-                        logger.debug("calcite chart sql: " + querySql);
-                        List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-                        nullToBlank(data);
+                        var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                        var querySql = result.getT1();
+                        var data = result.getT2();
                         var tmp = new HashMap<String, Object>();
                         tmp.put("data", buildCustomCalcResult(data, xAxis, yAxis));
                         tmp.put("sql", Base64.getEncoder().encodeToString(querySql.getBytes()));
@@ -192,27 +135,12 @@ public class TablePivotHandler extends GroupChartHandler {
         }
         // 行列交叉部分总计，无聚合，直接算，用列总计公式
         if (row.isShowGrandTotals() && col.isShowGrandTotals()) {
-            var yAxis = new ArrayList<ChartViewFieldDTO>();
-            for (TableCalcTotalCfg totalCfg : col.getCalcTotals().getCfg()) {
-                if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
-                    var field = new ChartViewFieldDTO();
-                    BeanUtils.copyBean(field, totalCfg);
-                    field.setExtField(ExtFieldConstant.EXT_CALC);
-                    field.setDeType(DeTypeConstants.DE_FLOAT);
-                    field.setId(IDUtils.snowID());
-                    yAxis.add(field);
-                }
-            }
+            var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 // 清掉聚合轴
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, Collections.emptyList(), FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-                datasourceRequest.setQuery(querySql);
-                logger.debug("calcite chart sql: " + querySql);
-                List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-                nullToBlank(data);
+                var result = getData(sqlMeta, Collections.emptyList(), yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                var querySql = result.getT1();
+                var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
                 dataMap.put("rowColTotal", tmp);
                 var tmpData = new HashMap<String, String>();
@@ -226,17 +154,7 @@ public class TablePivotHandler extends GroupChartHandler {
         }
         // 行总计里面的列小计
         if (row.isShowGrandTotals() && col.isShowSubTotals()) {
-            var yAxis = new ArrayList<ChartViewFieldDTO>();
-            for (TableCalcTotalCfg totalCfg : col.getCalcTotals().getCfg()) {
-                if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
-                    var field = new ChartViewFieldDTO();
-                    BeanUtils.copyBean(field, totalCfg);
-                    field.setExtField(ExtFieldConstant.EXT_CALC);
-                    field.setDeType(DeTypeConstants.DE_FLOAT);
-                    field.setId(IDUtils.snowID());
-                    yAxis.add(field);
-                }
-            }
+            var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
                 dataMap.put("colSubInRowTotal", tmpData);
@@ -245,14 +163,9 @@ public class TablePivotHandler extends GroupChartHandler {
                         break;
                     }
                     var xAxis = colAxis.subList(0, i + 1);
-                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                    Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                    String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                    querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-                    datasourceRequest.setQuery(querySql);
-                    logger.debug("calcite chart sql: " + querySql);
-                    List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-                    nullToBlank(data);
+                    var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                    var querySql = result.getT1();
+                    var data = result.getT2();
                     var tmp = new HashMap<String, Object>();
                     tmp.put("data", buildCustomCalcResult(data, xAxis, yAxis));
                     tmp.put("sql", Base64.getEncoder().encodeToString(querySql.getBytes()));
@@ -262,17 +175,7 @@ public class TablePivotHandler extends GroupChartHandler {
         }
         // 列总计里面的行小计
         if (col.isShowGrandTotals() && row.isShowGrandTotals()) {
-            var yAxis = new ArrayList<ChartViewFieldDTO>();
-            for (TableCalcTotalCfg totalCfg : row.getCalcTotals().getCfg()) {
-                if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
-                    var field = new ChartViewFieldDTO();
-                    BeanUtils.copyBean(field, totalCfg);
-                    field.setExtField(ExtFieldConstant.EXT_CALC);
-                    field.setDeType(DeTypeConstants.DE_FLOAT);
-                    field.setId(IDUtils.snowID());
-                    yAxis.add(field);
-                }
-            }
+            var yAxis = getCustomFields(view, row.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
                 dataMap.put("rowSubInColTotal", tmpData);
@@ -281,14 +184,9 @@ public class TablePivotHandler extends GroupChartHandler {
                         break;
                     }
                     var xAxis = rowAxis.subList(0, i + 1);
-                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                    Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                    String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                    querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-                    datasourceRequest.setQuery(querySql);
-                    logger.debug("calcite chart sql: " + querySql);
-                    List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-                    nullToBlank(data);
+                    var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                    var querySql = result.getT1();
+                    var data = result.getT2();
                     var tmp = new HashMap<String, Object>();
                     tmp.put("data", buildCustomCalcResult(data, xAxis, yAxis));
                     tmp.put("sql", Base64.getEncoder().encodeToString(querySql.getBytes()));
@@ -298,17 +196,7 @@ public class TablePivotHandler extends GroupChartHandler {
         }
         // 行小计和列小计相交部分
         if (row.isShowSubTotals() && col.isShowSubTotals()) {
-            var yAxis = new ArrayList<ChartViewFieldDTO>();
-            for (TableCalcTotalCfg totalCfg : col.getCalcTotals().getCfg()) {
-                if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
-                    var field = new ChartViewFieldDTO();
-                    BeanUtils.copyBean(field, totalCfg);
-                    field.setExtField(ExtFieldConstant.EXT_CALC);
-                    field.setDeType(DeTypeConstants.DE_FLOAT);
-                    field.setId(IDUtils.snowID());
-                    yAxis.add(field);
-                }
-            }
+            var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<List<Map<String, Object>>>();
                 dataMap.put("rowSubInColSub", tmpData);
@@ -326,14 +214,9 @@ public class TablePivotHandler extends GroupChartHandler {
                         }
                         var subCol = colAxis.subList(0, j + 1);
                         xAxis.addAll(subCol);
-                        Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                        Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-                        String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                        querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-                        datasourceRequest.setQuery(querySql);
-                        logger.debug("calcite chart sql: " + querySql);
-                        List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
-                        nullToBlank(data);
+                        var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                        var querySql = result.getT1();
+                        var data = result.getT2();
                         var tmp = new HashMap<String, Object>();
                         tmp.put("data", buildCustomCalcResult(data, xAxis, yAxis));
                         tmp.put("sql", Base64.getEncoder().encodeToString(querySql.getBytes()));
@@ -370,6 +253,21 @@ public class TablePivotHandler extends GroupChartHandler {
         return rootResult;
     }
 
+    private Tuple2<String, List<String[]>> getData(SQLMeta sqlMeta, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis,
+                           List<ChartViewFieldDTO> allFields, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap,
+                           ChartViewDTO view, Provider provider, boolean needOrder) {
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDsList(dsMap);
+        Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+        Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+        String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+        querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
+        datasourceRequest.setQuery(querySql);
+        logger.debug("calcite chart sql: " + querySql);
+        List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
+        nullToBlank(data);
+        return Tuples.of(querySql, data);
+    }
     private void nullToBlank(List<String[]> data) {
         data.forEach(r -> {
             for (int i = 0; i < r.length; i++) {
@@ -380,4 +278,22 @@ public class TablePivotHandler extends GroupChartHandler {
         });
     }
 
+    private List<ChartViewFieldDTO> getCustomFields(ChartViewDTO view, List<TableCalcTotalCfg> cfgList) {
+        var quotaIds = view.getYAxis().stream().map(ChartViewFieldDTO::getDataeaseName).collect(Collectors.toSet());
+        var customFields = new ArrayList<ChartViewFieldDTO>();
+        for (TableCalcTotalCfg totalCfg : cfgList) {
+            if (!quotaIds.contains(totalCfg.getDataeaseName())) {
+                continue;
+            }
+            if (StringUtils.equalsIgnoreCase(totalCfg.getAggregation(), "CUSTOM")){
+                var field = new ChartViewFieldDTO();
+                field.setDeType(DeTypeConstants.DE_FLOAT);
+                BeanUtils.copyBean(field, totalCfg);
+                field.setId(IDUtils.snowID());
+                field.setExtField(ExtFieldConstant.EXT_CALC);
+                customFields.add(field);
+            }
+        }
+        return customFields;
+    }
 }
