@@ -289,7 +289,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   protected configLegend(chart: Chart, options: LineOptions): LineOptions {
     const optionTmp = super.configLegend(chart, options)
     const xAxisExt = chart.xAxisExt
-    if (!optionTmp.legend || xAxisExt.length === 0 || xAxisExt[0].customSort.length === 0) {
+    if (!optionTmp.legend || xAxisExt.length === 0 || xAxisExt[0].customSort?.length === 0) {
       return optionTmp
     }
     // 图例自定义排序
@@ -302,7 +302,6 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         name: item,
         value: item,
         marker: {
-          spacing: 13,
           symbol: l.marker.symbol,
           style: {
             r: 6,
@@ -316,7 +315,6 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     })
     const legend = {
       ...l,
-      itemHeight: l.itemHeight + 4,
       custom: true,
       items: legendItems
     }
