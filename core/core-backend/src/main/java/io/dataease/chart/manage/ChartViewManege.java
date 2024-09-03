@@ -100,7 +100,8 @@ public class ChartViewManege {
     }
 
     @XpackInteract(value = "chartViewManage")
-    public void disuse(List<Long> chartIdList) {}
+    public void disuse(List<Long> chartIdList) {
+    }
 
     @Transactional
     public void deleteBySceneId(Long sceneId, List<Long> chartIds) {
@@ -258,13 +259,23 @@ public class ChartViewManege {
         ChartBasePO po = extChartViewMapper.queryChart(id);
         if (ObjectUtils.isEmpty(po)) return null;
         ChartBaseVO vo = BeanUtils.copyBean(new ChartBaseVO(), po);
-        TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {};
+        TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {
+        };
         vo.setXAxis(JsonUtil.parseList(po.getXAxis(), tokenType));
         vo.setXAxisExt(JsonUtil.parseList(po.getXAxisExt(), tokenType));
         vo.setYAxis(JsonUtil.parseList(po.getYAxis(), tokenType));
         vo.setYAxisExt(JsonUtil.parseList(po.getYAxisExt(), tokenType));
         vo.setExtStack(JsonUtil.parseList(po.getExtStack(), tokenType));
         vo.setExtBubble(JsonUtil.parseList(po.getExtBubble(), tokenType));
+        vo.setFlowMapStartName(JsonUtil.parseList(po.getFlowMapStartName(), tokenType));
+        vo.setFlowMapEndName(JsonUtil.parseList(po.getFlowMapEndName(), tokenType));
+        if (StringUtils.isBlank(po.getExtColor()) || StringUtils.equals("null", po.getExtColor())) {
+            vo.setExtColor(new ArrayList<>());
+        } else {
+            vo.setExtColor(JsonUtil.parseList(po.getExtColor(), tokenType));
+        }
+        vo.setExtLabel(JsonUtil.parseList(po.getExtLabel(), tokenType));
+        vo.setExtTooltip(JsonUtil.parseList(po.getExtTooltip(), tokenType));
         return vo;
     }
 

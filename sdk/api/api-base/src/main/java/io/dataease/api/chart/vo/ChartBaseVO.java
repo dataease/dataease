@@ -63,4 +63,14 @@ public class ChartBaseVO implements Serializable {
      */
     private List<ChartViewFieldDTO> extBubble;
 
+    private List<ChartViewFieldDTO> flowMapStartName;
+
+    private List<ChartViewFieldDTO> flowMapEndName;
+
+    private List<ChartViewFieldDTO> extColor;
+
+    private List<ChartViewFieldDTO> extLabel;
+
+    private List<ChartViewFieldDTO> extTooltip;
+
 }
