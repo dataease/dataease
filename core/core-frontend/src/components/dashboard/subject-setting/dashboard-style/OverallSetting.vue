@@ -55,7 +55,7 @@
         :max="3600"
         size="middle"
         :disabled="!canvasStyleData.refreshViewEnable"
-        @change="themeChange"
+        @change="onRefreshChange"
       >
         <template #append>
           <el-select
@@ -165,7 +165,7 @@ import {
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT
 } from '@/custom-component/component-list'
-import { ElFormItem, ElIcon, ElSpace } from 'element-plus-secondary'
+import { ElFormItem, ElIcon, ElMessage, ElSpace } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 const snapshotStore = snapshotStoreWithOut()
 const props = defineProps({
@@ -179,7 +179,18 @@ const toolTip = computed(() => {
 })
 
 const resourceType = computed(() => (dvInfo.value.type === 'dashboard' ? '仪表板' : '数据大屏'))
-const themeChange = modifyName => {
+
+const onRefreshChange = val => {
+  if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {
+    canvasStyleData.value.refreshTime = 1
+    return
+  } else if (parseFloat(val) > 3600) {
+    canvasStyleData.value.refreshTime = 3600
+  }
+  themeChange()
+}
+
+const themeChange = (modifyName?) => {
   if (modifyName === 'themeColor') {
     // 主题变更
     canvasStyleData.value.component.chartCommonStyle.backgroundColorSelect = true
