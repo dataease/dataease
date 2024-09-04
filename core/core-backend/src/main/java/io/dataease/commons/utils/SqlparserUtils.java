@@ -177,8 +177,11 @@ public class SqlparserUtils {
         }
     }
 
-    private static String handleHaving(PlainSelect plainSelect) throws Exception {
+    private static void handleHaving(PlainSelect plainSelect) throws Exception {
         Expression expr = plainSelect.getHaving();
+        if (expr == null) {
+            return;
+        }
         StringBuilder stringBuilder = new StringBuilder();
         BinaryExpression binaryExpression = null;
         try {
@@ -192,12 +195,10 @@ public class SqlparserUtils {
             } else {
                 expr.accept(getExpressionDeParser(stringBuilder));
             }
-
         } else {
             expr.accept(getExpressionDeParser(stringBuilder));
         }
         plainSelect.setHaving(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
-        return plainSelect.toString();
     }
 
     private static String handleWhere(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {

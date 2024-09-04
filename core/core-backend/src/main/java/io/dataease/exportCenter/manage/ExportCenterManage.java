@@ -395,7 +395,7 @@ public class ExportCenterManage {
                 }
                 if (StringUtils.isNotEmpty(request.getExpressionTree())) {
                     Gson gson = new Gson();
-                    DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj = gson.fromJson(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
+                    DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj =JsonUtil.parseObject(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
                     permissionManage.getField(datasetRowPermissionsTreeObj);
                     DataSetRowPermissionsTreeDTO dataSetRowPermissionsTreeDTO = new DataSetRowPermissionsTreeDTO();
                     dataSetRowPermissionsTreeDTO.setTree(datasetRowPermissionsTreeObj);
@@ -468,15 +468,7 @@ public class ExportCenterManage {
                                             cell.setCellStyle(cellStyle);
                                             detailsSheet.setColumnWidth(j, 255 * 20);
                                         } else {
-                                            if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                                try {
-                                                    cell.setCellValue(Double.valueOf(rowData.get(j)));
-                                                } catch (Exception e) {
-                                                    LogUtil.warn("export excel data transform error");
-                                                }
-                                            } else {
-                                                cell.setCellValue(rowData.get(j));
-                                            }
+                                            cell.setCellValue(rowData.get(j));
                                         }
                                     }
                                 }
@@ -499,15 +491,7 @@ public class ExportCenterManage {
                             if (rowData != null) {
                                 for (int j = 0; j < rowData.size(); j++) {
                                     Cell cell = row.createCell(j);
-                                    if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                        try {
-                                            cell.setCellValue(Double.valueOf(rowData.get(j)));
-                                        } catch (Exception e) {
-                                            LogUtil.warn("export excel data transform error");
-                                        }
-                                    } else {
-                                        cell.setCellValue(rowData.get(j));
-                                    }
+                                    cell.setCellValue(rowData.get(j));
                                 }
                             }
                         }
