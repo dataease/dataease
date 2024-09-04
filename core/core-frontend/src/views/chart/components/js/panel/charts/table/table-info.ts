@@ -147,18 +147,15 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
-      s2Options.colCell = (node, sheet, config) => {
-        if (node.colIndex === 0) {
-          let indexLabel = customAttr.tableHeader.indexLabel
-          if (!indexLabel) {
-            indexLabel = ''
-          }
-          const cell = new TableColCell(node, sheet, config)
-          const shape = cell.getTextShape() as any
-          shape.attrs.text = indexLabel
-          return cell
+      let indexLabel = customAttr.tableHeader.indexLabel
+      if (!indexLabel) {
+        indexLabel = ''
+      }
+      s2Options.layoutCoordinate = (_, __, col) => {
+        if (col.colIndex === 0 && col.rowIndex === 0) {
+          col.label = indexLabel
+          col.value = indexLabel
         }
-        return new TableColCell(node, sheet, config)
       }
     }
     s2Options.dataCell = viewMeta => {
