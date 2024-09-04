@@ -526,7 +526,7 @@ export function isGroupCanvas(canvasId) {
 }
 
 export function isTabCanvas(canvasId) {
-  return canvasId && canvasId.includes('tab')
+  return canvasId && !canvasId.includes('Group') && !isMainCanvas(canvasId)
 }
 
 export function findComponentIndexById(componentId, componentDataMatch = componentData.value) {
