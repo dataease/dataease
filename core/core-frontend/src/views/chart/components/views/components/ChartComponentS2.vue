@@ -671,7 +671,7 @@ const tablePageClass = computed(() => {
     </el-row>
     <chart-error v-if="isError" :err-msg="errMsg" />
   </div>
-  <el-dialog v-model="state.imgEnlarge" append-to-body>
+  <el-dialog v-model="state.imgEnlarge" append-to-body class="image-dialog">
     <div class="enlarge-image">
       <img :src="state.imgSrc" style="width: 100%; height: 100%; object-fit: contain" />
     </div>
@@ -724,6 +724,13 @@ const tablePageClass = computed(() => {
 }
 </style>
 <style lang="less">
+.image-dialog {
+  height: 100%;
+  .ed-dialog__body {
+    height: calc(100% - 24px);
+    width: 100%;
+  }
+}
 .enlarge-image {
   display: flex;
   width: 100%;
