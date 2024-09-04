@@ -77,6 +77,7 @@ const change = () => {
     new KeyValue({
       type: 'text',
       enable: true,
+      nameType: 'fixed',
       uuid: guid(),
       contentType: 'text/plain'
     })

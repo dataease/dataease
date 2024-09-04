@@ -38,6 +38,10 @@ const props = defineProps({
   headers: {
     type: Array as PropType<Item[]>,
     default: () => []
+  },
+  valueList: {
+    type: Array as PropType<Item[]>,
+    default: () => []
   }
 })
 const { t } = useI18n()
@@ -216,6 +220,7 @@ const emits = defineEmits(['headersChange'])
         :is-show-enable="isShowEnable"
         type="body"
         @change-parameters="changeParameters"
+        :value-list="valueList"
       />
     </div>
     <div v-if="apiBody.type == 'JSON'" class="ms-body">
