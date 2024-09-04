@@ -313,8 +313,40 @@ export class StackBar extends Bar {
     return this.configStackColor(chart, options)
   }
 
+  protected configData(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const { xAxis, extStack, yAxis } = chart
+    const mainSort = xAxis.some(axis => axis.sort !== 'none')
+    const subSort = extStack.some(axis => axis.sort !== 'none')
+    if (mainSort || subSort) {
+      return options
+    }
+    const quotaSort = yAxis?.[0].sort !== 'none'
+    if (!quotaSort || !extStack.length || !yAxis.length) {
+      return options
+    }
+    const { data } = options
+    const mainAxisValueMap = data.reduce((p, n) => {
+      p[n.field] = p[n.field] ? p[n.field] + n.value : n.value || 0
+      return p
+    }, {})
+    const sort = yAxis[0].sort
+    data.sort((p, n) => {
+      if (sort === 'asc') {
+        return mainAxisValueMap[p.field] - mainAxisValueMap[n.field]
+      } else {
+        return mainAxisValueMap[n.field] - mainAxisValueMap[p.field]
+      }
+    })
+    return options
+  }
+
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpStackSeriesColor(chart, data)
+  }
+
+  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const tmp = super.setupOptions(chart, options)
+    return flow(this.configData)(chart, tmp, {}, this)
   }
 
   constructor(name = 'bar-stack') {
@@ -376,6 +408,22 @@ export class GroupBar extends StackBar {
     return setUpGroupSeriesColor(chart, data)
   }
 
+  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+    return flow(
+      this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configColor,
+      this.configBasicStyle,
+      this.configLabel,
+      this.configTooltip,
+      this.configLegend,
+      this.configXAxis,
+      this.configYAxis,
+      this.configSlider,
+      this.configAnalyse
+    )(chart, options, {}, this)
+  }
+
   constructor(name = 'bar-group') {
     super(name)
     this.baseOptions = {
@@ -427,6 +475,23 @@ export class GroupStackBar extends StackBar {
       tooltip
     }
   }
+
+  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+    return flow(
+      this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configColor,
+      this.configBasicStyle,
+      this.configLabel,
+      this.configTooltip,
+      this.configLegend,
+      this.configXAxis,
+      this.configYAxis,
+      this.configSlider,
+      this.configAnalyse
+    )(chart, options, {}, this)
+  }
+
   constructor(name = 'bar-group-stack') {
     super(name)
     this.baseOptions = {
