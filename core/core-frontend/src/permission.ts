@@ -59,8 +59,8 @@ router.beforeEach(async (to, from, next) => {
     }
   }
   await appearanceStore.setAppearance()
+  await appearanceStore.setFontList()
   if ((wsCache.get('user.token') || isDesktop) && !to.path.startsWith('/de-link/')) {
-    await appearanceStore.setFontList()
     if (!userStore.getUid) {
       await userStore.setUser()
     }
@@ -134,7 +134,7 @@ router.beforeEach(async (to, from, next) => {
       whiteList.includes(to.path) ||
       to.path.startsWith('/de-link/')
     ) {
-      await appearanceStore.setAppearance()
+      await appearanceStore.setFontList()
       permissionStore.setCurrentPath(to.path)
       next()
     } else {
