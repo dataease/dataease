@@ -70,6 +70,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/map/")
                 || StringUtils.startsWithAny(requestURI, "/typeface/download")
                 || StringUtils.startsWithAny(requestURI, "/typeface/defaultFont")
+                || StringUtils.startsWithAny(requestURI, "/typeface/listFont")
                 || StringUtils.startsWithAny(requestURI, "/communicate/image/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/down/");
     }
