@@ -1230,20 +1230,22 @@ export const dvMainStore = defineStore('dataVisualization', {
     setViewDataDetails(viewId, chartDataInfo) {
       this.canvasViewDataInfo[viewId] = chartDataInfo.data
       const viewInfo = this.canvasViewInfo[viewId]
-      const oldCalParams = viewInfo.calParams
-        ? viewInfo.calParams.reduce((map, params) => {
-            map[params.id] = params.value
-            return map
-          }, {})
-        : {}
-      if (chartDataInfo.calParams) {
-        chartDataInfo.calParams.forEach(paramsItem => {
-          if (oldCalParams[paramsItem.id]) {
-            paramsItem.value = oldCalParams[paramsItem.id]
-          }
-        })
+      if (viewInfo) {
+        const oldCalParams = viewInfo.calParams
+          ? viewInfo.calParams.reduce((map, params) => {
+              map[params.id] = params.value
+              return map
+            }, {})
+          : {}
+        if (chartDataInfo.calParams) {
+          chartDataInfo.calParams.forEach(paramsItem => {
+            if (oldCalParams[paramsItem.id]) {
+              paramsItem.value = oldCalParams[paramsItem.id]
+            }
+          })
+        }
+        this.canvasViewInfo[viewId]['calParams'] = chartDataInfo.calParams || null
       }
-      this.canvasViewInfo[viewId]['calParams'] = chartDataInfo.calParams || null
     },
     getViewDataDetails(viewId) {
       return this.canvasViewDataInfo[viewId]
