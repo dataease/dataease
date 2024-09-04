@@ -740,7 +740,7 @@ const tablePageClass = computed(() => {
   justify-content: center;
 }
 .antv-s2-tooltip-container {
-  max-width: 80px;
+  max-width: 400px;
   min-width: 80px;
 }
 </style>
