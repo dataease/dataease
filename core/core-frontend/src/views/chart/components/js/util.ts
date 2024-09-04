@@ -990,6 +990,30 @@ export function isAlphaColor(color: string): boolean {
   return false
 }
 
+export function isTransparent(color: string): boolean {
+  if (!color?.trim()) {
+    return true
+  }
+  if (color.startsWith('#')) {
+    const tmp = color.substring(1, color.length)
+    if (tmp.length === 3 || tmp.length === 6) {
+      return false
+    }
+    if (tmp.length === 8) {
+      return tmp.substring(6, 8) === '00'
+    }
+  }
+  if (color.startsWith('rgb')) {
+    const tmp = color.split(',')
+    if (tmp.length !== 4) {
+      return false
+    }
+    const alpha = tmp[3].substring(0, tmp[3].length - 1)
+    return alpha.trim() === '0'
+  }
+  return false
+}
+
 export function convertToAlphaColor(color: string, alpha: number): string {
   if (!color?.trim()) {
     return 'rgba(255,255,255,1)'
