@@ -1,4 +1,11 @@
-import { copyString, hexColorToRGBA, isAlphaColor, parseJson, resetRgbOpacity } from '../..//util'
+import {
+  copyString,
+  hexColorToRGBA,
+  isAlphaColor,
+  isTransparent,
+  parseJson,
+  resetRgbOpacity
+} from '../..//util'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_TABLE_CELL,
@@ -547,7 +554,10 @@ export function getConditions(chart: Chart) {
             return null
           }
           const fill = mappingColor(value, defaultBgColor, field, 'backgroundColor')
-          return fill ? { fill } : null
+          if (isTransparent(fill)) {
+            return null
+          }
+          return { fill }
         }
       })
     }

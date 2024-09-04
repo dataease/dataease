@@ -705,7 +705,10 @@ export const stepsColor = (start, end, steps, gamma) => {
 export const getMapColorCases = colorCases => {
   const cloneColorCases = JSON.parse(JSON.stringify(colorCases))
   return cloneColorCases.map(colorItem => {
-    const curColors = colorItem.colors
+    let curColors = colorItem.colors
+    if (['fresh', 'red', 'spiritual'].includes(colorItem.value)) {
+      curColors = colorItem.colors.reverse()
+    }
     const len = curColors.length
     const start = curColors[0]
     const end = curColors[len - 1]
@@ -983,6 +986,30 @@ export function isAlphaColor(color: string): boolean {
   }
   if (color.startsWith('rgb')) {
     return color.split(',').length === 4
+  }
+  return false
+}
+
+export function isTransparent(color: string): boolean {
+  if (!color?.trim()) {
+    return true
+  }
+  if (color.startsWith('#')) {
+    const tmp = color.substring(1, color.length)
+    if (tmp.length === 3 || tmp.length === 6) {
+      return false
+    }
+    if (tmp.length === 8) {
+      return tmp.substring(6, 8) === '00'
+    }
+  }
+  if (color.startsWith('rgb')) {
+    const tmp = color.split(',')
+    if (tmp.length !== 4) {
+      return false
+    }
+    const alpha = tmp[3].substring(0, tmp[3].length - 1)
+    return alpha.trim() === '0'
   }
   return false
 }
