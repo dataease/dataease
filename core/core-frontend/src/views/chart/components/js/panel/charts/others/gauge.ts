@@ -266,8 +266,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
               return ''
             }
             if (gaugePercentLabel === false) {
-              const val = v === '0' ? min : v === '1' ? max : min + (max - min) * v
-              return valueFormatter(val, labelFormatter)
+              return v === '0' ? min : v === '1' ? max : min + (max - min) * v
             }
             return v === '0' ? v : v * 100 + '%'
           }
