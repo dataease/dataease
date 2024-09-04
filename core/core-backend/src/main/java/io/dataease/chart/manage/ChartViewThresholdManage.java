@@ -199,6 +199,9 @@ public class ChartViewThresholdManage {
             thresholdTemplate = convertStyle(thresholdTemplate.replace("[触发告警]", s));
             List<Map<String, Object>> tableRow = (List<Map<String, Object>>) data.get("tableRow");
             List<DatasetTableFieldDTO> fields = (List<DatasetTableFieldDTO>) data.get("fields");
+            if (CollectionUtils.isEmpty(fields)) {
+                return new ThresholdCheckVO(false, null, String.format("当前图表类型[%s]暂不支持阈值告警！", chart.getType()), null);
+            }
             Map<Long, DatasetTableFieldDTO> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableFieldDTO::getId, item -> item));
             FilterTreeObj filterTreeObj = JsonUtil.parseObject(thresholdRules, FilterTreeObj.class);
             List<Map<String, Object>> rows = filterRows(tableRow, filterTreeObj, fieldMap);
