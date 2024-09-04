@@ -1,8 +1,13 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue'
 import UploadDetail from './UploadDetail.vue'
-import { deleteById, edit, list, defaultFont } from '@/api/font'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+import { deleteById, edit, defaultFont } from '@/api/font'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { cloneDeep } from 'lodash-es'
+
+const appearanceStore = useAppearanceStoreWithOut()
+
 const fontKeyword = ref('')
 const fontList = ref([])
 const basePath = import.meta.env.VITE_API_BASEPATH
@@ -13,15 +18,11 @@ const uploadFont = (title, type, item) => {
   uploadDetail.value.init(title, type, item)
 }
 
-const listFont = () => {
+const listFont = async () => {
   loading.value = true
-  list({})
-    .then(res => {
-      fontList.value = res
-    })
-    .finally(() => {
-      loading.value = false
-    })
+  await appearanceStore.setFontList()
+  fontList.value = cloneDeep(appearanceStore.fontList)
+  loading.value = false
 }
 
 const fontListComputed = computed(() => {
@@ -96,16 +97,12 @@ const getDefaultFont = () => {
     )
   })
 }
-const uploadFilish = () => {
+const uploadFilish = async () => {
   loading.value = true
-  list({})
-    .then(res => {
-      fontList.value = res
-      getDefaultFont()
-    })
-    .finally(() => {
-      loading.value = false
-    })
+  await appearanceStore.setFontList()
+  fontList.value = cloneDeep(appearanceStore.fontList)
+  loading.value = false
+  getDefaultFont()
 }
 
 onMounted(() => {

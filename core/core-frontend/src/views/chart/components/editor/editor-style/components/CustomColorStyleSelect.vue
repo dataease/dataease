@@ -147,11 +147,17 @@ const setupSeriesColor = () => {
   }
 }
 
+const flag = ref(1)
+
 const switchSeriesColor = (seriesColor, index) => {
   seriesColorPickerRef.value?.hide()
   seriesColorState.curSeriesColor = cloneDeep(seriesColor)
   seriesColorState.curColorIndex = index
-  seriesColorState.seriesColorPickerId = '#series-color-picker-' + seriesColor.id
+  const id = '#series-color-picker-' + seriesColor.id + `-${flag.value}`
+  if (document.querySelectorAll(id).length > 1) {
+    flag.value = 2
+  }
+  seriesColorState.seriesColorPickerId = '#series-color-picker-' + seriesColor.id + `-${flag.value}`
   nextTick(() => {
     seriesColorPickerRef.value?.show()
   })
@@ -462,7 +468,7 @@ const colorItemBorderColor = (index, state) => {
           class="color-list-item"
         >
           <div
-            :id="`series-color-picker-${item.id}`"
+            :id="`series-color-picker-${item.id}-${flag}`"
             :class="{
               active: item.id === seriesColorState.curSeriesColor?.id
             }"

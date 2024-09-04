@@ -277,10 +277,13 @@ const initTitle = () => {
           CHART_FONT_FAMILY_MAP[ele.name] = ele.name
         })
       }
-
       state.title_class.fontFamily = customStyle.text.fontFamily
         ? CHART_FONT_FAMILY_MAP[customStyle.text.fontFamily]
         : DEFAULT_TITLE_STYLE.fontFamily
+      if (!CHART_FONT_FAMILY_MAP[customStyle.text.fontFamily]) {
+        state.title_class.fontFamily = appearanceStore.fontList.find(ele => ele.isDefault)?.name
+        customStyle.text.fontFamily = state.title_class.fontFamily
+      }
       appearanceStore.setCurrentFont(state.title_class.fontFamily)
       state.title_class.letterSpacing =
         (customStyle.text.letterSpace

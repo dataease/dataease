@@ -459,7 +459,11 @@ const delFieldByIdFake = (arr, fakeAllfields) => {
     fakeAllfields = fakeAllfields.filter(ele => {
       if (ele.extField !== 2) return true
       const idMap = ele.originName.match(/\[(.+?)\]/g)
-      if (!idMap) return true
+      if (
+        !idMap ||
+        idMap.every(itx => ele.params?.map(element => element.id).includes(itx.slice(1, -1)))
+      )
+        return true
       const result = idMap.every(itm => {
         const id = itm.slice(1, -1)
         return allfieldsId.includes(id)
@@ -478,7 +482,8 @@ const deleteField = item => {
   let tip = ''
   const idArr = allfields.value.reduce((pre, next) => {
     if (next.extField !== 2) return pre
-    const idMap = next.originName.match(/\[(.+?)\]/g) || []
+    let idMap = next.originName.match(/\[(.+?)\]/g) || []
+    idMap = idMap.filter(itx => !next.params?.map(element => element.id).includes(itx.slice(1, -1)))
     const result = idMap.map(itm => {
       return itm.slice(1, -1)
     })

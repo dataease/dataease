@@ -352,7 +352,10 @@ const confirmEditUnion = () => {
   if (!!ids.length) {
     const idArr = allfields.value.reduce((pre, next) => {
       if (next.extField === 2) {
-        const idMap = next.originName.match(/\[(.+?)\]/g)
+        let idMap = next.originName.match(/\[(.+?)\]/g)
+        idMap = idMap.filter(
+          itx => !next.params?.map(element => element.id).includes(itx.slice(1, -1))
+        )
         const result = idMap.map(itm => {
           return itm.slice(1, -1)
         })

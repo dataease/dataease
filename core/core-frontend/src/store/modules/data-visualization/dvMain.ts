@@ -23,7 +23,7 @@ import {
 } from '@/custom-component/component-list'
 import { get, set } from 'lodash-es'
 import { viewFieldTimeTrans } from '@/utils/viewUtils'
-import { isMainCanvas } from '@/utils/canvasUtils'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -410,6 +410,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         componentData.push(component)
         this.setCurComponent({ component: component, index: componentData.length - 1 })
       }
+      const currentFont = useAppearanceStoreWithOut().fontList.find(ele => ele.isDefault)
       //如果当前的组件是UserView 图表，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
         const defaultConfig = JSON.parse(JSON.stringify(BASE_VIEW_CONFIG))
@@ -436,6 +437,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           newView = chartViewInstance.setupDefaultOptions(newView)
           newView['title'] = component.name
         }
+        currentFont && (newView.customStyle.text.fontFamily = currentFont.name)
         this.canvasViewInfo[component.id] = newView
       }
       if (component.component === 'VQuery') {

@@ -95,6 +95,7 @@ const uploadFail = response => {
 const emits = defineEmits(['finish'])
 const cancel = () => {
   Object.assign(ruleForm, cloneDeep(defaultForm))
+  ruleFormRef.value.clearValidate()
   state.fileList = null
   dialogVisible.value = false
 }
