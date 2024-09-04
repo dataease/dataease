@@ -128,8 +128,18 @@ public class CalciteProvider extends Provider {
             default:
                 break;
         }
-        String querySql = getTablesSql(datasourceRequest).get(0);
-        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30); ResultSet resultSet = statement.executeQuery(querySql)) {
+
+        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource())) {
+            datasourceRequest.setDsVersion(con.getConnection().getMetaData().getDatabaseMajorVersion());
+            String querySql = getTablesSql(datasourceRequest).get(0);
+            Statement statement = getStatement(con.getConnection(), 30);
+            ResultSet resultSet = statement.executeQuery(querySql);
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
         } catch (Exception e) {
             throw e;
         }
