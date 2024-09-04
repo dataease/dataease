@@ -51,4 +51,9 @@ public interface VisualizationLinkJumpApi {
     @PostMapping("/updateJumpSetActive")
     @Operation(summary = "更新跳转信息可用状态")
     VisualizationLinkJumpBaseResponse updateJumpSetActive(@RequestBody VisualizationLinkJumpBaseRequest request);
+
+    @PostMapping("/removeJumpSet")
+    @Operation(summary = "删除跳转信息")
+    void removeJumpSet(@RequestBody VisualizationLinkJumpDTO jumpDTO);
+
 }

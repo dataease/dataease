@@ -11,9 +11,17 @@ import { computed, PropType, ref, toRefs, watch } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
-import { updateJumpSetActive } from '@/api/visualization/linkJump'
+import {
+  queryVisualizationJumpInfo,
+  removeJumpSet,
+  updateJumpSetActive
+} from '@/api/visualization/linkJump'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { updateLinkageActive } from '@/api/visualization/linkage'
+import {
+  getPanelAllLinkageInfo,
+  removeLinkage,
+  updateLinkageActive
+} from '@/api/visualization/linkage'
 import { includesAny } from '../util/StringUtils'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { storeToRefs } from 'pinia'
@@ -192,6 +200,24 @@ const linkageActiveChange = () => {
 }
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+
+const removeLinkageSenior = () => {
+  removeLinkage({ dvId: dvInfo.value.id, sourceViewId: chart.value.id }).then(rsp => {
+    // 刷新联动信息
+    getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
+      dvMainStore.setNowPanelTrackInfo(rsp.data)
+    })
+  })
+}
+
+const removeJumpSenior = () => {
+  removeJumpSet({ sourceDvId: dvInfo.value.id, sourceViewId: chart.value.id }).then(rspCur => {
+    // 刷新跳转信息
+    queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
+      dvMainStore.setNowPanelJumpInfo(rsp.data)
+    })
+  })
+}
 </script>
 
 <template>
@@ -304,6 +330,21 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
                   <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
                     已设置
                   </span>
+                  <el-button
+                    class="circle-button font14"
+                    :title="t('chart.delete')"
+                    :class="'label-' + props.themes"
+                    text
+                    size="small"
+                    :style="{ width: '14px', margin: '0 8px' }"
+                    @click="removeLinkageSenior"
+                  >
+                    <template #icon>
+                      <el-icon size="14px">
+                        <Icon name="icon_delete-trash_outlined" />
+                      </el-icon>
+                    </template>
+                  </el-button>
                 </template>
                 <el-button
                   class="circle-button font14"
@@ -339,21 +380,21 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
                   <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
                     已设置
                   </span>
-                  <!--                  <el-button
+                  <el-button
                     class="circle-button font14"
                     :title="t('chart.delete')"
                     :class="'label-' + props.themes"
                     text
                     size="small"
-                    :style="{ width: '24px', marginLeft: '6px' }"
-                    @click="linkJumpSetOpen"
+                    :style="{ width: '14px', margin: '0 8px' }"
+                    @click="removeJumpSenior"
                   >
                     <template #icon>
                       <el-icon size="14px">
                         <Icon name="icon_delete-trash_outlined" />
                       </el-icon>
                     </template>
-                  </el-button>-->
+                  </el-button>
                 </template>
                 <el-button
                   class="circle-button font14"
@@ -361,7 +402,7 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
                   :class="'label-' + props.themes"
                   text
                   size="small"
-                  :style="{ width: '24px', marginLeft: '6px' }"
+                  :style="{ width: '14px', margin: 0 }"
                   @click="linkJumpSetOpen"
                   :disabled="!chart.jumpActive"
                 >

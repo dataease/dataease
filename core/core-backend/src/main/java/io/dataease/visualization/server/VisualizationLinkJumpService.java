@@ -166,4 +166,12 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         return queryVisualizationJumpInfo(request.getSourceDvId());
     }
 
+    @Override
+    public void removeJumpSet(VisualizationLinkJumpDTO jumpDTO) {
+        //清理原有数据
+        extVisualizationLinkJumpMapper.deleteJumpTargetViewInfo(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
+        extVisualizationLinkJumpMapper.deleteJumpInfo(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
+        extVisualizationLinkJumpMapper.deleteJump(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
+    }
+
 }
