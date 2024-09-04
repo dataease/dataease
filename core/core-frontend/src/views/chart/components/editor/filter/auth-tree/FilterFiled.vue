@@ -97,7 +97,7 @@ const operators = computed(() => {
   if (authTargetType.value === 'sysParams') {
     return textOptionsForSysParams
   }
-  if ([0, 5].includes(deType)) {
+  if ([0, 5, 7].includes(deType)) {
     return textOptions
   } else if (deType === 1) {
     return dateOptions
