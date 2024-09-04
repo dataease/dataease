@@ -352,7 +352,7 @@ const removeJumpSenior = () => {
                   :class="'label-' + props.themes"
                   text
                   size="small"
-                  :style="{ width: '24px', marginLeft: '6px' }"
+                  :style="{ width: '14px', margin: '0' }"
                   @click="linkageSetOpen"
                   :disabled="!chart.linkageActive"
                 >
