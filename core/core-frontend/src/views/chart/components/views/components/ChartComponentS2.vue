@@ -739,4 +739,8 @@ const tablePageClass = computed(() => {
   flex-direction: row;
   justify-content: center;
 }
+.antv-s2-tooltip-container {
+  max-width: 80px;
+  min-width: 80px;
+}
 </style>
