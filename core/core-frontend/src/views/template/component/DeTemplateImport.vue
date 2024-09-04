@@ -246,7 +246,6 @@ const importTemplate = () => {
           ElMessage.warning('当前名称已在模版管理中存在，请修改')
         } else {
           save(state.templateInfo).then(rsp => {
-            console.log('====' + JSON.stringify(rsp))
             ElMessage.success(t('导入成功'))
             emits('refresh', getRefreshPInfo())
             emits('closeEditTemplateDialog')
