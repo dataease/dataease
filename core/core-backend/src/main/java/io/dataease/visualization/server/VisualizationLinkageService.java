@@ -122,4 +122,11 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
         coreChartViewMapper.updateById(coreChartView);
         return getVisualizationAllLinkageInfo(request.getDvId());
     }
+
+    @Override
+    public void removeLinkage(VisualizationLinkageRequest request) {
+        // 清理原有关系
+        extVisualizationLinkageMapper.deleteViewLinkageField(request.getDvId(), request.getSourceViewId());
+        extVisualizationLinkageMapper.deleteViewLinkage(request.getDvId(), request.getSourceViewId());
+    }
 }

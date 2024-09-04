@@ -47,3 +47,11 @@ export function updateJumpSetActive(requestInfo) {
     loading: true
   })
 }
+
+export function removeJumpSet(requestInfo) {
+  return request.post({
+    url: '/linkJump/removeJumpSet',
+    data: requestInfo,
+    loading: true
+  })
+}
