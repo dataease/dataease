@@ -140,7 +140,6 @@ public class ApiUtils {
         return fetchResult(response, apiDefinition);
     }
 
-
     public static String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout, List<ApiDefinition> paramsList) {
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
@@ -297,8 +296,58 @@ public class ApiUtils {
                             DEException.throwException(e);
                         }
                         for (JsonNode jsonNode : rootNode) {
-                            if (jsonNode.has("name")) {
-                                body.put(jsonNode.get("name").asText(), jsonNode.get("value").asText());
+                            if (jsonNode.has("name") && jsonNode.has("value")) {
+                                if (jsonNode.get("value") != null && StringUtils.isNotEmpty(jsonNode.get("value").asText())) {
+                                    if (jsonNode.get("nameType") != null && jsonNode.get("nameType").toString().equalsIgnoreCase("params")) {
+                                        String param = jsonNode.get("value").toString();
+                                        for (ApiDefinition definition : paramsList) {
+                                            for (int i = 0; i < definition.getFields().size(); i++) {
+                                                TableField field = definition.getFields().get(i);
+                                                if (field.getOriginName().equalsIgnoreCase(param)) {
+                                                    String resultStr = execHttpRequest(definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
+                                                    List<String[]> dataList = fetchResult(resultStr, definition);
+                                                    if (dataList.size() > 0) {
+                                                        body.put(jsonNode.get("name").toString(), dataList.get(0)[i]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").toString().equalsIgnoreCase("custom")) {
+                                        List<String> bodYparams = new ArrayList<>();
+                                        String regex = "\\$\\{(.*?)\\}";
+                                        Pattern pattern = Pattern.compile(regex);
+                                        Matcher matcher = pattern.matcher(jsonNode.get("value").toString());
+                                        while (matcher.find()) {
+                                            bodYparams.add(matcher.group(1));
+                                        }
+                                        String result = jsonNode.get("value").toString();
+                                        for (String param : bodYparams) {
+                                            for (ApiDefinition definition : paramsList) {
+                                                for (int i = 0; i < definition.getFields().size(); i++) {
+                                                    TableField field = definition.getFields().get(i);
+                                                    if (field.getOriginName().equalsIgnoreCase(param)) {
+                                                        String resultStr = execHttpRequest(definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
+                                                        List<String[]> dataList = fetchResult(resultStr, definition);
+                                                        if (dataList.size() > 0) {
+                                                            result = result.replace("${" + param + "}", dataList.get(0)[i]);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        body.put(jsonNode.get("name").toString(), result);
+                                    } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").toString().equalsIgnoreCase("timeFun")) {
+                                        String timeFormat = jsonNode.get("value").toString();
+                                        Calendar calendar = Calendar.getInstance();
+                                        Date date = calendar.getTime();
+                                        if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentDay")) {
+                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
+                                            body.put(jsonNode.get("name").toString(), simpleDateFormat.format(date));
+                                        }
+                                    } else {
+                                        body.put(jsonNode.get("name").asText(), jsonNode.get("value").asText());
+                                    }
+                                }
                             }
                         }
                         response = HttpClientUtil.post(apiDefinition.getUrl(), body, httpClientConfig);

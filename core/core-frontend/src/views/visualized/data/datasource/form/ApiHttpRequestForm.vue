@@ -173,6 +173,7 @@ const emits = defineEmits(['changeId'])
           :headers="apiRequest.headers"
           :body="apiRequest.body"
           :is-show-enable="isShowEnable"
+          :value-list="valueList"
         />
       </el-tab-pane>
 
