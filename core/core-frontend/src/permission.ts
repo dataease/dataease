@@ -134,6 +134,7 @@ router.beforeEach(async (to, from, next) => {
       whiteList.includes(to.path) ||
       to.path.startsWith('/de-link/')
     ) {
+      await appearanceStore.setAppearance()
       permissionStore.setCurrentPath(to.path)
       next()
     } else {
