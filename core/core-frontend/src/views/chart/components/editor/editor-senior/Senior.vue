@@ -173,8 +173,11 @@ const SENIOR_PROP: EditorProperty[] = [
   'linkage',
   'bubble-animate'
 ]
+const excludeTypeList = ['chart-mix', 'chart-mix-stack', 'chart-mix-group']
 const noSenior = computed(() => {
-  return !includesAny(properties.value, ...SENIOR_PROP)
+  return (
+    !includesAny(properties.value, ...SENIOR_PROP) && excludeTypeList.includes(chart.value.type)
+  )
 })
 
 const linkJumpActiveChange = () => {
