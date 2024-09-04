@@ -434,7 +434,7 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   remarkShow: false,
   remark: '',
   remarkBackgroundColor: '#ffffff',
-  fontFamily: 'Microsoft YaHei',
+  fontFamily: '',
   letterSpace: '0',
   fontShadow: false
 }
@@ -483,7 +483,7 @@ export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
   isBolder: true,
   remarkShow: false,
   remark: '',
-  fontFamily: 'Microsoft YaHei',
+  fontFamily: '',
   letterSpace: '0',
   fontShadow: false,
   color: '',

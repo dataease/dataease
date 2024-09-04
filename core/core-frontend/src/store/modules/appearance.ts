@@ -31,7 +31,7 @@ interface AppearanceState {
   showDemoTips?: boolean
   demoTipsContent?: string
   community: boolean
-  fontList: Array<{ name: string; id: string }>
+  fontList: Array<{ name: string; id: string; isDefault: boolean }>
 }
 const { wsCache } = useCache()
 export const useAppearanceStore = defineStore('appearanceStore', {
