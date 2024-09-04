@@ -705,7 +705,10 @@ export const stepsColor = (start, end, steps, gamma) => {
 export const getMapColorCases = colorCases => {
   const cloneColorCases = JSON.parse(JSON.stringify(colorCases))
   return cloneColorCases.map(colorItem => {
-    const curColors = colorItem.colors
+    let curColors = colorItem.colors
+    if (['fresh', 'red', 'spiritual'].includes(colorItem.value)) {
+      curColors = colorItem.colors.reverse()
+    }
     const len = curColors.length
     const start = curColors[0]
     const end = curColors[len - 1]
