@@ -118,4 +118,9 @@ public class AppCoreDatasetTableFieldVO implements Serializable {
      * 时间格式类型
      */
     private String dateFormatType;
+
+    /**
+     * params
+     */
+    private String params;
 }
