@@ -435,14 +435,18 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
     private String tokenByUser(SysUserEntity user) {
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(user.getUsername()).build();
-        String token = JWTUtils.sign(tokenInfo, user.getPassword(), false);
-
-        return token;
+        return JWTUtils.signShotToken(tokenInfo, user.getPassword());
     }
 
     private String panelUrl(String panelId) {
         String domain = ServletUtils.domain();
         return domain + "/#/previewScreenShot/" + panelId + "/true";
+    }
+
+    public static void main(String[] args) {
+        TokenInfo tokenInfo = TokenInfo.builder().userId(1L).username("admin").build();
+        String contextPath = JWTUtils.signShotToken(tokenInfo, "ae8000252199d4f2aa00e3b99e6f9934");
+        System.out.println(contextPath);
     }
 
 }
