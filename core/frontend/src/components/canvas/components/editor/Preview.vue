@@ -16,7 +16,7 @@
       @back-to-top="backToTop"
     />
     <link-opt-bar
-      v-if="canvasId==='canvas-main'"
+      v-if="linkOptBarShow"
       ref="link-opt-bar"
       :terminal="terminal"
       :canvas-style-data="canvasStyleData"
@@ -382,6 +382,9 @@ export default {
     }
   },
   computed: {
+    linkOptBarShow() {
+      return this.canvasId==='canvas-main' && this.canvasStyleData.showPublicLinkButton
+    },
     screenShotStatues() {
       return this.exporting || this.screenShot || this.backScreenShot
     },
