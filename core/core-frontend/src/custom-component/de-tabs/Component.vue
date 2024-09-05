@@ -47,6 +47,9 @@
                     >
                       删除
                     </el-dropdown-item>
+                    <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
+                      复制
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -126,10 +129,12 @@ import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
+import { copyStoreWithOut, deepCopyTabItemHelper } from '@/store/modules/data-visualization/copy'
 const dvMainStore = dvMainStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
 let carouselTimer = null
+const copyStore = copyStoreWithOut()
 
 const props = defineProps({
   canvasStyleData: {
@@ -258,6 +263,10 @@ function deleteCur(param) {
       })
     }
   }
+}
+function copyCur(param) {
+  state.curItem = param
+  element.value.propValue.push(deepCopyTabItemHelper(element.value.id, param))
 }
 
 function editCurTitle(param) {
