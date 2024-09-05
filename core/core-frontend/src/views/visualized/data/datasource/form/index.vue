@@ -362,30 +362,33 @@ const validateDS = () => {
 
 const doValidateDs = request => {
   dsLoading.value = true
-  validate(request).then(res => {
-    dsLoading.value = false
-    if (res.data.type === 'API') {
-      let error = 0
-      const status = JSON.parse(res.data.status) as Array<{ status: string; name: string }>
-      for (let i = 0; i < status.length; i++) {
-        if (status[i].status === 'Error') {
-          error++
-        }
-        for (let j = 0; j < form.apiConfiguration.length; j++) {
-          if (status[i].name === form.apiConfiguration[j].name) {
-            form.apiConfiguration[j].status = status[i].status
+  validate(request)
+    .then(res => {
+      if (res.data.type === 'API') {
+        let error = 0
+        const status = JSON.parse(res.data.status) as Array<{ status: string; name: string }>
+        for (let i = 0; i < status.length; i++) {
+          if (status[i].status === 'Error') {
+            error++
+          }
+          for (let j = 0; j < form.apiConfiguration.length; j++) {
+            if (status[i].name === form.apiConfiguration[j].name) {
+              form.apiConfiguration[j].status = status[i].status
+            }
           }
         }
-      }
-      if (error === 0) {
-        ElMessage.success(t('datasource.validate_success'))
+        if (error === 0) {
+          ElMessage.success(t('datasource.validate_success'))
+        } else {
+          ElMessage.error('校验失败')
+        }
       } else {
-        ElMessage.error('校验失败')
+        ElMessage.success(t('datasource.validate_success'))
       }
-    } else {
-      ElMessage.success(t('datasource.validate_success'))
-    }
-  })
+    })
+    .finally(() => {
+      dsLoading.value = false
+    })
 }
 
 const typeTitle = computed(() => {

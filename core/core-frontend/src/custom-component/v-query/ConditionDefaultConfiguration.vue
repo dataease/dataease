@@ -459,7 +459,12 @@ defineExpose({
             class="setting-input"
             :class="curComponent.timeGranularity === 'datetime' && 'with-date'"
           >
-            <el-input-number v-model="curComponent.timeNum" :min="0" controls-position="right" />
+            <el-input-number
+              step-strictly
+              v-model="curComponent.timeNum"
+              :min="0"
+              controls-position="right"
+            />
             <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrentType">
               <el-option
                 v-for="item in relativeToCurrentTypeList"

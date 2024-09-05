@@ -504,11 +504,14 @@ const getDsSchema = () => {
       const request = JSON.parse(JSON.stringify(form.value))
       request.configuration = Base64.encode(JSON.stringify(request.configuration))
       loading.value = true
-      getSchema(request).then(res => {
-        loading.value = false
-        schemas.value = res.data
-        ElMessage.success(t('commons.success'))
-      })
+      getSchema(request)
+        .then(res => {
+          schemas.value = res.data
+          ElMessage.success(t('commons.success'))
+        })
+        .finally(() => {
+          loading.value = false
+        })
     }
   })
 }
