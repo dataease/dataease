@@ -94,6 +94,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
   componentStyle.refreshViewEnable = (componentStyle.refreshViewEnable === undefined ? true : componentStyle.refreshViewEnable)
   componentStyle.refreshBrowserEnable = (componentStyle.refreshBrowserEnable || false)
+  componentStyle.showPublicLinkButton = (componentStyle.showPublicLinkButton === undefined ? true : componentStyle.showPublicLinkButton)
   componentStyle.refreshBrowserTime = (componentStyle.refreshBrowserTime || 5)
   componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
   componentStyle.pdfPageLine = (componentStyle.pdfPageLine || deepCopy(PAGE_LINE_DESIGN))
