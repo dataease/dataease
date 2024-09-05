@@ -219,7 +219,7 @@ public class ChartViewThresholdManage {
                 if (ObjectUtils.isEmpty(fieldDTO)) continue;
                 String fieldDTOName = fieldDTO.getName();
                 String dataeaseName = fieldDTO.getDataeaseName();
-                List<String> valueList = rows.stream().map(row -> row.get(dataeaseName).toString()).collect(Collectors.toList());
+                List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : row.get(dataeaseName).toString()).collect(Collectors.toList());
                 String replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
                 // 替换文本
                 matcher.appendReplacement(sb, replacement);
