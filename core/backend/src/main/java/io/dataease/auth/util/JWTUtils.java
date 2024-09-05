@@ -125,6 +125,18 @@ public class JWTUtils {
         return IPUtils.get();
     }
 
+    public static String signShotToken(TokenInfo tokenInfo, String secret) {
+        Long userId = tokenInfo.getUserId();
+        long expireTimeMillis = getExpireTime();
+        Date date = new Date(System.currentTimeMillis() + expireTimeMillis);
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        Builder builder = JWT.create()
+                .withClaim("username", tokenInfo.getUsername())
+                .withClaim("forShot", true)
+                .withClaim("userId", userId);
+        return builder.withExpiresAt(date).sign(algorithm);
+    }
+
     public static String sign(TokenInfo tokenInfo, String secret, boolean writeOnline) {
 
         Long userId = tokenInfo.getUserId();
