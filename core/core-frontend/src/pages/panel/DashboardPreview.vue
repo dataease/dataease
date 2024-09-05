@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onBeforeMount, nextTick } from 'vue'
+import { ref, reactive, onBeforeMount, nextTick, inject } from 'vue'
 import { initCanvasData, initCanvasDataMobile } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -20,6 +20,8 @@ const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const dashboardPreview = ref(null)
+const embeddedParams = inject('embeddedParams') as object
+
 const { t } = useI18n()
 const state = reactive({
   canvasDataPreview: null,
@@ -34,14 +36,14 @@ const checkPer = async resourceId => {
   if (!window.DataEaseBi || !resourceId) {
     return true
   }
-  const request = { busiFlag: embeddedStore.busiFlag }
+  const request = { busiFlag: embeddedParams.busiFlag }
   await interactiveStore.setInteractive(request)
-  const key = embeddedStore.busiFlag === 'dataV' ? 'screen-weight' : 'panel-weight'
+  const key = embeddedParams.busiFlag === 'dataV' ? 'screen-weight' : 'panel-weight'
   return check(wsCache.get(key), resourceId, 1)
 }
 const isPc = ref(true)
 onBeforeMount(async () => {
-  const checkResult = await checkPer(embeddedStore.dvId)
+  const checkResult = await checkPer(embeddedParams.dvId)
   if (!checkResult) {
     return
   }
@@ -53,14 +55,14 @@ onBeforeMount(async () => {
   }
   // 添加外部参数
   let attachParams
-  await getOuterParamsInfo(embeddedStore.dvId).then(rsp => {
+  await getOuterParamsInfo(embeddedParams.dvId).then(rsp => {
     dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
   })
 
   // div嵌入
-  if (embeddedStore.outerParams) {
+  if (embeddedParams.outerParams) {
     try {
-      const outerPramsParse = JSON.parse(embeddedStore.outerParams)
+      const outerPramsParse = JSON.parse(embeddedParams.outerParams)
       attachParams = outerPramsParse.attachParams
       dvMainStore.setEmbeddedCallBack(outerPramsParse.callBackFlag || 'no')
     } catch (e) {
@@ -76,8 +78,8 @@ onBeforeMount(async () => {
   const req = isPc.value ? initCanvasData : initCanvasDataMobile
 
   req(
-    embeddedStore.dvId,
-    embeddedStore.busiFlag,
+    embeddedParams.dvId,
+    embeddedParams.busiFlag,
     function ({
       canvasDataResult,
       canvasStyleResult,
