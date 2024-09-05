@@ -3,6 +3,7 @@ package io.dataease.chart.manage;
 import io.dataease.api.chart.request.ThresholdCheckRequest;
 import io.dataease.api.chart.vo.ThresholdCheckVO;
 import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
@@ -13,6 +14,7 @@ import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -193,7 +195,10 @@ public class ChartViewThresholdManage {
         Long chartId = request.getChartId();
         try {
             ChartViewDTO chart = chartViewManege.getChart(chartId);
-            Map<String, Object> data = chart.getData();
+            Map<String, Object> data = null;
+            if (ObjectUtils.isEmpty(chart) || MapUtils.isEmpty(data = chart.getData())) {
+                return new ThresholdCheckVO(false, null, "查询图表异常！", null);
+            }
             thresholdTemplate = thresholdTemplate.replace("[检测时间]", DateUtils.time2String(System.currentTimeMillis()));
             String s = convertThresholdRules(chart, thresholdRules);
             thresholdTemplate = convertStyle(thresholdTemplate.replace("[触发告警]", s));
