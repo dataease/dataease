@@ -93,7 +93,7 @@
               @change="themeChange"
             >{{ $t('panel.refresh_browser_frequency') }}
             </el-checkbox>
-            <span class="custom-item-text bl">
+            <span class="custom-item-text bl margin-left4">
               <span>
                 <el-tooltip
                   class="item"
@@ -130,7 +130,7 @@
         <el-row class="custom-item-text-row">
           <span class="custom-item-text bl">
             {{ $t('panel.panel_view_result_show') }}
-            <span>
+            <span class="margin-left4">
               <el-tooltip
                 class="item"
                 effect="dark"
@@ -192,7 +192,7 @@
               @change="themeChange"
             >{{ $t('panel.public_link_button_show') }}
             </el-checkbox>
-            <span class="custom-item-text bl">
+            <span class="custom-item-text bl margin-left4">
               <span>
                 <el-tooltip
                   class="item"
@@ -388,6 +388,10 @@ export default {
 
 .margin-left32 {
   margin-left: 32px;
+}
+
+.margin-left4 {
+  margin-left: 4px;
 }
 
 .bl {
