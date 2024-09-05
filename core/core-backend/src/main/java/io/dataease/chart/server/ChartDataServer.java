@@ -284,12 +284,7 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                // with DataType
-                                if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
-                                    cell.setCellValue(Double.valueOf(cellValObj.toString()));
-                                } else {
-                                    cell.setCellValue(cellValObj.toString());
-                                }
+                                cell.setCellValue(cellValObj.toString());
                             } catch (Exception e) {
                                 LogUtil.warn("export excel data transform error");
                             }
