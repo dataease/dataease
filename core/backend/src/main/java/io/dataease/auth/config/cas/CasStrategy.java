@@ -1,9 +1,14 @@
 package io.dataease.auth.config.cas;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.service.impl.ShiroServiceImpl;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.service.system.SystemParameterService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.util.AntPathMatcher;
 import org.jasig.cas.client.authentication.UrlPatternMatcherStrategy;
@@ -38,9 +43,9 @@ public class CasStrategy implements UrlPatternMatcherStrategy {
             s = s.substring(beginIndex + serverName.length());
         }
         if (StringUtils.equals("/", s)) {
-            if (fromLink(serverName)) return true;
-            return false;
+            return fromLink(serverName);
         }
+        if (fromShot()) return true;
         if (StringUtils.equals("/login", s)) return false;
         if (StringUtils.startsWith(s, "/cas/callBack")) return false;
         if (StringUtils.equals("/api/auth/deLogout", s)) return true;
@@ -73,5 +78,18 @@ public class CasStrategy implements UrlPatternMatcherStrategy {
             return referrer.startsWith("/link.html");
         }
         return false;
+    }
+
+    private Boolean fromShot() {
+        String token = ServletUtils.getToken();
+        if (StringUtils.isBlank(token)) return false;
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            Claim forShot = jwt.getClaim("forShot");
+            return ObjectUtils.isNotEmpty(forShot) && forShot.asBoolean();
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage());
+            return false;
+        }
     }
 }

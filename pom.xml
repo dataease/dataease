@@ -12,6 +12,7 @@
         <dataease.version>1.18.24</dataease.version>
         <poi.version>4.1.1</poi.version>
         <xmlbeans.version>3.1.0</xmlbeans.version>
+        <tomcat.version>9.0.64</tomcat.version>
     </properties>
 
     <name>dataease</name>

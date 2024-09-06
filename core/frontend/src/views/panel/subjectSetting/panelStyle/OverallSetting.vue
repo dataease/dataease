@@ -93,7 +93,7 @@
               @change="themeChange"
             >{{ $t('panel.refresh_browser_frequency') }}
             </el-checkbox>
-            <span class="custom-item-text bl">
+            <span class="custom-item-text bl margin-left4">
               <span>
                 <el-tooltip
                   class="item"
@@ -126,11 +126,11 @@
           </el-input>
         </el-row>
       </el-row>
-      <el-row class="margin-top20 margin-bottom20">
+      <el-row class="margin-top20">
         <el-row class="custom-item-text-row">
           <span class="custom-item-text bl">
             {{ $t('panel.panel_view_result_show') }}
-            <span>
+            <span class="margin-left4">
               <el-tooltip
                 class="item"
                 effect="dark"
@@ -180,6 +180,36 @@
               />
             </el-col>
           </el-row>
+        </el-row>
+      </el-row>
+
+      <el-row class="margin-top20 margin-bottom20">
+        <el-row class="custom-item-text-row">
+          <span class="custom-item-text el-input-refresh-browser-inner bl">
+            <el-checkbox
+              v-model="overallSettingForm.showPublicLinkButton"
+              class="el-input-refresh-browser"
+              @change="themeChange"
+            >{{ $t('panel.public_link_button_show') }}
+            </el-checkbox>
+            <span class="custom-item-text bl margin-left4">
+              <span>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="bottom"
+                >
+                  <div slot="content">
+                    {{ $t('panel.public_link_button_tips') }}
+                  </div>
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
+                </el-tooltip>
+              </span>
+            </span>
+          </span>
         </el-row>
       </el-row>
     </el-col>
@@ -358,6 +388,10 @@ export default {
 
 .margin-left32 {
   margin-left: 32px;
+}
+
+.margin-left4 {
+  margin-left: 4px;
 }
 
 .bl {

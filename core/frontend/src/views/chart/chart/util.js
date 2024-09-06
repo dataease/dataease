@@ -178,7 +178,8 @@ export const TYPE_CONFIGS = [
         'tableColumnMode',
         'tableRowTooltip',
         'tableColTooltip',
-        'tableCellTooltip'
+        'tableCellTooltip',
+        'tableLayoutMode'
       ],
       'total-cfg': [
         'row',

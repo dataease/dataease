@@ -82,6 +82,7 @@ export const CANVAS_STYLE = {
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
   refreshTime: 5, // 仪表板刷新时间 默认5分钟
   refreshBrowserEnable: false, // 开启视图刷新（默认关闭）
+  showPublicLinkButton: true, // 开启公共链接按钮（默认开启）
   refreshBrowserTime: 5, // 仪表板刷新时间 默认5分钟(浏览器刷新仅保留分钟)
   themeId: 'system_1', // 当前所选主题ID 默认系统主题1
   chartInfo: PANEL_CHART_INFO
