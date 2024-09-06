@@ -3,7 +3,6 @@ package io.dataease.chart.manage;
 import io.dataease.api.chart.request.ThresholdCheckRequest;
 import io.dataease.api.chart.vo.ThresholdCheckVO;
 import io.dataease.engine.constant.DeTypeConstants;
-import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
@@ -388,11 +387,36 @@ public class ChartViewThresholdManage {
                 }
             } else if (Objects.equals(deType, DeTypeConstants.DE_TIME)) {
                 // 补充时间逻辑
-                return true;
+                return timeMatch(item, valueObj);
             } else {
                 return true;
             }
         }
     }
 
+    private boolean timeMatch(FilterTreeItem item, Object valueObj) {
+        if (ObjectUtils.isEmpty(valueObj)) return false;
+        String valueText = valueObj.toString();
+        String target = item.getValue();
+        target = target.replaceAll("[^0-9]", "");
+        valueText = valueText.replaceAll("[^0-9]", "");
+        long targetLong = Long.parseLong(target);
+        long valueLong = Long.parseLong(valueText);
+        String term = item.getTerm();
+        if (StringUtils.equals(term, "eq")) {
+            return valueLong == targetLong;
+        } else if (StringUtils.equals(term, "not_eq")) {
+            return valueLong != targetLong;
+        } else if (StringUtils.equals(term, "gt")) {
+            return valueLong > targetLong;
+        } else if (StringUtils.equals(term, "ge")) {
+            return valueLong >= targetLong;
+        } else if (StringUtils.equals(term, "lt")) {
+            return valueLong < targetLong;
+        } else if (StringUtils.equals(term, "le")) {
+            return valueLong <= targetLong;
+        } else {
+            return valueLong == targetLong;
+        }
+    }
 }
