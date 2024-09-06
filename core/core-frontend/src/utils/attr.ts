@@ -1,8 +1,8 @@
 export const positionData = [
-  { key: 'left', label: 'X', min: -1000, max: 20000, step: 10 },
-  { key: 'width', label: 'W', min: 10, max: 20000, step: 10 },
-  { key: 'top', label: 'Y', min: -1000, max: 20000, step: 10 },
-  { key: 'height', label: 'H', min: 10, max: 20000, step: 10 }
+  { key: 'left', label: 'X', min: -1000, max: 20000, step: 1 },
+  { key: 'width', label: 'W', min: 10, max: 20000, step: 1 },
+  { key: 'top', label: 'Y', min: -1000, max: 20000, step: 1 },
+  { key: 'height', label: 'H', min: 10, max: 20000, step: 1 }
 ]
 
 export const multiDimensionalData = [
