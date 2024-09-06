@@ -380,6 +380,10 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         })
       }
+      //组件组内部可能还有多个图表
+      this.updateCopyCanvasView(idMap, canvasViewInfoPre)
+    },
+    updateCopyCanvasView(idMap, canvasViewInfoPre = this.canvasViewInfo) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
       //组件组内部可能还有多个图表

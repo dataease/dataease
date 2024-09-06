@@ -40,15 +40,14 @@
                     <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
                       编辑标题
                     </el-dropdown-item>
-
+                    <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
+                      复制
+                    </el-dropdown-item>
                     <el-dropdown-item
                       v-if="element.propValue.length > 1"
                       :command="beforeHandleCommand('deleteCur', tabItem)"
                     >
                       删除
-                    </el-dropdown-item>
-                    <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
-                      复制
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -265,8 +264,12 @@ function deleteCur(param) {
   }
 }
 function copyCur(param) {
-  state.curItem = param
-  element.value.propValue.push(deepCopyTabItemHelper(element.value.id, param))
+  addTab()
+  const newTabItem = element.value.propValue[element.value.propValue.length - 1]
+  const idMap = {}
+  const newCanvasId = element.value.id + '--' + newTabItem.name
+  newTabItem.componentData = deepCopyTabItemHelper(newCanvasId, param.componentData, idMap)
+  dvMainStore.updateCopyCanvasView(idMap)
 }
 
 function editCurTitle(param) {
@@ -283,6 +286,9 @@ function handleCommand(command) {
       break
     case 'deleteCur':
       deleteCur(command.param)
+      break
+    case 'copyCur':
+      copyCur(command.param)
       break
   }
 }
