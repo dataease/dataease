@@ -138,7 +138,7 @@ public class CustomWhere2Str {
                 res = "(" + whereName + " IN ('" + String.join("','", item.getEnumValue()) + "'))";
             }
         } else {
-            if (field.getDeType() == 1) {
+            if (field.getDeType() == 1 && isCross) {
                 // 规定几种日期格式，一一匹配，匹配到就是该格式
                 whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
             }
@@ -168,13 +168,23 @@ public class CustomWhere2Str {
                         whereTerm = " BETWEEN ";
                         // 把value类似过滤组件处理，获得start time和end time
                         Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
-                        whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
+                        if (isCross) {
+                            whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
+                        } else {
+                            whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(stringLongMap.get("startTime")), Utils.transLong2Str(stringLongMap.get("endTime")));
+                        }
                     } else if (StringUtils.equalsIgnoreCase(whereTerm, " <> ")) {
                         whereTerm = " NOT BETWEEN ";
                         Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
-                        whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
+                        if (isCross) {
+                            whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
+                        } else {
+                            whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(stringLongMap.get("startTime")), Utils.transLong2Str(stringLongMap.get("endTime")));
+                        }
                     } else {
-                        value = Utils.allDateFormat2Long(value) + "";
+                        if (isCross) {
+                            value = Utils.allDateFormat2Long(value) + "";
+                        }
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                     }
                 } else {
