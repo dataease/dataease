@@ -156,21 +156,17 @@ onMounted(() => {
         >
           已设置
         </span>
-        <el-button
+        <button
           :class="'label-' + props.themes"
-          :style="{ width: '24px', marginLeft: '6px' }"
+          :style="{ marginLeft: '6px' }"
           :disabled="!state.assistLineCfg.enable"
-          class="circle-button font14"
-          text
-          size="small"
+          class="circle-button_icon"
           @click="editLine"
         >
-          <template #icon>
-            <el-icon size="14px">
-              <Icon name="icon_edit_outlined" />
-            </el-icon>
-          </template>
-        </el-button>
+          <el-icon>
+            <Icon name="icon_edit_outlined" />
+          </el-icon>
+        </button>
       </span>
     </div>
 
