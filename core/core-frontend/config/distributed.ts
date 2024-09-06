@@ -26,6 +26,11 @@ export default {
         }
       }
     },
+    modulePreload: {
+      resolveDependencies() {
+        return []
+      }
+    },
     sourcemap: false
   }
 }
