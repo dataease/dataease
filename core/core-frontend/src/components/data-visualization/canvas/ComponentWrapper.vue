@@ -268,8 +268,6 @@ const onWrapperClick = e => {
       useEmitt().emitter.emit('componentRefresh')
     } else if (config.value.events.type === 'fullScreen') {
       useEmitt().emitter.emit('canvasFullscreen')
-    } else if (config.value.events.type === 'share') {
-      useEmitt().emitter.emit('shareComponent')
     } else if (config.value.events.type === 'download') {
       useEmitt().emitter.emit('canvasDownload')
     }

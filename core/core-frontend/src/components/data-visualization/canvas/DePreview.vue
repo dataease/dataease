@@ -18,14 +18,12 @@ import CanvasFilterBtn from '@/custom-component/canvas-filter-btn/Component.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
-import ShareHandler from '@/views/share/share/ShareHandler.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
 const customDatasetParamsRef = ref(null)
 const emits = defineEmits(['onResetLayout'])
 const fullScreeRef = ref(null)
-const shareComponent = ref(null)
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -197,15 +195,6 @@ useEmitt({
   callback: function () {
     if (isMainCanvas(canvasId.value)) {
       fullScreeRef.value.toggleFullscreen()
-    }
-  }
-})
-
-useEmitt({
-  name: 'shareComponent',
-  callback: function () {
-    if (isMainCanvas(canvasId.value)) {
-      shareComponent.value.execute()
     }
   }
 })
@@ -454,12 +443,6 @@ defineExpose({
   <de-fullscreen ref="fullScreeRef"></de-fullscreen>
   <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
-  <ShareHandler
-    ref="shareComponent"
-    :resource-id="dvInfo.id"
-    :resource-type="dvInfo.type"
-    :weight="dvInfo.weight"
-  />
 </template>
 
 <style lang="less" scoped>
