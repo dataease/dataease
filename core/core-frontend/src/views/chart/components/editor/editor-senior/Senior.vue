@@ -333,38 +333,29 @@ const removeJumpSenior = () => {
                   <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
                     已设置
                   </span>
-                  <el-button
-                    class="circle-button font14"
+                  <button
+                    class="circle-button_icon"
                     :title="t('chart.delete')"
                     :class="'label-' + props.themes"
-                    text
-                    size="small"
-                    :style="{ width: '14px', margin: '0 8px' }"
+                    :style="{ margin: '0 8px' }"
                     @click="removeLinkageSenior"
                   >
-                    <template #icon>
-                      <el-icon size="14px">
-                        <Icon name="icon_delete-trash_outlined" />
-                      </el-icon>
-                    </template>
-                  </el-button>
+                    <el-icon>
+                      <Icon name="icon_delete-trash_outlined" />
+                    </el-icon>
+                  </button>
                 </template>
-                <el-button
-                  class="circle-button font14"
+                <button
+                  class="circle-button_icon"
                   :title="t('chart.edit')"
                   :class="'label-' + props.themes"
-                  text
-                  size="small"
-                  :style="{ width: '14px', margin: '0' }"
                   @click="linkageSetOpen"
                   :disabled="!chart.linkageActive"
                 >
-                  <template #icon>
-                    <el-icon size="14px">
-                      <Icon name="icon_edit_outlined" />
-                    </el-icon>
-                  </template>
-                </el-button>
+                  <el-icon>
+                    <Icon name="icon_edit_outlined" />
+                  </el-icon>
+                </button>
               </span>
             </div>
           </collapse-switch-item>
@@ -383,38 +374,29 @@ const removeJumpSenior = () => {
                   <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
                     已设置
                   </span>
-                  <el-button
-                    class="circle-button font14"
+                  <button
+                    class="circle-button_icon"
                     :title="t('chart.delete')"
                     :class="'label-' + props.themes"
-                    text
-                    size="small"
-                    :style="{ width: '14px', margin: '0 8px' }"
+                    :style="{ margin: '0 8px' }"
                     @click="removeJumpSenior"
                   >
-                    <template #icon>
-                      <el-icon size="14px">
-                        <Icon name="icon_delete-trash_outlined" />
-                      </el-icon>
-                    </template>
-                  </el-button>
+                    <el-icon>
+                      <Icon name="icon_delete-trash_outlined" />
+                    </el-icon>
+                  </button>
                 </template>
-                <el-button
-                  class="circle-button font14"
+                <button
+                  class="circle-button_icon"
                   :title="t('chart.edit')"
                   :class="'label-' + props.themes"
-                  text
-                  size="small"
-                  :style="{ width: '14px', margin: 0 }"
                   @click="linkJumpSetOpen"
                   :disabled="!chart.jumpActive"
                 >
-                  <template #icon>
-                    <el-icon size="14px">
-                      <Icon name="icon_edit_outlined" />
-                    </el-icon>
-                  </template>
-                </el-button>
+                  <el-icon>
+                    <Icon name="icon_edit_outlined" />
+                  </el-icon>
+                </button>
               </span>
             </div>
           </collapse-switch-item>
@@ -495,18 +477,6 @@ span {
   font-weight: 400;
   line-height: 20px;
   color: #a6a6a6 !important;
-  &.ed-button {
-    color: var(--ed-color-primary) !important;
-  }
-  &.is-disabled {
-    color: #5f5f5f !important;
-  }
-}
-
-.font14 {
-  :deep(.ed-icon) {
-    font-size: 14px;
-  }
 }
 
 .inner-container {
