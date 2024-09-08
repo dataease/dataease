@@ -260,7 +260,8 @@ export function getCustomTheme(chart: Chart): S2Theme {
         }
       }
       merge(theme, tmpTheme)
-      if (tableHeader.showHorizonBorder === false) {
+      // 这边设置为 0 的话就会显示表头背景颜色，所以要判断一下表头是否关闭
+      if (tableHeader.showHorizonBorder === false && tableHeader.showTableHeader !== false) {
         const tmpTheme = {
           splitLine: {
             horizontalBorderColor: tableHeaderBgColor,
