@@ -58,6 +58,11 @@ public class VisualizationOuterParamsInfo implements Serializable {
      */
     private String defaultValue;
 
+    /**
+     * 是否启用默认值
+     */
+    private Boolean enabledDefault;
+
     public String getParamsInfoId() {
         return paramsInfoId;
     }
@@ -122,6 +127,14 @@ public class VisualizationOuterParamsInfo implements Serializable {
         this.defaultValue = defaultValue;
     }
 
+    public Boolean getEnabledDefault() {
+        return enabledDefault;
+    }
+
+    public void setEnabledDefault(Boolean enabledDefault) {
+        this.enabledDefault = enabledDefault;
+    }
+
     @Override
     public String toString() {
         return "VisualizationOuterParamsInfo{" +
@@ -133,6 +146,7 @@ public class VisualizationOuterParamsInfo implements Serializable {
         ", copyId = " + copyId +
         ", required = " + required +
         ", defaultValue = " + defaultValue +
+        ", enabledDefault = " + enabledDefault +
         "}";
     }
 }

@@ -24,6 +24,7 @@ import {
 import { get, set } from 'lodash-es'
 import { viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+import { ElMessage } from 'element-plus-secondary'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -114,6 +115,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       nowPanelJumpInfoTargetPanel: {},
       // 当前仪表板的外部参数信息
       nowPanelOuterParamsInfo: {},
+      // 当前仪表板的外部参数基础信息
+      nowPanelOuterParamsBaseInfo: null,
       // 拖拽的组件信息
       dragComponentInfo: null,
       // 移动端布局状态
@@ -887,6 +890,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setNowPanelOuterParamsInfo(outerParamsInfo) {
       this.nowPanelOuterParamsInfo = outerParamsInfo.outerParamsInfoMap
+      this.nowPanelOuterParamsBaseInfo = outerParamsInfo.outerParamsInfoBaseMap
     },
     // 添加联动 下钻 等查询组件
     addViewTrackFilter(data) {
@@ -939,8 +943,40 @@ export const dvMainStore = defineStore('dataVisualization', {
       })
     },
     // 添加外部参数的过滤条件
-    addOuterParamsFilter(params, curComponentData = this.componentData, source = 'inner') {
+    addOuterParamsFilter(paramsPre, curComponentData = this.componentData, source = 'inner') {
       // params 结构 {key1:value1,key2:value2}
+      const params = {}
+      if (this.nowPanelOuterParamsBaseInfo) {
+        let errorCount = 0
+        let errorMes = ''
+        Object.keys(this.nowPanelOuterParamsBaseInfo).forEach(key => {
+          const targetInfo = this.nowPanelOuterParamsBaseInfo[key]
+          const userParams = paramsPre[key]
+          const userParamsIsNull = !userParams || userParams.length === 0
+          if (targetInfo.required && userParamsIsNull) {
+            // 要求用户必填 但是用户没有输入参数
+            errorCount++
+            errorMes = errorMes + key + ';'
+          } else if (
+            userParamsIsNull &&
+            targetInfo.enabledDefault &&
+            targetInfo.defaultValue &&
+            targetInfo.defaultValue.length > 0
+          ) {
+            // 非必填时 用户没有填写参数 但是启用默认值且有预设默认值时
+            params[key] = JSON.parse(targetInfo.defaultValue)
+          } else if (!userParamsIsNull) {
+            params[key] = paramsPre[key]
+          }
+        })
+        if (errorCount > 0) {
+          ElMessage.error('参数错误 ' + errorMes + '为必填参数')
+          return
+        }
+      } else {
+        return
+      }
+
       if (params) {
         const preActiveComponentIds = []
         const trackInfo = this.nowPanelOuterParamsInfo

@@ -86,6 +86,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     } catch (e) {
       console.error(e)
       ElMessage.error(t('visualization.outer_param_decode_error'))
+      return
     }
   }
   initCanvasDataMobile(

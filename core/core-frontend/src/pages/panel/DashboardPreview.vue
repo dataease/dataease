@@ -68,6 +68,7 @@ onBeforeMount(async () => {
     } catch (e) {
       console.error(e)
       ElMessage.error(t('visualization.outer_param_decode_error'))
+      return
     }
   }
   if (tokenInfo && Object.keys(tokenInfo).length) {
