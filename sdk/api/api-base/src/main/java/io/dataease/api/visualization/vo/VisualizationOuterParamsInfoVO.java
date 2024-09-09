@@ -36,6 +36,18 @@ public class VisualizationOuterParamsInfoVO implements Serializable {
      */
     private Boolean checked;
 
+
+    /**
+     * 是否必填
+     */
+    private Boolean required;
+
+    /**
+     * 默认值 JSON格式
+     */
+    private String defaultValue;
+
+
     /**
      * 复制来源
      */

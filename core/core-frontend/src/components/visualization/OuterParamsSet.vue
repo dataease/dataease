@@ -4,14 +4,14 @@
     :append-to-body="true"
     title="外部参数设置"
     v-model="state.outerParamsSetVisible"
-    width="70vw"
+    width="80vw"
     top="10vh"
     trigger="click"
   >
     <el-row style="height: 550px">
       <el-row v-loading="state.loading">
         <el-row class="preview">
-          <el-col :span="8" class="preview-left">
+          <el-col :span="6" class="preview-left">
             <el-row class="tree-head">
               <span class="head-text">参数列表</span>
               <span class="head-filter">
@@ -68,7 +68,7 @@
               </el-tree>
             </el-row>
           </el-col>
-          <el-col :span="16" class="preview-show">
+          <el-col :span="14" class="preview-show">
             <el-row v-if="state.curNodeId">
               <el-row class="new-params-title"> 选择参数关联组件 </el-row>
               <el-row class="new-params-filter" v-if="state.outerParamsInfo?.filterInfo?.length">
@@ -246,6 +246,11 @@
               <empty-background description="请配置参数" img-type="noneWhite" />
             </div>
           </el-col>
+          <el-col :span="4" class="params-attach-setting">
+            <el-row v-if="state.curNodeId">
+              <el-row class="new-params-title"> 参数配置 </el-row>
+            </el-row>
+          </el-col>
         </el-row>
       </el-row>
       <el-row class="root-class">
@@ -320,6 +325,8 @@ const state = reactive({
   defaultOuterParamsInfo: {
     paramName: '',
     checked: true,
+    required: false,
+    defaultValue: {},
     targetViewInfoList: []
   },
   defaultTargetViewInfo: {
@@ -971,5 +978,9 @@ defineExpose({
 
 .expand-custom-outer {
   margin-right: 4px;
+}
+
+.params-attach-setting {
+  border-left: 1px solid #e6e6e6;
 }
 </style>

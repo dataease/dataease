@@ -14,7 +14,7 @@ public class MybatisPlusGenerator {
      * 第一 我嫌麻烦
      * 第二 后面配置会放到nacos读起来更麻烦了
      */
-    private static final String url = "jdbc:mysql://localhost:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false";
+    private static final String url = "jdbc:mysql://localhost:3306/dataease4?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false";
     private static final String username = "root";
     private static final String password = "123456";
 
@@ -25,7 +25,7 @@ public class MybatisPlusGenerator {
     /**
      * 这是要生成代码的表名称
      */
-    private static final String TABLE_NAME = "visualization_outer_params_target_view_info";
+    private static final String TABLE_NAME = "visualization_outer_params_info";
 
     /**
      * 下面两个配置基本上不用动

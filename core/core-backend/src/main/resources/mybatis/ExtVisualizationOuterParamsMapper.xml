@@ -16,6 +16,8 @@
         <result column="params_id" jdbcType="VARCHAR" property="paramsId" />
         <result column="param_name" jdbcType="VARCHAR" property="paramName" />
         <result column="checked" jdbcType="BIT" property="checked" />
+        <result column="required" jdbcType="BIT" property="checked" />
+        <result column="default_value" jdbcType="VARCHAR" property="copyFrom" />
         <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
         <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
     </resultMap>
