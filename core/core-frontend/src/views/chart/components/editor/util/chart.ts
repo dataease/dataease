@@ -335,7 +335,11 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
     show: false,
     precision: 2,
     text: '转化率'
-  }
+  },
+  showTotal: false,
+  totalFontSize: 12,
+  totalColor: '#FFF',
+  totalFormatter: formatterItem
 }
 export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
