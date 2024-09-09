@@ -12,6 +12,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
+import { setTitle } from '@/utils/utils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -115,6 +116,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       if (props.publicLinkStatus) {
         // 设置浏览器title为当前仪表板名称
         document.title = dvInfo.name
+        setTitle(dvInfo.name)
       }
     }
   )
