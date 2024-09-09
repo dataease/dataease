@@ -76,7 +76,7 @@ public interface DataFillingApi {
 
     @DePermit({"#p0.formId+':manage'"})
     @PostMapping("/task/save")
-    Long save(@RequestBody TaskInfoVO task);
+    Long saveTask(@RequestBody TaskInfoVO task);
 
     @PostMapping("/task/logMsg")
     String logMsg(@RequestBody ReportInstanceMsgRequest request);
@@ -131,4 +131,7 @@ public interface DataFillingApi {
     @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/confirmUpload")
     void confirmUpload(@PathVariable("formId") Long formId, @RequestBody Map<String, String> data);
+
+    @GetMapping("/template/{itemId}")
+    String getTemplateByUserTaskItemId(@PathVariable("itemId") Long itemId);
 }
