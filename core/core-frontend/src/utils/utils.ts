@@ -1,5 +1,6 @@
 import { BusiTreeNode } from '@/models/tree/TreeNode'
 import { useCache } from '@/hooks/web/useCache'
+import { loadScript } from '@/utils/RemoteJs'
 
 const { wsCache } = useCache()
 export function deepCopy(target) {
@@ -133,6 +134,35 @@ export function isMobile() {
       /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
     ) && !isTablet()
   )
+}
+
+export const isDingTalk = window.navigator.userAgent.toLowerCase().includes('dingtalk')
+
+export const setTitle = (title?: string) => {
+  if (!isDingTalk) {
+    document.title = title || 'DataEase'
+    return
+  }
+  const jsUrl = 'https://g.alicdn.com/dingding/dingtalk-jsapi/3.0.25/dingtalk.open.js'
+  const jsId = 'fit2cloud-dataease-v2-platform-client-dingtalk'
+  if (window['dd'] && window['dd'].biz?.navigation?.setTitle) {
+    window['dd'].biz.navigation.setTitle({
+      title: title
+    })
+    return
+  }
+  const awaitMethod = loadScript(jsUrl, jsId)
+  awaitMethod
+    .then(() => {
+      window['dd'].ready(() => {
+        window['dd'].biz.navigation.setTitle({
+          title: title
+        })
+      })
+    })
+    .catch(() => {
+      document.title = title || 'DataEase'
+    })
 }
 
 export function isTablet() {
