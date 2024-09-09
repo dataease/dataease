@@ -50,7 +50,7 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi visualizationApi() {
-        return GroupedOpenApi.builder().group("1-visualization").displayName("可视化管理").packagesToScan("io.dataease.visualization").build();
+        return GroupedOpenApi.builder().group("1-visualization").displayName("可视化管理").packagesToScan("io.dataease.visualization", "io.dataease.share").build();
     }
 
     @Bean

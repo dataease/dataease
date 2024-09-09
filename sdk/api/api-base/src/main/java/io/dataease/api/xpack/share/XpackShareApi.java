@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "分享")
+@Tag(name = "可视化管理:分享")
 public interface XpackShareApi {
 
     @Operation(summary = "查询资源分享状态")
