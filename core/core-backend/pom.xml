@@ -131,21 +131,6 @@
                     <artifactId>flexmark-all</artifactId>
                     <version>${flexmark.version}</version>
                 </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-permissions</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-sync</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-base</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
             </dependencies>
 
             <build>
