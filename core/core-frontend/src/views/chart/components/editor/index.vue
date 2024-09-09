@@ -4392,6 +4392,9 @@ span {
   border-top: 1px solid @side-outline-border-color;
   overflow: auto;
   height: calc(100% - 1px);
+  :deep(.is-horizontal) {
+    display: none !important;
+  }
 }
 
 .collapse-title {
