@@ -130,6 +130,8 @@ public class DatasourceServer implements DatasourceApi {
 
     private boolean isUpdatingStatus = false;
 
+    private static List<Long> syncDsIds = new ArrayList<>();
+
     private void getParents(Long pid, List<Long> ids) {
         CoreDatasource parent = datasourceMapper.selectById(pid);// 查找父级folder
         ids.add(parent.getId());
@@ -1069,11 +1071,16 @@ public class DatasourceServer implements DatasourceApi {
         wrapper.notIn("type", Arrays.asList("Excel", "folder"));
         List<CoreDatasource> datasources = datasourceMapper.selectList(wrapper);
         datasources.forEach(datasource -> {
+            if (!syncDsIds.contains(datasource.getId())) {
+                syncDsIds.add(datasource.getId());
+            }
             commonThreadPool.addTask(() -> {
                 try {
                     LicenseUtil.validate();
                     validate(datasource);
                 } catch (Exception e) {
+                } finally {
+                    syncDsIds.removeIf(id -> id.equals(datasource.getId()));
                 }
             });
         });
