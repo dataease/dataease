@@ -72,6 +72,7 @@ onBeforeMount(async () => {
     } catch (e) {
       console.error(e)
       ElMessage.error(t('visualization.outer_param_decode_error'))
+      return
     }
   }
   const chartId = embeddedParams?.chartId || embeddedStore.chartId

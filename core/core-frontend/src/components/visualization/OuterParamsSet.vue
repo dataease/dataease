@@ -68,7 +68,7 @@
               </el-tree>
             </el-row>
           </el-col>
-          <el-col :span="14" class="preview-show">
+          <el-col :span="13" class="preview-show">
             <el-row v-if="state.curNodeId">
               <el-row class="new-params-title"> 选择参数关联组件 </el-row>
               <el-row class="new-params-filter" v-if="state.outerParamsInfo?.filterInfo?.length">
@@ -246,9 +246,31 @@
               <empty-background description="请配置参数" img-type="noneWhite" />
             </div>
           </el-col>
-          <el-col :span="4" class="params-attach-setting">
+          <el-col :span="5" class="params-attach-setting">
             <el-row v-if="state.curNodeId">
               <el-row class="new-params-title"> 参数配置 </el-row>
+              <el-row class="params-attach-content">
+                <el-row>
+                  <el-checkbox v-model="state.outerParamsInfo.required">必填 </el-checkbox>
+                </el-row>
+                <el-row>
+                  <el-checkbox v-model="state.outerParamsInfo.enabledDefault">默认值 </el-checkbox>
+                </el-row>
+                <el-input
+                  :ref="el => setArgRef(el, state.outerParamsInfo.paramsInfoId)"
+                  :placeholder="'请输入参数'"
+                  v-model="state.outerParamsInfo.defaultValue"
+                  type="textarea"
+                  :autosize="{ minRows: 4, maxRows: 8 }"
+                  @change="
+                    val =>
+                      validateArgs(
+                        state.outerParamsInfo.defaultValue,
+                        state.outerParamsInfo.paramsInfoId
+                      )
+                  "
+                />
+              </el-row>
             </el-row>
           </el-col>
         </el-row>
@@ -265,13 +287,12 @@
 import { ref, reactive, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ElCol, ElMessage } from 'element-plus-secondary'
+import { ElCol, ElInput, ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import generateID from '@/utils/generateID'
 import { queryWithVisualizationId, updateOuterParamsSet } from '@/api/visualization/outerParams'
 import { queryOuterParamsDsInfo, viewDetailList } from '@/api/visualization/dataVisualization'
-import checkArrayRepeat from '@/utils/check'
 import HandleMore from '@/components/handle-more/src/HandleMore.vue'
 import { fieldType } from '@/utils/attr'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -318,6 +339,9 @@ const state = reactive({
   outerParamsInfo: {
     content: '',
     linkType: '',
+    required: false,
+    enabledDefault: false,
+    defaultValue: null,
     targetViewInfoList: [],
     paramsInfoId: null
   },
@@ -326,7 +350,8 @@ const state = reactive({
     paramName: '',
     checked: true,
     required: false,
-    defaultValue: {},
+    enabledDefault: false,
+    defaultValue: null,
     targetViewInfoList: []
   },
   defaultTargetViewInfo: {
@@ -349,6 +374,49 @@ const state = reactive({
     numberRangeWidget: '数值区间过滤组件'
   }
 })
+
+const argRefs = ref({})
+
+const setArgRef = (el, id) => {
+  if (el) {
+    argRefs.value[id] = el
+  }
+}
+
+const validateArgs = (val, id) => {
+  const cref = argRefs.value[id]
+  const e = cref.input
+  if (val === null || val === '' || typeof val === 'undefined') {
+    e.style.color = null
+    e.parentNode.removeAttribute('style')
+    const child = e.parentNode.querySelector('.error-msg')
+    if (child) {
+      e.parentNode.removeChild(child)
+    }
+    return true
+  }
+  try {
+    JSON.parse(val)
+    e.style.color = null
+    e.parentNode.removeAttribute('style')
+    const child = e.parentNode.querySelector('.error-msg')
+    if (child) {
+      e.parentNode.removeChild(child)
+    }
+    return true
+  } catch (error) {
+    e.style.color = 'red'
+    e.parentNode.setAttribute('style', 'box-shadow: 0 0 0 1px red inset;')
+    const child = e.parentNode.querySelector('.error-msg')
+    if (!child) {
+      const errorDom = document.createElement('div')
+      errorDom.className = 'error-msg'
+      errorDom.innerText = '格式错误'
+      e.parentNode.appendChild(errorDom)
+    }
+    return false
+  }
+}
 
 const viewSelectedField = computed(() =>
   state.outerParamsInfo?.targetViewInfoList?.map(targetViewInfo => targetViewInfo.targetViewId)
@@ -982,5 +1050,19 @@ defineExpose({
 
 .params-attach-setting {
   border-left: 1px solid #e6e6e6;
+}
+
+.params-attach-content {
+  padding: 16px;
+}
+
+:deep(.error-msg) {
+  color: red;
+  position: fixed;
+  z-index: 9;
+  font-size: 10px;
+  height: 10px;
+  margin-bottom: 12px;
+  margin-right: -80px;
 }
 </style>

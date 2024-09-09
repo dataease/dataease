@@ -56,7 +56,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
 
     @Override
     public VisualizationOuterParamsDTO queryWithVisualizationId(String visualizationId) {
-        VisualizationOuterParamsDTO visualizationOuterParamsDTO =  extOuterParamsMapper.queryWithVisualizationId(visualizationId);
+        VisualizationOuterParamsDTO visualizationOuterParamsDTO = extOuterParamsMapper.queryWithVisualizationId(visualizationId);
         return visualizationOuterParamsDTO;
     }
 
@@ -77,21 +77,21 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         String paramsId = UUID.randomUUID().toString();
         outerParamsDTO.setParamsId(paramsId);
         VisualizationOuterParams newOuterParams = new VisualizationOuterParams();
-        BeanUtils.copyBean(newOuterParams,outerParamsDTO);
+        BeanUtils.copyBean(newOuterParams, outerParamsDTO);
         outerParamsMapper.insert(newOuterParams);
         Optional.ofNullable(outerParamsDTO.getOuterParamsInfoArray()).orElse(new ArrayList<>()).forEach(outerParamsInfo -> {
             String paramsInfoId = UUID.randomUUID().toString();
             outerParamsInfo.setParamsInfoId(paramsInfoId);
             outerParamsInfo.setParamsId(paramsId);
             VisualizationOuterParamsInfo newOuterParamsInfo = new VisualizationOuterParamsInfo();
-            BeanUtils.copyBean(newOuterParamsInfo,outerParamsInfo);
+            BeanUtils.copyBean(newOuterParamsInfo, outerParamsInfo);
             outerParamsInfoMapper.insert(newOuterParamsInfo);
             Optional.ofNullable(outerParamsInfo.getTargetViewInfoList()).orElse(new ArrayList<>()).forEach(targetViewInfo -> {
                 String targetViewInfoId = UUID.randomUUID().toString();
                 targetViewInfo.setTargetId(targetViewInfoId);
                 targetViewInfo.setParamsInfoId(paramsInfoId);
                 VisualizationOuterParamsTargetViewInfo newOuterParamsTargetViewInfo = new VisualizationOuterParamsTargetViewInfo();
-                BeanUtils.copyBean(newOuterParamsTargetViewInfo,targetViewInfo);
+                BeanUtils.copyBean(newOuterParamsTargetViewInfo, targetViewInfo);
                 outerParamsTargetViewInfoMapper.insert(newOuterParamsTargetViewInfo);
             });
         });
@@ -101,28 +101,30 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     @Override
     public VisualizationOuterParamsBaseResponse getOuterParamsInfo(String visualizationId) {
         List<VisualizationOuterParamsInfoDTO> result = extOuterParamsMapper.getVisualizationOuterParamsInfo(visualizationId);
-        return new VisualizationOuterParamsBaseResponse(Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(VisualizationOuterParamsInfoDTO::getSourceInfo, VisualizationOuterParamsInfoDTO::getTargetInfoList)));
+        return new VisualizationOuterParamsBaseResponse(Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(VisualizationOuterParamsInfoDTO::getSourceInfo, VisualizationOuterParamsInfoDTO::getTargetInfoList)),
+                Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(VisualizationOuterParamsInfoDTO::getSourceInfo, paramsInfo -> paramsInfo))
+        );
     }
 
     @Override
     public List<CoreDatasetGroupVO> queryDsWithVisualizationId(String visualizationId) {
-        List<CoreDatasetGroupVO> result =  extOuterParamsMapper.queryDsWithVisualizationId(visualizationId);
-        if(!CollectionUtils.isEmpty(result)){
+        List<CoreDatasetGroupVO> result = extOuterParamsMapper.queryDsWithVisualizationId(visualizationId);
+        if (!CollectionUtils.isEmpty(result)) {
             result.forEach(coreDatasetGroupVO -> {
                 List<CoreDatasetTableFieldVO> fields = coreDatasetGroupVO.getDatasetFields();
                 QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
                 wrapper.eq("dataset_group_id", coreDatasetGroupVO.getId());
                 List<CoreDatasetTable> tableResult = coreDatasetTableMapper.selectList(wrapper);
-                if(!CollectionUtils.isEmpty(tableResult)){
+                if (!CollectionUtils.isEmpty(tableResult)) {
                     tableResult.forEach(coreDatasetTable -> {
                         String sqlVarDetail = coreDatasetTable.getSqlVariableDetails();
-                        if(StringUtils.isNotEmpty(sqlVarDetail)){
+                        if (StringUtils.isNotEmpty(sqlVarDetail)) {
                             TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
                             };
                             List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(sqlVarDetail, listTypeReference);
                             defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {
-                                String varFieldId = coreDatasetTable.getId()+"|DE|"+sqlVariableDetails.getVariableName();
-                                fields.add(new CoreDatasetTableFieldVO(varFieldId,sqlVariableDetails.getVariableName(), DeTypeConstants.DE_STRING));
+                                String varFieldId = coreDatasetTable.getId() + "|DE|" + sqlVariableDetails.getVariableName();
+                                fields.add(new CoreDatasetTableFieldVO(varFieldId, sqlVariableDetails.getVariableName(), DeTypeConstants.DE_STRING));
                             });
                         }
                     });

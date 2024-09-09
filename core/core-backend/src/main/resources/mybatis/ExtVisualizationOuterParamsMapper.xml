@@ -16,8 +16,9 @@
         <result column="params_id" jdbcType="VARCHAR" property="paramsId" />
         <result column="param_name" jdbcType="VARCHAR" property="paramName" />
         <result column="checked" jdbcType="BIT" property="checked" />
-        <result column="required" jdbcType="BIT" property="checked" />
-        <result column="default_value" jdbcType="VARCHAR" property="copyFrom" />
+        <result column="required" jdbcType="BIT" property="required" />
+        <result column="default_value" jdbcType="VARCHAR" property="defaultValue" />
+        <result column="enabled_default" jdbcType="BIT" property="enabledDefault" />
         <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
         <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
     </resultMap>
@@ -51,6 +52,9 @@
 
     <resultMap id="AllOuterParamsMap" type="io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO">
         <result column="sourceInfo" jdbcType="VARCHAR" property="sourceInfo"/>
+        <result column="required" jdbcType="VARCHAR" property="required"/>
+        <result column="default_value" jdbcType="VARCHAR" property="defaultValue"/>
+        <result column="enabled_default" jdbcType="VARCHAR" property="enabledDefault"/>
         <collection property="targetInfoList" ofType="String">
             <result column="targetInfo" jdbcType="VARCHAR"/>
         </collection>
@@ -61,6 +65,9 @@
             pop.visualization_id,
             popi.params_info_id,
             popi.param_name,
+            popi.enabled_default,
+            popi.required,
+            popi.default_value,
             ifnull( popi.checked, 0 ) AS checked,
             poptvi.target_view_id,
             poptvi.target_ds_id,
@@ -118,7 +125,10 @@
 
     <select id="getVisualizationOuterParamsInfo" resultMap="AllOuterParamsMap">
         SELECT DISTINCT
-            param_name AS sourceInfo,
+            popi.param_name AS sourceInfo,
+            popi.required AS required,
+            popi.default_value AS default_value,
+            popi.enabled_default AS enabled_default,
             CONCAT( poptvi.target_view_id, '#', poptvi.target_field_id ) AS targetInfo
         FROM
             visualization_outer_params pop
