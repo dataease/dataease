@@ -220,12 +220,13 @@ const COMPUTED_DEFAULT_LABEL = computed(() => {
   return DEFAULT_LABEL
 })
 
-const state = reactive<{ labelForm: ChartLabelAttr | any }>({
+const state = reactive<{ labelForm: DeepPartial<ChartLabelAttr> }>({
   labelForm: {
     quotaLabelFormatter: DEFAULT_LABEL.quotaLabelFormatter,
     seriesLabelFormatter: [],
     labelFormatter: DEFAULT_LABEL.labelFormatter,
-    conversionTag: DEFAULT_LABEL.conversionTag
+    conversionTag: DEFAULT_LABEL.conversionTag,
+    totalFormatter: DEFAULT_LABEL.totalFormatter
   }
 })
 
@@ -661,6 +662,149 @@ const conversionPrecision = [
           :label="t('chart.value_formatter_thousand_separator')"
         />
       </el-form-item>
+    </template>
+    <el-form-item v-if="showProperty('showTotal')" class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.labelForm.showTotal"
+        @change="changeLabelAttr('showTotal')"
+        :label="t('chart.total_show')"
+      />
+    </el-form-item>
+    <template v-if="false && showProperty('totalFormatter')">
+      <el-divider class="m-divider" :class="{ 'divider-dark': themes === 'dark' }" />
+      <div v-show="state.labelForm.showTotal">
+        <el-space>
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            v-if="showProperty('totalColor')"
+            :label="t('chart.text')"
+          >
+            <el-color-picker
+              :effect="themes"
+              v-model="state.labelForm.totalColor"
+              class="color-picker-style"
+              :predefine="COLOR_PANEL"
+              @change="changeLabelAttr('totalColor')"
+              is-custom
+            />
+          </el-form-item>
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            v-if="showProperty('totalFontSize')"
+          >
+            <template #label>&nbsp;</template>
+            <el-tooltip content="字号" :effect="toolTip" placement="top">
+              <el-select
+                size="small"
+                style="width: 108px"
+                :effect="themes"
+                v-model.number="state.labelForm.totalFontSize"
+                :placeholder="t('chart.text_fontsize')"
+                @change="changeLabelAttr('totalFontSize')"
+              >
+                <el-option
+                  v-for="option in fontSizeList"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-tooltip>
+          </el-form-item>
+        </el-space>
+        <el-form-item
+          :label="$t('chart.value_formatter_type')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-select
+            size="small"
+            :effect="themes"
+            v-model="state.labelForm.totalFormatter.type"
+            @change="changeLabelAttr('totalFormatter.type')"
+          >
+            <el-option
+              v-for="type in formatterType"
+              :key="type.value"
+              :label="$t('chart.' + type.name)"
+              :value="type.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="state.labelForm.totalFormatter && state.labelForm.totalFormatter.type !== 'auto'"
+          :label="$t('chart.value_formatter_decimal_count')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-input-number
+            controls-position="right"
+            :effect="themes"
+            v-model="state.labelForm.totalFormatter.decimalCount"
+            :precision="0"
+            :min="0"
+            :max="10"
+            @change="changeLabelAttr('totalFormatter.decimalCount')"
+          />
+        </el-form-item>
+
+        <el-row
+          :gutter="8"
+          v-if="state.labelForm.totalFormatter && state.labelForm.totalFormatter.type !== 'percent'"
+        >
+          <el-col :span="12">
+            <el-form-item
+              :label="$t('chart.value_formatter_unit')"
+              class="form-item"
+              :class="'form-item-' + themes"
+            >
+              <el-select
+                size="small"
+                :effect="themes"
+                v-model="state.labelForm.totalFormatter.unit"
+                :placeholder="$t('chart.pls_select_field')"
+                @change="changeLabelAttr('totalFormatter.unit')"
+              >
+                <el-option
+                  v-for="item in unitType"
+                  :key="item.value"
+                  :label="$t('chart.' + item.name)"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              :label="$t('chart.value_formatter_suffix')"
+              class="form-item"
+              :class="'form-item-' + themes"
+            >
+              <el-input
+                :effect="themes"
+                v-model="state.labelForm.totalFormatter.suffix"
+                clearable
+                :placeholder="$t('commons.input_content')"
+                @change="changeLabelAttr('totalFormatter.suffix')"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            :effect="themes"
+            v-model="state.labelForm.totalFormatter.thousandSeparator"
+            @change="changeLabelAttr('totalFormatter.thousandSeparator')"
+            :label="t('chart.value_formatter_thousand_separator')"
+          />
+        </el-form-item>
+      </div>
     </template>
 
     <el-form-item
