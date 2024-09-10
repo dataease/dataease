@@ -328,6 +328,8 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                                                 .setScale(8, RoundingMode.HALF_UP)
                                                 .toString();
                                     }
+                                } else if (StringUtils.equalsIgnoreCase(resultData, "pre")) {
+                                    item[dataIndex] = new BigDecimal(lastValue).toString();
                                 }
                             }
                         }

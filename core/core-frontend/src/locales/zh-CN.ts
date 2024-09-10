@@ -1098,6 +1098,7 @@ export default {
     quarter_mom: '季环比',
     week_mom: '周环比',
     day_mom: '日环比',
+    data_pre: '具体数值',
     data_sub: '对比差值',
     data_percent: '差值百分比',
     compare_calc_expression: '计算公式',
