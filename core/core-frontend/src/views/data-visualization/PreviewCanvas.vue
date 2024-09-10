@@ -94,6 +94,17 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       ElMessage.error(t('visualization.outer_param_decode_error'))
     }
   }
+
+  const initBrowserTimer = () => {
+    if (state.canvasStylePreview.refreshBrowserEnable) {
+      const gap = state.canvasStylePreview.refreshBrowserUnit === 'minute' ? 60 : 1
+      const browserRefreshTime = state.canvasStylePreview.refreshBrowserTime * gap * 1000
+      setTimeout(() => {
+        window.location.reload()
+      }, browserRefreshTime)
+    }
+  }
+
   initCanvasData(
     dvId,
     dvType,
@@ -120,6 +131,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
         document.title = dvInfo.name
         setTitle(dvInfo.name)
       }
+      initBrowserTimer()
     }
   )
 }

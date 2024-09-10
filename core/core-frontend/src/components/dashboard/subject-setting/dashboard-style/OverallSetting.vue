@@ -72,6 +72,56 @@
         </template>
       </el-input>
     </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes" style="margin-bottom: 8px">
+      <el-checkbox
+        :effect="themes"
+        size="small"
+        v-model="canvasStyleData.refreshViewBrowserEnable"
+        @change="themeChange"
+      >
+        整体刷新
+      </el-checkbox>
+      <el-tooltip class="item" :effect="toolTip" placement="bottom">
+        <template #content>
+          <div>仅公共链接生效</div>
+        </template>
+        <el-icon
+          class="hint-icon"
+          style="margin-left: 4px"
+          :class="{ 'hint-icon--dark': themes === 'dark' }"
+        >
+          <Icon name="icon_info_outlined" />
+        </el-icon>
+      </el-tooltip>
+    </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 20px">
+      <el-input
+        v-model="canvasStyleData.refreshBrowserTime"
+        :effect="themes"
+        class="time-input-number"
+        :class="[dvInfo.type === 'dashboard' && 'padding20', themes === 'dark' && 'dv-dark']"
+        type="number"
+        :min="1"
+        :max="3600"
+        size="middle"
+        :disabled="!canvasStyleData.refreshViewBrowserEnable"
+        @change="onRefreshChange"
+      >
+        <template #append>
+          <el-select
+            v-model="canvasStyleData.refreshBrowserUnit"
+            size="middle"
+            :effect="themes"
+            :disabled="!canvasStyleData.refreshViewBrowserEnable"
+            style="width: 90px"
+            @change="themeChange"
+          >
+            <el-option :label="t('visualization.minute')" :value="'minute'" />
+            <el-option :label="t('visualization.second')" :value="'second'" />
+          </el-select>
+        </template>
+      </el-input>
+    </el-form-item>
     <el-form-item class="form-item" :class="'form-item-' + themes">
       <el-checkbox
         :effect="themes"
