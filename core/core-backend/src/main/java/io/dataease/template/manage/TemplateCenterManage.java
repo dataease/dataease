@@ -5,7 +5,9 @@ import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.TemplateMarketDTO;
 import io.dataease.api.template.dto.TemplateMarketPreviewInfoDTO;
 import io.dataease.api.template.response.*;
+import io.dataease.api.template.vo.MarketApplicationMetaDataVO;
 import io.dataease.api.template.vo.MarketApplicationSpecVO;
+import io.dataease.api.template.vo.MarketLatestReleaseVO;
 import io.dataease.api.template.vo.MarketMetaDataVO;
 import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 public class TemplateCenterManage {
     private final static String POSTS_API_V2 = "/apis/api.store.halo.run/v1alpha1/applications?keyword=&priceMode=&sort=latestReleaseTimestamp%2Cdesc&type=THEME&deVersion=V2&templateType=&label=&page=1&size=2000";
     private final static String TEMPLATE_META_DATA_URL = "/upload/meta_data.json";
+    private final static String TEMPLATE_BASE_INFO_URL = "/apis/api.store.halo.run/v1alpha1/applications/";
     @Resource
     private SysParameterManage sysParameterManage;
 
@@ -54,10 +57,29 @@ public class TemplateCenterManage {
      */
     public TemplateManageFileDTO getTemplateFromMarket(String templateUrl) {
         if (StringUtils.isNotEmpty(templateUrl)) {
-            String templateName = templateUrl.substring(templateUrl.lastIndexOf("/")+1,templateUrl.length());
-            templateUrl = templateUrl.replace(templateName,URLEncoder.encode(templateName, StandardCharsets.UTF_8).replace("+", "%20"));
+            String templateName = templateUrl.substring(templateUrl.lastIndexOf("/") + 1, templateUrl.length());
+            templateUrl = templateUrl.replace(templateName, URLEncoder.encode(templateName, StandardCharsets.UTF_8).replace("+", "%20"));
             String sufUrl = sysParameterManage.groupVal("template.").get("template.url");
             String templateInfo = HttpClientUtil.get(sufUrl + templateUrl, null);
+            return JsonUtil.parseObject(templateInfo, TemplateManageFileDTO.class);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param templateUrl template url
+     * @Description Get template file from template market
+     */
+    public TemplateManageFileDTO getTemplateFromMarketV2(String templateName) {
+        if (StringUtils.isNotEmpty(templateName)) {
+            String sufUrl = sysParameterManage.groupVal("template.").get("template.url");
+            String templateBaseInfo = HttpClientUtil.get(sufUrl + TEMPLATE_BASE_INFO_URL + templateName, null);
+            MarketTemplateV2ItemResult baseItemInfo = JsonUtil.parseObject(templateBaseInfo, MarketTemplateV2ItemResult.class);
+            String templateUrl = sufUrl + "/store/apps/" + templateName +
+                    "/releases/download/" + baseItemInfo.getLatestRelease().getRelease().getMetadata().getName()
+                    + "/assets/" + baseItemInfo.getLatestRelease().getAssets().getFirst().getMetadata().getName();
+            String templateInfo = HttpClientUtil.get(templateUrl, null);
             return JsonUtil.parseObject(templateInfo, TemplateManageFileDTO.class);
         } else {
             return null;
@@ -117,8 +139,8 @@ public class TemplateCenterManage {
         manageResult.stream().forEach(templateManageDTO -> {
             templateManageDTO.setCategoryName(categoryMap.get(templateManageDTO.getPid()));
             List<String> categories = templateManageDTO.getCategories();
-            if(!CollectionUtils.isEmpty(categories)){
-                List<String> categoryNames = categories.stream().map(categoryId ->categoryMap.get(categoryId)).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(categories)) {
+                List<String> categoryNames = categories.stream().map(categoryId -> categoryMap.get(categoryId)).collect(Collectors.toList());
                 templateManageDTO.setCategoryNames(categoryNames);
                 result.add(new TemplateMarketDTO(templateManageDTO));
             }
@@ -172,7 +194,7 @@ public class TemplateCenterManage {
         }
     }
 
-    private MarketBaseResponse baseResponseV2TransRecommend(MarketTemplateV2BaseResponse v2BaseResponse,List<TemplateMarketDTO> templateManages, String url) {
+    private MarketBaseResponse baseResponseV2TransRecommend(MarketTemplateV2BaseResponse v2BaseResponse, List<TemplateMarketDTO> templateManages, String url) {
         Map<String, Long> useTime = coreOptRecentManage.findTemplateRecentUseTime();
         List<MarketMetaDataVO> categoryVO = getCategoriesV2().stream().filter(node -> !"全部".equalsIgnoreCase(node.getLabel())).collect(Collectors.toList());
         Map<String, String> categoriesMap = categoryVO.stream()
@@ -181,8 +203,9 @@ public class TemplateCenterManage {
         if (v2BaseResponse != null) {
             v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
                 MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
+                MarketApplicationMetaDataVO metadata = marketTemplateV2ItemResult.getApplication().getMetadata();
                 if ("Y".equalsIgnoreCase(spec.getSuggest())) {
-                    contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), "Y"));
+                    contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), "Y"));
                 }
             });
         }
@@ -192,16 +215,16 @@ public class TemplateCenterManage {
         Long countDashboard = contents.stream().filter(item -> "SCREEN".equals(item.getTemplateType())).count();
         List<TemplateMarketDTO> templateDataV = templateManages.stream().filter(item -> "PANEL".equals(item.getTemplateType())).collect(Collectors.toList());
         List<TemplateMarketDTO> templateDashboard = templateManages.stream().filter(item -> "SCREEN".equals(item.getTemplateType())).collect(Collectors.toList());
-        if(countDataV<10){
-            Long addItemCount = 10 -countDataV;
-            Long addIndex = templateDataV.size()<addItemCount? templateDataV.size() :addItemCount;
-            contents.addAll(templateDataV.subList(0,addIndex.intValue()));
+        if (countDataV < 10) {
+            Long addItemCount = 10 - countDataV;
+            Long addIndex = templateDataV.size() < addItemCount ? templateDataV.size() : addItemCount;
+            contents.addAll(templateDataV.subList(0, addIndex.intValue()));
         }
 
-        if(countDashboard<10){
-            Long addItemCount = 10 -countDashboard;
-            Long addIndex = templateDashboard.size()<addItemCount? templateDashboard.size() :addItemCount;
-            contents.addAll(templateDashboard.subList(0,addIndex.intValue()));
+        if (countDashboard < 10) {
+            Long addItemCount = 10 - countDashboard;
+            Long addIndex = templateDashboard.size() < addItemCount ? templateDashboard.size() : addItemCount;
+            contents.addAll(templateDashboard.subList(0, addIndex.intValue()));
         }
 
         return new MarketBaseResponse(url, categoryVO, contents);
@@ -221,7 +244,8 @@ public class TemplateCenterManage {
         if (v2BaseResponse != null) {
             v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
                 MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
-                contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest()));
+                MarketApplicationMetaDataVO metadata = marketTemplateV2ItemResult.getApplication().getMetadata();
+                contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest()));
                 if (categoriesMap.get(spec.getLabel()) != null) {
                     activeCategoriesName.add(categoriesMap.get(spec.getLabel()));
                 }
