@@ -2018,6 +2018,7 @@ export default {
     datasource: '数据源',
     char_can_not_more_50: '不能超过50字符',
     char_2_64: '2-64个字符',
+    char_1_64: '1-64个字符',
     share_success: '分享成功',
     input_id: '请输入ID',
     input_pwd: '请输入密码',
