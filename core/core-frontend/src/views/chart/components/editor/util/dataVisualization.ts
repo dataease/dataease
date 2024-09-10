@@ -80,6 +80,9 @@ export const DEFAULT_DASHBOARD_STYLE_DARK = {
 export const DEFAULT_CANVAS_STYLE_DATA_BASE = {
   width: 1920,
   height: 1080,
+  refreshBrowserEnable: false, // 开启浏览器刷新（默认关闭）
+  refreshBrowserUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
+  refreshBrowserTime: 5, // 仪表板刷新时间 默认5分钟
   refreshViewEnable: false, // 开启图表刷新（默认关闭）
   refreshViewLoading: true, // 仪表板图表loading提示
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
