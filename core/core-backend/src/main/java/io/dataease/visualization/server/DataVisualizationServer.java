@@ -571,7 +571,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 name = request.getName();
                 dvType = request.getType();
             } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)) {
-                TemplateManageFileDTO templateFileInfo = templateCenterManage.getTemplateFromMarket(request.getTemplateUrl());
+                TemplateManageFileDTO templateFileInfo = templateCenterManage.getTemplateFromMarketV2(request.getResourceName());
                 if (templateFileInfo == null) {
                     DEException.throwException("Can't find the template's info from market,please check");
                 }
