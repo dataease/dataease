@@ -4395,6 +4395,9 @@ span {
   :deep(.is-horizontal) {
     display: none !important;
   }
+  :deep(.ed-scrollbar__wrap) {
+    overflow-x: hidden;
+  }
 }
 
 .collapse-title {
