@@ -176,7 +176,8 @@ const showCustomSort = item => {
 const showSort = () => {
   const isExtColor = props.type === 'extColor'
   const isChartMix = props.chart.type.includes('chart-mix')
-  const isDimensionOrDimensionStack = props.type === 'dimension' || props.type === 'dimensionStack'
+  const isDimensionOrDimensionStack =
+    props.type === 'dimension' || props.type === 'dimensionStack' || props.type === 'dimensionExt'
   if (isExtColor) {
     return false
   }
@@ -333,7 +334,7 @@ onMounted(() => {
             :divided="
               !chart.type.includes('chart-mix') ||
               (chart.type.includes('chart-mix') &&
-                (type === 'dimension' || type === 'dimensionStack'))
+                (type === 'dimension' || type === 'dimensionStack' || type === 'dimensionExt'))
             "
           >
             <el-dropdown
@@ -532,7 +533,7 @@ onMounted(() => {
             :divided="
               !chart.type.includes('chart-mix') ||
               (chart.type.includes('chart-mix') &&
-                (type === 'dimension' || type === 'dimensionStack'))
+                (type === 'dimension' || type === 'dimensionStack' || type === 'dimensionExt'))
             "
             :command="beforeClickItem('rename')"
           >
