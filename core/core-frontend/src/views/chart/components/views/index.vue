@@ -378,7 +378,7 @@ const windowsJump = (url, jumpType) => {
     const newWindow = window.open(url, jumpType)
     initOpenHandler(newWindow)
   } catch (e) {
-    ElMessage.error(t('visualization.url_check_error') + ':' + url)
+    console.warn(t('visualization.url_check_error') + ':' + url)
   }
 }
 
