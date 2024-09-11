@@ -253,8 +253,8 @@ const getShapeItemShowStyle = item => {
 }
 
 const curGap = computed(() => {
-  return dashboardActive.value && canvasStyleData.value?.dashboard?.gap === 'yes'
-    ? canvasStyleData.value?.dashboard?.gapSize
+  return dashboardActive.value && dvMainStore.canvasStyleData.dashboard?.gap === 'yes'
+    ? dvMainStore.canvasStyleData?.dashboard?.gapSize
     : 0
 })
 
