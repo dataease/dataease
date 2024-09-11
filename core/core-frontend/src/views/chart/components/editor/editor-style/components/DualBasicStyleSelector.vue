@@ -209,7 +209,7 @@ onMounted(() => {
             </el-radio-group>
           </el-form-item>
         </template>
-        <tempalte v-else>
+        <template v-else>
           <el-row :gutter="8">
             <el-col :span="12">
               <el-form-item
@@ -284,7 +284,7 @@ onMounted(() => {
               {{ t('chart.line_smooth') }}
             </el-checkbox>
           </el-form-item>
-        </tempalte>
+        </template>
       </el-tab-pane>
       <el-tab-pane :label="t('chart.yAxisRight')" name="right">
         <template v-if="showProperty('colors')">
