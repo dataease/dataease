@@ -15,6 +15,8 @@ public class CommonThreadPool {
 
     private int maxQueueSize = 10;
 
+    private int maximumPoolSize = 10;
+
     private int keepAliveSeconds = 600;
 
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
@@ -22,6 +24,7 @@ public class CommonThreadPool {
     @PostConstruct
     public void init() {
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(corePoolSize);
+        scheduledThreadPoolExecutor.setMaximumPoolSize(maximumPoolSize);
         scheduledThreadPoolExecutor.setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
     }
 
