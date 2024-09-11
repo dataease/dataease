@@ -214,32 +214,25 @@ provide('quota', () => state.quota)
 watch(
   [() => view.value['tableId']],
   () => {
-    if (props.view.id) {
-      fieldLoading.value = true
-      deleteChartFieldByChartId(props.view.id)
-        .then(() => {
-          watchDs()
-        })
-        .catch(() => {
-          fieldLoading.value = false
-        })
-    } else {
-      watchDs()
-    }
+    fieldLoading.value = true
+    deleteChartFieldByChartId(props.view.id)
+      .then(() => {
+        getFields(props.view.tableId, props.view.id, props.view.type)
+        const nodeId = view.value['tableId']
+        if (!!nodeId) {
+          cacheId = nodeId as unknown as string
+        }
+        const node = datasetSelector?.value?.getNode(nodeId)
+        if (node?.data) {
+          curDatasetWeight.value = node.data.weight
+        }
+      })
+      .catch(() => {
+        fieldLoading.value = false
+      })
   },
   { deep: true }
 )
-const watchDs = () => {
-  getFields(props.view.tableId, props.view.id, props.view.type)
-  const nodeId = view.value['tableId']
-  if (!!nodeId) {
-    cacheId = nodeId as unknown as string
-  }
-  const node = datasetSelector?.value?.getNode(nodeId)
-  if (node?.data) {
-    curDatasetWeight.value = node.data.weight
-  }
-}
 const getFields = (id, chartId, type) => {
   if (id && chartId) {
     fieldLoading.value = true
