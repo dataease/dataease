@@ -452,6 +452,11 @@ defineExpose({
           </template>
         </el-table-column>
         <el-table-column prop="exportFromName" :label="$t('data_export.export_obj')" width="200" />
+        <el-table-column prop="exportTime" width="180" :label="$t('data_export.export_time')">
+          <template #default="scope">
+            <span>{{ timestampFormatDate(scope.row.exportTime) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="exportFromType" width="120" :label="$t('data_export.export_from')">
           <template #default="scope">
             <span v-if="scope.row.exportFromType === 'dataset'">{{ t('data_set.data_set') }}</span>
@@ -464,11 +469,6 @@ defineExpose({
           :label="t('data_set.organization')"
           width="200"
         />
-        <el-table-column prop="exportTime" width="180" :label="$t('data_export.export_time')">
-          <template #default="scope">
-            <span>{{ timestampFormatDate(scope.row.exportTime) }}</span>
-          </template>
-        </el-table-column>
         <el-table-column fixed="right" prop="operate" width="90" :label="$t('commons.operating')">
           <template #default="scope">
             <el-tooltip effect="dark" :content="t('data_set.download')" placement="top">
