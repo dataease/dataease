@@ -160,7 +160,7 @@ const state = reactive({
     id: ''
   },
   // 禁止移入Tab中的组件
-  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs', 'Group'],
+  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs', 'Group', 'GroupArea'],
   // 当画布在tab中是 宽度左右拓展的余量
   parentWidthTabOffset: 40,
   canvasChangeTips: 'none',
@@ -524,6 +524,7 @@ const handleMouseDownOnShape = e => {
     if (
       !isMainCanvas(canvasId.value) &&
       !isGroupCanvas(canvasId.value) &&
+      !isGroupArea.value &&
       (left < -30 || left + componentWidth - canvasWidth > 30)
     ) {
       contentDisplay.value = false
