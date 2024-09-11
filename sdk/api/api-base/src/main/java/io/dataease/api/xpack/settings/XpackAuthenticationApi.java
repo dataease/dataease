@@ -34,6 +34,9 @@ public interface XpackAuthenticationApi {
     @PostMapping("/save/ldap")
     String saveLdap(@RequestBody XpackLdapVO editor);
 
+    @PostMapping("/save/oauth2")
+    String saveOauth2(@RequestBody XpackOauth2VO editor);
+
 
     @GetMapping("/info/oidc")
     XpackOidcVO oidcInfo();
@@ -43,6 +46,9 @@ public interface XpackAuthenticationApi {
 
     @GetMapping("/info/ldap")
     XpackLdapVO ldapInfo();
+
+    @GetMapping("/info/oauth2")
+    XpackOauth2VO oauth2Info();
 
 
     @PostMapping("/validate/oidc")
@@ -54,10 +60,14 @@ public interface XpackAuthenticationApi {
     @PostMapping("/validate/ldap")
     String validateLdap(@RequestBody XpackLdapVO editor);
 
+    @PostMapping("/validate/oauth2")
+    String validateOauth2(@RequestBody XpackOauth2VO editor);
+
     @PostMapping("/validateId/{id}")
     String validate(@PathVariable("id") Long id);
 
     @Operation(summary = "查询状态")
     @GetMapping("/status")
     List<XpackAuthenticationStatusVO> status();
+
 }
