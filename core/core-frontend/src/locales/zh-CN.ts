@@ -2352,6 +2352,7 @@ export default {
     open_mode: '打开方式',
     new_window: '新开页面',
     now_window: '当前页面',
+    pop_window: '弹窗页面',
     hyperLinks: '目标地址',
     link_open_tips: '仪表板非编辑状态可打开链接',
     data_loading: '数据准备中...',
