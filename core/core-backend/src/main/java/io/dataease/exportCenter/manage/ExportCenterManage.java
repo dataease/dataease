@@ -94,7 +94,7 @@ public class ExportCenterManage {
     @Value("${dataease.export.max.size:10}")
     private int max;
 
-    @Value("${dataease.export.dataset.limit:100000}")
+    @Value("${dataease.export.dataset.limit:20}")
     private int limit;
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     private static final String exportData_path = "/opt/dataease2.0/data/exportData/";
@@ -153,7 +153,7 @@ public class ExportCenterManage {
     }
 
     private Long getExportLimit() {
-        return Math.min(f2CLicLimitedManage.checkDatasetLimit(),limit);
+        return Math.min(f2CLicLimitedManage.checkDatasetLimit(), limit);
     }
 
     public void download(String id, HttpServletResponse response) throws Exception {
@@ -395,7 +395,7 @@ public class ExportCenterManage {
                 }
                 if (StringUtils.isNotEmpty(request.getExpressionTree())) {
                     Gson gson = new Gson();
-                    DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj =JsonUtil.parseObject(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
+                    DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj = JsonUtil.parseObject(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
                     permissionManage.getField(datasetRowPermissionsTreeObj);
                     DataSetRowPermissionsTreeDTO dataSetRowPermissionsTreeDTO = new DataSetRowPermissionsTreeDTO();
                     dataSetRowPermissionsTreeDTO.setTree(datasetRowPermissionsTreeObj);
@@ -421,13 +421,15 @@ public class ExportCenterManage {
                 totalCount = totalCount > curLimit ? curLimit : totalCount;
                 Long totalPage = (totalCount / extractPageSize) + (totalCount % extractPageSize > 0 ? 1 : 0);
 
-
                 Workbook wb = new SXSSFWorkbook();
                 FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + request.getFilename() + ".xlsx");
                 Sheet detailsSheet = wb.createSheet("数据");
 
                 for (Integer p = 0; p < totalPage; p++) {
                     String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, p * extractPageSize, p * extractPageSize + extractPageSize);
+                    if (totalPage == 1) {
+                        querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, totalCount.intValue());
+                    }
                     querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
                     DatasourceRequest datasourceRequest = new DatasourceRequest();
                     datasourceRequest.setQuery(querySQL);
