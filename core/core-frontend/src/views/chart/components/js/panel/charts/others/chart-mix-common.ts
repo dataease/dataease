@@ -91,7 +91,11 @@ export const CHART_MIX_DEFAULT_BASIC_STYLE = {
     '#00ccdf',
     '#00c039',
     '#ff7701'
-  ]
+  ],
+  leftLineWidth: 2,
+  leftLineSymbol: 'circle',
+  leftLineSymbolSize: 4,
+  leftLineSmooth: true
 }
 
 export interface MixChartBasicStyle extends ChartBasicStyle {
