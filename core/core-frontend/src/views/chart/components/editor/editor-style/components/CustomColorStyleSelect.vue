@@ -142,6 +142,8 @@ const setupSeriesColor = () => {
       const target = document.getElementById(targetId)
       if (target) {
         seriesColorState.seriesColorPickerId = `#${targetId}`
+      } else {
+        seriesColorPickerRef.value?.hide()
       }
     })
   }
@@ -175,7 +177,7 @@ const changeSeriesColor = () => {
     }
   })
   if (changed) {
-    state.value.basicStyleForm[seriesColorName.value] = seriesColorState.seriesColor
+    state.value.basicStyleForm[seriesColorName.value] = cloneDeep(seriesColorState.seriesColor)
     changeBasicStyle('seriesColor')
   }
 }
