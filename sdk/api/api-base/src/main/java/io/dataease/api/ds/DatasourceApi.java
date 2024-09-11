@@ -2,10 +2,7 @@ package io.dataease.api.ds;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.api.ds.vo.ApiDefinition;
-import io.dataease.api.ds.vo.BusiDsRequest;
-import io.dataease.api.ds.vo.CoreDatasourceTaskLogDTO;
-import io.dataease.api.ds.vo.ExcelFileData;
+import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
@@ -47,18 +44,17 @@ public interface DatasourceApi {
     @Operation(summary = "更新")
     DatasourceDTO update(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
 
-
     @PostMapping("/move")
     @Operation(summary = "移动")
-    DatasourceDTO move(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
+    DatasourceDTO move(@RequestBody BusiCreateFolderRequest dataSourceDTO) throws DEException;
 
     @PostMapping("/reName")
     @Operation(summary = "重命名")
-    DatasourceDTO reName(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
+    DatasourceDTO reName(@RequestBody BusiRenameRequest dataSourceDTO) throws DEException;
 
     @PostMapping("/createFolder")
     @Operation(summary = "新建文件夹")
-    DatasourceDTO createFolder(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
+    DatasourceDTO createFolder(@RequestBody BusiCreateFolderRequest dataSourceDTO) throws DEException;
 
     @PostMapping("/checkRepeat")
     @Operation(summary = "校验重复")

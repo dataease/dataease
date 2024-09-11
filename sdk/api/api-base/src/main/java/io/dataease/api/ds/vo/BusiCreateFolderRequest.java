@@ -10,7 +10,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-public class BusiDsRequest implements Serializable {
+public class BusiCreateFolderRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1175287571828910222L;
 
@@ -26,28 +26,5 @@ public class BusiDsRequest implements Serializable {
     private String  nodeType;
     @Schema(description = "操作类型", requiredMode = Schema.RequiredMode.REQUIRED)
     private String  action;
-    private String description;
-    @Schema(description = "数据源类型", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String type;
-    private String typeAlias;
-    private String catalog;
-    private String catalogDesc;
-    @Schema(description = "详细信息", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String configuration;
-    private String apiConfigurationStr;
-    private String paramsStr;
-    private Long createTime;
-    private Long updateTime;
-    private Long updateBy;
-    private String createBy;
-    private String creator;
-    private String status;
-    private TaskDTO syncSetting;
-    private Integer editType;
-    private String  fileName;
-    private String  size;
-    private Long lastSyncTime;
-    private String qrtzInstance;
-    private String taskStatus;
-    private Boolean enableDataFill;
+
 }

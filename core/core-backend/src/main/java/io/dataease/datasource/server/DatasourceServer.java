@@ -111,6 +111,7 @@ public class DatasourceServer implements DatasourceApi {
     public enum UpdateType {
         all_scope, add_scope
     }
+
     private TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
     };
     @Resource
@@ -178,7 +179,7 @@ public class DatasourceServer implements DatasourceApi {
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
     @Transactional
-    public DatasourceDTO move(BusiDsRequest busiDsRequest) {
+    public DatasourceDTO move(BusiCreateFolderRequest busiDsRequest) {
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         if (dataSourceDTO.getPid() == null) {
@@ -199,7 +200,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Transactional
-    public DatasourceDTO reName(BusiDsRequest busiDsRequest) {
+    public DatasourceDTO reName(BusiRenameRequest busiDsRequest) {
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         if (StringUtils.isEmpty(dataSourceDTO.getName())) {
@@ -214,7 +215,7 @@ public class DatasourceServer implements DatasourceApi {
 
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASOURCE)
     @Transactional
-    public DatasourceDTO createFolder(BusiDsRequest busiDsRequest) {
+    public DatasourceDTO createFolder(BusiCreateFolderRequest busiDsRequest) {
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         dataSourceDTO.setCreateTime(System.currentTimeMillis());
@@ -459,7 +460,9 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<String> getSchema(BusiDsRequest dataSourceDTO) throws DEException {
+    public List<String> getSchema(BusiDsRequest busiDsRequest) throws DEException {
+        DatasourceDTO dataSourceDTO = new DatasourceDTO();
+        BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
