@@ -375,10 +375,19 @@ const divEmbedded = type => {
 
 const windowsJump = (url, jumpType) => {
   try {
-    const newWindow = window.open(url, jumpType)
+    let newWindow
+    if ('newPop' === jumpType) {
+      window.open(
+        url,
+        '_blank',
+        'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
+      )
+    } else {
+      newWindow = window.open(url, jumpType)
+    }
     initOpenHandler(newWindow)
   } catch (e) {
-    ElMessage.error(t('visualization.url_check_error') + ':' + url)
+    console.warn(t('visualization.url_check_error') + ':' + url)
   }
 }
 

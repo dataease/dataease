@@ -106,10 +106,12 @@
                   >
                     <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
                     <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
+                    <el-radio label="newPop">{{ t('visualization.pop_window') }}</el-radio>
                   </el-radio-group>
                   <el-radio-group class="larger-radio" v-if="!state.linkJumpInfo" disabled>
                     <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
                     <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
+                    <el-radio label="newPop">{{ t('visualization.pop_window') }}</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-header>
