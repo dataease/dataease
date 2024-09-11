@@ -1772,6 +1772,8 @@
       <compare-edit
         :compare-item="quotaItemCompare"
         :chart="chart"
+        :dimension-data="dimensionData"
+        :quota-data="quotaData"
       />
       <div
         slot="footer"

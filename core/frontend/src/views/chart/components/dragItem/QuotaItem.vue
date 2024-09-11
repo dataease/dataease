@@ -323,6 +323,11 @@ export default {
       }
     },
     isEnableCompare() {
+      // 指标卡直接放行同环比配置
+      if (this.chart.type === 'text') {
+        this.disableEditCompare = false
+        return
+      }
       let xAxis = null
       if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
         xAxis = JSON.parse(JSON.stringify(this.chart.xaxis))
