@@ -28,8 +28,8 @@ const props = defineProps({
 })
 
 const { dvModel } = toRefs(props)
-const newComponent = params => {
-  eventBus.emit('handleNew', { componentName: params, innerType: params })
+const newComponent = (componentName, innerType) => {
+  eventBus.emit('handleNew', { componentName: componentName, innerType: innerType })
 }
 
 const handleDragStart = e => {
@@ -47,22 +47,22 @@ const handleDragEnd = e => {
       :themes="themes"
       icon="dv-picture-show"
       label="图片"
-      drag-info="Picture&Picture"
-      v-on:click="newComponent('Picture')"
+      drag-info="UserView&Picture"
+      v-on:click="newComponent('UserView', 'Picture')"
     ></drag-component>
     <drag-component
       :themes="themes"
       icon="icon-video"
       label="视频"
       drag-info="DeVideo&DeVideo"
-      v-on:click="newComponent('DeVideo')"
+      v-on:click="newComponent('DeVideo', 'DeVideo')"
     ></drag-component>
     <drag-component
       :themes="themes"
       icon="icon-stream"
       label="流媒体"
       drag-info="DeStreamMedia&DeStreamMedia"
-      v-on:click="newComponent('DeStreamMedia')"
+      v-on:click="newComponent('DeStreamMedia', 'DeStreamMedia')"
     ></drag-component>
   </div>
 </template>

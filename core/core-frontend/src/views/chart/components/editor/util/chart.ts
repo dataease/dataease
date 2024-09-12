@@ -1505,6 +1505,20 @@ export const CHART_TYPE_CONFIGS = [
         icon: 'rich-text'
       }
     ]
+  },
+  {
+    category: 'other',
+    title: '图片',
+    display: 'hidden',
+    details: [
+      {
+        render: 'custom',
+        category: 'quota',
+        value: 'Picture',
+        title: '图片',
+        icon: 'picture'
+      }
+    ]
   }
 ]
 

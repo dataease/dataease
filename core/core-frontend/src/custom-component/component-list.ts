@@ -306,7 +306,15 @@ const list = [
     component: 'UserView',
     name: '图表',
     label: '图表',
-    propValue: { textValue: '' },
+    propValue: {
+      textValue: '',
+      url: '',
+      pictureShowType: 'common', // 图片显示方式 common 正常显示 dataset 绑定数据集显示
+      flip: {
+        horizontal: false,
+        vertical: false
+      }
+    },
     icon: 'bar',
     innerType: 'bar',
     editing: false,

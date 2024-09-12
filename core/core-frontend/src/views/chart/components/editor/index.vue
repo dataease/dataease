@@ -253,7 +253,7 @@ const getFields = (id, chartId, type) => {
 
 const chartStyleShow = computed(() => {
   return (
-    view.value.type !== 'richText' &&
+    !['richText', 'Picture'].includes(view.value.type) &&
     curComponent.value &&
     curComponent.value.component === 'UserView'
   )
@@ -1770,7 +1770,10 @@ const deleteChartFieldItem = id => {
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-container direction="vertical">
                   <el-scrollbar class="has-footer drag_main_area attr-style theme-border-class">
-                    <el-row v-if="view.type !== 'rich-text'" class="drag-data padding-lr">
+                    <el-row
+                      v-if="!['rich-text', 'Picture'].includes(view.type)"
+                      class="drag-data padding-lr"
+                    >
                       <span class="data-area-label">{{ t('chart.switch_chart') }}</span>
                       <el-popover
                         :offset="4"
