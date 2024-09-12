@@ -273,7 +273,16 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   let attachInfo = { source: 'main' }
   if (dvMainStore.canvasAttachInfo && !!dvMainStore.canvasAttachInfo.taskId) {
     attachInfo = { source: 'report', taskId: dvMainStore.canvasAttachInfo.taskId }
+    const showWatermarkExist =
+      dvMainStore.canvasAttachInfo.hasOwnProperty('showWatermark') &&
+      typeof dvMainStore.canvasAttachInfo.showWatermark !== 'undefined' &&
+      dvMainStore.canvasAttachInfo.showWatermark !== null
+    if (showWatermarkExist) {
+      const enable = dvMainStore.canvasAttachInfo.showWatermark === 'true'
+      attachInfo['showWatermark'] = enable
+    }
   }
+
   method(dvId, busiFlagCustom, attachInfo).then(res => {
     const canvasInfo = res.data
     const watermarkInfo = {
