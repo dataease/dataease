@@ -5,25 +5,29 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, PropType, reactive, toRefs, computed } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
+import Icon from '../../components/icon-custom/src/Icon.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import { cloneDeep } from 'lodash-es'
+import FilterTree from '@/views/chart/components/editor/filter/FilterTree.vue'
+const { t } = useI18n()
 
-withDefaults(
-  defineProps<{
-    themes?: EditorTheme
-  }>(),
-  {
-    themes: 'dark'
+const props = defineProps({
+  themes: {
+    type: String as PropType<EditorTheme>,
+    default: 'dark'
   }
-)
+})
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 
 const fileList = ref([])
 const dialogImageUrl = ref('')
@@ -31,6 +35,23 @@ const dialogVisible = ref(false)
 const uploadDisabled = ref(false)
 const files = ref(null)
 const maxImageSize = 15000000
+const datasetSelector = ref(null)
+const filterTree = ref(null)
+const state = reactive({})
+
+const addDsWindow = () => {
+  // do addDs
+}
+
+const doUpdate = () => {
+  // do update
+}
+const view = computed(() =>
+  curComponent.value ? canvasViewInfo.value[curComponent.value.id] : null
+)
+const dsSelectedShow = computed(
+  () => curComponent.value.propValue?.pictureAttr?.showType === 'dataset' && view.value
+)
 
 const handlePictureCardPreview = file => {
   dialogImageUrl.value = file.url
@@ -80,6 +101,26 @@ const init = () => {
   } else {
     fileList.value = []
   }
+}
+
+const openTreeFilter = () => {
+  filterTree.value.init(cloneDeep(view.value.customFilter))
+}
+
+const isFilterActive = computed(() => {
+  return !!view.value?.customFilter?.items?.length
+})
+
+const changeFilterData = customFilter => {
+  view.value.customFilter = cloneDeep(customFilter)
+}
+
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
+
+const removeCustomFilter = () => {
+  view.value.customFilter = {}
 }
 
 watch(
@@ -181,6 +222,69 @@ onBeforeUnmount(() => {
             </el-radio-group>
           </el-form-item>
         </el-row>
+
+        <template v-if="curComponent.propValue.pictureAttr.showType">
+          <el-row class="pic-adaptor" v-if="curComponent.propValue?.pictureAttr?.showType">
+            <el-form-item
+              class="form-item"
+              label="图片显示"
+              size="small"
+              :effect="themes"
+              :class="'form-item-' + themes"
+            >
+              <el-radio-group
+                size="small"
+                v-model="curComponent.propValue.pictureAttr.showType"
+                @change="onStyleChange"
+                :effect="themes"
+              >
+                <el-radio label="common" :effect="themes">显示</el-radio>
+                <el-radio label="dataset" :effect="themes">绑定数据集</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-row>
+          <el-row class="pic-adaptor" v-if="dsSelectedShow">
+            <dataset-select
+              ref="datasetSelector"
+              v-model="view.tableId"
+              style="flex: 1"
+              :view-id="view.id"
+              :state-obj="state"
+              :themes="themes"
+              @add-ds-window="addDsWindow"
+              @on-dataset-change="doUpdate"
+            />
+          </el-row>
+          <el-row class="padding-lr drag-data no-top-border no-top-padding">
+            <div class="form-draggable-title">
+              <span>
+                {{ t('chart.result_filter') }}
+              </span>
+              <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
+                <el-icon
+                  class="remove-icon"
+                  :class="{ 'remove-icon--dark': themes === 'dark' }"
+                  size="14px"
+                  @click="removeCustomFilter"
+                >
+                  <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                </el-icon>
+              </el-tooltip>
+            </div>
+            <div
+              class="tree-btn"
+              :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
+              @click="openTreeFilter"
+            >
+              <el-icon>
+                <Icon class="svg-background" name="icon-filter"></Icon>
+              </el-icon>
+
+              <span>{{ $t('chart.filter') }}</span>
+            </div>
+          </el-row>
+          <FilterTree ref="filterTree" @filter-data="changeFilterData" />
+        </template>
       </el-collapse-item>
     </CommonAttr>
   </div>
@@ -302,6 +406,48 @@ onBeforeUnmount(() => {
 .form-item-dark {
   .ed-radio {
     margin-right: 4px !important;
+  }
+}
+
+.drag-data {
+  padding-top: 8px;
+  padding-bottom: 16px;
+
+  .tree-btn {
+    width: 100%;
+    margin-top: 8px;
+    background: #fff;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    display: flex;
+    color: #cccccc;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+    font-size: 12px;
+    &.tree-btn--dark {
+      background: rgba(235, 235, 235, 0.05);
+      border-color: #5f5f5f;
+    }
+
+    &.active {
+      color: #3370ff;
+      border-color: #3370ff;
+    }
+  }
+
+  &.no-top-border {
+    border-top: none !important;
+  }
+  &.no-top-padding {
+    padding-top: 0 !important;
+  }
+  &:nth-child(n + 2) {
+    border-top: 1px solid @side-outline-border-color;
+  }
+  &:first-child {
+    border-top: none !important;
   }
 }
 </style>
