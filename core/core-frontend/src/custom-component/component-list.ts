@@ -309,7 +309,10 @@ const list = [
     propValue: {
       textValue: '',
       url: '',
-      pictureShowType: 'common', // 图片显示方式 common 正常显示 dataset 绑定数据集显示
+      pictureAttr: {
+        showType: 'common', // 图片显示方式 common 正常显示 dataset 绑定数据集显示
+        dsConditionShowType: 'show' // dataset条件满足时显示方式 show显示 hidden 隐藏
+      },
       flip: {
         horizontal: false,
         vertical: false
@@ -606,6 +609,9 @@ export function findNewComponentFromList(
       newComponent.innerType = innerType
       if (comp.component === 'DeTabs') {
         newComponent.propValue[0].name = guid()
+      }
+      if (newComponent.innerType === 'Picture') {
+        newComponent.style['adaptation'] = 'adaptation'
       }
     }
   })
