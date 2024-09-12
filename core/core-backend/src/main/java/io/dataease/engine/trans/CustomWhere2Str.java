@@ -182,8 +182,11 @@ public class CustomWhere2Str {
                             whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(stringLongMap.get("startTime")), Utils.transLong2Str(stringLongMap.get("endTime")));
                         }
                     } else {
+                        long ts = Utils.allDateFormat2Long(value);
                         if (isCross) {
-                            value = Utils.allDateFormat2Long(value) + "";
+                            value = ts + "";
+                        } else {
+                            value = Utils.transLong2Str(ts);
                         }
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                     }
