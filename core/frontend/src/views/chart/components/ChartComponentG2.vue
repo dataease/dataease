@@ -45,7 +45,13 @@ import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { adjustPosition, getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
-import { baseBarOptionAntV, hBaseBarOptionAntV, baseBidirectionalBarOptionAntV, timeRangeBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
+import {
+  baseBarOptionAntV,
+  hBaseBarOptionAntV,
+  baseBidirectionalBarOptionAntV,
+  timeRangeBarOptionAntV,
+  stockLineOptionAntV
+} from '@/views/chart/chart/bar/bar_antv'
 import { baseAreaOptionAntV, baseLineOptionAntV } from '@/views/chart/chart/line/line_antv'
 import { basePieOptionAntV, basePieRoseOptionAntV } from '@/views/chart/chart/pie/pie_antv'
 import { baseScatterOptionAntV } from '@/views/chart/chart/scatter/scatter_antv'
@@ -298,6 +304,8 @@ export default {
         this.myChart = await baseFlowMapOption(this.chartId, chart, this.antVAction)
       } else if (chart.type === 'bidirectional-bar') {
         this.myChart = baseBidirectionalBarOptionAntV(this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'stock-line'){
+        this.myChart = stockLineOptionAntV(this.chartId, chart, this.antVAction)
       }
 
       if (this.myChart && !equalsAny(chart.type, 'liquid', 'flow-map') && this.searchCount > 0) {

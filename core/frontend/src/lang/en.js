@@ -1412,6 +1412,7 @@ export default {
     chart_bar_stack_horizontal: 'Stack Horizontal Bar',
     chart_percentage_bar_stack_horizontal: 'Horizontal Percentage Stack Bar',
     chart_bidirectional_bar: 'Bidirectional Bar',
+    chart_stock_line: 'Stock Line',
     chart_line: 'Base Line',
     chart_line_stack: 'Stack Line',
     chart_pie: 'Pie',
