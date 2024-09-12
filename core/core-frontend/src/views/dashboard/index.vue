@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import findComponent from '../../utils/components'
+import { findComponentAttr } from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
 import router from '@/router'
 import MobileConfigPanel from './MobileConfigPanel.vue'
@@ -75,10 +75,25 @@ const initDataset = () => {
   })
 }
 
+const otherEditorShow = computed(() => {
+  return Boolean(
+    curComponent.value &&
+      (!['UserView', 'VQuery'].includes(curComponent.value?.component) ||
+        (curComponent.value?.component === 'UserView' &&
+          curComponent.value?.innerType === 'Picture')) &&
+      !batchOptStatus.value
+  )
+})
+
+const otherEditorTitle = computed(() => {
+  return curComponent.value?.component === 'UserView' ? '属性' : curComponent.value?.label || '属性'
+})
+
 const viewEditorShow = computed(() => {
   return Boolean(
     curComponent.value &&
       ['UserView', 'VQuery'].includes(curComponent.value.component) &&
+      curComponent.value.innerType !== 'Picture' &&
       !batchOptStatus.value
   )
 })
@@ -260,19 +275,15 @@ onUnmounted(() => {
       </main>
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
-        v-if="
-          curComponent &&
-          !['UserView', 'VQuery'].includes(curComponent.component) &&
-          !batchOptStatus
-        "
+        v-if="otherEditorShow"
         :theme-info="'light'"
-        :title="curComponent.label || '属性'"
+        :title="otherEditorTitle"
         :width="420"
         :side-name="'componentProp'"
         :aside-position="'right'"
         class="left-sidebar"
       >
-        <component :is="findComponent(curComponent['component'] + 'Attr')" :themes="'light'" />
+        <component :is="findComponentAttr(curComponent)" :themes="'light'" />
       </dv-sidebar>
       <dv-sidebar
         v-show="!curComponent && !batchOptStatus"
