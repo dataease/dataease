@@ -61,6 +61,9 @@ export function findNewComponent(componentName, innerType, staticMap?) {
           textValue: ''
         }
       }
+      if (newComponent.innerType === 'Picture') {
+        newComponent.style['adaptation'] = 'adaptation'
+      }
       if (dvMainStore.curOriginThemes === 'light') {
         newComponent['commonBackground'] = cloneDeep(COMMON_COMPONENT_BACKGROUND_LIGHT)
       } else {

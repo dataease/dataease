@@ -43,6 +43,7 @@ import { storeToRefs } from 'pinia'
 import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
 import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
+import DePictureV2 from '@/custom-component/picture/Component.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { viewFieldTimeTrans } from '@/utils/viewUtils'
@@ -120,7 +121,7 @@ const { view, showPosition, element, active, searchCount, scale } = toRefs(props
 
 const titleShow = computed(
   () =>
-    element.value.innerType !== 'rich-text' &&
+    !['rich-text', 'Picture'].includes('rich-text') &&
     state.title_show &&
     showPosition.value !== 'viewDialog'
 )
@@ -672,7 +673,7 @@ const chartAreaShow = computed(() => {
       return true
     }
   }
-  if (view.value.type === 'rich-text') {
+  if (['rich-text', 'Picture'].includes(view.value.type)) {
     return true
   }
   if (view.value?.isPlugin) {
@@ -895,6 +896,11 @@ const loadPluginCategory = data => {
         @onJumpClick="jumpClick"
         @resetLoading="() => (loading = false)"
       />
+      <de-picture-v2
+        :element="element"
+        :prop-value="element.propValue"
+        v-else-if="showChartView(ChartLibraryType.PICTURE)"
+      ></de-picture-v2>
       <de-rich-text-view
         v-else-if="showChartView(ChartLibraryType.RICH_TEXT)"
         :themes="canvasStyleData.dashboard.themeColor"
