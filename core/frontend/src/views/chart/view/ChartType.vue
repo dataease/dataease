@@ -161,6 +161,10 @@ export default {
   margin:5px;
 }
 
+.el-radio:last-child{
+  margin-right: 5px;
+}
+
 .radio-row{
   width: 100%;
   display: flex;

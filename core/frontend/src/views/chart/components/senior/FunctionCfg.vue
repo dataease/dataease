@@ -78,7 +78,7 @@
             v-model="functionForm.emptyDataStrategy"
             @change="changeFunctionCfg"
           >
-            <el-radio :label="'breakLine'">{{ $t('chart.break_line') }}</el-radio>
+            <el-radio v-show="showBreakOption" :label="'breakLine'">{{ $t('chart.break_line') }}</el-radio>
             <el-radio :label="'setZero'">{{ $t('chart.set_zero') }}</el-radio>
             <el-radio
               v-show="showIgnoreOption"
@@ -114,6 +114,7 @@
 <script>
 import { DEFAULT_FUNCTION_CFG, COLOR_PANEL } from '../../chart/chart'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
+import {cloneDeep} from "lodash";
 
 export default {
   name: 'FunctionCfg',
@@ -134,7 +135,7 @@ export default {
     showSlider() {
       return this.chart.type !== 'bidirectional-bar' &&
         !equalsAny(this.chart.type, 'map') &&
-        !includesAny(this.chart.type, 'table', 'text')
+        !includesAny(this.chart.type, 'table', 'text','stock-line')
     },
     showEmptyStrategy() {
       return (this.chart.render === 'antv' &&
@@ -148,7 +149,10 @@ export default {
       return this.showEmptyStrategy &&
         includesAny(this.chart.type, 'table') &&
         this.functionForm.emptyDataStrategy !== 'breakLine'
-    }
+    },
+    showBreakOption() {
+      return !equalsAny(this.chart.type, 'stock-line')
+    },
   },
   watch: {
     'chart': {
@@ -170,10 +174,14 @@ export default {
         } else {
           senior = JSON.parse(chart.senior)
         }
+        const defaultFunctionCfg = cloneDeep(DEFAULT_FUNCTION_CFG)
+        if (equalsAny(this.chart.type, 'stock-line')) {
+          defaultFunctionCfg.emptyDataStrategy = 'setZero'
+        }
         if (senior.functionCfg) {
-          this.functionForm = { ...DEFAULT_FUNCTION_CFG, ...senior.functionCfg }
+          this.functionForm = { ...defaultFunctionCfg, ...senior.functionCfg }
         } else {
-          this.functionForm = JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG))
+          this.functionForm = JSON.parse(JSON.stringify(defaultFunctionCfg))
         }
         this.initFieldCtrl()
       }
