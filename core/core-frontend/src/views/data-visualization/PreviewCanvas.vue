@@ -162,9 +162,9 @@ onMounted(async () => {
   })
   await new Promise(r => (p = r))
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
-  const { dvType, callBackFlag, taskId } = router.currentRoute.value.query
+  const { dvType, callBackFlag, taskId, showWatermark } = router.currentRoute.value.query
   if (!!taskId) {
-    dvMainStore.setCanvasAttachInfo({ taskId: taskId })
+    dvMainStore.setCanvasAttachInfo({ taskId, showWatermark })
   }
   if (dvId) {
     loadCanvasDataAsync(dvId, dvType)
