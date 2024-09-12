@@ -28,7 +28,7 @@ const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
-  checkPlatform()
+  const platform = checkPlatform()
   let isDesktop = wsCache.get('app.desktop')
   if (isDesktop === null) {
     await appStore.setAppModel()
@@ -130,7 +130,7 @@ router.beforeEach(async (to, from, next) => {
       permissionStore.setCurrentPath(to.path)
       next()
     } else if (
-      embeddedWindowWhiteList.includes(to.path) ||
+      (!platform && embeddedWindowWhiteList.includes(to.path)) ||
       whiteList.includes(to.path) ||
       to.path.startsWith('/de-link/')
     ) {
@@ -138,7 +138,7 @@ router.beforeEach(async (to, from, next) => {
       permissionStore.setCurrentPath(to.path)
       next()
     } else {
-      next(`/login?redirect=${to.path}`) // 否则全部重定向到登录页
+      next(`/login?redirect=${to.fullPath || to.path}`) // 否则全部重定向到登录页
     }
   }
 })
