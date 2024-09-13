@@ -223,7 +223,7 @@ onBeforeUnmount(() => {
           </el-form-item>
         </el-row>
 
-        <template v-if="curComponent.propValue.pictureAttr.showType">
+        <template v-if="curComponent?.propValue?.pictureAttr?.showType">
           <el-row class="pic-adaptor" v-if="curComponent.propValue?.pictureAttr?.showType">
             <el-form-item
               class="form-item"
