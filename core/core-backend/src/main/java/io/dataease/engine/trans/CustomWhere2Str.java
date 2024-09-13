@@ -164,10 +164,10 @@ public class CustomWhere2Str {
                 if (field.getDeType() == 1) {
                     // 如果是动态时间，计算具体值
                     value = fixValue(item);
+                    Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                     if (StringUtils.equalsIgnoreCase(whereTerm, " = ")) {
                         whereTerm = " BETWEEN ";
                         // 把value类似过滤组件处理，获得start time和end time
-                        Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                         if (isCross) {
                             whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
                         } else {
@@ -175,18 +175,26 @@ public class CustomWhere2Str {
                         }
                     } else if (StringUtils.equalsIgnoreCase(whereTerm, " <> ")) {
                         whereTerm = " NOT BETWEEN ";
-                        Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                         if (isCross) {
                             whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
                         } else {
                             whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(stringLongMap.get("startTime")), Utils.transLong2Str(stringLongMap.get("endTime")));
                         }
                     } else {
-                        long ts = Utils.allDateFormat2Long(value);
+                        Long startTime = stringLongMap.get("startTime");
+                        Long endTime = stringLongMap.get("endTime");
                         if (isCross) {
-                            value = ts + "";
+                            if (StringUtils.equalsIgnoreCase(whereTerm, " > ") || StringUtils.equalsIgnoreCase(whereTerm, " <= ")) {
+                                value = endTime + "";
+                            } else if (StringUtils.equalsIgnoreCase(whereTerm, " >= ") || StringUtils.equalsIgnoreCase(whereTerm, " < ")) {
+                                value = startTime + "";
+                            }
                         } else {
-                            value = Utils.transLong2Str(ts);
+                            if (StringUtils.equalsIgnoreCase(whereTerm, " > ") || StringUtils.equalsIgnoreCase(whereTerm, " <= ")) {
+                                value = Utils.transLong2Str(endTime);
+                            } else if (StringUtils.equalsIgnoreCase(whereTerm, " >= ") || StringUtils.equalsIgnoreCase(whereTerm, " < ")) {
+                                value = Utils.transLong2Str(startTime);
+                            }
                         }
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                     }
