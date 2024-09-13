@@ -1,10 +1,12 @@
 <script lang="ts" setup>
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import { ref, PropType, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { propTypes } from '@/utils/propTypes'
 import { ElTable } from 'element-plus-secondary'
 import { fieldType } from '@/utils/attr'
 import { type Field } from './util'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
 const props = defineProps({
@@ -91,7 +93,7 @@ watch(
       >
         <template #prefix>
           <el-icon>
-            <Icon name="icon_search-outline_outlined"></Icon>
+            <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
           </el-icon>
         </template>
       </el-input>
@@ -119,9 +121,8 @@ watch(
         <el-table-column :label="t('dataset.origin_name')">
           <template #default="scope">
             <el-icon>
-              <Icon
-                :className="`field-icon-${fieldType[scope.row.deType]}`"
-                :name="`field_${fieldType[scope.row.deType]}`"
+              <Icon :className="`field-icon-${fieldType[scope.row.deType]}`"
+                ><component :is="iconFieldMap[fieldType[scope.row.deType]]"></component
               ></Icon>
             </el-icon>
             {{ scope.row.originName }}

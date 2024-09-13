@@ -40,7 +40,7 @@
     >
       <span>
         <el-icon class="bar-base-icon" @click="userViewEnlargeOpen($event, 'enlarge')">
-          <Icon name="dv-bar-enlarge" />
+          <Icon name="dv-bar-enlarge" ><dvBarEnlarge /></Icon>
         </el-icon>
       </span>
     </el-tooltip>
@@ -52,7 +52,7 @@
     >
       <span>
         <el-icon class="bar-base-icon" @click="userViewEnlargeOpen($event, 'details')">
-          <Icon name="dv-details" />
+          <Icon name="dv-details" ><dvDetails /></Icon>
         </el-icon>
       </span>
     </el-tooltip>
@@ -64,7 +64,7 @@
     >
       <span>
         <el-icon class="bar-base-icon" @click="datasetParamsInit">
-          <Icon name="icon_params_setting"></Icon>
+          <Icon name="icon_params_setting"><icon_params_setting /></Icon>
         </el-icon>
       </span>
     </el-tooltip>
@@ -82,7 +82,7 @@
       v-if="barShowCheck('unLinkage') && existLinkage"
     >
       <el-icon class="bar-base-icon" @click="clearLinkage">
-        <Icon name="dv-bar-unLinkage" />
+        <Icon name="dv-bar-unLinkage" ><dvBarUnLinkage /></Icon>
       </el-icon>
     </span>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
@@ -97,7 +97,7 @@
     >
       <el-icon class="bar-base-icon">
         <el-tooltip :content="t('visualization.more')" effect="dark" placement="bottom">
-          <icon name="icon_more_outlined" />
+          <icon name="icon_more_outlined" ><icon_more_outlined /></icon>
         </el-tooltip>
       </el-icon>
       <template #dropdown>
@@ -165,7 +165,7 @@
     >
       <el-icon @click="downloadClick" class="bar-base-icon">
         <el-tooltip :content="t('chart.export')" effect="dark" placement="bottom">
-          <icon name="dv-preview-download" />
+          <icon name="dv-preview-download" ><dvPreviewDownload /></icon>
         </el-tooltip>
       </el-icon>
       <template #dropdown>
@@ -184,7 +184,7 @@
     </el-dropdown>
     <el-popover v-if="selectFieldShow" width="200" trigger="click" @mousedown="fieldsAreaDown">
       <template #reference>
-        <el-icon class="bar-base-icon"> <Icon name="database"></Icon></el-icon>
+        <el-icon class="bar-base-icon"> <Icon name="database"><database /></Icon></el-icon>
       </template>
       <fields-list :fields="state.curFields" :element="element" />
     </el-popover>
@@ -193,6 +193,13 @@
 </template>
 
 <script lang="ts" setup>
+import dvBarEnlarge from '@/assets/svg/dv-bar-enlarge.svg'
+import dvDetails from '@/assets/svg/dv-details.svg'
+import icon_params_setting from '@/assets/svg/icon_params_setting.svg'
+import dvBarUnLinkage from '@/assets/svg/dv-bar-unLinkage.svg'
+import database from '@/assets/svg/database.svg'
+import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
+import dvPreviewDownload from '@/assets/svg/dv-preview-download.svg'
 import { computed, h, onBeforeUnmount, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'

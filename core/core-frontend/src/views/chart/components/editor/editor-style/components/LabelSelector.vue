@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { computed, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
@@ -10,6 +11,7 @@ import { fieldType } from '@/utils/attr'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
 
@@ -476,7 +478,7 @@ const conversionPrecision = [
                 <div>可以${fieldName}的形式读取字段值（不支持换行）</div>
               </template>
               <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-                <Icon name="icon_info_outlined" />
+                <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
               </el-icon>
             </el-tooltip>
           </span>
@@ -548,7 +550,7 @@ const conversionPrecision = [
           </template>
           <span style="vertical-align: middle">
             <el-icon style="cursor: pointer">
-              <Icon name="icon_info_outlined" />
+              <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
             </el-icon>
           </span>
         </el-tooltip>
@@ -1007,19 +1009,17 @@ const conversionPrecision = [
         >
           <template #prefix>
             <el-icon v-if="curSeriesFormatter[computedIdKey]" style="font-size: 14px">
-              <Icon
-                :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
-                :name="`field_${fieldType[curSeriesFormatter.deType]}`"
-              />
+              <Icon :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
+                ><component :is="iconFieldMap[fieldType[curSeriesFormatter.deType]]"></component
+              ></Icon>
             </el-icon>
           </template>
           <template v-for="item in state.labelForm.seriesLabelFormatter" :key="item[computedIdKey]">
             <el-option class="series-select-option" :value="item" :label="item.optionLabel">
               <el-icon style="margin-right: 8px">
-                <Icon
-                  :className="`field-icon-${fieldType[item.deType]}`"
-                  :name="`field_${fieldType[item.deType]}`"
-                />
+                <Icon :className="`field-icon-${fieldType[item.deType]}`"
+                  ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                ></Icon>
               </el-icon>
               {{ item.optionShowName }}
             </el-option>
@@ -1272,7 +1272,7 @@ const conversionPrecision = [
               </template>
               <span style="vertical-align: middle">
                 <el-icon style="cursor: pointer">
-                  <Icon name="icon_info_outlined" />
+                  <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
                 </el-icon>
               </span>
             </el-tooltip>

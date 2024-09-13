@@ -16,7 +16,7 @@
         v-click-outside="clickOutPopover"
       >
         <template #icon>
-          <icon name="icon_share-label_outlined"></icon>
+          <icon name="icon_share-label_outlined"><icon_shareLabel_outlined /></icon>
         </template>
         {{ t('visualization.share') }}
       </el-button>
@@ -43,7 +43,7 @@
         <el-button v-if="linkCustom" text @click.stop="finishEditUuid">完成</el-button>
         <el-button v-else @click.stop="editUuid" size="default" plain>
           <template #icon>
-            <icon name="icon_admin_outlined"></icon>
+            <icon name="icon_admin_outlined"><icon_admin_outlined /></icon>
           </template>
         </el-button>
       </div>
@@ -134,6 +134,8 @@
 </template>
 
 <script lang="ts" setup>
+import icon_shareLabel_outlined from '@/assets/svg/icon_share-label_outlined.svg'
+import icon_admin_outlined from '@/assets/svg/icon_admin_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, computed, nextTick, watch } from 'vue'
 import request from '@/config/axios'

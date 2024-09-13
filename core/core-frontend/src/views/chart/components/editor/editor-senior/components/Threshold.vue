@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
@@ -8,6 +9,7 @@ import TextLabelThresholdEdit from '@/views/chart/components/editor/editor-senio
 import TextThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextThresholdEdit.vue'
 import { fieldType } from '@/utils/attr'
 import { defaultsDeep } from 'lodash-es'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
 
@@ -320,7 +322,7 @@ init()
         >
           <template #icon>
             <el-icon size="14px">
-              <Icon name="icon_edit_outlined" />
+              <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
             </el-icon>
           </template>
         </el-button>
@@ -396,7 +398,7 @@ init()
             >
               <template #icon>
                 <el-icon size="14px">
-                  <Icon name="icon_edit_outlined" />
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
                 </el-icon>
               </template>
             </el-button>
@@ -494,7 +496,7 @@ init()
             >
               <template #icon>
                 <el-icon size="14px">
-                  <Icon name="icon_edit_outlined" />
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
                 </el-icon>
               </template>
             </el-button>
@@ -514,10 +516,9 @@ init()
             <div class="field-style" :class="{ 'field-style-dark': themes === 'dark' }">
               <span>
                 <el-icon>
-                  <Icon
-                    :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
-                    :name="`field_${fieldType[fieldItem.field.deType]}`"
-                  />
+                  <Icon :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                    ><component :is="iconFieldMap[fieldType[fieldItem.field.deType]]"></component
+                  ></Icon>
                 </el-icon>
               </span>
               <span :title="fieldItem.field.name" class="field-text">{{

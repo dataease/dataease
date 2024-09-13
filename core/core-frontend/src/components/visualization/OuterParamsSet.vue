@@ -94,11 +94,9 @@
                   >
                     <div style="width: 16px"></div>
                     <div style="flex: 1; line-height: 32px">
-                      <Icon
-                        style="margin-top: 4px"
-                        class-name="view-type-icon"
-                        name="filter-params"
-                      />
+                      <Icon style="margin-top: 4px" class-name="view-type-icon" name="filter-params"
+                        ><filterParams
+                      /></Icon>
                       <span>{{ findFilterName(baseFilter.id) }}</span>
                     </div>
                     <div style="flex: 1">
@@ -157,7 +155,7 @@
                       <div style="flex: 1; display: flex; line-height: 32px">
                         <div style="width: 16px; margin-top: 2px; margin-right: 4px">
                           <el-icon>
-                            <Icon name="icon_dataset" />
+                            <Icon name="icon_dataset"><icon_dataset /></Icon>
                           </el-icon>
                         </div>
                         <span>{{ baseDatasetInfo.name }}</span>
@@ -190,9 +188,9 @@
                           >
                             <Icon
                               style="width: 14px; height: 14px"
-                              :name="`field_${fieldType[item.deType]}`"
                               :className="`field-icon-${fieldType[item.deType]}`"
-                            />
+                              ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                            ></Icon>
                             <span style="font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
@@ -232,7 +230,8 @@
                               class-name="view-type-icon"
                               style="margin: 0 4px"
                               :name="viewInfo.chartType"
-                            />
+                              ><component :is="iconChartMap[viewInfo.chartType]"></component
+                            ></Icon>
                           </div>
                           <span style="font-size: 12px"> {{ viewInfo.chartName }}</span>
                         </div>
@@ -284,6 +283,8 @@
 </template>
 
 <script setup lang="ts">
+import filterParams from '@/assets/svg/filter-params.svg'
+import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import { ref, reactive, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -297,6 +298,8 @@ import HandleMore from '@/components/handle-more/src/HandleMore.vue'
 import { fieldType } from '@/utils/attr'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { iconChartMap } from '../icon-group/chart-list'
+import { iconFieldMap } from '../icon-group/field-list'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, componentData } = storeToRefs(dvMainStore)
 const outerParamsInfoTree = ref(null)

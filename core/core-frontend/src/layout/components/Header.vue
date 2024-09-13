@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import logo from '@/assets/svg/logo.svg'
+import copilot from '@/assets/svg/copilot.svg'
+import dvAi from '@/assets/svg/dv-ai.svg'
+import dvPreviewDownload from '@/assets/svg/dv-preview-download.svg'
 import { computed, onMounted, ref } from 'vue'
 import { usePermissionStore } from '@/store/modules/permission'
 import { isExternal } from '@/utils/validate'
@@ -126,7 +130,7 @@ onMounted(() => {
       @click="handleIconClick"
       className="logo"
       name="logo"
-    ></Icon>
+    ><logo /></Icon>
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
@@ -143,7 +147,7 @@ onMounted(() => {
         class="ai-icon copilot-icon"
         v-if="!showOverlayCopilot && appearanceStore.getShowCopilot"
       >
-        <Icon name="copilot" @click="handleCopilotClick" />
+        <Icon name="copilot" @click="handleCopilotClick" ><copilot /></Icon>
       </el-icon>
       <Copilot
         @confirm="copilotConfirm"
@@ -156,14 +160,14 @@ onMounted(() => {
         class="ai-icon"
         v-if="aiBaseUrl && !showOverlay && appearanceStore.getShowAi"
       >
-        <Icon name="dv-ai" @click="handleAiClick" />
+        <Icon name="dv-ai" @click="handleAiClick" ><dvAi /></Icon>
       </el-icon>
       <el-tooltip effect="dark" content="数据导出中心" placement="bottom">
         <el-icon
           class="preview-download_icon"
           :class="navigateBg === 'light' && 'is-light-setting'"
         >
-          <Icon name="dv-preview-download" @click="downloadClick" />
+          <Icon name="dv-preview-download" @click="downloadClick" ><dvPreviewDownload /></Icon>
         </el-icon>
       </el-tooltip>
 

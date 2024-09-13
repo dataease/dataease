@@ -1,4 +1,7 @@
 <script lang="tsx" setup>
+import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
+import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { PropType, toRefs, computed } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
@@ -295,7 +298,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                   @click="checkBold('fontWeight')"
                 >
                   <el-icon>
-                    <Icon name="icon_bold_outlined" />
+                    <Icon name="icon_bold_outlined" ><icon_bold_outlined /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -313,7 +316,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                   @click="checkItalic('fontStyle')"
                 >
                   <el-icon>
-                    <Icon name="icon_italic_outlined" />
+                    <Icon name="icon_italic_outlined" ><icon_italic_outlined /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -351,7 +354,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                     placement="top"
                   >
                     <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-                      <Icon name="icon_info_outlined" />
+                      <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
                     </el-icon>
                   </el-tooltip>
                 </el-checkbox>
@@ -413,7 +416,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                   @click="checkBold('fontWeightBtn')"
                 >
                   <el-icon>
-                    <Icon name="icon_bold_outlined" />
+                    <Icon name="icon_bold_outlined" ><icon_bold_outlined /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -431,7 +434,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                   @click="checkItalic('fontStyleBtn')"
                 >
                   <el-icon>
-                    <Icon name="icon_italic_outlined" />
+                    <Icon name="icon_italic_outlined" ><icon_italic_outlined /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>

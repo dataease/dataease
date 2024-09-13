@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import { reactive, ref, computed, watch, nextTick } from 'vue'
 import { ElIcon, ElMessage, ElMessageBox, ElMessageBoxOptions } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
@@ -20,6 +22,7 @@ import { cloneDeep } from 'lodash-es'
 import { useCache } from '@/hooks/web/useCache'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { XpackComponent, PluginComponent } from '@/components/plugin'
+import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 
 interface Node {
   name: string
@@ -700,7 +703,7 @@ defineExpose({
         </el-steps>
       </div>
       <el-icon @click="close" class="datasource-close">
-        <Icon name="icon_close_outlined"></Icon>
+        <Icon name="icon_close_outlined"><icon_close_outlined /></Icon>
       </el-icon>
     </template>
     <div class="datasource">
@@ -714,7 +717,7 @@ defineExpose({
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"></Icon>
+                <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
               </el-icon>
             </template>
           </el-input>
@@ -760,7 +763,7 @@ defineExpose({
             <span class="custom-tree-node flex-align-center">
               <el-icon v-if="!!data.catalog" class="icon-border" style="width: 18px; height: 18px">
                 <Icon v-if="data['isPlugin']" :static-content="data.icon"></Icon>
-                <Icon v-else :name="`${data.type}-ds`"></Icon>
+                <Icon v-else><component :is="iconDatasourceMap[data.type]"></component></Icon>
               </el-icon>
               <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             </span>

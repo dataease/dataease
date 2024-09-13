@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import dvRuler from '@/assets/svg/dv-ruler.svg'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { computed, watch, onMounted, reactive, ref, nextTick, onUnmounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -434,7 +435,7 @@ eventBus.on('handleNew', handleNew)
       <main id="dv-main-center" class="center" ref="canvasCenterRef">
         <div class="de-ruler-icon-outer">
           <el-icon class="de-ruler-icon">
-            <Icon name="dv-ruler" />
+            <Icon name="dv-ruler" ><dvRuler /></Icon>
           </el-icon>
         </div>
         <de-ruler ref="deWRulerRef"></de-ruler>

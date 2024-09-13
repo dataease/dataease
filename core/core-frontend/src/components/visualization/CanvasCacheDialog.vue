@@ -9,7 +9,7 @@
   >
     <el-row style="height: 20px">
       <el-col :span="3">
-        <Icon name="warn-tree" style="width: 20px; height: 20px; float: right" />
+        <Icon name="warn-tree" style="width: 20px; height: 20px; float: right" ><warnTree /></Icon>
       </el-col>
       <el-col :span="21">
         <span style="font-size: 13px; margin-left: 10px; font-weight: bold; line-height: 20px">
@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import warnTree from '@/assets/svg/warn-tree.svg'
 import { ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { reactive, nextTick, ref, toRefs, onBeforeMount, computed, onMounted } from 'vue'
@@ -299,7 +300,7 @@ defineExpose({
         <empty-background description="暂无仪表板" img-type="none">
           <el-button v-if="rootManage && !isDataEaseBi" @click="createNew" type="primary">
             <template #icon>
-              <Icon name="icon_add_outlined" />
+              <Icon name="icon_add_outlined" ><icon_add_outlined /></Icon>
             </template>
             {{ $t('commons.create') }}{{ $t('chart.dashboard') }}
           </el-button>

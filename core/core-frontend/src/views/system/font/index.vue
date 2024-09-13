@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { onMounted, ref, computed } from 'vue'
 import UploadDetail from './UploadDetail.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
@@ -118,14 +120,14 @@ onMounted(() => {
         <el-input v-model="fontKeyword" clearable style="width: 240px" placeholder="搜索字体名称">
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
+              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
             </el-icon>
           </template>
         </el-input>
 
         <el-button type="primary" @click="uploadFont('新建字体', 'create', {})">
           <template #icon>
-            <Icon name="icon_add_outlined"></Icon>
+            <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
           </template>
           添加字体
         </el-button>

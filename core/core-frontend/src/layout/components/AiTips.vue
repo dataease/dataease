@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import dvAi from '@/assets/svg/dv-ai.svg'
 import { onMounted, ref } from 'vue'
 const visible = ref(true)
 const emits = defineEmits(['confirm'])
@@ -31,7 +32,7 @@ onMounted(() => {
     <template #reference>
       <div class="ai-popper-tips-icon">
         <el-icon style="margin: 2px" class="ai-icon">
-          <Icon name="dv-ai" />
+          <Icon name="dv-ai" ><dvAi /></Icon>
         </el-icon>
       </div>
     </template>

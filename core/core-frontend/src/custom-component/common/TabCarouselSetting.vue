@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { computed, toRefs } from 'vue'
 import { ElFormItem, ElIcon, ElInputNumber } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -63,7 +64,7 @@ const handleInput = value => {
               <div>Tab轮播退出编辑模式才开生效</div>
             </template>
             <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-              <Icon name="icon_info_outlined" />
+              <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
             </el-icon>
           </el-tooltip>
 

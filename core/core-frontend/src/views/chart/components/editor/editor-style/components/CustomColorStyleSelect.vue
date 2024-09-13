@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icon_admin_outlined from '@/assets/svg/icon_admin_outlined.svg'
 import { ElColorPicker, ElPopover } from 'element-plus-secondary'
 import { computed, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -389,7 +390,7 @@ const colorItemBorderColor = (index, state) => {
           @click="customColorExtendSettingOpened = !customColorExtendSettingOpened"
         >
           <el-icon style="font-size: 12px">
-            <Icon name="icon_admin_outlined" />
+            <Icon name="icon_admin_outlined" ><icon_admin_outlined /></Icon>
           </el-icon>
         </div>
       </div>

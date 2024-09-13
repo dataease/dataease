@@ -1,4 +1,5 @@
 <script lang="tsx" setup>
+import icon_drag_outlined from '@/assets/svg/icon_drag_outlined.svg'
 import draggable from 'vuedraggable'
 import { getFieldData } from '@/api/chart'
 import { reactive, watch, ref } from 'vue'
@@ -88,7 +89,7 @@ init()
       <template #item="{ element }">
         <span :key="element.value" class="item-dimension" :title="element.value">
           <el-icon class="item-icon">
-            <Icon name="icon_drag_outlined" />
+            <Icon name="icon_drag_outlined" ><icon_drag_outlined /></Icon>
           </el-icon>
           <span class="item-span">
             {{ element.value }}

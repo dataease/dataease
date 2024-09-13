@@ -1,4 +1,20 @@
 <script setup lang="ts">
+import dvBatch from '@/assets/svg/dv-batch.svg'
+import dvDashboard from '@/assets/svg/dv-dashboard.svg'
+import dvFilter from '@/assets/svg/dv-filter.svg'
+import dvMedia from '@/assets/svg/dv-media.svg'
+import dvMoreCom from '@/assets/svg/dv-more-com.svg'
+import dvTab from '@/assets/svg/dv-tab.svg'
+import dvText from '@/assets/svg/dv-text.svg'
+import dvView from '@/assets/svg/dv-view.svg'
+import icon_params_setting from '@/assets/svg/icon_params_setting.svg'
+import icon_phone_outlined from '@/assets/svg/icon_phone_outlined.svg'
+import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
+import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import icon_undo_outlined from '@/assets/svg/icon_undo_outlined.svg'
+import icon_redo_outlined from '@/assets/svg/icon_redo_outlined.svg'
+import icon_pc_fullscreen from '@/assets/svg/icon_pc_fullscreen.svg'
+import dvPreviewOuter from '@/assets/svg/dv-preview-outer.svg'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -443,7 +459,7 @@ const initOpenHandler = newWindow => {
       </template>
       <template v-else>
         <el-icon v-if="!batchOptStatus" class="custom-el-icon back-icon" @click="backToMain()">
-          <Icon class="toolbar-icon" name="icon_left_outlined" />
+          <Icon class="toolbar-icon" name="icon_left_outlined"><icon_left_outlined /></Icon>
         </el-icon>
         <div class="left-area" v-if="editMode === 'edit' && !batchOptStatus">
           <span id="canvas-name" class="name-area" @dblclick="editCanvasName">
@@ -457,7 +473,7 @@ const initOpenHandler = newWindow => {
                 :disabled="snapshotIndex < 1"
                 @click="undo()"
               >
-                <Icon name="icon_undo_outlined"></Icon>
+                <Icon name="icon_undo_outlined"><icon_undo_outlined /></Icon>
               </el-icon>
             </el-tooltip>
 
@@ -469,7 +485,7 @@ const initOpenHandler = newWindow => {
                 }"
                 @click="redo()"
               >
-                <Icon name="icon_redo_outlined"></Icon>
+                <Icon name="icon_redo_outlined"><icon_redo_outlined /></Icon>
               </el-icon>
             </el-tooltip>
           </div>
@@ -484,7 +500,7 @@ const initOpenHandler = newWindow => {
             :base-width="410"
             :show-split-line="true"
             is-label
-            :icon-name="'dv-view'"
+            :icon-name="dvView"
             themes="light"
             title="图表"
           >
@@ -495,7 +511,7 @@ const initOpenHandler = newWindow => {
             :show-split-line="true"
             is-label
             themes="light"
-            icon-name="dv-filter"
+            :icon-name="dvFilter"
             title="查询组件"
           >
             <query-group themes="light" :dv-model="dvModel"></query-group>
@@ -504,7 +520,7 @@ const initOpenHandler = newWindow => {
             is-label
             themes="light"
             :base-width="115"
-            icon-name="dv-text"
+            :icon-name="dvText"
             title="富文本"
           >
             <text-group themes="light" :dv-model="dvModel"></text-group>
@@ -514,12 +530,12 @@ const initOpenHandler = newWindow => {
             themes="light"
             placement="bottom"
             :base-width="315"
-            icon-name="dv-media"
+            :icon-name="dvMedia"
             title="媒体"
           >
             <media-group themes="light" :dv-model="dvModel"></media-group>
           </component-group>
-          <component-group themes="light" is-label :base-width="115" icon-name="dv-tab" title="Tab">
+          <component-group themes="light" is-label :base-width="115" :icon-name="dvTab" title="Tab">
             <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
           </component-group>
           <component-group
@@ -527,13 +543,13 @@ const initOpenHandler = newWindow => {
             show-split-line
             is-label
             :base-width="115"
-            icon-name="dv-more-com"
+            :icon-name="dvMoreCom"
             title="更多"
           >
             <db-more-com-group themes="light" :dv-model="dvModel"></db-more-com-group>
           </component-group>
           <component-button-label
-            icon-name="icon_copy_filled"
+            :icon-name="icon_copy_filled"
             title="复用"
             is-label
             @customClick="multiplexingCanvasOpen"
@@ -547,14 +563,14 @@ const initOpenHandler = newWindow => {
             <component-button
               tips="外部参数设置"
               @custom-click="openOuterParamsSet"
-              icon-name="icon_params_setting"
+              :icon-name="icon_params_setting"
             />
           </el-tooltip>
           <el-tooltip effect="dark" content="批量操作" placement="bottom">
             <component-button
               tips="批量操作"
               @custom-click="batchOptStatusChange(true)"
-              icon-name="dv-batch"
+              :icon-name="dvBatch"
             />
           </el-tooltip>
 
@@ -562,7 +578,7 @@ const initOpenHandler = newWindow => {
             <component-button
               tips="仪表板配置"
               @custom-click="openDataBoardSetting"
-              icon-name="dv-dashboard"
+              :icon-name="dvDashboard"
             />
           </el-tooltip>
           <div class="divider"></div>
@@ -570,7 +586,7 @@ const initOpenHandler = newWindow => {
             <component-button
               tips="切换至移动端布局"
               @custom-click="openMobileSetting"
-              icon-name="icon_phone_outlined"
+              :icon-name="icon_phone_outlined"
             />
           </el-tooltip>
         </template>
@@ -583,13 +599,13 @@ const initOpenHandler = newWindow => {
             <el-dropdown-menu class="drop-style">
               <el-dropdown-item @click="previewInner">
                 <el-icon style="margin-right: 8px; font-size: 16px">
-                  <Icon name="icon_pc_fullscreen" />
+                  <Icon name="icon_pc_fullscreen"><icon_pc_fullscreen /></Icon>
                 </el-icon>
                 全屏预览
               </el-dropdown-item>
               <el-dropdown-item @click="previewOuter()">
                 <el-icon style="margin-right: 8px; font-size: 16px">
-                  <Icon name="dv-preview-outer" />
+                  <Icon name="dv-preview-outer"><dvPreviewOuter /></Icon>
                 </el-icon>
                 新页面预览
               </el-dropdown-item>

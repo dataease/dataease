@@ -90,7 +90,7 @@
           style="margin-left: 4px"
           :class="{ 'hint-icon--dark': themes === 'dark' }"
         >
-          <Icon name="icon_info_outlined" />
+          <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
         </el-icon>
       </el-tooltip>
     </el-form-item>
@@ -145,7 +145,7 @@
               </div>
             </template>
             <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-              <Icon name="icon_info_outlined" />
+              <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
             </el-icon>
           </el-tooltip>
         </span>
@@ -184,6 +184,7 @@
 </template>
 
 <script setup lang="ts">
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

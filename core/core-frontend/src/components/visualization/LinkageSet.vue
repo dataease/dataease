@@ -17,16 +17,16 @@
         <div class="top-area">
           <span class="top-area-text" style="margin-left: 0">已选图表：</span>
           <span class="top-area-value">
-            <Icon class-name="view-type-icon" :name="state.curLinkageViewInfo.type" />
+            <Icon class-name="view-type-icon"
+              ><component :is="iconChartMap[state.curLinkageViewInfo.type]"></component
+            ></Icon>
             {{ state.curLinkageViewInfo.title }}</span
           >
           <span class="top-area-text">所用数据集：</span>
           <span class="top-area-value">
-            <Icon
-              style="vertical-align: -0.2em"
-              class-name="view-type-icon"
-              name="dataset-outline"
-            />
+            <Icon style="vertical-align: -0.2em" class-name="view-type-icon" name="dataset-outline"
+              ><datasetOutline
+            /></Icon>
             {{ state.curDatasetInfo.name }}</span
           >
         </div>
@@ -82,11 +82,9 @@
                   </span>
                   <span>
                     <span class="tree-select-field">
-                      <Icon
-                        class-name="view-type-icon"
-                        style="margin-right: 4px"
-                        :name="data.targetViewType"
-                      />
+                      <Icon class-name="view-type-icon" style="margin-right: 4px"
+                        ><component :is="iconChartMap[data.targetViewType]"></component
+                      ></Icon>
                       {{ data.targetViewName }}
                     </span>
                   </span>
@@ -133,7 +131,8 @@
                         class-name="view-type-icon"
                         style="margin-right: 4px"
                         :name="data.targetViewType"
-                      />
+                        ><component :is="iconChartMap[data.targetViewType]"></component
+                      ></Icon>
                       {{ data.targetViewName }}
                     </span>
                   </span>
@@ -175,9 +174,9 @@
                             <span class="custom-option">
                               <Icon
                                 style="width: 14px; height: 14px"
-                                :name="`field_${fieldType[item.deType]}`"
                                 :className="`field-icon-${fieldType[item.deType]}`"
-                              />
+                                ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                              ></Icon>
                               <span style="float: left; margin-left: 4px; font-size: 14px">{{
                                 item.name
                               }}</span>
@@ -187,7 +186,9 @@
                       </div>
                     </div>
                     <el-icon class="link-icon-join">
-                      <Icon style="width: 20px; height: 20px" name="dv-link-target" />
+                      <Icon style="width: 20px; height: 20px" name="dv-link-target"
+                        ><dvLinkTarget
+                      /></Icon>
                     </el-icon>
                     <div style="flex: 1">
                       <div class="select-filed">
@@ -207,7 +208,8 @@
                                 style="width: 14px; height: 14px"
                                 :name="`field_${fieldType[item.deType]}`"
                                 :className="`field-icon-${fieldType[item.deType]}`"
-                              />
+                                ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                              ></Icon>
                               <span style="float: left; margin-left: 4px; font-size: 14px">{{
                                 item.name
                               }}</span>
@@ -219,7 +221,7 @@
 
                     <el-button class="m-del-icon-btn" text @click="deleteLinkageField(index)">
                       <el-icon size="20px">
-                        <Icon name="icon_delete-trash_outlined" />
+                        <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
                       </el-icon>
                     </el-button>
                   </div>
@@ -232,7 +234,7 @@
               </el-row>
             </el-row>
             <el-row v-else style="height: 100%" class="custom-position">
-              <Icon style="width: 125px; height: 125px" name="dv-empty" />
+              <Icon style="width: 125px; height: 125px" name="dv-empty"><dvEmpty /></Icon>
               <span style="margin-top: 8px; font-size: 14px">请先勾选需要联动的图表</span>
             </el-row>
           </el-col>
@@ -249,6 +251,12 @@
 </template>
 
 <script lang="ts" setup>
+import { iconFieldMap } from '@/components/icon-group/field-list'
+import { iconChartMap } from '@/components/icon-group/chart-list'
+import datasetOutline from '@/assets/svg/dataset-outline.svg'
+import dvLinkTarget from '@/assets/svg/dv-link-target.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import dvEmpty from '@/assets/svg/dv-empty.svg'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { reactive, ref, nextTick, watch, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

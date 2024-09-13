@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import dvTabShow from '@/assets/svg/dv-tab-show.svg'
 import { toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
@@ -50,7 +51,7 @@ const handleDragEnd = e => {
   >
     <drag-component
       :themes="themes"
-      icon="dv-tab-show"
+      :icon="dvTabShow"
       label="Tab"
       drag-info="DeTabs&DeTabs"
     ></drag-component>

@@ -4,17 +4,16 @@
       class="icon-area"
       :class="{ 'selected-active': active, 'icon-area-dark': themes === 'dark' }"
     >
-      <Icon
-        :style="{ color: innerImageColor }"
-        class-name="svg-background"
-        :name="mainIconClass(item)"
-      />
+      <Icon :style="{ color: innerImageColor }" class-name="svg-background"
+        ><component :is="iconBoardMap[mainIconClass(item)]"></component
+      ></Icon>
     </div>
     <span>{{ item.name }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
+import { iconBoardMap } from '@/components/icon-group/board-list'
 import { toRefs } from 'vue'
 
 const props = withDefaults(

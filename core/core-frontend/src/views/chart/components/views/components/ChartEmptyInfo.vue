@@ -1,4 +1,6 @@
 <script lang="tsx" setup>
+import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list'
+import { iconChartMap } from '@/components/icon-group/chart-list'
 import { toRefs } from 'vue'
 const props = defineProps({
   viewIcon: {
@@ -18,7 +20,11 @@ const { viewIcon, themes } = toRefs(props)
 
 <template>
   <div class="canvas-content error-info">
-    <Icon class-name="item-icon" :name="viewIcon + (themes === 'dark' ? '-dark' : '')" />
+    <Icon class-name="item-icon"
+      ><component
+        :is="themes === 'dark' ? iconChartDarkMap[`${viewIcon}-dark`] : iconChartMap[viewIcon]"
+      ></component
+    ></Icon>
   </div>
 </template>
 

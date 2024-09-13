@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_file_font_colorful from '@/assets/svg/icon_file-font_colorful.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 withDefaults(
   defineProps<{
     name?: string
@@ -19,14 +21,14 @@ const del = () => {
 <template>
   <div class="font-info">
     <el-icon class="font">
-      <Icon name="icon_file_font_colorful"></Icon>
+      <Icon><icon_file_font_colorful /></Icon>
     </el-icon>
     <div class="info">
       <p class="name ellipsis">{{ name || '-' }}</p>
       <p class="size ellipsis">{{ size || '-' }}</p>
     </div>
     <el-icon @click="del" class="delete">
-      <Icon name="icon_delete-trash_outlined"></Icon>
+      <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
     </el-icon>
   </div>
 </template>

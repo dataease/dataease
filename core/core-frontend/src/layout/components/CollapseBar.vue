@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_sideFold_outlined from '@/assets/svg/icon_side-fold_outlined.svg'
+import icon_sideExpand_outlined from '@/assets/svg/icon_side-expand_outlined.svg'
 const props = defineProps({
   isCollapse: Boolean
 })
@@ -11,7 +13,11 @@ const setCollapse = () => {
 <template>
   <div class="de-collapse-bar" @click="setCollapse">
     <el-icon style="color: #646a73">
-      <Icon :name="!isCollapse ? 'icon_side-fold_outlined' : 'icon_side-expand_outlined'"></Icon>
+      <Icon
+        ><component
+          :is="!isCollapse ? icon_sideFold_outlined : icon_sideExpand_outlined"
+        ></component
+      ></Icon>
     </el-icon>
     {{ !isCollapse ? '收起导航' : '' }}
   </div>

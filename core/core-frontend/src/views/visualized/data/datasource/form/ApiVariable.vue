@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import icon_drag_outlined from '@/assets/svg/icon_drag_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { propTypes } from '@/utils/propTypes'
 import { computed, onBeforeMount, PropType, toRefs, inject } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -141,7 +144,7 @@ const timeFunLists = [
         <div :key="index" style="margin-bottom: 16px">
           <el-row :gutter="8">
             <el-icon class="drag handle">
-              <Icon name="icon_drag_outlined"></Icon>
+              <Icon name="icon_drag_outlined"><icon_drag_outlined /></Icon>
             </el-icon>
             <el-col :span="6">
               <el-input
@@ -244,7 +247,7 @@ const timeFunLists = [
             <el-col :span="1">
               <el-button text :disabled="isDisable() || isReadOnly" @click="remove(index)">
                 <template #icon>
-                  <Icon name="icon_delete-trash_outlined"></Icon>
+                  <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
                 </template>
               </el-button>
             </el-col>
@@ -255,7 +258,7 @@ const timeFunLists = [
 
     <el-button @click="change" text>
       <template #icon>
-        <icon name="icon_add_outlined"></icon>
+        <icon name="icon_add_outlined"><icon_add_outlined /></icon>
       </template>
       添加参数
     </el-button>

@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import joinJoin from '@/assets/svg/join-join.svg'
 import { ref, shallowRef } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
@@ -202,14 +206,14 @@ defineExpose({
     </template>
     <div class="content">
       <el-icon style="font-size: 16px">
-        <Icon name="icon_info_colorful"></Icon>
+        <Icon name="icon_info_colorful"><icon_info_colorful /></Icon>
       </el-icon>
       基于当前查询组件的查询条件，如果需要进行级联配置，需要满足以下条件：<br />
       1. 展示类型：文本下拉组件和数字下拉组件；2. 选项值来源：选择数据集<br />
     </div>
     <el-button text @click="addCascadeBlock">
       <template #icon>
-        <Icon name="icon_add_outlined"></Icon>
+        <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
       </template>
       添加级联配置
     </el-button>
@@ -217,13 +221,13 @@ defineExpose({
       <div style="display: flex; align-items: center; justify-content: space-between">
         <el-button :disabled="item.length === 2" text @click="addCascadeItem(item)">
           <template #icon>
-            <Icon name="icon_add_outlined"></Icon>
+            <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
           </template>
           添加级联条件
         </el-button>
         <el-button @click="deleteCascadeBlock(index)" class="cascade-delete-block" text>
           <template #icon>
-            <Icon name="icon_delete-trash_outlined"></Icon>
+            <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
           </template>
         </el-button>
       </div>
@@ -257,7 +261,7 @@ defineExpose({
         </div>
         <div class="cascade-icon">
           <el-icon>
-            <Icon name="join-join"></Icon>
+            <Icon name="join-join"><joinJoin /></Icon>
           </el-icon>
         </div>
         <div class="item-field">
@@ -277,7 +281,7 @@ defineExpose({
         </div>
         <el-button v-show="idx !== 0" @click="deleteCascade(idx, item)" class="cascade-delete" text>
           <template #icon>
-            <Icon name="icon_delete-trash_outlined"></Icon>
+            <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
           </template>
         </el-button>
       </div>

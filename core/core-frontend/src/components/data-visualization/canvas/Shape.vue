@@ -11,7 +11,7 @@
   >
     <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
       <el-icon>
-        <Icon name="mobile-checkbox"></Icon>
+        <Icon name="mobile-checkbox"><mobileCheckbox /></Icon>
       </el-icon>
     </div>
     <div
@@ -46,7 +46,7 @@
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
       >
-        <Icon v-show="shapeLock" class="iconfont icon-suo" name="dv-lock"></Icon>
+        <Icon v-show="shapeLock" class="iconfont icon-suo" name="dv-lock"><dvLock /></Icon>
         <!--边框背景-->
         <Board
           v-if="svgInnerEnable"
@@ -97,6 +97,8 @@
 </template>
 
 <script setup lang="ts">
+import mobileCheckbox from '@/assets/svg/mobile-checkbox.svg'
+import dvLock from '@/assets/svg/dv-lock.svg'
 import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize, {
   calculateRadioComponentPositionAndSize

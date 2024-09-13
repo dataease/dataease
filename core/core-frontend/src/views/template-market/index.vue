@@ -154,7 +154,7 @@
         </div>
         <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
           <div style="text-align: center">
-            <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"></Icon>
+            <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"><no_result /></Icon>
             <br />
             <span>没有找到相关模板</span>
           </div>
@@ -169,6 +169,7 @@
 </template>
 
 <script setup lang="ts">
+import no_result from '@/assets/svg/no_result.svg'
 import { searchMarket } from '@/api/templateMarket'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'

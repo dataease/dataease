@@ -1,4 +1,12 @@
 <script lang="ts" setup>
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import iconFilter from '@/assets/svg/icon-filter.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
 import {
   PropType,
   reactive,
@@ -57,6 +65,9 @@ import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/cha
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
 import { XpackComponent } from '@/components/plugin'
 import { useEmbedded } from '@/store/modules/embedded'
+import { iconChartMap } from '@/components/icon-group/chart-list'
+import { iconFieldMap } from '@/components/icon-group/field-list'
+import { iconFieldCalculatedMap, iconFieldCalculatedQMap } from '@/components/icon-group/field-calculated-list'
 const embeddedStore = useEmbedded()
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -1441,9 +1452,10 @@ const confirmEditCalc = () => {
 
 const getIconName = (deType, extField, dimension = false) => {
   if (extField === 2) {
-    return `${fieldTypeCalculated[deType]}${dimension ? '' : '_1'}`
+    const iconFieldCalculated = dimension ? iconFieldCalculatedMap : iconFieldCalculatedQMap
+    return iconFieldCalculated[fieldTypeCalculated[deType]]
   }
-  return `field_${fieldType[deType]}`
+  return iconFieldMap[fieldType[deType]]
 }
 
 const chartFieldEdit = param => {
@@ -1802,8 +1814,7 @@ const deleteChartFieldItem = id => {
                               <Icon
                                 v-else
                                 class-name="chart-type-select-icon"
-                                :name="state.chartTypeOptions[0]['icon']"
-                              />
+                              ><component :is='iconChartMap[state.chartTypeOptions[0]['icon']]'></component></Icon>
                             </template>
                             <template #default>
                               <el-option
@@ -1876,7 +1887,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('xAxis')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -1934,7 +1945,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('xAxisExt')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -1990,7 +2001,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('flowMapStartName')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -2048,7 +2059,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('flowMapEndName')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -2106,7 +2117,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('extStack')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -2161,7 +2172,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('extColor')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -2224,7 +2235,7 @@ const deleteChartFieldItem = id => {
                                   class="hint-icon"
                                   :class="{ 'hint-icon--dark': themes === 'dark' }"
                                 >
-                                  <Icon name="icon_info_outlined" />
+                                  <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
                                 </el-icon>
                               </el-tooltip>
                             </span>
@@ -2239,7 +2250,7 @@ const deleteChartFieldItem = id => {
                                 size="14px"
                                 @click="removeItems('yAxis')"
                               >
-                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                               </el-icon>
                             </el-tooltip>
                           </div>
@@ -2300,7 +2311,7 @@ const deleteChartFieldItem = id => {
                                 size="14px"
                                 @click="removeItems('extBubble')"
                               >
-                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                               </el-icon>
                             </el-tooltip>
                           </div>
@@ -2356,7 +2367,7 @@ const deleteChartFieldItem = id => {
                                 size="14px"
                                 @click="removeItems('yAxisExt')"
                               >
-                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                               </el-icon>
                             </el-tooltip>
                           </div>
@@ -2416,7 +2427,7 @@ const deleteChartFieldItem = id => {
                                 size="14px"
                                 @click="removeItems('yAxis')"
                               >
-                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                               </el-icon>
                             </el-tooltip>
                           </div>
@@ -2489,7 +2500,7 @@ const deleteChartFieldItem = id => {
                                 size="14px"
                                 @click="removeItems('yAxisExt')"
                               >
-                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                               </el-icon>
                             </el-tooltip>
                           </div>
@@ -2566,7 +2577,7 @@ const deleteChartFieldItem = id => {
                                 class="hint-icon"
                                 :class="{ 'hint-icon--dark': themes === 'dark' }"
                               >
-                                <Icon name="icon_info_outlined" />
+                                <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
                               </el-icon>
                             </el-tooltip>
                           </span>
@@ -2581,7 +2592,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('extBubble')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -2638,7 +2649,7 @@ const deleteChartFieldItem = id => {
                                 class="hint-icon"
                                 :class="{ 'hint-icon--dark': themes === 'dark' }"
                               >
-                                <Icon name="icon_info_outlined" />
+                                <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
                               </el-icon>
                             </el-tooltip>
                           </span>
@@ -2653,7 +2664,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('drillFields')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -2707,7 +2718,7 @@ const deleteChartFieldItem = id => {
                               size="14px"
                               @click="removeItems('customFilter')"
                             >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -2717,7 +2728,7 @@ const deleteChartFieldItem = id => {
                           @click="openTreeFilter"
                         >
                           <el-icon>
-                            <Icon class="svg-background" name="icon-filter"></Icon>
+                            <Icon class="svg-background" name="icon-filter"><iconFilter /></Icon>
                           </el-icon>
 
                           <span>{{ $t('chart.filter') }}</span>
@@ -2997,7 +3008,7 @@ const deleteChartFieldItem = id => {
                   style="margin-left: 8px"
                   @click="editDs"
                 >
-                  <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete" />
+                  <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete" ><icon_edit_outlined /></Icon>
                 </el-icon>
               </el-tooltip>
             </el-row>
@@ -3014,7 +3025,7 @@ const deleteChartFieldItem = id => {
                       <Icon
                         name="icon_refresh_outlined"
                         class="el-icon-arrow-down el-icon-delete"
-                      />
+                      ><icon_refresh_outlined /></Icon>
                     </el-icon>
                   </el-tooltip>
                   <el-icon
@@ -3023,7 +3034,7 @@ const deleteChartFieldItem = id => {
                     :class="{ dark: themes === 'dark' }"
                     @click="addCalcField('d')"
                   >
-                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"><icon_add_outlined /></Icon>
                   </el-icon>
                 </span>
               </div>
@@ -3038,7 +3049,7 @@ const deleteChartFieldItem = id => {
               >
                 <template #prefix>
                   <el-icon class="el-input__icon">
-                    <Icon name="icon_search-outline_outlined"></Icon>
+                    <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
                   </el-icon>
                 </template>
               </el-input>
@@ -3082,8 +3093,7 @@ const deleteChartFieldItem = id => {
                           :class-name="`field-icon-${
                             fieldType[[2, 3].includes(element.deType) ? 2 : 0]
                           }`"
-                          :name="getIconName(element.deType, element.extField)"
-                        />
+                        ><component :is='getIconName(element.deType, element.extField)'></component></Icon>
                       </el-icon>
                       <span
                         class="field-name ellipsis"
@@ -3098,7 +3108,7 @@ const deleteChartFieldItem = id => {
                         size="14px"
                         @click.stop="copyChartFieldItem(element.id)"
                       >
-                        <Icon class-name="inner-class" name="icon_copy_outlined" />
+                        <Icon class-name="inner-class" name="icon_copy_outlined" ><icon_copy_outlined /></Icon>
                       </el-icon>
                       <el-icon
                         v-if="element.id !== '-1' && element.chartId"
@@ -3107,7 +3117,7 @@ const deleteChartFieldItem = id => {
                         size="14px"
                         @click.stop="deleteChartFieldItem(element.id)"
                       >
-                        <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                        <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                       </el-icon>
                       <el-dropdown
                         v-if="element.id !== '-1' && false"
@@ -3157,8 +3167,7 @@ const deleteChartFieldItem = id => {
                               :class-name="`field-icon-${
                                 fieldType[[2, 3].includes(ele.deType) ? 2 : 0]
                               }`"
-                              :name="`field_${fieldType[ele.deType]}`"
-                            />
+                            ><component :is='iconFieldMap[fieldType[ele.deType]]'></component></Icon>
                           </el-icon>
                           <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{
                             ele.name
@@ -3234,8 +3243,7 @@ const deleteChartFieldItem = id => {
                       <el-icon>
                         <Icon
                           :class-name="`field-icon-${fieldType[element.deType]}`"
-                          :name="getIconName(element.deType, element.extField, true)"
-                        ></Icon>
+                        ><component :is='getIconName(element.deType, element.extField, true)'></component></Icon>
                       </el-icon>
                       <span
                         class="field-name ellipsis"
@@ -3250,7 +3258,7 @@ const deleteChartFieldItem = id => {
                         size="14px"
                         @click.stop="copyChartFieldItem(element.id)"
                       >
-                        <Icon class-name="inner-class" name="icon_copy_outlined" />
+                        <Icon class-name="inner-class" name="icon_copy_outlined" ><icon_copy_outlined /></Icon>
                       </el-icon>
                       <el-icon
                         v-if="element.id !== '-1' && element.chartId"
@@ -3259,7 +3267,7 @@ const deleteChartFieldItem = id => {
                         size="14px"
                         @click.stop="deleteChartFieldItem(element.id)"
                       >
-                        <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                        <Icon class-name="inner-class" name="icon_delete-trash_outlined" ><icon_deleteTrash_outlined /></Icon>
                       </el-icon>
                       <el-dropdown
                         v-if="element.id !== '-1' && false"
@@ -3305,10 +3313,7 @@ const deleteChartFieldItem = id => {
                           class="items flex-align-center"
                         >
                           <el-icon>
-                            <Icon
-                              :class-name="`field-icon-${fieldType[ele.deType]}`"
-                              :name="`field_${fieldType[ele.deType]}`"
-                            ></Icon>
+                            <Icon :class-name="`field-icon-${fieldType[ele.deType]}`"><component :is='iconFieldMap[fieldType[ele.deType]]'></component></Icon>
                           </el-icon>
                           <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{
                             ele.name

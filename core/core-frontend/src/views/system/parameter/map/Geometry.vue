@@ -5,7 +5,7 @@
         <span>{{ t('online_map.geometry') }}</span>
         <span class="add-icon-span" @click="add()">
           <el-icon>
-            <Icon name="icon_add_outlined"></Icon>
+            <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
           </el-icon>
         </span>
       </div>
@@ -19,7 +19,7 @@
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
+              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
             </el-icon>
           </template>
         </el-input>
@@ -53,7 +53,7 @@
                     placement="top"
                   >
                     <el-icon @click.stop="delHandler(data)" class="hover-icon">
-                      <Icon name="icon_delete-trash_outlined"></Icon>
+                      <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
                     </el-icon>
                   </el-tooltip>
                 </span>
@@ -101,6 +101,9 @@
 </template>
 
 <script lang="ts" setup>
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import { ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getWorldTree } from '@/api/map'

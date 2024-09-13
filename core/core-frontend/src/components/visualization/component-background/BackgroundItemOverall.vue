@@ -10,11 +10,9 @@
       :style="itemStyle"
       @click.stop="setBoard"
     >
-      <Icon
-        :style="{ color: commonBackground.innerImageColor }"
-        class-name="svg-background"
-        :name="mainIconClass"
-      />
+      <Icon :style="{ color: commonBackground.innerImageColor }" class-name="svg-background"
+        ><component :is="iconBoardMap[mainIconClass]"></component
+      ></Icon>
     </div>
     <span class="demonstration">{{ template.name }}</span>
   </div>
@@ -24,6 +22,7 @@
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { computed, toRefs } from 'vue'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
+import { iconBoardMap } from '@/components/icon-group/board-list'
 
 const props = defineProps({
   template: {

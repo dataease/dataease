@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
 import { ref, reactive } from 'vue'
 import { uploadFontFile } from '@/api/font'
 import FontInfo from './FontInfo.vue'
@@ -155,7 +156,7 @@ const confirm = () => {
           <template #trigger>
             <el-button secondary>
               <template #icon>
-                <Icon name="icon_upload_outlined"></Icon>
+                <Icon name="icon_upload_outlined"><icon_upload_outlined /></Icon>
               </template>
               上传字库文件
             </el-button>

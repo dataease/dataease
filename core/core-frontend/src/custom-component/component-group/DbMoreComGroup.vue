@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import dbMoreWeb from '@/assets/svg/db-more-web.svg'
 import { toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
@@ -38,7 +39,7 @@ const handleDragEnd = e => {
   >
     <drag-component
       :themes="themes"
-      icon="db-more-web"
+      :icon="dbMoreWeb"
       label="网页"
       drag-info="DeFrame&DeFrame"
     ></drag-component>

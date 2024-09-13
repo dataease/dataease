@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+import icon_chartLineC from '@/assets/svg/icon_chart-line-c.svg'
+import icon_dashboard_outlinedC from '@/assets/svg/icon_dashboard_outlined-c.svg'
+import icon_pie_outlinedC from '@/assets/svg/icon_pie_outlined-c.svg'
+import default_avatar from '@/assets/svg/default_avatar.svg'
+import copilot from '@/assets/svg/copilot.svg'
+import chartTable from '@/assets/svg/chart-table.svg'
+import chartDownload from '@/assets/svg/chart-download.svg'
 import { PropType, computed, onMounted, shallowRef, ref, nextTick, watch } from 'vue'
 import { Column, Line, Pie } from '@antv/g2plot'
 import { useElementSize } from '@vueuse/core'
@@ -213,20 +220,21 @@ const renderTable = computed(() => {
   )
 })
 const activeCommand = ref('')
+
 const curTypeList = [
   {
     label: '折线图',
     value: 'line',
-    icon: 'icon_chart-line-c'
+    icon: icon_chartLineC
   },
   {
     label: '柱状图',
-    icon: 'icon_dashboard_outlined-c',
+    icon: icon_dashboard_outlinedC,
     value: 'bar'
   },
   {
     label: '饼图',
-    icon: 'icon_pie_outlined-c',
+    icon: icon_pie_outlinedC,
     value: 'pie'
   }
 ]
@@ -257,7 +265,9 @@ const tips = computed(() => {
     ]"
   >
     <el-icon style="font-size: 32px" class="dialogue-chart_icon">
-      <Icon :name="copilotInfo.msgType === 'api' ? 'copilot' : 'default_avatar'" />
+      <Icon
+        ><component :is="copilotInfo.msgType === 'api' ? copilot : default_avatar"></component
+      ></Icon>
     </el-icon>
     <div ref="content" class="content">
       <div v-if="isWelcome" class="question-or-title" style="font-size: 16px; font-weight: 500">
@@ -304,7 +314,9 @@ const tips = computed(() => {
           v-if="activeCommand"
           class="select-prefix"
         >
-          <Icon :name="curTypeList.find(ele => ele.value === activeCommand).icon" />
+          <Icon
+            ><component :is="curTypeList.find(ele => ele.value === activeCommand).icon"></component
+          ></Icon>
         </el-icon>
         <el-tooltip effect="dark" content="切换图表类型" placement="top">
           <div
@@ -338,13 +350,13 @@ const tips = computed(() => {
           class="ed-icon_chart"
           @click="switchChartType('table')"
         >
-          <Icon name="chart-table" />
+          <Icon name="chart-table"><chartTable /></Icon>
         </el-icon>
       </el-tooltip>
       <el-divider direction="vertical" />
       <el-tooltip effect="dark" content="下载" placement="top">
         <el-icon class="ed-icon_chart" @click="downloadChart">
-          <Icon name="chart-download" />
+          <Icon name="chart-download"><chartDownload /></Icon>
         </el-icon>
       </el-tooltip>
     </div>

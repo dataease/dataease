@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+import mobileIcon_dashboard_filled from '@/assets/svg/mobile/icon_dashboard_filled.svg'
+import mobileIcon_dashboard_outlined from '@/assets/svg/mobile/icon_dashboard_outlined.svg'
+import mobileIcon_home_filled from '@/assets/svg/mobile/icon_home_filled.svg'
+import mobileIcon_home_outlined from '@/assets/svg/mobile/icon_home_outlined.svg'
+import mobileIcon_member_filled from '@/assets/svg/mobile/icon_member_filled.svg'
+import mobileIcon_member_outlined from '@/assets/svg/mobile/icon_member_outlined.svg'
 import { ref, onBeforeMount } from 'vue'
 import Home from './home/index.vue'
 import Directory from './directory/index.vue'
@@ -36,7 +42,11 @@ onBeforeMount(() => {
       <van-tabbar-item name="home">
         <template #icon="{ active }">
           <el-icon>
-            <Icon :name="active ? 'mobile-icon_home_filled' : 'mobile-icon_home_outlined'"></Icon>
+            <Icon
+              ><component
+                :is="active ? mobileIcon_home_filled : mobileIcon_home_outlined"
+              ></component
+            ></Icon>
           </el-icon>
         </template>
         工作台
@@ -45,7 +55,9 @@ onBeforeMount(() => {
         ><template #icon="{ active }">
           <el-icon>
             <Icon
-              :name="active ? 'mobile-icon_dashboard_filled' : 'mobile-icon_dashboard_outlined'"
+              ><component
+                :is="active ? mobileIcon_dashboard_filled : mobileIcon_dashboard_outlined"
+              ></component
             ></Icon>
           </el-icon> </template
         >仪表板</van-tabbar-item
@@ -54,7 +66,9 @@ onBeforeMount(() => {
         ><template #icon="{ active }">
           <el-icon>
             <Icon
-              :name="active ? 'mobile-icon_member_filled' : 'mobile-icon_member_outlined'"
+              ><component
+                :is="active ? mobileIcon_member_filled : mobileIcon_member_outlined"
+              ></component
             ></Icon>
           </el-icon> </template
         >我的</van-tabbar-item

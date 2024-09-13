@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_admin_outlined from '@/assets/svg/icon_admin_outlined.svg'
 import { ref } from 'vue'
 import { COLOR_CASES, COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -99,7 +100,7 @@ const resetCustomColor = () => {
       </div>
       <el-button @click="changeShowCustom" style="margin-left: 8px" size="default" plain>
         <template #icon>
-          <icon name="icon_admin_outlined"></icon>
+          <icon name="icon_admin_outlined"><icon_admin_outlined /></icon>
         </template>
       </el-button>
     </div>

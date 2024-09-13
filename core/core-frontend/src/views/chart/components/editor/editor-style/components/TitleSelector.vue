@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+import icon_letterSpacing_outlined from '@/assets/svg/icon_letter-spacing_outlined.svg'
+import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
+import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
+import icon_leftAlignment_outlined from '@/assets/svg/icon_left-alignment_outlined.svg'
+import icon_centerAlignment_outlined from '@/assets/svg/icon_center-alignment_outlined.svg'
+import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { PropType, computed, onMounted, reactive, toRefs, watch, nextTick, ref } from 'vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -198,7 +205,7 @@ watch(
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_letter-spacing_outlined" />
+                <Icon name="icon_letter-spacing_outlined" ><icon_letterSpacing_outlined /></Icon>
               </el-icon>
             </template>
             <el-option
@@ -228,7 +235,7 @@ watch(
                 :class="{ dark: themes === 'dark', active: state.titleForm.isBolder }"
               >
                 <el-icon>
-                  <Icon name="icon_bold_outlined" />
+                  <Icon name="icon_bold_outlined" ><icon_bold_outlined /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -251,7 +258,7 @@ watch(
                 :class="{ dark: themes === 'dark', active: state.titleForm.isItalic }"
               >
                 <el-icon>
-                  <Icon name="icon_italic_outlined" />
+                  <Icon name="icon_italic_outlined" ><icon_italic_outlined /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -277,7 +284,7 @@ watch(
                   :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
                 >
                   <el-icon>
-                    <Icon name="icon_left-alignment_outlined" />
+                    <Icon name="icon_left-alignment_outlined" ><icon_leftAlignment_outlined /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -295,7 +302,7 @@ watch(
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_center-alignment_outlined" />
+                    <Icon name="icon_center-alignment_outlined" ><icon_centerAlignment_outlined /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -313,7 +320,7 @@ watch(
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_right-alignment_outlined" />
+                    <Icon name="icon_right-alignment_outlined" ><icon_rightAlignment_outlined /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -349,7 +356,7 @@ watch(
         </label>
         <el-button text @click="openEditRemark" :effect="themes">
           <el-icon size="14px">
-            <Icon name="icon_edit_outlined" />
+            <Icon name="icon_edit_outlined" ><icon_edit_outlined /></Icon>
           </el-icon>
         </el-button>
       </el-form-item>
