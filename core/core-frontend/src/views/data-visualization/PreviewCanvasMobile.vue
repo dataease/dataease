@@ -119,6 +119,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
         document.title = dvInfo.name
         setTitle(dvInfo.name)
       }
+      initBrowserTimer()
     }
   )
 }
@@ -138,6 +139,16 @@ onMounted(async () => {
   dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
 })
+
+const initBrowserTimer = () => {
+  if (state.canvasStylePreview.refreshBrowserEnable) {
+    const gap = state.canvasStylePreview.refreshBrowserUnit === 'minute' ? 60 : 1
+    const browserRefreshTime = state.canvasStylePreview.refreshBrowserTime * gap * 1000
+    setTimeout(() => {
+      window.location.reload()
+    }, browserRefreshTime)
+  }
+}
 
 defineExpose({
   loadCanvasDataAsync
