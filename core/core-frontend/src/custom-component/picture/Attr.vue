@@ -27,7 +27,7 @@ const props = defineProps({
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
-const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
+const { curComponent } = storeToRefs(dvMainStore)
 
 const fileList = ref([])
 const dialogImageUrl = ref('')
@@ -38,20 +38,6 @@ const maxImageSize = 15000000
 const datasetSelector = ref(null)
 const filterTree = ref(null)
 const state = reactive({})
-
-const addDsWindow = () => {
-  // do addDs
-}
-
-const doUpdate = () => {
-  // do update
-}
-const view = computed(() =>
-  curComponent.value ? canvasViewInfo.value[curComponent.value.id] : null
-)
-const dsSelectedShow = computed(
-  () => curComponent.value.propValue?.pictureAttr?.showType === 'dataset' && view.value
-)
 
 const handlePictureCardPreview = file => {
   dialogImageUrl.value = file.url
@@ -103,25 +89,9 @@ const init = () => {
   }
 }
 
-const openTreeFilter = () => {
-  filterTree.value.init(cloneDeep(view.value.customFilter))
-}
-
-const isFilterActive = computed(() => {
-  return !!view.value?.customFilter?.items?.length
-})
-
-const changeFilterData = customFilter => {
-  view.value.customFilter = cloneDeep(customFilter)
-}
-
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
-
-const removeCustomFilter = () => {
-  view.value.customFilter = {}
-}
 
 watch(
   () => curComponent.value.propValue.url,
@@ -222,69 +192,6 @@ onBeforeUnmount(() => {
             </el-radio-group>
           </el-form-item>
         </el-row>
-
-        <template v-if="curComponent?.propValue?.pictureAttr?.showType">
-          <el-row class="pic-adaptor" v-if="curComponent.propValue?.pictureAttr?.showType">
-            <el-form-item
-              class="form-item"
-              label="图片显示"
-              size="small"
-              :effect="themes"
-              :class="'form-item-' + themes"
-            >
-              <el-radio-group
-                size="small"
-                v-model="curComponent.propValue.pictureAttr.showType"
-                @change="onStyleChange"
-                :effect="themes"
-              >
-                <el-radio label="common" :effect="themes">显示</el-radio>
-                <el-radio label="dataset" :effect="themes">绑定数据集</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-row>
-          <el-row class="pic-adaptor" v-if="dsSelectedShow">
-            <dataset-select
-              ref="datasetSelector"
-              v-model="view.tableId"
-              style="flex: 1"
-              :view-id="view.id"
-              :state-obj="state"
-              :themes="themes"
-              @add-ds-window="addDsWindow"
-              @on-dataset-change="doUpdate"
-            />
-          </el-row>
-          <el-row class="padding-lr drag-data no-top-border no-top-padding">
-            <div class="form-draggable-title">
-              <span>
-                {{ t('chart.result_filter') }}
-              </span>
-              <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                <el-icon
-                  class="remove-icon"
-                  :class="{ 'remove-icon--dark': themes === 'dark' }"
-                  size="14px"
-                  @click="removeCustomFilter"
-                >
-                  <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                </el-icon>
-              </el-tooltip>
-            </div>
-            <div
-              class="tree-btn"
-              :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
-              @click="openTreeFilter"
-            >
-              <el-icon>
-                <Icon class="svg-background" name="icon-filter"></Icon>
-              </el-icon>
-
-              <span>{{ $t('chart.filter') }}</span>
-            </div>
-          </el-row>
-          <FilterTree ref="filterTree" @filter-data="changeFilterData" />
-        </template>
       </el-collapse-item>
     </CommonAttr>
   </div>
