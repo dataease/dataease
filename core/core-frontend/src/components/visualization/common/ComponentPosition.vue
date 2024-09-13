@@ -155,9 +155,7 @@ const onPositionChange = key => {
       )
     }
   } else {
-    curComponent.value.style[key] = Math.round(
-      (positionMounted.value[key] * canvasStyleData.value.scale) / 100
-    )
+    curComponent.value.style[key] = (positionMounted.value[key] * canvasStyleData.value.scale) / 100
   }
 
   if (['Group', 'DeTabs'].includes(curComponent.value.component)) {
