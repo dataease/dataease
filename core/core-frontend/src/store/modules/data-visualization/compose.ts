@@ -164,7 +164,7 @@ export const composeStore = defineStore('compose', {
       components.forEach(component => {
         component.canvasId = 'Group-' + newId
       })
-      const groupComponent = {
+      const groupComponent = deepCopy({
         id: newId,
         component: 'Group',
         canvasActive: false,
@@ -173,7 +173,7 @@ export const composeStore = defineStore('compose', {
         icon: 'group',
         expand: true,
         commonBackground: {
-          ...deepCopy(COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]),
+          ...COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value],
           backgroundColorSelect: false,
           innerPadding: 0
         },
@@ -183,7 +183,7 @@ export const composeStore = defineStore('compose', {
           ...areaData.style
         },
         propValue: components
-      }
+      })
 
       createGroupStyle(groupComponent)
       dvMainStore.addComponent({
