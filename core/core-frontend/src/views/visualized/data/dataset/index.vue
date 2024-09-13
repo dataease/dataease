@@ -38,7 +38,8 @@ import {
   barInfoApi,
   perDelete,
   exportDatasetData,
-  exportLimit
+  exportLimit,
+  getDatasetTotal
 } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
@@ -313,7 +314,7 @@ onBeforeMount(() => {
 
 const columns = shallowRef([])
 const tableData = shallowRef([])
-const total = ref(0)
+const total = ref(null)
 
 const handleNodeClick = (data: BusiTreeNode) => {
   if (!data.leaf) {
@@ -459,11 +460,13 @@ const handleClick = (tabName: TabPaneName) => {
           dataPreview = (res?.data?.data as Array<{}>) || []
           columns.value = columnsPreview
           tableData.value = dataPreview
-          total.value = res.total
         })
         .finally(() => {
           dataPreviewLoading.value = false
         })
+      getDatasetTotal(nodeInfo.id).then(res => {
+        total.value = res
+      })
       break
     case 'structPreview':
       columns.value = allFieldsColumns
