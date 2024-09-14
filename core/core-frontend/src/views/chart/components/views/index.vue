@@ -43,7 +43,7 @@ import { storeToRefs } from 'pinia'
 import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
 import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
-import DePictureV2 from '@/custom-component/picture/Component.vue'
+import DePictureGroup from '@/custom-component/picture-group/component.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { viewFieldTimeTrans } from '@/utils/viewUtils'
@@ -897,11 +897,15 @@ const loadPluginCategory = data => {
         @onJumpClick="jumpClick"
         @resetLoading="() => (loading = false)"
       />
-      <de-picture-v2
+      <de-picture-group
+        v-else-if="showChartView(ChartLibraryType.PICTURE_GROUP)"
+        :themes="canvasStyleData.dashboard.themeColor"
+        ref="chartComponent"
         :element="element"
-        :prop-value="element.propValue"
-        v-else-if="showChartView(ChartLibraryType.PICTURE)"
-      ></de-picture-v2>
+        :active="active"
+        :show-position="showPosition"
+      >
+      </de-picture-group>
       <de-rich-text-view
         v-else-if="showChartView(ChartLibraryType.RICH_TEXT)"
         :themes="canvasStyleData.dashboard.themeColor"
