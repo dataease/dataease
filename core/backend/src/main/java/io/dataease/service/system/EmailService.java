@@ -83,7 +83,7 @@ public class EmailService {
     }
 
 
-    public void sendPdfWithFiles(String to, String title, String content, byte[] bytes, List<File> files) {
+    public void sendPdfWithFiles(String to, String title, String content, byte[] bytes, List<File> files, String pdfFileName) {
         if (ArrayUtils.isEmpty(bytes)) {
             send(to, title, content);
             return;
@@ -98,7 +98,7 @@ public class EmailService {
         MimeMessage mimeMessage = driver.createMimeMessage();
         try {
             multipart = addContent(multipart, content);
-            multipart = addPdf(multipart, bytes);
+            multipart = addPdf(multipart, bytes, pdfFileName);
             if (CollectionUtils.isNotEmpty(files)) {
                 multipart = addFiles(multipart, files);
             }
@@ -165,11 +165,11 @@ public class EmailService {
         return multipart;
     }
 
-    private MimeMultipart addPdf(MimeMultipart multipart, byte[] bytes) throws Exception {
+    private MimeMultipart addPdf(MimeMultipart multipart, byte[] bytes, String pdfFileName) throws Exception {
         MimeBodyPart attach = new MimeBodyPart();
         ByteArrayDataSource fileDataSource = new ByteArrayDataSource(bytes, "application/pdf");
         attach.setDataHandler(new DataHandler(fileDataSource));
-        attach.setFileName(MimeUtility.encodeText("panel.pdf", "gb2312", null));
+        attach.setFileName(MimeUtility.encodeText(pdfFileName, "gb2312", null));
         multipart.addBodyPart(attach);
         multipart.setSubType("related");
         return multipart;
