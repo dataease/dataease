@@ -622,7 +622,10 @@ const generateColumns = (arr: Field[]) =>
       <div class="flex-align-center">
         <ElIcon>
           <Icon className={`field-icon-${fieldType[column.deType]}`}>
-            {iconFieldMap[fieldType[column.deType]]}
+            {{
+              ...iconFieldMap[fieldType[column.deType]],
+              className: `svg-icon field-icon-${fieldType[column.deType]}`
+            }}
           </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '120px', marginLeft: '4px' }}>
@@ -1357,7 +1360,7 @@ const getDsIconName = data => {
     <div class="top">
       <span class="name">
         <el-icon @click="backToMain">
-          <Icon name="icon_left_outlined"><icon_left_outlined /></Icon>
+          <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
         </el-icon>
         <template v-if="showInput">
           <el-input
@@ -1386,7 +1389,7 @@ const getDsIconName = data => {
     <div class="container dataset-db" @mouseup="mouseupDrag">
       <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
         <el-icon>
-          <Icon name="icon_right_outlined"><icon_right_outlined /></Icon>
+          <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
         </el-icon>
       </p>
       <div
@@ -1407,7 +1410,7 @@ const getDsIconName = data => {
             {{ t('data_set.select_data_source') }}
             <span class="left-outlined">
               <el-icon style="color: #1f2329" @click="showLeft = false">
-                <Icon name="icon_left_outlined"><icon_left_outlined /></Icon>
+                <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
               </el-icon>
             </span>
           </p>
@@ -1429,7 +1432,7 @@ const getDsIconName = data => {
               <div class="flex-align-center icon">
                 <el-icon>
                   <icon :static-content="getDsIcon({ leaf, type })"
-                    ><component :is="getDsIconName({ leaf, type })"></component
+                    ><component class="svg-icon" :is="getDsIconName({ leaf, type })"></component
                   ></icon>
                 </el-icon>
                 <span v-if="!leaf || extraFlag > -1">{{ name }}</span>
@@ -1448,7 +1451,7 @@ const getDsIconName = data => {
             {{ t('datasource.data_table') }}
             <span class="num">
               <el-icon class="icon-color">
-                <Icon name="reference-table"><referenceTable /></Icon>
+                <Icon name="reference-table"><referenceTable class="svg-icon" /></Icon>
               </el-icon>
               {{ datasourceTableData.length }}
             </span>
@@ -1461,7 +1464,9 @@ const getDsIconName = data => {
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
           </el-input>
@@ -1484,7 +1489,7 @@ const getDsIconName = data => {
             @click="setActiveName(sqlNode)"
           >
             <el-icon class="icon-color">
-              <Icon name="icon_sql_outlined_1"><icon_sql_outlined_1 /></Icon>
+              <Icon name="icon_sql_outlined_1"><icon_sql_outlined_1 class="svg-icon" /></Icon>
             </el-icon>
             <span class="label">{{ t('data_set.custom_sql') }}</span>
           </div>
@@ -1509,7 +1514,7 @@ const getDsIconName = data => {
                 @click="setActiveName(datasourceTableData[index])"
               >
                 <el-icon class="icon-color">
-                  <Icon name="reference-table"><referenceTable /></Icon>
+                  <Icon name="reference-table"><referenceTable class="svg-icon" /></Icon>
                 </el-icon>
                 <span class="label">{{ datasourceTableData[index].tableName }}</span>
               </div>
@@ -1520,7 +1525,7 @@ const getDsIconName = data => {
       <div class="drag-right" :style="{ width: `calc(100vw - ${showLeft ? LeftWidth : 0}px)` }">
         <div v-if="crossDatasources" class="different-datasource">
           <el-icon>
-            <Icon name="icon_warning_colorful"><icon_warning_colorful /></Icon>
+            <Icon name="icon_warning_colorful"><icon_warning_colorful class="svg-icon" /></Icon>
           </el-icon>
           {{ t('data_set.be_reported_incorrectly') }}
         </div>
@@ -1550,7 +1555,7 @@ const getDsIconName = data => {
               <el-button :disabled="!allfields.length" @click="addCalcField('q')" secondary>
                 <template #icon>
                   <el-icon>
-                    <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+                    <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </template>
                 {{ t('dataset.add_calc_field') }}
@@ -1564,7 +1569,9 @@ const getDsIconName = data => {
               >
                 <template #icon>
                   <el-icon>
-                    <Icon name="icon_refresh_outlined"><icon_refresh_outlined /></Icon>
+                    <Icon name="icon_refresh_outlined"
+                      ><icon_refresh_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </template>
                 {{ t('data_set.refresh_data') }}
@@ -1580,7 +1587,9 @@ const getDsIconName = data => {
               <div :class="['field-d', { open: expandedD }]">
                 <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
                   <ElIcon class="expand">
-                    <Icon name="icon_expand-right_filled"><icon_expandRight_filled /></Icon>
+                    <Icon name="icon_expand-right_filled"
+                      ><icon_expandRight_filled class="svg-icon"
+                    /></Icon>
                   </ElIcon>
                   &nbsp;{{ t('chart.dimension') }}
                 </div>
@@ -1611,7 +1620,9 @@ const getDsIconName = data => {
               <div :class="['field-q', { open: expandedQ }]">
                 <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
                   <ElIcon class="expand">
-                    <Icon name="icon_expand-right_filled"><icon_expandRight_filled /></Icon>
+                    <Icon name="icon_expand-right_filled"
+                      ><icon_expandRight_filled class="svg-icon"
+                    /></Icon>
                   </ElIcon>
                   &nbsp;{{ t('chart.quota') }}
                 </div>
@@ -1781,6 +1792,7 @@ const getDsIconName = data => {
                             <el-icon>
                               <Icon className="primary-color"
                                 ><component
+                                  class="svg-icon primary-color"
                                   :is="iconFieldMap[getIconName(scope.row.deExtractType)]"
                                 ></component
                               ></Icon>
@@ -1802,7 +1814,9 @@ const getDsIconName = data => {
                           <template #default>
                             <el-button text @click="handleFieldMore(scope.row, 'translate')">
                               <template #icon>
-                                <Icon name="icon_switch_outlined"><icon_switch_outlined /></Icon>
+                                <Icon name="icon_switch_outlined"
+                                  ><icon_switch_outlined class="svg-icon"
+                                /></Icon>
                               </template>
                             </el-button>
                           </template>
@@ -1816,7 +1830,9 @@ const getDsIconName = data => {
                           <template #default>
                             <el-button text @click="handleFieldMore(scope.row, 'copy')">
                               <template #icon>
-                                <Icon name="icon_copy_outlined"><icon_copy_outlined /></Icon>
+                                <Icon name="icon_copy_outlined"
+                                  ><icon_copy_outlined class="svg-icon"
+                                /></Icon>
                               </template>
                             </el-button>
                           </template>
@@ -1827,7 +1843,7 @@ const getDsIconName = data => {
                             <el-button text @click="handleFieldMore(scope.row, 'delete')">
                               <template #icon>
                                 <Icon name="icon_delete-trash_outlined"
-                                  ><icon_deleteTrash_outlined
+                                  ><icon_deleteTrash_outlined class="svg-icon"
                                 /></Icon>
                               </template>
                             </el-button>
@@ -1842,7 +1858,9 @@ const getDsIconName = data => {
                               @click="handleFieldMore(scope.row, 'editor')"
                             >
                               <template #icon>
-                                <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                                <Icon name="icon_edit_outlined"
+                                  ><icon_edit_outlined class="svg-icon"
+                                /></Icon>
                               </template>
                             </el-button>
                           </template>
@@ -1950,6 +1968,7 @@ const getDsIconName = data => {
                             <el-icon>
                               <Icon className="green-color"
                                 ><component
+                                  class="svg-icon green-color"
                                   :is="iconFieldMap[getIconName(scope.row.deExtractType)]"
                                 ></component
                               ></Icon>
@@ -1971,7 +1990,9 @@ const getDsIconName = data => {
                           <template #default>
                             <el-button text @click="handleFieldMore(scope.row, 'translate')">
                               <template #icon>
-                                <Icon name="icon_switch_outlined"><icon_switch_outlined /></Icon>
+                                <Icon name="icon_switch_outlined"
+                                  ><icon_switch_outlined class="svg-icon"
+                                /></Icon>
                               </template>
                             </el-button>
                           </template>
@@ -1985,7 +2006,9 @@ const getDsIconName = data => {
                           <template #default>
                             <el-button text @click="handleFieldMore(scope.row, 'copy')">
                               <template #icon>
-                                <Icon name="icon_copy_outlined"><icon_copy_outlined /></Icon>
+                                <Icon name="icon_copy_outlined"
+                                  ><icon_copy_outlined class="svg-icon"
+                                /></Icon>
                               </template>
                             </el-button>
                           </template>
@@ -1996,7 +2019,7 @@ const getDsIconName = data => {
                             <el-button text @click="handleFieldMore(scope.row, 'delete')">
                               <template #icon>
                                 <Icon name="icon_delete-trash_outlined"
-                                  ><icon_deleteTrash_outlined
+                                  ><icon_deleteTrash_outlined class="svg-icon"
                                 /></Icon>
                               </template>
                             </el-button>
@@ -2011,7 +2034,9 @@ const getDsIconName = data => {
                               @click="handleFieldMore(scope.row, 'editor')"
                             >
                               <template #icon>
-                                <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                                <Icon name="icon_edit_outlined"
+                                  ><icon_edit_outlined class="svg-icon"
+                                /></Icon>
                               </template>
                             </el-button>
                           </template>
@@ -2054,7 +2079,11 @@ const getDsIconName = data => {
                 <span class="select-svg-icon">
                   <el-icon>
                     <Icon :className="`field-icon-${getIconName(deTypeArr[0])}`"
-                      ><component :is="iconFieldMap[getIconName(deTypeArr[0])]"></component
+                      ><component
+                        class="svg-icon"
+                        :class="`field-icon-${getIconName(deTypeArr[0])}`"
+                        :is="iconFieldMap[getIconName(deTypeArr[0])]"
+                      ></component
                     ></Icon>
                   </el-icon>
                 </span>

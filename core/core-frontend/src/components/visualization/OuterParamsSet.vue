@@ -59,7 +59,7 @@
                         style="margin-right: 16px"
                         @handle-command="cmd => outerParamsOperation(cmd, node, data)"
                         :menu-list="state.optMenu"
-                        icon-name="icon_more_outlined"
+                        :icon-name="icon_more_outlined"
                         placement="bottom-start"
                       ></handle-more>
                     </span>
@@ -94,8 +94,8 @@
                   >
                     <div style="width: 16px"></div>
                     <div style="flex: 1; line-height: 32px">
-                      <Icon style="margin-top: 4px" class-name="view-type-icon" name="filter-params"
-                        ><filterParams
+                      <Icon name="filter-params"
+                        ><filterParams style="margin-top: 4px" class="svg-icon view-type-icon"
                       /></Icon>
                       <span>{{ findFilterName(baseFilter.id) }}</span>
                     </div>
@@ -155,7 +155,7 @@
                       <div style="flex: 1; display: flex; line-height: 32px">
                         <div style="width: 16px; margin-top: 2px; margin-right: 4px">
                           <el-icon>
-                            <Icon name="icon_dataset"><icon_dataset /></Icon>
+                            <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                           </el-icon>
                         </div>
                         <span>{{ baseDatasetInfo.name }}</span>
@@ -283,6 +283,9 @@
 </template>
 
 <script setup lang="ts">
+import _delete from '@/assets/svg/delete.svg'
+import edit from '@/assets/svg/edit.svg'
+import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
 import filterParams from '@/assets/svg/filter-params.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import { ref, reactive, computed, nextTick } from 'vue'
@@ -315,12 +318,12 @@ const state = reactive({
   optMenu: [
     {
       label: '重命名',
-      svgName: 'edit',
+      svgName: edit,
       command: 'rename'
     },
     {
       label: '删除',
-      svgName: 'delete',
+      svgName: _delete,
       command: 'delete'
     }
   ],

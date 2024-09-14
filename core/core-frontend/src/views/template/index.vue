@@ -18,7 +18,7 @@
     >
       <template #prefix>
         <el-icon>
-          <Icon name="de-search" ><deSearch /></Icon>
+          <Icon name="de-search"><deSearch class="svg-icon" /></Icon>
         </el-icon>
       </template>
     </el-input>
@@ -56,7 +56,9 @@
                 v-if="!state.currentTemplateShowList.length && !state.templateFilterText"
                 class="custom-position"
               >
-                <Icon style="width: 125px; height: 125px" name="dv-empty" ><dvEmpty /></Icon>
+                <Icon name="dv-empty"
+                  ><dvEmpty style="width: 125px; height: 125px" class="svg-icon"
+                /></Icon>
                 <span style="margin-top: 8px; font-size: 14px"> 暂无模板 </span>
               </el-row>
 
@@ -65,7 +67,9 @@
                 v-if="!currentTemplateShowListComputed.length && state.templateFilterText"
                 class="custom-position"
               >
-                <Icon style="width: 125px; height: 125px" name="dv-nothing" ><dvNothing /></Icon>
+                <Icon name="dv-nothing"
+                  ><dvNothing style="width: 125px; height: 125px" class="svg-icon"
+                /></Icon>
                 <span style="margin-top: 8px; font-size: 14px"> 没有找到相关模板 </span>
               </el-row>
 
@@ -97,7 +101,9 @@
     </div>
     <div class="container-sys-param" v-show="!state.templateCategories.length">
       <el-row style="height: 100%" class="custom-position">
-        <Icon style="width: 125px; height: 125px" name="dv-empty" ><dvEmpty /></Icon>
+        <Icon name="dv-empty"
+          ><dvEmpty style="width: 125px; height: 125px" class="svg-icon"
+        /></Icon>
         <span style="margin-top: 8px; font-size: 14px">
           <el-button
             style="float: right"

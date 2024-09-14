@@ -3,9 +3,8 @@ import { Icon } from '@/components/icon-custom'
 import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
 import { propTypes } from '@/utils/propTypes'
 import type { Placement } from 'element-plus-secondary'
-import { ref, PropType, type Component } from 'vue'
+import { ref, PropType } from 'vue'
 import ShareHandler from '@/views/share/share/ShareHandler.vue'
-import { object } from 'vue-types'
 export interface Menu {
   svgName?: string
   label?: string
@@ -23,10 +22,7 @@ const props = defineProps({
     type: String as () => Placement,
     default: 'bottom-end'
   },
-  iconName: {
-    type: object<Component>,
-    default: icon_more_outlined
-  },
+  iconName: propTypes.string.def(''),
   inTable: propTypes.bool.def(false),
   resourceType: propTypes.string.def('dashboard'),
   node: {
@@ -72,7 +68,7 @@ const emit = defineEmits(['handleCommand'])
     @command="handleCommand"
   >
     <el-icon class="hover-icon" :class="inTable && 'hover-icon-in-table'" @click.stop>
-      <Icon><component :is="iconName"></component></Icon>
+      <Icon><component class="svg-icon" :is="iconName || icon_more_outlined"></component></Icon>
     </el-icon>
     <template #dropdown>
       <el-dropdown-menu>
@@ -85,7 +81,7 @@ const emit = defineEmits(['handleCommand'])
           :class="{ 'de-hidden-drop-item': ele.hidden }"
         >
           <el-icon class="handle-icon" v-if="ele.svgName">
-            <Icon><component :is="ele.svgName"></component></Icon>
+            <Icon><component class="svg-icon" :is="ele.svgName"></component></Icon>
           </el-icon>
           {{ ele.label }}
         </el-dropdown-item>

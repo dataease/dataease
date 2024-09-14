@@ -39,7 +39,7 @@ onMounted(() => {
     >
       <span>{{ item.name }}</span>
       <el-icon v-if="language === item.value">
-        <Icon name="icon_done_outlined"><icon_done_outlined /></Icon>
+        <Icon name="icon_done_outlined"><icon_done_outlined class="svg-icon" /></Icon>
       </el-icon>
     </div>
   </div>

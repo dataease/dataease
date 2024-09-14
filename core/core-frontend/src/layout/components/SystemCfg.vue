@@ -25,7 +25,9 @@ const redirectUser = () => {
       }"
     >
       <el-icon @click="redirectUser">
-        <Icon class="icon-setting" name="icon-setting" ><iconSetting /></Icon>
+        <Icon class="icon-setting" name="icon-setting"
+          ><iconSetting class="svg-icon icon-setting"
+        /></Icon>
       </el-icon>
     </div>
   </el-tooltip>

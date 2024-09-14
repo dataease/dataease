@@ -25,13 +25,15 @@
             <span class="custom-tree-node">
               <span class="custom-label">
                 <el-icon style="font-size: 18px" v-if="data.nodeType === 'folder'">
-                  <Icon name="dv-folder"><dvFolder /></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <el-icon style="font-size: 18px" v-else-if="data.dvType === 'dashboard'">
-                  <Icon name="dv-dashboard-spine"><dvDashboardSpine /></Icon>
+                  <Icon name="dv-dashboard-spine"><dvDashboardSpine class="svg-icon" /></Icon>
                 </el-icon>
                 <el-icon class="icon-screen-new" style="font-size: 18px" v-else>
-                  <Icon name="icon_operation-analysis_outlined"><icon_operationAnalysis_outlined /></Icon>
+                  <Icon name="icon_operation-analysis_outlined"
+                    ><icon_operationAnalysis_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
                 <span :title="data.name" class="custom-name">{{ data.name }}</span>
               </span>

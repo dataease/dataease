@@ -389,7 +389,7 @@ defineExpose({
             style="margin-left: -4px"
           >
             <template #icon>
-              <Icon name="icon_admin_outlined"><icon_admin_outlined /></Icon>
+              <Icon name="icon_admin_outlined"><icon_admin_outlined class="svg-icon" /></Icon>
             </template>
             设置
           </el-button>

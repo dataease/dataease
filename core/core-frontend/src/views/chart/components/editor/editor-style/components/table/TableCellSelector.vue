@@ -184,7 +184,7 @@ onMounted(() => {
               :class="{ dark: themes === 'dark', active: state.tableCellForm.isBolder }"
             >
               <el-icon>
-                <Icon name="icon_bold_outlined" ><icon_bold_outlined /></Icon>
+                <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -207,7 +207,7 @@ onMounted(() => {
               :class="{ dark: themes === 'dark', active: state.tableCellForm.isItalic }"
             >
               <el-icon>
-                <Icon name="icon_italic_outlined" ><icon_italic_outlined /></Icon>
+                <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -238,7 +238,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_left-alignment_outlined" ><icon_leftAlignment_outlined /></Icon>
+                  <Icon name="icon_left-alignment_outlined"
+                    ><icon_leftAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -256,7 +258,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_center-alignment_outlined" ><icon_centerAlignment_outlined /></Icon>
+                  <Icon name="icon_center-alignment_outlined"
+                    ><icon_centerAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -274,7 +278,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_right-alignment_outlined" ><icon_rightAlignment_outlined /></Icon>
+                  <Icon name="icon_right-alignment_outlined"
+                    ><icon_rightAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
-
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvCopyDark from '@/assets/svg/dv-copy-dark.svg'
 import dvDelete from '@/assets/svg/dv-delete.svg'
 import dvMove from '@/assets/svg/dv-move.svg'
@@ -519,14 +519,16 @@ defineExpose({
               style="margin-right: 20px"
               @click="addOperation('newFolder', null, 'folder')"
             >
-              <Icon name="dv-new-folder"><dvNewFolder /></Icon>
+              <Icon name="dv-new-folder"><dvNewFolder class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
 
           <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
             <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
               <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
-                <Icon name="icon_file-add_outlined"><icon_fileAdd_outlined /></Icon>
+                <Icon name="icon_file-add_outlined"
+                  ><icon_fileAdd_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -538,7 +540,7 @@ defineExpose({
                   </el-dropdown-item>
                   <el-dropdown-item @click="addOperation('newFromTemplate', null, 'leaf', true)">
                     <el-icon class="handle-icon">
-                      <Icon name="dv-use-template"><dvUseTemplate /></Icon>
+                      <Icon name="dv-use-template"><dvUseTemplate class="svg-icon" /></Icon>
                     </el-icon>
                     使用模板新建
                   </el-dropdown-item>
@@ -556,7 +558,9 @@ defineExpose({
       >
         <template #prefix>
           <el-icon>
-            <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+            <Icon name="icon_search-outline_outlined"
+              ><icon_searchOutline_outlined class="svg-icon"
+            /></Icon>
           </el-icon>
         </template>
       </el-input>
@@ -564,12 +568,12 @@ defineExpose({
         <el-icon class="filter-icon-span">
           <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
             <Icon v-if="state.curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"
-              ><dvSortAsc
+              ><dvSortAsc class="svg-icon opt-icon"
             /></Icon>
           </el-tooltip>
           <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
-            <Icon v-show="state.curSortType.includes('desc')" name="dv-sort-desc" class="opt-icon"
-              ><dvSortDesc
+            <Icon v-if="state.curSortType.includes('desc')" name="dv-sort-desc" class="opt-icon"
+              ><dvSortDesc class="svg-icon opt-icon"
             /></Icon>
           </el-tooltip>
         </el-icon>
@@ -607,7 +611,7 @@ defineExpose({
         <template #default="{ node, data }">
           <span class="custom-tree-node">
             <el-icon style="font-size: 18px" v-if="!data.leaf">
-              <Icon name="dv-folder"><dvFolder /></Icon>
+              <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
               <Icon
@@ -618,7 +622,7 @@ defineExpose({
             </el-icon>
             <el-icon class="icon-screen-new color-dataV" style="font-size: 18px" v-else>
               <Icon name="icon_operation-analysis_outlined"
-                ><icon_operationAnalysis_outlined
+                ><icon_operationAnalysis_outlined class="svg-icon"
               /></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
@@ -633,14 +637,14 @@ defineExpose({
                 class="hover-icon"
                 @click="resourceEdit(data.id)"
               >
-                <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
               </el-icon>
               <handle-more
                 @handle-command="
                   cmd => addOperation(cmd, data, cmd === 'newFolder' ? 'folder' : 'leaf')
                 "
                 :menu-list="resourceTypeList"
-                icon-name="icon_add_outlined"
+                :icon-name="icon_add_outlined"
                 placement="bottom-start"
                 v-if="!data.leaf"
               ></handle-more>

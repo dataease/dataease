@@ -91,7 +91,7 @@ const del = (index, child) => {
           <span style="color: rgba(0 0 0 / 65%)" class="mrg-title fir">
             {{ logic === 'or' ? 'OR' : 'AND' }}
             <el-icon>
-              <Icon name="icon_down_outlined"><icon_down_outlined /></Icon>
+              <Icon name="icon_down_outlined"><icon_down_outlined class="svg-icon" /></Icon>
             </el-icon>
           </span>
           <template #dropdown>
@@ -104,7 +104,9 @@ const del = (index, child) => {
       </div>
       <span class="operate-icon" v-if="x">
         <el-icon @click="emits('removeRelationList')">
-          <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+          <Icon name="icon_delete-trash_outlined"
+            ><icon_deleteTrash_outlined class="svg-icon"
+          /></Icon>
         </el-icon>
       </span>
     </div>

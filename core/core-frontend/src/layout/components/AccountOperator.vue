@@ -113,11 +113,11 @@ if (uid.value === '1') {
     v-click-outside="openPopover"
   >
     <el-icon class="main-color">
-      <Icon name="user-img" ><userImg /></Icon>
+      <Icon name="user-img"><userImg class="svg-icon" /></Icon>
     </el-icon>
     <span class="uname-span">{{ name }}</span>
     <el-icon class="el-icon-animate">
-      <Icon name="icon_expand-down_filled" ><icon_expandDown_filled /></Icon>
+      <Icon name="icon_expand-down_filled"><icon_expandDown_filled class="svg-icon" /></Icon>
     </el-icon>
   </div>
   <el-popover

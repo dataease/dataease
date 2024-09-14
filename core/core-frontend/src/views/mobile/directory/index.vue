@@ -210,7 +210,7 @@ onMounted(() => {
         <div @click="onClickPanel" key="仪表板">
           <span class="label primary-name">仪表板</span>
           <el-icon>
-            <Icon name="icon_right_outlined"><icon_right_outlined /></Icon>
+            <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
         <div v-for="(ele, index) in [...directName]" @click="handleDir(index)" :key="ele">
@@ -218,7 +218,7 @@ onMounted(() => {
             ele
           }}</span>
           <el-icon v-if="index !== directName.length - 1">
-            <Icon name="icon_right_outlined"><icon_right_outlined /></Icon>
+            <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
       </div>
@@ -233,17 +233,19 @@ onMounted(() => {
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
         <el-dropdown @command="sortTypeChange" trigger="click">
           <el-icon class="filter-icon-span">
             <Icon v-if="curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"
-              ><dvSortAsc
+              ><dvSortAsc class="svg-icon opt-icon"
             /></Icon>
-            <Icon v-show="curSortType.includes('desc')" name="dv-sort-desc" class="opt-icon"
-              ><dvSortDesc
+            <Icon v-if="curSortType.includes('desc')" name="dv-sort-desc" class="opt-icon"
+              ><dvSortDesc class="svg-icon opt-icon"
             /></Icon>
           </el-icon>
           <template #dropdown>

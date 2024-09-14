@@ -118,7 +118,10 @@ const generateColumns = (arr: Field[]) =>
       <div class="flex-align-center icon">
         <ElIcon>
           <Icon className={`field-icon-${fieldType[column.fieldType]}`}>
-            {iconFieldMap[fieldType[column.fieldType]]}
+            {{
+              ...iconFieldMap[fieldType[column.fieldType]],
+              className: `svg-icon field-icon-${fieldType[column.fieldType]}`
+            }}
           </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '100px' }}>
@@ -484,7 +487,7 @@ defineExpose({
             <template #trigger>
               <el-button secondary>
                 <template #icon>
-                  <Icon name="icon_upload_outlined"><icon_upload_outlined /></Icon>
+                  <Icon name="icon_upload_outlined"><icon_upload_outlined class="svg-icon" /></Icon>
                 </template>
                 {{ t('dataset.upload_file') }}
               </el-button>

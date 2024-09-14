@@ -322,7 +322,7 @@ init()
         >
           <template #icon>
             <el-icon size="14px">
-              <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+              <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
             </el-icon>
           </template>
         </el-button>
@@ -398,7 +398,7 @@ init()
             >
               <template #icon>
                 <el-icon size="14px">
-                  <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </template>
             </el-button>
@@ -496,7 +496,7 @@ init()
             >
               <template #icon>
                 <el-icon size="14px">
-                  <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </template>
             </el-button>
@@ -517,7 +517,11 @@ init()
               <span>
                 <el-icon>
                   <Icon :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
-                    ><component :is="iconFieldMap[fieldType[fieldItem.field.deType]]"></component
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                      :is="iconFieldMap[fieldType[fieldItem.field.deType]]"
+                    ></component
                   ></Icon>
                 </el-icon>
               </span>

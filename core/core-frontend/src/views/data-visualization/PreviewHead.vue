@@ -122,7 +122,7 @@ const initOpenHandler = newWindow => {
       <el-popover show-arrow :offset="8" placement="bottom" width="400" trigger="hover">
         <template #reference>
           <el-icon class="info-tips"
-            ><Icon name="dv-info"><dvInfoSvg /></Icon
+            ><Icon name="dv-info"><dvInfoSvg class="svg-icon" /></Icon
           ></el-icon>
         </template>
         <dv-detail-info></dv-detail-info>
@@ -135,13 +135,13 @@ const initOpenHandler = newWindow => {
         @click="() => useEmitt().emitter.emit('canvasFullscreen')"
       >
         <template #icon>
-          <icon name="icon_pc_fullscreen"><icon_pc_fullscreen /></icon>
+          <icon name="icon_pc_fullscreen"><icon_pc_fullscreen class="svg-icon" /></icon>
         </template>
         全屏</el-button
       >
       <el-button secondary @click="preview()">
         <template #icon>
-          <icon name="icon_pc_outlined"><icon_pc_outlined /></icon>
+          <icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></icon>
         </template>
         预览</el-button
       >
@@ -152,13 +152,13 @@ const initOpenHandler = newWindow => {
       />
       <el-button class="custom-button" v-if="dvInfo.weight > 6" type="primary" @click="dvEdit()">
         <template #icon>
-          <icon name="icon_edit_outlined"><icon_edit_outlined /></icon>
+          <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
         </template>
         编辑</el-button
       >
       <el-dropdown trigger="click">
         <el-icon class="head-more-icon">
-          <Icon name="dv-head-more"><dvHeadMore /></Icon>
+          <Icon name="dv-head-more"><dvHeadMore class="svg-icon" /></Icon>
         </el-icon>
         <template #dropdown>
           <el-dropdown-menu style="width: 130px">

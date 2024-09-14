@@ -299,7 +299,7 @@ onBeforeMount(() => {
         <empty-background description="暂无数据大屏" img-type="none">
           <el-button v-if="rootManage && !isDataEaseBi" @click="createNew" type="primary">
             <template #icon>
-              <Icon name="icon_add_outlined" ><icon_add_outlined /></Icon>
+              <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
             </template>
             {{ $t('commons.create') }}数据大屏
           </el-button>

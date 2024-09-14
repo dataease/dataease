@@ -18,14 +18,17 @@
           <span class="top-area-text" style="margin-left: 0">已选图表：</span>
           <span class="top-area-value">
             <Icon class-name="view-type-icon"
-              ><component :is="iconChartMap[state.curLinkageViewInfo.type]"></component
+              ><component
+                class="svg-icon view-type-icon"
+                :is="iconChartMap[state.curLinkageViewInfo.type]"
+              ></component
             ></Icon>
             {{ state.curLinkageViewInfo.title }}</span
           >
           <span class="top-area-text">所用数据集：</span>
           <span class="top-area-value">
-            <Icon style="vertical-align: -0.2em" class-name="view-type-icon" name="dataset-outline"
-              ><datasetOutline
+            <Icon class-name="view-type-icon" name="dataset-outline"
+              ><datasetOutline style="vertical-align: -0.2em" class="svg-icon view-type-icon"
             /></Icon>
             {{ state.curDatasetInfo.name }}</span
           >
@@ -82,8 +85,12 @@
                   </span>
                   <span>
                     <span class="tree-select-field">
-                      <Icon class-name="view-type-icon" style="margin-right: 4px"
-                        ><component :is="iconChartMap[data.targetViewType]"></component
+                      <Icon class-name="view-type-icon"
+                        ><component
+                          :is="iconChartMap[data.targetViewType]"
+                          style="margin-right: 4px"
+                          class="svg-icon view-type-icon"
+                        ></component
                       ></Icon>
                       {{ data.targetViewName }}
                     </span>
@@ -187,7 +194,7 @@
                     </div>
                     <el-icon class="link-icon-join">
                       <Icon style="width: 20px; height: 20px" name="dv-link-target"
-                        ><dvLinkTarget
+                        ><dvLinkTarget style="width: 20px; height: 20px" class="svg-icon"
                       /></Icon>
                     </el-icon>
                     <div style="flex: 1">
@@ -221,7 +228,9 @@
 
                     <el-button class="m-del-icon-btn" text @click="deleteLinkageField(index)">
                       <el-icon size="20px">
-                        <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                        <Icon name="icon_delete-trash_outlined"
+                          ><icon_deleteTrash_outlined class="svg-icon"
+                        /></Icon>
                       </el-icon>
                     </el-button>
                   </div>
@@ -234,7 +243,9 @@
               </el-row>
             </el-row>
             <el-row v-else style="height: 100%" class="custom-position">
-              <Icon style="width: 125px; height: 125px" name="dv-empty"><dvEmpty /></Icon>
+              <Icon name="dv-empty"
+                ><dvEmpty style="width: 125px; height: 125px" class="svg-icon"
+              /></Icon>
               <span style="margin-top: 8px; font-size: 14px">请先勾选需要联动的图表</span>
             </el-row>
           </el-col>

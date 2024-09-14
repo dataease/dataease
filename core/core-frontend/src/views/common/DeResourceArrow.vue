@@ -23,7 +23,7 @@ const handleClick = val => {
     class="arrow-side-tree arrow-side-tree-left"
   >
     <el-icon>
-      <Icon name="icon_left_outlined" ><icon_left_outlined /></Icon>
+      <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
     </el-icon>
   </div>
   <div
@@ -32,7 +32,7 @@ const handleClick = val => {
     class="arrow-side-tree arrow-side-tree-right"
   >
     <el-icon>
-      <Icon name="icon_right_outlined" ><icon_right_outlined /></Icon>
+      <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
     </el-icon>
   </div>
 </template>

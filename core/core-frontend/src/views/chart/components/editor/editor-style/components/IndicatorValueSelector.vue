@@ -192,7 +192,9 @@ defineExpose({ getFormData })
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_letter-spacing_outlined" ><icon_letterSpacing_outlined /></Icon>
+                <Icon name="icon_letter-spacing_outlined"
+                  ><icon_letterSpacing_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
             <el-option
@@ -222,7 +224,7 @@ defineExpose({ getFormData })
                 :class="{ dark: themes === 'dark', active: state.indicatorValueForm.isBolder }"
               >
                 <el-icon>
-                  <Icon name="icon_bold_outlined" ><icon_bold_outlined /></Icon>
+                  <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -245,7 +247,7 @@ defineExpose({ getFormData })
                 :class="{ dark: themes === 'dark', active: state.indicatorValueForm.isItalic }"
               >
                 <el-icon>
-                  <Icon name="icon_italic_outlined" ><icon_italic_outlined /></Icon>
+                  <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -274,7 +276,9 @@ defineExpose({ getFormData })
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_left-alignment_outlined" ><icon_leftAlignment_outlined /></Icon>
+                    <Icon name="icon_left-alignment_outlined"
+                      ><icon_leftAlignment_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -292,7 +296,9 @@ defineExpose({ getFormData })
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_center-alignment_outlined" ><icon_centerAlignment_outlined /></Icon>
+                    <Icon name="icon_center-alignment_outlined"
+                      ><icon_centerAlignment_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -310,7 +316,9 @@ defineExpose({ getFormData })
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_right-alignment_outlined" ><icon_rightAlignment_outlined /></Icon>
+                    <Icon name="icon_right-alignment_outlined"
+                      ><icon_rightAlignment_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -339,7 +347,9 @@ defineExpose({ getFormData })
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_top-align_outlined" ><icon_topAlign_outlined /></Icon>
+                  <Icon name="icon_top-align_outlined"
+                    ><icon_topAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -357,7 +367,9 @@ defineExpose({ getFormData })
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_vertical-align_outlined" ><icon_verticalAlign_outlined /></Icon>
+                  <Icon name="icon_vertical-align_outlined"
+                    ><icon_verticalAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -375,7 +387,9 @@ defineExpose({ getFormData })
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_bottom-align_outlined" ><icon_bottomAlign_outlined /></Icon>
+                  <Icon name="icon_bottom-align_outlined"
+                    ><icon_bottomAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -481,7 +495,9 @@ defineExpose({ getFormData })
             >
               <template #prefix>
                 <el-icon>
-                  <Icon name="icon_letter-spacing_outlined" ><icon_letterSpacing_outlined /></Icon>
+                  <Icon name="icon_letter-spacing_outlined"
+                    ><icon_letterSpacing_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </template>
               <el-option
@@ -515,7 +531,7 @@ defineExpose({ getFormData })
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_bold_outlined" ><icon_bold_outlined /></Icon>
+                    <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -542,7 +558,9 @@ defineExpose({ getFormData })
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_italic_outlined" ><icon_italic_outlined /></Icon>
+                    <Icon name="icon_italic_outlined"
+                      ><icon_italic_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>

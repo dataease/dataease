@@ -176,7 +176,9 @@ watch(
       >
         <template #prefix>
           <el-icon>
-            <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+            <Icon name="icon_search-outline_outlined"
+              ><icon_searchOutline_outlined class="svg-icon"
+            /></Icon>
           </el-icon>
         </template>
       </el-input>
@@ -196,7 +198,9 @@ watch(
         <template v-slot:default="scope">
           <div class="name-content">
             <el-icon style="margin-right: 12px; font-size: 18px" v-if="scope.row.extFlag">
-              <Icon name="dv-dashboard-spine-mobile"><dvDashboardSpineMobile /></Icon>
+              <Icon name="dv-dashboard-spine-mobile"
+                ><dvDashboardSpineMobile class="svg-icon"
+              /></Icon>
             </el-icon>
             <el-icon v-else :class="`main-color color-${scope.row.type}`">
               <Icon><component :is="iconMap[scope.row.type]"></component></Icon>
@@ -228,7 +232,7 @@ watch(
         <template #default="scope">
           <el-tooltip effect="dark" content="新页面预览" placement="top">
             <el-icon class="hover-icon hover-icon-in-table" @click="preview(scope.row.resourceId)">
-              <Icon name="icon_pc_outlined"><icon_pc_outlined /></Icon>
+              <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
           <ShareHandler

@@ -284,7 +284,11 @@ onMounted(() => {
             >
               <el-icon style="margin-right: 8px">
                 <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                  ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
                 ></Icon>
               </el-icon>
               {{ item.name }}
@@ -378,7 +382,11 @@ onMounted(() => {
             >
               <el-icon style="margin-right: 8px">
                 <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                  ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                  ><component
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    class="svg-icon"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
                 ></Icon>
               </el-icon>
               {{ item.name }}
@@ -522,9 +530,13 @@ onMounted(() => {
               :value="item.id"
             >
               <el-icon style="margin-right: 8px">
-                <Icon
-                  :className="`field-icon-${fieldType[item.deType]}`"
-                ><component :is="iconFieldMap[fieldType[item.deType]]"></component></Icon>
+                <Icon :className="`field-icon-${fieldType[item.deType]}`"
+                  ><component
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    class="svg-icon"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
+                ></Icon>
               </el-icon>
               {{ item.name }}
             </el-option>
@@ -577,7 +589,7 @@ onMounted(() => {
             <template #content><span v-html="t('chart.axis_tip')"></span></template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">
-                <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </span>
           </el-tooltip>

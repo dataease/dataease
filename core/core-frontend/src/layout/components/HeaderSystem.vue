@@ -25,13 +25,13 @@ const navigate = computed(() => appearanceStore.getNavigate)
     :class="{ 'header-light': navigateBg && navigateBg === 'light' }"
   >
     <img class="logo" v-if="navigate" :src="navigate" alt="" />
-    <Icon class="de-logo" v-else className="logo" name="logo"><logo /></Icon>
+    <Icon class="de-logo" v-else className="logo" name="logo"><logo class="svg-icon logo" /></Icon>
     <el-divider direction="vertical" />
     <span class="system">{{ props.title || '系统设置' }}</span>
     <div class="operate-setting">
       <span @click="backToMain" class="work-bar flex-align-center">
         <el-icon>
-          <Icon name="icon_left_outlined"><icon_left_outlined /></Icon>
+          <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
         </el-icon>
         <span class="work">返回工作台</span>
       </span>

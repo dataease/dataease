@@ -151,7 +151,7 @@ const handleChange = () => {
   >
     <template #reference>
       <el-icon class="menu-more">
-        <Icon name="more_v"><more_v /></Icon>
+        <Icon name="more_v"><more_v class="svg-icon" /></Icon>
       </el-icon>
     </template>
     <ElCascaderPanel

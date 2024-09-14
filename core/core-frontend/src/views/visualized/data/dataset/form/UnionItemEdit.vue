@@ -88,7 +88,7 @@ init()
         <el-button type="primary" class="union-add" @click="addUnion">
           <template #icon>
             <el-icon>
-              <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+              <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
             </el-icon>
           </template>
           {{ t('dataset.add_union_field') }}
@@ -119,8 +119,12 @@ init()
                 :value="item"
               >
                 <el-icon>
-                  <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                    ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                  <Icon
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[item.deType]}`"
+                      :is="iconFieldMap[fieldType[item.deType]]"
+                    ></component
                   ></Icon>
                 </el-icon>
                 <span>
@@ -130,7 +134,7 @@ init()
             </el-select>
           </span>
           <el-icon>
-            <Icon name="join-join"><joinJoin /></Icon>
+            <Icon name="join-join"><joinJoin class="svg-icon" /></Icon>
           </el-icon>
           <!--右侧孩子field-->
           <span class="column">
@@ -149,8 +153,12 @@ init()
                 :value="item"
               >
                 <el-icon>
-                  <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                    ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                  <Icon
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[item.deType]}`"
+                      :is="iconFieldMap[fieldType[item.deType]]"
+                    ></component
                   ></Icon>
                 </el-icon>
                 <span>
@@ -167,7 +175,9 @@ init()
               @click="removeUnionItem(index)"
             >
               <template #icon>
-                <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                <Icon name="icon_delete-trash_outlined"
+                  ><icon_deleteTrash_outlined class="svg-icon"
+                /></Icon>
               </template>
             </el-button>
           </span>

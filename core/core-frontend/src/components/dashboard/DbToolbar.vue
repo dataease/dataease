@@ -459,7 +459,9 @@ const initOpenHandler = newWindow => {
       </template>
       <template v-else>
         <el-icon v-if="!batchOptStatus" class="custom-el-icon back-icon" @click="backToMain()">
-          <Icon class="toolbar-icon" name="icon_left_outlined"><icon_left_outlined /></Icon>
+          <Icon name="icon_left_outlined"
+            ><icon_left_outlined class="svg-icon toolbar-icon"
+          /></Icon>
         </el-icon>
         <div class="left-area" v-if="editMode === 'edit' && !batchOptStatus">
           <span id="canvas-name" class="name-area" @dblclick="editCanvasName">
@@ -473,7 +475,7 @@ const initOpenHandler = newWindow => {
                 :disabled="snapshotIndex < 1"
                 @click="undo()"
               >
-                <Icon name="icon_undo_outlined"><icon_undo_outlined /></Icon>
+                <Icon name="icon_undo_outlined"><icon_undo_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
 
@@ -485,7 +487,7 @@ const initOpenHandler = newWindow => {
                 }"
                 @click="redo()"
               >
-                <Icon name="icon_redo_outlined"><icon_redo_outlined /></Icon>
+                <Icon name="icon_redo_outlined"><icon_redo_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
           </div>
@@ -599,13 +601,13 @@ const initOpenHandler = newWindow => {
             <el-dropdown-menu class="drop-style">
               <el-dropdown-item @click="previewInner">
                 <el-icon style="margin-right: 8px; font-size: 16px">
-                  <Icon name="icon_pc_fullscreen"><icon_pc_fullscreen /></Icon>
+                  <Icon name="icon_pc_fullscreen"><icon_pc_fullscreen class="svg-icon" /></Icon>
                 </el-icon>
                 全屏预览
               </el-dropdown-item>
               <el-dropdown-item @click="previewOuter()">
                 <el-icon style="margin-right: 8px; font-size: 16px">
-                  <Icon name="dv-preview-outer"><dvPreviewOuter /></Icon>
+                  <Icon name="dv-preview-outer"><dvPreviewOuter class="svg-icon" /></Icon>
                 </el-icon>
                 新页面预览
               </el-dropdown-item>

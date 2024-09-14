@@ -100,7 +100,7 @@ const resetCustomColor = () => {
       </div>
       <el-button @click="changeShowCustom" style="margin-left: 8px" size="default" plain>
         <template #icon>
-          <icon name="icon_admin_outlined"><icon_admin_outlined /></icon>
+          <icon name="icon_admin_outlined"><icon_admin_outlined class="svg-icon" /></icon>
         </template>
       </el-button>
     </div>

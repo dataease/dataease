@@ -288,7 +288,9 @@ const fullScreenPreview = () => {
       </template>
       <template v-else>
         <el-icon class="custom-el-icon back-icon" @click="backToMain()">
-          <Icon class="toolbar-icon" name="icon_left_outlined"><icon_left_outlined /></Icon>
+          <Icon name="icon_left_outlined"
+            ><icon_left_outlined class="svg-icon toolbar-icon"
+          /></Icon>
         </el-icon>
         <div class="left-area">
           <span id="dv-canvas-name" class="name-area" @dblclick="editCanvasName">
@@ -301,7 +303,7 @@ const fullScreenPreview = () => {
                 :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
                 @click="undo()"
               >
-                <Icon name="icon_undo_outlined"><icon_undo_outlined /></Icon>
+                <Icon name="icon_undo_outlined"><icon_undo_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
             <el-tooltip effect="ndark" :content="$t('commons.reduction')" placement="bottom">
@@ -312,7 +314,7 @@ const fullScreenPreview = () => {
                 }"
                 @click="redo()"
               >
-                <Icon name="icon_redo_outlined"><icon_redo_outlined /></Icon>
+                <Icon name="icon_redo_outlined"><icon_redo_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
           </div>

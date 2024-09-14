@@ -345,7 +345,7 @@ const emits = defineEmits(['finish'])
           <template #default="{ data: { name } }">
             <span class="custom-tree-node">
               <el-icon>
-                <Icon name="dv-folder"><dvFolder /></Icon>
+                <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
               </el-icon>
               <span :title="name">{{ name }}</span>
             </span>
@@ -356,7 +356,9 @@ const emits = defineEmits(['finish'])
         <el-input style="margin-bottom: 12px" v-model="filterText" clearable>
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
@@ -375,7 +377,7 @@ const emits = defineEmits(['finish'])
             <template #default="{ data }">
               <span class="custom-tree-node">
                 <el-icon style="font-size: 18px">
-                  <Icon name="dv-folder"><dvFolder /></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <span :title="data.name">{{ data.name }}</span>
               </span>

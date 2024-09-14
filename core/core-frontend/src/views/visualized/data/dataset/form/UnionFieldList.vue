@@ -93,7 +93,9 @@ watch(
       >
         <template #prefix>
           <el-icon>
-            <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+            <Icon name="icon_search-outline_outlined"
+              ><icon_searchOutline_outlined class="svg-icon"
+            /></Icon>
           </el-icon>
         </template>
       </el-input>
@@ -121,8 +123,12 @@ watch(
         <el-table-column :label="t('dataset.origin_name')">
           <template #default="scope">
             <el-icon>
-              <Icon :className="`field-icon-${fieldType[scope.row.deType]}`"
-                ><component :is="iconFieldMap[fieldType[scope.row.deType]]"></component
+              <Icon
+                ><component
+                  class="svg-icon"
+                  :class="`field-icon-${fieldType[scope.row.deType]}`"
+                  :is="iconFieldMap[fieldType[scope.row.deType]]"
+                ></component
               ></Icon>
             </el-icon>
             {{ scope.row.originName }}

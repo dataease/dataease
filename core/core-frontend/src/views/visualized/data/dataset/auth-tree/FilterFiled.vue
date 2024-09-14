@@ -274,7 +274,9 @@ const emits = defineEmits(['update:item', 'del'])
             >
               <template #prefix>
                 <el-icon>
-                  <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+                  <Icon name="icon_search-outline_outlined"
+                    ><icon_searchOutline_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </template>
             </el-input>
@@ -288,8 +290,12 @@ const emits = defineEmits(['update:item', 'del'])
                 v-for="ele in dimensions"
               >
                 <el-icon>
-                  <Icon :className="`field-icon-${fieldEnums[ele.deType]}`"
-                    ><component :is="iconFieldMap[fieldEnums[ele.deType]]"></component
+                  <Icon
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldEnums[ele.deType]}`"
+                      :is="iconFieldMap[fieldEnums[ele.deType]]"
+                    ></component
                   ></Icon>
                 </el-icon>
                 <span>{{ ele.name }}</span>
@@ -442,7 +448,9 @@ const emits = defineEmits(['update:item', 'del'])
                     <label>{{ i }}</label>
                   </el-tooltip>
                   <el-icon @click="delChecks(idx)" style="opacity: 1">
-                    <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </li>
               </ul>
@@ -453,7 +461,9 @@ const emits = defineEmits(['update:item', 'del'])
                 </div>
                 <div class="footer-right">
                   <el-icon @click="clearAll">
-                    <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </div>
@@ -462,7 +472,9 @@ const emits = defineEmits(['update:item', 'del'])
         </el-popover>
       </div>
       <el-icon v-if="showDel" class="font12" @click="emits('del')">
-        <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+        <Icon name="icon_delete-trash_outlined"
+          ><icon_deleteTrash_outlined class="svg-icon"
+        /></Icon>
       </el-icon>
     </div>
   </div>

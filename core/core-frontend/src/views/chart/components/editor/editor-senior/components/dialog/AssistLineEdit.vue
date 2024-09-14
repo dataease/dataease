@@ -234,7 +234,11 @@ onMounted(() => {
               <span style="float: left">
                 <el-icon>
                   <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                    ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[item.deType]}`"
+                      :is="iconFieldMap[fieldType[item.deType]]"
+                    ></component
                   ></Icon>
                 </el-icon>
               </span>
@@ -300,7 +304,9 @@ onMounted(() => {
               class="hover-icon"
               @click="removeLine(index)"
             >
-              <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+              <Icon name="icon_delete-trash_outlined"
+                ><icon_deleteTrash_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </div>
         </el-col>
@@ -308,7 +314,7 @@ onMounted(() => {
     </div>
     <el-button class="circle-button" text style="margin-left: 5px" @click="addLine">
       <template #icon>
-        <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
       </template>
       {{ t('chart.add_assist_line') }}
     </el-button>

@@ -207,7 +207,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
   <div class="copilot">
     <div class="copilot-analysis">
       <el-icon style="margin-right: 8px; font-size: 24px">
-        <Icon name="copilot"><copilot /></Icon>
+        <Icon name="copilot"><copilot class="svg-icon" /></Icon>
       </el-icon>
       Copilot 对话分析
     </div>
@@ -230,7 +230,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
           >
           </el-input>
           <el-icon v-if="copilotChatLoading" class="copilot-icon circular-input_icon">
-            <Icon name="icon_loading_outlined"><icon_loading_outlined /></Icon>
+            <Icon name="icon_loading_outlined"><icon_loading_outlined class="svg-icon" /></Icon>
           </el-icon>
           <el-icon v-else class="copilot-icon" @click="queryAnswer" :class="isActive && 'active'">
             <Icon><component :is="isActive ? activeBtn_copilot : btn_copilot"></component></Icon>
@@ -241,7 +241,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         <el-tooltip effect="dark" content="收起" placement="left">
           <p v-show="!showLeft" class="arrow-right" @click="handleShowLeft(true)">
             <el-icon>
-              <Icon name="icon_right_outlined"><icon_right_outlined /></Icon>
+              <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
             </el-icon>
           </p>
         </el-tooltip>
@@ -249,7 +249,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         <el-tooltip effect="dark" content="展开" placement="left">
           <p v-show="showLeft" class="left-outlined" @click="handleShowLeft(false)">
             <el-icon>
-              <Icon name="icon_left_outlined"><icon_left_outlined /></Icon>
+              <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
             </el-icon>
           </p>
         </el-tooltip>
@@ -271,10 +271,10 @@ const queryAnswer = (event?: KeyboardEvent) => {
             <template #default="{ node, data }">
               <div class="content">
                 <el-icon size="18px" v-if="!data.leaf">
-                  <Icon name="dv-folder"><dvFolder /></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <el-icon size="18px" v-if="data.leaf">
-                  <Icon name="icon_dataset"><icon_dataset /></Icon>
+                  <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                 </el-icon>
                 <span class="label ellipsis" style="margin-left: 8px" :title="node.label">{{
                   node.label
@@ -287,7 +287,9 @@ const queryAnswer = (event?: KeyboardEvent) => {
           <div :class="['field-d', { open: expandedD }]">
             <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
               <ElIcon class="expand">
-                <Icon name="icon_expand-right_filled"><icon_expandRight_filled /></Icon>
+                <Icon name="icon_expand-right_filled"
+                  ><icon_expandRight_filled class="svg-icon"
+                /></Icon>
               </ElIcon>
               &nbsp;{{ $t('chart.dimension') }}
             </div>
@@ -310,7 +312,9 @@ const queryAnswer = (event?: KeyboardEvent) => {
           <div :class="['field-q', { open: expandedQ }]">
             <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
               <ElIcon class="expand">
-                <Icon name="icon_expand-right_filled"><icon_expandRight_filled /></Icon>
+                <Icon name="icon_expand-right_filled"
+                  ><icon_expandRight_filled class="svg-icon"
+                /></Icon>
               </ElIcon>
               &nbsp;{{ $t('chart.quota') }}
             </div>

@@ -4,8 +4,12 @@
       class="icon-area"
       :class="{ 'selected-active': active, 'icon-area-dark': themes === 'dark' }"
     >
-      <Icon :style="{ color: innerImageColor }" class-name="svg-background"
-        ><component :is="iconBoardMap[mainIconClass(item)]"></component
+      <Icon
+        ><component
+          :style="{ color: innerImageColor }"
+          class="svg-icon svg-background"
+          :is="iconBoardMap[mainIconClass(item)]"
+        ></component
       ></Icon>
     </div>
     <span>{{ item.name }}</span>

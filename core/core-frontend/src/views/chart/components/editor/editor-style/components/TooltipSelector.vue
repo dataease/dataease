@@ -519,7 +519,7 @@ onMounted(() => {
                 <div>可以${fieldName}的形式读取字段值（支持HTML）</div>
               </template>
               <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-                <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
           </span>
@@ -642,7 +642,11 @@ onMounted(() => {
           <template #prefix>
             <el-icon v-if="curSeriesFormatter.seriesId" style="font-size: 14px">
               <Icon :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
-                ><component :is="iconFieldMap[fieldType[curSeriesFormatter.deType]]"></component
+                ><component
+                  class="svg-icon"
+                  :class="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
+                  :is="iconFieldMap[fieldType[curSeriesFormatter.deType]]"
+                ></component
               ></Icon>
             </el-icon>
           </template>
@@ -657,7 +661,11 @@ onMounted(() => {
             >
               <el-icon style="margin-right: 8px">
                 <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                  ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
                 ></Icon>
               </el-icon>
               {{ item.name }}

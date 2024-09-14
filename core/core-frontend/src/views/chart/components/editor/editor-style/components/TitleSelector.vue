@@ -205,7 +205,9 @@ watch(
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_letter-spacing_outlined" ><icon_letterSpacing_outlined /></Icon>
+                <Icon name="icon_letter-spacing_outlined"
+                  ><icon_letterSpacing_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
             <el-option
@@ -235,7 +237,7 @@ watch(
                 :class="{ dark: themes === 'dark', active: state.titleForm.isBolder }"
               >
                 <el-icon>
-                  <Icon name="icon_bold_outlined" ><icon_bold_outlined /></Icon>
+                  <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -258,7 +260,7 @@ watch(
                 :class="{ dark: themes === 'dark', active: state.titleForm.isItalic }"
               >
                 <el-icon>
-                  <Icon name="icon_italic_outlined" ><icon_italic_outlined /></Icon>
+                  <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -284,7 +286,9 @@ watch(
                   :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
                 >
                   <el-icon>
-                    <Icon name="icon_left-alignment_outlined" ><icon_leftAlignment_outlined /></Icon>
+                    <Icon name="icon_left-alignment_outlined"
+                      ><icon_leftAlignment_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -302,7 +306,9 @@ watch(
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_center-alignment_outlined" ><icon_centerAlignment_outlined /></Icon>
+                    <Icon name="icon_center-alignment_outlined"
+                      ><icon_centerAlignment_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -320,7 +326,9 @@ watch(
                   }"
                 >
                   <el-icon>
-                    <Icon name="icon_right-alignment_outlined" ><icon_rightAlignment_outlined /></Icon>
+                    <Icon name="icon_right-alignment_outlined"
+                      ><icon_rightAlignment_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </el-tooltip>
@@ -356,7 +364,7 @@ watch(
         </label>
         <el-button text @click="openEditRemark" :effect="themes">
           <el-icon size="14px">
-            <Icon name="icon_edit_outlined" ><icon_edit_outlined /></Icon>
+            <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
           </el-icon>
         </el-button>
       </el-form-item>

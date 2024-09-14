@@ -306,7 +306,9 @@ const getEmptyDesc = (): string => {
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
@@ -388,7 +390,7 @@ const getEmptyDesc = (): string => {
                     preview(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
                   "
                 >
-                  <Icon name="icon_pc_outlined"><icon_pc_outlined /></Icon>
+                  <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
               <ShareHandler
@@ -414,7 +416,7 @@ const getEmptyDesc = (): string => {
                   class="hover-icon hover-icon-in-table"
                   @click.stop="executeCancelStore(scope.row)"
                 >
-                  <Icon name="icon_cancel_store"><icon_cancel_store /></Icon>
+                  <Icon name="icon_cancel_store"><icon_cancel_store class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
             </template>
@@ -427,7 +429,7 @@ const getEmptyDesc = (): string => {
                     openDataset(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
                   "
                 >
-                  <Icon name="icon_pc_outlined"><icon_pc_outlined /></Icon>
+                  <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
             </template>

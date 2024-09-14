@@ -23,14 +23,14 @@ const del = () => {
 <template>
   <div class="excel-info">
     <el-icon class="excel">
-      <Icon name="icon_excel"><icon_excel /></Icon>
+      <Icon name="icon_excel"><icon_excel class="svg-icon" /></Icon>
     </el-icon>
     <div class="info">
       <p class="name ellipsis">{{ name || '-' }}</p>
       <p class="size ellipsis">{{ size || '-' }}</p>
     </div>
     <el-icon v-if="showDel" @click="del" class="delete">
-      <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+      <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined class="svg-icon" /></Icon>
     </el-icon>
   </div>
 </template>

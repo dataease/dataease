@@ -16,7 +16,9 @@
         v-click-outside="clickOutPopover"
       >
         <template #icon>
-          <icon name="icon_share-label_outlined"><icon_shareLabel_outlined /></icon>
+          <icon name="icon_share-label_outlined"
+            ><icon_shareLabel_outlined class="svg-icon"
+          /></icon>
         </template>
         {{ t('visualization.share') }}
       </el-button>
@@ -43,7 +45,7 @@
         <el-button v-if="linkCustom" text @click.stop="finishEditUuid">完成</el-button>
         <el-button v-else @click.stop="editUuid" size="default" plain>
           <template #icon>
-            <icon name="icon_admin_outlined"><icon_admin_outlined /></icon>
+            <icon name="icon_admin_outlined"><icon_admin_outlined class="svg-icon" /></icon>
           </template>
         </el-button>
       </div>

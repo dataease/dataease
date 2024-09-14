@@ -120,14 +120,16 @@ onMounted(() => {
         <el-input v-model="fontKeyword" clearable style="width: 240px" placeholder="搜索字体名称">
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
 
         <el-button type="primary" @click="uploadFont('新建字体', 'create', {})">
           <template #icon>
-            <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+            <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
           </template>
           添加字体
         </el-button>

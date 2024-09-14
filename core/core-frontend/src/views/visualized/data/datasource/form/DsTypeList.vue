@@ -120,7 +120,9 @@ const selectDs = ({ type }) => {
         <div v-for="db in ele.dbList" :key="db.type" class="db-card" @click="selectDs(db)">
           <el-icon class="icon-border">
             <Icon v-if="db['isPlugin']" :static-content="db.icon"></Icon>
-            <Icon v-else><component :is="iconDatasourceMap[db.type]"></component></Icon>
+            <Icon v-else
+              ><component :is="iconDatasourceMap[db.type]" class="svg-icon"></component
+            ></Icon>
           </el-icon>
           <p class="db-name">{{ db.name }}</p>
         </div>

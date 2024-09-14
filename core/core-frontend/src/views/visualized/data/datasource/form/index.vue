@@ -703,7 +703,7 @@ defineExpose({
         </el-steps>
       </div>
       <el-icon @click="close" class="datasource-close">
-        <Icon name="icon_close_outlined"><icon_close_outlined /></Icon>
+        <Icon name="icon_close_outlined"><icon_close_outlined class="svg-icon" /></Icon>
       </el-icon>
     </template>
     <div class="datasource">
@@ -717,7 +717,9 @@ defineExpose({
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
           </el-input>
@@ -763,7 +765,9 @@ defineExpose({
             <span class="custom-tree-node flex-align-center">
               <el-icon v-if="!!data.catalog" class="icon-border" style="width: 18px; height: 18px">
                 <Icon v-if="data['isPlugin']" :static-content="data.icon"></Icon>
-                <Icon v-else><component :is="iconDatasourceMap[data.type]"></component></Icon>
+                <Icon v-else
+                  ><component class="svg-icon" :is="iconDatasourceMap[data.type]"></component
+                ></Icon>
               </el-icon>
               <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             </span>

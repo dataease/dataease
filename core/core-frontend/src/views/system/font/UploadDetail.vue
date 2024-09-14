@@ -156,7 +156,7 @@ const confirm = () => {
           <template #trigger>
             <el-button secondary>
               <template #icon>
-                <Icon name="icon_upload_outlined"><icon_upload_outlined /></Icon>
+                <Icon name="icon_upload_outlined"><icon_upload_outlined class="svg-icon" /></Icon>
               </template>
               上传字库文件
             </el-button>

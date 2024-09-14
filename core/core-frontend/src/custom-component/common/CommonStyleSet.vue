@@ -146,7 +146,7 @@
             @click="checkBold"
           >
             <el-icon>
-              <Icon name="icon_bold_outlined"><icon_bold_outlined /></Icon>
+              <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
             </el-icon>
           </div>
         </el-tooltip>
@@ -161,7 +161,7 @@
             @click="checkItalic"
           >
             <el-icon>
-              <Icon name="icon_italic_outlined"><icon_italic_outlined /></Icon>
+              <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
             </el-icon>
           </div>
         </el-tooltip>
@@ -178,7 +178,9 @@
                 @click="setPosition('textAlign', 'left')"
               >
                 <el-icon>
-                  <Icon name="icon_left-alignment_outlined"><icon_leftAlignment_outlined /></Icon>
+                  <Icon name="icon_left-alignment_outlined"
+                    ><icon_leftAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -193,7 +195,7 @@
               >
                 <el-icon>
                   <Icon name="icon_center-alignment_outlined"
-                    ><icon_centerAlignment_outlined
+                    ><icon_centerAlignment_outlined class="svg-icon"
                   /></Icon>
                 </el-icon>
               </div>
@@ -208,7 +210,9 @@
                 @click="setPosition('textAlign', 'right')"
               >
                 <el-icon>
-                  <Icon name="icon_right-alignment_outlined"><icon_rightAlignment_outlined /></Icon>
+                  <Icon name="icon_right-alignment_outlined"
+                    ><icon_rightAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -229,7 +233,9 @@
               @click="setPosition('headHorizontalPosition', 'left')"
             >
               <el-icon>
-                <Icon name="icon_left-alignment_outlined"><icon_leftAlignment_outlined /></Icon>
+                <Icon name="icon_left-alignment_outlined"
+                  ><icon_leftAlignment_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -246,7 +252,9 @@
               @click="setPosition('headHorizontalPosition', 'center')"
             >
               <el-icon>
-                <Icon name="icon_center-alignment_outlined"><icon_centerAlignment_outlined /></Icon>
+                <Icon name="icon_center-alignment_outlined"
+                  ><icon_centerAlignment_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -263,7 +271,9 @@
               @click="setPosition('headHorizontalPosition', 'right')"
             >
               <el-icon>
-                <Icon name="icon_right-alignment_outlined"><icon_rightAlignment_outlined /></Icon>
+                <Icon name="icon_right-alignment_outlined"
+                  ><icon_rightAlignment_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </div>
           </el-tooltip>

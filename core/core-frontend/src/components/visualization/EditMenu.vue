@@ -18,7 +18,7 @@ onMounted(() => {
     @command="handleSetLanguage"
   >
     <el-icon>
-      <Icon name="language" ><language /></Icon>
+      <Icon name="language"><language class="svg-icon" /></Icon>
     </el-icon>
     <template #dropdown>
       <el-dropdown-menu>

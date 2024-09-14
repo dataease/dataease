@@ -290,7 +290,7 @@ initMarketTemplate()
     <div class="info-quick-creation">
       <div class="user-info">
         <el-icon class="main-color user-icon-container">
-          <Icon name="user-img"><userImg /></Icon>
+          <Icon name="user-img"><userImg class="svg-icon" /></Icon>
         </el-icon>
         <div class="info">
           <div class="name-role flex-align-center">
@@ -357,7 +357,7 @@ initMarketTemplate()
               <div class="empty-tooltip-container-template" />
             </el-tooltip>
             <el-icon class="main-color-quick template-create">
-              <Icon name="icon_template_colorful"><icon_template_colorful /></Icon>
+              <Icon name="icon_template_colorful"><icon_template_colorful class="svg-icon" /></Icon>
             </el-icon>
             <span class="name">{{ t('work_branch.new_using_template') }}</span>
           </div>
@@ -405,7 +405,9 @@ initMarketTemplate()
           </div>
           <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
             <div style="text-align: center">
-              <Icon name="no_result" class="no-result"><no_result /></Icon>
+              <Icon name="no_result" class="no-result"
+                ><no_result class="svg-icon no-result"
+              /></Icon>
               <br />
               <span class="no-result-tips">{{ t('work_branch.relevant_templates_found') }}</span>
             </div>

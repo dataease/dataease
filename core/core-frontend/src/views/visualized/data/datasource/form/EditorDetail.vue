@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
 import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
@@ -702,12 +703,12 @@ const delParams = data => {
 const datasetTypeList = [
   {
     label: '重命名',
-    svgName: 'icon_rename_outlined',
+    svgName: icon_rename_outlined,
     command: 'rename'
   },
   {
     label: '删除',
-    svgName: 'icon_delete-trash_outlined',
+    svgName: icon_deleteTrash_outlined,
     command: 'delete'
   }
 ]
@@ -769,7 +770,7 @@ defineExpose({
             </el-tabs>
             <el-button type="primary" style="margin-left: auto" @click="() => addApiItem(null)">
               <template #icon>
-                <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+                <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
               </template>
               {{ t('common.add') }}
             </el-button>
@@ -800,7 +801,7 @@ defineExpose({
                   </el-col>
                   <el-col style="text-align: right" :span="5">
                     <el-icon class="de-copy-icon hover-icon" @click.stop="copyItem(api)">
-                      <Icon name="de-copy"><deCopy /></Icon>
+                      <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
                     </el-icon>
 
                     <span @click.stop>
@@ -814,12 +815,14 @@ defineExpose({
                       >
                         <template #reference>
                           <el-icon class="de-delete-icon hover-icon">
-                            <Icon name="de-delete"><deDelete /></Icon>
+                            <Icon name="de-delete"><deDelete class="svg-icon" /></Icon>
                           </el-icon>
                         </template>
                         <template #default>
                           <el-icon class="de-copy-icon icon-warning">
-                            <Icon name="icon_warning_filled"><icon_warning_filled /></Icon>
+                            <Icon name="icon_warning_filled"
+                              ><icon_warning_filled class="svg-icon"
+                            /></Icon>
                           </el-icon>
                           <div class="tips">
                             {{ t('datasource.delete_this_item') }}
@@ -869,7 +872,7 @@ defineExpose({
                 <span class="label">{{ ele.name }}</span>
                 <span class="name-copy">
                   <el-icon class="hover-icon" @click.stop="handleApiParams('edit', ele)">
-                    <icon name="icon_edit_outlined"><icon_edit_outlined /></icon>
+                    <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
                   </el-icon>
                   <handle-more
                     icon-size="24px"
@@ -896,8 +899,12 @@ defineExpose({
                   <template #default="scope">
                     <div class="flex-align-center icon">
                       <el-icon>
-                        <Icon :className="`field-icon-${fieldType[scope.row.deType]}`"
-                          ><component :is="iconFieldMap[fieldType[scope.row.deType]]"></component
+                        <Icon
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[scope.row.deType]}`"
+                            :is="iconFieldMap[fieldType[scope.row.deType]]"
+                          ></component
                         ></Icon>
                       </el-icon>
                       {{ fieldTypeText[scope.row.deType] }}
@@ -909,7 +916,9 @@ defineExpose({
                   <template #default="scope">
                     <el-button text @click.stop="delParams(scope.row)">
                       <template #icon>
-                        <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                        <Icon name="icon_delete-trash_outlined"
+                          ><icon_deleteTrash_outlined class="svg-icon"
+                        /></Icon>
                       </template>
                     </el-button>
                   </template>
@@ -1056,7 +1065,7 @@ defineExpose({
               <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
               <el-button text size="small" @click="getDsSchema()">
                 <template #icon>
-                  <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+                  <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
                 </template>
                 {{ t('datasource.get_schema') }}
               </el-button>

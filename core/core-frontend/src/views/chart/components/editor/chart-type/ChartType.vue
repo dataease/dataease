@@ -103,6 +103,7 @@ const groupActiveChange = category => {
               />
               <Icon v-else class-name="item-top-icon"
                 ><component
+                  class="svg-icon item-top-icon"
                   :is="
                     props.themes === 'dark'
                       ? iconChartDarkMap[`${chartInfo.icon}-dark`]

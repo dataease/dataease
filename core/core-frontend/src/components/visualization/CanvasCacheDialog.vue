@@ -9,7 +9,9 @@
   >
     <el-row style="height: 20px">
       <el-col :span="3">
-        <Icon name="warn-tree" style="width: 20px; height: 20px; float: right" ><warnTree /></Icon>
+        <Icon name="warn-tree"
+          ><warnTree style="width: 20px; height: 20px; float: right" class="svg-icon"
+        /></Icon>
       </el-col>
       <el-col :span="21">
         <span style="font-size: 13px; margin-left: 10px; font-weight: bold; line-height: 20px">

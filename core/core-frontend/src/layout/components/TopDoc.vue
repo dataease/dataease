@@ -46,7 +46,7 @@ const cardInfoList = [
         :class="{ 'is-light-setting': navigateBg && navigateBg === 'light' }"
       >
         <el-icon>
-          <Icon name="docs"><docs /></Icon>
+          <Icon name="docs"><docs class="svg-icon" /></Icon>
         </el-icon>
       </div>
     </template>

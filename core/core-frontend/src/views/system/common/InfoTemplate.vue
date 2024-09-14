@@ -23,7 +23,7 @@
             placement="top"
           >
             <el-icon class="info-tips"
-              ><Icon name="dv-info"><dvInfo /></Icon
+              ><Icon name="dv-info"><dvInfo class="svg-icon" /></Icon
             ></el-icon>
           </el-tooltip>
         </div>
@@ -41,7 +41,7 @@
             >
               <el-button text @click="copyVal(item.pval)" class="setting-tip-btn">
                 <template #icon>
-                  <Icon name="de-copy"><deCopy /></Icon>
+                  <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
                 </template>
               </el-button>
             </el-tooltip>
@@ -73,7 +73,7 @@
             >
               <el-button text @click="copyVal(item.pval)" class="setting-tip-btn">
                 <template #icon>
-                  <Icon name="de-copy"><deCopy /></Icon>
+                  <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
                 </template>
               </el-button>
             </el-tooltip>

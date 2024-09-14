@@ -57,7 +57,7 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
     <el-button secondary>
       <template #icon>
         <el-icon>
-          <Icon name="icon-setting"><iconSetting /></Icon>
+          <Icon name="icon-setting"><iconSetting class="svg-icon" /></Icon>
         </el-icon>
       </template>
       {{ $t('component.columnList') }}

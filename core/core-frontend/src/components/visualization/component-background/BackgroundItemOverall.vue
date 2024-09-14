@@ -10,8 +10,12 @@
       :style="itemStyle"
       @click.stop="setBoard"
     >
-      <Icon :style="{ color: commonBackground.innerImageColor }" class-name="svg-background"
-        ><component :is="iconBoardMap[mainIconClass]"></component
+      <Icon class-name="svg-background"
+        ><component
+          :style="{ color: commonBackground.innerImageColor }"
+          class="svg-icon svg-background"
+          :is="iconBoardMap[mainIconClass]"
+        ></component
       ></Icon>
     </div>
     <span class="demonstration">{{ template.name }}</span>

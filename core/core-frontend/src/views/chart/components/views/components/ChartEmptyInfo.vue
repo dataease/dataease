@@ -22,6 +22,7 @@ const { viewIcon, themes } = toRefs(props)
   <div class="canvas-content error-info">
     <Icon class-name="item-icon"
       ><component
+        class="svg-icon item-icon"
         :is="themes === 'dark' ? iconChartDarkMap[`${viewIcon}-dark`] : iconChartMap[viewIcon]"
       ></component
     ></Icon>

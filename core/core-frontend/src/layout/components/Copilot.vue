@@ -33,7 +33,7 @@ onMounted(() => {
     <template #reference>
       <div class="copilot-popper-tips-icon">
         <el-icon style="margin: 2px" class="ai-icon">
-          <Icon name="copilot" ><copilot /></Icon>
+          <Icon name="copilot"><copilot class="svg-icon" /></Icon>
         </el-icon>
       </div>
     </template>

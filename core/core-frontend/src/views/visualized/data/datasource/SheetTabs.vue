@@ -77,10 +77,10 @@ const nextClick = () => {
     </div>
     <div class="tab-btn" v-if="showBtn">
       <el-icon size="12px" @click="prevClick">
-        <Icon name="icon_expand-left_filled"><icon_expandLeft_filled /></Icon>
+        <Icon name="icon_expand-left_filled"><icon_expandLeft_filled class="svg-icon" /></Icon>
       </el-icon>
       <el-icon size="12px" @click="nextClick">
-        <Icon name="icon_expand-right_filled"><icon_expandRight_filled /></Icon>
+        <Icon name="icon_expand-right_filled"><icon_expandRight_filled class="svg-icon" /></Icon>
       </el-icon>
     </div>
   </div>

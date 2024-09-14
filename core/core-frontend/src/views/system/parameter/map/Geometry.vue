@@ -5,7 +5,7 @@
         <span>{{ t('online_map.geometry') }}</span>
         <span class="add-icon-span" @click="add()">
           <el-icon>
-            <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+            <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
           </el-icon>
         </span>
       </div>
@@ -19,7 +19,9 @@
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
@@ -53,7 +55,9 @@
                     placement="top"
                   >
                     <el-icon @click.stop="delHandler(data)" class="hover-icon">
-                      <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                      <Icon name="icon_delete-trash_outlined"
+                        ><icon_deleteTrash_outlined class="svg-icon"
+                      /></Icon>
                     </el-icon>
                   </el-tooltip>
                 </span>

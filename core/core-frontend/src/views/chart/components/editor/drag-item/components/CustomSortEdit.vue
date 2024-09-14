@@ -89,7 +89,7 @@ init()
       <template #item="{ element }">
         <span :key="element.value" class="item-dimension" :title="element.value">
           <el-icon class="item-icon">
-            <Icon name="icon_drag_outlined" ><icon_drag_outlined /></Icon>
+            <Icon name="icon_drag_outlined"><icon_drag_outlined class="svg-icon" /></Icon>
           </el-icon>
           <span class="item-span">
             {{ element.value }}

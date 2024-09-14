@@ -350,13 +350,13 @@ const tips = computed(() => {
           class="ed-icon_chart"
           @click="switchChartType('table')"
         >
-          <Icon name="chart-table"><chartTable /></Icon>
+          <Icon name="chart-table"><chartTable class="svg-icon" /></Icon>
         </el-icon>
       </el-tooltip>
       <el-divider direction="vertical" />
       <el-tooltip effect="dark" content="下载" placement="top">
         <el-icon class="ed-icon_chart" @click="downloadChart">
-          <Icon name="chart-download"><chartDownload /></Icon>
+          <Icon name="chart-download"><chartDownload class="svg-icon" /></Icon>
         </el-icon>
       </el-tooltip>
     </div>

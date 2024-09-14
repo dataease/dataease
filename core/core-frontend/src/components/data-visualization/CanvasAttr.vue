@@ -126,7 +126,7 @@ onMounted(() => {
                   <div>预览时生效</div>
                 </template>
                 <el-icon class="hint-icon--dark">
-                  <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
+                  <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-select

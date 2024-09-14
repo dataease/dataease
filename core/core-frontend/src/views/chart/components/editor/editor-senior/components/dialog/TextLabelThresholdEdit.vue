@@ -92,7 +92,7 @@ init()
   <el-col>
     <el-button class="circle-button" circle style="margin-bottom: 10px" @click="addThreshold">
       <template #icon>
-        <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
       </template>
     </el-button>
     <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
@@ -138,7 +138,9 @@ init()
             @click="removeThreshold(index)"
           >
             <template #icon>
-              <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+              <Icon name="icon_delete-trash_outlined"
+                ><icon_deleteTrash_outlined class="svg-icon"
+              /></Icon>
             </template>
           </el-button>
         </el-col>

@@ -22,7 +22,7 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import AiComponent from '@/layout/components/AiComponent.vue'
 import { findBaseParams } from '@/api/aiComponent'
 import AiTips from '@/layout/components/AiTips.vue'
-import Copilot from '@/layout/components/Copilot.vue'
+import CopilotCom from '@/layout/components/Copilot.vue'
 
 const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
@@ -124,13 +124,9 @@ onMounted(() => {
 <template>
   <el-header class="header-flex" :class="{ 'header-light': navigateBg && navigateBg === 'light' }">
     <img class="logo" v-if="navigate" :src="navigate" alt="" />
-    <Icon
-      style="cursor: pointer"
-      v-else
-      @click="handleIconClick"
-      className="logo"
-      name="logo"
-    ><logo /></Icon>
+    <Icon v-else @click="handleIconClick" className="logo" name="logo"
+      ><logo class="svg-icon logo" style="cursor: pointer"
+    /></Icon>
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
@@ -147,9 +143,9 @@ onMounted(() => {
         class="ai-icon copilot-icon"
         v-if="!showOverlayCopilot && appearanceStore.getShowCopilot"
       >
-        <Icon name="copilot" @click="handleCopilotClick" ><copilot /></Icon>
+        <Icon name="copilot" @click="handleCopilotClick"><copilot class="svg-icon" /></Icon>
       </el-icon>
-      <Copilot
+      <CopilotCom
         @confirm="copilotConfirm"
         v-if="showOverlayCopilot && appearanceStore.getShowCopilot"
         class="copilot-icon-tips"
@@ -160,14 +156,16 @@ onMounted(() => {
         class="ai-icon"
         v-if="aiBaseUrl && !showOverlay && appearanceStore.getShowAi"
       >
-        <Icon name="dv-ai" @click="handleAiClick" ><dvAi /></Icon>
+        <Icon name="dv-ai" @click="handleAiClick"><dvAi class="svg-icon" /></Icon>
       </el-icon>
       <el-tooltip effect="dark" content="数据导出中心" placement="bottom">
         <el-icon
           class="preview-download_icon"
           :class="navigateBg === 'light' && 'is-light-setting'"
         >
-          <Icon name="dv-preview-download" @click="downloadClick" ><dvPreviewDownload /></Icon>
+          <Icon name="dv-preview-download" @click="downloadClick"
+            ><dvPreviewDownload class="svg-icon"
+          /></Icon>
         </el-icon>
       </el-tooltip>
 

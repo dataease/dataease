@@ -56,7 +56,9 @@
           />
           <el-row v-show="!state.hasResult" class="custom-position">
             <div style="text-align: center">
-              <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"><no_result /></Icon>
+              <Icon name="no_result"
+                ><no_result style="margin-bottom: 16px; font-size: 75px" class="svg-icon"
+              /></Icon>
               <br />
               <span>{{ t('commons.no_result') }}</span>
             </div>

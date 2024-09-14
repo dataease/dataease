@@ -5,7 +5,9 @@
         <el-tooltip class="item" effect="dark" :content="$t('link_ticket.back')" placement="top">
           <span class="back-tips">
             <el-icon class="custom-el-icon back-icon" @click.stop="close">
-              <Icon class="toolbar-icon" name="icon_left_outlined" ><icon_left_outlined /></Icon>
+              <Icon class="toolbar-icon" name="icon_left_outlined"
+                ><icon_left_outlined class="svg-icon toolbar-icon"
+              /></Icon>
             </el-icon>
           </span>
         </el-tooltip>
@@ -22,7 +24,7 @@
     <div class="ticket-add">
       <el-button @click.stop="addRow" text>
         <template #icon>
-          <icon name="icon_add_outlined"><icon_add_outlined /></icon>
+          <icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></icon>
         </template>
         {{ t('commons.create') }}
       </el-button>
@@ -36,7 +38,7 @@
               <el-tooltip class="item" effect="dark" :content="$t('commons.copy')" placement="top">
                 <el-button text @click.stop="copyTicket(scope.row.ticket)">
                   <template #icon>
-                    <Icon name="de-copy"><deCopy /></Icon>
+                    <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>
@@ -48,7 +50,9 @@
               >
                 <el-button text @click.stop="refreshTicket(scope.row)">
                   <template #icon>
-                    <Icon name="icon_refresh_outlined"><icon_refresh_outlined /></Icon>
+                    <Icon name="icon_refresh_outlined"
+                      ><icon_refresh_outlined class="svg-icon"
+                    /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>
@@ -66,7 +70,7 @@
                 :content="$t('link_ticket.time_tips')"
                 placement="top"
               >
-                <Icon name="dv-info"><dvInfo /></Icon>
+                <Icon name="dv-info"><dvInfo class="svg-icon" /></Icon>
               </el-tooltip>
             </div>
           </template>
@@ -116,7 +120,9 @@
               >
                 <el-button text @click.stop="deleteTicket(scope.row, scope.$index)">
                   <template #icon>
-                    <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>
@@ -128,12 +134,12 @@
               >
                 <el-button v-if="!scope.row.isEdit" text @click.stop="editRow(scope.row)">
                   <template #icon>
-                    <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                   </template>
                 </el-button>
                 <el-button v-else text @click.stop="saveRow(scope.row, scope.$index)">
                   <template #icon>
-                    <Icon name="edit-done"><editDone /></Icon>
+                    <Icon name="edit-done"><editDone class="svg-icon" /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>

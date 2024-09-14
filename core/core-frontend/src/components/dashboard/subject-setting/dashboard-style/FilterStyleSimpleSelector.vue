@@ -14,7 +14,9 @@
                   @click="handleHorizontalChange('left')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_left-align_outlined" ><icon_leftAlign_outlined /></Icon>
+                  <Icon name="icon_left-align_outlined"
+                    ><icon_leftAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-tooltip effect="dark" placement="top">
@@ -26,7 +28,9 @@
                   @click="handleHorizontalChange('center')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_horizontal-align_outlined" ><icon_horizontalAlign_outlined /></Icon>
+                  <Icon name="icon_horizontal-align_outlined"
+                    ><icon_horizontalAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-tooltip effect="dark" placement="top">
@@ -38,7 +42,9 @@
                   @click="handleHorizontalChange('right')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_right-align_outlined" ><icon_rightAlign_outlined /></Icon>
+                  <Icon name="icon_right-align_outlined"
+                    ><icon_rightAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
             </el-form-item>
@@ -54,7 +60,9 @@
                   @click="handleHorizontalChange('vertical', 'layout')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_title-top-align_outlined" ><icon_titleTopAlign_outlined /></Icon>
+                  <Icon name="icon_title-top-align_outlined"
+                    ><icon_titleTopAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-tooltip effect="dark" placement="top">
@@ -66,7 +74,9 @@
                   @click="handleHorizontalChange('horizontal', 'layout')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_title-left-align_outlined" ><icon_titleLeftAlign_outlined /></Icon>
+                  <Icon name="icon_title-left-align_outlined"
+                    ><icon_titleLeftAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
             </el-form-item>

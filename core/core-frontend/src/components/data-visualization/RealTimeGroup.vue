@@ -322,24 +322,24 @@ const handleContextMenu = e => {
                   v-show="!getComponent(index).isShow"
                   @click="showComponent"
                 >
-                  <Icon name="dv-eye-close" class="opt-icon"><dvEyeClose /></Icon>
+                  <Icon name="dv-eye-close"><dvEyeClose class="svg-icon opt-icon" /></Icon>
                 </el-icon>
                 <el-icon
                   class="component-base"
                   v-show="getComponent(index)?.isShow"
                   @click="hideComponent"
                 >
-                  <Icon name="dv-show" class="opt-icon"><dvShow /></Icon>
+                  <Icon name="dv-show"><dvShow class="svg-icon opt-icon" /></Icon>
                 </el-icon>
                 <el-icon v-show="!getComponent(index)?.isLock" class="component-base" @click="lock">
-                  <Icon class="opt-icon" name="dv-unlock"><dvUnlock /></Icon>
+                  <Icon name="dv-unlock"><dvUnlock class="svg-icon opt-icon" /></Icon>
                 </el-icon>
                 <el-icon
                   class="component-base component-icon-display"
                   v-show="getComponent(index)?.isLock"
                   @click="unlock"
                 >
-                  <Icon name="dv-lock" class="opt-icon"><dvLock /></Icon>
+                  <Icon name="dv-lock"><dvLock class="svg-icon opt-icon" /></Icon>
                 </el-icon>
                 <el-dropdown
                   ref="dropdownMore"
@@ -350,7 +350,7 @@ const handleContextMenu = e => {
                 >
                   <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
                     <el-icon class="component-base">
-                      <Icon name="dv-more" class="opt-icon"><dvMore /></Icon>
+                      <Icon name="dv-more"><dvMore class="svg-icon opt-icon" /></Icon>
                     </el-icon>
                   </span>
                   <template #dropdown>

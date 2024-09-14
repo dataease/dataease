@@ -188,7 +188,7 @@ const activeTableData = computed(() => {
         <div @click="clearOrg" class="flex-align-center">
           <span class="ellipsis" :class="!!directName.length && 'active'">组织</span>
           <el-icon v-if="!!directName.length">
-            <Icon name="icon_right_outlined"><icon_right_outlined /></Icon>
+            <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
         <div
@@ -199,7 +199,7 @@ const activeTableData = computed(() => {
         >
           <span class="ellipsis" :class="ele !== activeDirectName && 'active'">{{ ele }}</span>
           <el-icon v-if="directName.length > 1 && index !== directName.length - 1">
-            <Icon name="icon_right_outlined"><icon_right_outlined /></Icon>
+            <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
       </div>

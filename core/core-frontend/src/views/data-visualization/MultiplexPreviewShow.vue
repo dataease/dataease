@@ -188,8 +188,12 @@ onBeforeMount(() => {
             </span>
             <span>
               <span class="tree-select-field">
-                <Icon class-name="view-type-icon" style="margin-right: 4px"
-                  ><component :is="getIconName(data)"></component
+                <Icon class-name="view-type-icon"
+                  ><component
+                    class="svg-icon view-type-icon"
+                    style="margin-right: 4px"
+                    :is="getIconName(data)"
+                  ></component
                 ></Icon>
                 {{ data.label }}
               </span>

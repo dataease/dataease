@@ -243,7 +243,10 @@ const generateColumns = (arr: Field[]) =>
       <div class="flex-align-center">
         <ElIcon style={{ marginRight: '6px' }}>
           <Icon className={`field-icon-${fieldType[column.deType]}`}>
-            {iconFieldMap[fieldType[column.deType]]}
+            {{
+              ...iconFieldMap[fieldType[column.deType]],
+              className: `svg-icon field-icon-${fieldType[column.deType]}`
+            }}
           </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '120px' }}>
@@ -999,12 +1002,14 @@ const getMenuList = (val: boolean) => {
                   :style="{ marginRight: '20px' }"
                   @click="handleDatasourceTree('folder')"
                 >
-                  <Icon name="dv-new-folder"><dvNewFolder /></Icon>
+                  <Icon name="dv-new-folder"><dvNewFolder class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-tooltip effect="dark" :content="t('datasource.create')" placement="top">
                 <el-icon class="custom-icon btn" @click="createDatasource">
-                  <Icon name="icon_file-add_outlined"><icon_fileAdd_outlined /></Icon>
+                  <Icon name="icon_file-add_outlined"
+                    ><icon_fileAdd_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
             </div>
@@ -1018,7 +1023,9 @@ const getMenuList = (val: boolean) => {
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
           </el-input>
@@ -1026,7 +1033,7 @@ const getMenuList = (val: boolean) => {
             <el-icon class="filter-icon-span">
               <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
                 <Icon v-if="state.curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"
-                  ><dvSortAsc
+                  ><dvSortAsc class="svg-icon opt-icon"
                 /></Icon>
               </el-tooltip>
               <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
@@ -1034,7 +1041,7 @@ const getMenuList = (val: boolean) => {
                   v-show="state.curSortType.includes('desc')"
                   name="dv-sort-desc"
                   class="opt-icon"
-                  ><dvSortDesc
+                  ><dvSortDesc class="svg-icon opt-icon"
                 /></Icon>
               </el-tooltip>
             </el-icon>
@@ -1072,7 +1079,7 @@ const getMenuList = (val: boolean) => {
               <span class="custom-tree-node">
                 <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
                   <Icon :static-content="getDsIcon(data)"
-                    ><component :is="getDsIconName(data)"></component
+                    ><component class="svg-icon" :is="getDsIconName(data)"></component
                   ></Icon>
                 </el-icon>
                 <span
@@ -1095,7 +1102,7 @@ const getMenuList = (val: boolean) => {
                     @click.stop="handleEdit(data)"
                     v-else-if="data.type !== 'Excel'"
                   >
-                    <icon name="icon_edit_outlined"><icon_edit_outlined /></icon>
+                    <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
                   </el-icon>
                   <handle-more
                     @handle-command="
@@ -1122,7 +1129,7 @@ const getMenuList = (val: boolean) => {
         <empty-background description="暂无数据源" img-type="none">
           <el-button v-if="rootManage" @click="() => createDatasource()" type="primary">
             <template #icon>
-              <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+              <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
             </template>
             {{ t('datasource.create') }}</el-button
           >
@@ -1133,7 +1140,7 @@ const getMenuList = (val: boolean) => {
           <div class="info-method">
             <el-icon class="icon-border">
               <Icon :static-content="getDsIconType(nodeInfo.type)"
-                ><component :is="iconDatasourceMap[nodeInfo.type]"></component
+                ><component class="svg-icon" :is="iconDatasourceMap[nodeInfo.type]"></component
               ></Icon>
             </el-icon>
             <span :title="nodeInfo.name" class="name ellipsis">
@@ -1146,7 +1153,7 @@ const getMenuList = (val: boolean) => {
             <el-popover :offset="8" show-arrow placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon size="16px" class="create-user">
-                  <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
+                  <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </template>
               <dataset-detail
@@ -1157,7 +1164,9 @@ const getMenuList = (val: boolean) => {
             <div class="right-btn flex-align-center">
               <el-button secondary @click="createDataset(null)" v-permission="['dataset']">
                 <template #icon>
-                  <Icon name="icon_dataset_outlined"><icon_dataset_outlined /></Icon>
+                  <Icon name="icon_dataset_outlined"
+                    ><icon_dataset_outlined class="svg-icon"
+                  /></Icon>
                 </template>
                 新建数据集
               </el-button>
@@ -1184,7 +1193,9 @@ const getMenuList = (val: boolean) => {
                   <template #trigger>
                     <el-button v-loading="replaceLoading" class="replace-excel" type="primary">
                       <template #icon>
-                        <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                        <Icon name="icon_edit_outlined"
+                          ><icon_edit_outlined class="svg-icon"
+                        /></Icon>
                       </template>
                       替换数据
                     </el-button>
@@ -1205,7 +1216,9 @@ const getMenuList = (val: boolean) => {
                   <template #trigger>
                     <el-button v-loading="addLoading" type="primary">
                       <template #icon>
-                        <Icon name="icon_new-item_outlined"><icon_newItem_outlined /></Icon>
+                        <Icon name="icon_new-item_outlined"
+                          ><icon_newItem_outlined class="svg-icon"
+                        /></Icon>
                       </template>
                       追加数据
                     </el-button>
@@ -1214,7 +1227,7 @@ const getMenuList = (val: boolean) => {
               </template>
               <el-button v-else-if="nodeInfo.weight >= 7" @click="editDatasource()" type="primary">
                 <template #icon>
-                  <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                 </template>
                 编辑
               </el-button>
@@ -1239,7 +1252,9 @@ const getMenuList = (val: boolean) => {
             >
               <template #prefix>
                 <el-icon>
-                  <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
+                  <Icon name="icon_search-outline_outlined"
+                    ><icon_searchOutline_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </template>
             </el-input>
@@ -1267,7 +1282,9 @@ const getMenuList = (val: boolean) => {
                   <div class="flex-align-center">
                     <template v-if="scope.row.status === 'Completed'">
                       <el-icon style="margin-right: 8px">
-                        <icon name="icon_succeed_filled"><icon_succeed_filled /></icon>
+                        <icon name="icon_succeed_filled"
+                          ><icon_succeed_filled class="svg-icon"
+                        /></icon>
                       </el-icon>
                       {{ t('dataset.completed') }}
                     </template>
@@ -1277,7 +1294,7 @@ const getMenuList = (val: boolean) => {
                     <template v-if="scope.row.status === 'Error' || scope.row.status === 'Warning'">
                       <el-icon style="margin-right: 8px">
                         <icon class="field-icon-red" name="icon_close_filled"
-                          ><icon_close_filled
+                          ><icon_close_filled class="svg-icon field-icon-red"
                         /></icon>
                       </el-icon>
                       {{ t('dataset.error') }}
@@ -1309,14 +1326,18 @@ const getMenuList = (val: boolean) => {
                       v-permission="['dataset']"
                     >
                       <template #icon>
-                        <Icon name="icon_dataset_outlined"><icon_dataset_outlined /></Icon>
+                        <Icon name="icon_dataset_outlined"
+                          ><icon_dataset_outlined class="svg-icon"
+                        /></Icon>
                       </template>
                     </el-button>
                   </el-tooltip>
                   <el-tooltip effect="dark" :content="t('visualization.details')" placement="top">
                     <el-button @click.stop="selectDataset(scope.row)" text>
                       <template #icon>
-                        <Icon name="icon_describe_outlined"><icon_describe_outlined /></Icon>
+                        <Icon name="icon_describe_outlined"
+                          ><icon_describe_outlined class="svg-icon"
+                        /></Icon>
                       </template>
                     </el-button>
                   </el-tooltip>
@@ -1503,7 +1524,9 @@ const getMenuList = (val: boolean) => {
                   <el-col style="text-align: right" :span="5">
                     <el-button @click="updateApiTable(api)" text>
                       <template #icon>
-                        <icon name="icon_replace_outlined"><icon_replace_outlined /></icon>
+                        <icon name="icon_replace_outlined"
+                          ><icon_replace_outlined class="svg-icon"
+                        /></icon>
                       </template>
                     </el-button>
                   </el-col>
@@ -1528,7 +1551,7 @@ const getMenuList = (val: boolean) => {
             </div>
             <el-button @click="updateApiDs" class="update-records" text>
               <template #icon>
-                <icon name="icon_replace_outlined"><icon_replace_outlined /></icon>
+                <icon name="icon_replace_outlined"><icon_replace_outlined class="svg-icon" /></icon>
               </template>
               全部更新
             </el-button>
@@ -1561,7 +1584,9 @@ const getMenuList = (val: boolean) => {
             </template>
             <el-button @click="getRecord" class="update-records" text>
               <template #icon>
-                <icon name="icon_describe_outlined"><icon_describe_outlined /></icon>
+                <icon name="icon_describe_outlined"
+                  ><icon_describe_outlined class="svg-icon"
+                /></icon>
               </template>
               {{ t('dataset.update_records') }}
             </el-button>
@@ -1647,7 +1672,11 @@ const getMenuList = (val: boolean) => {
               <div class="flex-align-center icon">
                 <el-icon>
                   <icon :class="`field-icon-${fieldType[scope.row.deType]}`"
-                    ><component :is="iconFieldMap[fieldType[scope.row.deType]]"></component
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[scope.row.deType]}`"
+                      :is="iconFieldMap[fieldType[scope.row.deType]]"
+                    ></component
                   ></icon>
                 </el-icon>
                 {{
@@ -1715,7 +1744,7 @@ const getMenuList = (val: boolean) => {
             <div class="flex-align-center">
               <template v-if="scope.row.taskStatus === 'Completed'">
                 <el-icon style="margin-right: 8px">
-                  <icon name="icon_succeed_filled"><icon_succeed_filled /></icon>
+                  <icon name="icon_succeed_filled"><icon_succeed_filled class="svg-icon" /></icon>
                 </el-icon>
                 {{ t('dataset.completed') }}
               </template>
@@ -1727,11 +1756,13 @@ const getMenuList = (val: boolean) => {
                 v-if="scope.row.taskStatus === 'Error' || scope.row.taskStatus === 'Warning'"
               >
                 <el-icon style="margin-right: 8px">
-                  <icon class="field-icon-red" name="icon_close_filled"><icon_close_filled /></icon>
+                  <icon class="field-icon-red" name="icon_close_filled"
+                    ><icon_close_filled class="svg-icon field-icon-red"
+                  /></icon>
                 </el-icon>
                 {{ t('dataset.error') }}
                 <el-icon @click="showErrorInfo(scope.row.info)" class="error-info">
-                  <icon name="icon-maybe_outlined"><iconMaybe_outlined /></icon>
+                  <icon name="icon-maybe_outlined"><iconMaybe_outlined class="svg-icon" /></icon>
                 </el-icon>
               </template>
             </div>

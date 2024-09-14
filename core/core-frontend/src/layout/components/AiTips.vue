@@ -32,7 +32,7 @@ onMounted(() => {
     <template #reference>
       <div class="ai-popper-tips-icon">
         <el-icon style="margin: 2px" class="ai-icon">
-          <Icon name="dv-ai" ><dvAi /></Icon>
+          <Icon name="dv-ai"><dvAi class="svg-icon" /></Icon>
         </el-icon>
       </div>
     </template>

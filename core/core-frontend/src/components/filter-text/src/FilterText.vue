@@ -54,7 +54,7 @@ watch(
     <span class="title">个结果</span>
     <el-divider direction="vertical" />
     <el-icon @click="scrollPre" class="arrow-left arrow-filter" v-if="showScroll">
-      <Icon name="icon_left_outlined"><icon_left_outlined /></Icon>
+      <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
     </el-icon>
     <div class="filter-texts-container" ref="container">
       <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
@@ -62,7 +62,7 @@ watch(
           {{ ele }}
         </el-tooltip>
         <el-icon @click="clearFilter(index)">
-          <Icon name="icon_close_outlined"><icon_close_outlined /></Icon>
+          <Icon name="icon_close_outlined"><icon_close_outlined class="svg-icon" /></Icon>
         </el-icon>
       </p>
       <el-button
@@ -72,13 +72,15 @@ watch(
         @click="clearFilterAll"
       >
         <template #icon>
-          <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+          <Icon name="icon_delete-trash_outlined"
+            ><icon_deleteTrash_outlined class="svg-icon"
+          /></Icon>
         </template>
         清空条件</el-button
       >
     </div>
     <el-icon @click="scrollNext" class="arrow-right arrow-filter" v-if="showScroll">
-      <Icon name="icon_right_outlined"><icon_right_outlined /></Icon>
+      <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
     </el-icon>
     <el-button
       type="text"
@@ -88,7 +90,9 @@ watch(
       @click="clearFilterAll"
     >
       <template #icon>
-        <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+        <Icon name="icon_delete-trash_outlined"
+          ><icon_deleteTrash_outlined class="svg-icon"
+        /></Icon>
       </template>
       清空条件</el-button
     >

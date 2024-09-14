@@ -4,7 +4,7 @@
       <el-col style="float: left" :class="state.asideActive ? 'aside-active' : 'aside-inActive'">
         <el-tooltip class="box-item" effect="dark" content="展开" placement="right">
           <el-icon v-show="!state.asideActive" class="insert" @click="asideActiveChange(true)">
-            <Icon name="market-expand"><marketExpand /></Icon>
+            <Icon name="market-expand"><marketExpand class="svg-icon" /></Icon>
           </el-icon>
         </el-tooltip>
         <el-row v-show="state.asideActive" style="padding: 24px 12px 0">
@@ -15,7 +15,7 @@
             <el-tooltip class="box-item" effect="dark" content="收起" placement="right">
               <div @click="asideActiveChange(false)" class="insert-retract">
                 <el-icon>
-                  <Icon name="icon_left_outlined" ><icon_left_outlined /></Icon>
+                  <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -89,7 +89,9 @@
           </el-collapse>
           <el-row v-show="!state.hasResult" class="custom-position">
             <div style="text-align: center">
-              <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"><no_result /></Icon>
+              <Icon name="no_result"
+                ><no_result style="margin-bottom: 16px; font-size: 75px" class="svg-icon"
+              /></Icon>
               <br />
               <span>没有找到相关模板</span>
             </div>

@@ -15,7 +15,7 @@ defineExpose({
   <div :class="[active ? 'active' : 'deactivate', 'base-info-content']">
     <p class="title" @click="active = !active">
       <el-icon style="font-size: 10px">
-        <Icon name="icon_expand-right_filled"><icon_expandRight_filled /></Icon>
+        <Icon name="icon_expand-right_filled"><icon_expandRight_filled class="svg-icon" /></Icon>
       </el-icon>
       <span class="name">{{ name }}</span>
     </p>

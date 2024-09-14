@@ -11,7 +11,7 @@
   >
     <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
       <el-icon>
-        <Icon name="mobile-checkbox"><mobileCheckbox /></Icon>
+        <Icon name="mobile-checkbox"><mobileCheckbox class="svg-icon" /></Icon>
       </el-icon>
     </div>
     <div
@@ -46,7 +46,7 @@
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
       >
-        <Icon v-show="shapeLock" class="iconfont icon-suo" name="dv-lock"><dvLock /></Icon>
+        <Icon v-if="shapeLock" name="dv-lock"><dvLock class="svg-icon iconfont icon-suo" /></Icon>
         <!--边框背景-->
         <Board
           v-if="svgInnerEnable"

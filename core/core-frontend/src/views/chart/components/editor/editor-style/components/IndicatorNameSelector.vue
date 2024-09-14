@@ -182,7 +182,9 @@ defineExpose({ getFormData })
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_letter-spacing_outlined" ><icon_letterSpacing_outlined /></Icon>
+                <Icon name="icon_letter-spacing_outlined"
+                  ><icon_letterSpacing_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
             <el-option
@@ -212,7 +214,7 @@ defineExpose({ getFormData })
                 :class="{ dark: themes === 'dark', active: state.indicatorNameForm.isBolder }"
               >
                 <el-icon>
-                  <Icon name="icon_bold_outlined" ><icon_bold_outlined /></Icon>
+                  <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -235,7 +237,7 @@ defineExpose({ getFormData })
                 :class="{ dark: themes === 'dark', active: state.indicatorNameForm.isItalic }"
               >
                 <el-icon>
-                  <Icon name="icon_italic_outlined" ><icon_italic_outlined /></Icon>
+                  <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>

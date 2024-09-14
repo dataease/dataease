@@ -252,7 +252,9 @@ init()
 <template>
   <el-col>
     <div class="tip">
-      <Icon name="icon_info_filled" class="icon-style"><icon_info_filled /></Icon>
+      <Icon name="icon_info_filled" class="icon-style"
+        ><icon_info_filled class="svg-icon icon-style"
+      /></Icon>
       <span style="padding-left: 10px">{{ t('chart.table_threshold_tip') }}</span>
     </div>
 
@@ -293,7 +295,9 @@ init()
             @click="removeThreshold(fieldIndex)"
           >
             <el-icon size="20px" style="color: #646a73">
-              <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+              <Icon name="icon_delete-trash_outlined"
+                ><icon_deleteTrash_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </el-button>
         </el-row>
@@ -426,7 +430,9 @@ init()
                 @click="removeCondition(fieldItem, index)"
               >
                 <el-icon size="20px" style="color: #646a73">
-                  <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                  <Icon name="icon_delete-trash_outlined"
+                    ><icon_deleteTrash_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-button>
             </div>
@@ -441,7 +447,7 @@ init()
           @click="addConditions(fieldItem)"
         >
           <template #icon>
-            <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+            <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
           </template>
           {{ t('chart.add_style') }}
         </el-button>
@@ -456,7 +462,7 @@ init()
       @click="addThreshold"
     >
       <template #icon>
-        <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
+        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
       </template>
       {{ t('chart.add_condition') }}
     </el-button>

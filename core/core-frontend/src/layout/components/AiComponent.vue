@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import dvAiWindowMax from '@/assets/svg/dv-ai-window-max.svg'
+import dvAiWindowMin from '@/assets/svg/dv-ai-window-min.svg'
 import { onMounted, ref } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const aiDialogShow = ref(false)
@@ -39,7 +41,11 @@ onMounted(() => {
     <div class="ai-content">
       <el-icon class="close" @click="closeAi"><Close /></el-icon>
       <el-icon class="size-class" @click="sizeChange"
-        ><Icon :name="'dv-ai-window-' + sizeState"></Icon
+        ><Icon
+          ><component
+            :is="sizeState === 'min' ? dvAiWindowMin : dvAiWindowMax"
+            class="svg-icon"
+          ></component></Icon
       ></el-icon>
       <iframe :src="baseUrl" style="width: 100%; height: 100%" frameborder="0" allow="microphone">
       </iframe>

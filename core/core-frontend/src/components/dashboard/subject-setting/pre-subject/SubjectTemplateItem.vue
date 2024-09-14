@@ -16,7 +16,9 @@
           width="172"
           height="79"
         />
-        <Icon v-else name="dv-no-img" style="width: 172px; height: 79px" ><dvNoImg /></Icon>
+        <Icon v-else name="dv-no-img"
+          ><dvNoImg class="svg-icon" style="width: 172px; height: 79px"
+        /></Icon>
       </div>
       <div class="title-main">
         <div class="title-area">

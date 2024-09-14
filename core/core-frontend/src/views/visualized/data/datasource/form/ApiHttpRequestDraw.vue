@@ -595,7 +595,9 @@ defineExpose({
           @click="activeColumnInfo = !activeColumnInfo"
         >
           <el-icon style="font-size: 10px">
-            <Icon name="icon_expand-right_filled"><icon_expandRight_filled /></Icon>
+            <Icon name="icon_expand-right_filled"
+              ><icon_expandRight_filled class="svg-icon"
+            /></Icon>
           </el-icon>
           <span class="name">{{ t('datasource.column_info') }}</span>
         </p>
@@ -651,6 +653,8 @@ defineExpose({
                     <el-icon>
                       <Icon :className="`field-icon-${fieldType[scope.row.deExtractType]}`"
                         ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldType[scope.row.deExtractType]}`"
                           :is="iconFieldMap[fieldType[scope.row.deExtractType]]"
                         ></component
                       ></Icon>
@@ -665,7 +669,11 @@ defineExpose({
                     <span style="float: left">
                       <el-icon>
                         <Icon :className="`field-icon-${fieldType[item.value]}`"
-                          ><component :is="iconFieldMap[fieldType[item.value]]"></component
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[item.value]}`"
+                            :is="iconFieldMap[fieldType[item.value]]"
+                          ></component
                         ></Icon>
                       </el-icon>
                     </span>
@@ -683,7 +691,9 @@ defineExpose({
           @click="activeDataPreview = !activeDataPreview"
         >
           <el-icon style="font-size: 10px">
-            <Icon name="icon_expand-right_filled"><icon_expandRight_filled /></Icon>
+            <Icon name="icon_expand-right_filled"
+              ><icon_expandRight_filled class="svg-icon"
+            /></Icon>
           </el-icon>
           <span class="name">{{ t('datasource.data_preview') }}</span>
         </p>

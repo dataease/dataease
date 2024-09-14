@@ -33,7 +33,7 @@ const handleClick = () => {
     </div>
     <div class="switch" v-if="nextlevel">
       <el-icon>
-        <Icon name="icon_right_outlined"><icon_right_outlined /></Icon>
+        <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
       </el-icon>
     </div>
   </div>

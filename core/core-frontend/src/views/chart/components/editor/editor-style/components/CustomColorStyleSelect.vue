@@ -390,7 +390,7 @@ const colorItemBorderColor = (index, state) => {
           @click="customColorExtendSettingOpened = !customColorExtendSettingOpened"
         >
           <el-icon style="font-size: 12px">
-            <Icon name="icon_admin_outlined" ><icon_admin_outlined /></Icon>
+            <Icon name="icon_admin_outlined"><icon_admin_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
       </div>

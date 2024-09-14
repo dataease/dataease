@@ -21,14 +21,14 @@ const del = () => {
 <template>
   <div class="font-info">
     <el-icon class="font">
-      <Icon><icon_file_font_colorful /></Icon>
+      <Icon><icon_file_font_colorful class="svg-icon" /></Icon>
     </el-icon>
     <div class="info">
       <p class="name ellipsis">{{ name || '-' }}</p>
       <p class="size ellipsis">{{ size || '-' }}</p>
     </div>
     <el-icon @click="del" class="delete">
-      <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+      <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined class="svg-icon" /></Icon>
     </el-icon>
   </div>
 </template>

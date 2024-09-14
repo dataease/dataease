@@ -197,7 +197,7 @@ const syncFree = () => {
     <img width="792" height="180" :src="aboutBg" />
     <div class="color-overlay"></div>
     <el-icon class="logo">
-      <icon name="logo"><logo /></icon>
+      <icon name="logo"><logo class="svg-icon" /></icon>
     </el-icon>
     <div class="content">
       <div class="item">

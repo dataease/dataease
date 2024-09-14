@@ -311,7 +311,9 @@ onMounted(async () => {
                 v-if="!loginLogoUrl && axiosFinished"
                 className="login-logo-icon"
                 name="DataEase"
-              ><DataEase /></Icon>
+              >
+                <DataEase class="login-logo-icon" />
+              </Icon>
               <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="" />
             </div>
             <div class="login-welcome">

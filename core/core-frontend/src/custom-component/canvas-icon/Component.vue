@@ -1,6 +1,6 @@
 <template>
   <Icon v-if="element.innerType.includes('board')" class-name="de-svg-main"
-    ><component :is="iconBoardMap[element.innerType]"></component
+    ><component class="svg-icon de-svg-main" :is="iconBoardMap[element.innerType]"></component
   ></Icon>
   <component v-else :is="element.innerType"></component>
 </template>

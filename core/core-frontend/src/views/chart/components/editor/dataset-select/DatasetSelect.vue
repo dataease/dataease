@@ -327,16 +327,16 @@ onMounted(() => {
                   >
                     <div class="m-icon">
                       <el-icon v-if="!data.leaf">
-                        <Icon name="dv-folder" ><dvFolder /></Icon>
+                        <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                       </el-icon>
                       <el-icon v-if="data.leaf">
-                        <Icon name="icon_dataset" ><icon_dataset /></Icon>
+                        <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                       </el-icon>
                     </div>
                     {{ node.label }}
 
                     <el-icon class="checked-item" v-if="_modelValue === data.id">
-                      <Icon name="icon_done_outlined" ><icon_done_outlined /></Icon>
+                      <Icon name="icon_done_outlined"><icon_done_outlined class="svg-icon" /></Icon>
                     </el-icon>
                   </div>
                 </template>

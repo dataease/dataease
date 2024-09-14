@@ -435,7 +435,7 @@ eventBus.on('handleNew', handleNew)
       <main id="dv-main-center" class="center" ref="canvasCenterRef">
         <div class="de-ruler-icon-outer">
           <el-icon class="de-ruler-icon">
-            <Icon name="dv-ruler" ><dvRuler /></Icon>
+            <Icon name="dv-ruler"><dvRuler class="svg-icon" /></Icon>
           </el-icon>
         </div>
         <de-ruler ref="deWRulerRef"></de-ruler>

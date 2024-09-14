@@ -74,7 +74,7 @@ onMounted(() => {
         }"
       >
         <el-icon>
-          <Icon name="sys-tools"><sysTools /></Icon>
+          <Icon name="sys-tools"><sysTools class="svg-icon" /></Icon>
         </el-icon>
       </div>
     </template>

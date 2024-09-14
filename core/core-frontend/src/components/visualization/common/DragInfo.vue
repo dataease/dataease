@@ -2,7 +2,9 @@
   <div class="drag-info-main">
     <template v-if="!mobileInPc">
       <el-row style="justify-content: center">
-        <Icon style="width: 125px; height: 125px" name="dv-drag-tips"><dvDragTips /></Icon>
+        <Icon name="dv-drag-tips"
+          ><dvDragTips class="svg-icon" style="width: 125px; height: 125px"
+        /></Icon>
       </el-row>
       <el-row class="tips-info"> {{ tips }} </el-row>
     </template>

@@ -59,7 +59,7 @@
                         style="margin-right: 10px"
                         @handle-command="cmd => outerParamsOperation(cmd, node, data)"
                         :menu-list="state.optMenu"
-                        icon-name="icon_more_outlined"
+                        :icon-name="icon_more_outlined"
                         placement="bottom-start"
                       ></handle-more>
                     </span>
@@ -103,8 +103,12 @@
                             :label="item.title"
                             :value="item.id"
                           >
-                            <Icon class-name="view-type-icon" style="margin-right: 4px"
-                              ><component :is="iconChartMap[item.type]"></component
+                            <Icon class-name="view-type-icon"
+                              ><component
+                                class="svg-icon view-type-icon"
+                                style="margin-right: 4px"
+                                :is="iconChartMap[item.type]"
+                              ></component
                             ></Icon>
                             <span style="font-size: 12px"> {{ item.title }}</span>
                           </el-option>
@@ -112,8 +116,8 @@
                       </div>
                     </div>
                     <el-icon class="link-icon-join">
-                      <Icon style="width: 20px; height: 20px" name="dv-link-target"
-                        ><dvLinkTarget
+                      <Icon name="dv-link-target"
+                        ><dvLinkTarget style="width: 20px; height: 20px" class="svg-icon"
                       /></Icon>
                     </el-icon>
                     <div style="flex: 1">
@@ -146,7 +150,9 @@
                     </div>
                     <el-button class="m-del-icon-btn" text @click="deleteOuterParamsField(index)">
                       <el-icon size="20px">
-                        <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                        <Icon name="icon_delete-trash_outlined"
+                          ><icon_deleteTrash_outlined class="svg-icon"
+                        /></Icon>
                       </el-icon>
                     </el-button>
                   </div>
@@ -176,6 +182,9 @@
 </template>
 
 <script setup lang="ts">
+import _delete from '@/assets/svg/delete.svg'
+import edit from '@/assets/svg/edit.svg'
+import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
 import dvLinkTarget from '@/assets/svg/dv-link-target.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import { ref, reactive, computed, nextTick } from 'vue'
@@ -207,12 +216,12 @@ const state = reactive({
   optMenu: [
     {
       label: '重命名',
-      svgName: 'edit',
+      svgName: edit,
       command: 'rename'
     },
     {
       label: '删除',
-      svgName: 'delete',
+      svgName: _delete,
       command: 'delete'
     }
   ],

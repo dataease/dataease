@@ -597,12 +597,14 @@ const autoStyle = computed(() => {
               >
                 <el-tooltip effect="dark" content="设置过滤条件" placement="top">
                   <el-icon @click="editeQueryConfig(ele.id)">
-                    <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </el-tooltip>
                 <el-tooltip effect="dark" content="删除条件" placement="top">
                   <el-icon style="margin-left: 8px" @click="delQueryConfig(index)">
-                    <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </el-tooltip>
               </div>

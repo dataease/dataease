@@ -6,7 +6,8 @@
     @mousedown="handOptBarMousedown"
   >
     <el-button size="mini" type="warning" @click="clearAllLinkage"
-      ><el-icon class="bar-base-icon"> <Icon name="dv-bar-unLinkage"><dvBarUnLinkage /></Icon></el-icon
+      ><el-icon class="bar-base-icon">
+        <Icon name="dv-bar-unLinkage"><dvBarUnLinkage class="svg-icon" /></Icon></el-icon
       >{{ $t('visualization.remove_all_linkage') }}</el-button
     >
   </div>

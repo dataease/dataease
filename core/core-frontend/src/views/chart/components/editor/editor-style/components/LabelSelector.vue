@@ -478,7 +478,7 @@ const conversionPrecision = [
                 <div>可以${fieldName}的形式读取字段值（不支持换行）</div>
               </template>
               <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-                <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
           </span>
@@ -550,7 +550,7 @@ const conversionPrecision = [
           </template>
           <span style="vertical-align: middle">
             <el-icon style="cursor: pointer">
-              <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
             </el-icon>
           </span>
         </el-tooltip>
@@ -1010,7 +1010,11 @@ const conversionPrecision = [
           <template #prefix>
             <el-icon v-if="curSeriesFormatter[computedIdKey]" style="font-size: 14px">
               <Icon :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
-                ><component :is="iconFieldMap[fieldType[curSeriesFormatter.deType]]"></component
+                ><component
+                  :class="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
+                  class="svg-icon"
+                  :is="iconFieldMap[fieldType[curSeriesFormatter.deType]]"
+                ></component
               ></Icon>
             </el-icon>
           </template>
@@ -1018,7 +1022,11 @@ const conversionPrecision = [
             <el-option class="series-select-option" :value="item" :label="item.optionLabel">
               <el-icon style="margin-right: 8px">
                 <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                  ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                  ><component
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    class="svg-icon"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
                 ></Icon>
               </el-icon>
               {{ item.optionShowName }}
@@ -1272,7 +1280,7 @@ const conversionPrecision = [
               </template>
               <span style="vertical-align: middle">
                 <el-icon style="cursor: pointer">
-                  <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
+                  <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </span>
             </el-tooltip>

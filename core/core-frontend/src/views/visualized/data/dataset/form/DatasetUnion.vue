@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_fullAssociation from '@/assets/svg/icon_full-association.svg'
 import icon_intersect from '@/assets/svg/icon_intersect.svg'
 import icon_leftAssociation from '@/assets/svg/icon_left-association.svg'
@@ -542,12 +546,12 @@ const dfsNodeFieldBackReal = ele => {
 
 const menuList = [
   {
-    svgName: 'icon_text-box_outlined',
+    svgName: icon_textBox_outlined,
     label: t('data_set.field_selection'),
     command: 'editerField'
   },
   {
-    svgName: 'icon_delete-trash_outlined',
+    svgName: icon_deleteTrash_outlined,
     label: t('data_set.delete'),
     command: 'del'
   }
@@ -555,12 +559,12 @@ const menuList = [
 
 const sqlMenu = [
   {
-    svgName: 'icon_edit_outlined',
+    svgName: icon_edit_outlined,
     label: t('data_set.edit_sql'),
     command: 'editerSql'
   },
   {
-    svgName: 'icon_rename_outlined',
+    svgName: icon_rename_outlined,
     label: t('datasource.field_rename'),
     command: 'rename'
   }

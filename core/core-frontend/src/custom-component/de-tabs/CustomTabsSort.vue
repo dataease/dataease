@@ -13,7 +13,7 @@
         <template #item="{ element }">
           <span :key="element.name" class="item-dimension" :title="element.title">
             <el-icon size="20px">
-              <Icon name="drag" ><drag /></Icon>
+              <Icon name="drag"><drag class="svg-icon" /></Icon>
             </el-icon>
             <span class="item-span">
               {{ element.title }}

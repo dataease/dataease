@@ -15,14 +15,17 @@
           <span class="top-area-text">已选图表：</span>
           <span class="top-area-value">
             <Icon class-name="view-type-icon"
-              ><component :is="iconChartMap[state.curJumpViewInfo.type]"></component
+              ><component
+                class="svg-icon view-type-icon"
+                :is="iconChartMap[state.curJumpViewInfo.type]"
+              ></component
             ></Icon>
             {{ state.curJumpViewInfo.title }}</span
           >
           <span class="top-area-text margin-left">所用数据集：</span>
           <span class="top-area-value">
-            <Icon style="vertical-align: -0.2em" class-name="view-type-icon" name="dataset-outline"
-              ><datasetOutline
+            <Icon name="dataset-outline"
+              ><datasetOutline style="vertical-align: -0.2em" class="svg-icon view-type-icon"
             /></Icon>
             {{ state.curDatasetInfo.name }}</span
           >
@@ -136,8 +139,8 @@
                           </el-form-item>
                         </div>
                         <div class="icon-center">
-                          <Icon style="width: 20px; height: 20px" name="dv-link-target"
-                            ><dvLinkTarget
+                          <Icon name="dv-link-target"
+                            ><dvLinkTarget style="width: 20px; height: 20px" class="svg-icon"
                           /></Icon>
                         </div>
                         <div style="flex: 1">
@@ -159,10 +162,12 @@
                                     style="display: inline-block"
                                     v-if="data.leaf"
                                   >
-                                    <Icon name="dv-dashboard-spine"><dvDashboardSpine /></Icon>
+                                    <Icon name="dv-dashboard-spine"
+                                      ><dvDashboardSpine class="svg-icon"
+                                    /></Icon>
                                   </el-icon>
                                   <el-icon size="18px" style="display: inline-block" v-else>
-                                    <Icon name="dv-folder"><dvFolder /></Icon>
+                                    <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                                   </el-icon>
                                   <span
                                     style="margin-left: 8px; font-size: 14px"
@@ -220,8 +225,8 @@
                               </el-select>
                             </div>
                             <div class="icon-center">
-                              <Icon style="width: 20px; height: 20px" name="dv-link-target"
-                                ><dvLinkTarget
+                              <Icon name="dv-link-target"
+                                ><dvLinkTarget style="width: 20px; height: 20px" class="svg-icon"
                               /></Icon>
                             </div>
                             <div style="flex: 1">
@@ -289,7 +294,7 @@
                             >
                               <el-icon size="20px">
                                 <Icon name="icon_delete-trash_outlined"
-                                  ><icon_deleteTrash_outlined
+                                  ><icon_deleteTrash_outlined class="svg-icon"
                                 /></Icon>
                               </el-icon>
                             </el-button>
@@ -319,7 +324,9 @@
                               {{ $t('visualization.target_url_tips') }}
                             </template>
                             <el-icon size="16px" class="hint-icon">
-                              <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
+                              <Icon name="icon_info_outlined"
+                                ><icon_info_outlined class="svg-icon"
+                              /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -339,7 +346,9 @@
                               <span v-html="$t('chart.reference_field_tip')"></span>
                             </template>
                             <el-icon size="16px" class="hint-icon">
-                              <Icon name="icon_info_outlined"><icon_info_outlined /></Icon>
+                              <Icon name="icon_info_outlined"
+                                ><icon_info_outlined class="svg-icon"
+                              /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -363,8 +372,10 @@
                               @click="insertFieldToCodeMirror('[' + item.sourceFieldName + ']')"
                             >
                               <el-icon>
-                                <Icon :className="`field-icon-${fieldType[item.sourceDeType]}`"
+                                <Icon
                                   ><component
+                                    class="svg-icon"
+                                    :className="`field-icon-${fieldType[item.sourceDeType]}`"
                                     :is="iconFieldMap[fieldType[item.sourceDeType]]"
                                   ></component
                                 ></Icon>

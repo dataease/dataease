@@ -215,7 +215,7 @@ onMounted(() => {
             <template #content><span v-html="t('chart.axis_tip')"></span></template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">
-                <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </span>
           </el-tooltip>
@@ -271,7 +271,7 @@ onMounted(() => {
             <template #content>期望的坐标轴刻度数量，非最终结果。</template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">
-                <Icon name="icon_info_outlined" ><icon_info_outlined /></Icon>
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </span>
           </el-tooltip>
