@@ -870,9 +870,9 @@ export class DualLineMix extends ColumnLineMix {
         p[n.id] = n
         return p
       }, {})
-      const { yAxis, extStack } = chart
+      const { yAxis, xAxisExt } = chart
       const { data } = options as unknown as Options
-      if (extStack?.length) {
+      if (xAxisExt?.length) {
         const seriesSet = new Set()
         data[0]?.forEach(d => d.category !== null && seriesSet.add(d.category))
         const tmp = [...seriesSet]
@@ -917,8 +917,8 @@ export class DualLineMix extends ColumnLineMix {
     const result: ChartBasicStyle['seriesColor'] = []
     const seriesSet = new Set<string>()
     const colors = chart.customAttr.basicStyle.colors
-    const { yAxis, extStack } = chart
-    if (extStack?.length) {
+    const { yAxis, xAxisExt } = chart
+    if (xAxisExt?.length) {
       data?.forEach(d => {
         if (d.value === null || d.category === null || seriesSet.has(d.category)) {
           return
