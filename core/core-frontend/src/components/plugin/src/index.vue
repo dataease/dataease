@@ -102,7 +102,38 @@ const invokeMethod = param => {
 }
 
 onMounted(async () => {
-  loadComponent()
+  const key = 'xpack-model-distributed'
+  let distributed = false
+  if (wsCache.get(key) === null) {
+    const res = await xpackModelApi()
+    wsCache.set('xpack-model-distributed', res.data)
+    distributed = res.data
+  } else {
+    distributed = wsCache.get(key)
+  }
+  if (distributed) {
+    if (window['DEXPack']) {
+      const xpack = await window['DEXPack'].mapping[attrs.jsname]
+      plugin.value = xpack.default
+    } else if (!window._de_xpack_not_loaded) {
+      window._de_xpack_not_loaded = true
+      window['VueDe'] = Vue
+      window['AxiosDe'] = axios
+      window['PiniaDe'] = Pinia
+      window['vueRouterDe'] = router
+      window['MittAllDe'] = useEmitt().emitter.all
+      window['I18nDe'] = i18n
+      if (!window.tinymce) {
+        window.tinymce = tinymce
+      }
+      loadDistributed().then(async res => {
+        new Function(res.data)()
+        useEmitt().emitter.emit('load-xpack')
+      })
+    }
+  } else {
+    loadComponent()
+  }
 })
 
 const emits = defineEmits(['loadFail'])
