@@ -35,6 +35,8 @@ import ScrollText from '@/custom-component/scroll-text/Component.vue'
 import ScrollTextAttr from '@/custom-component/scroll-text/Attr.vue'
 import PopArea from '@/custom-component/pop-area/Component.vue'
 import PopAreaAttr from '@/custom-component/pop-area/Attr.vue'
+import PictureGroup from '@/custom-component/picture-group/Component.vue'
+import PictureGroupAttr from '@/custom-component/picture-group/Attr.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -72,7 +74,9 @@ export const componentsMap = {
   ScrollText: ScrollText,
   ScrollTextAttr: ScrollTextAttr,
   PopArea: PopArea,
-  PopAreaAttr: PopAreaAttr
+  PopAreaAttr: PopAreaAttr,
+  PictureGroup: PictureGroup,
+  PictureGroupAttr: PictureGroupAttr
 }
 
 export default function findComponent(key) {

@@ -693,6 +693,9 @@ import icon_font from '@/assets/svg/icon_font.svg'
 import tHeatmap from '@/assets/svg/t-heatmap.svg'
 import tHeatmapDark from '@/assets/svg/t-heatmap-dark.svg'
 import tHeatmapOrigin from '@/assets/svg/t-heatmap-origin.svg'
+import pictureGroupDark from '@/assets/svg/picture-group-dark.svg'
+import pictureGroupOrigin from '@/assets/svg/picture-group-origin.svg'
+import pictureGroup from '@/assets/svg/picture-group.svg'
 const iconMap = {
   '401': _401,
   icon_link_calculated_outlined,
@@ -1384,7 +1387,10 @@ const iconMap = {
   clock,
   't-heatmap': tHeatmap,
   't-heatmap-dark': tHeatmapDark,
-  't-heatmap-origin': tHeatmapOrigin
+  't-heatmap-origin': tHeatmapOrigin,
+  'picture-group': pictureGroup,
+  'picture-group-dark': pictureGroupDark,
+  'picture-group-origin': pictureGroupOrigin
 }
 
 const props = defineProps({

@@ -1508,14 +1508,14 @@ export const CHART_TYPE_CONFIGS = [
   },
   {
     category: 'other',
-    title: '图片',
+    title: '图片组',
     display: 'hidden',
     details: [
       {
         render: 'custom',
         category: 'quota',
-        value: 'Picture',
-        title: '图片',
+        value: 'picture-group',
+        title: '图片图',
         icon: 'picture'
       }
     ]
