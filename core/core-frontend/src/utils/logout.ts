@@ -3,7 +3,6 @@ import router from '@/router'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useCache } from '@/hooks/web/useCache'
-import request from '@/config/axios'
 
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
@@ -11,12 +10,6 @@ const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 
 export const logoutHandler = (justClean?: boolean) => {
-  const idToken = wsCache.get('oauth2-id-token')
-  if (idToken) {
-    request.get({ url: `/oauth2/logout/${idToken}` }).finally(() => {
-      wsCache.delete('oauth2-id-token')
-    })
-  }
   userStore.clear()
   userStore.$reset()
   permissionStore.clear()
