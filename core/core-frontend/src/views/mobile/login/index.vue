@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
+import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
 import { ref } from 'vue'
 import VanCellGroup from 'vant/es/cell-group'
 import mobileWholeBg from '@/assets/img/bg-mobile.png'
@@ -150,8 +152,12 @@ const usernameEndValidate = ({ status, message }) => {
           >
             <template #right-icon>
               <el-icon>
-                <Icon v-if="visible" name="icon_invisible_outlined"></Icon>
-                <Icon v-else name="icon_visible_outlined"></Icon>
+                <Icon v-if="visible" name="icon_invisible_outlined"
+                  ><icon_invisible_outlined class="svg-icon"
+                /></Icon>
+                <Icon v-else name="icon_visible_outlined"
+                  ><icon_visible_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
           </van-field>

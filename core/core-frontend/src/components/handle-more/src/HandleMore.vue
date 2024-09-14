@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { Icon } from '@/components/icon-custom'
+import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
 import { propTypes } from '@/utils/propTypes'
 import type { Placement } from 'element-plus-secondary'
 import { PropType } from 'vue'
@@ -20,7 +21,7 @@ defineProps({
     type: String as () => Placement,
     default: 'bottom-end'
   },
-  iconName: propTypes.string.def('icon_more_outlined'),
+  iconName: propTypes.string.def(''),
   iconSize: propTypes.string.def('16px'),
   inTable: propTypes.bool.def(false)
 })
@@ -40,7 +41,7 @@ const emit = defineEmits(['handleCommand'])
     @command="handleCommand"
   >
     <el-icon class="hover-icon" :class="inTable && 'hover-icon-in-table'" @click.stop>
-      <Icon :name="iconName"></Icon>
+      <Icon><component class="svg-icon" :is="iconName || icon_more_outlined"></component></Icon>
     </el-icon>
     <template #dropdown>
       <el-dropdown-menu :persistent="false">
@@ -52,7 +53,7 @@ const emit = defineEmits(['handleCommand'])
           :disabled="ele.disabled"
         >
           <el-icon class="handle-icon" :style="{ fontSize: iconSize }" v-if="ele.svgName">
-            <Icon :name="ele.svgName"></Icon>
+            <Icon><component class="svg-icon" :is="ele.svgName"></component></Icon>
           </el-icon>
           {{ ele.label }}
         </el-dropdown-item>

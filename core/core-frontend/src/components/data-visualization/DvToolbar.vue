@@ -1,7 +1,19 @@
 <script setup lang="ts">
+import dvFilter from '@/assets/svg/dv-filter.svg'
+import dvMaterial from '@/assets/svg/dv-material.svg'
+import dvMedia from '@/assets/svg/dv-media.svg'
+import dvMoreCom from '@/assets/svg/dv-more-com.svg'
+import dvTab from '@/assets/svg/dv-tab.svg'
+import dvText from '@/assets/svg/dv-text.svg'
+import dvView from '@/assets/svg/dv-view.svg'
+import icon_params_setting from '@/assets/svg/icon_params_setting.svg'
+import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
+import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import icon_undo_outlined from '@/assets/svg/icon_undo_outlined.svg'
+import icon_redo_outlined from '@/assets/svg/icon_redo_outlined.svg'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { ref, nextTick, computed, toRefs, onMounted } from 'vue'
+import { ref, nextTick, computed, toRefs } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -276,7 +288,9 @@ const fullScreenPreview = () => {
       </template>
       <template v-else>
         <el-icon class="custom-el-icon back-icon" @click="backToMain()">
-          <Icon class="toolbar-icon" name="icon_left_outlined" />
+          <Icon name="icon_left_outlined"
+            ><icon_left_outlined class="svg-icon toolbar-icon"
+          /></Icon>
         </el-icon>
         <div class="left-area">
           <span id="dv-canvas-name" class="name-area" @dblclick="editCanvasName">
@@ -289,7 +303,7 @@ const fullScreenPreview = () => {
                 :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
                 @click="undo()"
               >
-                <Icon name="icon_undo_outlined"></Icon>
+                <Icon name="icon_undo_outlined"><icon_undo_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
             <el-tooltip effect="ndark" :content="$t('commons.reduction')" placement="bottom">
@@ -300,7 +314,7 @@ const fullScreenPreview = () => {
                 }"
                 @click="redo()"
               >
-                <Icon name="icon_redo_outlined"></Icon>
+                <Icon name="icon_redo_outlined"><icon_redo_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
           </div>
@@ -310,7 +324,7 @@ const fullScreenPreview = () => {
             show-split-line
             is-label
             :base-width="410"
-            icon-name="dv-view"
+            :icon-name="dvView"
             title="图表"
           >
             <user-view-group></user-view-group>
@@ -319,40 +333,40 @@ const fullScreenPreview = () => {
             :base-width="115"
             :show-split-line="true"
             is-label
-            icon-name="dv-filter"
+            :icon-name="dvFilter"
             title="查询组件"
           >
             <query-group :dv-model="dvModel"></query-group>
           </component-group>
-          <component-group is-label :base-width="215" icon-name="dv-text" title="文本">
+          <component-group is-label :base-width="215" :icon-name="dvText" title="文本">
             <text-group></text-group>
           </component-group>
           <component-group
             is-label
             placement="bottom"
             :base-width="315"
-            icon-name="dv-media"
+            :icon-name="dvMedia"
             title="媒体"
           >
             <media-group></media-group>
           </component-group>
-          <component-group is-label :base-width="115" icon-name="dv-tab" title="Tab">
+          <component-group is-label :base-width="115" :icon-name="dvTab" title="Tab">
             <tabs-group :dv-model="dvModel"></tabs-group>
           </component-group>
-          <component-group is-label :base-width="215" icon-name="dv-more-com" title="更多">
+          <component-group is-label :base-width="215" :icon-name="dvMoreCom" title="更多">
             <more-com-group></more-com-group>
           </component-group>
           <component-group
             is-label
             :base-width="410"
-            icon-name="dv-material"
+            :icon-name="dvMaterial"
             :show-split-line="true"
             title="素材"
           >
             <common-group></common-group>
           </component-group>
           <component-button-label
-            icon-name="icon_copy_filled"
+            :icon-name="icon_copy_filled"
             title="复用"
             is-label
             @customClick="multiplexingCanvasOpen"
@@ -365,7 +379,7 @@ const fullScreenPreview = () => {
             v-show="editMode === 'edit'"
             tips="外部参数设置"
             @custom-click="openOuterParamsSet"
-            icon-name="icon_params_setting"
+            :icon-name="icon_params_setting"
           />
         </el-tooltip>
         <div v-show="editMode === 'edit'" class="divider"></div>

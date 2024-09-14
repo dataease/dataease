@@ -1,4 +1,21 @@
 <script lang="tsx" setup>
+import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
+import icon_dataset from '@/assets/svg/icon_dataset.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
+import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
+import dvNewFolder from '@/assets/svg/dv-new-folder.svg'
+import icon_fileAdd_outlined from '@/assets/svg/icon_file-add_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import dvSortAsc from '@/assets/svg/dv-sort-asc.svg'
+import dvSortDesc from '@/assets/svg/dv-sort-desc.svg'
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
+import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
+import icon_download_outlined from '@/assets/svg/icon_download_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   ref,
@@ -10,8 +27,7 @@ import {
   nextTick,
   unref,
   h,
-  provide,
-  inject
+  provide
 } from 'vue'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -62,6 +78,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { XpackComponent } from '@/components/plugin'
 import { useCache } from '@/hooks/web/useCache'
 import { RefreshLeft } from '@element-plus/icons-vue'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
@@ -201,10 +218,12 @@ const allFieldsColumns = [
     cellRenderer: ({ cellData: deType }) => (
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
         <ElIcon style={{ marginRight: '6px' }}>
-          <Icon
-            name={`field_${fieldType[deType]}`}
-            className={`field-icon-${fieldType[deType]}`}
-          ></Icon>
+          <Icon className={`field-icon-${fieldType[deType]}`}>
+            {{
+              ...iconFieldMap[fieldType[deType]],
+              className: `svg-icon field-icon-${fieldType[deType]}`
+            }}
+          </Icon>
         </ElIcon>
         {t(`dataset.${fieldType[deType]}`) +
           `${deType === 3 ? '(' + t('dataset.float') + ')' : ''}`}
@@ -239,10 +258,12 @@ const generateColumns = (arr: Field[]) =>
     headerCellRenderer: ({ column }) => (
       <div class="flex-align-center">
         <ElIcon style={{ marginRight: '6px' }}>
-          <Icon
-            name={`field_${fieldType[column.deType]}`}
-            className={`field-icon-${fieldType[column.deType]}`}
-          ></Icon>
+          <Icon className={`field-icon-${fieldType[column.deType]}`}>
+            {{
+              ...iconFieldMap[fieldType[column.deType]],
+              className: `svg-icon field-icon-${fieldType[column.deType]}`
+            }}
+          </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '120px' }}>
           {column.title}
@@ -590,18 +611,18 @@ const activeName = ref('dataPreview')
 const menuList = [
   {
     label: t('visualization.move_to'),
-    svgName: 'icon_into-item_outlined',
+    svgName: icon_intoItem_outlined,
     command: 'move'
   },
   {
     label: t('visualization.rename'),
-    svgName: 'icon_rename_outlined',
+    svgName: icon_rename_outlined,
     command: 'rename'
   },
   {
     label: t('common.delete'),
     divided: true,
-    svgName: 'icon_delete-trash_outlined',
+    svgName: icon_deleteTrash_outlined,
     command: 'delete'
   }
 ]
@@ -623,13 +644,13 @@ const datasetTypeList = computed(() => {
   return [
     {
       label: t('data_set.a_new_dataset'),
-      svgName: 'icon_dataset',
+      svgName: icon_dataset,
       command: 'dataset'
     },
     {
       label: t('deDataset.new_folder'),
       divided: true,
-      svgName: 'dv-folder',
+      svgName: dvFolder,
       command: 'folder'
     }
   ]
@@ -723,7 +744,7 @@ const getMenuList = (val: boolean) => {
     : [
         {
           label: t('common.copy'),
-          svgName: 'icon_copy_filled',
+          svgName: icon_copy_filled,
           command: 'copy'
         }
       ].concat(menuList)
@@ -766,7 +787,7 @@ const getMenuList = (val: boolean) => {
                   style="margin-right: 20px"
                   @click="handleDatasetTree('folder')"
                 >
-                  <Icon name="dv-new-folder" />
+                  <Icon name="dv-new-folder"><dvNewFolder class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-tooltip
@@ -776,7 +797,9 @@ const getMenuList = (val: boolean) => {
                 placement="top"
               >
                 <el-icon class="custom-icon btn" @click="createDataset">
-                  <Icon name="icon_file-add_outlined" />
+                  <Icon name="icon_file-add_outlined"
+                    ><icon_fileAdd_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
             </div>
@@ -789,25 +812,26 @@ const getMenuList = (val: boolean) => {
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined" />
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
           </el-input>
           <el-dropdown @command="sortTypeChange" trigger="click">
             <el-icon class="filter-icon-span">
               <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
-                <Icon
-                  v-if="state.curSortType.includes('asc')"
-                  name="dv-sort-asc"
-                  class="opt-icon"
-                ></Icon>
+                <Icon v-if="state.curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"
+                  ><dvSortAsc class="svg-icon opt-icon"
+                /></Icon>
               </el-tooltip>
               <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
                 <Icon
                   v-show="state.curSortType.includes('desc')"
                   name="dv-sort-desc"
                   class="opt-icon"
-                ></Icon>
+                  ><dvSortDesc class="svg-icon"
+                /></Icon>
               </el-tooltip>
             </el-icon>
             <template #dropdown>
@@ -845,10 +869,10 @@ const getMenuList = (val: boolean) => {
             <template #default="{ node, data }">
               <span class="custom-tree-node">
                 <el-icon v-if="!data.leaf" style="font-size: 18px">
-                  <Icon name="dv-folder"></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <el-icon v-if="data.leaf" style="font-size: 18px">
-                  <Icon name="icon_dataset"></Icon>
+                  <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                 </el-icon>
                 <span :title="node.label" class="label-tooltip ellipsis">{{ node.label }}</span>
                 <div class="icon-more" v-if="data.weight >= 7">
@@ -856,12 +880,12 @@ const getMenuList = (val: boolean) => {
                     icon-size="24px"
                     @handle-command="cmd => handleDatasetTree(cmd, data)"
                     :menu-list="datasetTypeList"
-                    icon-name="icon_add_outlined"
+                    :icon-name="icon_add_outlined"
                     placement="bottom-start"
                     v-if="!data.leaf"
                   ></handle-more>
                   <el-icon v-else class="hover-icon" @click.stop="handleEdit(data.id)">
-                    <icon name="icon_edit_outlined"></icon>
+                    <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
                   </el-icon>
                   <handle-more
                     @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
@@ -885,7 +909,7 @@ const getMenuList = (val: boolean) => {
         <empty-background :description="t('data_set.data_set_yet')" img-type="none">
           <el-button v-if="rootManage" @click="() => createDataset()" type="primary">
             <template #icon>
-              <Icon name="icon_add_outlined"></Icon>
+              <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
             </template>
             {{ t('deDataset.create') + t('auth.dataset') }}</el-button
           >
@@ -903,7 +927,7 @@ const getMenuList = (val: boolean) => {
             <el-popover show-arrow :offset="8" placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon size="16px" class="create-user">
-                  <Icon name="icon_info_outlined"></Icon>
+                  <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </template>
               <dataset-detail
@@ -914,23 +938,30 @@ const getMenuList = (val: boolean) => {
             <div class="right-btn">
               <el-button secondary @click="createPanel('dashboard')" v-permission="['panel']">
                 <template #icon>
-                  <Icon name="icon_dashboard_outlined"></Icon>
+                  <Icon name="icon_dashboard_outlined"
+                    ><icon_dashboard_outlined class="svg-icon"
+                  /></Icon>
                 </template>
                 {{ t('visualization.panelAdd') }}
               </el-button>
               <el-button secondary @click="createPanel('dvCanvas')" v-permission="['screen']">
-                <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
+                <template #icon>
+                  <Icon name="icon_operation-analysis_outlined"
+                    ><icon_operationAnalysis_outlined class="svg-icon"
+                  /></Icon> </template
                 >{{ t('data_set.new_data_screen') }}
               </el-button>
               <el-button secondary @click="exportDataset">
                 <template #icon>
-                  <Icon name="icon_download_outlined"></Icon>
+                  <Icon name="icon_download_outlined"
+                    ><icon_download_outlined class="svg-icon"
+                  /></Icon>
                 </template>
                 数据集导出
               </el-button>
               <el-button type="primary" @click="editorDataset" v-if="nodeInfo.weight >= 7">
                 <template #icon>
-                  <Icon name="icon_edit_outlined"></Icon>
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                 </template>
                 {{ t('visualization.edit') }}
               </el-button>
@@ -996,9 +1027,12 @@ const getMenuList = (val: boolean) => {
                     <template #header>
                       <div class="flex-align-center">
                         <ElIcon style="margin-right: 6px">
-                          <Icon
-                            :name="`field_${fieldType[column.deType]}`"
-                            :className="`field-icon-${fieldType[column.deType]}`"
+                          <Icon :className="`field-icon-${fieldType[column.deType]}`"
+                            ><component
+                              class="svg-icon"
+                              :class="`field-icon-${fieldType[column.deType]}`"
+                              :is="iconFieldMap[fieldType[column.deType]]"
+                            ></component
                           ></Icon>
                         </ElIcon>
                         <span class="ellipsis" :title="column.title" style="width: 120px">

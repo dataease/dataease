@@ -1,7 +1,13 @@
 <script lang="ts" setup>
+import icon_app_outlined from '@/assets/svg/icon_app_outlined.svg'
+import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
+import icon_database_outlined from '@/assets/svg/icon_database_outlined.svg'
+import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
+import userImg from '@/assets/svg/user-img.svg'
+import icon_template_colorful from '@/assets/svg/icon_template_colorful.svg'
+import no_result from '@/assets/svg/no_result.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, shallowRef, computed, reactive, watch } from 'vue'
-
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
@@ -32,22 +38,22 @@ const appStore = useAppStoreWithOut()
 
 const quickCreationList = shallowRef([
   {
-    icon: 'icon_dashboard_outlined',
+    icon: icon_dashboard_outlined,
     name: 'panel',
     color: '#3370ff'
   },
   {
-    icon: 'icon_operation-analysis_outlined',
+    icon: icon_operationAnalysis_outlined,
     name: 'screen',
     color: '#00d6b9'
   },
   {
-    icon: 'icon_app_outlined',
+    icon: icon_app_outlined,
     name: 'dataset',
     color: '#16c0ff'
   },
   {
-    icon: 'icon_database_outlined',
+    icon: icon_database_outlined,
     name: 'datasource',
     color: '#7f3bf6'
   }
@@ -284,7 +290,7 @@ initMarketTemplate()
     <div class="info-quick-creation">
       <div class="user-info">
         <el-icon class="main-color user-icon-container">
-          <Icon name="user-img" />
+          <Icon name="user-img"><userImg class="svg-icon" /></Icon>
         </el-icon>
         <div class="info">
           <div class="name-role flex-align-center">
@@ -328,7 +334,7 @@ initMarketTemplate()
               <div class="empty-tooltip-container" />
             </el-tooltip>
             <el-icon class="main-color" :style="{ backgroundColor: ele.color }">
-              <Icon :name="ele.icon" />
+              <Icon><component :is="ele.icon"></component></Icon>
             </el-icon>
             <span class="name">
               {{ t(`auth.${ele.name}`) }}
@@ -351,7 +357,7 @@ initMarketTemplate()
               <div class="empty-tooltip-container-template" />
             </el-tooltip>
             <el-icon class="main-color-quick template-create">
-              <Icon name="icon_template_colorful" />
+              <Icon name="icon_template_colorful"><icon_template_colorful class="svg-icon" /></Icon>
             </el-icon>
             <span class="name">{{ t('work_branch.new_using_template') }}</span>
           </div>
@@ -399,7 +405,9 @@ initMarketTemplate()
           </div>
           <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
             <div style="text-align: center">
-              <Icon name="no_result" class="no-result"></Icon>
+              <Icon name="no_result" class="no-result"
+                ><no_result class="svg-icon no-result"
+              /></Icon>
               <br />
               <span class="no-result-tips">{{ t('work_branch.relevant_templates_found') }}</span>
             </div>

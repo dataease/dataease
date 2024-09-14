@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import iconSetting from '@/assets/svg/icon-setting.svg'
 import { reactive, ref, toRaw } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import {
@@ -56,7 +57,7 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
     <el-button secondary>
       <template #icon>
         <el-icon>
-          <Icon name="icon-setting"></Icon>
+          <Icon name="icon-setting"><iconSetting class="svg-icon" /></Icon>
         </el-icon>
       </template>
       {{ $t('component.columnList') }}

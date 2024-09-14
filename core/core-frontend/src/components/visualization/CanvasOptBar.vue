@@ -6,13 +6,15 @@
     @mousedown="handOptBarMousedown"
   >
     <el-button size="mini" type="warning" @click="clearAllLinkage"
-      ><el-icon class="bar-base-icon"> <Icon name="dv-bar-unLinkage"></Icon></el-icon
+      ><el-icon class="bar-base-icon">
+        <Icon name="dv-bar-unLinkage"><dvBarUnLinkage class="svg-icon" /></Icon></el-icon
       >{{ $t('visualization.remove_all_linkage') }}</el-button
     >
   </div>
 </template>
 
 <script lang="ts" setup>
+import dvBarUnLinkage from '@/assets/svg/dv-bar-unLinkage.svg'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { computed } from 'vue'
 import { isMainCanvas } from '@/utils/canvasUtils'

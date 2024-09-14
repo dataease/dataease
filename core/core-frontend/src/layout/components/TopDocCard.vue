@@ -25,7 +25,9 @@ const openBlank = () => {
 <template>
   <div class="doc-card" @click="openBlank">
     <el-row class="base-show">
-      <Icon class-name="item-top-icon" :name="cardInfo.icon" />
+      <Icon class-name="item-top-icon"
+        ><component class="svg-icon item-top-icon" :is="cardInfo.icon"></component
+      ></Icon>
     </el-row>
     <el-row class="base-show show-content"> {{ cardInfo.name }}</el-row>
   </div>

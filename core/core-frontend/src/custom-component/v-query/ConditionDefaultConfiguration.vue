@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_admin_outlined from '@/assets/svg/icon_admin_outlined.svg'
 import { ElSelect } from 'element-plus-secondary'
 import { computed, ref, toRefs } from 'vue'
 import RangeFilterTime from '@/custom-component/v-query/RangeFilterTime.vue'
@@ -388,7 +389,7 @@ defineExpose({
             style="margin-left: -4px"
           >
             <template #icon>
-              <Icon name="icon_admin_outlined"></Icon>
+              <Icon name="icon_admin_outlined"><icon_admin_outlined class="svg-icon" /></Icon>
             </template>
             设置
           </el-button>

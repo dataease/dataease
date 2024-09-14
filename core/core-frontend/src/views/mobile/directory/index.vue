@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_dashboard from '@/assets/svg/icon_dashboard.svg'
+
+import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import dvSortAsc from '@/assets/svg/dv-sort-asc.svg'
+import dvSortDesc from '@/assets/svg/dv-sort-desc.svg'
 import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -203,7 +210,7 @@ onMounted(() => {
         <div @click="onClickPanel" key="仪表板">
           <span class="label primary-name">仪表板</span>
           <el-icon>
-            <Icon name="icon_right_outlined"></Icon>
+            <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
         <div v-for="(ele, index) in [...directName]" @click="handleDir(index)" :key="ele">
@@ -211,7 +218,7 @@ onMounted(() => {
             ele
           }}</span>
           <el-icon v-if="index !== directName.length - 1">
-            <Icon name="icon_right_outlined"></Icon>
+            <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
       </div>
@@ -226,14 +233,20 @@ onMounted(() => {
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
         <el-dropdown @command="sortTypeChange" trigger="click">
           <el-icon class="filter-icon-span">
-            <Icon v-if="curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"></Icon>
-            <Icon v-show="curSortType.includes('desc')" name="dv-sort-desc" class="opt-icon"></Icon>
+            <Icon v-if="curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"
+              ><dvSortAsc class="svg-icon opt-icon"
+            /></Icon>
+            <Icon v-if="curSortType.includes('desc')" name="dv-sort-desc" class="opt-icon"
+              ><dvSortDesc class="svg-icon opt-icon"
+            /></Icon>
           </el-icon>
           <template #dropdown>
             <el-dropdown-menu style="width: 246px">
@@ -258,7 +271,7 @@ onMounted(() => {
         @click="dataClick(ele)"
         :label="ele.name"
         :nextlevel="!ele.leaf"
-        :prefix-icon="ele.leaf ? 'icon_dashboard' : 'dv-folder'"
+        :prefix-icon="ele.leaf ? icon_dashboard : dvFolder"
       />
     </div>
   </div>

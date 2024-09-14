@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import { ref, inject, computed, watch, onBeforeMount, toRefs, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { SelectConfig } from '../TimeDialog.vue'
@@ -12,6 +14,7 @@ import {
   sysParamsIlns,
   fieldEnums
 } from '@/views/visualized/data/dataset/options.js'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 export interface Item {
   term: string
   fieldId: string
@@ -372,7 +375,9 @@ const emits = defineEmits(['update:item', 'del'])
             >
               <template #prefix>
                 <el-icon>
-                  <Icon name="icon_search-outline_outlined"></Icon>
+                  <Icon name="icon_search-outline_outlined"
+                    ><icon_searchOutline_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </template>
             </el-input>
@@ -386,9 +391,12 @@ const emits = defineEmits(['update:item', 'del'])
                 v-for="ele in dimensions"
               >
                 <el-icon>
-                  <Icon
-                    :name="`field_${fieldEnums[ele.deType]}`"
-                    :className="`field-icon-${fieldEnums[ele.deType]}`"
+                  <Icon :className="`field-icon-${fieldEnums[ele.deType]}`"
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldEnums[ele.deType]}`"
+                      :is="iconFieldMap[fieldEnums[ele.deType]]"
+                    ></component
                   ></Icon>
                 </el-icon>
                 <span>{{ ele.name }}</span>
@@ -573,7 +581,9 @@ const emits = defineEmits(['update:item', 'del'])
                     <label>{{ i }}</label>
                   </el-tooltip>
                   <el-icon @click="delChecks(idx)" style="opacity: 1">
-                    <Icon name="icon_delete-trash_outlined"></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </li>
               </ul>
@@ -584,7 +594,9 @@ const emits = defineEmits(['update:item', 'del'])
                 </div>
                 <div class="footer-right">
                   <el-icon @click="clearAll">
-                    <Icon name="icon_delete-trash_outlined"></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </div>
@@ -593,7 +605,9 @@ const emits = defineEmits(['update:item', 'del'])
         </el-popover>
       </div>
       <el-icon v-if="showDel" class="font12" @click="emits('del')">
-        <Icon name="icon_delete-trash_outlined"></Icon>
+        <Icon name="icon_delete-trash_outlined"
+          ><icon_deleteTrash_outlined class="svg-icon"
+        /></Icon>
       </el-icon>
     </div>
     <el-dialog append-to-body v-model="dialogVisible" title="日期设置" width="500">

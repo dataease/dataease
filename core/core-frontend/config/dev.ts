@@ -8,7 +8,7 @@ export default {
       },
       // 使用 proxy 实例
       '/api': {
-        target: 'http://localhost:8100',
+        target: 'https://de2.fit2cloud.com',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, 'de2api')
       }

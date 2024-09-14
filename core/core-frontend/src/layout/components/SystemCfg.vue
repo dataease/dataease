@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import iconSetting from '@/assets/svg/icon-setting.svg'
 import { useRouter } from 'vue-router'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { computed } from 'vue'
@@ -24,7 +25,9 @@ const redirectUser = () => {
       }"
     >
       <el-icon @click="redirectUser">
-        <Icon class="icon-setting" name="icon-setting" />
+        <Icon class="icon-setting" name="icon-setting"
+          ><iconSetting class="svg-icon icon-setting"
+        /></Icon>
       </el-icon>
     </div>
   </el-tooltip>

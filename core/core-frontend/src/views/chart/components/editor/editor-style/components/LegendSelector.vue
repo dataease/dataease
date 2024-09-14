@@ -1,4 +1,10 @@
 <script lang="tsx" setup>
+import icon_leftAlign_outlined from '@/assets/svg/icon_left-align_outlined.svg'
+import icon_horizontalAlign_outlined from '@/assets/svg/icon_horizontal-align_outlined.svg'
+import icon_rightAlign_outlined from '@/assets/svg/icon_right-align_outlined.svg'
+import icon_topAlign_outlined from '@/assets/svg/icon_top-align_outlined.svg'
+import icon_verticalAlign_outlined from '@/assets/svg/icon_vertical-align_outlined.svg'
+import icon_bottomAlign_outlined from '@/assets/svg/icon_bottom-align_outlined.svg'
 import { computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
@@ -296,7 +302,9 @@ onMounted(() => {
                 :class="{ dark: themes === 'dark', active: state.legendForm.hPosition === 'left' }"
               >
                 <el-icon>
-                  <Icon name="icon_left-align_outlined" />
+                  <Icon name="icon_left-align_outlined"
+                    ><icon_leftAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -314,7 +322,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_horizontal-align_outlined" />
+                  <Icon name="icon_horizontal-align_outlined"
+                    ><icon_horizontalAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -329,7 +339,9 @@ onMounted(() => {
                 :class="{ dark: themes === 'dark', active: state.legendForm.hPosition === 'right' }"
               >
                 <el-icon>
-                  <Icon name="icon_right-align_outlined" />
+                  <Icon name="icon_right-align_outlined"
+                    ><icon_rightAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -364,7 +376,9 @@ onMounted(() => {
                 :class="{ dark: themes === 'dark', active: state.legendForm.vPosition === 'top' }"
               >
                 <el-icon>
-                  <Icon name="icon_top-align_outlined" />
+                  <Icon name="icon_top-align_outlined"
+                    ><icon_topAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -382,7 +396,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_vertical-align_outlined" />
+                  <Icon name="icon_vertical-align_outlined"
+                    ><icon_verticalAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -400,7 +416,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_bottom-align_outlined" />
+                  <Icon name="icon_bottom-align_outlined"
+                    ><icon_bottomAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>

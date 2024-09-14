@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
+import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
 import { ref, reactive } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -328,7 +330,9 @@ defineExpose({
       <span class="de-expand" @click="showPriority = !showPriority"
         >{{ t('datasource.priority') }}
         <el-icon>
-          <Icon :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+          <Icon
+            ><component :is="showPriority ? icon_down_outlined : icon_down_outlined1"></component
+          ></Icon>
         </el-icon>
       </span>
       <template v-if="showPriority">

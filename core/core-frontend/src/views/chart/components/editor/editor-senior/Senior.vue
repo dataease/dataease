@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import FunctionCfg from '@/views/chart/components/editor/editor-senior/components/FunctionCfg.vue'
 import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/ScrollCfg.vue'
@@ -341,7 +343,9 @@ const removeJumpSenior = () => {
                     @click="removeLinkageSenior"
                   >
                     <el-icon>
-                      <Icon name="icon_delete-trash_outlined" />
+                      <Icon name="icon_delete-trash_outlined"
+                        ><icon_deleteTrash_outlined class="svg-icon"
+                      /></Icon>
                     </el-icon>
                   </button>
                 </template>
@@ -353,7 +357,7 @@ const removeJumpSenior = () => {
                   :disabled="!chart.linkageActive"
                 >
                   <el-icon>
-                    <Icon name="icon_edit_outlined" />
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </button>
               </span>
@@ -382,7 +386,9 @@ const removeJumpSenior = () => {
                     @click="removeJumpSenior"
                   >
                     <el-icon>
-                      <Icon name="icon_delete-trash_outlined" />
+                      <Icon name="icon_delete-trash_outlined"
+                        ><icon_deleteTrash_outlined class="svg-icon"
+                      /></Icon>
                     </el-icon>
                   </button>
                 </template>
@@ -394,7 +400,7 @@ const removeJumpSenior = () => {
                   :disabled="!chart.jumpActive"
                 >
                   <el-icon>
-                    <Icon name="icon_edit_outlined" />
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </button>
               </span>

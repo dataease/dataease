@@ -1,4 +1,5 @@
 <script lang="tsx" setup>
+import icon_expandRight_filled from '@/assets/svg/icon_expand-right_filled.svg'
 import { nextTick, reactive, ref, shallowRef, provide } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
@@ -13,6 +14,7 @@ import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 import type { ApiConfiguration } from '@/views/visualized/data/datasource/form/option'
 import { cancelMap } from '@/config/axios/service'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 export interface Field {
   name: string
@@ -593,7 +595,9 @@ defineExpose({
           @click="activeColumnInfo = !activeColumnInfo"
         >
           <el-icon style="font-size: 10px">
-            <Icon name="icon_expand-right_filled"></Icon>
+            <Icon name="icon_expand-right_filled"
+              ><icon_expandRight_filled class="svg-icon"
+            /></Icon>
           </el-icon>
           <span class="name">{{ t('datasource.column_info') }}</span>
         </p>
@@ -647,9 +651,12 @@ defineExpose({
                 >
                   <template #prefix>
                     <el-icon>
-                      <Icon
-                        :name="`field_${fieldType[scope.row.deExtractType]}`"
-                        :className="`field-icon-${fieldType[scope.row.deExtractType]}`"
+                      <Icon :className="`field-icon-${fieldType[scope.row.deExtractType]}`"
+                        ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldType[scope.row.deExtractType]}`"
+                          :is="iconFieldMap[fieldType[scope.row.deExtractType]]"
+                        ></component
                       ></Icon>
                     </el-icon>
                   </template>
@@ -661,9 +668,12 @@ defineExpose({
                   >
                     <span style="float: left">
                       <el-icon>
-                        <Icon
-                          :name="`field_${fieldType[item.value]}`"
-                          :className="`field-icon-${fieldType[item.value]}`"
+                        <Icon :className="`field-icon-${fieldType[item.value]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[item.value]}`"
+                            :is="iconFieldMap[fieldType[item.value]]"
+                          ></component
                         ></Icon>
                       </el-icon>
                     </span>
@@ -681,7 +691,9 @@ defineExpose({
           @click="activeDataPreview = !activeDataPreview"
         >
           <el-icon style="font-size: 10px">
-            <Icon name="icon_expand-right_filled"></Icon>
+            <Icon name="icon_expand-right_filled"
+              ><icon_expandRight_filled class="svg-icon"
+            /></Icon>
           </el-icon>
           <span class="name">{{ t('datasource.data_preview') }}</span>
         </p>

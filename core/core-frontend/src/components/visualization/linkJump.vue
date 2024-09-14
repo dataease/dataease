@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import joinJoin from '@/assets/svg/join-join.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive } from 'vue'
 import type { FormInstance } from 'element-plus-secondary'
@@ -98,7 +102,9 @@ defineExpose({
         <span class="label">已选择图表:</span>
         <span class="name">
           <el-icon class="main-color">
-            <Icon class="toolbar-icon" name="icon_left_outlined" />
+            <Icon name="icon_left_outlined"
+              ><icon_left_outlined class="svg-icon toolbar-icon"
+            /></Icon>
           </el-icon>
           折线图1
         </span>
@@ -107,7 +113,9 @@ defineExpose({
         <span class="label">所用数据集:</span>
         <span class="name">
           <el-icon class="main-color">
-            <Icon class="toolbar-icon" name="icon_left_outlined" />
+            <Icon name="icon_left_outlined"
+              ><icon_left_outlined class="svg-icon toolbar-icon"
+            /></Icon>
           </el-icon>
           佩尔数据集
         </span>
@@ -172,7 +180,7 @@ defineExpose({
                 </el-select>
               </el-form-item>
               <el-icon class="join">
-                <Icon name="join-join"></Icon>
+                <Icon name="join-join"><joinJoin class="svg-icon" /></Icon>
               </el-icon>
               <el-form-item label="目标仪表板">
                 <el-select v-model="formInline.region" placeholder="Activity zone" clearable>
@@ -206,7 +214,7 @@ defineExpose({
                   </el-select>
                 </el-form-item>
                 <el-icon class="join">
-                  <Icon name="join-join"></Icon>
+                  <Icon name="join-join"><joinJoin class="svg-icon" /></Icon>
                 </el-icon>
                 <el-form-item
                   label="目标字段"
@@ -238,7 +246,9 @@ defineExpose({
                 </el-form-item>
                 <el-button v-if="formFields.fields.length > 1" text @click="removeField(field)">
                   <template #icon>
-                    <Icon name="icon_delete-trash_outlined"></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </template>
                 </el-button>
               </template>
@@ -246,7 +256,7 @@ defineExpose({
           </div>
           <el-button class="add-field" text @click="addField">
             <template #icon>
-              <Icon name="icon_add_outlined"></Icon>
+              <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
             </template>
             添加联动图表字段
           </el-button>

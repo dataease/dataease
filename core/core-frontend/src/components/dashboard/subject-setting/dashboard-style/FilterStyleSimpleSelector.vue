@@ -14,7 +14,9 @@
                   @click="handleHorizontalChange('left')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_left-align_outlined" />
+                  <Icon name="icon_left-align_outlined"
+                    ><icon_leftAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-tooltip effect="dark" placement="top">
@@ -26,7 +28,9 @@
                   @click="handleHorizontalChange('center')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_horizontal-align_outlined" />
+                  <Icon name="icon_horizontal-align_outlined"
+                    ><icon_horizontalAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-tooltip effect="dark" placement="top">
@@ -38,7 +42,9 @@
                   @click="handleHorizontalChange('right')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_right-align_outlined" />
+                  <Icon name="icon_right-align_outlined"
+                    ><icon_rightAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
             </el-form-item>
@@ -54,7 +60,9 @@
                   @click="handleHorizontalChange('vertical', 'layout')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_title-top-align_outlined" />
+                  <Icon name="icon_title-top-align_outlined"
+                    ><icon_titleTopAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-tooltip effect="dark" placement="top">
@@ -66,7 +74,9 @@
                   @click="handleHorizontalChange('horizontal', 'layout')"
                   class="hover-icon"
                 >
-                  <Icon name="icon_title-left-align_outlined" />
+                  <Icon name="icon_title-left-align_outlined"
+                    ><icon_titleLeftAlign_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-tooltip>
             </el-form-item>
@@ -145,6 +155,11 @@
 </template>
 
 <script setup lang="ts">
+import icon_leftAlign_outlined from '@/assets/svg/icon_left-align_outlined.svg'
+import icon_horizontalAlign_outlined from '@/assets/svg/icon_horizontal-align_outlined.svg'
+import icon_rightAlign_outlined from '@/assets/svg/icon_right-align_outlined.svg'
+import icon_titleTopAlign_outlined from '@/assets/svg/icon_title-top-align_outlined.svg'
+import icon_titleLeftAlign_outlined from '@/assets/svg/icon_title-left-align_outlined.svg'
 import { onMounted, reactive, computed } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

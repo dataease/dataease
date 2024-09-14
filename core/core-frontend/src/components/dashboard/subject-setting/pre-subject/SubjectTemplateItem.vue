@@ -16,7 +16,9 @@
           width="172"
           height="79"
         />
-        <Icon v-else name="dv-no-img" style="width: 172px; height: 79px" />
+        <Icon v-else name="dv-no-img"
+          ><dvNoImg class="svg-icon" style="width: 172px; height: 79px"
+        /></Icon>
       </div>
       <div class="title-main">
         <div class="title-area">
@@ -44,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import dvNoImg from '@/assets/svg/dv-no-img.svg'
 import { computed, onMounted, reactive, toRefs } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

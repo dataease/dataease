@@ -1,5 +1,16 @@
 getLastStart
 <script lang="ts" setup>
+import more_v from '@/assets/svg/more_v.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_drag_outlined from '@/assets/svg/icon_drag_outlined.svg'
+import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
+import de_pwd_invisible from '@/assets/svg/de_pwd_invisible.svg'
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_dataset from '@/assets/svg/icon_dataset.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_warning_filled from '@/assets/svg/icon_warning_filled.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import {
   ref,
   reactive,
@@ -31,6 +42,8 @@ import draggable from 'vuedraggable'
 import type { ManipulateType } from 'dayjs'
 import dayjs from 'dayjs'
 import ConditionDefaultConfiguration from '@/custom-component/v-query/ConditionDefaultConfiguration.vue'
+import { iconChartMap } from '@/components/icon-group/chart-list'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
@@ -1455,7 +1468,7 @@ defineExpose({
         <div class="title">
           查询条件
           <el-icon @click="addQueryCriteria">
-            <Icon name="icon_add_outlined"></Icon>
+            <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
         <draggable tag="div" :list="conditions" handle=".handle">
@@ -1468,14 +1481,14 @@ defineExpose({
               :class="element.id === activeCondition && 'active'"
             >
               <el-icon class="handle">
-                <Icon name="icon_drag_outlined"></Icon>
+                <Icon name="icon_drag_outlined"><icon_drag_outlined class="svg-icon" /></Icon>
               </el-icon>
               <div class="label flex-align-center icon" :title="element.name">
                 <el-icon
                   v-if="!element.auto && element.showError"
                   style="font-size: 16px; color: #f54a45"
                 >
-                  <icon name="icon_warning_filled"></icon>
+                  <icon name="icon_warning_filled"><icon_warning_filled class="svg-icon" /></icon>
                 </el-icon>
                 {{ element.name }}
               </div>
@@ -1483,7 +1496,7 @@ defineExpose({
                 <handle-more
                   @handle-command="cmd => addOperation(cmd, element, index)"
                   :menu-list="typeList"
-                  icon-name="more_v"
+                  :icon-name="more_v"
                   placement="bottom-end"
                 ></handle-more>
                 <el-icon
@@ -1491,10 +1504,12 @@ defineExpose({
                   @click.stop="element.visible = !element.visible"
                   v-if="element.visible"
                 >
-                  <Icon name="icon_visible_outlined"></Icon>
+                  <Icon name="icon_visible_outlined"
+                    ><icon_visible_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
                 <el-icon class="hover-icon" @click.stop="element.visible = !element.visible" v-else>
-                  <Icon name="de_pwd_invisible"></Icon>
+                  <Icon name="de_pwd_invisible"><de_pwd_invisible class="svg-icon" /></Icon>
                 </el-icon>
               </div>
               <div @click.stop v-if="activeConditionForRename.id === element.id" class="rename">
@@ -1525,7 +1540,7 @@ defineExpose({
                     </div>
                   </template>
                   <el-icon style="margin-left: 4px; color: #646a73">
-                    <icon name="icon_info_outlined"></icon>
+                    <icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></icon>
                   </el-icon>
                 </el-tooltip>
               </div>
@@ -1549,7 +1564,11 @@ defineExpose({
             <div v-for="field in fields" :key="field.componentId" class="list-item_field_de">
               <el-checkbox :label="field.componentId"
                 ><el-icon class="component-type">
-                  <Icon :name="canvasViewInfo[field.componentId].type"></Icon> </el-icon
+                  <Icon
+                    ><component
+                      :is="iconChartMap[canvasViewInfo[field.componentId].type]"
+                    ></component
+                  ></Icon> </el-icon
                 ><span
                   :title="canvasViewInfo[field.componentId].title"
                   class="checkbox-name ellipsis"
@@ -1569,14 +1588,6 @@ defineExpose({
                 <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
                   <el-icon>
                     <Icon
-                      :name="`field_${
-                        fieldType[
-                          getDetype(
-                            curComponent.checkedFieldsMap[field.componentId],
-                            Object.values(field.fields)
-                          )
-                        ]
-                      }`"
                       :className="`field-icon-${
                         fieldType[
                           getDetype(
@@ -1585,6 +1596,18 @@ defineExpose({
                           )
                         ]
                       }`"
+                      ><component
+                        :is="
+                          iconFieldMap[
+                            fieldType[
+                              getDetype(
+                                curComponent.checkedFieldsMap[field.componentId],
+                                Object.values(field.fields)
+                              )
+                            ]
+                          ]
+                        "
+                      ></component
                     ></Icon>
                   </el-icon>
                 </template>
@@ -1618,9 +1641,12 @@ defineExpose({
                     :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
                   >
                     <el-icon>
-                      <Icon
-                        :name="`field_${fieldType[ele.deType]}`"
-                        :className="`field-icon-${fieldType[ele.deType]}`"
+                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                        ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldType[ele.deType]}`"
+                          :is="iconFieldMap[fieldType[ele.deType]]"
+                        ></component
                       ></Icon>
                     </el-icon>
                     <span :title="ele.name || ele.variableName" class="ellipsis">
@@ -1717,7 +1743,7 @@ defineExpose({
                 @click="startTreeDesign"
               >
                 <template #icon>
-                  <icon name="icon_edit_outlined"></icon>
+                  <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
                 </template>
               </el-button>
             </div>
@@ -1731,9 +1757,12 @@ defineExpose({
                   <span class="level-index">层级{{ indexCascade[index + 1] }}</span>
                   <span class="field-type"
                     ><el-icon>
-                      <Icon
-                        :name="`field_${fieldType[ele.deType]}`"
-                        :className="`field-icon-${fieldType[ele.deType]}`"
+                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                        ><component
+                          :class="`field-icon-${fieldType[ele.deType]}`"
+                          class="svg-icon"
+                          :is="iconFieldMap[fieldType[ele.deType]]"
+                        ></component
                       ></Icon> </el-icon
                   ></span>
                   <span class="field-tree_name">{{ ele.name }}</span>
@@ -1741,7 +1770,7 @@ defineExpose({
               </template>
               <el-button @click="startTreeDesign" v-else text>
                 <template #icon>
-                  <Icon name="icon_add_outlined"></Icon>
+                  <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
                 </template>
                 点击进行树结构设计
               </el-button>
@@ -1816,10 +1845,10 @@ defineExpose({
                     <template #default="{ node, data }">
                       <div class="content">
                         <el-icon size="18px" v-if="!data.leaf">
-                          <Icon name="dv-folder"></Icon>
+                          <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                         </el-icon>
                         <el-icon size="18px" v-if="data.leaf">
-                          <Icon name="icon_dataset"></Icon>
+                          <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                         </el-icon>
                         <span class="label ellipsis" style="margin-left: 8px" :title="node.label">{{
                           node.label
@@ -1839,12 +1868,18 @@ defineExpose({
                     <template v-if="curComponent.field.id" #prefix>
                       <el-icon>
                         <Icon
-                          :name="`field_${
-                            fieldType[getDetype(curComponent.field.id, curComponent.dataset.fields)]
-                          }`"
                           :className="`field-icon-${
                             fieldType[getDetype(curComponent.field.id, curComponent.dataset.fields)]
                           }`"
+                          ><component
+                            :is="
+                              iconFieldMap[
+                                fieldType[
+                                  getDetype(curComponent.field.id, curComponent.dataset.fields)
+                                ]
+                              ]
+                            "
+                          ></component
                         ></Icon>
                       </el-icon>
                     </template>
@@ -1865,9 +1900,12 @@ defineExpose({
                         :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
                       >
                         <el-icon>
-                          <Icon
-                            :name="`field_${fieldType[ele.deType]}`"
-                            :className="`field-icon-${fieldType[ele.deType]}`"
+                          <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                            ><component
+                              class="svg-icon"
+                              :class="`field-icon-${fieldType[ele.deType]}`"
+                              :is="iconFieldMap[fieldType[ele.deType]]"
+                            ></component
                           ></Icon>
                         </el-icon>
                         <span>
@@ -1887,16 +1925,20 @@ defineExpose({
                     <template v-if="curComponent.displayId" #prefix>
                       <el-icon>
                         <Icon
-                          :name="`field_${
-                            fieldType[
-                              getDetype(curComponent.displayId, curComponent.dataset.fields)
-                            ]
-                          }`"
                           :className="`field-icon-${
                             fieldType[
                               getDetype(curComponent.displayId, curComponent.dataset.fields)
                             ]
                           }`"
+                          ><component
+                            :is="
+                              iconFieldMap[
+                                fieldType[
+                                  getDetype(curComponent.displayId, curComponent.dataset.fields)
+                                ]
+                              ]
+                            "
+                          ></component
                         ></Icon>
                       </el-icon>
                     </template>
@@ -1917,9 +1959,12 @@ defineExpose({
                         :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
                       >
                         <el-icon>
-                          <Icon
-                            :name="`field_${fieldType[ele.deType]}`"
-                            :className="`field-icon-${fieldType[ele.deType]}`"
+                          <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                            ><component
+                              class="svg-icon"
+                              :class="`field-icon-${fieldType[ele.deType]}`"
+                              :is="iconFieldMap[fieldType[ele.deType]]"
+                            ></component
                           ></Icon>
                         </el-icon>
                         <span>
@@ -1941,12 +1986,18 @@ defineExpose({
                     <template v-if="curComponent.sortId" #prefix>
                       <el-icon>
                         <Icon
-                          :name="`field_${
-                            fieldType[getDetype(curComponent.sortId, curComponent.dataset.fields)]
-                          }`"
                           :className="`field-icon-${
                             fieldType[getDetype(curComponent.sortId, curComponent.dataset.fields)]
                           }`"
+                          ><component
+                            :is="
+                              iconFieldMap[
+                                fieldType[
+                                  getDetype(curComponent.sortId, curComponent.dataset.fields)
+                                ]
+                              ]
+                            "
+                          ></component
                         ></Icon>
                       </el-icon>
                     </template>
@@ -1962,9 +2013,12 @@ defineExpose({
                         :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
                       >
                         <el-icon>
-                          <Icon
-                            :name="`field_${fieldType[ele.deType]}`"
-                            :className="`field-icon-${fieldType[ele.deType]}`"
+                          <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                            ><component
+                              :class="`field-icon-${fieldType[ele.deType]}`"
+                              class="svg-icon"
+                              :is="iconFieldMap[fieldType[ele.deType]]"
+                            ></component
                           ></Icon>
                         </el-icon>
                         <span>
@@ -1994,7 +2048,9 @@ defineExpose({
                   <template #reference>
                     <el-button text>
                       <template #icon>
-                        <Icon name="icon_edit_outlined"></Icon>
+                        <Icon name="icon_edit_outlined"
+                          ><icon_edit_outlined class="svg-icon"
+                        /></Icon>
                       </template>
                       {{ t('common.edit') }}
                     </el-button>
@@ -2023,7 +2079,9 @@ defineExpose({
                           text
                         >
                           <template #icon>
-                            <Icon name="icon_delete-trash_outlined"></Icon>
+                            <Icon name="icon_delete-trash_outlined"
+                              ><icon_deleteTrash_outlined class="svg-icon"
+                            /></Icon>
                           </template>
                         </el-button>
                       </div>
@@ -2031,7 +2089,9 @@ defineExpose({
                     <div class="add-btn">
                       <el-button @click="valueSource.push('')" text>
                         <template #icon>
-                          <Icon name="icon_add_outlined"></Icon>
+                          <Icon name="icon_add_outlined"
+                            ><icon_add_outlined class="svg-icon"
+                          /></Icon>
                         </template>
                         添加选项值
                       </el-button>

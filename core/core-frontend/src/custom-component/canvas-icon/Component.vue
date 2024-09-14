@@ -1,14 +1,13 @@
 <template>
-  <Icon
-    v-if="element.innerType.includes('board')"
-    class-name="de-svg-main"
-    :name="element.innerType"
-  />
+  <Icon v-if="element.innerType.includes('board')" class-name="de-svg-main"
+    ><component class="svg-icon de-svg-main" :is="iconBoardMap[element.innerType]"></component
+  ></Icon>
   <component v-else :is="element.innerType"></component>
 </template>
 
 <script setup lang="ts">
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import { iconBoardMap } from '@/components/icon-group/board-list'
 import { toRefs } from 'vue'
 const props = defineProps({
   propValue: {

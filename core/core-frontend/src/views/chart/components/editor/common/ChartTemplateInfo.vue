@@ -1,8 +1,10 @@
-<script lang="tsx" setup></script>
+<script lang="tsx" setup>
+import dvUpArrow from '@/assets/svg/dv-up-arrow.svg'
+</script>
 
 <template>
   <div class="view-panel-Mask">
-    <Icon class-name="item-icon" name="dv-up-arrow" />
+    <Icon class-name="item-icon" name="dv-up-arrow"><dvUpArrow class="svg-icon item-icon" /></Icon>
     <div>
       <el-button style="opacity: 1 !important" type="warning" size="mini" round>
         <span style="font-weight: bold; opacity: 1"> 当前为模板图表，请更换数据集...</span>

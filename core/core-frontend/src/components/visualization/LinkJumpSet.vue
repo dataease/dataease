@@ -14,16 +14,19 @@
         <div class="top-area">
           <span class="top-area-text">已选图表：</span>
           <span class="top-area-value">
-            <Icon class-name="view-type-icon" :name="state.curJumpViewInfo.type" />
+            <Icon class-name="view-type-icon"
+              ><component
+                class="svg-icon view-type-icon"
+                :is="iconChartMap[state.curJumpViewInfo.type]"
+              ></component
+            ></Icon>
             {{ state.curJumpViewInfo.title }}</span
           >
           <span class="top-area-text margin-left">所用数据集：</span>
           <span class="top-area-value">
-            <Icon
-              style="vertical-align: -0.2em"
-              class-name="view-type-icon"
-              name="dataset-outline"
-            />
+            <Icon name="dataset-outline"
+              ><datasetOutline style="vertical-align: -0.2em" class="svg-icon view-type-icon"
+            /></Icon>
             {{ state.curDatasetInfo.name }}</span
           >
         </div>
@@ -66,7 +69,8 @@
                         <Icon
                           :name="`field_${fieldType[data.sourceDeType]}`"
                           :className="`field-icon-${fieldType[data.sourceDeType]}`"
-                        />
+                          ><component :is="iconFieldMap[fieldType[data.sourceDeType]]"></component
+                        ></Icon>
                       </el-icon>
                       {{ data.sourceFieldName }}
                     </span>
@@ -135,7 +139,9 @@
                           </el-form-item>
                         </div>
                         <div class="icon-center">
-                          <Icon style="width: 20px; height: 20px" name="dv-link-target" />
+                          <Icon name="dv-link-target"
+                            ><dvLinkTarget style="width: 20px; height: 20px" class="svg-icon"
+                          /></Icon>
                         </div>
                         <div style="flex: 1">
                           <el-form-item>
@@ -156,10 +162,12 @@
                                     style="display: inline-block"
                                     v-if="data.leaf"
                                   >
-                                    <Icon name="dv-dashboard-spine"></Icon>
+                                    <Icon name="dv-dashboard-spine"
+                                      ><dvDashboardSpine class="svg-icon"
+                                    /></Icon>
                                   </el-icon>
                                   <el-icon size="18px" style="display: inline-block" v-else>
-                                    <Icon name="dv-folder"></Icon>
+                                    <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                                   </el-icon>
                                   <span
                                     style="margin-left: 8px; font-size: 14px"
@@ -204,9 +212,11 @@
                                   <span class="custom-option">
                                     <Icon
                                       style="width: 14px; height: 14px"
-                                      :name="`field_${fieldType[curViewField.deType]}`"
                                       :className="`field-icon-${fieldType[curViewField.deType]}`"
-                                    />
+                                      ><component
+                                        :is="iconFieldMap[fieldType[curViewField.deType]]"
+                                      ></component
+                                    ></Icon>
                                     <span style="float: left; margin-left: 4px; font-size: 14px">{{
                                       curViewField.name
                                     }}</span>
@@ -215,7 +225,9 @@
                               </el-select>
                             </div>
                             <div class="icon-center">
-                              <Icon style="width: 20px; height: 20px" name="dv-link-target" />
+                              <Icon name="dv-link-target"
+                                ><dvLinkTarget style="width: 20px; height: 20px" class="svg-icon"
+                              /></Icon>
                             </div>
                             <div style="flex: 1">
                               <el-select
@@ -233,10 +245,10 @@
                                 >
                                   <span class="custom-option">
                                     <Icon
-                                      :name="item.type"
                                       class-name="view-type-icon"
                                       style="width: 14px; height: 14px"
-                                    />
+                                      ><component :is="iconChartMap[item.type]"></component
+                                    ></Icon>
                                     <span style="float: left; margin-left: 4px; font-size: 14px">{{
                                       item.title
                                     }}</span>
@@ -262,9 +274,11 @@
                                   <span class="custom-option">
                                     <Icon
                                       style="width: 14px; height: 14px"
-                                      :name="`field_${fieldType[viewField.deType]}`"
                                       :className="`field-icon-${fieldType[viewField.deType]}`"
-                                    />
+                                      ><component
+                                        :is="iconFieldMap[fieldType[viewField.deType]]"
+                                      ></component
+                                    ></Icon>
                                     <span style="float: left; margin-left: 4px; font-size: 14px">{{
                                       viewField.name
                                     }}</span>
@@ -279,7 +293,9 @@
                               @click="deleteLinkJumpField(index)"
                             >
                               <el-icon size="20px">
-                                <Icon name="icon_delete-trash_outlined" />
+                                <Icon name="icon_delete-trash_outlined"
+                                  ><icon_deleteTrash_outlined class="svg-icon"
+                                /></Icon>
                               </el-icon>
                             </el-button>
                           </div>
@@ -308,7 +324,9 @@
                               {{ $t('visualization.target_url_tips') }}
                             </template>
                             <el-icon size="16px" class="hint-icon">
-                              <Icon name="icon_info_outlined" />
+                              <Icon name="icon_info_outlined"
+                                ><icon_info_outlined class="svg-icon"
+                              /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -328,7 +346,9 @@
                               <span v-html="$t('chart.reference_field_tip')"></span>
                             </template>
                             <el-icon size="16px" class="hint-icon">
-                              <Icon name="icon_info_outlined" />
+                              <Icon name="icon_info_outlined"
+                                ><icon_info_outlined class="svg-icon"
+                              /></Icon>
                             </el-icon>
                           </el-tooltip>
                         </div>
@@ -353,9 +373,12 @@
                             >
                               <el-icon>
                                 <Icon
-                                  :name="`field_${fieldType[item.sourceDeType]}`"
-                                  :className="`field-icon-${fieldType[item.sourceDeType]}`"
-                                />
+                                  ><component
+                                    class="svg-icon"
+                                    :className="`field-icon-${fieldType[item.sourceDeType]}`"
+                                    :is="iconFieldMap[fieldType[item.sourceDeType]]"
+                                  ></component
+                                ></Icon>
                               </el-icon>
                               {{ item.sourceFieldName }}
                             </span>
@@ -387,6 +410,14 @@
 </template>
 
 <script lang="ts" setup>
+import { iconFieldMap } from '@/components/icon-group/field-list'
+import { iconChartMap } from '@/components/icon-group/chart-list'
+import datasetOutline from '@/assets/svg/dataset-outline.svg'
+import dvLinkTarget from '@/assets/svg/dv-link-target.svg'
+import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import {
   queryVisualizationJumpInfo,
   queryWithViewId,

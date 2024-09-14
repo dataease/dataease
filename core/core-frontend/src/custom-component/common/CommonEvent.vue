@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { computed, toRefs } from 'vue'
 import { ElFormItem, ElIcon } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -52,7 +53,7 @@ const onJumpValueChange = () => {
             <div>事件绑定需退出编辑模式后生效,富文本开启绑定事件则内部点击事件失效</div>
           </template>
           <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-            <Icon name="icon_info_outlined" />
+            <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
           </el-icon>
         </el-tooltip>
       </el-form-item>

@@ -1,4 +1,15 @@
 <script lang="ts" setup>
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
+import icon_fullAssociation from '@/assets/svg/icon_full-association.svg'
+import icon_intersect from '@/assets/svg/icon_intersect.svg'
+import icon_leftAssociation from '@/assets/svg/icon_left-association.svg'
+import icon_rightAssociation from '@/assets/svg/icon_right-association.svg'
+import icon_sql_outlined from '@/assets/svg/icon_sql_outlined.svg'
+import referenceTable from '@/assets/svg/reference-table.svg'
+import icon_moreVertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'
 import { reactive, computed, ref, nextTick, inject, type Ref, watch, unref } from 'vue'
 import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -34,10 +45,10 @@ const primaryColor = computed(() => {
 })
 
 const iconName = {
-  left: 'icon_left-association',
-  right: 'icon_right-association',
-  inner: 'icon_intersect',
-  full: 'icon_full-association'
+  left: icon_leftAssociation,
+  right: icon_rightAssociation,
+  inner: icon_intersect,
+  full: icon_fullAssociation
 }
 const { t } = useI18n()
 const editSqlField = ref(false)
@@ -535,12 +546,12 @@ const dfsNodeFieldBackReal = ele => {
 
 const menuList = [
   {
-    svgName: 'icon_text-box_outlined',
+    svgName: icon_textBox_outlined,
     label: t('data_set.field_selection'),
     command: 'editerField'
   },
   {
-    svgName: 'icon_delete-trash_outlined',
+    svgName: icon_deleteTrash_outlined,
     label: t('data_set.delete'),
     command: 'del'
   }
@@ -548,12 +559,12 @@ const menuList = [
 
 const sqlMenu = [
   {
-    svgName: 'icon_edit_outlined',
+    svgName: icon_edit_outlined,
     label: t('data_set.edit_sql'),
     command: 'editerSql'
   },
   {
-    svgName: 'icon_rename_outlined',
+    svgName: icon_rename_outlined,
     label: t('datasource.field_rename'),
     command: 'rename'
   }
@@ -1078,13 +1089,15 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
           ]"
         >
           <el-icon>
-            <Icon :name="ele.type !== 'sql' ? 'reference-table' : 'icon_sql_outlined'"></Icon>
+            <Icon
+              ><component :is="ele.type !== 'sql' ? referenceTable : icon_sql_outlined"></component
+            ></Icon>
           </el-icon>
           <span class="tableName">{{ ele.tableName }}</span>
           <span class="placeholder">拖拽表或自定义SQL至此处</span>
           <handle-more
             style="margin-left: auto"
-            iconName="icon_more-vertical_outlined"
+            :iconName="icon_moreVertical_outlined"
             :menuList="ele.type === 'sql' ? [...sqlMenu, ...menuList] : menuList"
             @handle-command="command => handleCommand(ele, command)"
           ></handle-more>
@@ -1106,7 +1119,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
           :style="{ borderColor: ele.sqlChangeFlag ? '#F54A45' : '' }"
         >
           <el-icon>
-            <Icon :name="iconName[ele.to.unionType]"></Icon>
+            <Icon><component :is="iconName[ele.to.unionType]"></component></Icon>
           </el-icon>
         </div>
       </foreignObject>

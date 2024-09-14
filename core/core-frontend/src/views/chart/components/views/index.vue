@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import icon_linkRecord_outlined from '@/assets/svg/icon_link-record_outlined.svg'
+import icon_viewinchat_outlined from '@/assets/svg/icon_viewinchat_outlined.svg'
+import icon_drilling_outlined from '@/assets/svg/icon_drilling_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
@@ -856,22 +860,26 @@ const loadPluginCategory = data => {
               <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
             </template>
             <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_info_outlined" />
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
           <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
             <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_link-record_outlined" />
+              <Icon name="icon_link-record_outlined"
+                ><icon_linkRecord_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </el-tooltip>
           <el-tooltip :effect="toolTip" placement="top" content="已设置跳转" v-if="hasJumpIcon">
             <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_viewinchat_outlined" />
+              <Icon name="icon_viewinchat_outlined"
+                ><icon_viewinchat_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </el-tooltip>
           <el-tooltip :effect="toolTip" placement="top" content="已设置下钻" v-if="hasDrillIcon">
             <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_drilling_outlined" />
+              <Icon name="icon_drilling_outlined"><icon_drilling_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
         </div>

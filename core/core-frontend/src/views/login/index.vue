@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import DataEase from '@/assets/svg/DataEase.svg'
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
@@ -310,7 +311,9 @@ onMounted(async () => {
                 v-if="!loginLogoUrl && axiosFinished"
                 className="login-logo-icon"
                 name="DataEase"
-              ></Icon>
+              >
+                <DataEase class="login-logo-icon" />
+              </Icon>
               <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="" />
             </div>
             <div class="login-welcome">

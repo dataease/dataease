@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import userImg from '@/assets/svg/user-img.svg'
+import icon_expandDown_filled from '@/assets/svg/icon_expand-down_filled.svg'
 import { computed, ref, unref } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -111,11 +113,11 @@ if (uid.value === '1') {
     v-click-outside="openPopover"
   >
     <el-icon class="main-color">
-      <Icon name="user-img" />
+      <Icon name="user-img"><userImg class="svg-icon" /></Icon>
     </el-icon>
     <span class="uname-span">{{ name }}</span>
     <el-icon class="el-icon-animate">
-      <Icon name="icon_expand-down_filled" />
+      <Icon name="icon_expand-down_filled"><icon_expandDown_filled class="svg-icon" /></Icon>
     </el-icon>
   </div>
   <el-popover

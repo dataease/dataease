@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import dvFilterShow from '@/assets/svg/dv-filter-show.svg'
 import { toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
@@ -51,7 +52,7 @@ const newComponent = componentName => {
   >
     <drag-component
       :themes="themes"
-      icon="dv-filter-show"
+      :icon="dvFilterShow"
       label="查询组件"
       drag-info="VQuery&VQuery"
     ></drag-component>

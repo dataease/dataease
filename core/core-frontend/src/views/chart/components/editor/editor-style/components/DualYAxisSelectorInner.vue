@@ -1,4 +1,5 @@
 <script lang="tsx" setup>
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
@@ -197,7 +198,7 @@ onMounted(() => {
             <template #content><span v-html="t('chart.axis_tip')"></span></template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">
-                <Icon name="icon_info_outlined" />
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </span>
           </el-tooltip>
@@ -253,7 +254,7 @@ onMounted(() => {
             <template #content>期望的坐标轴刻度数量，非最终结果。</template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">
-                <Icon name="icon_info_outlined" />
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </span>
           </el-tooltip>

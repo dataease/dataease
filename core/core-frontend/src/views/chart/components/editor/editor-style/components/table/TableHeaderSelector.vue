@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
+import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
+import icon_leftAlignment_outlined from '@/assets/svg/icon_left-alignment_outlined.svg'
+import icon_centerAlignment_outlined from '@/assets/svg/icon_center-alignment_outlined.svg'
+import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outlined.svg'
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
@@ -150,7 +155,7 @@ onMounted(() => {
               :class="{ dark: themes === 'dark', active: state.tableHeaderForm.isBolder }"
             >
               <el-icon>
-                <Icon name="icon_bold_outlined" />
+                <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -173,7 +178,7 @@ onMounted(() => {
               :class="{ dark: themes === 'dark', active: state.tableHeaderForm.isItalic }"
             >
               <el-icon>
-                <Icon name="icon_italic_outlined" />
+                <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -204,7 +209,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_left-alignment_outlined" />
+                  <Icon name="icon_left-alignment_outlined"
+                    ><icon_leftAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -222,7 +229,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_center-alignment_outlined" />
+                  <Icon name="icon_center-alignment_outlined"
+                    ><icon_centerAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -240,7 +249,9 @@ onMounted(() => {
                 }"
               >
                 <el-icon>
-                  <Icon name="icon_right-alignment_outlined" />
+                  <Icon name="icon_right-alignment_outlined"
+                    ><icon_rightAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
