@@ -119,12 +119,13 @@ const props = defineProps({
 const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount, scale } = toRefs(props)
 
-const titleShow = computed(
-  () =>
-    !['rich-text', 'Picture'].includes('rich-text') &&
+const titleShow = computed(() => {
+  return (
+    !['rich-text', 'Picture'].includes(element.value.innerType) &&
     state.title_show &&
     showPosition.value !== 'viewDialog'
-)
+  )
+})
 const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
