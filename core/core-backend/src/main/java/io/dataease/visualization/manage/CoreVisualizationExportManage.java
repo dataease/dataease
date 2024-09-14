@@ -49,6 +49,12 @@ public class CoreVisualizationExportManage {
     @Resource
     private DatasetFieldServer datasetFieldServer;
 
+    public String getResourceName(Long dvId, String busiFlag) {
+        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
+        if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
+        return visualization.getName();
+    }
+
     public File exportExcel(Long dvId, String busiFlag, List<Long> viewIdList, boolean onlyDisplay) throws Exception {
         DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
