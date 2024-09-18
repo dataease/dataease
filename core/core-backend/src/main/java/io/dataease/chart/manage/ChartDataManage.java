@@ -111,7 +111,7 @@ public class ChartDataManage {
 
         var dillAxis = new ArrayList<ChartViewFieldDTO>();
 
-        DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
+        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
         if (table == null) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
         }
@@ -238,12 +238,12 @@ public class ChartDataManage {
         if (ObjectUtils.isNotEmpty(filters)) {
             for (ChartExtFilterDTO request : filters) {
                 // 包含 DE 的为数据集参数
-                if(request.getFieldId().contains("DE")){
+                if (request.getFieldId().contains("DE")) {
                     // 组装sql 参数原始数据
                     if (CollectionUtils.isNotEmpty(sqlVariables)) {
-                        for(SqlVariableDetails sourceVariables : sqlVariables){
-                            if(sourceVariables.getId().equals(request.getFieldId())){
-                                if(CollectionUtils.isEmpty(request.getParameters())){
+                        for (SqlVariableDetails sourceVariables : sqlVariables) {
+                            if (sourceVariables.getId().equals(request.getFieldId())) {
+                                if (CollectionUtils.isEmpty(request.getParameters())) {
                                     request.setParameters(new ArrayList<>());
                                 }
                                 request.getParameters().add(sourceVariables);
@@ -251,7 +251,7 @@ public class ChartDataManage {
                         }
 
                     }
-                }else {
+                } else {
                     DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(Long.valueOf(request.getFieldId()));
                     request.setDatasetTableField(datasetTableField);
                     request.setFilterType(2);
