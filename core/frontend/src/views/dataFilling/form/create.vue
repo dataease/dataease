@@ -980,6 +980,7 @@ export default {
                       :placeholder="item.settings.placeholder"
                       style="width: 100%"
                       size="small"
+                      filterable
                       :multiple="item.settings.multiple"
                       clearable
                     >
