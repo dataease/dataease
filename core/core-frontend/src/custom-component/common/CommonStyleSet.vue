@@ -54,7 +54,7 @@
                 :title="t('chart.text_color')"
                 v-model="styleForm[styleColorKey.value]"
                 class="color-picker-style"
-                :prefix-icon="expandIcon(styleColorKey.icon)"
+                :prefix-icon="styleColorKey.icon"
                 :triggerWidth="styleColorKey.width"
                 is-custom
                 :predefine="state.predefineColors"
@@ -284,6 +284,10 @@
 </template>
 
 <script lang="tsx" setup>
+import dvStyleBackgroundColor from '@/assets/svg/dv-style-backgroundColor.svg'
+import dvStyleColor from '@/assets/svg/dv-style-color.svg'
+import dvStyleHeadFontActiveColor from '@/assets/svg/dv-style-headFontActiveColor.svg'
+import dvStyleHeadFontColor from '@/assets/svg/dv-style-headFontColor.svg'
 import dvStyleScrollSpeed from '@/assets/svg/dv-style-scroll-speed.svg'
 import dvStyleOpacity from '@/assets/svg/dv-style-opacity.svg'
 import dvStyleFontSize from '@/assets/svg/dv-style-fontSize.svg'
@@ -317,9 +321,6 @@ const props = withDefaults(
     themes: 'dark'
   }
 )
-const expandIcon = (name: string) => {
-  return h(Icon, { className: '', name })
-}
 const { themes, element } = toRefs(props)
 const emits = defineEmits(['onStyleAttrChange'])
 const styleMounted = ref({
@@ -376,20 +377,20 @@ const state = reactive({
 })
 
 const styleColorKeyArray = [
-  { value: 'color', label: '颜色', width: 90, icon: 'dv-style-color' },
+  { value: 'color', label: '颜色', width: 90, icon: dvStyleColor },
   {
     value: 'headFontColor',
     label: '头部字体颜色',
     width: 90,
-    icon: 'dv-style-headFontColor'
+    icon: dvStyleHeadFontColor
   },
   {
     value: 'headFontActiveColor',
     label: '激活字体颜色',
     width: 90,
-    icon: 'dv-style-headFontActiveColor'
+    icon: dvStyleHeadFontActiveColor
   },
-  { value: 'backgroundColor', label: '背景色', width: 90, icon: 'dv-style-backgroundColor' }
+  { value: 'backgroundColor', label: '背景色', width: 90, icon: dvStyleBackgroundColor }
 ]
 
 const letterSpacingList = computed(() => {

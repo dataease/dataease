@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_calendar_outlined from '@/assets/svg/icon_calendar_outlined.svg'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
 import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
@@ -69,7 +70,6 @@ const loading = ref(false)
 const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)
-const calendar = h(Icon, { name: 'icon_calendar_outlined' })
 
 const defaultRule = {
   name: [
@@ -1351,7 +1351,7 @@ defineExpose({
             <el-date-picker
               v-model="form.syncSetting.startTime"
               class="de-date-picker"
-              :prefix-icon="calendar"
+              :prefix-icon="icon_calendar_outlined"
               type="datetime"
               :placeholder="t('datasource.start_time')"
             />
@@ -1365,7 +1365,7 @@ defineExpose({
               <el-date-picker
                 v-model="form.syncSetting.endTime"
                 class="de-date-picker"
-                :prefix-icon="calendar"
+                :prefix-icon="icon_calendar_outlined"
                 type="datetime"
                 :placeholder="t('datasource.end_time')"
               />
