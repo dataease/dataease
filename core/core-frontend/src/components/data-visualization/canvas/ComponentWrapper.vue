@@ -290,7 +290,7 @@ const deepScale = computed(() => scale.value / 100)
     element-loading-background="rgba(255, 255, 255, 1)"
   >
     <component-edit-bar
-      v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard' && !props.isSelector"
+      v-if="!showPosition.includes('canvas') && !props.isSelector"
       class="wrapper-edit-bar"
       ref="componentEditBarRef"
       :canvas-id="canvasId"
