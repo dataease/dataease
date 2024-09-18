@@ -114,8 +114,8 @@ onMounted(() => {
         </span>
         <span class="item-span-style" :title="item.name">{{ item.name }}</span>
         <el-icon class="child remove-icon" size="14px">
-          <Icon name="icon_delete-trash_outlined" class-name="inner-class" @click="removeItem"
-            ><icon_deleteTrash_outlined class="svg-icon inner-class"
+          <Icon name="icon_delete-trash_outlined" class-name="inner-class"
+            ><icon_deleteTrash_outlined @click="removeItem" class="svg-icon inner-class"
           /></Icon>
         </el-icon>
         <el-icon
