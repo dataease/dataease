@@ -1784,7 +1784,7 @@ const deleteChartFieldItem = id => {
                 <el-container direction="vertical">
                   <el-scrollbar class="has-footer drag_main_area attr-style theme-border-class">
                     <el-row
-                      v-if="!['rich-text', 'Picture'].includes(view.type)"
+                      v-if="!['rich-text', 'Picture', 'picture-group'].includes(view.type)"
                       class="drag-data padding-lr"
                     >
                       <span class="data-area-label">{{ t('chart.switch_chart') }}</span>

@@ -306,7 +306,7 @@ const list = [
     component: 'UserView',
     name: '图表',
     label: '图表',
-    propValue: { textValue: '' },
+    propValue: { textValue: '', urlList: [] },
     icon: 'bar',
     innerType: 'bar',
     editing: false,

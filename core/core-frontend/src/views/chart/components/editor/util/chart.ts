@@ -1160,6 +1160,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'indicator',
         title: t('chart.chart_indicator'),
         icon: 'indicator'
+      },
+      {
+        render: 'custom',
+        category: 'quota',
+        value: 'picture-group',
+        title: '图片组',
+        icon: 'picture-group'
       }
     ]
   },
@@ -1503,20 +1510,6 @@ export const CHART_TYPE_CONFIGS = [
         value: 'rich-text',
         title: '富文本',
         icon: 'rich-text'
-      }
-    ]
-  },
-  {
-    category: 'other',
-    title: '图片组',
-    display: 'hidden',
-    details: [
-      {
-        render: 'custom',
-        category: 'quota',
-        value: 'picture-group',
-        title: '图片图',
-        icon: 'picture'
       }
     ]
   }
