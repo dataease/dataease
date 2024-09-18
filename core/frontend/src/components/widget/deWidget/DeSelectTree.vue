@@ -293,10 +293,14 @@ export default {
         if (!token && linkToken) {
           method = linkMappingFieldValues
         }
-        method({
+        const param = {
           fieldIds: this.element.options.attrs.fieldId.split(','),
           sort: this.element.options.attrs.sort
-        }).then(res => {
+        }
+        if (this.panelInfo.proxy) {
+          param.userId = this.panelInfo.proxy
+        }
+        method(param).then(res => {
           this.data = this.optionData(res.data)
           this.$nextTick(() => {
             this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.data)
