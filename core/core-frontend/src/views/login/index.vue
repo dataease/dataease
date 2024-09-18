@@ -88,7 +88,7 @@ const getCurLocation = () => {
 }
 
 const formRef = ref<FormInstance | undefined>()
-const duringLogin = ref(false)
+const duringLogin = ref(true)
 const handleLogin = () => {
   if (!formRef.value) return
   formRef.value.validate(async (valid: boolean) => {
@@ -226,6 +226,7 @@ const switchTab = (name: string) => {
 }
 onMounted(async () => {
   loadArrearance()
+  duringLogin.value = false
   if (!checkPlatform()) {
     const res = await loginCategoryApi()
     const adminLogin = router.currentRoute?.value?.name === 'admin-login'
