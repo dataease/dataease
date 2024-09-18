@@ -259,10 +259,22 @@ const onWrapperClick = e => {
         dvMainStore.popAreaActiveSwitch()
       })
     } else if (config.value.events.type === 'jump') {
+      const url = config.value.events.jump.value
+      const jumpType = config.value.events.jump.type
       try {
-        window.open(config.value.events.jump.value, '_blank')
+        let newWindow
+        if ('newPop' === jumpType) {
+          window.open(
+            url,
+            '_blank',
+            'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
+          )
+        } else {
+          newWindow = window.open(url, jumpType)
+        }
+        initOpenHandler(newWindow)
       } catch (e) {
-        console.info('Something wrong when try to jump: ' + config.value.events?.jump?.value)
+        console.warn(t('visualization.url_check_error') + ':' + url)
       }
     } else if (config.value.events.type === 'refreshDataV') {
       useEmitt().emitter.emit('componentRefresh')
@@ -276,6 +288,16 @@ const onWrapperClick = e => {
   }
 }
 
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
 const deepScale = computed(() => scale.value / 100)
 </script>
 

@@ -190,6 +190,8 @@ export function historyItemAdaptor(
     componentItem.events.type !== 'displayChange'
       ? componentItem.events
       : deepCopy(BASE_EVENTS)
+
+  componentItem.events['jump'].type = componentItem.events['jump'].type || '_blank'
   componentItem['category'] = componentItem['category'] || 'base'
 
   if (componentItem.component === 'DeTabs') {
