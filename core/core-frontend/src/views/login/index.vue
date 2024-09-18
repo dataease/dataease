@@ -113,14 +113,7 @@ const handleLogin = () => {
           userStore.setExp(exp)
           if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
             const param = {
-              methodName: 'init',
-              args: r => {
-                duringLogin.value = !!r
-                if (r) {
-                  const queryRedirectPath = getCurLocation()
-                  router.push({ path: queryRedirectPath })
-                }
-              }
+              methodName: 'init'
             }
             xpackInvalidPwd?.value.invokeMethod(param)
             return
@@ -145,6 +138,13 @@ const ldapValidate = callback => {
 }
 const ldapFeedback = () => {
   duringLogin.value = false
+}
+const invalidPwdCb = val => {
+  duringLogin.value = !!val
+  if (val) {
+    const queryRedirectPath = getCurLocation()
+    router.push({ path: queryRedirectPath })
+  }
 }
 const xpackLoadFail = ref(false)
 const loadingText = ref('登录中...')
@@ -376,6 +376,7 @@ onMounted(async () => {
                 ref="xpackInvalidPwd"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
                 @load-fail="() => (xpackLoadFail = true)"
+                @call-back="invalidPwdCb"
               />
             </div>
 
