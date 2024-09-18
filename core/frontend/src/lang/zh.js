@@ -1849,7 +1849,9 @@ export default {
     polynomial_regression: '多项式拟合',
     show_summary: '显示总计',
     summary_label: '总计标签',
-    tip: '提示'
+    tip: '提示',
+    pivot_export_empty_fields: '行维度或指标维度为空不可导出',
+    export_formatted_excel: '导出 Excel (带格式)'
   },
   dataset: {
     goto: ', 前往 ',

@@ -89,6 +89,16 @@
           @click.stop="exportExcelDownload()"
         />
       </span>
+      <span
+        v-if="exportFormattedExcelShow"
+        :title="$t('chart.export_formatted_excel')"
+        @click.stop="exportFormattedExcel()"
+      >
+        <svg-icon
+          style="font-size: 14px; color: white; margin-right: 3px"
+          icon-class="ds-excel-format"
+        />
+      </span>
       <setting-menu
         v-if="activeModel==='edit'"
         style="float: right;height: 24px!important;"
@@ -207,6 +217,7 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { hasDataPermission } from '@/utils/permission'
 import { exportExcelDownload } from '@/components/canvas/utils/utils'
 import { Button } from 'element-ui'
+import { exportPivotExcel } from '@/views/chart/chart/common/common_table'
 
 export default {
   components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController },
@@ -297,6 +308,13 @@ export default {
     },
     exportExcelShow() {
       return this.detailsShow && hasDataPermission('export', this.$store.state.panel.panelInfo.privileges) && this.chart && this.chart.dataFrom !== 'template'
+    },
+    exportFormattedExcelShow() {
+      return this.detailsShow &&
+        hasDataPermission('export', this.$store.state.panel.panelInfo.privileges) &&
+        this.chart &&
+        this.chart.dataFrom !== 'template' &&
+        JSON.parse(this.chart.customAttr).size?.tableLayoutMode !== 'tree'
     },
     enlargeShow() {
       return this.curComponent.type === 'view' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType !== 'richTextView' && !this.curComponent.propValue.innerType.includes('table')
@@ -490,20 +508,20 @@ export default {
         message: h('p', null, [
           this.$t('data_export.exporting'),
           h(
-              Button,
-              {
-                props: {
-                  type: 'text',
-                },
-                class: 'btn-text',
-                on: {
-                  click: () => {
-                    cb()
-                  }
-                }
+            Button,
+            {
+              props: {
+                type: 'text'
               },
-              this.$t('data_export.export_center')
-            ),
+              class: 'btn-text',
+              on: {
+                click: () => {
+                  cb()
+                }
+              }
+            },
+            this.$t('data_export.export_center')
+          ),
           this.$t('data_export.export_info')
         ]),
         iconClass,
@@ -522,7 +540,7 @@ export default {
             Button,
             {
               props: {
-                type: 'text',
+                type: 'text'
               },
               class: 'btn-text',
               on: {
@@ -541,6 +559,13 @@ export default {
     },
     exportExcelDownload() {
       exportExcelDownload(this.chart, null, null, null, null, null, this.exportDataCb)
+    },
+    exportFormattedExcel() {
+      const instance = this.$store.state.chart.tableInstance[this.chart.id]
+      if (!instance) {
+        return
+      }
+      exportPivotExcel(instance, this.chart)
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {

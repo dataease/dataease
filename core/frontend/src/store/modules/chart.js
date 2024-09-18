@@ -5,7 +5,8 @@ const getDefaultState = () => {
     sceneId: {},
     viewId: null,
     tableId: {},
-    chartSceneData: {}
+    chartSceneData: {},
+    tableInstance: {}
   }
 }
 
@@ -29,6 +30,9 @@ const mutations = {
   },
   setChartSceneData: (state, chartSceneData) => {
     state.chartSceneData = chartSceneData
+  },
+  setTableInstance: (state, { viewId, tableInstance }) => {
+    state.tableInstance[viewId] = tableInstance
   }
 }
 
@@ -50,6 +54,9 @@ const actions = {
   },
   setChartSceneData: ({ commit }, chartSceneData) => {
     commit('setChartSceneData', chartSceneData)
+  },
+  setTableInstance: ({ commit }, { viewId, tableInstance }) => {
+    commit('setTableInstance', { viewId, tableInstance })
   }
 }
 
