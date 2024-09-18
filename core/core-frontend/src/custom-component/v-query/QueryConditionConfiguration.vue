@@ -1326,12 +1326,7 @@ const relativeToCurrentListRange = computed(() => {
 })
 
 const timeGranularityChange = (val: string) => {
-  if (
-    ['year', 'month', 'date', 'datetime'].indexOf(val) <
-    ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentType)
-  ) {
-    curComponent.value.relativeToCurrentType = 'year'
-  }
+  curComponent.value.relativeToCurrentType = ['date', 'datetime'].includes(val) ? 'date' : val
   if (curComponent.value.relativeToCurrent !== 'custom') {
     curComponent.value.relativeToCurrent = relativeToCurrentList.value[0]?.value
   }
@@ -1339,19 +1334,10 @@ const timeGranularityChange = (val: string) => {
 
 const timeGranularityMultipleChange = (val: string) => {
   handleDialogClick()
-  if (
-    ['yearrange', 'monthrange', 'daterange', 'datetimerange'].indexOf(val) <
-    ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentType)
-  ) {
-    curComponent.value.relativeToCurrentType = 'year'
-  }
-  if (
-    ['yearrange', 'monthrange', 'daterange', 'datetimerange'].indexOf(val) <
-    ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentTypeRange)
-  ) {
-    curComponent.value.relativeToCurrentTypeRange = 'year'
-  }
-
+  curComponent.value.relativeToCurrentType = ['daterange', 'datetimerange'].includes(val)
+    ? 'date'
+    : val.split('range')[0]
+  curComponent.value.relativeToCurrentTypeRange = curComponent.value.relativeToCurrentType
   if (curComponent.value.relativeToCurrentRange !== 'custom') {
     curComponent.value.relativeToCurrentRange = relativeToCurrentListRange.value[0]?.value
   }
@@ -1365,10 +1351,10 @@ const timeGranularityMultipleChange = (val: string) => {
     relativeToCurrent: 'custom',
     relativeToCurrentRange: 'custom',
     timeNum: 0,
-    relativeToCurrentType: 'year',
+    relativeToCurrentType: curComponent.value.relativeToCurrentRange,
     around: 'f',
     timeNumRange: 0,
-    relativeToCurrentTypeRange: 'year',
+    relativeToCurrentTypeRange: curComponent.value.relativeToCurrentRange,
     aroundRange: 'f'
   }
 }
