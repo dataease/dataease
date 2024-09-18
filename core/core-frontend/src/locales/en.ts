@@ -379,6 +379,7 @@ export default {
       confirm_delete: 'Confirm delete?',
       add_data: 'Add Data',
       batch_upload: 'Upload Data',
+      download: 'Download Data',
       download_template: 'Download Template',
       insert_data: 'Insert Data',
       update_data: 'Update Data',

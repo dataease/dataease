@@ -471,6 +471,9 @@ defineExpose({
           <template #default="scope">
             <span v-if="scope.row.exportFromType === 'dataset'">{{ t('data_set.data_set') }}</span>
             <span v-if="scope.row.exportFromType === 'chart'">{{ t('data_set.view') }}</span>
+            <span v-if="scope.row.exportFromType === 'data_filling'">{{
+              t('data_fill.data_fill')
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column

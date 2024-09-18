@@ -107,7 +107,7 @@ public interface DataFillingApi {
     List<Map<String, Object>> listSubTaskUser(@PathVariable("id") Long id, @PathVariable("type") String type) throws Exception;
 
     @PostMapping("/user-task/page/{goPage}/{pageSize}")
-    IPage<DfUserTaskVo> listUserTask(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize,@RequestBody DfUserTaskRequest request) throws Exception;
+    IPage<DfUserTaskVo> listUserTask(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfUserTaskRequest request) throws Exception;
 
     @GetMapping("/user-task/list/{id}")
     DfUserTaskData listUserTaskData(@PathVariable("id") Long id) throws Exception;
@@ -134,4 +134,11 @@ public interface DataFillingApi {
 
     @GetMapping("/template/{itemId}")
     String getTemplateByUserTaskItemId(@PathVariable("itemId") Long itemId);
+
+    void writeExcel(String file, DataFillFormTableDataRequest request, Long userId, Long org) throws Exception;
+
+    void geFullName(Long pid, List<String> fullName);
+
+    @PostMapping("/innerExport/{formId}")
+    void innerExport(@PathVariable("formId") Long formId) throws Exception;
 }
