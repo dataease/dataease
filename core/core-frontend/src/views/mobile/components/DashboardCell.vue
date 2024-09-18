@@ -25,7 +25,7 @@ const handleClick = () => {
   <div class="dashboard-cell" @click="handleClick">
     <div class="label">
       <el-icon>
-        <Icon><component :is="prefixIcon"></component></Icon>
+        <Icon><component class="svg-icon" :is="prefixIcon"></component></Icon>
       </el-icon>
       <span class="text ellipsis">
         {{ label }}

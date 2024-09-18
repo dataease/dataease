@@ -187,9 +187,12 @@
                             :value="item.attachId"
                           >
                             <Icon
-                              style="width: 14px; height: 14px"
-                              :className="`field-icon-${fieldType[item.deType]}`"
-                              ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                              ><component
+                                class="svg-icon"
+                                style="width: 14px; height: 14px"
+                                :class="`field-icon-${fieldType[item.deType]}`"
+                                :is="iconFieldMap[fieldType[item.deType]]"
+                              ></component
                             ></Icon>
                             <span style="font-size: 12px">{{ item.name }}</span>
                           </el-option>
@@ -227,10 +230,11 @@
                           </div>
                           <div>
                             <Icon
-                              class-name="view-type-icon"
-                              style="margin: 0 4px"
-                              :name="viewInfo.chartType"
-                              ><component :is="iconChartMap[viewInfo.chartType]"></component
+                              ><component
+                                class="svg-icon view-type-icon"
+                                style="margin: 0 4px"
+                                :is="iconChartMap[viewInfo.chartType]"
+                              ></component
                             ></Icon>
                           </div>
                           <span style="font-size: 12px"> {{ viewInfo.chartName }}</span>

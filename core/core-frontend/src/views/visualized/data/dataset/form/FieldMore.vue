@@ -166,11 +166,14 @@ const handleChange = () => {
         <div class="flex-align-center icon">
           <el-icon v-if="data.icon">
             <Icon
-              :className="
-                ['text', 'location', 'value', 'float', 'time', 'url'].includes(data.value) &&
-                `field-icon-${fieldType[['float', 'value'].includes(data.value) ? 2 : 0]}`
-              "
-              ><component :is="data.icon"></component
+              ><component
+                class="svg-icon"
+                :class="
+                  ['text', 'location', 'value', 'float', 'time', 'url'].includes(data.value) &&
+                  `field-icon-${fieldType[['float', 'value'].includes(data.value) ? 2 : 0]}`
+                "
+                :is="data.icon"
+              ></component
             ></Icon>
           </el-icon>
           <span>

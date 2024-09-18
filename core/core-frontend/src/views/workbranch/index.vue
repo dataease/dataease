@@ -334,7 +334,7 @@ initMarketTemplate()
               <div class="empty-tooltip-container" />
             </el-tooltip>
             <el-icon class="main-color" :style="{ backgroundColor: ele.color }">
-              <Icon><component :is="ele.icon"></component></Icon>
+              <Icon><component class="svg-icon" :is="ele.icon"></component></Icon>
             </el-icon>
             <span class="name">
               {{ t(`auth.${ele.name}`) }}

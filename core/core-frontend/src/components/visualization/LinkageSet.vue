@@ -134,11 +134,12 @@
                   </span>
                   <span>
                     <span class="tree-select-field">
-                      <Icon
-                        class-name="view-type-icon"
-                        style="margin-right: 4px"
-                        :name="data.targetViewType"
-                        ><component :is="iconChartMap[data.targetViewType]"></component
+                      <Icon :name="data.targetViewType"
+                        ><component
+                          class="svg-icon view-type-icon"
+                          style="margin-right: 4px"
+                          :is="iconChartMap[data.targetViewType]"
+                        ></component
                       ></Icon>
                       {{ data.targetViewName }}
                     </span>
@@ -180,9 +181,12 @@
                           >
                             <span class="custom-option">
                               <Icon
-                                style="width: 14px; height: 14px"
-                                :className="`field-icon-${fieldType[item.deType]}`"
-                                ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                                ><component
+                                  style="width: 14px; height: 14px"
+                                  :class="`field-icon-${fieldType[item.deType]}`"
+                                  class="svg-icon"
+                                  :is="iconFieldMap[fieldType[item.deType]]"
+                                ></component
                               ></Icon>
                               <span style="float: left; margin-left: 4px; font-size: 14px">{{
                                 item.name
@@ -212,10 +216,12 @@
                           >
                             <span class="custom-option">
                               <Icon
-                                style="width: 14px; height: 14px"
-                                :name="`field_${fieldType[item.deType]}`"
-                                :className="`field-icon-${fieldType[item.deType]}`"
-                                ><component :is="iconFieldMap[fieldType[item.deType]]"></component
+                                ><component
+                                  style="width: 14px; height: 14px"
+                                  class="svg-icon"
+                                  :class="`field-icon-${fieldType[item.deType]}`"
+                                  :is="iconFieldMap[fieldType[item.deType]]"
+                                ></component
                               ></Icon>
                               <span style="float: left; margin-left: 4px; font-size: 14px">{{
                                 item.name

@@ -88,7 +88,7 @@ const groupActiveChange = category => {
             <Icon
               v-if="['outer_svg', 'graphical'].includes(chartInfo.type)"
               class-name="item-top-icon"
-              ><component :is="chartInfo.icon"></component
+              ><component class="svg-icon item-top-icon" :is="chartInfo.icon"></component
             ></Icon>
             <component v-else style="color: #a6a6a6" :is="chartInfo.icon"></component>
           </div>

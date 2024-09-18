@@ -14,7 +14,10 @@
       {{ t('datasource.priority') }}
       <el-icon>
         <Icon
-          ><component :is="showPriority ? icon_down_outlined : icon_down_outlined1"></component
+          ><component
+            class="svg-icon"
+            :is="showPriority ? icon_down_outlined : icon_down_outlined1"
+          ></component
         ></Icon>
       </el-icon>
     </span>
