@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import iconFilter from '@/assets/svg/icon-filter.svg'
@@ -445,9 +446,6 @@ const quotaItemRemove = item => {
     axis = view.value.extBubble.splice(item.index, 1)
   }
   useEmitt().emitter.emit('removeAxis', { axisType, axis, editType: 'remove' })
-}
-const arrowIcon = () => {
-  return h(Icon, { name: 'icon_down_outlined-1' })
 }
 
 const isFilterActive = computed(() => {
@@ -1804,7 +1802,7 @@ const deleteChartFieldItem = id => {
                             v-model="state.useless"
                             popper-class="chart-type-hide-options"
                             class="chart-type-select"
-                            :suffix-icon="arrowIcon()"
+                            :suffix-icon="icon_down_outlined1"
                             :effect="themes"
                             size="small"
                           >
