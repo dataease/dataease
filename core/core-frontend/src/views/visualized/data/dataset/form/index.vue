@@ -23,6 +23,7 @@ import {
   computed,
   watch,
   provide,
+  h,
   onMounted,
   onBeforeUnmount
 } from 'vue'
@@ -621,11 +622,10 @@ const generateColumns = (arr: Field[]) =>
     headerCellRenderer: ({ column }) => (
       <div class="flex-align-center">
         <ElIcon>
-          <Icon className={`field-icon-${fieldType[column.deType]}`}>
-            {{
-              ...iconFieldMap[fieldType[column.deType]],
-              className: `svg-icon field-icon-${fieldType[column.deType]}`
-            }}
+          <Icon>
+            {h(iconFieldMap[fieldType[column.deType]], {
+              class: `svg-icon field-icon-${fieldType[column.deType]}`
+            })}
           </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '120px', marginLeft: '4px' }}>

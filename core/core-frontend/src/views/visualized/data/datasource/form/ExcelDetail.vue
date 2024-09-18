@@ -7,6 +7,7 @@ import {
   ref,
   shallowRef,
   reactive,
+  h,
   computed,
   toRefs,
   onMounted,
@@ -117,11 +118,10 @@ const generateColumns = (arr: Field[]) =>
     headerCellRenderer: ({ column }) => (
       <div class="flex-align-center icon">
         <ElIcon>
-          <Icon className={`field-icon-${fieldType[column.fieldType]}`}>
-            {{
-              ...iconFieldMap[fieldType[column.fieldType]],
-              className: `svg-icon field-icon-${fieldType[column.fieldType]}`
-            }}
+          <Icon>
+            {h(iconFieldMap[fieldType[column.fieldType]], {
+              class: `svg-icon field-icon-${fieldType[column.fieldType]}`
+            })}
           </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '100px' }}>

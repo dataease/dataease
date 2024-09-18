@@ -243,10 +243,9 @@ const generateColumns = (arr: Field[]) =>
       <div class="flex-align-center">
         <ElIcon style={{ marginRight: '6px' }}>
           <Icon className={`field-icon-${fieldType[column.deType]}`}>
-            {{
-              ...iconFieldMap[fieldType[column.deType]],
-              className: `svg-icon field-icon-${fieldType[column.deType]}`
-            }}
+            {h(iconFieldMap[fieldType[column.deType]], {
+              class: `svg-icon field-icon-${fieldType[column.deType]}`
+            })}
           </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '120px' }}>

@@ -218,11 +218,10 @@ const allFieldsColumns = [
     cellRenderer: ({ cellData: deType }) => (
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
         <ElIcon style={{ marginRight: '6px' }}>
-          <Icon className={`field-icon-${fieldType[deType]}`}>
-            {{
-              ...iconFieldMap[fieldType[deType]],
-              className: `svg-icon field-icon-${fieldType[deType]}`
-            }}
+          <Icon>
+            {h(iconFieldMap[fieldType[deType]], {
+              class: `svg-icon field-icon-${fieldType[deType]}`
+            })}
           </Icon>
         </ElIcon>
         {t(`dataset.${fieldType[deType]}`) +
@@ -258,11 +257,10 @@ const generateColumns = (arr: Field[]) =>
     headerCellRenderer: ({ column }) => (
       <div class="flex-align-center">
         <ElIcon style={{ marginRight: '6px' }}>
-          <Icon className={`field-icon-${fieldType[column.deType]}`}>
-            {{
-              ...iconFieldMap[fieldType[column.deType]],
-              className: `svg-icon field-icon-${fieldType[column.deType]}`
-            }}
+          <Icon>
+            {h(iconFieldMap[fieldType[column.deType]], {
+              class: `svg-icon field-icon-${fieldType[column.deType]}`
+            })}
           </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '120px' }}>

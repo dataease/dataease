@@ -3134,10 +3134,11 @@ const deleteChartFieldItem = id => {
                     >
                       <el-icon>
                         <Icon
-                          :class-name="`field-icon-${
-                            fieldType[[2, 3].includes(element.deType) ? 2 : 0]
-                          }`"
                           ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[[2, 3].includes(element.deType) ? 2 : 0]
+                            }`"
                             :is="getIconName(element.deType, element.extField)"
                           ></component
                         ></Icon>
