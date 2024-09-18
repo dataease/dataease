@@ -364,10 +364,14 @@ export default {
         if (!token && linkToken) {
           method = linkMultFieldValues
         }
-        method({
+        const param = {
           fieldIds: this.element.options.attrs.fieldId.split(','),
           sort: this.element.options.attrs.sort, keyword: this.keyWord
-        }).then(res => {
+        }
+        if (this.panelInfo.proxy) {
+          param.userId = this.panelInfo.proxy
+        }
+        method(param).then(res => {
           this.data = this.optionData(res.data)
           this.changeInputStyle()
           if (this.element.options.attrs.multiple) {
