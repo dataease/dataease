@@ -143,7 +143,7 @@ onMounted(() => {
         class="ai-icon copilot-icon"
         v-if="!showOverlayCopilot && appearanceStore.getShowCopilot"
       >
-        <Icon name="copilot" @click="handleCopilotClick"><copilot class="svg-icon" /></Icon>
+        <Icon name="copilot"><copilot @click="handleCopilotClick" class="svg-icon" /></Icon>
       </el-icon>
       <CopilotCom
         @confirm="copilotConfirm"
@@ -156,15 +156,15 @@ onMounted(() => {
         class="ai-icon"
         v-if="aiBaseUrl && !showOverlay && appearanceStore.getShowAi"
       >
-        <Icon name="dv-ai" @click="handleAiClick"><dvAi class="svg-icon" /></Icon>
+        <Icon name="dv-ai"><dvAi @click="handleAiClick" class="svg-icon" /></Icon>
       </el-icon>
       <el-tooltip effect="dark" content="数据导出中心" placement="bottom">
         <el-icon
           class="preview-download_icon"
           :class="navigateBg === 'light' && 'is-light-setting'"
         >
-          <Icon name="dv-preview-download" @click="downloadClick"
-            ><dvPreviewDownload class="svg-icon"
+          <Icon name="dv-preview-download"
+            ><dvPreviewDownload @click="downloadClick" class="svg-icon"
           /></Icon>
         </el-icon>
       </el-tooltip>
