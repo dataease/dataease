@@ -296,7 +296,6 @@ const emits = defineEmits(['finish'])
 
 <template>
   <el-dialog
-    v-loading="loading"
     :title="dialogTitle"
     v-model="createDataset"
     class="create-dialog"
@@ -374,7 +373,9 @@ const emits = defineEmits(['finish'])
     </el-form>
     <template #footer>
       <el-button secondary @click="resetForm">{{ t('dataset.cancel') }} </el-button>
-      <el-button type="primary" @click="saveDataset">{{ t('dataset.confirm') }} </el-button>
+      <el-button v-loading="loading" type="primary" @click="saveDataset"
+        >{{ t('dataset.confirm') }}
+      </el-button>
     </template>
   </el-dialog>
 </template>
