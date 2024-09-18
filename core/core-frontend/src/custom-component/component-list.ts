@@ -33,7 +33,8 @@ export const BASE_EVENTS = {
     { key: 'refreshView', label: '刷新图表' }
   ],
   jump: {
-    value: 'https://'
+    value: 'https://',
+    type: '_blank'
   },
   download: {
     value: true
