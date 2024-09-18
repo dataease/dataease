@@ -12,7 +12,17 @@ import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
 import icon_playRound_outlined from '@/assets/svg/icon_play-round_outlined.svg'
-import { ref, reactive, onMounted, PropType, toRefs, watch, onBeforeUnmount, shallowRef } from 'vue'
+import {
+  ref,
+  reactive,
+  onMounted,
+  PropType,
+  toRefs,
+  watch,
+  onBeforeUnmount,
+  shallowRef,
+  h
+} from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
 import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
@@ -105,11 +115,10 @@ const generateColumns = (arr: Field[]) =>
     headerCellRenderer: ({ column }) => (
       <div class="flex-align-center">
         <ElIcon style={{ marginRight: '6px' }}>
-          <Icon className={`field-icon-${fieldType[column.deType]}`}>
-            {{
-              ...iconFieldMap[fieldType[column.deType]],
-              className: `svg-icon field-icon-${fieldType[column.deType]}`
-            }}
+          <Icon>
+            {h(iconFieldMap[fieldType[column.deType]], {
+              class: `svg-icon field-icon-${fieldType[column.deType]}`
+            })}
           </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '120px' }}>
