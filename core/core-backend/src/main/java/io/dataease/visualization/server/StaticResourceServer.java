@@ -68,8 +68,15 @@ public class StaticResourceServer implements StaticResourceApi {
             return false;
         }
         String mimeType = file.getContentType();
+        if (StringUtils.isEmpty(mimeType)) {
+            return false;
+        }
         // 判断是否为图片或SVG
-        return (mimeType != null && mimeType.startsWith("image/")) || isValidSVG(file);
+        if (mimeType.toLowerCase().equals("image/svg+xml")) {
+            return isValidSVG(file);
+        } else {
+            return mimeType.startsWith("image/");
+        }
     }
 
     public void saveFilesToServe(String staticResource) {
@@ -123,9 +130,14 @@ public class StaticResourceServer implements StaticResourceApi {
         }
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
 
         try (InputStream inputStream = file.getInputStream()) {
+            // 禁用外部实体解析以防止XXE攻击
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(inputStream);
 
