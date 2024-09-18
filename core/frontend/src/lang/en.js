@@ -1859,7 +1859,9 @@ export default {
     polynomial_regression: 'Polynomial regression',
     show_summary: 'Show summary',
     summary_label: 'Summary label',
-    tip: 'Tip'
+    tip: 'Tip',
+    pivot_export_empty_fields: 'Can not export without row dimension or quota',
+    export_formatted_excel: 'Export formatted excel'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
