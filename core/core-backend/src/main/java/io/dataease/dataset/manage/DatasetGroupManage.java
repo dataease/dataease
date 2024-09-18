@@ -45,8 +45,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import static io.dataease.result.ResultCode.DV_RESOURCE_UNCHECKED;
-
 /**
  * @Author Junjun
  */
@@ -395,10 +393,6 @@ public class DatasetGroupManage {
             dto.setAllFields(allFields);
         }
         return dto;
-    }
-
-    public DatasetGroupInfoDTO getDatasetGroupInfoDTO(Long id, String type) throws Exception {
-        return get(id, type);
     }
 
     public DatasetGroupInfoDTO getDetail(Long id) throws Exception {
