@@ -1099,7 +1099,10 @@ defineExpose({
               >SSH 设置
               <el-icon>
                 <Icon
-                  ><component :is="showSSH ? icon_down_outlined : icon_down_outlined1"></component
+                  ><component
+                    class="svg-icon"
+                    :is="showSSH ? icon_down_outlined : icon_down_outlined1"
+                  ></component
                 ></Icon>
               </el-icon>
             </span>

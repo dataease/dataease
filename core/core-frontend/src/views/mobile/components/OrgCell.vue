@@ -37,7 +37,7 @@ const handleRightClick = () => {
   <div class="org-cell">
     <div class="label" :class="active && 'active'">
       <el-icon v-if="!!prefixIcon">
-        <Icon><component :is="prefixIcon"></component></Icon>
+        <Icon><component class="svg-icon" :is="prefixIcon"></component></Icon>
       </el-icon>
       <span class="text ellipsis">
         {{ label }}

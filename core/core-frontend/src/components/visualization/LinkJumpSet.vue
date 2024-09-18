@@ -67,9 +67,11 @@
                     <span class="tree-select-field">
                       <el-icon style="margin-right: 4px">
                         <Icon
-                          :name="`field_${fieldType[data.sourceDeType]}`"
-                          :className="`field-icon-${fieldType[data.sourceDeType]}`"
-                          ><component :is="iconFieldMap[fieldType[data.sourceDeType]]"></component
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[data.sourceDeType]}`"
+                            :is="iconFieldMap[fieldType[data.sourceDeType]]"
+                          ></component
                         ></Icon>
                       </el-icon>
                       {{ data.sourceFieldName }}
@@ -245,9 +247,11 @@
                                 >
                                   <span class="custom-option">
                                     <Icon
-                                      class-name="view-type-icon"
-                                      style="width: 14px; height: 14px"
-                                      ><component :is="iconChartMap[item.type]"></component
+                                      ><component
+                                        class="svg-icon view-type-icon"
+                                        style="width: 14px; height: 14px"
+                                        :is="iconChartMap[item.type]"
+                                      ></component
                                     ></Icon>
                                     <span style="float: left; margin-left: 4px; font-size: 14px">{{
                                       item.title

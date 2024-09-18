@@ -1090,7 +1090,10 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
         >
           <el-icon>
             <Icon
-              ><component :is="ele.type !== 'sql' ? referenceTable : icon_sql_outlined"></component
+              ><component
+                class="svg-icon"
+                :is="ele.type !== 'sql' ? referenceTable : icon_sql_outlined"
+              ></component
             ></Icon>
           </el-icon>
           <span class="tableName">{{ ele.tableName }}</span>
@@ -1119,7 +1122,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
           :style="{ borderColor: ele.sqlChangeFlag ? '#F54A45' : '' }"
         >
           <el-icon>
-            <Icon><component :is="iconName[ele.to.unionType]"></component></Icon>
+            <Icon><component class="svg-icon" :is="iconName[ele.to.unionType]"></component></Icon>
           </el-icon>
         </div>
       </foreignObject>

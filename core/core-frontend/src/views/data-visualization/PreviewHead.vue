@@ -113,7 +113,12 @@ const initOpenHandler = newWindow => {
         @click="executeStore"
         :style="{ color: favorited ? '#FFC60A' : '#646A73' }"
       >
-        <icon><component :is="favorited ? visualStar : icon_collection_outlined"></component></icon>
+        <icon
+          ><component
+            class="svg-icon"
+            :is="favorited ? visualStar : icon_collection_outlined"
+          ></component
+        ></icon>
       </el-icon>
     </el-tooltip>
     <el-divider style="margin: 0 16px 0 7px" direction="vertical" />

@@ -1598,10 +1598,11 @@ const getDsIconName = data => {
                     <span class="custom-tree-node father">
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[[2, 3].includes(data.deType) ? 2 : 0]
-                          }`"
-                          ><component :is="iconFieldMap[fieldType[data.deType]]"></component
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[[2, 3].includes(data.deType) ? 2 : 0]}`"
+                            :is="iconFieldMap[fieldType[data.deType]]"
+                          ></component
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
@@ -1631,10 +1632,11 @@ const getDsIconName = data => {
                     <span class="custom-tree-node father">
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[[2, 3].includes(data.deType) ? 2 : 0]
-                          }`"
-                          ><component :is="iconFieldMap[fieldType[data.deType]]"></component
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[[2, 3].includes(data.deType) ? 2 : 0]}`"
+                            :is="iconFieldMap[fieldType[data.deType]]"
+                          ></component
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
@@ -1672,10 +1674,13 @@ const getDsIconName = data => {
                     <div class="flex-align-center">
                       <ElIcon style="margin-right: 6px">
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[[2, 3].includes(column.deType) ? 2 : 0]
-                          }`"
-                          ><component :is="iconFieldMap[fieldType[column.deType]]"></component
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[[2, 3].includes(column.deType) ? 2 : 0]
+                            }`"
+                            :is="iconFieldMap[fieldType[column.deType]]"
+                          ></component
                         ></Icon>
                       </ElIcon>
                       <span class="ellipsis" :title="column.title" style="width: 120px">
@@ -1757,10 +1762,13 @@ const getDsIconName = data => {
                           <template v-slot="{ data }">
                             <el-icon>
                               <Icon
-                                :className="`field-icon-${
-                                  fieldType[[2, 3].includes(data.value) ? 2 : 0]
-                                }`"
-                                ><component :is="iconFieldMap[getIconName(data.value)]"></component
+                                ><component
+                                  class="svg-icon"
+                                  :class="`field-icon-${
+                                    fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                  }`"
+                                  :is="iconFieldMap[getIconName(data.value)]"
+                                ></component
                               ></Icon>
                             </el-icon>
                             <span>{{ data.label }}</span>
@@ -1933,10 +1941,13 @@ const getDsIconName = data => {
                           <template v-slot="{ data }">
                             <el-icon>
                               <Icon
-                                :className="`field-icon-${
-                                  fieldType[[2, 3].includes(data.value) ? 2 : 0]
-                                }`"
-                                ><component :is="iconFieldMap[getIconName(data.value)]"></component
+                                ><component
+                                  class="svg-icon"
+                                  :class="`field-icon-${
+                                    fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                  }`"
+                                  :is="iconFieldMap[getIconName(data.value)]"
+                                ></component
                               ></Icon>
                             </el-icon>
                             <span>{{ data.label }}</span>
@@ -2069,8 +2080,11 @@ const getDsIconName = data => {
                   <template v-slot="{ data }">
                     <el-icon>
                       <Icon
-                        :className="`field-icon-${fieldType[[2, 3].includes(data.value) ? 2 : 0]}`"
-                        ><component :is="iconFieldMap[getIconName(data.value)]"></component
+                        ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldType[[2, 3].includes(data.value) ? 2 : 0]}`"
+                          :is="iconFieldMap[getIconName(data.value)]"
+                        ></component
                       ></Icon>
                     </el-icon>
                     <span>{{ data.label }}</span>

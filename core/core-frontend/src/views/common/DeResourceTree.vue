@@ -534,7 +534,7 @@ defineExpose({
                 <el-dropdown-menu>
                   <el-dropdown-item @click="addOperation('newLeaf', null, 'leaf', true)">
                     <el-icon :class="`handle-icon color-${curCanvasType}`">
-                      <Icon><component :is="dvSvgType"></component></Icon>
+                      <Icon><component class="svg-icon" :is="dvSvgType"></component></Icon>
                     </el-icon>
                     空白新建
                   </el-dropdown-item>

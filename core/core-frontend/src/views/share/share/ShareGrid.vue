@@ -203,7 +203,7 @@ watch(
               /></Icon>
             </el-icon>
             <el-icon v-else :class="`main-color color-${scope.row.type}`">
-              <Icon><component :is="iconMap[scope.row.type]"></component></Icon>
+              <Icon><component class="svg-icon" :is="iconMap[scope.row.type]"></component></Icon>
             </el-icon>
             <el-tooltip placement="top">
               <template #content>{{ scope.row.name }}</template>

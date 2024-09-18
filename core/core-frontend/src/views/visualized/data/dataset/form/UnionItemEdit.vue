@@ -75,7 +75,12 @@ init()
         >
           <template #prefix>
             <el-icon>
-              <Icon><component :is="iconName[unionTypeFromParent] || noJoin"></component></Icon>
+              <Icon
+                ><component
+                  class="svg-icon"
+                  :is="iconName[unionTypeFromParent] || noJoin"
+                ></component
+              ></Icon>
             </el-icon>
           </template>
           <el-option

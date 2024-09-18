@@ -3216,10 +3216,13 @@ const deleteChartFieldItem = id => {
                         >
                           <el-icon>
                             <Icon
-                              :class-name="`field-icon-${
-                                fieldType[[2, 3].includes(ele.deType) ? 2 : 0]
-                              }`"
-                              ><component :is="iconFieldMap[fieldType[ele.deType]]"></component
+                              ><component
+                                class="svg-icon"
+                                :class="`field-icon-${
+                                  fieldType[[2, 3].includes(ele.deType) ? 2 : 0]
+                                }`"
+                                :is="iconFieldMap[fieldType[ele.deType]]"
+                              ></component
                             ></Icon>
                           </el-icon>
                           <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{

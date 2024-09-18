@@ -233,7 +233,12 @@ const queryAnswer = (event?: KeyboardEvent) => {
             <Icon name="icon_loading_outlined"><icon_loading_outlined class="svg-icon" /></Icon>
           </el-icon>
           <el-icon v-else class="copilot-icon" @click="queryAnswer" :class="isActive && 'active'">
-            <Icon><component :is="isActive ? activeBtn_copilot : btn_copilot"></component></Icon>
+            <Icon
+              ><component
+                class="svg-icon"
+                :is="isActive ? activeBtn_copilot : btn_copilot"
+              ></component
+            ></Icon>
           </el-icon>
         </div>
       </div>
@@ -298,10 +303,13 @@ const queryAnswer = (event?: KeyboardEvent) => {
                 <span class="custom-tree-node father">
                   <el-icon>
                     <Icon
-                      :className="`field-icon-${
-                        fieldType[[2, 3].includes(data.deExtractType) ? 2 : 0]
-                      }`"
-                      ><component :is="iconFieldMap[fieldType[data.deExtractType]]"></component
+                      ><component
+                        class="svg-icon"
+                        :class="`field-icon-${
+                          fieldType[[2, 3].includes(data.deExtractType) ? 2 : 0]
+                        }`"
+                        :is="iconFieldMap[fieldType[data.deExtractType]]"
+                      ></component
                     ></Icon>
                   </el-icon>
                   <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
@@ -323,10 +331,13 @@ const queryAnswer = (event?: KeyboardEvent) => {
                 <span class="custom-tree-node father">
                   <el-icon>
                     <Icon
-                      :className="`field-icon-${
-                        fieldType[[2, 3].includes(data.deExtractType) ? 2 : 0]
-                      }`"
-                      ><component :is="iconFieldMap[fieldType[data.deExtractType]]"></component
+                      ><component
+                        class="svg-icon"
+                        :class="`field-icon-${
+                          fieldType[[2, 3].includes(data.deExtractType) ? 2 : 0]
+                        }`"
+                        :is="iconFieldMap[fieldType[data.deExtractType]]"
+                      ></component
                     ></Icon>
                   </el-icon>
                   <span :title="data.name" class="label-tooltip">{{ data.name }}</span>

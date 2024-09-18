@@ -257,8 +257,8 @@ onMounted(() => {
             <span>{{ t('chart.delete') }}</span>
           </template>
           <el-icon class="child remove-icon">
-            <Icon class-name="inner-class" name="icon_delete-trash_outlined" @click="removeItem"
-              ><icon_deleteTrash_outlined class="svg-icon inner-clas"
+            <Icon @click="removeItem"
+              ><icon_deleteTrash_outlined class="svg-icon inner-class"
             /></Icon>
           </el-icon>
         </el-tooltip>

@@ -328,10 +328,12 @@ const getEmptyDesc = (): string => {
           <template v-slot:default="scope">
             <div class="name-content" :class="{ 'jump-active': jumpActiveCheck(scope.row) }">
               <el-icon v-if="scope.row.extFlag" style="margin-right: 12px; font-size: 18px">
-                <Icon><component :is="iconMap[scope.row.type + 'Mobile']"></component></Icon>
+                <Icon
+                  ><component class="svg-icon" :is="iconMap[scope.row.type + 'Mobile']"></component
+                ></Icon>
               </el-icon>
               <el-icon v-else :class="`main-color color-${scope.row.type}`">
-                <Icon><component :is="iconMap[scope.row.type]"></component></Icon>
+                <Icon><component class="svg-icon" :is="iconMap[scope.row.type]"></component></Icon>
               </el-icon>
               <el-tooltip placement="top">
                 <template #content>{{ scope.row.name }}</template>

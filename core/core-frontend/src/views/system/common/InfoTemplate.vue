@@ -54,7 +54,10 @@
               <el-button text @click="switchPwd(item.pkey)" class="setting-tip-btn">
                 <template #icon>
                   <Icon
-                    ><component :is="pwdItem[item.pkey]['hidden'] ? eye : eyeOpen"></component
+                    ><component
+                      class="svg-icon"
+                      :is="pwdItem[item.pkey]['hidden'] ? eye : eyeOpen"
+                    ></component
                   ></Icon>
                 </template>
               </el-button>

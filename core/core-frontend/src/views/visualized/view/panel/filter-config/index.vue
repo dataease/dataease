@@ -182,9 +182,11 @@ const handleTabClick = () => {
             <div class="filter-db-row">
               <el-icon>
                 <Icon
-                  :name="`field_${fieldType[element.deType]}`"
-                  :className="`field-icon-${fieldType[element.deType]}`"
-                  ><component :is="iconFieldMap[fieldType[element.deType]]"></component
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[element.deType]}`"
+                    :is="iconFieldMap[fieldType[element.deType]]"
+                  ></component
                 ></Icon>
               </el-icon>
               <span :title="element.name">{{ element.name }}</span>

@@ -266,7 +266,10 @@ const tips = computed(() => {
   >
     <el-icon style="font-size: 32px" class="dialogue-chart_icon">
       <Icon
-        ><component :is="copilotInfo.msgType === 'api' ? copilot : default_avatar"></component
+        ><component
+          class="svg-icon"
+          :is="copilotInfo.msgType === 'api' ? copilot : default_avatar"
+        ></component
       ></Icon>
     </el-icon>
     <div ref="content" class="content">
@@ -315,7 +318,10 @@ const tips = computed(() => {
           class="select-prefix"
         >
           <Icon
-            ><component :is="curTypeList.find(ele => ele.value === activeCommand).icon"></component
+            ><component
+              class="svg-icon"
+              :is="curTypeList.find(ele => ele.value === activeCommand).icon"
+            ></component
           ></Icon>
         </el-icon>
         <el-tooltip effect="dark" content="切换图表类型" placement="top">

@@ -11,9 +11,11 @@
       @click.stop="setBoard"
     >
       <Icon
-        :style="{ color: curComponent.commonBackground.innerImageColor }"
-        class-name="svg-background"
-        ><component :is="iconBoardMap[mainIconClass]"></component
+        ><component
+          class="svg-icon svg-background"
+          :style="{ color: curComponent.commonBackground.innerImageColor }"
+          :is="iconBoardMap[mainIconClass]"
+        ></component
       ></Icon>
     </div>
     <span class="demonstration">{{ template.name }}</span>
