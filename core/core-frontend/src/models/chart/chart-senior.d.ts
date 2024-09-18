@@ -194,6 +194,10 @@ declare interface Threshold {
    * 背景颜色
    */
   backgroundColor: string
+  /**
+   * url
+   */
+  url: string
 }
 
 /**

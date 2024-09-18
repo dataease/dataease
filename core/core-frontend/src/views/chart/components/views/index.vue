@@ -125,7 +125,7 @@ const { view, showPosition, element, active, searchCount, scale } = toRefs(props
 
 const titleShow = computed(() => {
   return (
-    !['rich-text', 'Picture'].includes(element.value.innerType) &&
+    !['rich-text', 'picture-group'].includes(element.value.innerType) &&
     state.title_show &&
     showPosition.value !== 'viewDialog'
   )
@@ -678,7 +678,7 @@ const chartAreaShow = computed(() => {
       return true
     }
   }
-  if (['rich-text', 'Picture'].includes(view.value.type)) {
+  if (['rich-text', 'picture-group'].includes(view.value.type)) {
     return true
   }
   if (view.value?.isPlugin) {
@@ -911,6 +911,7 @@ const loadPluginCategory = data => {
         ref="chartComponent"
         :element="element"
         :active="active"
+        :view="view"
         :show-position="showPosition"
       >
       </de-picture-group>

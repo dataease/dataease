@@ -10,7 +10,12 @@ import TextThresholdEdit from '@/views/chart/components/editor/editor-senior/com
 import { fieldType } from '@/utils/attr'
 import { defaultsDeep } from 'lodash-es'
 import { iconFieldMap } from '@/components/icon-group/field-list'
-
+import PictureGroupThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/PictureGroupThresholdEdit.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import { imgUrlTrans } from '@/utils/imgUtils'
+const dvMainStore = dvMainStoreWithOut()
+const { curComponent } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const props = defineProps({
@@ -592,22 +597,35 @@ init()
                 </span>
                 <span v-else>&nbsp;</span>
               </div>
-              <div
-                :title="t('chart.textColor')"
-                :style="{
-                  backgroundColor: item.color
-                }"
-                class="color-div"
-                :class="{ 'color-div-dark': themes === 'dark' }"
-              ></div>
-              <div
-                :title="t('chart.backgroundColor')"
-                :style="{
-                  backgroundColor: item.backgroundColor
-                }"
-                class="color-div"
-                :class="{ 'color-div-dark': themes === 'dark' }"
-              ></div>
+              <template v-if="chart.type === 'picture-group'">
+                <div title="显示图片" class="pic-group-main">
+                  <img
+                    draggable="false"
+                    v-if="item.url"
+                    class="pic-group-img"
+                    :src="imgUrlTrans(item.url)"
+                  />
+                </div>
+              </template>
+
+              <template v-if="chart.type !== 'picture-group'">
+                <div
+                  :title="t('chart.textColor')"
+                  :style="{
+                    backgroundColor: item.color
+                  }"
+                  class="color-div"
+                  :class="{ 'color-div-dark': themes === 'dark' }"
+                ></div>
+                <div
+                  :title="t('chart.backgroundColor')"
+                  :style="{
+                    backgroundColor: item.backgroundColor
+                  }"
+                  class="color-div"
+                  :class="{ 'color-div-dark': themes === 'dark' }"
+                ></div>
+              </template>
             </div>
           </el-row>
         </div>
@@ -672,7 +690,15 @@ init()
       class="dialog-css"
       append-to-body
     >
+      <picture-group-threshold-edit
+        v-if="chart.type === 'picture-group' && curComponent"
+        :threshold="state.thresholdForm.tableThreshold"
+        :chart="chart"
+        :element="curComponent"
+        @onTableThresholdChange="tableThresholdChange"
+      ></picture-group-threshold-edit>
       <table-threshold-edit
+        v-else
         :threshold="state.thresholdForm.tableThreshold"
         :chart="chart"
         @onTableThresholdChange="tableThresholdChange"
@@ -860,5 +886,17 @@ span {
   &.is-disabled {
     color: #5f5f5f !important;
   }
+}
+
+.pic-group-main {
+  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  border: solid 1px #e1e4e8;
+  border-radius: 2px;
+}
+.pic-group-img {
+  width: 100%;
+  height: 100%;
 }
 </style>

@@ -41,6 +41,7 @@ import treemap from '@/assets/svg/treemap.svg'
 import waterfall from '@/assets/svg/waterfall.svg'
 import wordCloud from '@/assets/svg/word-cloud.svg'
 import tHeatmap from '@/assets/svg/t-heatmap.svg'
+import pictureGroup from '@/assets/svg/picture-group.svg'
 
 const iconChartMap = {
   'area-stack': areaStack,
@@ -85,7 +86,8 @@ const iconChartMap = {
   treemap: treemap,
   waterfall: waterfall,
   'word-cloud': wordCloud,
-  't-heatmap': tHeatmap
+  't-heatmap': tHeatmap,
+  'picture-group': pictureGroup
 }
 
 export { iconChartMap }

@@ -1,31 +1,38 @@
 <script setup lang="ts">
-import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch, PropType, reactive, toRefs, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, PropType, computed } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
-import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
-import Icon from '../../components/icon-custom/src/Icon.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { cloneDeep } from 'lodash-es'
-import FilterTree from '@/views/chart/components/editor/filter/FilterTree.vue'
+import { toRefs } from 'vue'
 const { t } = useI18n()
 
 const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  element: {
+    type: Object,
+    default() {
+      return {
+        propValue: {
+          urlList: []
+        }
+      }
+    }
   }
 })
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
+const { element } = toRefs(props)
 
 const { curComponent } = storeToRefs(dvMainStore)
 
@@ -43,14 +50,14 @@ const handlePictureCardPreview = file => {
 
 const handleRemove = (_, fileList) => {
   uploadDisabled.value = false
-  curComponent.value.propValue.url = null
+  element.value.propValue['urlList'] = []
   fileList.value = []
   snapshotStore.recordSnapshotCache()
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
     snapshotStore.recordSnapshotCache()
-    curComponent.value.propValue.url = fileUrl
+    element.value.propValue.urlList.push({ name: file.file.name, url: fileUrl })
   })
 }
 
@@ -70,20 +77,25 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     snapshotStore.recordSnapshotCache()
-    curComponent.value.propValue.url = fileUrl
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
+    element.value.propValue.url = fileUrl
+    fileList.value = [{ name: file.name, url: imgUrlTrans(element.value.propValue.url) }]
   })
 }
 
 const sizeMessage = () => {
   ElMessage.success('图片大小不符合')
 }
-const init = () => {
-  if (curComponent.value.propValue.url) {
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
-  } else {
-    fileList.value = []
+
+const fileListInit = () => {
+  fileList.value = []
+  if (element.value.propValue.urlList && element.value.propValue.urlList.length > 0) {
+    element.value.propValue.urlList.forEach(urlInfo => {
+      fileList.value.push({ name: urlInfo.name, url: imgUrlTrans(urlInfo.url) })
+    })
   }
+}
+const init = () => {
+  fileListInit()
 }
 
 const toolTip = computed(() => {
@@ -91,7 +103,7 @@ const toolTip = computed(() => {
 })
 
 watch(
-  () => curComponent.value.propValue.url,
+  () => element.value.propValue.url,
   () => {
     init()
   }
@@ -107,7 +119,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="attr-list de-collapse-style">
+  <el-collapse-item :effect="themes" title="图片组" name="picture">
     <input
       id="input"
       ref="files"
@@ -121,77 +133,69 @@ onBeforeUnmount(() => {
       "
       @change="reUpload"
     />
-    <CommonAttr
-      :themes="themes"
-      :element="curComponent"
-      :background-color-picker-width="197"
-      :background-border-select-width="197"
-    >
-      <el-collapse-item :effect="themes" title="图片组" name="picture">
-        <el-row class="img-area" :class="`img-area_${themes}`">
-          <el-col style="width: 130px !important">
-            <el-upload
-              :themes="themes"
-              action=""
-              accept=".jpeg,.jpg,.png,.gif,.svg"
-              class="avatar-uploader"
-              list-type="picture-card"
-              :class="{ disabled: uploadDisabled }"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove"
-              :before-upload="beforeUploadCheck"
-              :http-request="upload"
-              :file-list="fileList"
-            >
-              <el-icon><Plus /></el-icon>
-            </el-upload>
-            <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
-          </el-col>
-        </el-row>
-        <el-row>
-          <span
-            style="margin-top: 2px"
-            v-if="!curComponent.propValue.url"
-            class="image-hint"
-            :class="`image-hint_${themes}`"
-          >
-            支持JPG、PNG、GIF、SVG
-          </span>
+    <el-row class="img-area" :class="`img-area_${themes}`">
+      <el-col style="width: 130px !important">
+        <el-upload
+          :themes="themes"
+          limit="10"
+          action=""
+          accept=".jpeg,.jpg,.png,.gif,.svg"
+          class="avatar-uploader"
+          list-type="picture-card"
+          :class="{ disabled: uploadDisabled }"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove"
+          :before-upload="beforeUploadCheck"
+          :http-request="upload"
+          :file-list="fileList"
+        >
+          <el-icon><Plus /></el-icon>
+        </el-upload>
+        <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
+      </el-col>
+    </el-row>
+    <el-row>
+      <span
+        style="margin-top: 2px"
+        v-if="!curComponent.propValue.url"
+        class="image-hint"
+        :class="`image-hint_${themes}`"
+      >
+        支持JPG、PNG、GIF、SVG
+      </span>
 
-          <el-button
-            size="small"
-            style="margin: 8px 0 0 -4px"
-            v-if="curComponent.propValue.url"
-            text
-            @click="goFile"
-          >
-            重新上传
-          </el-button>
-        </el-row>
-        <el-row class="pic-adaptor">
-          <el-form-item
-            v-if="curComponent.style.adaptation"
-            class="form-item"
-            label="图片适应方式"
-            size="small"
-            :effect="themes"
-            :class="'form-item-' + themes"
-          >
-            <el-radio-group
-              size="small"
-              v-model="curComponent.style.adaptation"
-              @change="onStyleChange"
-              :effect="themes"
-            >
-              <el-radio label="adaptation" :effect="themes">适应组件</el-radio>
-              <el-radio label="original" :effect="themes">原始尺寸</el-radio>
-              <el-radio label="equiratio" :effect="themes">等比适应</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-row>
-      </el-collapse-item>
-    </CommonAttr>
-  </div>
+      <el-button
+        size="small"
+        style="margin: 8px 0 0 -4px"
+        v-if="curComponent.propValue.url"
+        text
+        @click="goFile"
+      >
+        重新上传
+      </el-button>
+    </el-row>
+    <el-row class="pic-adaptor">
+      <el-form-item
+        v-if="curComponent.style.adaptation"
+        class="form-item"
+        label="图片适应方式"
+        size="small"
+        :effect="themes"
+        :class="'form-item-' + themes"
+      >
+        <el-radio-group
+          size="small"
+          v-model="curComponent.style.adaptation"
+          @change="onStyleChange"
+          :effect="themes"
+        >
+          <el-radio label="adaptation" :effect="themes">适应组件</el-radio>
+          <el-radio label="original" :effect="themes">原始尺寸</el-radio>
+          <el-radio label="equiratio" :effect="themes">等比适应</el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-row>
+  </el-collapse-item>
 </template>
 
 <style lang="less" scoped>
@@ -251,8 +255,6 @@ onBeforeUnmount(() => {
   }
 }
 .img-area {
-  height: 80px;
-  width: 80px;
   margin-top: 10px;
   overflow: hidden;
 

@@ -210,7 +210,7 @@ const clearShow = computed(
   () =>
     props.sourceType === 'dataset' &&
     dvMainStore.curComponent &&
-    dvMainStore.curComponent.innerType === 'rich-text'
+    ['rich-text', 'picture-group'].includes(dvMainStore.curComponent.innerType)
 )
 
 const handleClear = e => {

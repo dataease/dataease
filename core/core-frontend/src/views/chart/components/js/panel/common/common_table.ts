@@ -610,6 +610,9 @@ export function mappingColor(value, defaultColor, field, type) {
           color = t[type]
           flag = true
         }
+      } else if (t.term === 'default') {
+        color = t[type]
+        flag = true
       }
       if (flag) {
         break
@@ -648,6 +651,9 @@ export function mappingColor(value, defaultColor, field, type) {
           color = t[type]
           flag = true
         }
+      } else if (t.term === 'default') {
+        color = t[type]
+        flag = true
       }
       if (flag) {
         break
@@ -688,6 +694,9 @@ export function mappingColor(value, defaultColor, field, type) {
           color = t[type]
           flag = true
         }
+      } else if (t.term === 'default') {
+        color = t[type]
+        flag = true
       }
       if (flag) {
         break
