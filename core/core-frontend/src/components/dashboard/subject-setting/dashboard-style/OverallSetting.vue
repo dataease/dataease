@@ -76,7 +76,7 @@
       <el-checkbox
         :effect="themes"
         size="small"
-        v-model="canvasStyleData.refreshViewBrowserEnable"
+        v-model="canvasStyleData.refreshBrowserEnable"
         @change="themeChange"
       >
         整体刷新
