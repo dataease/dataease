@@ -76,8 +76,8 @@ const closeEditCanvasName = () => {
   if (inputName.value.trim() === dvInfo.value.name) {
     return
   }
-  if (inputName.value.trim().length > 64 || inputName.value.trim().length < 2) {
-    ElMessage.warning('名称字段长度2-64个字符')
+  if (inputName.value.trim().length > 64 || inputName.value.trim().length < 1) {
+    ElMessage.warning('名称字段长度1-64个字符')
     editCanvasName()
     return
   }
