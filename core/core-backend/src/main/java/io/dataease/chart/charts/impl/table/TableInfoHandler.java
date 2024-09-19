@@ -89,11 +89,12 @@ public class TableInfoHandler extends DefaultChartHandler {
         if(view.getIsExcelExport()){
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO fieldDTO = null;
-                for (int i1 = 0; i1 < allFields.size(); i1++) {
-                    if (allFields.get(i1).getId().equals(xAxis.get(i).getId())) {
-                        fieldDTO = allFields.get(i1);
+                for (ChartViewFieldDTO allField : allFields) {
+                    if (allField.getId().equals(xAxis.get(i).getId())) {
+                        fieldDTO = allField;
                     }
                 }
+                assert fieldDTO != null;
                 if (fieldDTO.isAgg()) {
                     sqlMeta.getXFields().get(i).setFieldName("'-'");
                 }
