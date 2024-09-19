@@ -49,6 +49,7 @@ const handleInput = value => {
     :themes="themes"
     v-model="carouselInfo.enable"
     name="carouselInfo"
+    @modelChange="onSettingChange"
     title="轮播"
   >
     <el-row class="custom-row">
