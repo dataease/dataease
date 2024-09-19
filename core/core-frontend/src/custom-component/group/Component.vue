@@ -9,7 +9,6 @@ import { groupSizeStyleAdaptor } from '@/utils/style'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, curComponent } = storeToRefs(dvMainStore)
 const sourceCanvasStyle = deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK)
-
 const props = defineProps({
   propValue: {
     type: Array,
