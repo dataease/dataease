@@ -12,6 +12,7 @@ import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
+import io.dataease.utils.JsonUtil;
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +86,20 @@ public class TableInfoHandler extends DefaultChartHandler {
             pageInfo.setPageSize(chartExtRequest.getPageSize());
         }
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+        if(view.getIsExcelExport()){
+            for (int i = 0; i < xAxis.size(); i++) {
+                ChartViewFieldDTO fieldDTO = null;
+                for (int i1 = 0; i1 < allFields.size(); i1++) {
+                    if (allFields.get(i1).getId().equals(xAxis.get(i).getId())) {
+                        fieldDTO = allFields.get(i1);
+                    }
+                }
+                if (fieldDTO.isAgg()) {
+                    sqlMeta.getXFields().get(i).setFieldName("'-'");
+                }
+            }
+        }
+
         String originSql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);// 明细表强制加排序
         String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * chartExtRequest.getPageSize() : "");
         var querySql = originSql + limit;
