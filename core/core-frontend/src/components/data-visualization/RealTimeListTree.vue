@@ -503,13 +503,13 @@ const canvasChange = () => {
                     @click="expandClick(getComponent(index))"
                   >
                     <Icon
-                      v-show="getComponent(index)?.expand"
+                      v-if="getComponent(index)?.expand"
                       name="dv-expand-down"
                       class="expand-icon"
                       ><dvExpandDown class="svg-icon expand-icon"
                     /></Icon>
                     <Icon
-                      v-show="!getComponent(index)?.expand"
+                      v-if="!getComponent(index)?.expand"
                       name="dv-expand-right"
                       class="expand-icon"
                       ><dvExpandRight class="svg-icon expand-icon"
