@@ -466,6 +466,7 @@ export default {
     input_limit_2_25: '{0}-{1}字符',
     input_limit_2_50: '2-50字符',
     input_limit_2_64: '2-64字符',
+    input_limit_1_64: '1-64字符',
     data_source_configuration: '数据源配置',
     data_source_table: '数据源表',
     auth_method: '认证方式',
