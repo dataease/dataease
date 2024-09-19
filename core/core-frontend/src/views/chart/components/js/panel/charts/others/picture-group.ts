@@ -6,17 +6,11 @@ const { t } = useI18n()
  * 图片组图表
  */
 export class PictureGroupView extends AbstractChartView {
-  properties: EditorProperty[] = [
-    'background-overall-component',
-    'border-style',
-    'threshold',
-    'function-cfg'
-  ]
+  properties: EditorProperty[] = ['background-overall-component', 'border-style', 'threshold']
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'border-style': ['all'],
-    threshold: ['tableThreshold'],
-    'function-cfg': ['emptyDataStrategy']
+    threshold: ['tableThreshold']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   axisConfig: AxisConfig = {

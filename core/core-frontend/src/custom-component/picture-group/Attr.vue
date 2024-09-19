@@ -177,11 +177,10 @@ onBeforeUnmount(() => {
     <el-row class="pic-adaptor">
       <el-form-item
         v-if="curComponent.style.adaptation"
-        class="form-item"
+        class="form-item form-item-custom"
         label="图片适应方式"
         size="small"
         :effect="themes"
-        :class="'form-item-' + themes"
       >
         <el-radio-group
           size="small"
@@ -309,7 +308,7 @@ onBeforeUnmount(() => {
   }
 }
 
-.form-item-dark {
+.form-item-custom {
   .ed-radio {
     margin-right: 4px !important;
   }

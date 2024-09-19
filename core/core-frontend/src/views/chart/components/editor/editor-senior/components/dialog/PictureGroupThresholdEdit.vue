@@ -366,7 +366,8 @@ init()
               v-if="
                 !item.term.includes('null') &&
                 !item.term.includes('empty') &&
-                item.term !== 'between'
+                item.term !== 'between' &&
+                !item.term.includes('default')
               "
               :span="10"
               style="text-align: center"

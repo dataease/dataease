@@ -575,11 +575,13 @@ init()
                 <span v-else-if="item.term === 'not_empty'" :title="t('chart.filter_not_empty')">
                   {{ t('chart.filter_not_empty') }}
                 </span>
+                <span v-else-if="item.term === 'default'" title="默认"> 默认 </span>
               </div>
               <div style="flex: 1; margin: 0 8px">
                 <span
                   v-if="
                     !item.term.includes('null') &&
+                    !item.term.includes('default') &&
                     !item.term.includes('empty') &&
                     item.term !== 'between'
                   "

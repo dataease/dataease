@@ -107,6 +107,7 @@ const initCurFields = chartDetails => {
 }
 
 const conditionAdaptor = (chart: Chart) => {
+  state.showUrl = null
   if (!chart || !chart.senior) {
     return
   }
@@ -118,7 +119,7 @@ const conditionAdaptor = (chart: Chart) => {
   if (conditions?.length > 0) {
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
-      let defaultValueColor = 'none'
+      let defaultValueColor = null
       const checkResult = mappingColor(
         dataRowNameSelect.value[field.field.name],
         defaultValueColor,
@@ -139,8 +140,13 @@ const withInit = () => {
 }
 
 const calcData = (view: Chart, callback) => {
-  console.log('===calcData1')
   isError.value = false
+  const { threshold } = parseJson(view.senior)
+  if (!threshold.enable) {
+    withInit()
+    callback?.()
+    return
+  }
   if (view.tableId || view['dataFrom'] === 'template') {
     const v = JSON.parse(JSON.stringify(view))
     getData(v)
