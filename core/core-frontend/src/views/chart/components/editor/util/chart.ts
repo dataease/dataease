@@ -1160,13 +1160,6 @@ export const CHART_TYPE_CONFIGS = [
         value: 'indicator',
         title: t('chart.chart_indicator'),
         icon: 'indicator'
-      },
-      {
-        render: 'custom',
-        category: 'quota',
-        value: 'picture-group',
-        title: '图片组',
-        icon: 'picture-group'
       }
     ]
   },
