@@ -1574,15 +1574,15 @@ defineExpose({
                 <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
                   <el-icon>
                     <Icon
-                      :className="`field-icon-${
-                        fieldType[
-                          getDetype(
-                            curComponent.checkedFieldsMap[field.componentId],
-                            Object.values(field.fields)
-                          )
-                        ]
-                      }`"
                       ><component
+                        :class="`field-icon-${
+                          fieldType[
+                            getDetype(
+                              curComponent.checkedFieldsMap[field.componentId],
+                              Object.values(field.fields)
+                            )
+                          ]
+                        }`"
                         :is="
                           iconFieldMap[
                             fieldType[

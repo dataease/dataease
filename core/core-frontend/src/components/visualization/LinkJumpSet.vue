@@ -379,7 +379,7 @@
                                 <Icon
                                   ><component
                                     class="svg-icon"
-                                    :className="`field-icon-${fieldType[item.sourceDeType]}`"
+                                    :class="`field-icon-${fieldType[item.sourceDeType]}`"
                                     :is="iconFieldMap[fieldType[item.sourceDeType]]"
                                   ></component
                                 ></Icon>
