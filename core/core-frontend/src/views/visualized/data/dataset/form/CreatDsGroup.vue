@@ -189,9 +189,9 @@ const createInit = (type, data: Tree, exec, name: string) => {
         trigger: 'blur'
       },
       {
-        min: 2,
+        min: 1,
         max: 64,
-        message: t('datasource.input_limit_2_25', [2, 64]),
+        message: t('datasource.input_limit_1_64', [1, 64]),
         trigger: 'blur'
       }
     ],
