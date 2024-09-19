@@ -1332,6 +1332,11 @@ const timeGranularityChange = (val: string) => {
   }
 }
 
+const handleTimeTypeChange = () => {
+  timeGranularityChange(curComponent.value.timeGranularity)
+  timeGranularityMultipleChange(curComponent.value.timeGranularityMultiple)
+}
+
 const timeGranularityMultipleChange = (val: string) => {
   handleDialogClick()
   curComponent.value.relativeToCurrentType = ['daterange', 'datetimerange'].includes(val)
@@ -2121,6 +2126,7 @@ defineExpose({
           </div>
           <condition-default-configuration
             ref="defaultConfigurationRef"
+            @handleTimeTypeChange="handleTimeTypeChange"
             :cur-component="curComponent"
           ></condition-default-configuration>
         </div>

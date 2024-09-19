@@ -35,6 +35,14 @@ const filterTypeCom = computed(() => {
     : Select
 })
 
+const emits = defineEmits(['handleTimeTypeChange'])
+
+const handleTimeTypeChange = val => {
+  if (val === 'dynamic') {
+    emits('handleTimeTypeChange')
+  }
+}
+
 const props = defineProps({
   curComponent: {
     type: Object,
@@ -436,7 +444,7 @@ defineExpose({
       v-if="curComponent.defaultValueCheck && ['1', '7'].includes(curComponent.displayType)"
     >
       <div class="setting">
-        <el-radio-group v-model="curComponent.timeType">
+        <el-radio-group @change="handleTimeTypeChange" v-model="curComponent.timeType">
           <el-radio label="fixed">固定时间</el-radio>
           <el-radio label="dynamic">动态时间</el-radio>
         </el-radio-group>

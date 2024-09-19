@@ -18,9 +18,7 @@ import {
   nextTick,
   onBeforeMount,
   provide,
-  h,
   unref,
-  getCurrentInstance,
   onMounted
 } from 'vue'
 import Icon from '@/components/icon-custom/src/Icon.vue'
@@ -32,7 +30,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
 import draggable from 'vuedraggable'
 import DimensionItem from './drag-item/DimensionItem.vue'
-import { fieldType, fieldTypeCalculated } from '@/utils/attr'
+import { fieldType } from '@/utils/attr'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterTree from './filter/FilterTree.vue'
@@ -1454,7 +1452,7 @@ const confirmEditCalc = () => {
 const getIconName = (deType, extField, dimension = false) => {
   if (extField === 2) {
     const iconFieldCalculated = dimension ? iconFieldCalculatedMap : iconFieldCalculatedQMap
-    return iconFieldCalculated[fieldTypeCalculated[deType]]
+    return iconFieldCalculated[deType]
   }
   return iconFieldMap[fieldType[deType]]
 }
