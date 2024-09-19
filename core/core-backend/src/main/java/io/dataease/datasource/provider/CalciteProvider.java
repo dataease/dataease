@@ -337,9 +337,6 @@ public class CalciteProvider extends Provider {
             case ck:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), CK.class);
                 break;
-            case h2:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), H2.class);
-                break;
             default:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
         }
