@@ -146,6 +146,7 @@ import { exportPivotExcel } from '@/views/chart/components/js/panel/common/commo
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
+import { getCanvasStyle } from '@/utils/style'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -208,14 +209,14 @@ const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
 const authShow = computed(() => editMode.value === 'edit' || dvInfo.value.weight > 3)
 
 const customExport = computed(() => {
+  const style = canvasStyleData.value ? getCanvasStyle(canvasStyleData.value, 'canvas-main') : {}
   if (downLoading.value) {
     const bashStyle = pixel.value.split(' * ')
-    return {
-      width: bashStyle[0] + 'px!important',
-      height: bashStyle[1] + 'px!important'
-    }
+    style['width'] = bashStyle[0] + 'px!important'
+    style['height'] = bashStyle[1] + 'px!important'
+    return style
   } else {
-    return {}
+    return style
   }
 })
 

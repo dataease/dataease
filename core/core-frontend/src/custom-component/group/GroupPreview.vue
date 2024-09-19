@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { ref, toRefs } from 'vue'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 import { toPercent } from '@/utils/translate'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
+const dvMainStore = dvMainStoreWithOut()
+const userViewEnlargeRef = ref(null)
 
 const props = defineProps({
   propValue: {
@@ -43,7 +47,6 @@ const props = defineProps({
 })
 
 const { propValue, dvInfo, searchCount, scale, canvasViewInfo } = toRefs(props)
-
 const customGroupStyle = item => {
   return {
     width: toPercent(item.groupStyle.width),
@@ -51,6 +54,16 @@ const customGroupStyle = item => {
     top: toPercent(item.groupStyle.top),
     left: toPercent(item.groupStyle.left)
   }
+}
+
+const userViewEnlargeOpen = (opt, item) => {
+  userViewEnlargeRef.value.dialogInit(
+    dvMainStore.canvasStyleData,
+    canvasViewInfo.value[item.id],
+    item,
+    opt,
+    { scale: scale.value }
+  )
 }
 </script>
 
@@ -69,8 +82,10 @@ const customGroupStyle = item => {
         :show-position="showPosition"
         :search-count="searchCount"
         :scale="scale"
+        @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
       />
     </div>
+    <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
 </template>
 

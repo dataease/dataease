@@ -274,7 +274,7 @@ const onWrapperClick = e => {
         }
         initOpenHandler(newWindow)
       } catch (e) {
-        console.warn(t('visualization.url_check_error') + ':' + url)
+        console.warn('url 格式错误:' + url)
       }
     } else if (config.value.events.type === 'refreshDataV') {
       useEmitt().emitter.emit('componentRefresh')
