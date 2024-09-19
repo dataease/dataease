@@ -67,11 +67,7 @@ public class StaticResourceServer implements StaticResourceApi {
             return false;
         }
         // 判断是否为图片或SVG
-        if (mimeType.toLowerCase().equals("image/svg+xml")) {
-            return isValidSVG(file);
-        } else {
-            return mimeType.startsWith("image/");
-        }
+        return (mimeType != null && mimeType.startsWith("image/")) || isValidSVG(file);
     }
 
     public void saveFilesToServe(String staticResource) {
