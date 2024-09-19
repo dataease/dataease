@@ -120,6 +120,20 @@
                     <el-radio label="newPop">{{ t('visualization.pop_window') }}</el-radio>
                   </el-radio-group>
                 </el-form-item>
+
+                <el-form-item
+                  class="radio-group-box"
+                  v-if="state.linkJumpInfo?.jumpType === 'newPop'"
+                >
+                  <template #label>
+                    <span class="title">窗口大小</span>
+                  </template>
+                  <el-radio-group class="larger-radio" v-model="state.linkJumpInfo.windowSize">
+                    <el-radio label="large">大</el-radio>
+                    <el-radio label="middle">中</el-radio>
+                    <el-radio label="small">小</el-radio>
+                  </el-radio-group>
+                </el-form-item>
               </el-header>
 
               <el-main class="settings-main">
@@ -1022,7 +1036,7 @@ span {
   height: 100%;
 
   .settings-header {
-    height: 92px;
+    height: auto;
     border-bottom: 1px solid #e6e6e6;
 
     .radio-group-box {
@@ -1047,6 +1061,7 @@ span {
 
   .settings-main {
     padding: 16px;
+    overflow: hidden;
     .empty {
       width: 100%;
       height: 100%;

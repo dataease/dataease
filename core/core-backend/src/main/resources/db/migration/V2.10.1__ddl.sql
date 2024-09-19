@@ -8,3 +8,6 @@ set required =0;
 ALTER TABLE `xpack_report_info`
     ADD COLUMN `show_watermark` tinyint(1) NOT NULL DEFAULT 0 COMMENT '显示水印' AFTER `rid`;
 
+ALTER TABLE `visualization_link_jump_info`
+    ADD COLUMN `window_size` varchar(255) NULL DEFAULT 'middle' COMMENT '窗口大小large middle small';
+
