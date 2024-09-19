@@ -71,9 +71,7 @@ const dataRowFiledName = ref([])
 let carouselTimer = null
 const { element, view, showPosition } = toRefs(props)
 
-const isEditMode = computed(
-  () => editMode.value === 'edit' && !showPosition.value.includes('canvas') && !mobileInPc.value
-)
+const isEditMode = computed(() => showPosition.value.includes('canvas') && !mobileInPc.value)
 
 watch(
   () => isEditMode.value,
