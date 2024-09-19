@@ -213,9 +213,10 @@
                                 >
                                   <span class="custom-option">
                                     <Icon
-                                      style="width: 14px; height: 14px"
-                                      :className="`field-icon-${fieldType[curViewField.deType]}`"
                                       ><component
+                                        class="svg-icon"
+                                        style="width: 14px; height: 14px"
+                                        :class="`field-icon-${fieldType[curViewField.deType]}`"
                                         :is="iconFieldMap[fieldType[curViewField.deType]]"
                                       ></component
                                     ></Icon>
@@ -277,9 +278,10 @@
                                 >
                                   <span class="custom-option">
                                     <Icon
-                                      style="width: 14px; height: 14px"
-                                      :className="`field-icon-${fieldType[viewField.deType]}`"
                                       ><component
+                                        class="svg-icon"
+                                        style="width: 14px; height: 14px"
+                                        :class="`field-icon-${fieldType[viewField.deType]}`"
                                         :is="iconFieldMap[fieldType[viewField.deType]]"
                                       ></component
                                     ></Icon>
