@@ -16,7 +16,7 @@ import { XpackComponent } from '@/components/plugin'
 import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { checkPlatform, cleanPlatformFlag } from '@/utils/utils'
+import { checkPlatform, cleanPlatformFlag, getQueryString } from '@/utils/utils'
 import xss from 'xss'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -253,6 +253,8 @@ onMounted(async () => {
     } else {
       preheat.value = false
     }
+  } else if (getQueryString('state')?.includes('de-oauth2-')) {
+    preheat.value = true
   }
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
     const msg = localStorage.getItem('DE-GATEWAY-FLAG')
