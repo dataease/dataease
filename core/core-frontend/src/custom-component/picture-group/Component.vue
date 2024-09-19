@@ -10,7 +10,17 @@
 </template>
 
 <script setup lang="ts">
-import { CSSProperties, computed, nextTick, toRefs, reactive, ref, PropType } from 'vue'
+import {
+  CSSProperties,
+  computed,
+  nextTick,
+  toRefs,
+  reactive,
+  ref,
+  PropType,
+  watch,
+  onBeforeMount
+} from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -19,14 +29,15 @@ import { parseJson } from '@/views/chart/components/js/util'
 import { mappingColor } from '@/views/chart/components/js/panel/common/common_table'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasViewInfo } = storeToRefs(dvMainStore)
+const { canvasViewInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
 const state = reactive({
   emptyValue: '-',
   data: null,
   viewDataInfo: null,
   showUrl: null,
   firstRender: true,
-  previewFirstRender: true
+  previewFirstRender: true,
+  curImgList: []
 })
 const initReady = ref(true)
 const props = defineProps({
@@ -37,6 +48,11 @@ const props = defineProps({
         propValue: { urlList: [] }
       }
     }
+  },
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'preview'
   },
   view: {
     type: Object as PropType<ChartObj>,
@@ -52,8 +68,39 @@ const errMsg = ref('')
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
 const dataRowFiledName = ref([])
+let carouselTimer = null
+const { element, view, showPosition } = toRefs(props)
 
-const { element, view } = toRefs(props)
+const isEditMode = computed(
+  () => editMode.value === 'edit' && !showPosition.value.includes('canvas') && !mobileInPc.value
+)
+
+watch(
+  () => isEditMode.value,
+  () => {
+    initCarousel()
+  }
+)
+
+const initCarousel = () => {
+  carouselTimer && clearInterval(carouselTimer)
+  carouselTimer = null
+  const picLength = element.value.propValue.urlList?.length || 0
+  const { threshold } = parseJson(view.value.senior)
+  // 非编辑状态 未启用条件样式 存在图片 启用轮播
+  if (!isEditMode.value && !threshold.enable && picLength > 0 && element.value.carousel?.enable) {
+    const switchTime = (element.value.carousel.time || 5) * 1000
+    let switchCount = 1
+    // 轮播定时器
+    carouselTimer = setInterval(() => {
+      const nowIndex = switchCount % element.value.propValue.urlList.length
+      switchCount++
+      nextTick(() => {
+        state.showUrl = element.value.propValue.urlList[nowIndex].url
+      })
+    }, switchTime)
+  }
+}
 
 const imageAdapter = computed(() => {
   const style = {
@@ -137,6 +184,7 @@ const withInit = () => {
   if (element.value.propValue['urlList'] && element.value.propValue['urlList'].length > 0) {
     state.showUrl = element.value.propValue['urlList'][0].url
   }
+  initCarousel()
 }
 
 const calcData = (view: Chart, callback) => {
@@ -163,6 +211,7 @@ const calcData = (view: Chart, callback) => {
           dvMainStore.setViewDataDetails(element.value.id, res)
           initReady.value = true
           initCurFields(res)
+          initCarousel()
         }
         callback?.()
         nextTick(() => {
@@ -196,6 +245,13 @@ const calcData = (view: Chart, callback) => {
 const renderChart = viewInfo => {
   //do renderView
 }
+
+onBeforeMount(() => {
+  if (carouselTimer) {
+    clearInterval(carouselTimer)
+    carouselTimer = null
+  }
+})
 
 defineExpose({
   calcData,

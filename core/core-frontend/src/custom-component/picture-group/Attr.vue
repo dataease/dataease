@@ -310,7 +310,7 @@ onBeforeUnmount(() => {
 
 .form-item-custom {
   .ed-radio {
-    margin-right: 4px !important;
+    margin-right: 2px !important;
   }
 }
 

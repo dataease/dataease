@@ -61,7 +61,8 @@ const handleInput = value => {
           <span style="font-size: 12px">轮播时间（秒）</span>
           <el-tooltip class="item" :effect="themes" placement="top">
             <template #content>
-              <div>Tab轮播退出编辑模式才开生效</div>
+              <div>轮播退出编辑模式才开生效</div>
+              <div v-if="element.innerType === 'picture-group'">启用条件样式后，轮播失效</div>
             </template>
             <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
               <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
