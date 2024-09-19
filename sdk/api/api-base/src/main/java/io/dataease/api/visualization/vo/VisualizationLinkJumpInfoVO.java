@@ -30,6 +30,12 @@ public class VisualizationLinkJumpInfoVO {
     private String jumpType;
 
     /**
+     * 窗口大小large middle small
+     */
+    private String windowSize;
+
+
+    /**
      * 关联仪表板ID
      */
     @JsonSerialize(using = ToStringSerializer.class)

@@ -379,14 +379,29 @@ const divEmbedded = type => {
   useEmitt().emitter.emit('changeCurrentComponent', type)
 }
 
-const windowsJump = (url, jumpType) => {
+const windowsJump = (url, jumpType, size = 'middle') => {
   try {
     let newWindow
     if ('newPop' === jumpType) {
+      let sizeX, sizeY
+      if (size === 'large') {
+        sizeX = 0.95
+        sizeY = 0.9
+      } else if (size === 'middle') {
+        sizeX = 0.8
+        sizeY = 0.75
+      } else {
+        sizeX = 0.6
+        sizeY = 0.5
+      }
+      const height = screen.height * sizeY
+      const width = screen.width * sizeX
+      const left = screen.width * ((1 - sizeX) / 2)
+      const top = screen.height * ((1 - sizeY) / 2)
       window.open(
         url,
         '_blank',
-        'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
+        `width=${width},height=${height},left=${left},top=${top},toolbar=no,scrollbars=yes,resizable=yes,location=no`
       )
     } else {
       newWindow = window.open(url, jumpType)
@@ -441,7 +456,7 @@ const jumpClick = param => {
             }?jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
-            windowsJump(url, jumpInfo.jumpType)
+            windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
           } else {
             ElMessage.warning(t('visualization.public_link_tips'))
           }
@@ -464,7 +479,7 @@ const jumpClick = param => {
             router.push(parseUrl(url))
             return
           }
-          windowsJump(url, jumpInfo.jumpType)
+          windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
         }
       } else {
         ElMessage.warning('未指定跳转仪表板')
@@ -483,7 +498,7 @@ const jumpClick = param => {
         return
       }
 
-      windowsJump(url, jumpInfo.jumpType)
+      windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
     }
   } else {
   }

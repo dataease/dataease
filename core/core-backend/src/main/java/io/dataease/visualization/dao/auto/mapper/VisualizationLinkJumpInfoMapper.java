@@ -6,11 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- *  Mapper 接口
+ * 跳转配置表 Mapper 接口
  * </p>
  *
  * @author fit2cloud
- * @since 2023-09-22
+ * @since 2024-09-19
  */
 @Mapper
 public interface VisualizationLinkJumpInfoMapper extends BaseMapper<VisualizationLinkJumpInfo> {

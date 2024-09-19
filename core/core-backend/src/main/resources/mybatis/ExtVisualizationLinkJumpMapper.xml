@@ -16,6 +16,7 @@
         <result column="link_jump_id" jdbcType="BIGINT" property="linkJumpId"/>
         <result column="link_type" jdbcType="VARCHAR" property="linkType"/>
         <result column="jump_type" jdbcType="VARCHAR" property="jumpType"/>
+        <result column="window_size" jdbcType="VARCHAR" property="windowSize"/>
         <result column="target_dv_id" jdbcType="BIGINT" property="targetDvId"/>
         <result column="source_field_id" jdbcType="BIGINT" property="sourceFieldId"/>
         <result column="content" jdbcType="VARCHAR" property="content"/>
@@ -78,6 +79,7 @@
             visualization_link_jump_info.link_jump_id,
             visualization_link_jump_info.link_type,
             visualization_link_jump_info.jump_type,
+            visualization_link_jump_info.window_size,
             visualization_link_jump_info.target_dv_id,
             visualization_link_jump_info.content,
             xpack_share.uuid AS publicJumpId,
@@ -304,6 +306,7 @@
                                                   link_jump_id,
                                                   link_type,
                                                   jump_type,
+                                                  window_size,
                                                   target_dv_id,
                                                   source_field_id,
                                                   content,
@@ -315,6 +318,7 @@
                plj_copy.t_id,
                link_type,
                jump_type,
+               window_size,
                target_dv_id,
                source_field_id,
                content,
