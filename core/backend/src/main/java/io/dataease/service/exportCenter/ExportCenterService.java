@@ -7,6 +7,7 @@ import io.dataease.auth.service.ProxyAuthService;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
+import io.dataease.controller.chart.ChartViewController;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.dataset.DataSetExportRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
@@ -119,6 +120,8 @@ public class ExportCenterService {
     private PermissionService permissionService;
     @Resource
     private ChartViewService chartViewService;
+    @Resource
+    private ChartViewController chartViewController;
     @Resource
     private DataSetGroupService dataSetGroupService;
     @Resource
@@ -332,7 +335,7 @@ public class ExportCenterService {
                 componentFilterInfo.setProxy(request.getProxy());
                 componentFilterInfo.setUser(request.getUserId());
                 componentFilterInfo.setDownloadType(request.getDownloadType());
-                ChartViewDTO chartViewInfo = chartViewService.getData(request.getViewId(), componentFilterInfo);
+                ChartViewDTO chartViewInfo = chartViewController.getData(request.getViewId(), null, componentFilterInfo);
                 List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
                 request.setDetails(tableRow);
                 if ("dataset".equals(request.getDownloadType())) {
