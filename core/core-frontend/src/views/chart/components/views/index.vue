@@ -69,8 +69,15 @@ const isIframe = computed(() => appStore.getIsIframe)
 
 const emit = defineEmits(['onPointClick'])
 
-const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData, mobileInPc } =
-  storeToRefs(dvMainStore)
+const {
+  nowPanelJumpInfo,
+  publicLinkStatus,
+  dvInfo,
+  curComponent,
+  canvasStyleData,
+  mobileInPc,
+  inMobile
+} = storeToRefs(dvMainStore)
 
 const props = defineProps({
   active: {
@@ -398,11 +405,16 @@ const windowsJump = (url, jumpType, size = 'middle') => {
       const width = screen.width * sizeX
       const left = screen.width * ((1 - sizeX) / 2)
       const top = screen.height * ((1 - sizeY) / 2)
-      window.open(
+      newWindow = window.open(
         url,
         '_blank',
         `width=${width},height=${height},left=${left},top=${top},toolbar=no,scrollbars=yes,resizable=yes,location=no`
       )
+    } else if ('_self' === jumpType) {
+      newWindow = window.open(url, jumpType)
+      if (inMobile) {
+        window.location.reload()
+      }
     } else {
       newWindow = window.open(url, jumpType)
     }
