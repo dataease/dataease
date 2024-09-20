@@ -41,7 +41,9 @@
         icon="Download"
         size="middle"
         :loading="exportLoading"
-        :disabled="requestStore.loadingMap[permissionStore.currentPath] > 0"
+        :disabled="
+          requestStore.loadingMap[permissionStore.currentPath] > 0 || state.dataFrom === 'template'
+        "
         @click="downloadViewDetails('view')"
       >
         导出Excel
@@ -54,7 +56,9 @@
         size="middle"
         :loading="exportLoading"
         @click="downloadViewDetails('dataset')"
-        :disabled="requestStore.loadingMap[permissionStore.currentPath] > 0"
+        :disabled="
+          requestStore.loadingMap[permissionStore.currentPath] > 0 || state.dataFrom === 'template'
+        "
       >
         导出原始明细
       </el-button>
@@ -196,7 +200,8 @@ const DETAIL_CHART_ATTR: DeepPartial<ChartObj> = {
 
 const state = reactive({
   scale: 0.5,
-  componentSourceType: null
+  componentSourceType: null,
+  dataFrom: null
 })
 const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
   senior: {
@@ -269,6 +274,7 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   optType.value = opt
   dialogShow.value = true
   state.componentSourceType = view.type
+  state.dataFrom = view.dataFrom
   viewInfo.value = deepCopy(view) as DeepPartial<ChartObj>
   viewInfo.value.customStyle.text.show = false
   config.value = deepCopy(item)
