@@ -11,6 +11,7 @@ import bidirectionalBar from '@/assets/svg/bidirectional-bar.svg'
 import bubbleMap from '@/assets/svg/bubble-map.svg'
 import chartMixGroup from '@/assets/svg/chart-mix-group.svg'
 import chartMixStack from '@/assets/svg/chart-mix-stack.svg'
+import chartMixDualLine from '@/assets/svg/chart-mix-dual-line.svg'
 import chartMix from '@/assets/svg/chart-mix.svg'
 import flowMap from '@/assets/svg/flow-map.svg'
 import funnel from '@/assets/svg/funnel.svg'
@@ -57,6 +58,7 @@ const iconChartMap = {
   'bubble-map': bubbleMap,
   'chart-mix-group': chartMixGroup,
   'chart-mix-stack': chartMixStack,
+  'chart-mix-dual-line': chartMixDualLine,
   'chart-mix': chartMix,
   'flow-map': flowMap,
   funnel: funnel,

@@ -25,6 +25,7 @@ import bubbleMapOrigin from '@/assets/svg/bubble-map-origin.svg'
 import chartMixGroupOrigin from '@/assets/svg/chart-mix-group-origin.svg'
 import chartMixOrigin from '@/assets/svg/chart-mix-origin.svg'
 import chartMixStackOrigin from '@/assets/svg/chart-mix-stack-origin.svg'
+import chartMixDualLineOrigin from '@/assets/svg/chart-mix-dual-line-origin.svg'
 import flowMapOrigin from '@/assets/svg/flow-map-origin.svg'
 import funnelOrigin from '@/assets/svg/funnel-origin.svg'
 import gaugeOrigin from '@/assets/svg/gauge-origin.svg'
@@ -292,6 +293,7 @@ const iconMap = {
   'chart-mix-group-origin': chartMixGroupOrigin,
   'chart-mix-origin': chartMixOrigin,
   'chart-mix-stack-origin': chartMixStackOrigin,
+  'chart-mix-dual-line-origin': chartMixDualLineOrigin,
   'flow-map-origin': flowMapOrigin,
   'funnel-origin': funnelOrigin,
   'gauge-origin': gaugeOrigin,
