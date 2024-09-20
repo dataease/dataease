@@ -911,7 +911,7 @@ defineExpose({
           </div>
         </template>
         <template v-if="notapiexcelconfig">
-          <el-form-item label="连接方式" prop="type">
+          <el-form-item label="连接方式" prop="type" v-if="form.type !== 'es'">
             <el-radio-group v-model="form.configuration.urlType">
               <el-radio label="hostName">主机名</el-radio>
               <el-radio label="jdbcUrl">JDBC 连接</el-radio>
@@ -933,7 +933,7 @@ defineExpose({
           <el-form-item
             :label="t('datasource.host')"
             prop="configuration.host"
-            v-if="form.configuration.urlType !== 'jdbcUrl'"
+            v-if="form.configuration.urlType !== 'jdbcUrl' && form.type !== 'es'"
           >
             <el-input
               v-model="form.configuration.host"
@@ -944,7 +944,7 @@ defineExpose({
           <el-form-item
             :label="t('datasource.port')"
             prop="configuration.port"
-            v-if="form.configuration.urlType !== 'jdbcUrl'"
+            v-if="form.configuration.urlType !== 'jdbcUrl' && form.type !== 'es'"
           >
             <el-input-number
               v-model="form.configuration.port"
@@ -960,7 +960,7 @@ defineExpose({
           <el-form-item
             :label="t('datasource.data_base')"
             prop="configuration.dataBase"
-            v-if="form.configuration.urlType !== 'jdbcUrl'"
+            v-if="form.configuration.urlType !== 'jdbcUrl' && form.type !== 'es'"
           >
             <el-input
               v-model="form.configuration.dataBase"
@@ -1011,6 +1011,17 @@ defineExpose({
             <p>
               {{ t('datasource.kerbers_info') }}
             </p>
+          </el-form-item>
+          <el-form-item
+            v-if="form.type == 'es'"
+            :label="$t('datasource.datasource_url')"
+            prop="configuration.url"
+          >
+            <el-input
+              v-model="form.configuration.url"
+              :placeholder="$t('datasource.please_input_datasource_url')"
+              autocomplete="off"
+            />
           </el-form-item>
           <el-form-item :label="t('datasource.user_name')" v-if="form.type !== 'presto'">
             <el-input
@@ -1066,7 +1077,7 @@ defineExpose({
           </el-form-item>
           <el-form-item
             :label="t('datasource.extra_params')"
-            v-if="form.configuration.urlType !== 'jdbcUrl'"
+            v-if="form.configuration.urlType !== 'jdbcUrl' && form.type !== 'es'"
           >
             <el-input
               :placeholder="t('common.inputText') + t('datasource.extra_params')"

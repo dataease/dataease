@@ -1274,7 +1274,6 @@ public class CalciteProvider extends Provider {
                 try {
                     connection = initConnection(dsMap);
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             });
 

@@ -130,6 +130,15 @@ public class DatasetDataManage {
             }
 
             tableFields = provider.fetchTableField(datasourceRequest);
+        } else if (StringUtils.equalsIgnoreCase(type, DatasetTableType.Es)) {
+            CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasetTableDTO.getDatasourceId());
+            Provider provider = ProviderFactory.getProvider(type);
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+            BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+            datasourceRequest.setDatasource(datasourceSchemaDTO);
+            datasourceRequest.setTable(datasetTableDTO.getTableName());
+            tableFields = provider.fetchTableField(datasourceRequest);
         } else {
             // excel,api
             CoreDatasource coreDatasource = engineManage.getDeEngine();
@@ -185,9 +194,7 @@ public class DatasetDataManage {
                 DEException.throwException(Translator.get("i18n_no_column_permission"));
             }
         }
-
         buildFieldName(sqlMap, fields);
-
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         DatasourceUtils.checkDsStatus(dsMap);
         List<String> dsList = new ArrayList<>();
@@ -202,13 +209,11 @@ public class DatasetDataManage {
             }
             sql = Utils.replaceSchemaAlias(sql, dsMap);
         }
-
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
         TokenUserBO user = AuthUtils.getUser();
         if (user != null && checkPermission) {
             rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
         }
-
         Provider provider;
         if (crossDs) {
             provider = ProviderFactory.getDefaultProvider();
@@ -236,7 +241,6 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
-
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
 
         Map<String, Object> map = new LinkedHashMap<>();

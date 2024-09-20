@@ -352,6 +352,7 @@ const initSearch = () => {
   state.filterTable = tableData.value.filter(ele =>
     ele.tableName.toLowerCase().includes(nickName.value.toLowerCase())
   )
+  console.log(tableData.value)
   state.paginationConfig.total = state.filterTable.length
 }
 
@@ -836,6 +837,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
 }
 
 const handleClick = (tabName: TabPaneName) => {
+  console.log(tabName)
   switch (tabName) {
     case 'config':
       listDatasourceTables({ datasourceId: nodeInfo.id }).then(res => {

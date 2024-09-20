@@ -494,7 +494,16 @@ public class DatasetSQLManage {
                 datasourceSchemaDTO.setSchemaAlias(schemaAlias);
                 dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
             }
-        } else {
+        } else if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.Es)){
+            CoreDatasource coreDatasource = coreDatasourceMapper.selectById(ds.getDatasourceId());
+            schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
+            if (!dsMap.containsKey(coreDatasource.getId())) {
+                DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+                BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+                datasourceSchemaDTO.setSchemaAlias(schemaAlias);
+                dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
+            }
+        }else {
             CoreDatasource coreDatasource = engineManage.getDeEngine();
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(coreDatasource.getId())) {
