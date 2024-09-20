@@ -601,6 +601,7 @@ export default {
     'cfilters': {
       handler: function(val1, val2) {
         if (isChange(val1, val2) && !this.isFirstLoad) {
+          this.currentPage.page = 1
           this.getData(this.element.propValue.viewId)
           this.getDataLoading = true
         }
@@ -779,20 +780,20 @@ export default {
         message: h('p', null, [
           this.$t('data_export.exporting'),
           h(
-              Button,
-              {
-                props: {
-                  type: 'text',
-                },
-                class: 'btn-text',
-                on: {
-                  click: () => {
-                    cb()
-                  }
-                }
+            Button,
+            {
+              props: {
+                type: 'text'
               },
-              this.$t('data_export.export_center')
-            ),
+              class: 'btn-text',
+              on: {
+                click: () => {
+                  cb()
+                }
+              }
+            },
+            this.$t('data_export.export_center')
+          ),
           this.$t('data_export.export_info')
         ]),
         iconClass,
@@ -811,7 +812,7 @@ export default {
             Button,
             {
               props: {
-                type: 'text',
+                type: 'text'
               },
               class: 'btn-text',
               on: {
@@ -999,7 +1000,7 @@ export default {
     },
     getData(id, cache = true, dataBroadcast = false) {
       // Err1001 已删除的不在重复请求
-      if (this.requestStatus === 'waiting' || (this.message && this.message.indexOf('Err1001')> -1)) {
+      if (this.requestStatus === 'waiting' || (this.message && this.message.indexOf('Err1001') > -1)) {
         return
       }
       if (id) {
