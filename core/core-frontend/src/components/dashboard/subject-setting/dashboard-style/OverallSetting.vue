@@ -104,7 +104,7 @@
         :min="1"
         :max="3600"
         size="middle"
-        :disabled="!canvasStyleData.refreshViewBrowserEnable"
+        :disabled="!canvasStyleData.refreshBrowserEnable"
         @change="onRefreshChange"
       >
         <template #append>
