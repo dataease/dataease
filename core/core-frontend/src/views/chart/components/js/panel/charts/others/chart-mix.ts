@@ -240,7 +240,10 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const smooth = s.lineSmooth
     const point = {
       size: s.lineSymbolSize,
-      shape: s.lineSymbol
+      shape: s.lineSymbol,
+      style: {
+        stroke: hexColorToRGBA('#FFFFFF', s.subAlpha)
+      }
     }
     const lineStyle = {
       lineWidth: s.lineWidth
@@ -248,7 +251,10 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const leftSmooth = s.leftLineSmooth
     const leftPoint = {
       size: s.leftLineSymbolSize,
-      shape: s.leftLineSymbol
+      shape: s.leftLineSymbol,
+      style: {
+        stroke: hexColorToRGBA('#FFFFFF', s.alpha)
+      }
     }
     const leftLineStyle = {
       lineWidth: s.leftLineWidth
