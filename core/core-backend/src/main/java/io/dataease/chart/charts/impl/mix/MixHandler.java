@@ -116,7 +116,12 @@ public class MixHandler extends YoyChartHandler {
         var extBubble = new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.extBubble));
         xAxis.addAll(extBubble);
         var dillAxis = (ArrayList<ChartViewFieldDTO>) formatResult.getContext().get("dillAxis");
-        xAxis.addAll(dillAxis);
+        var fields = xAxis.stream().map(ChartViewFieldDTO::getId).collect(Collectors.toSet());
+        for (ChartViewFieldDTO dillAxi : dillAxis) {
+            if (!fields.contains(dillAxi.getId())) {
+                xAxis.add(dillAxi);
+            }
+        }
         formatResult2.getAxisMap().put(ChartAxis.xAxis, xAxis);
         formatResult2.getAxisMap().put(ChartAxis.xAxisExt, extBubble);
         var yAxisExt = new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.yAxisExt));
