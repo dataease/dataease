@@ -195,7 +195,8 @@ const DETAIL_CHART_ATTR: DeepPartial<ChartObj> = {
 }
 
 const state = reactive({
-  scale: 0.5
+  scale: 0.5,
+  componentSourceType: null
 })
 const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
   senior: {
@@ -209,7 +210,11 @@ const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
 const authShow = computed(() => editMode.value === 'edit' || dvInfo.value.weight > 3)
 
 const customExport = computed(() => {
-  const style = canvasStyleData.value ? getCanvasStyle(canvasStyleData.value, 'canvas-main') : {}
+  const style =
+    canvasStyleData.value &&
+    (optType.value === 'enlarge' || state.componentSourceType?.includes('table'))
+      ? getCanvasStyle(canvasStyleData.value, 'canvas-main')
+      : {}
   if (downLoading.value) {
     const bashStyle = pixel.value.split(' * ')
     style['width'] = bashStyle[0] + 'px!important'
@@ -263,6 +268,7 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   sourceViewType.value = view.type
   optType.value = opt
   dialogShow.value = true
+  state.componentSourceType = view.type
   viewInfo.value = deepCopy(view) as DeepPartial<ChartObj>
   viewInfo.value.customStyle.text.show = false
   config.value = deepCopy(item)
