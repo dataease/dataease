@@ -431,7 +431,7 @@ public class DatasetGroupManage {
         return dto;
     }
 
-    public DatasetGroupInfoDTO get(Long id, String type) throws Exception {
+    public DatasetGroupInfoDTO getDatasetGroupInfoDTO(Long id, String type) throws Exception {
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
         if (coreDatasetGroup == null) {
             return null;
