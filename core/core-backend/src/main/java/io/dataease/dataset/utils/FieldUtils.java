@@ -14,6 +14,22 @@ public class FieldUtils {
         List<String> num = Arrays.asList("INT", "SMALLINT", "MEDIUMINT", "INTEGER", "BIGINT", "LONG", "INT2", "INT4", "INT8", "int2", "int4", "int8", "INT16", "INT32", "INT64", "UINT8", "UINT16", "UINT32", "UINT64");
         List<String> doubleList = Arrays.asList("NUMBER", "FLOAT", "DOUBLE", "DECIMAL", "REAL", "MONEY", "NUMERIC", "float4", "float8", "FLOAT4", "FLOAT8", "DECFLOAT", "FLOAT32", "FLOAT64");
         List<String> boolType = Arrays.asList("BIT", "TINYINT");
+        if (boolType.contains(type)) {
+            return 4;// 布尔
+        }
+        if (doubleList.contains(type)) {
+            return 3;// 浮点
+        }
+        if (num.contains(type)) {
+            return 2;// 整型
+        }
+        if (time.contains(type)) {
+            return 1;// 时间
+        }
+        if (text.contains(type)) {
+            return 0;// 文本
+        }
+
         if (boolType.stream().anyMatch(l -> type.contains(l))) {
             return 4;// 布尔
         }
