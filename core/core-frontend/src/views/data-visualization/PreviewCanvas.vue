@@ -4,7 +4,6 @@ import { nextTick, onMounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import ExportExcel from '@/views/visualized/data/dataset/ExportExcel.vue'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
@@ -149,12 +148,6 @@ let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
   useEmitt({
-    name: 'data-export-center',
-    callback: function (params) {
-      ExportExcelRef.value.init(params)
-    }
-  })
-  useEmitt({
     name: 'canvasDownload',
     callback: function () {
       downloadH2('img')
@@ -173,7 +166,6 @@ onMounted(async () => {
   dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
 })
-const ExportExcelRef = ref()
 
 defineExpose({
   loadCanvasDataAsync
@@ -199,7 +191,6 @@ defineExpose({
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   />
-  <ExportExcel ref="ExportExcelRef"></ExportExcel>
 </template>
 
 <style lang="less">
