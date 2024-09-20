@@ -41,7 +41,7 @@ export const CHART_MIX_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'axisLine',
     'splitLine'
   ],
-  'y-axis-selector': [
+  'dual-y-axis-selector': [
     'name',
     'color',
     'fontSize',
