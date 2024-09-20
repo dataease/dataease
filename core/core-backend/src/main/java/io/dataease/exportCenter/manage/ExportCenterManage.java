@@ -96,7 +96,7 @@ public class ExportCenterManage implements BaseExportApi {
     @Value("${dataease.export.max.size:10}")
     private int max;
 
-    @Value("${dataease.export.dataset.limit:20}")
+    @Value("${dataease.export.dataset.limit:100000}")
     private int limit;
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     private static final String exportData_path = "/opt/dataease2.0/data/exportData/";
@@ -506,9 +506,10 @@ public class ExportCenterManage implements BaseExportApi {
                 Workbook wb = new SXSSFWorkbook();
                 FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + request.getFilename() + ".xlsx");
                 Sheet detailsSheet = wb.createSheet("数据");
+                List<List<String>> details = new ArrayList<>();
 
                 for (Integer p = 0; p < totalPage; p++) {
-                    String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, p * extractPageSize, p * extractPageSize + extractPageSize);
+                    String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, p * extractPageSize + extractPageSize, extractPageSize);
                     if (totalPage == 1) {
                         querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, totalCount.intValue());
                     }
@@ -530,7 +531,7 @@ public class ExportCenterManage implements BaseExportApi {
                         for (DatasetTableFieldDTO field : allFields) {
                             header.add(field.getName());
                         }
-                        List<List<String>> details = new ArrayList<>();
+
                         details.add(header);
                         for (Map<String, Object> obj : data) {
                             List<String> row = new ArrayList<>();
@@ -559,7 +560,7 @@ public class ExportCenterManage implements BaseExportApi {
                             }
                         }
                     } else {
-                        List<List<String>> details = new ArrayList<>();
+                        details.clear();
                         for (Map<String, Object> obj : data) {
                             List<String> row = new ArrayList<>();
                             for (DatasetTableFieldDTO field : allFields) {
