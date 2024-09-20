@@ -118,7 +118,7 @@
             >
             <el-dropdown-item
               style="padding: 0"
-              v-if="element.innerType !== 'rich-text' && barShowCheck('download')"
+              v-if="element.innerType !== 'rich-text' && barShowCheck('download') && showDownload"
               @click.prevent
             >
               <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
@@ -161,7 +161,12 @@
     <el-dropdown
       trigger="click"
       placement="right-start"
-      v-if="element.innerType !== 'rich-text' && barShowCheck('previewDownload') && authShow"
+      v-if="
+        element.innerType !== 'rich-text' &&
+        barShowCheck('previewDownload') &&
+        authShow &&
+        showDownload
+      "
     >
       <el-icon @click="downloadClick" class="bar-base-icon">
         <el-tooltip :content="t('chart.export')" effect="dark" placement="bottom">
@@ -583,6 +588,8 @@ const initCurFields = () => {
     }
   }
 }
+
+const showDownload = computed(() => canvasViewInfo.value[element.value.id]?.dataFrom !== 'template')
 // 富文本-End
 
 const datasetParamsSetShow = computed(() => {
