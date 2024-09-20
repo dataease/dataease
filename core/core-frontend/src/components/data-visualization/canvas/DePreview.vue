@@ -297,7 +297,8 @@ const winMsgHandle = event => {
   if (
     msgInfo &&
     msgInfo.type === 'attachParams' &&
-    msgInfo.targetSourceId === dvInfo.value.id + ''
+    msgInfo.targetSourceId === dvInfo.value.id + '' &&
+    isMainCanvas(canvasId.value)
   ) {
     const attachParams = msgInfo.params
     if (attachParams) {
