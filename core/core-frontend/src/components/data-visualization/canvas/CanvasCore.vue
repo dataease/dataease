@@ -332,6 +332,10 @@ const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
 
+const groupCanvasActive = computed(() => {
+  return isGroupOrTabCanvas(canvasId.value)
+})
+
 // 融合矩阵设计
 const renderOk = ref(false)
 const moveAnimate = ref(false)
@@ -1502,7 +1506,11 @@ defineExpose({
     :id="mainDomId"
     ref="container"
     class="editor"
-    :class="{ edit: isEdit, 'dashboard-editor': dashboardActive }"
+    :class="{
+      edit: isEdit,
+      'dashboard-editor': dashboardActive,
+      'group-canvas': groupCanvasActive
+    }"
     :style="editStyle"
     @contextmenu="handleContextMenu"
   >
@@ -1649,5 +1657,10 @@ defineExpose({
     width: 100%;
     height: 100%;
   }
+}
+
+.group-canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>
