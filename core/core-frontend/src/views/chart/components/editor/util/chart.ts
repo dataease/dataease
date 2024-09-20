@@ -1488,7 +1488,7 @@ export const CHART_TYPE_CONFIGS = [
         category: 'dual_axes',
         value: 'chart-mix-dual-line',
         title: t('chart.chart_mix_dual_line'),
-        icon: 'line'
+        icon: 'chart-mix-dual-line'
       }
     ]
   },

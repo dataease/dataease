@@ -12,6 +12,7 @@ import bubbleMapDark from '@/assets/svg/bubble-map-dark.svg'
 import chartMixDark from '@/assets/svg/chart-mix-dark.svg'
 import chartMixGroupDark from '@/assets/svg/chart-mix-group-dark.svg'
 import chartMixStackDark from '@/assets/svg/chart-mix-stack-dark.svg'
+import chartMixDualLineDark from '@/assets/svg/chart-mix-dual-line-dark.svg'
 import flowMapDark from '@/assets/svg/flow-map-dark.svg'
 import funnelDark from '@/assets/svg/funnel-dark.svg'
 import gaugeDark from '@/assets/svg/gauge-dark.svg'
@@ -57,6 +58,7 @@ const iconChartDarkMap = {
   'chart-mix-dark': chartMixDark,
   'chart-mix-group-dark': chartMixGroupDark,
   'chart-mix-stack-dark': chartMixStackDark,
+  'chart-mix-dual-line-dark': chartMixDualLineDark,
   'flow-map-dark': flowMapDark,
   'funnel-dark': funnelDark,
   'gauge-dark': gaugeDark,
