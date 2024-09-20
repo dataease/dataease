@@ -86,7 +86,7 @@ public class CasStrategy implements UrlPatternMatcherStrategy {
         try {
             DecodedJWT jwt = JWT.decode(token);
             Claim forShot = jwt.getClaim("forShot");
-            return ObjectUtils.isNotEmpty(forShot) && forShot.asBoolean();
+            return ObjectUtils.isNotEmpty(forShot) && !forShot.isNull() && forShot.asBoolean();
         } catch (Exception e) {
             LogUtil.error(e.getMessage());
             return false;
