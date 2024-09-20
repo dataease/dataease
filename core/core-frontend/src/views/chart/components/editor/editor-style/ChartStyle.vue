@@ -601,11 +601,11 @@ watch(
             :change-model="chart.customStyle.yAxis"
             @modelChange="val => onChangeYAxisForm(val, 'show')"
             name="yAxis"
-            :title="selectorSpec['dual-y-axis-selector']?.title"
+            :title="selectorSpec['dual-y-axis-selector']?.title ?? t('chart.yAxis')"
           >
             <dual-y-axis-selector
               class="attr-selector"
-              :property-inner="propertyInnerAll['y-axis-selector']"
+              :property-inner="propertyInnerAll['dual-y-axis-selector']"
               :themes="themes"
               :chart="chart"
               @onChangeYAxisForm="onChangeYAxisForm"
