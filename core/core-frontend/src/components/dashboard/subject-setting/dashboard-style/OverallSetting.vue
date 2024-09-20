@@ -112,7 +112,7 @@
             v-model="canvasStyleData.refreshBrowserUnit"
             size="middle"
             :effect="themes"
-            :disabled="!canvasStyleData.refreshViewBrowserEnable"
+            :disabled="!canvasStyleData.refreshBrowserEnable"
             style="width: 90px"
             @change="themeChange"
           >
