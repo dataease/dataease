@@ -83,7 +83,7 @@
       </el-checkbox>
       <el-tooltip class="item" :effect="toolTip" placement="bottom">
         <template #content>
-          <div>仅公共链接生效</div>
+          <div>仅公共链接和新Tab预览生效</div>
         </template>
         <el-icon
           class="hint-icon"
