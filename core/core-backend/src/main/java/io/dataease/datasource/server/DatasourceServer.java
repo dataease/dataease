@@ -208,6 +208,7 @@ public class DatasourceServer implements DatasourceApi {
         }
         CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
         datasource.setName(dataSourceDTO.getName());
+        dataSourceDTO.setPid(datasource.getPid());
         dataSourceManage.checkName(dataSourceDTO);
         dataSourceManage.innerEdit(datasource);
         return dataSourceDTO;
