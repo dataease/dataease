@@ -1412,6 +1412,7 @@ export default {
     chart_bar_stack_horizontal: 'Stack Horizontal Bar',
     chart_percentage_bar_stack_horizontal: 'Horizontal Percentage Stack Bar',
     chart_bidirectional_bar: 'Bidirectional Bar',
+    chart_stock_line: 'Stock Line',
     chart_line: 'Base Line',
     chart_line_stack: 'Stack Line',
     chart_pie: 'Pie',
@@ -1858,7 +1859,9 @@ export default {
     polynomial_regression: 'Polynomial regression',
     show_summary: 'Show summary',
     summary_label: 'Summary label',
-    tip: 'Tip'
+    tip: 'Tip',
+    pivot_export_empty_fields: 'Can not export without row dimension or quota',
+    export_formatted_excel: 'Export formatted excel'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

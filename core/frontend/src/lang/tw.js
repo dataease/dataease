@@ -1411,6 +1411,7 @@ export default {
     chart_bar_stack_horizontal: '橫嚮堆疊柱狀圖',
     chart_percentage_bar_stack_horizontal: '橫嚮百分比柱狀圖',
     chart_bidirectional_bar: '對稱柱狀圖',
+    chart_stock_line: 'K 線圖',
     chart_line: '基礎摺線圖',
     chart_line_stack: '堆疊摺線圖',
     chart_pie: '餅圖',
@@ -1851,7 +1852,9 @@ export default {
     polynomial_regression: '多項式擬合',
     show_summary: '顯示總計',
     summary_label: '總計標籤',
-    tip: '提示'
+    tip: '提示',
+    pivot_export_empty_fields: '行維度或指標維度為空不可導出',
+    export_formatted_excel: '導出 Excel (帶格式)'
   },
   dataset: {
     scope_edit: '僅編輯時生效',

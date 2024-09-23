@@ -308,6 +308,7 @@ export default {
         this.myChart = baseTableNormal(this.chartId, chart, this.antVAction, this.tableData, this, this.columnResize)
       } else if (chart.type === 'table-pivot') {
         this.myChart = baseTablePivot(this.chartId, chart, this.antVAction, this.tableHeaderClick, this.tableData)
+        this.$store.dispatch('chart/setTableInstance', { viewId: this.chart.id, tableInstance: this.myChart })
       }
 
       if (this.myChart && this.searchCount > 0) {

@@ -114,6 +114,7 @@ service.setTimeOut = time => {
 
 // 请根据实际需求修改
 service.interceptors.response.use(response => {
+  checkCasRedirect(response)
   response.config.loading && tryHideLoading(store.getters.currentPath)
   checkAuth(response)
   Vue.prototype.$currentHttpRequestList.delete(response.config.url)
@@ -189,6 +190,19 @@ const checkAuth = response => {
     const linkToken = response.headers[LinkTokenKey.toLocaleLowerCase()] || response.config.headers[LinkTokenKey.toLocaleLowerCase()]
     setLinkToken(linkToken)
     store.dispatch('user/setLinkToken', linkToken)
+  }
+}
+const checkCasRedirect = (response) => {
+  if (!response || !response.data) {
+    return
+  }
+  const resData = response.data
+  const routine = resData.hasOwnProperty('success')
+  const redirectUrl = response?.request?.responseURL
+  if (resData && !routine && resData.startsWith('<!') && redirectUrl?.includes('cas/login')) {
+    store.dispatch('user/logout').finally(() => {
+      location.reload()
+    })
   }
 }
 export default service

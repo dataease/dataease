@@ -1738,7 +1738,74 @@ export const TYPE_CONFIGS = [
       ]
     }
   },
-
+  {
+    render: 'antv',
+    category: 'chart.chart_type_compare',
+    value: 'stock-line',
+    title: 'chart.chart_stock_line',
+    icon: 'stock-line',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'colorPanel',
+        'customColor',
+        'alpha'
+      ],
+      'size-selector': [
+        'lineWidth',
+        'lineSymbol',
+        'lineSymbolSize',
+        'lineSmooth'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'axisValue',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder',
+        'remarkShow',
+        'fontFamily',
+        'letterSpace',
+        'fontShadow'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'textStyle',
+      ]
+    }
+  },
   {
     render: 'antv',
     category: 'chart.chart_type_distribute',

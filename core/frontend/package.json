@@ -1,6 +1,6 @@
 {
   "name": "dataease",
-  "version": "1.18.24",
+  "version": "1.18.25",
   "description": "dataease front",
   "private": true,
   "scripts": {
@@ -45,6 +45,7 @@
     "echarts": "^5.0.1",
     "element-resize-detector": "^1.2.3",
     "element-ui": "2.15.7",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "fit2cloud-ui": "^1.8.0",
     "flv.js": "^1.6.2",

@@ -1772,6 +1772,8 @@
       <compare-edit
         :compare-item="quotaItemCompare"
         :chart="chart"
+        :dimension-data="dimensionData"
+        :quota-data="quotaData"
       />
       <div
         slot="footer"
@@ -2192,7 +2194,7 @@ export default {
       return equalsAny(this.view.type, 'table-normal', 'table-info', 'table-pivot')
     },
     showAnalyseCfg() {
-      if (this.view.type === 'bidirectional-bar' || this.view.type === 'bar-time-range') {
+      if (this.view.type === 'bidirectional-bar' || this.view.type === 'bar-time-range' || this.view.type === 'stock-line') {
         return false
       }
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||

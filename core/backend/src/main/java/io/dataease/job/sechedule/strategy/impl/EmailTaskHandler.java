@@ -9,6 +9,7 @@ import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.chart.ViewOption;
+import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.ext.ExtTaskMapper;
 import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.job.sechedule.strategy.TaskHandler;
@@ -31,6 +32,7 @@ import io.dataease.plugins.xpack.wecom.dto.entity.WecomMsgResult;
 import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.chart.ViewExportExcel;
+import io.dataease.service.panel.PanelGroupService;
 import io.dataease.service.sys.SysUserService;
 import io.dataease.service.system.EmailService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -269,7 +271,9 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                                     emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 } else {
                                     bytes = emailXpackService.printPdf(url, token, xpackPixelEntity, false, true);
-                                    emailService.sendPdfWithFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                                    PanelGroupDTO panelInfo = CommonBeanFactory.getBean(PanelGroupService.class).findOne(panelId);
+                                    String pdfFileName = panelInfo.getName() + "pdf";
+                                    emailService.sendPdfWithFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files, pdfFileName);
                                 }
 
                             } catch (Exception e) {

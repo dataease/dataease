@@ -1408,6 +1408,7 @@ export default {
     chart_bar_stack_horizontal: '横向堆叠柱状图',
     chart_percentage_bar_stack_horizontal: '横向百分比柱状图',
     chart_bidirectional_bar: '对称柱状图',
+    chart_stock_line: 'K 线图',
     chart_line: '基础折线图',
     chart_line_stack: '堆叠折线图',
     chart_pie: '饼图',
@@ -1848,7 +1849,9 @@ export default {
     polynomial_regression: '多项式拟合',
     show_summary: '显示总计',
     summary_label: '总计标签',
-    tip: '提示'
+    tip: '提示',
+    pivot_export_empty_fields: '行维度或指标维度为空不可导出',
+    export_formatted_excel: '导出 Excel (带格式)'
   },
   dataset: {
     goto: ', 前往 ',
