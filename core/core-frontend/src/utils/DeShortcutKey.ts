@@ -235,7 +235,7 @@ function preview() {
 }
 
 function deleteComponent() {
-  if (curComponent.value) {
+  if (curComponent.value && curComponent.value.component !== 'GroupArea') {
     const curInfo = getCurInfo()
     if (curInfo) {
       dvMainStore.deleteComponent(curInfo.index, curInfo.componentData)
