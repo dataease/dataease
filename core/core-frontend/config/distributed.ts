@@ -1,5 +1,6 @@
 import pkg from '../package.json'
 import viteCompression from 'vite-plugin-compression'
+
 export default {
   plugins: [
     viteCompression({
@@ -12,6 +13,7 @@ export default {
     })
   ],
   build: {
+    cssCodeSplit: false,
     rollupOptions: {
       external: id => /de-xpack/.test(id) || /extensions/.test(id),
       output: {
@@ -19,10 +21,15 @@ export default {
         chunkFileNames: `assets/chunk/[name]-${pkg.version}-${pkg.name}.js`,
         assetFileNames: `assets/[ext]/[name]-${pkg.version}-${pkg.name}.[ext]`,
         entryFileNames: `js/[name]-${pkg.version}-${pkg.name}.js`,
-        manualChunks(id: string) {
-          if (id.includes('node_modules')) {
-            return id.toString().split('node_modules/')[1].split('/')[0].toString()
-          }
+        manualChunks: {
+          echarts: ['echarts'],
+          vue: ['vue', 'vue-router', 'pinia', 'vue-i18n', 'mitt'],
+          lodash: ['lodash-es', 'lodash'],
+          library: ['jspdf', '@tinymce/tinymce-vue', 'screenfull'],
+          antv: ['@antv/g2', '@antv/g2plot', '@antv/l7', '@antv/l7plot', '@antv/s2'],
+          tinymce: ['tinymce'],
+          axios: ['axios'],
+          'vuedraggable-es': ['vuedraggable']
         }
       }
     },
