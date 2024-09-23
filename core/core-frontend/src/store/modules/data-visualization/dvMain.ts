@@ -731,7 +731,50 @@ export const dvMainStore = defineStore('dataVisualization', {
         // 修改对应图表的参数
         this.curBatchOptComponents.forEach(viewId => {
           const viewInfo = this.canvasViewInfo[viewId]
-          if (propertyInfo.subProp) {
+          //针对双轴图chart-mix
+          if (
+            viewInfo.type.includes('chart-mix') &&
+            propertyInfo.property === 'basicStyle' &&
+            propertyInfo.subProp
+          ) {
+            const subValue = get(propertyInfo.value, propertyInfo.subProp)
+            const target = viewInfo[propertyInfo.custom][propertyInfo.property]
+            set(target, propertyInfo.subProp, subValue)
+            switch (propertyInfo.subProp) {
+              case 'alpha':
+                const subAlpha = get(propertyInfo.value, 'subAlpha')
+                set(target, 'subAlpha', subAlpha)
+                break
+              case 'colorScheme':
+                const subColorScheme = get(propertyInfo.value, 'subColorScheme')
+                set(target, 'subColorScheme', subColorScheme)
+                break
+              case 'seriesColor':
+                const subSeriesColor = get(propertyInfo.value, 'subSeriesColor')
+                set(target, 'subSeriesColor', subSeriesColor)
+                break
+              case 'colors':
+                const subColors = get(propertyInfo.value, 'subColors')
+                set(target, 'subColors', subColors)
+                break
+              case 'lineWidth':
+                const leftLineWidth = get(propertyInfo.value, 'leftLineWidth')
+                set(target, 'leftLineWidth', leftLineWidth)
+                break
+              case 'lineSymbol':
+                const leftLineSymbol = get(propertyInfo.value, 'leftLineSymbol')
+                set(target, 'leftLineSymbol', leftLineSymbol)
+                break
+              case 'lineSymbolSize':
+                const leftLineSymbolSize = get(propertyInfo.value, 'leftLineSymbolSize')
+                set(target, 'leftLineSymbolSize', leftLineSymbolSize)
+                break
+              case 'lineSmooth':
+                const leftLineSmooth = get(propertyInfo.value, 'leftLineSmooth')
+                set(target, 'leftLineSmooth', leftLineSmooth)
+                break
+            }
+          } else if (propertyInfo.subProp) {
             const subValue = get(propertyInfo.value, propertyInfo.subProp)
             const target = viewInfo[propertyInfo.custom][propertyInfo.property]
             set(target, propertyInfo.subProp, subValue)
