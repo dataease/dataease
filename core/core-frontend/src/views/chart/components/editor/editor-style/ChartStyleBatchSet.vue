@@ -17,6 +17,7 @@
       @onTooltipChange="onTooltipChange"
       @onChangeXAxisForm="onChangeXAxisForm"
       @onChangeYAxisForm="onChangeYAxisForm"
+      @onChangeYAxisExtForm="onChangeYAxisExtForm"
       @onTextChange="onTextChange"
       @onLegendChange="onLegendChange"
       @onBackgroundChange="onBackgroundChange"
@@ -86,6 +87,9 @@ const onChangeXAxisForm = (val, prop) => {
 
 const onChangeYAxisForm = (val, prop) => {
   batchOptChange('customStyle', 'yAxis', val, prop)
+}
+const onChangeYAxisExtForm = (val, prop) => {
+  batchOptChange('customStyle', 'yAxisExt', val, prop)
 }
 
 const onIndicatorChange = (val, prop) => {
