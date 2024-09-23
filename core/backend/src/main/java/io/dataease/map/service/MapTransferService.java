@@ -41,6 +41,7 @@ public class MapTransferService {
     private static final String FULL_FILE_SUFFIX = "_full.json";
 
     private static final List<String> coverFileNameList = new ArrayList<>();
+    private static final List<String> globalCoverFileNameList = new ArrayList<>();
 
 
     @PostConstruct
@@ -48,6 +49,7 @@ public class MapTransferService {
         MATCH_TYPES.add("map");
         MATCH_TYPES.add("buddle-map");
         coverFileNameList.add("350200_full.json");
+        globalCoverFileNameList.add("000000000_full.json");
     }
 
     @Resource
@@ -74,12 +76,11 @@ public class MapTransferService {
         File chinaRootDir = new File(chinaRootPath);
         File[] files = chinaRootDir.listFiles();
         if (ArrayUtils.isEmpty(files)) return;
+        moveGlobalFile();
         Map<String, List<File>> listMap = Arrays.stream(files).filter(FileUtil::isFile).collect(Collectors.groupingBy(this::fileType));
         if (ObjectUtils.isEmpty(listMap)) return;
         moveFiles(listMap, BORDER_KEY);
         moveFiles(listMap, FULL_KEY);
-        moveGlobalFile();
-
     }
 
     private void moveFiles(Map<String, List<File>> listMap, String fileType) {
@@ -110,7 +111,7 @@ public class MapTransferService {
         String targetPath = targetDirPath + fileName;
 
         File targetFile = new File(targetPath);
-        if (!targetFile.exists()) {
+        if (globalCoverFileNameList.contains(fileName) || !targetFile.exists()) {
             FileUtil.move(sourceFile, targetFile, true);
         }
 
