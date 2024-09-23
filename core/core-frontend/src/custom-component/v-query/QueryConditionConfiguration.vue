@@ -1440,6 +1440,11 @@ const addQueryCriteria = () => {
   conditions.value.push(addQueryCriteriaConfig())
 }
 
+const addQueryCriteriaAndSelect = () => {
+  addQueryCriteria()
+  handleCondition(conditions.value[conditions.value.length - 1])
+}
+
 const addCriteriaConfig = () => {
   addQueryCriteria()
   return conditions.value[conditions.value.length - 1].id
@@ -1467,7 +1472,7 @@ defineExpose({
       <div class="query-condition-list">
         <div class="title">
           查询条件
-          <el-icon @click="addQueryCriteria">
+          <el-icon @click="addQueryCriteriaAndSelect">
             <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
