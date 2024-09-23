@@ -47,8 +47,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        Map<String, Object> result = ChartDataBuild.transSymbolicMapNormalWithDetail(xAxis, yAxis, extBubble, data, detailFields, detailData);
-        return result;
+        return ChartDataBuild.transSymbolicMapNormalWithDetail(view, xAxis, yAxis, extBubble, data, detailFields, detailData);
     }
 
     @Override
