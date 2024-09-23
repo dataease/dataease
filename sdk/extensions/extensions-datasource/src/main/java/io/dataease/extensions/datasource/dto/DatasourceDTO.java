@@ -14,10 +14,10 @@ public class DatasourceDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1175287571828910222L;
 
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long pid;
     /**
      * 数据源名称
@@ -73,10 +73,10 @@ public class DatasourceDTO implements Serializable {
     private TaskDTO syncSetting;
 
     private Integer editType;
-    private String  nodeType;
-    private String  action;
-    private String  fileName;
-    private String  size;
+    private String nodeType;
+    private String action;
+    private String fileName;
+    private String size;
     /**
      * 上次成功更新时间
      */
@@ -91,4 +91,6 @@ public class DatasourceDTO implements Serializable {
     private String taskStatus;
 
     private Boolean enableDataFill;
+
+    private int dsVersion = -1;
 }
