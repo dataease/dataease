@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import iconVideo from '@/assets/svg/icon-video.svg'
+import dvPictureShow from '@/assets/svg/dv-picture-show.svg'
+import iconStream from '@/assets/svg/icon-stream.svg'
 import { toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
@@ -45,21 +48,21 @@ const handleDragEnd = e => {
   <div class="group" @dragstart="handleDragStart" @dragend="handleDragEnd">
     <drag-component
       :themes="themes"
-      icon="dv-picture-show"
+      :icon="dvPictureShow"
       label="图片"
       drag-info="Picture&Picture"
       v-on:click="newComponent('Picture')"
     ></drag-component>
     <drag-component
       :themes="themes"
-      icon="icon-video"
+      :icon="iconVideo"
       label="视频"
       drag-info="DeVideo&DeVideo"
       v-on:click="newComponent('DeVideo')"
     ></drag-component>
     <drag-component
       :themes="themes"
-      icon="icon-stream"
+      :icon="iconStream"
       label="流媒体"
       drag-info="DeStreamMedia&DeStreamMedia"
       v-on:click="newComponent('DeStreamMedia')"

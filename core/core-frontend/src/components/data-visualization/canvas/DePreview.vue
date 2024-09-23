@@ -18,14 +18,12 @@ import CanvasFilterBtn from '@/custom-component/canvas-filter-btn/Component.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
-import ShareHandler from '@/views/share/share/ShareHandler.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
 const customDatasetParamsRef = ref(null)
 const emits = defineEmits(['onResetLayout'])
 const fullScreeRef = ref(null)
-const shareComponent = ref(null)
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -201,15 +199,6 @@ useEmitt({
   }
 })
 
-useEmitt({
-  name: 'shareComponent',
-  callback: function () {
-    if (isMainCanvas(canvasId.value)) {
-      shareComponent.value.execute()
-    }
-  }
-})
-
 const resetLayout = () => {
   if (downloadStatus.value) {
     return
@@ -264,8 +253,8 @@ const getShapeItemShowStyle = item => {
 }
 
 const curGap = computed(() => {
-  return dashboardActive.value && canvasStyleData.value?.dashboard?.gap === 'yes'
-    ? canvasStyleData.value?.dashboard?.gapSize
+  return dashboardActive.value && dvMainStore.canvasStyleData.dashboard?.gap === 'yes'
+    ? dvMainStore.canvasStyleData?.dashboard?.gapSize
     : 0
 })
 
@@ -308,7 +297,8 @@ const winMsgHandle = event => {
   if (
     msgInfo &&
     msgInfo.type === 'attachParams' &&
-    msgInfo.targetSourceId === dvInfo.value.id + ''
+    msgInfo.targetSourceId === dvInfo.value.id + '' &&
+    isMainCanvas(canvasId.value)
   ) {
     const attachParams = msgInfo.params
     if (attachParams) {
@@ -454,12 +444,6 @@ defineExpose({
   <de-fullscreen ref="fullScreeRef"></de-fullscreen>
   <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
-  <ShareHandler
-    ref="shareComponent"
-    :resource-id="dvInfo.id"
-    :resource-type="dvInfo.type"
-    :weight="dvInfo.weight"
-  />
 </template>
 
 <style lang="less" scoped>

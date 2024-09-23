@@ -1,4 +1,21 @@
 <script setup lang="ts">
+import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import dvCopyDark from '@/assets/svg/dv-copy-dark.svg'
+import dvDelete from '@/assets/svg/dv-delete.svg'
+import dvMove from '@/assets/svg/dv-move.svg'
+import dvRename from '@/assets/svg/dv-rename.svg'
+import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
+import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
+import dvNewFolder from '@/assets/svg/dv-new-folder.svg'
+import icon_fileAdd_outlined from '@/assets/svg/icon_file-add_outlined.svg'
+import dvUseTemplate from '@/assets/svg/dv-use-template.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import dvSortAsc from '@/assets/svg/dv-sort-asc.svg'
+import dvSortDesc from '@/assets/svg/dv-sort-desc.svg'
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { onMounted, reactive, ref, toRefs, watch, nextTick, computed } from 'vue'
 import { copyResource, deleteLogic, ResourceOrFolder } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secondary'
@@ -66,17 +83,17 @@ const state = reactive({
     {
       label: '移动到',
       command: 'move',
-      svgName: 'dv-move'
+      svgName: dvMove
     },
     {
       label: '重命名',
       command: 'rename',
-      svgName: 'dv-rename'
+      svgName: dvRename
     },
     {
       label: '删除',
       command: 'delete',
-      svgName: 'dv-delete',
+      svgName: dvDelete,
       divided: true
     }
   ],
@@ -102,7 +119,7 @@ const state = reactive({
 })
 
 const dvSvgType = computed(() =>
-  curCanvasType.value === 'dashboard' ? 'dv-dashboard-spine' : 'dv-screen-spine'
+  curCanvasType.value === 'dashboard' ? dvDashboardSpine : dvScreenSpine
 )
 
 const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
@@ -116,13 +133,13 @@ const resourceTypeList = computed(() => {
     },
     {
       label: '使用模板新建',
-      svgName: 'dv-use-template',
+      svgName: dvUseTemplate,
       command: 'newFromTemplate'
     },
     {
       label: '新建文件夹',
       divided: true,
-      svgName: 'dv-folder',
+      svgName: dvFolder,
       command: 'newFolder'
     }
   ]
@@ -134,22 +151,22 @@ const menuList = computed(() => {
     {
       label: '复制',
       command: 'copy',
-      svgName: 'dv-copy-dark'
+      svgName: dvCopyDark
     },
     {
       label: '移动到',
       command: 'move',
-      svgName: 'dv-move'
+      svgName: dvMove
     },
     {
       label: '重命名',
       command: 'rename',
-      svgName: 'dv-rename'
+      svgName: dvRename
     },
     {
       label: '删除',
       command: 'delete',
-      svgName: 'dv-delete',
+      svgName: dvDelete,
       divided: true
     }
   ]
@@ -502,26 +519,28 @@ defineExpose({
               style="margin-right: 20px"
               @click="addOperation('newFolder', null, 'folder')"
             >
-              <Icon name="dv-new-folder" />
+              <Icon name="dv-new-folder"><dvNewFolder class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
 
           <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
             <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
               <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
-                <Icon name="icon_file-add_outlined" />
+                <Icon name="icon_file-add_outlined"
+                  ><icon_fileAdd_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item @click="addOperation('newLeaf', null, 'leaf', true)">
                     <el-icon :class="`handle-icon color-${curCanvasType}`">
-                      <Icon :name="dvSvgType"></Icon>
+                      <Icon><component class="svg-icon" :is="dvSvgType"></component></Icon>
                     </el-icon>
                     空白新建
                   </el-dropdown-item>
                   <el-dropdown-item @click="addOperation('newFromTemplate', null, 'leaf', true)">
                     <el-icon class="handle-icon">
-                      <Icon name="dv-use-template"></Icon>
+                      <Icon name="dv-use-template"><dvUseTemplate class="svg-icon" /></Icon>
                     </el-icon>
                     使用模板新建
                   </el-dropdown-item>
@@ -539,25 +558,23 @@ defineExpose({
       >
         <template #prefix>
           <el-icon>
-            <Icon name="icon_search-outline_outlined"></Icon>
+            <Icon name="icon_search-outline_outlined"
+              ><icon_searchOutline_outlined class="svg-icon"
+            /></Icon>
           </el-icon>
         </template>
       </el-input>
       <el-dropdown @command="sortTypeChange" trigger="click">
         <el-icon class="filter-icon-span">
           <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
-            <Icon
-              v-if="state.curSortType.includes('asc')"
-              name="dv-sort-asc"
-              class="opt-icon"
-            ></Icon>
+            <Icon v-if="state.curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"
+              ><dvSortAsc class="svg-icon opt-icon"
+            /></Icon>
           </el-tooltip>
           <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
-            <Icon
-              v-show="state.curSortType.includes('desc')"
-              name="dv-sort-desc"
-              class="opt-icon"
-            ></Icon>
+            <Icon v-if="state.curSortType.includes('desc')" name="dv-sort-desc" class="opt-icon"
+              ><dvSortDesc class="svg-icon opt-icon"
+            /></Icon>
           </el-tooltip>
         </el-icon>
         <template #dropdown>
@@ -594,15 +611,19 @@ defineExpose({
         <template #default="{ node, data }">
           <span class="custom-tree-node">
             <el-icon style="font-size: 18px" v-if="!data.leaf">
-              <Icon name="dv-folder"></Icon>
+              <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
               <Icon
-                :name="data.extraFlag ? 'dv-dashboard-spine-mobile' : 'dv-dashboard-spine'"
+                ><component
+                  :is="data.extraFlag ? dvDashboardSpineMobile : dvDashboardSpine"
+                ></component
               ></Icon>
             </el-icon>
             <el-icon class="icon-screen-new color-dataV" style="font-size: 18px" v-else>
-              <Icon name="icon_operation-analysis_outlined"></Icon>
+              <Icon name="icon_operation-analysis_outlined"
+                ><icon_operationAnalysis_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
 
@@ -616,14 +637,14 @@ defineExpose({
                 class="hover-icon"
                 @click="resourceEdit(data.id)"
               >
-                <Icon name="icon_edit_outlined" />
+                <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
               </el-icon>
               <handle-more
                 @handle-command="
                   cmd => addOperation(cmd, data, cmd === 'newFolder' ? 'folder' : 'leaf')
                 "
                 :menu-list="resourceTypeList"
-                icon-name="icon_add_outlined"
+                :icon-name="icon_add_outlined"
                 placement="bottom-start"
                 v-if="!data.leaf"
               ></handle-more>

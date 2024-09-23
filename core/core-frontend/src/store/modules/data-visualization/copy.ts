@@ -184,6 +184,16 @@ export const copyStore = defineStore('copy', {
   }
 })
 
+export function deepCopyTabItemHelper(newCanvasId, tabComponentData, idMap) {
+  const resultComponentData = []
+  tabComponentData.forEach(item => {
+    const newItem = deepCopyHelper(item, idMap)
+    newItem.canvasId = newCanvasId
+    resultComponentData.push(newItem)
+  })
+  return resultComponentData
+}
+
 function deepCopyHelper(data, idMap) {
   const result = deepCopy(data)
   const newComponentId = generateID()

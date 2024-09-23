@@ -40,7 +40,9 @@
                     <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
                       编辑标题
                     </el-dropdown-item>
-
+                    <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
+                      复制
+                    </el-dropdown-item>
                     <el-dropdown-item
                       v-if="element.propValue.length > 1"
                       :command="beforeHandleCommand('deleteCur', tabItem)"
@@ -126,10 +128,12 @@ import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
+import { copyStoreWithOut, deepCopyTabItemHelper } from '@/store/modules/data-visualization/copy'
 const dvMainStore = dvMainStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
 let carouselTimer = null
+const copyStore = copyStoreWithOut()
 
 const props = defineProps({
   canvasStyleData: {
@@ -259,6 +263,14 @@ function deleteCur(param) {
     }
   }
 }
+function copyCur(param) {
+  addTab()
+  const newTabItem = element.value.propValue[element.value.propValue.length - 1]
+  const idMap = {}
+  const newCanvasId = element.value.id + '--' + newTabItem.name
+  newTabItem.componentData = deepCopyTabItemHelper(newCanvasId, param.componentData, idMap)
+  dvMainStore.updateCopyCanvasView(idMap)
+}
 
 function editCurTitle(param) {
   state.activeTabName = param.name
@@ -274,6 +286,9 @@ function handleCommand(command) {
       break
     case 'deleteCur':
       deleteCur(command.param)
+      break
+    case 'copyCur':
+      copyCur(command.param)
       break
   }
 }

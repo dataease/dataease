@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import dvInfo from '@/assets/svg/dv-info.svg'
+import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
+import deJson from '@/assets/svg/de-json.svg'
 import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -221,7 +224,9 @@ defineExpose({
           <span class="area-code-label">
             <span>区域代码</span>
             <el-tooltip effect="dark" :content="codeTips" placement="top">
-              <el-icon class="info-tips"><Icon name="dv-info"></Icon></el-icon>
+              <el-icon class="info-tips"
+                ><Icon name="dv-info"><dvInfo class="svg-icon" /></Icon
+              ></el-icon>
             </el-tooltip>
           </span>
         </template>
@@ -265,12 +270,12 @@ defineExpose({
           >
             <template #suffix>
               <el-icon>
-                <Icon name="icon_upload_outlined" />
+                <Icon name="icon_upload_outlined"><icon_upload_outlined class="svg-icon" /></Icon>
               </el-icon>
             </template>
             <template #prefix>
               <el-icon v-if="!!state.form.fileName">
-                <Icon name="de-json" />
+                <Icon name="de-json"><deJson class="svg-icon" /></Icon>
               </el-icon>
             </template>
           </el-input>

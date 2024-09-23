@@ -1,4 +1,6 @@
 <script lang="tsx" setup>
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { onMounted, reactive, watch, computed, PropType } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
@@ -156,21 +158,17 @@ onMounted(() => {
         >
           已设置
         </span>
-        <el-button
+        <button
           :class="'label-' + props.themes"
-          :style="{ width: '24px', marginLeft: '6px' }"
+          :style="{ marginLeft: '6px' }"
           :disabled="!state.assistLineCfg.enable"
-          class="circle-button font14"
-          text
-          size="small"
+          class="circle-button_icon"
           @click="editLine"
         >
-          <template #icon>
-            <el-icon size="14px">
-              <Icon name="icon_edit_outlined" />
-            </el-icon>
-          </template>
-        </el-button>
+          <el-icon>
+            <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+          </el-icon>
+        </button>
       </span>
     </div>
 
@@ -224,7 +222,7 @@ onMounted(() => {
               <span> {{ t('chart.assist_line_tip') }}</span>
             </template>
             <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-              <Icon name="icon_info_outlined" />
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
         </div>

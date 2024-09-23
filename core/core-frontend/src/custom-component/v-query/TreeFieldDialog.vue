@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { ElMessage } from 'element-plus-secondary'
 import { ref, shallowRef, computed } from 'vue'
@@ -79,7 +81,7 @@ defineExpose({
       <div style="display: flex; align-items: center; justify-content: space-between">
         <el-button :disabled="treeList.length === 5" text @click="addCascadeItem">
           <template #icon>
-            <Icon name="icon_add_outlined"></Icon>
+            <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
           </template>
           添加层级
         </el-button>
@@ -108,7 +110,9 @@ defineExpose({
         </div>
         <el-button v-show="idx !== 0" @click="deleteCascade(idx)" class="cascade-delete" text>
           <template #icon>
-            <Icon name="icon_delete-trash_outlined"></Icon>
+            <Icon name="icon_delete-trash_outlined"
+              ><icon_deleteTrash_outlined class="svg-icon"
+            /></Icon>
           </template>
         </el-button>
       </div>

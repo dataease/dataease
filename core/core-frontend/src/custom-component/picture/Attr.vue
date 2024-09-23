@@ -5,20 +5,24 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, PropType, reactive, toRefs, computed } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
+import Icon from '../../components/icon-custom/src/Icon.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import { cloneDeep } from 'lodash-es'
+import FilterTree from '@/views/chart/components/editor/filter/FilterTree.vue'
+const { t } = useI18n()
 
-withDefaults(
-  defineProps<{
-    themes?: EditorTheme
-  }>(),
-  {
-    themes: 'dark'
+const props = defineProps({
+  themes: {
+    type: String as PropType<EditorTheme>,
+    default: 'dark'
   }
-)
+})
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -31,6 +35,9 @@ const dialogVisible = ref(false)
 const uploadDisabled = ref(false)
 const files = ref(null)
 const maxImageSize = 15000000
+const datasetSelector = ref(null)
+const filterTree = ref(null)
+const state = reactive({})
 
 const handlePictureCardPreview = file => {
   dialogImageUrl.value = file.url
@@ -81,6 +88,10 @@ const init = () => {
     fileList.value = []
   }
 }
+
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 
 watch(
   () => curComponent.value.propValue.url,
@@ -302,6 +313,48 @@ onBeforeUnmount(() => {
 .form-item-dark {
   .ed-radio {
     margin-right: 4px !important;
+  }
+}
+
+.drag-data {
+  padding-top: 8px;
+  padding-bottom: 16px;
+
+  .tree-btn {
+    width: 100%;
+    margin-top: 8px;
+    background: #fff;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    display: flex;
+    color: #cccccc;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+    font-size: 12px;
+    &.tree-btn--dark {
+      background: rgba(235, 235, 235, 0.05);
+      border-color: #5f5f5f;
+    }
+
+    &.active {
+      color: #3370ff;
+      border-color: #3370ff;
+    }
+  }
+
+  &.no-top-border {
+    border-top: none !important;
+  }
+  &.no-top-padding {
+    padding-top: 0 !important;
+  }
+  &:nth-child(n + 2) {
+    border-top: 1px solid @side-outline-border-color;
+  }
+  &:first-child {
+    border-top: none !important;
   }
 }
 </style>

@@ -1,6 +1,7 @@
 package io.dataease.chart.utils;
 
-import io.dataease.api.chart.dto.*;
+import io.dataease.api.chart.dto.ScatterChartDataDTO;
+import io.dataease.api.chart.dto.Series;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
@@ -423,7 +424,7 @@ public class ChartDataBuild {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
-                buildDynamicValue(view, axisChartDataDTO, row, size, ObjectUtils.isNotEmpty(extBubble)?extSize-1:extSize);
+                buildDynamicValue(view, axisChartDataDTO, row, size, ObjectUtils.isNotEmpty(extBubble) ? extSize - 1 : extSize);
                 // pop
                 if (ObjectUtils.isNotEmpty(extBubble)) {
                     try {
@@ -504,6 +505,11 @@ public class ChartDataBuild {
 
     // antV组合图形
     public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+        return transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, false);
+    }
+
+    public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill, boolean isLine) {
+
         Map<String, Object> map = new HashMap<>();
 
         List<Series> series = new ArrayList<>();
@@ -571,8 +577,16 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
+
                 String category = StringUtils.defaultIfBlank(b.toString(),
                         StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
+
+                if (isLine) {
+                    if (ObjectUtils.isEmpty(xAxisExt)) {
+                        category = StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName());
+                    }
+                }
+
                 axisChartDataDTO.setCategory(category);
                 categories.add(category);
 
@@ -1296,7 +1310,11 @@ public class ChartDataBuild {
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1 || chartViewFieldDTO.getDeType() == 5 || chartViewFieldDTO.getDeType() == 7) {
                     d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3 || chartViewFieldDTO.getDeType() == 4) {
-                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? null : new BigDecimal(ele[i]).setScale(8, RoundingMode.HALF_UP));
+                    if (view.getIsExcelExport()) {
+                        d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
+                    } else {
+                        d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? null : new BigDecimal(ele[i]).setScale(8, RoundingMode.HALF_UP));
+                    }
                 }
             }
             tableRow.add(d);
@@ -1764,7 +1782,7 @@ public class ChartDataBuild {
         List<Map<String, Object>> tableRow = (List<Map<String, Object>>) map.get("tableRow");
         final int xEndIndex = detailIndex;
         Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> "(" + StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), ")-de-(") + ")"));
-        String extBubbleDataeaseName = ObjectUtils.isNotEmpty(extBubble)?extBubble.get(0).getDataeaseName():"";
+        String extBubbleDataeaseName = ObjectUtils.isNotEmpty(extBubble) ? extBubble.get(0).getDataeaseName() : "";
         tableRow.forEach(row -> {
             BigDecimal rowValue = row.get(extBubbleDataeaseName) == null ? BigDecimal.ZERO : new BigDecimal(row.get(extBubbleDataeaseName).toString());
             String key = xAxis.stream().map(x -> String.format(format, row.get(x.getDataeaseName()).toString())).collect(Collectors.joining("-de-"));
@@ -1773,16 +1791,16 @@ public class ChartDataBuild {
                 Map<String, Object> temp = new HashMap<>();
                 for (int i = 0; i < realDetailFields.size(); i++) {
                     ChartViewFieldDTO realDetailField = realDetailFields.get(i);
-                    if(StringUtils.equalsIgnoreCase(extBubbleDataeaseName,realDetailField.getDataeaseName())){
+                    if (StringUtils.equalsIgnoreCase(extBubbleDataeaseName, realDetailField.getDataeaseName())) {
                         temp.put(realDetailField.getDataeaseName(), rowValue);
-                    }else{
+                    } else {
                         temp.put(realDetailField.getDataeaseName(), detailArr[detailIndex + i]);
                     }
                 }
                 return temp;
             })).collect(Collectors.toList());
             //详情只要一个
-            row.put("details", !detailValueMapList.isEmpty() ?Collections.singletonList(detailValueMapList.getFirst()):detailValueMapList);
+            row.put("details", !detailValueMapList.isEmpty() ? Collections.singletonList(detailValueMapList.getFirst()) : detailValueMapList);
         });
         // 先过滤掉所有记录数字段
         List<ChartViewFieldDTO> filterCountAxis = fields.stream()

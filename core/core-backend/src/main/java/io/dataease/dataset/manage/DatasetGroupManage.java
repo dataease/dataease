@@ -45,8 +45,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import static io.dataease.result.ResultCode.DV_RESOURCE_UNCHECKED;
-
 /**
  * @Author Junjun
  */
@@ -397,10 +395,6 @@ public class DatasetGroupManage {
         return dto;
     }
 
-    public DatasetGroupInfoDTO getDatasetGroupInfoDTO(Long id, String type) throws Exception {
-        return get(id, type);
-    }
-
     public DatasetGroupInfoDTO getDetail(Long id) throws Exception {
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
         if (coreDatasetGroup == null) {
@@ -437,7 +431,7 @@ public class DatasetGroupManage {
         return dto;
     }
 
-    public DatasetGroupInfoDTO get(Long id, String type) throws Exception {
+    public DatasetGroupInfoDTO getDatasetGroupInfoDTO(Long id, String type) throws Exception {
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
         if (coreDatasetGroup == null) {
             return null;
@@ -561,6 +555,9 @@ public class DatasetGroupManage {
 
     public void geFullName(Long pid, List<String> fullName) {
         CoreDatasetGroup parent = coreDatasetGroupMapper.selectById(pid);// 查找父级folder
+        if (parent == null) {
+            return;
+        }
         fullName.add(parent.getName());
         if (parent.getPid() != null && parent.getPid() != 0) {
             geFullName(parent.getPid(), fullName);

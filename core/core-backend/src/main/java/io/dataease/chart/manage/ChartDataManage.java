@@ -238,12 +238,12 @@ public class ChartDataManage {
         if (ObjectUtils.isNotEmpty(filters)) {
             for (ChartExtFilterDTO request : filters) {
                 // 包含 DE 的为数据集参数
-                if(request.getFieldId().contains("DE")){
+                if (request.getFieldId().contains("DE")) {
                     // 组装sql 参数原始数据
                     if (CollectionUtils.isNotEmpty(sqlVariables)) {
-                        for(SqlVariableDetails sourceVariables : sqlVariables){
-                            if(sourceVariables.getId().equals(request.getFieldId())){
-                                if(CollectionUtils.isEmpty(request.getParameters())){
+                        for (SqlVariableDetails sourceVariables : sqlVariables) {
+                            if (sourceVariables.getId().equals(request.getFieldId())) {
+                                if (CollectionUtils.isEmpty(request.getParameters())) {
                                     request.setParameters(new ArrayList<>());
                                 }
                                 request.getParameters().add(sourceVariables);
@@ -251,7 +251,7 @@ public class ChartDataManage {
                         }
 
                     }
-                }else {
+                } else {
                     DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(Long.valueOf(request.getFieldId()));
                     request.setDatasetTableField(datasetTableField);
                     request.setFilterType(2);
@@ -643,7 +643,7 @@ public class ChartDataManage {
         List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
         // 获取数据集,需校验权限
-        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
+        DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), view.getChartExtRequest().getUser());
 

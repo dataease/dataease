@@ -13,6 +13,7 @@ import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -193,7 +194,10 @@ public class ChartViewThresholdManage {
         Long chartId = request.getChartId();
         try {
             ChartViewDTO chart = chartViewManege.getChart(chartId);
-            Map<String, Object> data = chart.getData();
+            Map<String, Object> data = null;
+            if (ObjectUtils.isEmpty(chart) || MapUtils.isEmpty(data = chart.getData())) {
+                return new ThresholdCheckVO(false, null, "查询图表异常！", null);
+            }
             thresholdTemplate = thresholdTemplate.replace("[检测时间]", DateUtils.time2String(System.currentTimeMillis()));
             String s = convertThresholdRules(chart, thresholdRules);
             thresholdTemplate = convertStyle(thresholdTemplate.replace("[触发告警]", s));
@@ -219,7 +223,7 @@ public class ChartViewThresholdManage {
                 if (ObjectUtils.isEmpty(fieldDTO)) continue;
                 String fieldDTOName = fieldDTO.getName();
                 String dataeaseName = fieldDTO.getDataeaseName();
-                List<String> valueList = rows.stream().map(row -> row.get(dataeaseName).toString()).collect(Collectors.toList());
+                List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : row.get(dataeaseName).toString()).collect(Collectors.toList());
                 String replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
                 // 替换文本
                 matcher.appendReplacement(sb, replacement);
@@ -383,11 +387,36 @@ public class ChartViewThresholdManage {
                 }
             } else if (Objects.equals(deType, DeTypeConstants.DE_TIME)) {
                 // 补充时间逻辑
-                return true;
+                return timeMatch(item, valueObj);
             } else {
                 return true;
             }
         }
     }
 
+    private boolean timeMatch(FilterTreeItem item, Object valueObj) {
+        if (ObjectUtils.isEmpty(valueObj)) return false;
+        String valueText = valueObj.toString();
+        String target = item.getValue();
+        target = target.replaceAll("[^0-9]", "");
+        valueText = valueText.replaceAll("[^0-9]", "");
+        long targetLong = Long.parseLong(target);
+        long valueLong = Long.parseLong(valueText);
+        String term = item.getTerm();
+        if (StringUtils.equals(term, "eq")) {
+            return valueLong == targetLong;
+        } else if (StringUtils.equals(term, "not_eq")) {
+            return valueLong != targetLong;
+        } else if (StringUtils.equals(term, "gt")) {
+            return valueLong > targetLong;
+        } else if (StringUtils.equals(term, "ge")) {
+            return valueLong >= targetLong;
+        } else if (StringUtils.equals(term, "lt")) {
+            return valueLong < targetLong;
+        } else if (StringUtils.equals(term, "le")) {
+            return valueLong <= targetLong;
+        } else {
+            return valueLong == targetLong;
+        }
+    }
 }

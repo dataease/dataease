@@ -77,7 +77,7 @@ const setupAll = async (
   resourceId: string
 ): Promise<App<Element>> => {
   const app = createApp(AppElement, { componentName: type })
-  app.provide('embeddedParams', chartId)
+  app.provide('embeddedParams', { chartId, resourceId, dvId, pid, busiFlag, outerParams })
   await setupI18n(app)
   setupStore(app)
   setupRouter(app)

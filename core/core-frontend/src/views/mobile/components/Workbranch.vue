@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_dashboard from '@/assets/svg/icon_dashboard.svg'
 defineProps({
   label: {
     type: String,
@@ -19,7 +20,7 @@ const handleClick = () => {
 <template>
   <div class="workbranch-cell" @click="handleClick">
     <el-icon>
-      <Icon name="icon_dashboard"></Icon>
+      <Icon name="icon_dashboard"><icon_dashboard class="svg-icon" /></Icon>
     </el-icon>
     <div class="label">
       <div class="text ellipsis">

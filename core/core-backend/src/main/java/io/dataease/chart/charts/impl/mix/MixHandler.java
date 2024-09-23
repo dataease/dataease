@@ -55,11 +55,19 @@ public class MixHandler extends YoyChartHandler {
                 .getFilterList()
                 .stream()
                 .anyMatch(ele -> ele.getFilterType() == 1);
+        if (StringUtils.equals((String) formatResult.getContext().get("isRight"), "isRight")) {
+            var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
+            var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
+            var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+            var xAxisBase = xAxis.subList(0, xAxis.size() - xAxisExt.size());
+            return ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, true);
+        }
+
         var xAxisBase = (List<ChartViewFieldDTO>) formatResult.getContext().get("xAxisBase");
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
-        var result = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
+        var result = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, false);
         return result;
     }
 
@@ -97,11 +105,6 @@ public class MixHandler extends YoyChartHandler {
 
         AxisFormatResult formatResult2 = new AxisFormatResult();
         var axisMap = new HashMap<ChartAxis, List<ChartViewFieldDTO>>();
-        axisMap.put(ChartAxis.xAxis, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.xAxis)));
-        axisMap.put(ChartAxis.extStack, new ArrayList<>());
-        axisMap.put(ChartAxis.xAxisExt, new ArrayList<>());
-        axisMap.put(ChartAxis.extBubble, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.extBubble)));
-        axisMap.put(ChartAxis.yAxisExt, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.yAxisExt)));
         axisMap.put(ChartAxis.extLabel, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.extLabel)));
         axisMap.put(ChartAxis.extTooltip, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.extTooltip)));
         axisMap.put(ChartAxis.drill, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.drill)));
@@ -110,18 +113,21 @@ public class MixHandler extends YoyChartHandler {
 
         // 计算右轴，包含 xAxis,xAxisExt,yAxisExt,需要去掉 group 和 stack
         var xAxis = new ArrayList<>(view.getXAxis());
-        var extStack = formatResult2.getAxisMap().get(ChartAxis.extStack);
-        var xAxisExt = formatResult2.getAxisMap().get(ChartAxis.xAxisExt);
-        //xAxis = xAxis.subList(0, xAxis.size() - extStack.size() - xAxisExt.size());
-        var extBubble = formatResult2.getAxisMap().get(ChartAxis.extBubble);
+        var extBubble = new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.extBubble));
         xAxis.addAll(extBubble);
         var dillAxis = (ArrayList<ChartViewFieldDTO>) formatResult.getContext().get("dillAxis");
-        xAxis.addAll(dillAxis);
+        var fields = xAxis.stream().map(ChartViewFieldDTO::getId).collect(Collectors.toSet());
+        for (ChartViewFieldDTO dillAxi : dillAxis) {
+            if (!fields.contains(dillAxi.getId())) {
+                xAxis.add(dillAxi);
+            }
+        }
         formatResult2.getAxisMap().put(ChartAxis.xAxis, xAxis);
         formatResult2.getAxisMap().put(ChartAxis.xAxisExt, extBubble);
-        var yAxisExt = formatResult2.getAxisMap().get(ChartAxis.yAxisExt);
+        var yAxisExt = new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.yAxisExt));
         formatResult2.getAxisMap().put(ChartAxis.yAxis, yAxisExt);
         formatResult2.getContext().remove("yoyFiltered");
+        formatResult2.getContext().put("isRight", "isRight");
 
 
         formatResult.getContext().put("subAxisMap", axisMap);

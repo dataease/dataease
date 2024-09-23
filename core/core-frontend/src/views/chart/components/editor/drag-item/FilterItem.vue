@@ -1,9 +1,12 @@
 <script lang="tsx" setup>
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import { onMounted, reactive, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType } from './utils'
 import { Delete, Filter } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const state = reactive({
   formatterItem: formatterItem,
@@ -100,25 +103,28 @@ onMounted(() => {
       >
         <span style="display: flex">
           <el-icon>
-            <Icon
-              :className="`field-icon-${fieldType[item.deType]}`"
-              :name="`field_${fieldType[item.deType]}`"
+            <Icon :className="`field-icon-${fieldType[item.deType]}`"
+              ><component
+                class="svg-icon"
+                :class="`field-icon-${fieldType[item.deType]}`"
+                :is="iconFieldMap[fieldType[item.deType]]"
+              ></component
             ></Icon>
           </el-icon>
         </span>
         <span class="item-span-style" :title="item.name">{{ item.name }}</span>
         <el-icon class="child remove-icon" size="14px">
-          <Icon
-            name="icon_delete-trash_outlined"
-            class-name="inner-class"
-            @click="removeItem"
-          ></Icon>
+          <Icon name="icon_delete-trash_outlined" class-name="inner-class"
+            ><icon_deleteTrash_outlined @click="removeItem" class="svg-icon inner-class"
+          /></Icon>
         </el-icon>
         <el-icon
           class="child"
           style="position: absolute; top: 7px; right: 10px; color: #a6a6a6; cursor: pointer"
         >
-          <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"></Icon>
+          <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"
+            ><icon_down_outlined1 class="svg-icon el-icon-arrow-down el-icon-delete"
+          /></Icon>
         </el-icon>
       </el-tag>
       <template #dropdown>

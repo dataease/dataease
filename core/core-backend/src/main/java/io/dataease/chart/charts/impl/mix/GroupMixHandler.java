@@ -1,13 +1,10 @@
 package io.dataease.chart.charts.impl.mix;
 
-import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.extensions.view.dto.*;
 import lombok.Getter;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class GroupMixHandler extends MixHandler {
@@ -31,7 +28,9 @@ public class GroupMixHandler extends MixHandler {
         axisMap.put(ChartAxis.yAxisExt, view.getYAxisExt());
         //去除除了x轴以外的排序
         axisMap.forEach((k, v) -> {
-            v.forEach(x -> x.setSort("none"));
+            if (!ChartAxis.xAxisExt.equals(k)) {
+                v.forEach(x -> x.setSort("none"));
+            }
         });
         axisMap.put(ChartAxis.extLabel, view.getExtLabel());
         axisMap.put(ChartAxis.extTooltip, view.getExtTooltip());

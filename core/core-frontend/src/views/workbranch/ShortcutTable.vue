@@ -1,9 +1,19 @@
 <script lang="ts" setup>
+import icon_collection_outlined from '@/assets/svg/icon_collection_outlined.svg'
+import visualStar from '@/assets/svg/visual-star.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_app_outlined from '@/assets/svg/icon_app_outlined.svg'
+import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
+import icon_database_outlined from '@/assets/svg/icon_database_outlined.svg'
+import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
+import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
+import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
+import icon_cancel_store from '@/assets/svg/icon_cancel_store.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, onMounted, computed } from 'vue'
 import type { TabsPaneContext } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { shortcutOption } from './ShortcutOption'
 /* import { XpackComponent } from '@/components/plugin' */
@@ -23,7 +33,6 @@ const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const embeddedStore = useEmbedded()
-const route = useRoute()
 const { push } = useRouter()
 defineProps({
   expand: {
@@ -42,14 +51,14 @@ const state = reactive({
 })
 const busiDataMap = computed(() => interactiveStore.getData)
 const iconMap = {
-  panel: 'icon_dashboard_outlined',
-  panelMobile: 'dv-dashboard-spine-mobile',
-  dashboard: 'icon_dashboard_outlined',
-  dashboardMobile: 'dv-dashboard-spine-mobile',
-  screen: 'icon_operation-analysis_outlined',
-  dataV: 'icon_operation-analysis_outlined',
-  dataset: 'icon_app_outlined',
-  datasource: 'icon_database_outlined'
+  panel: icon_dashboard_outlined,
+  panelMobile: dvDashboardSpineMobile,
+  dashboard: icon_dashboard_outlined,
+  dashboardMobile: dvDashboardSpineMobile,
+  screen: icon_operationAnalysis_outlined,
+  dataV: icon_operationAnalysis_outlined,
+  dataset: icon_app_outlined,
+  datasource: icon_database_outlined
 }
 
 const jumpActiveCheck = row => {
@@ -297,7 +306,9 @@ const getEmptyDesc = (): string => {
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
@@ -317,10 +328,12 @@ const getEmptyDesc = (): string => {
           <template v-slot:default="scope">
             <div class="name-content" :class="{ 'jump-active': jumpActiveCheck(scope.row) }">
               <el-icon v-if="scope.row.extFlag" style="margin-right: 12px; font-size: 18px">
-                <Icon :name="iconMap[scope.row.type + 'Mobile']" />
+                <Icon
+                  ><component class="svg-icon" :is="iconMap[scope.row.type + 'Mobile']"></component
+                ></Icon>
               </el-icon>
               <el-icon v-else :class="`main-color color-${scope.row.type}`">
-                <Icon :name="iconMap[scope.row.type]" />
+                <Icon><component class="svg-icon" :is="iconMap[scope.row.type]"></component></Icon>
               </el-icon>
               <el-tooltip placement="top">
                 <template #content>{{ scope.row.name }}</template>
@@ -333,7 +346,9 @@ const getEmptyDesc = (): string => {
                 :style="{ color: scope.row.favorite ? '#FFC60A' : '#646A73' }"
               >
                 <icon
-                  :name="scope.row.favorite ? 'visual-star' : 'icon_collection_outlined'"
+                  ><component
+                    :is="scope.row.favorite ? visualStar : icon_collection_outlined"
+                  ></component
                 ></icon>
               </el-icon>
             </div>
@@ -377,7 +392,7 @@ const getEmptyDesc = (): string => {
                     preview(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
                   "
                 >
-                  <Icon name="icon_pc_outlined"></Icon>
+                  <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
               <ShareHandler
@@ -403,7 +418,7 @@ const getEmptyDesc = (): string => {
                   class="hover-icon hover-icon-in-table"
                   @click.stop="executeCancelStore(scope.row)"
                 >
-                  <Icon name="icon_cancel_store"></Icon>
+                  <Icon name="icon_cancel_store"><icon_cancel_store class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
             </template>
@@ -416,7 +431,7 @@ const getEmptyDesc = (): string => {
                     openDataset(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
                   "
                 >
-                  <Icon name="icon_pc_outlined"></Icon>
+                  <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
             </template>

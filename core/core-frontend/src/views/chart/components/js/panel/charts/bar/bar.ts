@@ -1,5 +1,5 @@
 import type { Column, ColumnOptions } from '@antv/g2plot/esm/plots/column'
-import { cloneDeep, isEmpty } from 'lodash-es'
+import { cloneDeep, each, groupBy, isEmpty } from 'lodash-es'
 import {
   G2PlotChartView,
   G2PlotDrawOptions
@@ -12,7 +12,7 @@ import {
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
 import type { Datum } from '@antv/g2plot'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY,
@@ -264,7 +264,14 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
 export class StackBar extends Bar {
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition'],
+    'label-selector': [
+      ...BAR_EDITOR_PROPERTY_INNER['label-selector'],
+      'vPosition',
+      'showTotal',
+      'totalColor',
+      'totalFontSize',
+      'totalFormatter'
+    ],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'show']
   }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
@@ -340,13 +347,58 @@ export class StackBar extends Bar {
     return options
   }
 
+  protected configTotalLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
+    if (!options.label) {
+      return options
+    }
+    const { label } = parseJson(chart.customAttr)
+    if (label.showTotal) {
+      const formatterCfg = label.labelFormatter ?? formatterItem
+      each(groupBy(options.data, 'field'), (values, key) => {
+        const total = values.reduce((a, b) => a + b.value, 0)
+        const value = valueFormatter(total, formatterCfg)
+        if (!options.annotations) {
+          options = {
+            ...options,
+            annotations: []
+          }
+        }
+        options.annotations.push({
+          type: 'text',
+          position: [key, total],
+          content: `${value}`,
+          style: {
+            textAlign: 'center',
+            fontSize: label.fontSize,
+            fill: label.color
+          },
+          offsetY: -(parseInt(label.fontSize as unknown as string) / 2)
+        })
+      })
+    }
+    return options
+  }
+
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpStackSeriesColor(chart, data)
   }
 
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
-    const tmp = super.setupOptions(chart, options)
-    return flow(this.configData)(chart, tmp, {}, this)
+    return flow(
+      this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configColor,
+      this.configBasicStyle,
+      this.configLabel,
+      this.configTooltip,
+      this.configLegend,
+      this.configXAxis,
+      this.configYAxis,
+      this.configSlider,
+      this.configAnalyse,
+      this.configData,
+      this.configTotalLabel
+    )(chart, options, {}, this)
   }
 
   constructor(name = 'bar-stack') {
@@ -439,6 +491,10 @@ export class GroupBar extends StackBar {
  * 分组堆叠柱状图
  */
 export class GroupStackBar extends StackBar {
+  propertyInner = {
+    ...this['propertyInner'],
+    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition']
+  }
   protected configTheme(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configTheme(chart, options)
     const baseTheme = baseOptions.theme as object

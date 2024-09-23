@@ -27,6 +27,7 @@ import {
   handleEmptyDataStrategy,
   setupSeriesColor
 } from '../../../util'
+import { Options } from '@antv/g2plot'
 
 export interface G2PlotDrawOptions<O> extends AntVDrawOptions<O> {
   /**
@@ -127,7 +128,10 @@ export abstract class G2PlotChartView<
 
   protected configAnalyse(chart: Chart, options: O): O {
     const annotations = getAnalyse(chart)
-    return { ...options, annotations }
+    return {
+      ...options,
+      annotations: [...annotations, ...((options as unknown as Options).annotations || [])]
+    }
   }
 
   protected configAnalyseHorizontal(chart: Chart, options: O): O {

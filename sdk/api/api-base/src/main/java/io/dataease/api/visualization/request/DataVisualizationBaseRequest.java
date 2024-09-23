@@ -42,6 +42,8 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long taskId;
 
+    private Boolean showWatermark;
+
     @JsonSerialize(using = ToStringSerializer.class)
     // 数据集分组PID
     private Long datasetFolderPid;

@@ -4,14 +4,14 @@
     :append-to-body="true"
     title="外部参数设置"
     v-model="state.outerParamsSetVisible"
-    width="70vw"
+    width="80vw"
     top="10vh"
     trigger="click"
   >
     <el-row style="height: 550px">
       <el-row v-loading="state.loading">
         <el-row class="preview">
-          <el-col :span="8" class="preview-left">
+          <el-col :span="6" class="preview-left">
             <el-row class="tree-head">
               <span class="head-text">参数列表</span>
               <span class="head-filter">
@@ -59,7 +59,7 @@
                         style="margin-right: 16px"
                         @handle-command="cmd => outerParamsOperation(cmd, node, data)"
                         :menu-list="state.optMenu"
-                        icon-name="icon_more_outlined"
+                        :icon-name="icon_more_outlined"
                         placement="bottom-start"
                       ></handle-more>
                     </span>
@@ -68,7 +68,7 @@
               </el-tree>
             </el-row>
           </el-col>
-          <el-col :span="16" class="preview-show">
+          <el-col :span="18" class="preview-show">
             <el-row v-if="state.curNodeId">
               <el-row class="new-params-title"> 选择参数关联组件 </el-row>
               <el-row class="new-params-filter" v-if="state.outerParamsInfo?.filterInfo?.length">
@@ -94,11 +94,9 @@
                   >
                     <div style="width: 16px"></div>
                     <div style="flex: 1; line-height: 32px">
-                      <Icon
-                        style="margin-top: 4px"
-                        class-name="view-type-icon"
-                        name="filter-params"
-                      />
+                      <Icon name="filter-params"
+                        ><filterParams style="margin-top: 4px" class="svg-icon view-type-icon"
+                      /></Icon>
                       <span>{{ findFilterName(baseFilter.id) }}</span>
                     </div>
                     <div style="flex: 1">
@@ -157,7 +155,7 @@
                       <div style="flex: 1; display: flex; line-height: 32px">
                         <div style="width: 16px; margin-top: 2px; margin-right: 4px">
                           <el-icon>
-                            <Icon name="icon_dataset" />
+                            <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                           </el-icon>
                         </div>
                         <span>{{ baseDatasetInfo.name }}</span>
@@ -189,10 +187,13 @@
                             :value="item.attachId"
                           >
                             <Icon
-                              style="width: 14px; height: 14px"
-                              :name="`field_${fieldType[item.deType]}`"
-                              :className="`field-icon-${fieldType[item.deType]}`"
-                            />
+                              ><component
+                                class="svg-icon"
+                                style="width: 14px; height: 14px"
+                                :class="`field-icon-${fieldType[item.deType]}`"
+                                :is="iconFieldMap[fieldType[item.deType]]"
+                              ></component
+                            ></Icon>
                             <span style="font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
@@ -229,10 +230,12 @@
                           </div>
                           <div>
                             <Icon
-                              class-name="view-type-icon"
-                              style="margin: 0 4px"
-                              :name="viewInfo.chartType"
-                            />
+                              ><component
+                                class="svg-icon view-type-icon"
+                                style="margin: 0 4px"
+                                :is="iconChartMap[viewInfo.chartType]"
+                              ></component
+                            ></Icon>
                           </div>
                           <span style="font-size: 12px"> {{ viewInfo.chartName }}</span>
                         </div>
@@ -246,6 +249,33 @@
               <empty-background description="请配置参数" img-type="noneWhite" />
             </div>
           </el-col>
+          <el-col :span="5" v-show="false" class="params-attach-setting">
+            <el-row v-if="state.curNodeId">
+              <el-row class="new-params-title"> 参数配置 </el-row>
+              <el-row class="params-attach-content">
+                <el-row>
+                  <el-checkbox v-model="state.outerParamsInfo.required">必填 </el-checkbox>
+                </el-row>
+                <el-row>
+                  <el-checkbox v-model="state.outerParamsInfo.enabledDefault">默认值 </el-checkbox>
+                </el-row>
+                <el-input
+                  :ref="el => setArgRef(el, state.outerParamsInfo.paramsInfoId)"
+                  :placeholder="'请输入参数'"
+                  v-model="state.outerParamsInfo.defaultValue"
+                  type="textarea"
+                  :autosize="{ minRows: 4, maxRows: 8 }"
+                  @change="
+                    val =>
+                      validateArgs(
+                        state.outerParamsInfo.defaultValue,
+                        state.outerParamsInfo.paramsInfoId
+                      )
+                  "
+                />
+              </el-row>
+            </el-row>
+          </el-col>
         </el-row>
       </el-row>
       <el-row class="root-class">
@@ -257,20 +287,26 @@
 </template>
 
 <script setup lang="ts">
+import _delete from '@/assets/svg/delete.svg'
+import edit from '@/assets/svg/edit.svg'
+import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
+import filterParams from '@/assets/svg/filter-params.svg'
+import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import { ref, reactive, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ElCol, ElMessage } from 'element-plus-secondary'
+import { ElCol, ElInput, ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import generateID from '@/utils/generateID'
 import { queryWithVisualizationId, updateOuterParamsSet } from '@/api/visualization/outerParams'
 import { queryOuterParamsDsInfo, viewDetailList } from '@/api/visualization/dataVisualization'
-import checkArrayRepeat from '@/utils/check'
 import HandleMore from '@/components/handle-more/src/HandleMore.vue'
 import { fieldType } from '@/utils/attr'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { iconChartMap } from '../icon-group/chart-list'
+import { iconFieldMap } from '../icon-group/field-list'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, componentData } = storeToRefs(dvMainStore)
 const outerParamsInfoTree = ref(null)
@@ -286,12 +322,12 @@ const state = reactive({
   optMenu: [
     {
       label: '重命名',
-      svgName: 'edit',
+      svgName: edit,
       command: 'rename'
     },
     {
       label: '删除',
-      svgName: 'delete',
+      svgName: _delete,
       command: 'delete'
     }
   ],
@@ -313,6 +349,9 @@ const state = reactive({
   outerParamsInfo: {
     content: '',
     linkType: '',
+    required: false,
+    enabledDefault: false,
+    defaultValue: null,
     targetViewInfoList: [],
     paramsInfoId: null
   },
@@ -320,6 +359,9 @@ const state = reactive({
   defaultOuterParamsInfo: {
     paramName: '',
     checked: true,
+    required: false,
+    enabledDefault: false,
+    defaultValue: null,
     targetViewInfoList: []
   },
   defaultTargetViewInfo: {
@@ -342,6 +384,49 @@ const state = reactive({
     numberRangeWidget: '数值区间过滤组件'
   }
 })
+
+const argRefs = ref({})
+
+const setArgRef = (el, id) => {
+  if (el) {
+    argRefs.value[id] = el
+  }
+}
+
+const validateArgs = (val, id) => {
+  const cref = argRefs.value[id]
+  const e = cref.input
+  if (val === null || val === '' || typeof val === 'undefined') {
+    e.style.color = null
+    e.parentNode.removeAttribute('style')
+    const child = e.parentNode.querySelector('.error-msg')
+    if (child) {
+      e.parentNode.removeChild(child)
+    }
+    return true
+  }
+  try {
+    JSON.parse(val)
+    e.style.color = null
+    e.parentNode.removeAttribute('style')
+    const child = e.parentNode.querySelector('.error-msg')
+    if (child) {
+      e.parentNode.removeChild(child)
+    }
+    return true
+  } catch (error) {
+    e.style.color = 'red'
+    e.parentNode.setAttribute('style', 'box-shadow: 0 0 0 1px red inset;')
+    const child = e.parentNode.querySelector('.error-msg')
+    if (!child) {
+      const errorDom = document.createElement('div')
+      errorDom.className = 'error-msg'
+      errorDom.innerText = '格式错误'
+      e.parentNode.appendChild(errorDom)
+    }
+    return false
+  }
+}
 
 const viewSelectedField = computed(() =>
   state.outerParamsInfo?.targetViewInfoList?.map(targetViewInfo => targetViewInfo.targetViewId)
@@ -971,5 +1056,23 @@ defineExpose({
 
 .expand-custom-outer {
   margin-right: 4px;
+}
+
+.params-attach-setting {
+  border-left: 1px solid #e6e6e6;
+}
+
+.params-attach-content {
+  padding: 16px;
+}
+
+:deep(.error-msg) {
+  color: red;
+  position: fixed;
+  z-index: 9;
+  font-size: 10px;
+  height: 10px;
+  margin-bottom: 12px;
+  margin-right: -80px;
 }
 </style>

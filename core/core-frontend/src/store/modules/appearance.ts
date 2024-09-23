@@ -5,6 +5,8 @@ import { uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import colorFunctions from 'less/lib/less/functions/color.js'
 import colorTree from 'less/lib/less/tree/color.js'
+import { setTitle } from '@/utils/utils'
+
 const basePath = import.meta.env.VITE_API_BASEPATH
 const baseUrl = basePath + '/appearance/image/'
 import { isBtnShow } from '@/utils/utils'
@@ -312,8 +314,10 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (isDataEaseBi) return
       if (this.name) {
         document.title = this.name
+        setTitle(this.name)
       } else {
         document.title = 'DataEase'
+        setTitle('DataEase')
       }
       const link = document.querySelector('link[rel="icon"]')
       if (link) {

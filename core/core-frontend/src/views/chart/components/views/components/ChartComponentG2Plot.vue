@@ -233,24 +233,28 @@ const renderChart = async (view, callback?) => {
   }
 }
 let myChart = null
+let g2Timer: number
 const renderG2Plot = async (chart, chartView: G2PlotChartView<any, any>) => {
-  try {
-    myChart?.destroy()
-    myChart = await chartView.drawChart({
-      chartObj: myChart,
-      container: containerId,
-      chart: chart,
-      scale: 1,
-      action,
-      quadrantDefaultBaseline
-    })
-    myChart?.render()
-    if (linkageActiveHistory.value) {
-      linkageActive()
+  g2Timer && clearTimeout(g2Timer)
+  g2Timer = setTimeout(async () => {
+    try {
+      myChart?.destroy()
+      myChart = await chartView.drawChart({
+        chartObj: myChart,
+        container: containerId,
+        chart: chart,
+        scale: 1,
+        action,
+        quadrantDefaultBaseline
+      })
+      myChart?.render()
+      if (linkageActiveHistory.value) {
+        linkageActive()
+      }
+    } catch (e) {
+      console.error('renderG2Plot error', e)
     }
-  } catch (e) {
-    console.error('renderG2Plot error', e)
-  }
+  }, 300)
 }
 
 const dynamicAreaId = ref('')

@@ -1,4 +1,5 @@
 <script setup lang="tsx">
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -125,7 +126,7 @@ onMounted(() => {
                   <div>预览时生效</div>
                 </template>
                 <el-icon class="hint-icon--dark">
-                  <Icon name="icon_info_outlined" />
+                  <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-select

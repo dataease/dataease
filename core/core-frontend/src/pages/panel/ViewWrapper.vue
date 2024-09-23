@@ -13,7 +13,7 @@ import { XpackComponent } from '@/components/plugin'
 const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
-const injectChartId = inject('embeddedParams') as string
+const embeddedParams = inject('embeddedParams') as object
 const config = ref()
 const viewInfo = ref()
 const userViewEnlargeRef = ref()
@@ -72,9 +72,10 @@ onBeforeMount(async () => {
     } catch (e) {
       console.error(e)
       ElMessage.error(t('visualization.outer_param_decode_error'))
+      return
     }
   }
-  const chartId = injectChartId || embeddedStore.chartId
+  const chartId = embeddedParams?.chartId || embeddedStore.chartId
 
   initCanvasData(
     embeddedStore.dvId,

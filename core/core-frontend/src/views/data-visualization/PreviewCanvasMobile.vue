@@ -12,6 +12,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
+import { setTitle } from '@/utils/utils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -85,6 +86,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     } catch (e) {
       console.error(e)
       ElMessage.error(t('visualization.outer_param_decode_error'))
+      return
     }
   }
   initCanvasDataMobile(
@@ -115,7 +117,9 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       if (props.publicLinkStatus) {
         // 设置浏览器title为当前仪表板名称
         document.title = dvInfo.name
+        setTitle(dvInfo.name)
       }
+      initBrowserTimer()
     }
   )
 }
@@ -135,6 +139,16 @@ onMounted(async () => {
   dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
 })
+
+const initBrowserTimer = () => {
+  if (state.canvasStylePreview.refreshBrowserEnable) {
+    const gap = state.canvasStylePreview.refreshBrowserUnit === 'minute' ? 60 : 1
+    const browserRefreshTime = state.canvasStylePreview.refreshBrowserTime * gap * 1000
+    setTimeout(() => {
+      window.location.reload()
+    }, browserRefreshTime)
+  }
+}
 
 defineExpose({
   loadCanvasDataAsync

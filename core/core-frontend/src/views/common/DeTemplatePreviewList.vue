@@ -25,13 +25,15 @@
             <span class="custom-tree-node">
               <span class="custom-label">
                 <el-icon style="font-size: 18px" v-if="data.nodeType === 'folder'">
-                  <Icon name="dv-folder"></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <el-icon style="font-size: 18px" v-else-if="data.dvType === 'dashboard'">
-                  <Icon name="dv-dashboard-spine"></Icon>
+                  <Icon name="dv-dashboard-spine"><dvDashboardSpine class="svg-icon" /></Icon>
                 </el-icon>
                 <el-icon class="icon-screen-new" style="font-size: 18px" v-else>
-                  <Icon name="icon_operation-analysis_outlined"></Icon>
+                  <Icon name="icon_operation-analysis_outlined"
+                    ><icon_operationAnalysis_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
                 <span :title="data.name" class="custom-name">{{ data.name }}</span>
               </span>
@@ -44,6 +46,9 @@
 </template>
 
 <script setup lang="ts">
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
+import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import { findOne } from '@/api/template'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive } from 'vue'

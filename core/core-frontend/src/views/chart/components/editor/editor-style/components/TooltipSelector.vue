@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { PropType, computed, onMounted, reactive, watch, ref, inject } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
@@ -13,6 +14,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
 
@@ -517,7 +519,7 @@ onMounted(() => {
                 <div>可以${fieldName}的形式读取字段值（支持HTML）</div>
               </template>
               <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-                <Icon name="icon_info_outlined" />
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
           </span>
@@ -639,10 +641,13 @@ onMounted(() => {
         >
           <template #prefix>
             <el-icon v-if="curSeriesFormatter.seriesId" style="font-size: 14px">
-              <Icon
-                :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
-                :name="`field_${fieldType[curSeriesFormatter.deType]}`"
-              />
+              <Icon :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
+                ><component
+                  class="svg-icon"
+                  :class="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
+                  :is="iconFieldMap[fieldType[curSeriesFormatter.deType]]"
+                ></component
+              ></Icon>
             </el-icon>
           </template>
           <template v-for="item in state.tooltipForm.seriesTooltipFormatter" :key="item.seriesId">
@@ -655,10 +660,13 @@ onMounted(() => {
               v-if="showOption(item)"
             >
               <el-icon style="margin-right: 8px">
-                <Icon
-                  :className="`field-icon-${fieldType[item.deType]}`"
-                  :name="`field_${fieldType[item.deType]}`"
-                />
+                <Icon :className="`field-icon-${fieldType[item.deType]}`"
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
+                ></Icon>
               </el-icon>
               {{ item.name }}
               {{ item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : '' }}

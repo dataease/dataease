@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_expandLeft_filled from '@/assets/svg/icon_expand-left_filled.svg'
+import icon_expandRight_filled from '@/assets/svg/icon_expand-right_filled.svg'
 import { toRefs, ref, watch, nextTick } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 const props = defineProps({
@@ -75,10 +77,10 @@ const nextClick = () => {
     </div>
     <div class="tab-btn" v-if="showBtn">
       <el-icon size="12px" @click="prevClick">
-        <Icon name="icon_expand-left_filled"></Icon>
+        <Icon name="icon_expand-left_filled"><icon_expandLeft_filled class="svg-icon" /></Icon>
       </el-icon>
       <el-icon size="12px" @click="nextClick">
-        <Icon name="icon_expand-right_filled"></Icon>
+        <Icon name="icon_expand-right_filled"><icon_expandRight_filled class="svg-icon" /></Icon>
       </el-icon>
     </div>
   </div>

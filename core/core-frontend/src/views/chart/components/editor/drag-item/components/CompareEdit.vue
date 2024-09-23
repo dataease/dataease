@@ -201,12 +201,14 @@ initDateFormatter()
 
       <el-form-item :label="t('chart.compare_data')">
         <el-radio-group v-model="compareItem.compareCalc.resultData">
+          <el-radio label="pre">{{ t('chart.data_pre') }}</el-radio>
           <el-radio label="sub">{{ t('chart.data_sub') }}</el-radio>
           <el-radio label="percent">{{ t('chart.data_percent') }}</el-radio>
         </el-radio-group>
       </el-form-item>
 
       <el-form-item :label="t('chart.compare_calc_expression')">
+        <span v-if="compareItem.compareCalc.resultData === 'pre'" class="exp-style">上期数据</span>
         <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style"
           >本期数据 - 上期数据</span
         >

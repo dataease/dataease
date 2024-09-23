@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_adjustment_outlined from '@/assets/svg/icon_adjustment_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import { ref, reactive, onMounted, onBeforeUnmount, watch, unref, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from '@/views/visualized/data/dataset/form/CodeMirror.vue'
@@ -6,6 +11,7 @@ import { getFunction } from '@/api/dataset'
 import { fieldType } from '@/utils/attr'
 import { cloneDeep } from 'lodash-es'
 import { guid } from '@/views/visualized/data/dataset/form/util'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 export interface CalcFieldType {
   id?: string
@@ -226,7 +232,7 @@ initFunction()
                 <div>{{ t('dataset.calc_tips.tip2') }}</div>
               </template>
               <el-icon size="16px">
-                <Icon name="icon_info_outlined"></Icon>
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
           </div>
@@ -251,7 +257,7 @@ initFunction()
               {{ t('dataset.calc_tips.tip5') }}
             </template>
             <el-icon size="16px">
-              <Icon name="icon_info_outlined"></Icon>
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
         </span>
@@ -259,7 +265,9 @@ initFunction()
           <el-input v-model="searchField" :placeholder="t('dataset.edit_search')" clearable>
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"></Icon>
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
           </el-input>
@@ -276,21 +284,28 @@ initFunction()
                 @click="insertFieldToCodeMirror('[' + item.name + ']')"
               >
                 <el-icon v-if="!item.groupType">
-                  <Icon name="icon_adjustment_outlined"></Icon>
+                  <Icon name="icon_adjustment_outlined"
+                    ><icon_adjustment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
                 <el-icon v-else>
-                  <Icon
-                    :name="`field_${fieldType[item.deType]}`"
-                    :className="`field-icon-${fieldType[item.deType]}`"
+                  <Icon :className="`field-icon-${fieldType[item.deType]}`"
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[item.deType]}`"
+                      :is="iconFieldMap[fieldType[item.deType]]"
+                    ></component
                   ></Icon>
                 </el-icon>
                 {{ item.name }}
                 <div v-if="!item.groupType" class="icon-right">
                   <el-icon @click.stop="updateParmasToQuota" class="hover-icon">
-                    <Icon name="icon_edit_outlined"></Icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                   </el-icon>
                   <el-icon @click.stop="delParmasToQuota" class="hover-icon">
-                    <Icon name="icon_delete-trash_outlined"></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </div>
               </span>
@@ -314,7 +329,7 @@ initFunction()
               <div v-else>{{ t('dataset.calc_tips.tip7') }}</div>
             </template>
             <el-icon size="16px">
-              <Icon name="icon_info_outlined"></Icon>
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
         </span>
@@ -327,7 +342,9 @@ initFunction()
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"></Icon>
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </template>
           </el-input>

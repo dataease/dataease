@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@ConditionalOnMissingBean(name = "loginServer")
+@ConditionalOnMissingBean(name = "userServer")
 @RestController
 @RequestMapping("/user")
 public class SubstituteUserServer {

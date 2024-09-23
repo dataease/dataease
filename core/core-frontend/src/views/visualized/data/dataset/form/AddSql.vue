@@ -1,5 +1,28 @@
 <script lang="tsx" setup>
-import { ref, reactive, onMounted, PropType, toRefs, watch, onBeforeUnmount, shallowRef } from 'vue'
+import referencePlay from '@/assets/svg/reference-play.svg'
+import referenceSetting1 from '@/assets/svg/reference-setting.svg'
+import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
+import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
+import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import referenceTable from '@/assets/svg/reference-table.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_form_outlined from '@/assets/svg/icon_form_outlined.svg'
+import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
+import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
+import icon_playRound_outlined from '@/assets/svg/icon_play-round_outlined.svg'
+import {
+  ref,
+  reactive,
+  onMounted,
+  PropType,
+  toRefs,
+  watch,
+  onBeforeUnmount,
+  shallowRef,
+  h
+} from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
 import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
@@ -15,6 +38,7 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 export interface SqlNode {
   sql: string
   tableName: string
@@ -91,10 +115,11 @@ const generateColumns = (arr: Field[]) =>
     headerCellRenderer: ({ column }) => (
       <div class="flex-align-center">
         <ElIcon style={{ marginRight: '6px' }}>
-          <Icon
-            name={`field_${fieldType[column.deType]}`}
-            className={`field-icon-${fieldType[column.deType]}`}
-          ></Icon>
+          <Icon>
+            {h(iconFieldMap[fieldType[column.deType]], {
+              class: `svg-icon field-icon-${fieldType[column.deType]}`
+            })}
+          </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '120px' }}>
           {column.title}
@@ -411,7 +436,7 @@ const mousedownDrag = () => {
       <el-button @click="getSQLPreview" text style="color: #1f2329">
         <template #icon>
           <el-icon>
-            <Icon name="reference-play"></Icon>
+            <Icon name="reference-play"><referencePlay class="svg-icon" /></Icon>
           </el-icon>
         </template>
         {{ t('data_set.run') }}
@@ -419,7 +444,7 @@ const mousedownDrag = () => {
       <el-button @click="referenceSetting()" style="color: #1f2329" text>
         <template #icon>
           <el-icon>
-            <Icon name="reference-setting"></Icon>
+            <Icon name="reference-setting"><referenceSetting1 class="svg-icon" /></Icon>
           </el-icon>
         </template>
         {{ t('data_set.parameter_settings') }}
@@ -429,7 +454,7 @@ const mousedownDrag = () => {
       >
       <el-divider direction="vertical" />
       <el-icon class="hover-icon" @click="handleClose">
-        <Icon name="icon_close_outlined"></Icon>
+        <Icon name="icon_close_outlined"><icon_close_outlined class="svg-icon" /></Icon>
       </el-icon>
     </div>
   </div>
@@ -437,7 +462,7 @@ const mousedownDrag = () => {
   <div class="sql-eidtor" @mouseup="mouseupDrag">
     <p v-show="!showLeft" class="arrow-right" @click="handleShowLeft">
       <el-icon>
-        <Icon name="icon_right_outlined"></Icon>
+        <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
       </el-icon>
     </p>
     <div
@@ -457,7 +482,7 @@ const mousedownDrag = () => {
           {{ t('data_set.current_data_source') }}
           <span class="left-outlined">
             <el-icon style="color: #1f2329" @click="showLeft = false">
-              <Icon name="icon_left_outlined" />
+              <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
             </el-icon>
           </span>
         </p>
@@ -477,7 +502,7 @@ const mousedownDrag = () => {
           {{ t('datasource.data_table')
           }}<span class="num">
             <el-icon class="icon-color">
-              <Icon name="reference-table"></Icon>
+              <Icon name="reference-table"><referenceTable class="svg-icon" /></Icon>
             </el-icon>
             {{ datasourceTableData.length }}
           </span>
@@ -490,7 +515,9 @@ const mousedownDrag = () => {
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
@@ -508,7 +535,7 @@ const mousedownDrag = () => {
           :itemSize="40"
           :data="datasourceTableData"
           :total="datasourceTableData.length"
-          :width="LeftWidth - 7"
+          :width="LeftWidth - 17"
           :height="windowHeight - 350"
           :scrollbarAlwaysOn="false"
           class-name="el-select-dropdown__list"
@@ -523,7 +550,7 @@ const mousedownDrag = () => {
               @click="setActiveName(datasourceTableData[index])"
             >
               <el-icon class="icon-color">
-                <Icon name="icon_form_outlined"></Icon>
+                <Icon name="icon_form_outlined"><icon_form_outlined class="svg-icon" /></Icon>
               </el-icon>
               <span class="label">{{ datasourceTableData[index].tableName }}</span>
               <span class="name-copy">
@@ -532,7 +559,7 @@ const mousedownDrag = () => {
                     class="hover-icon"
                     @click="copyInfo(datasourceTableData[index].tableName)"
                   >
-                    <Icon name="icon_copy_outlined"></Icon>
+                    <Icon name="icon_copy_outlined"><icon_copy_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </el-tooltip>
 
@@ -546,7 +573,7 @@ const mousedownDrag = () => {
                 >
                   <template #reference>
                     <el-icon class="hover-icon">
-                      <Icon name="icon_info_outlined"></Icon>
+                      <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
                     </el-icon>
                   </template>
                   <div class="table-filed" v-loading="gridDataLoading">
@@ -564,11 +591,15 @@ const mousedownDrag = () => {
                           )
                         "
                       >
-                        <Icon name="icon_copy_outlined"></Icon>
+                        <Icon name="icon_copy_outlined"
+                          ><icon_copy_outlined class="svg-icon"
+                        /></Icon>
                       </el-icon>
                       <div class="num flex-align-center">
                         <el-icon>
-                          <Icon name="icon_text-box_outlined"></Icon>
+                          <Icon name="icon_text-box_outlined"
+                            ><icon_textBox_outlined class="svg-icon"
+                          /></Icon>
                         </el-icon>
                         {{ gridData.length }}
                       </div>
@@ -585,8 +616,11 @@ const mousedownDrag = () => {
                             <div class="flex-align-center icon">
                               <el-icon>
                                 <Icon
-                                  :className="`field-icon-${fieldType[scope.row.deType]}`"
-                                  :name="`field_${fieldType[scope.row.deType]}`"
+                                  ><component
+                                    class="svg-icon"
+                                    :class="`field-icon-${fieldType[scope.row.deType]}`"
+                                    :is="iconFieldMap[fieldType[scope.row.deType]]"
+                                  ></component
                                 ></Icon>
                               </el-icon>
                               {{ scope.row.originName }}
@@ -604,7 +638,9 @@ const mousedownDrag = () => {
                               class="hover-icon de-hover-icon-primary"
                               @click.stop="copyInfo(scope.row.originName)"
                             >
-                              <Icon name="icon_copy_outlined"></Icon>
+                              <Icon name="icon_copy_outlined"
+                                ><icon_copy_outlined class="svg-icon"
+                              /></Icon>
                             </el-icon>
                           </template>
                         </el-table-column>
@@ -660,7 +696,9 @@ const mousedownDrag = () => {
               <div class="sql-tips flex-align-center">
                 {{ t('data_set.click_above') }}
                 <el-icon>
-                  <icon name="icon_play-round_outlined"></icon>
+                  <icon name="icon_play-round_outlined"
+                    ><icon_playRound_outlined class="svg-icon"
+                  /></icon>
                 </el-icon>
                 {{ t('data_set.see_the_results') }}
               </div>
@@ -727,7 +765,7 @@ const mousedownDrag = () => {
   >
     <div class="content">
       <el-icon style="font-size: 16px">
-        <Icon name="icon_info_colorful"></Icon>
+        <Icon name="icon_info_colorful"><icon_info_colorful class="svg-icon" /></Icon>
       </el-icon>
       {{ t('dataset.sql_variable_limit_1') }}<br />
       {{ t('dataset.sql_variable_limit_2') }}<br />
@@ -746,8 +784,11 @@ const mousedownDrag = () => {
             <template v-slot="{ data }">
               <el-icon>
                 <Icon
-                  :className="`field-icon-${getIconName(data.value)}`"
-                  :name="`field_${getIconName(data.value)}`"
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${getIconName(data.value)}`"
+                    :is="iconFieldMap[getIconName(data.value)]"
+                  ></component
                 ></Icon>
               </el-icon>
               <span>{{ data.label }}</span>
@@ -756,8 +797,11 @@ const mousedownDrag = () => {
           <span class="select-svg-icon">
             <el-icon>
               <Icon
-                :className="`field-icon-${getIconName(scope.row.type[0])}`"
-                :name="`field_${getIconName(scope.row.type[0])}`"
+                ><component
+                  class="svg-icon"
+                  :class="`field-icon-${getIconName(scope.row.type[0])}`"
+                  :is="iconFieldMap[getIconName(scope.row.type[0])]"
+                ></component
               ></Icon>
             </el-icon>
           </span>

@@ -1,79 +1,48 @@
 package io.dataease.dataset.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @Author Junjun
  */
 public class FieldUtils {
-    public static int transType2DeType(String type) {
-        type = type.replaceAll("\\((.*?)\\)","");
-        switch (type) {
-            case "CHAR":
-            case "VARCHAR":
-            case "TEXT":
-            case "TINYTEXT":
-            case "MEDIUMTEXT":
-            case "LONGTEXT":
-            case "ENUM":
-            case "ANY":
-            case "STRING":
-            case "BOOL":
-            case "BOOLEAN":
-                return 0;// 文本
-            case "DATE":
-            case "TIME":
-            case "YEAR":
-            case "DATETIME":
-            case "TIMESTAMP":
-            case "DATEV2":
-            case "DATETIMEV2":
-            case "DATETIME2":
-            case "DATETIMEOFFSET":
-            case "SMALLDATETIME":
-            case "DATETIME64":
-            case "_TIMESTAMPTZ":
-            case "TIMESTAMPTZ":
-                return 1;// 时间
-            case "INT":
-            case "SMALLINT":
-            case "MEDIUMINT":
-            case "INTEGER":
-            case "BIGINT":
-            case "LONG": //增加了LONG类型
-            case "INT2":
-            case "INT4":
-            case "INT8":
-            case "int2":
-            case "int4":
-            case "int8":
-            case "INT16":
-            case "INT32":
-            case "INT64":
-            case "UINT8":
-            case "UINT16":
-            case "UINT32":
-            case "UINT64":
-                return 2;// 整型
-            case "NUMBER":
-            case "FLOAT":
-            case "DOUBLE":
-            case "DECIMAL":
-            case "REAL":
-            case "MONEY":
-            case "NUMERIC":
-            case "float4":
-            case "float8":
-            case "FLOAT4":
-            case "FLOAT8":
-            case "DECFLOAT":
-            case "FLOAT32":
-            case "FLOAT64":
-                return 3;// 浮点
-            case "BIT":
-            case "TINYINT":
-                return 4;// 布尔
-            default:
-                return 0;
+    public static int transType2DeType(final String type) {
+        List<String> text = Arrays.asList("CHAR", "VARCHAR", "TEXT", "TINYTEXT", "MEDIUMTEXT", "LONGTEXT", "ENUM", "ANY", "STRING", "BOOL", "BOOLEAN");
+        List<String> time = Arrays.asList("DATE", "TIME", "YEAR", "DATETIME", "TIMESTAMP", "DATEV2", "DATETIMEV2", "DATETIME2", "DATETIMEOFFSET", "SMALLDATETIME", "DATETIME64", "_TIMESTAMPTZ", "TIMESTAMPTZ");
+        List<String> num = Arrays.asList("INT", "SMALLINT", "MEDIUMINT", "INTEGER", "BIGINT", "LONG", "INT2", "INT4", "INT8", "int2", "int4", "int8", "INT16", "INT32", "INT64", "UINT8", "UINT16", "UINT32", "UINT64");
+        List<String> doubleList = Arrays.asList("NUMBER", "FLOAT", "DOUBLE", "DECIMAL", "REAL", "MONEY", "NUMERIC", "float4", "float8", "FLOAT4", "FLOAT8", "DECFLOAT", "FLOAT32", "FLOAT64");
+        List<String> boolType = Arrays.asList("BIT", "TINYINT");
+        if (boolType.contains(type)) {
+            return 4;// 布尔
         }
+        if (doubleList.contains(type)) {
+            return 3;// 浮点
+        }
+        if (num.contains(type)) {
+            return 2;// 整型
+        }
+        if (time.contains(type)) {
+            return 1;// 时间
+        }
+        if (text.contains(type)) {
+            return 0;// 文本
+        }
+
+        if (boolType.stream().anyMatch(l -> type.contains(l))) {
+            return 4;// 布尔
+        }
+        if (doubleList.stream().anyMatch(l -> type.contains(l))) {
+            return 3;// 浮点
+        }
+        if (num.stream().anyMatch(l -> type.contains(l))) {
+            return 2;// 整型
+        }
+        if (time.stream().anyMatch(l -> type.contains(l))) {
+            return 1;// 时间
+        }
+        return 0;// 文本
     }
 
     public static String transDeType2DQ(int deType) {

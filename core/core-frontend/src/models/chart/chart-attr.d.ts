@@ -844,6 +844,22 @@ declare interface ChartLabelAttr {
    * 转化率标签
    */
   conversionTag: ConversionTagAtt
+  /**
+   * 堆叠柱状图显示总计
+   */
+  showTotal: boolean
+  /**
+   * 总计标签字体大小
+   */
+  totalFontSize: number
+  /**
+   * 总计标签字体颜色
+   */
+  totalColor: string
+  /**
+   * 总计标签格式化设置
+   */
+  totalFormatter: BaseFormatter
 }
 /**
  * 提示设置

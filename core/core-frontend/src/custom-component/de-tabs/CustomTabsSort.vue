@@ -13,7 +13,7 @@
         <template #item="{ element }">
           <span :key="element.name" class="item-dimension" :title="element.title">
             <el-icon size="20px">
-              <Icon name="drag" />
+              <Icon name="drag"><drag class="svg-icon" /></Icon>
             </el-icon>
             <span class="item-span">
               {{ element.title }}
@@ -32,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import drag from '@/assets/svg/drag.svg'
 import draggable from 'vuedraggable'
 import { onMounted, ref, toRefs } from 'vue'
 import { deepCopy } from '@/utils/utils'

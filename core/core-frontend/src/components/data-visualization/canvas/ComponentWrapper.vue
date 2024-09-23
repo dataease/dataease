@@ -259,17 +259,27 @@ const onWrapperClick = e => {
         dvMainStore.popAreaActiveSwitch()
       })
     } else if (config.value.events.type === 'jump') {
+      const url = config.value.events.jump.value
+      const jumpType = config.value.events.jump.type
       try {
-        window.open(config.value.events.jump.value, '_blank')
+        let newWindow
+        if ('newPop' === jumpType) {
+          window.open(
+            url,
+            '_blank',
+            'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
+          )
+        } else {
+          newWindow = window.open(url, jumpType)
+        }
+        initOpenHandler(newWindow)
       } catch (e) {
-        console.info('Something wrong when try to jump: ' + config.value.events?.jump?.value)
+        console.warn('url 格式错误:' + url)
       }
     } else if (config.value.events.type === 'refreshDataV') {
       useEmitt().emitter.emit('componentRefresh')
     } else if (config.value.events.type === 'fullScreen') {
       useEmitt().emitter.emit('canvasFullscreen')
-    } else if (config.value.events.type === 'share') {
-      useEmitt().emitter.emit('shareComponent')
     } else if (config.value.events.type === 'download') {
       useEmitt().emitter.emit('canvasDownload')
     }
@@ -278,6 +288,16 @@ const onWrapperClick = e => {
   }
 }
 
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
 const deepScale = computed(() => scale.value / 100)
 </script>
 
@@ -292,7 +312,7 @@ const deepScale = computed(() => scale.value / 100)
     element-loading-background="rgba(255, 255, 255, 1)"
   >
     <component-edit-bar
-      v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard' && !props.isSelector"
+      v-if="!showPosition.includes('canvas') && !props.isSelector"
       class="wrapper-edit-bar"
       ref="componentEditBarRef"
       :canvas-id="canvasId"

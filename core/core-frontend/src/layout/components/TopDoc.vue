@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+import topEnterpriseTrial from '@/assets/svg/top-enterprise-trial.svg'
+import topHelpDoc from '@/assets/svg/top-help-doc.svg'
+import topProductBbs from '@/assets/svg/top-product-bbs.svg'
+import topTechnology from '@/assets/svg/top-technology.svg'
+import docs from '@/assets/svg/docs.svg'
 import { computed } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import TopDocCard from '@/layout/components/TopDocCard.vue'
@@ -8,14 +13,14 @@ const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const help = computed(() => appearanceStore.getHelp)
 
 const cardInfoList = [
-  { name: '帮助文档', url: help.value || 'https://dataease.io/docs/v2/', icon: 'top-help-doc' },
-  { name: '产品论坛', url: 'https://bbs.fit2cloud.com/c/de/6', icon: 'top-product-bbs' },
+  { name: '帮助文档', url: help.value || 'https://dataease.io/docs/v2/', icon: topHelpDoc },
+  { name: '产品论坛', url: 'https://bbs.fit2cloud.com/c/de/6', icon: topProductBbs },
   {
     name: '技术博客',
     url: 'https://blog.fit2cloud.com/categories/dataease',
-    icon: 'top-technology'
+    icon: topTechnology
   },
-  { name: '企业版试用', url: 'https://jinshuju.net/f/TK5TTd', icon: 'top-enterprise-trial' }
+  { name: '企业版试用', url: 'https://jinshuju.net/f/TK5TTd', icon: topEnterpriseTrial }
 ]
 </script>
 
@@ -41,7 +46,7 @@ const cardInfoList = [
         :class="{ 'is-light-setting': navigateBg && navigateBg === 'light' }"
       >
         <el-icon>
-          <Icon name="docs" />
+          <Icon name="docs"><docs class="svg-icon" /></Icon>
         </el-icon>
       </div>
     </template>

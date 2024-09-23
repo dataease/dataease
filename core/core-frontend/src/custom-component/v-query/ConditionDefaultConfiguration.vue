@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_admin_outlined from '@/assets/svg/icon_admin_outlined.svg'
 import { ElSelect } from 'element-plus-secondary'
 import { computed, ref, toRefs } from 'vue'
 import RangeFilterTime from '@/custom-component/v-query/RangeFilterTime.vue'
@@ -33,6 +34,14 @@ const filterTypeCom = computed(() => {
     ? Tree
     : Select
 })
+
+const emits = defineEmits(['handleTimeTypeChange'])
+
+const handleTimeTypeChange = val => {
+  if (val === 'dynamic') {
+    emits('handleTimeTypeChange')
+  }
+}
 
 const props = defineProps({
   curComponent: {
@@ -388,7 +397,7 @@ defineExpose({
             style="margin-left: -4px"
           >
             <template #icon>
-              <Icon name="icon_admin_outlined"></Icon>
+              <Icon name="icon_admin_outlined"><icon_admin_outlined class="svg-icon" /></Icon>
             </template>
             设置
           </el-button>
@@ -435,7 +444,7 @@ defineExpose({
       v-if="curComponent.defaultValueCheck && ['1', '7'].includes(curComponent.displayType)"
     >
       <div class="setting">
-        <el-radio-group v-model="curComponent.timeType">
+        <el-radio-group @change="handleTimeTypeChange" v-model="curComponent.timeType">
           <el-radio label="fixed">固定时间</el-radio>
           <el-radio label="dynamic">动态时间</el-radio>
         </el-radio-group>
@@ -459,7 +468,12 @@ defineExpose({
             class="setting-input"
             :class="curComponent.timeGranularity === 'datetime' && 'with-date'"
           >
-            <el-input-number v-model="curComponent.timeNum" :min="0" controls-position="right" />
+            <el-input-number
+              step-strictly
+              v-model="curComponent.timeNum"
+              :min="0"
+              controls-position="right"
+            />
             <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrentType">
               <el-option
                 v-for="item in relativeToCurrentTypeList"

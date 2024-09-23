@@ -4,7 +4,6 @@ import { nextTick, onMounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import ExportExcel from '@/views/visualized/data/dataset/ExportExcel.vue'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
@@ -15,6 +14,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
 import { downloadCanvas2 } from '@/utils/imgUtils'
+import { setTitle } from '@/utils/utils'
+
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
 const embeddedStore = useEmbedded()
@@ -92,6 +93,17 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       ElMessage.error(t('visualization.outer_param_decode_error'))
     }
   }
+
+  const initBrowserTimer = () => {
+    if (state.canvasStylePreview.refreshBrowserEnable) {
+      const gap = state.canvasStylePreview.refreshBrowserUnit === 'minute' ? 60 : 1
+      const browserRefreshTime = state.canvasStylePreview.refreshBrowserTime * gap * 1000
+      setTimeout(() => {
+        window.location.reload()
+      }, browserRefreshTime)
+    }
+  }
+
   initCanvasData(
     dvId,
     dvType,
@@ -116,7 +128,9 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       if (props.publicLinkStatus) {
         // 设置浏览器title为当前仪表板名称
         document.title = dvInfo.name
+        setTitle(dvInfo.name)
       }
+      initBrowserTimer()
     }
   )
 }
@@ -134,12 +148,6 @@ let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
   useEmitt({
-    name: 'data-export-center',
-    callback: function (params) {
-      ExportExcelRef.value.init(params)
-    }
-  })
-  useEmitt({
     name: 'canvasDownload',
     callback: function () {
       downloadH2('img')
@@ -147,9 +155,9 @@ onMounted(async () => {
   })
   await new Promise(r => (p = r))
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
-  const { dvType, callBackFlag, taskId } = router.currentRoute.value.query
+  const { dvType, callBackFlag, taskId, showWatermark } = router.currentRoute.value.query
   if (!!taskId) {
-    dvMainStore.setCanvasAttachInfo({ taskId: taskId })
+    dvMainStore.setCanvasAttachInfo({ taskId, showWatermark })
   }
   if (dvId) {
     loadCanvasDataAsync(dvId, dvType)
@@ -158,7 +166,6 @@ onMounted(async () => {
   dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
 })
-const ExportExcelRef = ref()
 
 defineExpose({
   loadCanvasDataAsync
@@ -184,7 +191,6 @@ defineExpose({
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   />
-  <ExportExcel ref="ExportExcelRef"></ExportExcel>
 </template>
 
 <style lang="less">

@@ -1,4 +1,14 @@
 <script lang="ts" setup>
+import icon_calendar_outlined from '@/assets/svg/icon_calendar_outlined.svg'
+import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
+import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
+import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import deCopy from '@/assets/svg/de-copy.svg'
+import deDelete from '@/assets/svg/de-delete.svg'
+import icon_warning_filled from '@/assets/svg/icon_warning_filled.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { ref, reactive, h, computed, toRefs, nextTick, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
@@ -15,6 +25,7 @@ import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
 import { XpackComponent } from '@/components/plugin'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 const { t } = useI18n()
 const prop = defineProps({
   form: {
@@ -59,7 +70,6 @@ const loading = ref(false)
 const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)
-const calendar = h(Icon, { name: 'icon_calendar_outlined' })
 
 const defaultRule = {
   name: [
@@ -69,9 +79,9 @@ const defaultRule = {
       trigger: 'blur'
     },
     {
-      min: 2,
+      min: 1,
       max: 64,
-      message: t('datasource.input_limit_2_25', [2, 64]),
+      message: t('datasource.input_limit_1_64', [1, 64]),
       trigger: 'blur'
     }
   ]
@@ -504,11 +514,14 @@ const getDsSchema = () => {
       const request = JSON.parse(JSON.stringify(form.value))
       request.configuration = Base64.encode(JSON.stringify(request.configuration))
       loading.value = true
-      getSchema(request).then(res => {
-        loading.value = false
-        schemas.value = res.data
-        ElMessage.success(t('commons.success'))
-      })
+      getSchema(request)
+        .then(res => {
+          schemas.value = res.data
+          ElMessage.success(t('commons.success'))
+        })
+        .finally(() => {
+          loading.value = false
+        })
     }
   })
 }
@@ -690,12 +703,12 @@ const delParams = data => {
 const datasetTypeList = [
   {
     label: '重命名',
-    svgName: 'icon_rename_outlined',
+    svgName: icon_rename_outlined,
     command: 'rename'
   },
   {
     label: '删除',
-    svgName: 'icon_delete-trash_outlined',
+    svgName: icon_deleteTrash_outlined,
     command: 'delete'
   }
 ]
@@ -757,7 +770,7 @@ defineExpose({
             </el-tabs>
             <el-button type="primary" style="margin-left: auto" @click="() => addApiItem(null)">
               <template #icon>
-                <Icon name="icon_add_outlined"></Icon>
+                <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
               </template>
               {{ t('common.add') }}
             </el-button>
@@ -788,7 +801,7 @@ defineExpose({
                   </el-col>
                   <el-col style="text-align: right" :span="5">
                     <el-icon class="de-copy-icon hover-icon" @click.stop="copyItem(api)">
-                      <Icon name="de-copy"></Icon>
+                      <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
                     </el-icon>
 
                     <span @click.stop>
@@ -802,12 +815,14 @@ defineExpose({
                       >
                         <template #reference>
                           <el-icon class="de-delete-icon hover-icon">
-                            <Icon name="de-delete"></Icon>
+                            <Icon name="de-delete"><deDelete class="svg-icon" /></Icon>
                           </el-icon>
                         </template>
                         <template #default>
                           <el-icon class="de-copy-icon icon-warning">
-                            <Icon name="icon_warning_filled"></Icon>
+                            <Icon name="icon_warning_filled"
+                              ><icon_warning_filled class="svg-icon"
+                            /></Icon>
                           </el-icon>
                           <div class="tips">
                             {{ t('datasource.delete_this_item') }}
@@ -857,7 +872,7 @@ defineExpose({
                 <span class="label">{{ ele.name }}</span>
                 <span class="name-copy">
                   <el-icon class="hover-icon" @click.stop="handleApiParams('edit', ele)">
-                    <icon name="icon_edit_outlined"></icon>
+                    <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
                   </el-icon>
                   <handle-more
                     icon-size="24px"
@@ -885,8 +900,11 @@ defineExpose({
                     <div class="flex-align-center icon">
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${fieldType[scope.row.deType]}`"
-                          :name="`field_${fieldType[scope.row.deType]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[scope.row.deType]}`"
+                            :is="iconFieldMap[fieldType[scope.row.deType]]"
+                          ></component
                         ></Icon>
                       </el-icon>
                       {{ fieldTypeText[scope.row.deType] }}
@@ -898,7 +916,9 @@ defineExpose({
                   <template #default="scope">
                     <el-button text @click.stop="delParams(scope.row)">
                       <template #icon>
-                        <Icon name="icon_delete-trash_outlined"></Icon>
+                        <Icon name="icon_delete-trash_outlined"
+                          ><icon_deleteTrash_outlined class="svg-icon"
+                        /></Icon>
                       </template>
                     </el-button>
                   </template>
@@ -1045,7 +1065,7 @@ defineExpose({
               <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
               <el-button text size="small" @click="getDsSchema()">
                 <template #icon>
-                  <Icon name="icon_add_outlined"></Icon>
+                  <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
                 </template>
                 {{ t('datasource.get_schema') }}
               </el-button>
@@ -1078,7 +1098,12 @@ defineExpose({
               @click="showSSH = !showSSH"
               >SSH 设置
               <el-icon>
-                <Icon :name="showSSH ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+                <Icon
+                  ><component
+                    class="svg-icon"
+                    :is="showSSH ? icon_down_outlined : icon_down_outlined1"
+                  ></component
+                ></Icon>
               </el-icon>
             </span>
           </el-form-item>
@@ -1162,7 +1187,11 @@ defineExpose({
               @click="showPriority = !showPriority"
               >{{ t('datasource.priority') }}
               <el-icon>
-                <Icon :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+                <Icon
+                  ><component
+                    :is="showPriority ? icon_down_outlined : icon_down_outlined1"
+                  ></component
+                ></Icon>
               </el-icon>
             </span>
           </el-form-item>
@@ -1325,7 +1354,7 @@ defineExpose({
             <el-date-picker
               v-model="form.syncSetting.startTime"
               class="de-date-picker"
-              :prefix-icon="calendar"
+              :prefix-icon="icon_calendar_outlined"
               type="datetime"
               :placeholder="t('datasource.start_time')"
             />
@@ -1339,7 +1368,7 @@ defineExpose({
               <el-date-picker
                 v-model="form.syncSetting.endTime"
                 class="de-date-picker"
-                :prefix-icon="calendar"
+                :prefix-icon="icon_calendar_outlined"
                 type="datetime"
                 :placeholder="t('datasource.end_time')"
               />

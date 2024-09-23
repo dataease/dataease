@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import FunctionCfg from '@/views/chart/components/editor/editor-senior/components/FunctionCfg.vue'
 import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/ScrollCfg.vue'
@@ -29,9 +31,11 @@ import { BASE_VIEW_CONFIG } from '../util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import BubbleAnimateCfg from '@/views/chart/components/editor/editor-senior/components/BubbleAnimateCfg.vue'
 import { XpackComponent } from '@/components/plugin'
+import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
 const dvMainStore = dvMainStoreWithOut()
 
-const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData } = storeToRefs(dvMainStore)
+const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData, curComponent } =
+  storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 const linkJumpRef = ref(null)
@@ -333,38 +337,31 @@ const removeJumpSenior = () => {
                   <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
                     已设置
                   </span>
-                  <el-button
-                    class="circle-button font14"
+                  <button
+                    class="circle-button_icon"
                     :title="t('chart.delete')"
                     :class="'label-' + props.themes"
-                    text
-                    size="small"
-                    :style="{ width: '14px', margin: '0 8px' }"
+                    :style="{ margin: '0 8px' }"
                     @click="removeLinkageSenior"
                   >
-                    <template #icon>
-                      <el-icon size="14px">
-                        <Icon name="icon_delete-trash_outlined" />
-                      </el-icon>
-                    </template>
-                  </el-button>
+                    <el-icon>
+                      <Icon name="icon_delete-trash_outlined"
+                        ><icon_deleteTrash_outlined class="svg-icon"
+                      /></Icon>
+                    </el-icon>
+                  </button>
                 </template>
-                <el-button
-                  class="circle-button font14"
+                <button
+                  class="circle-button_icon"
                   :title="t('chart.edit')"
                   :class="'label-' + props.themes"
-                  text
-                  size="small"
-                  :style="{ width: '14px', margin: '0' }"
                   @click="linkageSetOpen"
                   :disabled="!chart.linkageActive"
                 >
-                  <template #icon>
-                    <el-icon size="14px">
-                      <Icon name="icon_edit_outlined" />
-                    </el-icon>
-                  </template>
-                </el-button>
+                  <el-icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                </button>
               </span>
             </div>
           </collapse-switch-item>
@@ -383,38 +380,31 @@ const removeJumpSenior = () => {
                   <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
                     已设置
                   </span>
-                  <el-button
-                    class="circle-button font14"
+                  <button
+                    class="circle-button_icon"
                     :title="t('chart.delete')"
                     :class="'label-' + props.themes"
-                    text
-                    size="small"
-                    :style="{ width: '14px', margin: '0 8px' }"
+                    :style="{ margin: '0 8px' }"
                     @click="removeJumpSenior"
                   >
-                    <template #icon>
-                      <el-icon size="14px">
-                        <Icon name="icon_delete-trash_outlined" />
-                      </el-icon>
-                    </template>
-                  </el-button>
+                    <el-icon>
+                      <Icon name="icon_delete-trash_outlined"
+                        ><icon_deleteTrash_outlined class="svg-icon"
+                      /></Icon>
+                    </el-icon>
+                  </button>
                 </template>
-                <el-button
-                  class="circle-button font14"
+                <button
+                  class="circle-button_icon"
                   :title="t('chart.edit')"
                   :class="'label-' + props.themes"
-                  text
-                  size="small"
-                  :style="{ width: '14px', margin: 0 }"
                   @click="linkJumpSetOpen"
                   :disabled="!chart.jumpActive"
                 >
-                  <template #icon>
-                    <el-icon size="14px">
-                      <Icon name="icon_edit_outlined" />
-                    </el-icon>
-                  </template>
-                </el-button>
+                  <el-icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                </button>
               </span>
             </div>
           </collapse-switch-item>
@@ -434,6 +424,11 @@ const removeJumpSenior = () => {
               @onBubbleAnimateChange="onBubbleAnimateChange"
             />
           </collapse-switch-item>
+          <carousel-setting
+            v-if="curComponent?.innerType === 'picture-group'"
+            :element="curComponent"
+            :themes="themes"
+          ></carousel-setting>
         </el-collapse>
       </el-row>
     </div>
@@ -495,18 +490,6 @@ span {
   font-weight: 400;
   line-height: 20px;
   color: #a6a6a6 !important;
-  &.ed-button {
-    color: var(--ed-color-primary) !important;
-  }
-  &.is-disabled {
-    color: #5f5f5f !important;
-  }
-}
-
-.font14 {
-  :deep(.ed-icon) {
-    font-size: 14px;
-  }
 }
 
 .inner-container {

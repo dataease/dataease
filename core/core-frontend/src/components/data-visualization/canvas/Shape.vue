@@ -11,7 +11,7 @@
   >
     <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
       <el-icon>
-        <Icon name="mobile-checkbox"></Icon>
+        <Icon name="mobile-checkbox"><mobileCheckbox class="svg-icon" /></Icon>
       </el-icon>
     </div>
     <div
@@ -46,7 +46,7 @@
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
       >
-        <Icon v-show="shapeLock" class="iconfont icon-suo" name="dv-lock"></Icon>
+        <Icon v-if="shapeLock" name="dv-lock"><dvLock class="svg-icon iconfont icon-suo" /></Icon>
         <!--边框背景-->
         <Board
           v-if="svgInnerEnable"
@@ -97,6 +97,8 @@
 </template>
 
 <script setup lang="ts">
+import mobileCheckbox from '@/assets/svg/mobile-checkbox.svg'
+import dvLock from '@/assets/svg/dv-lock.svg'
 import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize, {
   calculateRadioComponentPositionAndSize
@@ -160,7 +162,7 @@ const state = reactive({
     id: ''
   },
   // 禁止移入Tab中的组件
-  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs', 'Group'],
+  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs', 'Group', 'GroupArea'],
   // 当画布在tab中是 宽度左右拓展的余量
   parentWidthTabOffset: 40,
   canvasChangeTips: 'none',
@@ -524,6 +526,7 @@ const handleMouseDownOnShape = e => {
     if (
       !isMainCanvas(canvasId.value) &&
       !isGroupCanvas(canvasId.value) &&
+      !isGroupArea.value &&
       (left < -30 || left + componentWidth - canvasWidth > 30)
     ) {
       contentDisplay.value = false

@@ -172,6 +172,12 @@ export const getDatasetPreview = async (id): Promise<FieldData> => {
   })
 }
 
+export const getDatasetTotal = async (id): Promise<FieldData> => {
+  return request.post({ url: `/datasetData/getDatasetTotal`, data: { id: id } }).then(res => {
+    return res?.data
+  })
+}
+
 export const getDatasetDetails = async (id): Promise<Dataset> => {
   return request.post({ url: `/datasetTree/details/${id}`, data: {} }).then(res => {
     return res?.data

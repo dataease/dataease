@@ -74,7 +74,9 @@ public class ExtWhere2Str {
                             String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
                             // 此处获取标准格式的日期
                             whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
-                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                            if (isCross) {
+                                whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                            }
                         }
                         if (field.getDeExtractType() == 1) {
                             // 如果都是时间类型，把date和time类型进行字符串拼接
@@ -136,10 +138,18 @@ public class ExtWhere2Str {
                         if (request.getDatasetTableField().getDeExtractType() == 2
                                 || request.getDatasetTableField().getDeExtractType() == 3
                                 || request.getDatasetTableField().getDeExtractType() == 4) {
-                            whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, value.get(0), value.get(1));
+                            if (isCross) {
+                                whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, value.get(0), value.get(1));
+                            } else {
+                                whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(Long.parseLong(value.get(0))), Utils.transLong2Str(Long.parseLong(value.get(1))));
+                            }
                         } else {
-                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
-                            whereValue = String.format(SQLConstants.WHERE_BETWEEN, Long.parseLong(value.get(0)), Long.parseLong(value.get(1)));
+                            if (isCross) {
+                                whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                                whereValue = String.format(SQLConstants.WHERE_BETWEEN, Long.parseLong(value.get(0)), Long.parseLong(value.get(1)));
+                            } else {
+                                whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(Long.parseLong(value.get(0))), Utils.transLong2Str(Long.parseLong(value.get(1))));
+                            }
                         }
                     } else {
                         whereValue = String.format(SQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));

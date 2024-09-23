@@ -12,12 +12,13 @@ import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.FieldUtil;
 import io.dataease.utils.JsonUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 带同环比计算的图表处理器
@@ -118,6 +119,61 @@ public class YoyChartHandler extends DefaultChartHandler {
             expandedResult.setOriginData(resultData);
             expandedResult.setQuerySql(originSql);
         }
+        // 同环比数据排序
+        expandedResult.setOriginData(sortData(view, expandedResult.getOriginData()));
         return expandedResult;
+    }
+
+    public static List<String[]> sortData(ChartViewDTO view, List<String[]> data) {
+        // 维度排序
+        List<ChartViewFieldDTO> xAxisSortList = view.getXAxis().stream().filter(x -> !StringUtils.equalsIgnoreCase("none", x.getSort())).toList();
+        // 指标排序
+        List<ChartViewFieldDTO> yAxisSortList = view.getYAxis().stream().filter(y -> !StringUtils.equalsIgnoreCase("none", y.getSort())).toList();
+        // 不包含维度排序时，指标排序生效
+        if (!data.isEmpty() && CollectionUtils.isEmpty(xAxisSortList) && CollectionUtils.isNotEmpty(yAxisSortList)) {
+            // 指标排序仅第一个生效
+            ChartViewFieldDTO firstYAxis = yAxisSortList.getFirst();
+            boolean asc = firstYAxis.getSort().equalsIgnoreCase("asc");
+            // 维度指标
+            List<ChartViewFieldDTO> allAxisList = Stream.of(
+                    view.getXAxis(),
+                    view.getXAxisExt(),
+                    view.getYAxis()
+            ).flatMap(List::stream).toList();
+            int index = findIndex(allAxisList, firstYAxis.getId());
+            return sortData(data, asc, index);
+        }
+        return data;
+
+    }
+
+    public static List<String[]> sortData(List<String[]> data, boolean ascending, int index) {
+        Comparator<String[]> comparator;
+        if (ascending) {
+            comparator = Comparator.comparing(item -> toBigDecimal(item[index]), Comparator.nullsFirst(Comparator.naturalOrder()));
+        } else {
+            comparator = Comparator.comparing(item -> toBigDecimal(item[index]), Comparator.nullsLast(Comparator.reverseOrder()));
+        }
+        return data.stream().sorted(comparator).collect(Collectors.toList());
+    }
+
+    private static BigDecimal toBigDecimal(String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return new BigDecimal(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid number format: " + value, e);
+        }
+    }
+
+    public static int findIndex(List<ChartViewFieldDTO> list, Long id) {
+        for (int i = 0; i < list.size(); i++) {
+            if (StringUtils.equalsIgnoreCase(list.get(i).getId().toString(), id.toString())) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

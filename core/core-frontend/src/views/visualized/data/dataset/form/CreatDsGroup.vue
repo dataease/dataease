@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -187,9 +189,9 @@ const createInit = (type, data: Tree, exec, name: string) => {
         trigger: 'blur'
       },
       {
-        min: 2,
+        min: 1,
         max: 64,
-        message: t('datasource.input_limit_2_25', [2, 64]),
+        message: t('datasource.input_limit_1_64', [1, 64]),
         trigger: 'blur'
       }
     ],
@@ -294,7 +296,6 @@ const emits = defineEmits(['finish'])
 
 <template>
   <el-dialog
-    v-loading="loading"
     :title="dialogTitle"
     v-model="createDataset"
     class="create-dialog"
@@ -326,7 +327,7 @@ const emits = defineEmits(['finish'])
         >
           <template #default="{ data: { name } }">
             <el-icon>
-              <Icon name="dv-folder"></Icon>
+              <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
             <span :title="name">{{ name }}</span>
           </template>
@@ -336,7 +337,9 @@ const emits = defineEmits(['finish'])
         <el-input style="margin-bottom: 12px" v-model="filterText" clearable>
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
+              <Icon name="icon_search-outline_outlined"
+                ><icon_searchOutline_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </template>
         </el-input>
@@ -355,7 +358,7 @@ const emits = defineEmits(['finish'])
             <template #default="{ data }">
               <span class="custom-tree-node">
                 <el-icon style="font-size: 18px">
-                  <Icon name="dv-folder"></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <span class="node-text" :title="data.name">{{ data.name }}</span>
               </span>
@@ -370,7 +373,9 @@ const emits = defineEmits(['finish'])
     </el-form>
     <template #footer>
       <el-button secondary @click="resetForm">{{ t('dataset.cancel') }} </el-button>
-      <el-button type="primary" @click="saveDataset">{{ t('dataset.confirm') }} </el-button>
+      <el-button v-loading="loading" type="primary" @click="saveDataset"
+        >{{ t('dataset.confirm') }}
+      </el-button>
     </template>
   </el-dialog>
 </template>

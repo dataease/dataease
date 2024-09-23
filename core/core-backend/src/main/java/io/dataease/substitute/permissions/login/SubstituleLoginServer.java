@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Component
-@ConditionalOnMissingBean(name = "userServer")
+@ConditionalOnMissingBean(name = "loginServer")
 @RestController
 @RequestMapping
 public class SubstituleLoginServer {

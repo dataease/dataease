@@ -419,6 +419,12 @@ public class Utils {
         return map;
     }
 
+    public static String transLong2Str(Long ts) {
+        Date date = new Date(ts);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return simpleDateFormat.format(date);
+    }
+
     public static List<CalParam> getParams(List<DatasetTableFieldDTO> list) {
         if (ObjectUtils.isEmpty(list)) return Collections.emptyList();
         List<CalParam> param = new ArrayList<>();

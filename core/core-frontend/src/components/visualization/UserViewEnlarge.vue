@@ -41,7 +41,9 @@
         icon="Download"
         size="middle"
         :loading="exportLoading"
-        :disabled="requestStore.loadingMap[permissionStore.currentPath] > 0"
+        :disabled="
+          requestStore.loadingMap[permissionStore.currentPath] > 0 || state.dataFrom === 'template'
+        "
         @click="downloadViewDetails('view')"
       >
         导出Excel
@@ -54,7 +56,9 @@
         size="middle"
         :loading="exportLoading"
         @click="downloadViewDetails('dataset')"
-        :disabled="requestStore.loadingMap[permissionStore.currentPath] > 0"
+        :disabled="
+          requestStore.loadingMap[permissionStore.currentPath] > 0 || state.dataFrom === 'template'
+        "
       >
         导出原始明细
       </el-button>
@@ -146,6 +150,7 @@ import { exportPivotExcel } from '@/views/chart/components/js/panel/common/commo
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
+import { getCanvasStyle } from '@/utils/style'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -194,7 +199,9 @@ const DETAIL_CHART_ATTR: DeepPartial<ChartObj> = {
 }
 
 const state = reactive({
-  scale: 0.5
+  scale: 0.5,
+  componentSourceType: null,
+  dataFrom: null
 })
 const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
   senior: {
@@ -208,14 +215,18 @@ const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
 const authShow = computed(() => editMode.value === 'edit' || dvInfo.value.weight > 3)
 
 const customExport = computed(() => {
+  const style =
+    canvasStyleData.value &&
+    (optType.value === 'enlarge' || state.componentSourceType?.includes('table'))
+      ? getCanvasStyle(canvasStyleData.value, 'canvas-main')
+      : {}
   if (downLoading.value) {
     const bashStyle = pixel.value.split(' * ')
-    return {
-      width: bashStyle[0] + 'px!important',
-      height: bashStyle[1] + 'px!important'
-    }
+    style['width'] = bashStyle[0] + 'px!important'
+    style['height'] = bashStyle[1] + 'px!important'
+    return style
   } else {
-    return {}
+    return style
   }
 })
 
@@ -262,6 +273,8 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   sourceViewType.value = view.type
   optType.value = opt
   dialogShow.value = true
+  state.componentSourceType = view.type
+  state.dataFrom = view.dataFrom
   viewInfo.value = deepCopy(view) as DeepPartial<ChartObj>
   viewInfo.value.customStyle.text.show = false
   config.value = deepCopy(item)

@@ -27,6 +27,8 @@ public class ReportInfoVO implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long rid;
 
+    private Boolean showWatermark;
+
     private Integer format;
 
     private List<String> viewIdList;

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { computed, toRefs } from 'vue'
 import { ElFormItem, ElIcon } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -22,7 +23,7 @@ const isDashboard = dvMainStore.dvInfo.type === 'dashboard'
 
 const curSupportEvents = computed(() => {
   if (isDashboard) {
-    return ['jump', 'refreshDataV', 'fullScreen', 'share', 'download']
+    return ['jump', 'refreshDataV', 'fullScreen', 'download']
   } else {
     return ['jump', 'showHidden', 'refreshDataV', 'fullScreen', 'download']
   }
@@ -52,7 +53,7 @@ const onJumpValueChange = () => {
             <div>事件绑定需退出编辑模式后生效,富文本开启绑定事件则内部点击事件失效</div>
           </template>
           <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-            <Icon name="icon_info_outlined" />
+            <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
           </el-icon>
         </el-tooltip>
       </el-form-item>
@@ -92,8 +93,32 @@ const onJumpValueChange = () => {
           @change="onJumpValueChange"
         />
       </el-form-item>
+      <el-form-item
+        v-if="eventsInfo.type === 'jump' && eventsInfo.jump.type"
+        class="form-item"
+        :class="'form-item-' + themes"
+        style="margin-bottom: 8px"
+      >
+        <el-radio-group
+          size="small"
+          v-model="eventsInfo.jump.type"
+          :effect="themes"
+          :disabled="!eventsInfo.checked"
+          @change="onJumpValueChange"
+        >
+          <el-radio :effect="themes" label="_blank">新开页面</el-radio>
+          <el-radio :effect="themes" label="_self">当前页面</el-radio>
+          <el-radio :effect="themes" label="newPop">弹窗页面</el-radio>
+        </el-radio-group>
+      </el-form-item>
     </el-form>
   </el-row>
 </template>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.form-item-dark {
+  .ed-radio {
+    margin-right: 4px !important;
+  }
+}
+</style>

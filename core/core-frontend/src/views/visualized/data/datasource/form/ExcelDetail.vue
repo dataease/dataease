@@ -1,4 +1,5 @@
 <script lang="tsx" setup>
+import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
 import { Icon } from '@/components/icon-custom'
 import { ElIcon } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -6,6 +7,7 @@ import {
   ref,
   shallowRef,
   reactive,
+  h,
   computed,
   toRefs,
   onMounted,
@@ -21,6 +23,7 @@ import SheetTabs from '../SheetTabs.vue'
 import { cloneDeep, debounce } from 'lodash-es'
 import { uploadFile } from '@/api/datasource'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 export interface Param {
   editType: number
@@ -115,10 +118,11 @@ const generateColumns = (arr: Field[]) =>
     headerCellRenderer: ({ column }) => (
       <div class="flex-align-center icon">
         <ElIcon>
-          <Icon
-            name={`field_${fieldType[column.fieldType]}`}
-            className={`field-icon-${fieldType[column.fieldType]}`}
-          ></Icon>
+          <Icon>
+            {h(iconFieldMap[fieldType[column.fieldType]], {
+              class: `svg-icon field-icon-${fieldType[column.fieldType]}`
+            })}
+          </Icon>
         </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '100px' }}>
           {column.title}
@@ -483,7 +487,7 @@ defineExpose({
             <template #trigger>
               <el-button secondary>
                 <template #icon>
-                  <Icon name="icon_upload_outlined"></Icon>
+                  <Icon name="icon_upload_outlined"><icon_upload_outlined class="svg-icon" /></Icon>
                 </template>
                 {{ t('dataset.upload_file') }}
               </el-button>
