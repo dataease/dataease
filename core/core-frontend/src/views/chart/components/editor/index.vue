@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import dvInfoSvg from '@/assets/svg/dv-info.svg'
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
@@ -1752,13 +1753,28 @@ const deleteChartFieldItem = id => {
         </div>
         <div v-if="!canvasCollapse.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
-            <span
-              id="component-name"
-              class="name-area"
-              :class="{ 'component-name-dark': themes === 'dark' }"
-              @dblclick="editComponentName"
-              >{{ view.title }}</span
-            >
+            <div style="display: flex; align-items: center; width: calc(100% - 24px)">
+              <div
+                id="component-name"
+                class="name-area"
+                style="max-width: 180px; text-overflow: ellipsis; white-space: nowrap"
+                :style="{ width: componentNameEdit ? '300px' : 'auto' }"
+                :class="{ 'component-name-dark': themes === 'dark' }"
+                @dblclick="editComponentName"
+              >
+                {{ view.title }}
+              </div>
+              <el-popover show-arrow :offset="8" placement="bottom" width="200" trigger="click">
+                <template #reference>
+                  <el-icon
+                    v-show="route.path !== '/dvCanvas'"
+                    style="margin-left: 4px; cursor: pointer"
+                    ><Icon><dvInfoSvg class="svg-icon" /></Icon
+                  ></el-icon>
+                </template>
+                {{ view.id }}
+              </el-popover>
+            </div>
           </el-row>
 
           <el-row style="height: calc(100vh - 110px); overflow-y: auto">
@@ -4784,7 +4800,6 @@ span {
   line-height: 24px;
   height: 24px;
   font-size: 14px !important;
-  width: 300px;
   overflow: hidden;
   cursor: pointer;
   input {
