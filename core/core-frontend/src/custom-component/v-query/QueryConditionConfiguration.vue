@@ -415,7 +415,16 @@ const timeParameterList = computed(() => {
   const [year, y] = curComponent.value.parameters?.filter(
     ele => ele.deType === 1 && !!ele.variableName
   )[0].type
-  return timeList.filter(ele => ele.value === (typeTimeMap[y] || typeTimeMap[year]))
+  let stopPush = false
+  return timeList.reduce((pre, ele) => {
+    if (ele.value === (typeTimeMap[y] || typeTimeMap[year])) {
+      stopPush = true
+      pre.push(ele)
+    } else if (!stopPush) {
+      pre.push(ele)
+    }
+    return pre
+  }, [])
 })
 
 const cancelClick = () => {
