@@ -169,7 +169,7 @@ const initOpenHandler = newWindow => {
           <el-dropdown-menu style="width: 130px">
             <el-dropdown-item icon="Refresh" @click="reload()">刷新数据 </el-dropdown-item>
             <el-dropdown
-              style="width: 100%"
+              style="width: 100%; overflow: hidden"
               trigger="hover"
               placement="left-start"
               v-if="dvInfo.weight > 3"
