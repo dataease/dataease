@@ -252,6 +252,7 @@ const downLoadAll = () => {
           document.body.appendChild(link)
           link.click()
           document.body.removeChild(link)
+          URL.revokeObjectURL(link.href)
         })
         .finally(() => {
           exportDatasetLoading.value = false
@@ -298,6 +299,7 @@ const downloadClick = item => {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      URL.revokeObjectURL(link.href)
     })
     .finally(() => {
       exportDatasetLoading.value = false
