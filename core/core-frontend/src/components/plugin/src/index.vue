@@ -8,6 +8,7 @@ import { i18n } from '@/plugins/vue-i18n'
 import * as Vue from 'vue'
 import axios from 'axios'
 import * as Pinia from 'pinia'
+import * as echarts from 'echarts'
 import router from '@/router'
 import tinymce from 'tinymce/tinymce'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -123,6 +124,7 @@ onMounted(async () => {
       window['vueRouterDe'] = router
       window['MittAllDe'] = useEmitt().emitter.all
       window['I18nDe'] = i18n
+      window['EchartsDE'] = echarts
       if (!window.tinymce) {
         window.tinymce = tinymce
       }
