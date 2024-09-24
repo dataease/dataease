@@ -135,9 +135,9 @@ public class ViewExportExcel {
             for (int i = 0; i < headKeys.size(); i++) {
                 String key = headKeys.get(i);
                 Object val = row.get(key);
-                if (ObjectUtils.isEmpty(val))
+                if (ObjectUtils.isEmpty(val)) {
                     tempList.add(StringUtils.EMPTY);
-                if (fieldTypes.get(i) == 3) {
+                } else if (fieldTypes.get(i) == 3) {
                     tempList.add(filterInvalidDecimal(val.toString()));
                 } else {
                     tempList.add(val.toString());
@@ -159,5 +159,11 @@ public class ViewExportExcel {
             sourceNumberStr = sourceNumberStr.replaceAll("[.]$", "");
         }
         return sourceNumberStr;
+    }
+
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        list.add(null);
+        System.out.println(111);
     }
 }
