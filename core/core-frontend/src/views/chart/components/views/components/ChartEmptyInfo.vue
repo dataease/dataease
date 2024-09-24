@@ -1,6 +1,8 @@
 <script lang="tsx" setup>
 import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list'
+import { iconChartDarkDivideMap } from '@/components/icon-group/chart-dark-divide-list'
 import { iconChartMap } from '@/components/icon-group/chart-list'
+import { iconChartDivideMap } from '@/components/icon-group/chart-divide-list'
 import { toRefs } from 'vue'
 const props = defineProps({
   viewIcon: {
@@ -23,7 +25,11 @@ const { viewIcon, themes } = toRefs(props)
     <Icon class-name="item-icon"
       ><component
         class="svg-icon item-icon"
-        :is="themes === 'dark' ? iconChartDarkMap[`${viewIcon}-dark`] : iconChartMap[viewIcon]"
+        :is="
+          themes === 'dark'
+            ? iconChartDarkMap[`${viewIcon}-dark`] || iconChartDarkDivideMap[`${viewIcon}-dark`]
+            : iconChartMap[viewIcon] || iconChartDivideMap[viewIcon]
+        "
       ></component
     ></Icon>
   </div>
