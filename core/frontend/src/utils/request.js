@@ -198,8 +198,9 @@ const checkCasRedirect = (response) => {
   }
   const resData = response.data
   const routine = resData.hasOwnProperty('success')
+  const resStr = typeof resData === 'string'
   const redirectUrl = response?.request?.responseURL
-  if (resData && !routine && resData.startsWith('<!') && redirectUrl?.includes('cas/login')) {
+  if (resData && !routine && resStr && resData.startsWith('<!') && redirectUrl?.includes('cas/login')) {
     store.dispatch('user/logout').finally(() => {
       location.reload()
     })
