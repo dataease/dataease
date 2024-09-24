@@ -13,7 +13,7 @@ import { XpackComponent } from '@/components/plugin'
 const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
-const embeddedParams = inject('embeddedParams') as object
+const embeddedParamsDiv = inject('embeddedParams') as object
 const config = ref()
 const viewInfo = ref()
 const userViewEnlargeRef = ref()
@@ -27,6 +27,8 @@ const state = reactive({
   dvInfo: null,
   chartId: null
 })
+
+const embeddedParams = embeddedParamsDiv?.chartId ? embeddedParamsDiv : embeddedStore
 
 // 目标校验： 需要校验targetSourceId 是否是当前可视化资源ID
 const winMsgHandle = event => {
@@ -44,29 +46,29 @@ const checkPer = async resourceId => {
   if (!window.DataEaseBi || !resourceId) {
     return true
   }
-  const request = { busiFlag: embeddedStore.busiFlag }
+  const request = { busiFlag: embeddedParams.busiFlag }
   await interactiveStore.setInteractive(request)
-  const key = embeddedStore.busiFlag === 'dataV' ? 'screen-weight' : 'panel-weight'
+  const key = embeddedParams.busiFlag === 'dataV' ? 'screen-weight' : 'panel-weight'
   return check(wsCache.get(key), resourceId, 1)
 }
 onBeforeMount(async () => {
-  const checkResult = await checkPer(embeddedStore.dvId)
+  const checkResult = await checkPer(embeddedParams.dvId)
   if (!checkResult) {
     return
   }
-  state.chartId = embeddedStore.dvId
+  state.chartId = embeddedParams.dvId
   window.addEventListener('message', winMsgHandle)
 
   // 添加外部参数
   let attachParams
-  await getOuterParamsInfo(embeddedStore.dvId).then(rsp => {
+  await getOuterParamsInfo(embeddedParams.dvId).then(rsp => {
     dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
   })
 
   // div嵌入
-  if (embeddedStore.outerParams) {
+  if (embeddedParams.outerParams) {
     try {
-      const outerPramsParse = JSON.parse(embeddedStore.outerParams)
+      const outerPramsParse = JSON.parse(embeddedParams.outerParams)
       attachParams = outerPramsParse.attachParams
       dvMainStore.setEmbeddedCallBack(outerPramsParse.callBackFlag || 'no')
     } catch (e) {
@@ -75,11 +77,11 @@ onBeforeMount(async () => {
       return
     }
   }
-  const chartId = embeddedParams?.chartId || embeddedStore.chartId
+  const chartId = embeddedParams?.chartId
 
   initCanvasData(
-    embeddedStore.dvId,
-    embeddedStore.busiFlag,
+    embeddedParams.dvId,
+    embeddedParams.busiFlag,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
