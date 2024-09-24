@@ -51,6 +51,7 @@ import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
+import io.dataease.visualization.manage.CoreBusiManage;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
@@ -127,6 +128,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
     @Autowired
     private CoreDatasourceMapper coreDatasourceMapper;
+
+    @Resource
+    private CoreBusiManage coreBusiManage;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -482,6 +486,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
         return coreVisualizationManage.tree(request);
+    }
+
+    @Override
+    public Map<String, List<BusiNodeVO>> interactiveTree(Map<String, BusiNodeRequest> requestMap) {
+        return coreBusiManage.interactiveTree(requestMap);
     }
 
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.MODIFY, stExp = "#p0.type")
