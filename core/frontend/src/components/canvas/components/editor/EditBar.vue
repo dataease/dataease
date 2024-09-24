@@ -314,6 +314,7 @@ export default {
         hasDataPermission('export', this.$store.state.panel.panelInfo.privileges) &&
         this.chart &&
         this.chart.dataFrom !== 'template' &&
+        this.chart.type === 'table-pivot' &&
         JSON.parse(this.chart.customAttr).size?.tableLayoutMode !== 'tree'
     },
     enlargeShow() {
