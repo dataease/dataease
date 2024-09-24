@@ -48,6 +48,11 @@ public class ExcelUtils {
             cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+            int fieldTypeSize = 0;
+            if (CollectionUtils.isNotEmpty(fieldTypes)) {
+                fieldTypeSize = fieldTypes.size();
+            }
+
             if (CollectionUtils.isNotEmpty(details)) {
                 for (int i = 0; i < details.size(); i++) {
                     Row row = curSheet.createRow(i);
@@ -56,7 +61,7 @@ public class ExcelUtils {
                         for (int j = 0; j < rowData.size(); j++) {
                             Cell cell = row.createCell(j);
                             // with DataType
-                            if (i > 0 && (fieldTypes.get(j).equals(DeTypeConstants.DE_INT) || fieldTypes.get(j).equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(rowData.get(j))) {
+                            if (i > 0 && j < fieldTypeSize && (fieldTypes.get(j).equals(DeTypeConstants.DE_INT) || fieldTypes.get(j).equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(rowData.get(j))) {
                                 cell.setCellValue(Double.valueOf(rowData.get(j)));
                             } else {
                                 cell.setCellValue(rowData.get(j));
