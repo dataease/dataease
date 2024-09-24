@@ -622,7 +622,9 @@ public class ChartDataManage {
                 || StringUtils.containsIgnoreCase(view.getType(), "group")
                 || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
                 || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
-                || StringUtils.equalsIgnoreCase(view.getType(), "t-heatmap")) {
+                || StringUtils.equalsIgnoreCase(view.getType(), "t-heatmap")
+                || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
+        ) {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
