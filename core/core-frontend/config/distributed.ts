@@ -1,10 +1,8 @@
 import pkg from '../package.json'
 import viteCompression from 'vite-plugin-compression'
-import { visualizer } from 'rollup-plugin-visualizer'
 
 export default {
   plugins: [
-    visualizer(),
     viteCompression({
       // gzip静态资源压缩配置
       verbose: true, // 是否在控制台输出压缩结果
