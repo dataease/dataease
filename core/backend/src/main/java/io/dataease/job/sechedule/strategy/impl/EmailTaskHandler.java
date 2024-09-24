@@ -9,7 +9,6 @@ import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.chart.ViewOption;
-import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.ext.ExtTaskMapper;
 import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.job.sechedule.strategy.TaskHandler;
@@ -271,8 +270,8 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                                     emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 } else {
                                     bytes = emailXpackService.printPdf(url, token, xpackPixelEntity, false, true);
-                                    PanelGroupDTO panelInfo = CommonBeanFactory.getBean(PanelGroupService.class).findOne(panelId);
-                                    String pdfFileName = panelInfo.getName() + "pdf";
+                                    String panelName = CommonBeanFactory.getBean(PanelGroupService.class).getPanelName(panelId);
+                                    String pdfFileName = panelName + ".pdf";
                                     emailService.sendPdfWithFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files, pdfFileName);
                                 }
 
