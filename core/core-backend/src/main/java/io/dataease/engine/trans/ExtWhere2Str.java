@@ -13,10 +13,8 @@ import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Junjun
@@ -129,10 +127,18 @@ public class ExtWhere2Str {
                     if (value.contains(SQLConstants.EMPTY_SIGN)) {
                         whereValue = "('" + StringUtils.join(value, "','") + "', '')" + " or " + whereName + " is null ";
                     } else {
-                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                        if (StringUtils.equalsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")) {
+                            whereValue = "(" + value.stream().map(str -> "N" + "'" + str + "'").collect(Collectors.joining(",")) + ")";
+                        } else {
+                            whereValue = "('" + StringUtils.join(value, "','") + "')";
+                        }
                     }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
-                    whereValue = "'%" + value.get(0) + "%'";
+                    if (StringUtils.equalsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")) {
+                        whereValue = "N'%" + value.get(0) + "%'";
+                    } else {
+                        whereValue = "'%" + value.get(0) + "%'";
+                    }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                     if (request.getDatasetTableField().getDeType() == 1) {
                         if (request.getDatasetTableField().getDeExtractType() == 2
@@ -159,7 +165,11 @@ public class ExtWhere2Str {
                     if (StringUtils.equals(value.get(0), SQLConstants.EMPTY_SIGN)) {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, "") + " or " + whereName + " is null ";
                     } else {
-                        whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value.get(0));
+                        if (StringUtils.equalsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")) {
+                            whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
+                        } else {
+                            whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value.get(0));
+                        }
                     }
                 }
                 list.add(SQLObj.builder()
