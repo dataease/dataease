@@ -988,7 +988,25 @@ const tabMoveInCheck = async () => {
 const slotStyle = computed(() => {
   // 3d效果支持
   if (element.value['multiDimensional'] && element.value['multiDimensional']?.enable) {
+    const width = defaultStyle.value.width // 原始元素宽度
+    const height = defaultStyle.value.height // 原始元素高度
+    const rotateX = element.value['multiDimensional'].x // 旋转X角度
+    const rotateY = element.value['multiDimensional'].y // 旋转Y角度
+
+    // 将角度转换为弧度
+    const radX = (rotateX * Math.PI) / 180
+    const radY = (rotateY * Math.PI) / 180
+
+    // 计算旋转后新宽度和高度
+    const newWidth = Math.abs(width * Math.cos(radY)) + Math.abs(height * Math.sin(radX))
+    const newHeight = Math.abs(height * Math.cos(radX)) + Math.abs(width * Math.sin(radY))
+
+    // 计算需要的 padding
+    const paddingX = (newWidth - width) / 2
+    const paddingY = (newHeight - height) / 2
+
     return {
+      padding: `${paddingY}px ${paddingX}px`,
       transform: `rotateX(${element.value['multiDimensional'].x}deg) rotateY(${element.value['multiDimensional'].y}deg) rotateZ(${element.value['multiDimensional'].z}deg)`
     }
   } else {
