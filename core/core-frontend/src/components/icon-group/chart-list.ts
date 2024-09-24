@@ -8,7 +8,6 @@ import barStackHorizontal from '@/assets/svg/bar-stack-horizontal.svg'
 import barStack from '@/assets/svg/bar-stack.svg'
 import bar from '@/assets/svg/bar.svg'
 import bidirectionalBar from '@/assets/svg/bidirectional-bar.svg'
-import bubbleMap from '@/assets/svg/bubble-map.svg'
 import chartMixGroup from '@/assets/svg/chart-mix-group.svg'
 import chartMixStack from '@/assets/svg/chart-mix-stack.svg'
 import chartMixDualLine from '@/assets/svg/chart-mix-dual-line.svg'
@@ -16,7 +15,6 @@ import chartMix from '@/assets/svg/chart-mix.svg'
 import flowMap from '@/assets/svg/flow-map.svg'
 import funnel from '@/assets/svg/funnel.svg'
 import gauge from '@/assets/svg/gauge.svg'
-import heatMap from '@/assets/svg/heat-map.svg'
 import indicator from '@/assets/svg/indicator.svg'
 import line from '@/assets/svg/line.svg'
 import liquid from '@/assets/svg/liquid.svg'
@@ -34,7 +32,6 @@ import richText from '@/assets/svg/rich-text.svg'
 import sankey from '@/assets/svg/sankey.svg'
 import scatter from '@/assets/svg/scatter.svg'
 import stockLine from '@/assets/svg/stock-line.svg'
-import symbolicMap from '@/assets/svg/symbolic-map.svg'
 import tableInfo from '@/assets/svg/table-info.svg'
 import tableNormal from '@/assets/svg/table-normal.svg'
 import tablePivot from '@/assets/svg/table-pivot.svg'
@@ -55,7 +52,6 @@ const iconChartMap = {
   'bar-stack': barStack,
   bar: bar,
   'bidirectional-bar': bidirectionalBar,
-  'bubble-map': bubbleMap,
   'chart-mix-group': chartMixGroup,
   'chart-mix-stack': chartMixStack,
   'chart-mix-dual-line': chartMixDualLine,
@@ -63,7 +59,6 @@ const iconChartMap = {
   'flow-map': flowMap,
   funnel: funnel,
   gauge: gauge,
-  'heat-map': heatMap,
   indicator: indicator,
   line: line,
   liquid: liquid,
@@ -81,7 +76,6 @@ const iconChartMap = {
   sankey: sankey,
   scatter: scatter,
   'stock-line': stockLine,
-  'symbolic-map': symbolicMap,
   'table-info': tableInfo,
   'table-normal': tableNormal,
   'table-pivot': tablePivot,

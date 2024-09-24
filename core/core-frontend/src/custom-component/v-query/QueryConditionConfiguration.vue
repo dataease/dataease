@@ -43,6 +43,7 @@ import type { ManipulateType } from 'dayjs'
 import dayjs from 'dayjs'
 import ConditionDefaultConfiguration from '@/custom-component/v-query/ConditionDefaultConfiguration.vue'
 import { iconChartMap } from '@/components/icon-group/chart-list'
+import { iconChartDivideMap } from '@/components/icon-group/chart-divide-list'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
@@ -1571,7 +1572,10 @@ defineExpose({
                 ><el-icon class="component-type">
                   <Icon
                     ><component
-                      :is="iconChartMap[canvasViewInfo[field.componentId].type]"
+                      :is="
+                        iconChartMap[canvasViewInfo[field.componentId].type] ||
+                        iconChartDivideMap[canvasViewInfo[field.componentId].type]
+                      "
                     ></component
                   ></Icon> </el-icon
                 ><span

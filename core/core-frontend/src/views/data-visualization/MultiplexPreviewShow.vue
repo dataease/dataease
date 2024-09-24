@@ -16,6 +16,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getCanvasStyle } from '@/utils/style'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { iconChartMap } from '@/components/icon-group/chart-list'
+import { iconChartDivideMap } from '@/components/icon-group/chart-divide-list'
 const dvMainStore = dvMainStoreWithOut()
 const viewShow = ref(true)
 
@@ -99,7 +100,7 @@ const iconMap = {
 const getIconName = item => {
   if (item.component === 'UserView') {
     const viewInfo = canvasViewInfo.value[item.id]
-    return iconChartMap[`${viewInfo.type}`]
+    return iconChartMap[`${viewInfo.type}`] || iconChartDivideMap[`${viewInfo.type}`]
   } else {
     return iconMap[item.icon]
   }
