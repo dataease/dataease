@@ -183,6 +183,7 @@ const maintainRadioChange = () => {
 }
 const multiDimensionalChange = () => {
   // do change
+  snapshotStore.recordSnapshotCache()
 }
 
 const positionInit = () => {

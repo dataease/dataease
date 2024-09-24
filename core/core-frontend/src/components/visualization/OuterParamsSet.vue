@@ -68,7 +68,7 @@
               </el-tree>
             </el-row>
           </el-col>
-          <el-col :span="18" class="preview-show">
+          <el-col :span="13" class="preview-show">
             <el-row v-if="state.curNodeId">
               <el-row class="new-params-title"> 选择参数关联组件 </el-row>
               <el-row class="new-params-filter" v-if="state.outerParamsInfo?.filterInfo?.length">
@@ -249,7 +249,7 @@
               <empty-background description="请配置参数" img-type="noneWhite" />
             </div>
           </el-col>
-          <el-col :span="5" v-show="false" class="params-attach-setting">
+          <el-col :span="5" class="params-attach-setting">
             <el-row v-if="state.curNodeId">
               <el-row class="new-params-title"> 参数配置 </el-row>
               <el-row class="params-attach-content">

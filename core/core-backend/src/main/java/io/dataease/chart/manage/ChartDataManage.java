@@ -371,10 +371,7 @@ public class ChartDataManage {
             provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
         }
 
-        if (ObjectUtils.isEmpty(view.getCalParams())) {
-            view.setCalParams(Utils.getParams(transFields(allFields)));
-        }
-
+        view.setCalParams(Utils.getParams(transFields(allFields)));
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
         CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
