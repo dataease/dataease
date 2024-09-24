@@ -1,8 +1,10 @@
 import pkg from '../package.json'
 import viteCompression from 'vite-plugin-compression'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 export default {
   plugins: [
+    visualizer(),
     viteCompression({
       // gzip静态资源压缩配置
       verbose: true, // 是否在控制台输出压缩结果
@@ -29,7 +31,9 @@ export default {
           antv: ['@antv/g2', '@antv/g2plot', '@antv/l7', '@antv/l7plot', '@antv/s2'],
           tinymce: ['tinymce'],
           axios: ['axios'],
-          'vuedraggable-es': ['vuedraggable']
+          'vuedraggable-es': ['vuedraggable'],
+          'chart-dark-list_de': ['src/components/icon-group/chart-dark-list.ts'],
+          'chart-list_de': ['src/components/icon-group/chart-list.ts']
         }
       }
     },
