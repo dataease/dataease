@@ -142,7 +142,7 @@ const nickName = ref('')
 const dsName = ref('')
 const userDrawer = ref(false)
 const rawDatasourceList = ref([])
-const showPriority = ref(true)
+const showPriority = ref(false)
 const showSSH = ref(true)
 const datasourceEditor = ref()
 const activeTab = ref('')
@@ -1374,7 +1374,7 @@ const getMenuList = (val: boolean) => {
                   }}</BaseInfoItem>
                 </el-col>
               </el-row>
-              <template v-if="!['Excel', 'API'].includes(nodeInfo.type)">
+              <template v-if="!['Excel', 'API', 'es'].includes(nodeInfo.type)">
                 <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.host')">{{
@@ -1500,6 +1500,15 @@ const getMenuList = (val: boolean) => {
                     </el-col>
                   </el-row>
                 </template>
+              </template>
+              <template v-if="['es'].includes(nodeInfo.type)">
+                <el-row :gutter="24">
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.datasource_url')">{{
+                      nodeInfo.configuration.url
+                    }}</BaseInfoItem>
+                  </el-col>
+                </el-row>
               </template>
             </template>
           </BaseInfoContent>

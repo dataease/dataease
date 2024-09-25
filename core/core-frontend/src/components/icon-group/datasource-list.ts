@@ -13,6 +13,7 @@ import redshiftDs from '@/assets/svg/redshift-ds.svg'
 import APIDs from '@/assets/svg/API-ds.svg'
 import ExcelDs from '@/assets/svg/Excel-ds.svg'
 import dorisDs from '@/assets/svg/doris-ds.svg'
+import esDs from '@/assets/svg/es-ds.svg'
 const iconDatasourceMap = {
   mysql: mysqlDs,
   oracle: oracleDs,
@@ -28,7 +29,8 @@ const iconDatasourceMap = {
   redshift: redshiftDs,
   API: APIDs,
   Excel: ExcelDs,
-  doris: dorisDs
+  doris: dorisDs,
+  es: esDs
 }
 
 export { iconDatasourceMap }
