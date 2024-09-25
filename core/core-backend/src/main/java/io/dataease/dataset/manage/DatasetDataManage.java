@@ -254,8 +254,6 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
-        map.put("total", getDatasetTotal(datasetGroupInfoDTO, replaceSql, null));
         return map;
     }
 
@@ -265,6 +263,56 @@ public class DatasetDataManage {
             return getDatasetTotal(dto, null, new ChartExtRequest());
         }
         return 0L;
+    }
+
+    public Long getDatasetCountWithWhere(Long datasetGroupId) throws Exception {
+        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getForCount(datasetGroupId);
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+        String sql = (String) sqlMap.get("sql");
+
+        // 获取allFields
+        List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
+        if (ObjectUtils.isEmpty(fields)) {
+            DEException.throwException(Translator.get("i18n_no_fields"));
+        }
+
+        buildFieldName(sqlMap, fields);
+
+        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        DatasourceUtils.checkDsStatus(dsMap);
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (!crossDs) {
+            if (notFullDs.contains(dsMap.entrySet().iterator().next().getValue().getType()) && (boolean) sqlMap.get("isFullJoin")) {
+                DEException.throwException(Translator.get("i18n_not_full"));
+            }
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
+        }
+
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
+        TokenUserBO user = AuthUtils.getUser();
+        if (user != null) {
+            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+        }
+
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsList.getFirst());
+        }
+
+        // build query sql
+        SQLMeta sqlMeta = new SQLMeta();
+        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+        Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+        String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
+        return getDatasetTotal(datasetGroupInfoDTO, replaceSql, null);
     }
 
     public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO, String s, ChartExtRequest request) throws Exception {
@@ -472,7 +520,7 @@ public class DatasetDataManage {
             if (field.getChartId() != null) {
                 allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
             }
-            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
+            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
 
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
             String sql = (String) sqlMap.get("sql");
@@ -624,7 +672,7 @@ public class DatasetDataManage {
             if (field.getChartId() != null) {
                 allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
             }
-            datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
+            datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
 
             sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
             String sql = (String) sqlMap.get("sql");
@@ -844,7 +892,7 @@ public class DatasetDataManage {
         if (field.getChartId() != null) {
             allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
         }
-        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
+        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
 
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
         String sql = (String) sqlMap.get("sql");

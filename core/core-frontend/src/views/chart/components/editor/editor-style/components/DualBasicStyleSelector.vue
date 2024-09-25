@@ -141,20 +141,22 @@ onMounted(() => {
           />
         </template>
 
-        <el-form-item
-          class="form-item"
-          :class="'form-item-' + themes"
-          v-if="showProperty('gradient')"
-        >
-          <el-checkbox
-            size="small"
-            :effect="themes"
-            v-model="state.basicStyleForm.gradient"
-            @change="changeBasicStyle('gradient')"
+        <template v-if="chart.type !== 'chart-mix-dual-line'">
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            v-if="showProperty('gradient')"
           >
-            {{ $t('chart.gradient') }}{{ $t('chart.color') }}
-          </el-checkbox>
-        </el-form-item>
+            <el-checkbox
+              size="small"
+              :effect="themes"
+              v-model="state.basicStyleForm.gradient"
+              @change="changeBasicStyle('gradient')"
+            >
+              {{ $t('chart.gradient') }}{{ $t('chart.color') }}
+            </el-checkbox>
+          </el-form-item>
+        </template>
 
         <div class="alpha-setting" v-if="showProperty('alpha')">
           <label class="alpha-label" :class="{ dark: 'dark' === themes }">
@@ -189,22 +191,100 @@ onMounted(() => {
           </el-row>
         </div>
 
-        <el-form-item
-          class="form-item"
-          v-if="showProperty('radiusColumnBar')"
-          :label="t('chart.radiusColumnBar')"
-          :class="'form-item-' + themes"
-        >
-          <el-radio-group
-            size="small"
-            :effect="themes"
-            v-model="state.basicStyleForm.radiusColumnBar"
-            @change="changeBasicStyle('radiusColumnBar')"
+        <template v-if="chart.type !== 'chart-mix-dual-line'">
+          <el-form-item
+            class="form-item"
+            v-if="showProperty('radiusColumnBar')"
+            :label="t('chart.radiusColumnBar')"
+            :class="'form-item-' + themes"
           >
-            <el-radio label="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
-            <el-radio label="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
+            <el-radio-group
+              size="small"
+              :effect="themes"
+              v-model="state.basicStyleForm.radiusColumnBar"
+              @change="changeBasicStyle('radiusColumnBar')"
+            >
+              <el-radio label="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
+              <el-radio label="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </template>
+        <template v-else>
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item
+                :label="t('chart.line_width')"
+                class="form-item form-item-slider"
+                :class="'form-item-' + themes"
+                v-if="showProperty('lineWidth')"
+              >
+                <el-input-number
+                  :effect="themes"
+                  v-model="state.basicStyleForm.leftLineWidth"
+                  :min="0"
+                  :max="10"
+                  controls-position="right"
+                  @change="changeBasicStyle('lineWidth')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item
+                :label="t('chart.line_symbol')"
+                class="form-item"
+                :class="'form-item-' + themes"
+                v-if="showProperty('lineSymbol')"
+              >
+                <el-select
+                  :effect="themes"
+                  v-model="state.basicStyleForm.leftLineSymbol"
+                  :placeholder="t('chart.line_symbol')"
+                  @change="changeBasicStyle('lineSymbol')"
+                >
+                  <el-option
+                    v-for="item in symbolOptions"
+                    :key="item.value"
+                    :label="item.name"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                :label="t('chart.line_symbol_size')"
+                class="form-item form-item-slider"
+                :class="'form-item-' + themes"
+                v-if="showProperty('lineSymbolSize')"
+              >
+                <el-input-number
+                  :effect="themes"
+                  v-model="state.basicStyleForm.leftLineSymbolSize"
+                  :min="0"
+                  :max="20"
+                  controls-position="right"
+                  @change="changeBasicStyle('lineSymbolSize')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            v-if="showProperty('lineSmooth')"
+          >
+            <el-checkbox
+              size="small"
+              :effect="themes"
+              v-model="state.basicStyleForm.leftLineSmooth"
+              @change="changeBasicStyle('lineSmooth')"
+            >
+              {{ t('chart.line_smooth') }}
+            </el-checkbox>
+          </el-form-item>
+        </template>
       </el-tab-pane>
       <el-tab-pane :label="t('chart.yAxisRight')" name="right">
         <template v-if="showProperty('colors')">

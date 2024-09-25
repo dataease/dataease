@@ -25,7 +25,7 @@ const emits = defineEmits(['customClick'])
   >
     <el-col :span="24" class="group_inner" :class="{ 'inner-active': active }">
       <el-icon class="toolbar-icon">
-        <Icon :name="iconName" />
+        <Icon><component :is="iconName"></component></Icon>
       </el-icon>
       <span>{{ title }}</span>
     </el-col>

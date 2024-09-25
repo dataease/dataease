@@ -76,21 +76,21 @@
       <el-checkbox
         :effect="themes"
         size="small"
-        v-model="canvasStyleData.refreshViewBrowserEnable"
+        v-model="canvasStyleData.refreshBrowserEnable"
         @change="themeChange"
       >
         整体刷新
       </el-checkbox>
       <el-tooltip class="item" :effect="toolTip" placement="bottom">
         <template #content>
-          <div>仅公共链接生效</div>
+          <div>仅公共链接和新Tab预览生效</div>
         </template>
         <el-icon
           class="hint-icon"
           style="margin-left: 4px"
           :class="{ 'hint-icon--dark': themes === 'dark' }"
         >
-          <Icon name="icon_info_outlined" />
+          <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
         </el-icon>
       </el-tooltip>
     </el-form-item>
@@ -104,7 +104,7 @@
         :min="1"
         :max="3600"
         size="middle"
-        :disabled="!canvasStyleData.refreshViewBrowserEnable"
+        :disabled="!canvasStyleData.refreshBrowserEnable"
         @change="onRefreshChange"
       >
         <template #append>
@@ -112,7 +112,7 @@
             v-model="canvasStyleData.refreshBrowserUnit"
             size="middle"
             :effect="themes"
-            :disabled="!canvasStyleData.refreshViewBrowserEnable"
+            :disabled="!canvasStyleData.refreshBrowserEnable"
             style="width: 90px"
             @change="themeChange"
           >
@@ -145,7 +145,7 @@
               </div>
             </template>
             <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-              <Icon name="icon_info_outlined" />
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
         </span>
@@ -184,6 +184,7 @@
 </template>
 
 <script setup lang="ts">
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

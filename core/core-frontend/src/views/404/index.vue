@@ -1,11 +1,12 @@
 <template>
   <div class="page-not-found">
-    <Icon className="login-logo-icon" name="403"></Icon>
+    <Icon className="login-logo-icon" name="403"><Four class="svg-icon login-logo-icon" /></Icon>
     <span class="span-403">{{ t('common.no_auth_tips') }}</span>
   </div>
 </template>
 
 <script lang="ts" setup>
+import Four from '@/assets/svg/403.svg'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()

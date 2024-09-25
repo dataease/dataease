@@ -1,4 +1,6 @@
 <script lang="tsx" setup>
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import { reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
@@ -103,7 +105,7 @@ init()
   <el-col>
     <el-button class="circle-button" circle style="margin-bottom: 10px" @click="addThreshold">
       <template #icon>
-        <Icon name="icon_add_outlined"></Icon>
+        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
       </template>
     </el-button>
     <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
@@ -197,7 +199,9 @@ init()
             @click="removeThreshold(index)"
           >
             <template #icon>
-              <Icon name="icon_delete-trash_outlined"></Icon>
+              <Icon name="icon_delete-trash_outlined"
+                ><icon_deleteTrash_outlined class="svg-icon"
+              /></Icon>
             </template>
           </el-button>
         </div>

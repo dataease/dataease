@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
@@ -6,6 +7,7 @@ import { ElMessage, ElRow } from 'element-plus-secondary'
 import { fieldType } from '@/utils/attr'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
 
@@ -281,10 +283,13 @@ onMounted(() => {
               :value="item.id"
             >
               <el-icon style="margin-right: 8px">
-                <Icon
-                  :className="`field-icon-${fieldType[item.deType]}`"
-                  :name="`field_${fieldType[item.deType]}`"
-                />
+                <Icon :className="`field-icon-${fieldType[item.deType]}`"
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
+                ></Icon>
               </el-icon>
               {{ item.name }}
             </el-option>
@@ -376,10 +381,13 @@ onMounted(() => {
               :value="item.id"
             >
               <el-icon style="margin-right: 8px">
-                <Icon
-                  :className="`field-icon-${fieldType[item.deType]}`"
-                  :name="`field_${fieldType[item.deType]}`"
-                />
+                <Icon :className="`field-icon-${fieldType[item.deType]}`"
+                  ><component
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    class="svg-icon"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
+                ></Icon>
               </el-icon>
               {{ item.name }}
             </el-option>
@@ -522,10 +530,13 @@ onMounted(() => {
               :value="item.id"
             >
               <el-icon style="margin-right: 8px">
-                <Icon
-                  :className="`field-icon-${fieldType[item.deType]}`"
-                  :name="`field_${fieldType[item.deType]}`"
-                />
+                <Icon :className="`field-icon-${fieldType[item.deType]}`"
+                  ><component
+                    :class="`field-icon-${fieldType[item.deType]}`"
+                    class="svg-icon"
+                    :is="iconFieldMap[fieldType[item.deType]]"
+                  ></component
+                ></Icon>
               </el-icon>
               {{ item.name }}
             </el-option>
@@ -578,7 +589,7 @@ onMounted(() => {
             <template #content><span v-html="t('chart.axis_tip')"></span></template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">
-                <Icon name="icon_info_outlined" />
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </span>
           </el-tooltip>

@@ -28,9 +28,10 @@ import FlowMapLineSelector from '@/views/chart/components/editor/editor-style/co
 import FlowMapPointSelector from '@/views/chart/components/editor/editor-style/components/FlowMapPointSelector.vue'
 import CommonEvent from '@/custom-component/common/CommonEvent.vue'
 import CommonBorderSetting from '@/custom-component/common/CommonBorderSetting.vue'
+import PictureGroupAttr from '@/custom-component/picture-group/Attr.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
+const { dvInfo, batchOptStatus, curComponent } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const state = {
@@ -142,6 +143,10 @@ const eventsShow = computed(() => {
     ['indicator', 'rich-text'].includes(chart.value.type) &&
     props.eventInfo
   )
+})
+
+const pictureGroupShow = computed(() => {
+  return curComponent.value?.innerType === 'picture-group'
 })
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
@@ -596,17 +601,22 @@ watch(
             :change-model="chart.customStyle.yAxis"
             @modelChange="val => onChangeYAxisForm(val, 'show')"
             name="yAxis"
-            :title="selectorSpec['dual-y-axis-selector']?.title"
+            :title="selectorSpec['dual-y-axis-selector']?.title ?? t('chart.yAxis')"
           >
             <dual-y-axis-selector
               class="attr-selector"
-              :property-inner="propertyInnerAll['y-axis-selector']"
+              :property-inner="propertyInnerAll['dual-y-axis-selector']"
               :themes="themes"
               :chart="chart"
               @onChangeYAxisForm="onChangeYAxisForm"
               @onChangeYAxisExtForm="onChangeYAxisExtForm"
             />
           </collapse-switch-item>
+          <PictureGroupAttr
+            v-if="pictureGroupShow"
+            :themes="themes"
+            :element="curComponent"
+          ></PictureGroupAttr>
         </el-collapse>
       </el-row>
     </div>

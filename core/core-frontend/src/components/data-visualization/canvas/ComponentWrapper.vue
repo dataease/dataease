@@ -228,7 +228,24 @@ const commonBackgroundSvgInner = computed(() => {
 const slotStyle = computed(() => {
   // 3d效果支持
   if (config.value['multiDimensional'] && config.value['multiDimensional']?.enable) {
+    const width = config.value.style.width // 原始元素宽度
+    const height = config.value.style.height // 原始元素高度
+    const rotateX = config.value['multiDimensional'].x // 旋转X角度
+    const rotateY = config.value['multiDimensional'].y // 旋转Y角度
+
+    // 将角度转换为弧度
+    const radX = (rotateX * Math.PI) / 180
+    const radY = (rotateY * Math.PI) / 180
+
+    // 计算旋转后新宽度和高度
+    const newWidth = Math.abs(width * Math.cos(radY)) + Math.abs(height * Math.sin(radX))
+    const newHeight = Math.abs(height * Math.cos(radX)) + Math.abs(width * Math.sin(radY))
+
+    // 计算需要的 padding
+    const paddingX = (newWidth - width) / 2
+    const paddingY = (newHeight - height) / 2
     return {
+      padding: `${paddingY}px ${paddingX}px`,
       transform: `rotateX(${config.value['multiDimensional'].x}deg) rotateY(${config.value['multiDimensional'].y}deg) rotateZ(${config.value['multiDimensional'].z}deg)`
     }
   } else {
@@ -259,10 +276,22 @@ const onWrapperClick = e => {
         dvMainStore.popAreaActiveSwitch()
       })
     } else if (config.value.events.type === 'jump') {
+      const url = config.value.events.jump.value
+      const jumpType = config.value.events.jump.type
       try {
-        window.open(config.value.events.jump.value, '_blank')
+        let newWindow
+        if ('newPop' === jumpType) {
+          window.open(
+            url,
+            '_blank',
+            'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
+          )
+        } else {
+          newWindow = window.open(url, jumpType)
+        }
+        initOpenHandler(newWindow)
       } catch (e) {
-        console.info('Something wrong when try to jump: ' + config.value.events?.jump?.value)
+        console.warn('url 格式错误:' + url)
       }
     } else if (config.value.events.type === 'refreshDataV') {
       useEmitt().emitter.emit('componentRefresh')
@@ -276,6 +305,16 @@ const onWrapperClick = e => {
   }
 }
 
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
 const deepScale = computed(() => scale.value / 100)
 </script>
 
@@ -290,7 +329,7 @@ const deepScale = computed(() => scale.value / 100)
     element-loading-background="rgba(255, 255, 255, 1)"
   >
     <component-edit-bar
-      v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard' && !props.isSelector"
+      v-if="!showPosition.includes('canvas') && !props.isSelector"
       class="wrapper-edit-bar"
       ref="componentEditBarRef"
       :canvas-id="canvasId"

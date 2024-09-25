@@ -6,7 +6,6 @@ import io.dataease.api.xpack.settings.vo.XpackOauthAuthVO;
 import io.dataease.api.xpack.settings.vo.XpackOauthTokenVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,6 +19,4 @@ public interface XpackOauth2Api {
     @PostMapping("/token")
     XpackOauthTokenVO oauth2Token(@RequestBody XpackOauth2TokenRequest request);
 
-    @GetMapping("/logout/{idToken}")
-    void logout(@PathVariable("idToken") String idToken);
 }

@@ -33,7 +33,8 @@ const state = reactive({
     { value: '0', label: '普通登录' },
     { value: '1', label: 'LDAP' },
     { value: '2', label: 'OIDC' },
-    { value: '3', label: 'CAS' }
+    { value: '3', label: 'CAS' },
+    { value: '9', label: 'OAUTH2' }
   ]
 })
 
@@ -133,7 +134,7 @@ const edit = (list, orgOptions, roleOptions, loginOptions) => {
         }
       ]
     }
-    if (pkey === 'basic.exportFileLiveTime') {
+    if (pkey === 'basic.exportFileLiveTime' || pkey === 'basic.frontTimeOut') {
       rule[pkey.split('.')[1]] = [
         {
           required: true,
@@ -142,6 +143,7 @@ const edit = (list, orgOptions, roleOptions, loginOptions) => {
         }
       ]
     }
+
     item['label'] = `setting_${pkey}`
     item['pkey'] = pkey.split('.')[1]
     let pval = item.pval

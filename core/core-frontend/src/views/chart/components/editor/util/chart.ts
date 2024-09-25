@@ -1482,6 +1482,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'chart-mix-stack',
         title: t('chart.chart_mix_stack_column'),
         icon: 'chart-mix-stack'
+      },
+      {
+        render: 'antv',
+        category: 'dual_axes',
+        value: 'chart-mix-dual-line',
+        title: t('chart.chart_mix_dual_line'),
+        icon: 'chart-mix-dual-line'
       }
     ]
   },

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_expandRight_filled from '@/assets/svg/icon_expand-right_filled.svg'
 import { ref } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 defineProps({
@@ -14,7 +15,7 @@ defineExpose({
   <div :class="[active ? 'active' : 'deactivate', 'base-info-content']">
     <p class="title" @click="active = !active">
       <el-icon style="font-size: 10px">
-        <Icon name="icon_expand-right_filled"></Icon>
+        <Icon name="icon_expand-right_filled"><icon_expandRight_filled class="svg-icon" /></Icon>
       </el-icon>
       <span class="name">{{ name }}</span>
     </p>

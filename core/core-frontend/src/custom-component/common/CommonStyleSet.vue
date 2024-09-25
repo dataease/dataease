@@ -22,7 +22,7 @@
               >
                 <template #prefix>
                   <el-icon :class="{ 'dark-icon': themes === 'dark' }">
-                    <Icon :name="styleOptionKey.icon" />
+                    <Icon><component :is="styleOptionKey.icon"></component></Icon>
                   </el-icon>
                 </template>
                 <el-option
@@ -54,7 +54,7 @@
                 :title="t('chart.text_color')"
                 v-model="styleForm[styleColorKey.value]"
                 class="color-picker-style"
-                :prefix-icon="expandIcon(styleColorKey.icon)"
+                :prefix-icon="styleColorKey.icon"
                 :triggerWidth="styleColorKey.width"
                 is-custom
                 :predefine="state.predefineColors"
@@ -89,7 +89,7 @@
               >
                 <template #prefix>
                   <el-icon :class="{ 'dark-icon': themes === 'dark' }">
-                    <Icon :name="styleOptionMountedKey.icon" />
+                    <Icon><component :is="styleOptionMountedKey.icon"></component></Icon>
                   </el-icon>
                 </template>
                 <el-option
@@ -122,7 +122,7 @@
               >
                 <template #prefix>
                   <el-icon :class="{ 'dark-icon': themes === 'dark' }">
-                    <Icon :name="styleOptionKey.icon" />
+                    <Icon><component :is="styleOptionKey.icon"></component></Icon>
                   </el-icon>
                 </template>
                 <el-option
@@ -146,7 +146,7 @@
             @click="checkBold"
           >
             <el-icon>
-              <Icon name="icon_bold_outlined" />
+              <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
             </el-icon>
           </div>
         </el-tooltip>
@@ -161,7 +161,7 @@
             @click="checkItalic"
           >
             <el-icon>
-              <Icon name="icon_italic_outlined" />
+              <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
             </el-icon>
           </div>
         </el-tooltip>
@@ -178,7 +178,9 @@
                 @click="setPosition('textAlign', 'left')"
               >
                 <el-icon>
-                  <Icon name="icon_left-alignment_outlined" />
+                  <Icon name="icon_left-alignment_outlined"
+                    ><icon_leftAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -192,7 +194,9 @@
                 @click="setPosition('textAlign', 'center')"
               >
                 <el-icon>
-                  <Icon name="icon_center-alignment_outlined" />
+                  <Icon name="icon_center-alignment_outlined"
+                    ><icon_centerAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -206,7 +210,9 @@
                 @click="setPosition('textAlign', 'right')"
               >
                 <el-icon>
-                  <Icon name="icon_right-alignment_outlined" />
+                  <Icon name="icon_right-alignment_outlined"
+                    ><icon_rightAlignment_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </div>
             </el-tooltip>
@@ -227,7 +233,9 @@
               @click="setPosition('headHorizontalPosition', 'left')"
             >
               <el-icon>
-                <Icon name="icon_left-alignment_outlined" />
+                <Icon name="icon_left-alignment_outlined"
+                  ><icon_leftAlignment_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -244,7 +252,9 @@
               @click="setPosition('headHorizontalPosition', 'center')"
             >
               <el-icon>
-                <Icon name="icon_center-alignment_outlined" />
+                <Icon name="icon_center-alignment_outlined"
+                  ><icon_centerAlignment_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -261,7 +271,9 @@
               @click="setPosition('headHorizontalPosition', 'right')"
             >
               <el-icon>
-                <Icon name="icon_right-alignment_outlined" />
+                <Icon name="icon_right-alignment_outlined"
+                  ><icon_rightAlignment_outlined class="svg-icon"
+                /></Icon>
               </el-icon>
             </div>
           </el-tooltip>
@@ -272,6 +284,21 @@
 </template>
 
 <script lang="tsx" setup>
+import dvStyleBackgroundColor from '@/assets/svg/dv-style-backgroundColor.svg'
+import dvStyleColor from '@/assets/svg/dv-style-color.svg'
+import dvStyleHeadFontActiveColor from '@/assets/svg/dv-style-headFontActiveColor.svg'
+import dvStyleHeadFontColor from '@/assets/svg/dv-style-headFontColor.svg'
+import dvStyleScrollSpeed from '@/assets/svg/dv-style-scroll-speed.svg'
+import dvStyleOpacity from '@/assets/svg/dv-style-opacity.svg'
+import dvStyleFontSize from '@/assets/svg/dv-style-fontSize.svg'
+import dvStyleLetterSpacing from '@/assets/svg/dv-style-letterSpacing.svg'
+import dvStyleActiveFont from '@/assets/svg/dv-style-activeFont.svg'
+import dvStyleFontFamily from '@/assets/svg/dv-style-fontFamily.svg'
+import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
+import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
+import icon_leftAlignment_outlined from '@/assets/svg/icon_left-alignment_outlined.svg'
+import icon_centerAlignment_outlined from '@/assets/svg/icon_center-alignment_outlined.svg'
+import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outlined.svg'
 import { computed, h, reactive, ref, toRefs, watch } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -294,9 +321,6 @@ const props = withDefaults(
     themes: 'dark'
   }
 )
-const expandIcon = (name: string) => {
-  return h(Icon, { className: '', name })
-}
 const { themes, element } = toRefs(props)
 const emits = defineEmits(['onStyleAttrChange'])
 const styleMounted = ref({
@@ -353,20 +377,20 @@ const state = reactive({
 })
 
 const styleColorKeyArray = [
-  { value: 'color', label: '颜色', width: 90, icon: 'dv-style-color' },
+  { value: 'color', label: '颜色', width: 90, icon: dvStyleColor },
   {
     value: 'headFontColor',
     label: '头部字体颜色',
     width: 90,
-    icon: 'dv-style-headFontColor'
+    icon: dvStyleHeadFontColor
   },
   {
     value: 'headFontActiveColor',
     label: '激活字体颜色',
     width: 90,
-    icon: 'dv-style-headFontActiveColor'
+    icon: dvStyleHeadFontActiveColor
   },
-  { value: 'backgroundColor', label: '背景色', width: 90, icon: 'dv-style-backgroundColor' }
+  { value: 'backgroundColor', label: '背景色', width: 90, icon: dvStyleBackgroundColor }
 ]
 
 const letterSpacingList = computed(() => {
@@ -390,14 +414,13 @@ const fontSizeList = computed(() => {
   }
   return arr
 })
-
 const styleOptionKeyArrayPre = [
   {
     value: 'fontFamily',
     label: '字体',
     customOption: fontFamilyList,
     width: '188px',
-    icon: 'dv-style-fontFamily'
+    icon: dvStyleFontFamily
   }
 ]
 
@@ -408,21 +431,21 @@ const styleOptionMountedKeyArray = [
     label: '字间距',
     customOption: letterSpacingList.value,
     width: '90px',
-    icon: 'dv-style-letterSpacing'
+    icon: dvStyleLetterSpacing
   },
   {
     value: 'fontSize',
     label: '字体大小',
     customOption: fontSizeList.value,
     width: '90px',
-    icon: 'dv-style-fontSize'
+    icon: dvStyleFontSize
   },
   {
     value: 'activeFontSize',
     label: '激活字体大小',
     customOption: fontSizeList.value,
     width: '90px',
-    icon: 'dv-style-activeFont'
+    icon: dvStyleActiveFont
   }
 ]
 
@@ -433,14 +456,14 @@ const styleOptionKeyArray = [
     label: '滚动速度',
     customOption: scrollSpeedList,
     width: '90px',
-    icon: 'dv-style-scroll-speed'
+    icon: dvStyleScrollSpeed
   },
   {
     value: 'opacity',
     label: '不透明度',
     customOption: opacitySizeList,
     width: '90px',
-    icon: 'dv-style-opacity'
+    icon: dvStyleOpacity
   }
 ]
 

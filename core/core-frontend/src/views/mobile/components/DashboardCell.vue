@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 defineProps({
   label: {
     type: String,
@@ -24,7 +25,7 @@ const handleClick = () => {
   <div class="dashboard-cell" @click="handleClick">
     <div class="label">
       <el-icon>
-        <Icon :name="prefixIcon"></Icon>
+        <Icon><component class="svg-icon" :is="prefixIcon"></component></Icon>
       </el-icon>
       <span class="text ellipsis">
         {{ label }}
@@ -32,7 +33,7 @@ const handleClick = () => {
     </div>
     <div class="switch" v-if="nextlevel">
       <el-icon>
-        <Icon name="icon_right_outlined"></Icon>
+        <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
       </el-icon>
     </div>
   </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="batch-opt-main view-panel-row">
+  <div class="batch-opt-main view-panel-row tab-header">
     <chart-style
       v-if="mixProperties && batchOptComponentInfo && batchOptComponentType === 'UserView'"
       class="chart-style-main"
@@ -17,6 +17,7 @@
       @onTooltipChange="onTooltipChange"
       @onChangeXAxisForm="onChangeXAxisForm"
       @onChangeYAxisForm="onChangeYAxisForm"
+      @onChangeYAxisExtForm="onChangeYAxisExtForm"
       @onTextChange="onTextChange"
       @onLegendChange="onLegendChange"
       @onBackgroundChange="onBackgroundChange"
@@ -86,6 +87,9 @@ const onChangeXAxisForm = (val, prop) => {
 
 const onChangeYAxisForm = (val, prop) => {
   batchOptChange('customStyle', 'yAxis', val, prop)
+}
+const onChangeYAxisExtForm = (val, prop) => {
+  batchOptChange('customStyle', 'yAxisExt', val, prop)
 }
 
 const onIndicatorChange = (val, prop) => {
@@ -292,6 +296,48 @@ const onStyleAttrChange = params => {
         color: #a6a6a6;
       }
     }
+  }
+}
+.tab-header {
+  --ed-tabs-header-height: 34px;
+  --custom-tab-color: #646a73;
+
+  :deep(.ed-tabs__nav-wrap::after) {
+    background-color: unset;
+  }
+
+  &.dark {
+    --custom-tab-color: #a6a6a6;
+  }
+
+  height: 100%;
+  :deep(.ed-tabs__header) {
+    border-top: solid 1px @side-outline-border-color;
+  }
+  :deep(.ed-tabs__item) {
+    font-weight: 400;
+    font-size: 12px;
+    padding: 0 8px !important;
+    margin-right: 12px;
+    color: var(--custom-tab-color);
+  }
+  :deep(.is-active) {
+    font-weight: 500;
+    color: var(--ed-color-primary, #3370ff);
+  }
+
+  :deep(.ed-tabs__nav-scroll) {
+    padding-left: 0 !important;
+  }
+
+  :deep(.ed-tabs__header) {
+    margin: 0 !important;
+  }
+
+  :deep(.ed-tabs__content) {
+    height: calc(100% - 35px);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 </style>

@@ -2,7 +2,9 @@
   <div class="drag-info-main">
     <template v-if="!mobileInPc">
       <el-row style="justify-content: center">
-        <Icon style="width: 125px; height: 125px" name="dv-drag-tips"></Icon>
+        <Icon name="dv-drag-tips"
+          ><dvDragTips class="svg-icon" style="width: 125px; height: 125px"
+        /></Icon>
       </el-row>
       <el-row class="tips-info"> {{ tips }} </el-row>
     </template>
@@ -11,6 +13,7 @@
 </template>
 
 <script lang="ts" setup>
+import dvDragTips from '@/assets/svg/dv-drag-tips.svg'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 

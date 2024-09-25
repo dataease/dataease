@@ -1,4 +1,6 @@
 <script lang="tsx" setup>
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, toRefs } from 'vue'
 
@@ -141,7 +143,9 @@ init()
         </div>
         <el-button class="m-del-icon-btn" text @click="removeFilter(index)">
           <el-icon size="20px">
-            <Icon name="icon_delete-trash_outlined" />
+            <Icon name="icon_delete-trash_outlined"
+              ><icon_deleteTrash_outlined class="svg-icon"
+            /></Icon>
           </el-icon>
         </el-button>
       </div>
@@ -152,7 +156,9 @@ init()
       @click="addFilter"
       :style="{ marginTop: item.filter && item.filter.length > 0 ? '10px' : 0 }"
     >
-      <Icon name="icon_add_outlined" style="width: 14px" />
+      <Icon name="icon_add_outlined"
+        ><icon_add_outlined class="svg-icon" style="width: 14px"
+      /></Icon>
       {{ t('chart.add_addition') }}
     </el-button>
   </div>

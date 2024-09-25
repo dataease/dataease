@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_app_outlined from '@/assets/svg/icon_app_outlined.svg'
+import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
+import icon_database_outlined from '@/assets/svg/icon_database_outlined.svg'
+import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
+import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
+import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, watch, computed } from 'vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -118,14 +125,14 @@ const handleCellClick = row => {
 }
 
 const iconMap = {
-  panel: 'icon_dashboard_outlined',
-  panelMobile: 'dv-dashboard-spine-mobile',
-  dashboard: 'icon_dashboard_outlined',
-  dashboardMobile: 'dv-dashboard-spine-mobile',
-  screen: 'icon_operation-analysis_outlined',
-  dataV: 'icon_operation-analysis_outlined',
-  dataset: 'icon_app_outlined',
-  datasource: 'icon_database_outlined'
+  panel: icon_dashboard_outlined,
+  panelMobile: dvDashboardSpineMobile,
+  dashboard: icon_dashboard_outlined,
+  dashboardMobile: dvDashboardSpineMobile,
+  screen: icon_operationAnalysis_outlined,
+  dataV: icon_operationAnalysis_outlined,
+  dataset: icon_app_outlined,
+  datasource: icon_database_outlined
 }
 
 watch(
@@ -169,7 +176,9 @@ watch(
       >
         <template #prefix>
           <el-icon>
-            <Icon name="icon_search-outline_outlined"></Icon>
+            <Icon name="icon_search-outline_outlined"
+              ><icon_searchOutline_outlined class="svg-icon"
+            /></Icon>
           </el-icon>
         </template>
       </el-input>
@@ -189,10 +198,12 @@ watch(
         <template v-slot:default="scope">
           <div class="name-content">
             <el-icon style="margin-right: 12px; font-size: 18px" v-if="scope.row.extFlag">
-              <Icon name="dv-dashboard-spine-mobile"></Icon>
+              <Icon name="dv-dashboard-spine-mobile"
+                ><dvDashboardSpineMobile class="svg-icon"
+              /></Icon>
             </el-icon>
             <el-icon v-else :class="`main-color color-${scope.row.type}`">
-              <Icon :name="iconMap[scope.row.type]" />
+              <Icon><component class="svg-icon" :is="iconMap[scope.row.type]"></component></Icon>
             </el-icon>
             <el-tooltip placement="top">
               <template #content>{{ scope.row.name }}</template>
@@ -221,7 +232,7 @@ watch(
         <template #default="scope">
           <el-tooltip effect="dark" content="新页面预览" placement="top">
             <el-icon class="hover-icon hover-icon-in-table" @click="preview(scope.row.resourceId)">
-              <Icon name="icon_pc_outlined"></Icon>
+              <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
           <ShareHandler

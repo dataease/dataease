@@ -1,4 +1,66 @@
 <script lang="ts" setup>
+import group from '@/assets/svg/group.svg'
+import bar from '@/assets/svg/bar.svg'
+import dbMoreWeb from '@/assets/svg/db-more-web.svg'
+import dvMoreTimeClock from '@/assets/svg/dv-more-time-clock.svg'
+import dvPictureReal from '@/assets/svg/dv-picture-real.svg'
+import dvTab from '@/assets/svg/dv-tab.svg'
+import iconStream from '@/assets/svg/icon-stream.svg'
+import iconVideo from '@/assets/svg/icon-video.svg'
+import icon_graphical from '@/assets/svg/icon_graphical.svg'
+import icon_search from '@/assets/svg/icon_search.svg'
+import other_material_board from '@/assets/svg/other_material_board.svg'
+import other_material_icon from '@/assets/svg/other_material_icon.svg'
+import scrollText from '@/assets/svg/scroll-text.svg'
+import areaOrigin from '@/assets/svg/area-origin.svg'
+import areaStackOrigin from '@/assets/svg/area-stack-origin.svg'
+import barGroupOrigin from '@/assets/svg/bar-group-origin.svg'
+import barGroupStackOrigin from '@/assets/svg/bar-group-stack-origin.svg'
+import barHorizontalOrigin from '@/assets/svg/bar-horizontal-origin.svg'
+import barOrigin from '@/assets/svg/bar-origin.svg'
+import barRangeOrigin from '@/assets/svg/bar-range-origin.svg'
+import barStackHorizontalOrigin from '@/assets/svg/bar-stack-horizontal-origin.svg'
+import barStackOrigin from '@/assets/svg/bar-stack-origin.svg'
+import bidirectionalBarOrigin from '@/assets/svg/bidirectional-bar-origin.svg'
+import bubbleMapOrigin from '@/assets/svg/bubble-map-origin.svg'
+import chartMixGroupOrigin from '@/assets/svg/chart-mix-group-origin.svg'
+import chartMixOrigin from '@/assets/svg/chart-mix-origin.svg'
+import chartMixStackOrigin from '@/assets/svg/chart-mix-stack-origin.svg'
+import chartMixDualLineOrigin from '@/assets/svg/chart-mix-dual-line-origin.svg'
+import flowMapOrigin from '@/assets/svg/flow-map-origin.svg'
+import funnelOrigin from '@/assets/svg/funnel-origin.svg'
+import gaugeOrigin from '@/assets/svg/gauge-origin.svg'
+import heatMapOrigin from '@/assets/svg/heat-map-origin.svg'
+import indicatorOrigin from '@/assets/svg/indicator-origin.svg'
+import lineOrigin from '@/assets/svg/line-origin.svg'
+import liquidOrigin from '@/assets/svg/liquid-origin.svg'
+import mapOrigin from '@/assets/svg/map-origin.svg'
+import percentageBarStackHorizontalOrigin from '@/assets/svg/percentage-bar-stack-horizontal-origin.svg'
+import percentageBarStackOrigin from '@/assets/svg/percentage-bar-stack-origin.svg'
+import pieDonutOrigin from '@/assets/svg/pie-donut-origin.svg'
+import pieDonutRoseOrigin from '@/assets/svg/pie-donut-rose-origin.svg'
+import pieOrigin from '@/assets/svg/pie-origin.svg'
+import pieRoseOrigin from '@/assets/svg/pie-rose-origin.svg'
+import progressBarOrigin from '@/assets/svg/progress-bar-origin.svg'
+import quadrantOrigin from '@/assets/svg/quadrant-origin.svg'
+import radarOrigin from '@/assets/svg/radar-origin.svg'
+import richTextOrigin from '@/assets/svg/rich-text-origin.svg'
+import sankeyOrigin from '@/assets/svg/sankey-origin.svg'
+import scatterOrigin from '@/assets/svg/scatter-origin.svg'
+import stockLineOrigin from '@/assets/svg/stock-line-origin.svg'
+import symbolicMapOrigin from '@/assets/svg/symbolic-map-origin.svg'
+import tableInfoOrigin from '@/assets/svg/table-info-origin.svg'
+import tableNormalOrigin from '@/assets/svg/table-normal-origin.svg'
+import tablePivotOrigin from '@/assets/svg/table-pivot-origin.svg'
+import treemapOrigin from '@/assets/svg/treemap-origin.svg'
+import waterfallOrigin from '@/assets/svg/waterfall-origin.svg'
+import wordCloudOrigin from '@/assets/svg/word-cloud-origin.svg'
+import tHeatmapOrigin from '@/assets/svg/t-heatmap-origin.svg'
+import dvEyeClose from '@/assets/svg/dv-eye-close.svg'
+import dvShow from '@/assets/svg/dv-show.svg'
+import dvUnlock from '@/assets/svg/dv-unlock.svg'
+import dvLock from '@/assets/svg/dv-lock.svg'
+import dvMore from '@/assets/svg/dv-more.svg'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
@@ -114,12 +176,71 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
   dvMainStore.setCurComponent({ component: target, index: transformIndex(comLength - oldIndex) })
 }
 
+const iconMap = {
+  bar: bar,
+  'db-more-web': dbMoreWeb,
+  'dv-more-time-clock': dvMoreTimeClock,
+  'dv-picture-real': dvPictureReal,
+  'dv-tab': dvTab,
+  'icon-stream': iconStream,
+  'icon-video': iconVideo,
+  icon_graphical: icon_graphical,
+  icon_search: icon_search,
+  other_material_board: other_material_board,
+  other_material_icon: other_material_icon,
+  'scroll-text': scrollText,
+  'area-origin': areaOrigin,
+  'area-stack-origin': areaStackOrigin,
+  'bar-group-origin': barGroupOrigin,
+  'bar-group-stack-origin': barGroupStackOrigin,
+  'bar-horizontal-origin': barHorizontalOrigin,
+  'bar-origin': barOrigin,
+  'bar-range-origin': barRangeOrigin,
+  'bar-stack-horizontal-origin': barStackHorizontalOrigin,
+  'bar-stack-origin': barStackOrigin,
+  'bidirectional-bar-origin': bidirectionalBarOrigin,
+  'bubble-map-origin': bubbleMapOrigin,
+  'chart-mix-group-origin': chartMixGroupOrigin,
+  'chart-mix-origin': chartMixOrigin,
+  'chart-mix-stack-origin': chartMixStackOrigin,
+  'chart-mix-dual-line': chartMixDualLineOrigin,
+  'flow-map-origin': flowMapOrigin,
+  'funnel-origin': funnelOrigin,
+  'gauge-origin': gaugeOrigin,
+  'heat-map-origin': heatMapOrigin,
+  'indicator-origin': indicatorOrigin,
+  'line-origin': lineOrigin,
+  'liquid-origin': liquidOrigin,
+  'map-origin': mapOrigin,
+  'percentage-bar-stack-horizontal-origin': percentageBarStackHorizontalOrigin,
+  'percentage-bar-stack-origin': percentageBarStackOrigin,
+  'pie-donut-origin': pieDonutOrigin,
+  'pie-donut-rose-origin': pieDonutRoseOrigin,
+  'pie-origin': pieOrigin,
+  'pie-rose-origin': pieRoseOrigin,
+  'progress-bar-origin': progressBarOrigin,
+  'quadrant-origin': quadrantOrigin,
+  'radar-origin': radarOrigin,
+  'rich-text-origin': richTextOrigin,
+  'sankey-origin': sankeyOrigin,
+  'scatter-origin': scatterOrigin,
+  'stock-line-origin': stockLineOrigin,
+  'symbolic-map-origin': symbolicMapOrigin,
+  'table-info-origin': tableInfoOrigin,
+  'table-normal-origin': tableNormalOrigin,
+  'table-pivot-origin': tablePivotOrigin,
+  'treemap-origin': treemapOrigin,
+  'waterfall-origin': waterfallOrigin,
+  'word-cloud-origin': wordCloudOrigin,
+  't-heatmap-origin': tHeatmapOrigin,
+  group: group
+}
 const getIconName = item => {
   if (item.component === 'UserView') {
     const viewInfo = canvasViewInfo.value[item.id]
-    return `${viewInfo.type}-origin`
+    return iconMap[`${viewInfo.type}-origin`]
   } else {
-    return item.icon
+    return iconMap[item.icon]
   }
 }
 
@@ -183,7 +304,7 @@ const handleContextMenu = e => {
               @click="onClick(transformIndex(index))"
             >
               <el-icon class="component-icon">
-                <Icon :name="getIconName(getComponent(index))"></Icon>
+                <Icon><component :is="getIconName(getComponent(index))"></component></Icon>
               </el-icon>
               <span
                 :id="`component-label-${getComponent(index)?.id}`"
@@ -205,24 +326,24 @@ const handleContextMenu = e => {
                   v-show="!getComponent(index).isShow"
                   @click="showComponent"
                 >
-                  <Icon name="dv-eye-close" class="opt-icon"></Icon>
+                  <Icon name="dv-eye-close"><dvEyeClose class="svg-icon opt-icon" /></Icon>
                 </el-icon>
                 <el-icon
                   class="component-base"
                   v-show="getComponent(index)?.isShow"
                   @click="hideComponent"
                 >
-                  <Icon name="dv-show" class="opt-icon"></Icon>
+                  <Icon name="dv-show"><dvShow class="svg-icon opt-icon" /></Icon>
                 </el-icon>
                 <el-icon v-show="!getComponent(index)?.isLock" class="component-base" @click="lock">
-                  <Icon class="opt-icon" name="dv-unlock"></Icon>
+                  <Icon name="dv-unlock"><dvUnlock class="svg-icon opt-icon" /></Icon>
                 </el-icon>
                 <el-icon
                   class="component-base component-icon-display"
                   v-show="getComponent(index)?.isLock"
                   @click="unlock"
                 >
-                  <Icon name="dv-lock" class="opt-icon"></Icon>
+                  <Icon name="dv-lock"><dvLock class="svg-icon opt-icon" /></Icon>
                 </el-icon>
                 <el-dropdown
                   ref="dropdownMore"
@@ -233,7 +354,7 @@ const handleContextMenu = e => {
                 >
                   <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
                     <el-icon class="component-base">
-                      <Icon name="dv-more" class="opt-icon"></Icon>
+                      <Icon name="dv-more"><dvMore class="svg-icon opt-icon" /></Icon>
                     </el-icon>
                   </span>
                   <template #dropdown>

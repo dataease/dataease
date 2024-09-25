@@ -354,14 +354,21 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 firstLoad
               )
               if (result?.length) {
+                const fieldId = isTree
+                  ? getFieldId(treeFieldList, result)
+                  : item.checkedFieldsMap[curComponentId]
+                const parametersFilter = parameters.reduce((pre, next) => {
+                  if (next.id === fieldId && !pre.length) {
+                    pre.push(next)
+                  }
+                  return pre
+                }, [])
                 filter.push({
                   componentId: ele.id,
-                  fieldId: isTree
-                    ? getFieldId(treeFieldList, result)
-                    : item.checkedFieldsMap[curComponentId],
+                  fieldId,
                   operator,
                   value: result,
-                  parameters,
+                  parameters: parametersFilter,
                   isTree
                 })
               }

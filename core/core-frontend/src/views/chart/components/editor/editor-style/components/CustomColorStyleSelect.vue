@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icon_admin_outlined from '@/assets/svg/icon_admin_outlined.svg'
 import { ElColorPicker, ElPopover } from 'element-plus-secondary'
 import { computed, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -138,28 +139,23 @@ const setupSeriesColor = () => {
     }
     seriesColorState.curSeriesColor = seriesColorState.seriesColor[seriesColorState.curColorIndex]
     nextTick(() => {
-      const targetId = 'series-color-picker-' + seriesColorState.curColorIndex
-      const target = document.getElementById(targetId)
-      if (target) {
-        seriesColorState.seriesColorPickerId = `#${targetId}`
-      }
+      customColorPickerRef.value?.hide()
+      // 防止 teleport 失效还有选框飘到左上角
+      seriesColorState.seriesColorPickerId = `#seriesr-picker-slot-${props.sub ? 1 : 0}`
     })
   }
 }
-
-const flag = ref(1)
-
 const switchSeriesColor = (seriesColor, index) => {
   seriesColorPickerRef.value?.hide()
   seriesColorState.curSeriesColor = cloneDeep(seriesColor)
   seriesColorState.curColorIndex = index
-  const id = '#series-color-picker-' + seriesColor.id + `-${flag.value}`
-  if (document.querySelectorAll(id).length > 1) {
-    flag.value = 2
-  }
-  seriesColorState.seriesColorPickerId = '#series-color-picker-' + seriesColor.id + `-${flag.value}`
+  const id = `series-color-picker-${props.sub ? 1 : 0}-${index}`
+  seriesColorState.seriesColorPickerId = `#${id}`
   nextTick(() => {
-    seriesColorPickerRef.value?.show()
+    const dom = document.getElementById(id)
+    if (dom) {
+      seriesColorPickerRef.value?.show()
+    }
   })
 }
 
@@ -175,7 +171,7 @@ const changeSeriesColor = () => {
     }
   })
   if (changed) {
-    state.value.basicStyleForm[seriesColorName.value] = seriesColorState.seriesColor
+    state.value.basicStyleForm[seriesColorName.value] = cloneDeep(seriesColorState.seriesColor)
     changeBasicStyle('seriesColor')
   }
 }
@@ -394,7 +390,7 @@ const colorItemBorderColor = (index, state) => {
           @click="customColorExtendSettingOpened = !customColorExtendSettingOpened"
         >
           <el-icon style="font-size: 12px">
-            <Icon name="icon_admin_outlined" />
+            <Icon name="icon_admin_outlined"><icon_admin_outlined class="svg-icon" /></Icon>
           </el-icon>
         </div>
       </div>
@@ -463,12 +459,15 @@ const colorItemBorderColor = (index, state) => {
         class="series-color-setting colors"
       >
         <div
+          :id="`seriesr-picker-slot-${sub ? 1 : 0}`"
+          style="overflow: hidden; transform: translateX(0)"
+        ></div>
+        <div
           v-for="(item, index) in seriesColorState.seriesColor"
           :key="item.id"
           class="color-list-item"
         >
           <div
-            :id="`series-color-picker-${item.id}-${flag}`"
             :class="{
               active: item.id === seriesColorState.curSeriesColor?.id
             }"
@@ -482,22 +481,24 @@ const colorItemBorderColor = (index, state) => {
               }"
             ></div>
           </div>
+          <div :id="`series-color-picker-${sub ? 1 : 0}-${index}`"></div>
           <span
             :title="item.name"
             class="color-item-name"
             :class="themes === 'dark' ? 'dark' : ''"
             >{{ item.name }}</span
           >
-          <div :id="'series-color-picker-' + index"></div>
         </div>
       </div>
     </template>
-    <teleport :to="seriesColorState.seriesColorPickerId">
-      <div style="position: absolute; top: 0; left: 10px; width: 0; height: 0; overflow: hidden">
+    <teleport defer :to="seriesColorState.seriesColorPickerId">
+      <div class="series-color-picker-wrapper">
         <el-color-picker
           ref="seriesColorPickerRef"
           v-model="seriesColorState.curSeriesColor.color"
           size="small"
+          popper-class="series-color-picker"
+          :teleported="false"
           :predefine="predefineColors"
           @change="changeSeriesColor"
         />
@@ -588,7 +589,6 @@ const colorItemBorderColor = (index, state) => {
       cursor: pointer;
       padding: 2px;
       border: solid 1px transparent;
-      position: relative;
       .color-item__inner {
         width: 14px;
         height: 14px;
@@ -660,7 +660,6 @@ const colorItemBorderColor = (index, state) => {
       cursor: pointer;
       padding: 2px;
       border: solid 1px transparent;
-      position: relative;
 
       .color-item__inner {
         width: 14px;
@@ -718,6 +717,20 @@ const colorItemBorderColor = (index, state) => {
 
   .cases-list__text {
     margin-left: 4px;
+  }
+}
+.series-color-picker-wrapper {
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  :deep(.ed-tooltip__trigger) {
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+  }
+  :deep(.series-color-picker) {
+    position: fixed !important;
+    margin-top: 16px !important;
   }
 }
 </style>

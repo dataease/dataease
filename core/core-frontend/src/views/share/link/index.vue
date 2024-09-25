@@ -1,5 +1,8 @@
 <template>
-  <div class="link-container" v-loading="loading">
+  <div
+    class="link-container"
+    v-loading="loading || requestStore.loadingMap[permissionStore.currentPath]"
+  >
     <IframeError v-if="!loading && iframeError" />
     <LinkError v-else-if="!loading && !linkExist" />
     <Exp v-else-if="!loading && linkExp" />
@@ -18,6 +21,8 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, nextTick, ref, reactive } from 'vue'
+import { useRequestStoreWithOut } from '@/store/modules/request'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import PreviewCanvas from '@/views/data-visualization/PreviewCanvas.vue'
 import { ProxyInfo, shareProxy } from './ShareProxy'
 import Exp from './exp.vue'
@@ -25,6 +30,8 @@ import LinkError from './error.vue'
 import PwdTips from './pwd.vue'
 import IframeError from './IframeError.vue'
 import TicketError from './TicketError.vue'
+const requestStore = useRequestStoreWithOut()
+const permissionStore = usePermissionStoreWithOut()
 const pcanvas = ref(null)
 const iframeError = ref(true)
 const linkExist = ref(false)

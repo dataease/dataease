@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import eventBus from '@/utils/eventBus'
 import { ElMessage } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -595,12 +597,14 @@ const autoStyle = computed(() => {
               >
                 <el-tooltip effect="dark" content="设置过滤条件" placement="top">
                   <el-icon @click="editeQueryConfig(ele.id)">
-                    <Icon name="icon_edit_outlined"></Icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </el-tooltip>
                 <el-tooltip effect="dark" content="删除条件" placement="top">
                   <el-icon style="margin-left: 8px" @click="delQueryConfig(index)">
-                    <Icon name="icon_delete-trash_outlined"></Icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </el-tooltip>
               </div>

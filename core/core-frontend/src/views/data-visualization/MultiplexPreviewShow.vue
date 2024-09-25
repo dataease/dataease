@@ -1,8 +1,21 @@
 <script lang="ts" setup>
+import bar from '@/assets/svg/bar.svg'
+import dbMoreWeb from '@/assets/svg/db-more-web.svg'
+import dvMoreTimeClock from '@/assets/svg/dv-more-time-clock.svg'
+import dvPictureReal from '@/assets/svg/dv-picture-real.svg'
+import dvTab from '@/assets/svg/dv-tab.svg'
+import iconStream from '@/assets/svg/icon-stream.svg'
+import iconVideo from '@/assets/svg/icon-video.svg'
+import icon_graphical from '@/assets/svg/icon_graphical.svg'
+import icon_search from '@/assets/svg/icon_search.svg'
+import other_material_board from '@/assets/svg/other_material_board.svg'
+import other_material_icon from '@/assets/svg/other_material_icon.svg'
+import scrollText from '@/assets/svg/scroll-text.svg'
 import { computed, nextTick, onBeforeMount, reactive, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getCanvasStyle } from '@/utils/style'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
+import { iconChartMap } from '@/components/icon-group/chart-list'
 const dvMainStore = dvMainStoreWithOut()
 const viewShow = ref(true)
 
@@ -68,12 +81,27 @@ const targetViewCheckedChange = (val, data) => {
   })
 }
 
+const iconMap = {
+  bar: bar,
+  'db-more-web': dbMoreWeb,
+  'dv-more-time-clock': dvMoreTimeClock,
+  'dv-picture-real': dvPictureReal,
+  'dv-tab': dvTab,
+  'icon-stream': iconStream,
+  'icon-video': iconVideo,
+  icon_graphical: icon_graphical,
+  icon_search: icon_search,
+  other_material_board: other_material_board,
+  other_material_icon: other_material_icon,
+  'scroll-text': scrollText
+}
+
 const getIconName = item => {
   if (item.component === 'UserView') {
     const viewInfo = canvasViewInfo.value[item.id]
-    return `${viewInfo.type}`
+    return iconChartMap[`${viewInfo.type}`]
   } else {
-    return item.icon
+    return iconMap[item.icon]
   }
 }
 
@@ -160,11 +188,13 @@ onBeforeMount(() => {
             </span>
             <span>
               <span class="tree-select-field">
-                <Icon
-                  class-name="view-type-icon"
-                  style="margin-right: 4px"
-                  :name="getIconName(data)"
-                />
+                <Icon class-name="view-type-icon"
+                  ><component
+                    class="svg-icon view-type-icon"
+                    style="margin-right: 4px"
+                    :is="getIconName(data)"
+                  ></component
+                ></Icon>
                 {{ data.label }}
               </span>
             </span>

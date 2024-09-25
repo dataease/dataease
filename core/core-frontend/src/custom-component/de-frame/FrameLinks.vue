@@ -14,7 +14,7 @@
                 </div>
               </template>
               <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
-                <Icon name="icon_info_outlined" />
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
               </el-icon>
             </el-tooltip>
           </span>
@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { reactive, ref, toRefs, watch, computed } from 'vue'
 import { dvMainStoreWithOut } from '../../store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia/dist/pinia'

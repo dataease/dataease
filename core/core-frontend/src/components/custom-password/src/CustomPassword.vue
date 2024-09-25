@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { useAttrs, computed } from 'vue'
+import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
+import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
 import { hIcon } from '@/components/icon-custom'
 const attrs = useAttrs()
 const props = defineProps(['modelValue'])
@@ -13,8 +15,8 @@ const value = computed({
   }
 })
 
-const iconView = hIcon('icon_visible_outlined')
-const iconHide = hIcon('icon_invisible_outlined')
+const iconView = hIcon(icon_visible_outlined)
+const iconHide = hIcon(icon_invisible_outlined)
 </script>
 
 <template>

@@ -190,6 +190,8 @@ export function historyItemAdaptor(
     componentItem.events.type !== 'displayChange'
       ? componentItem.events
       : deepCopy(BASE_EVENTS)
+
+  componentItem.events['jump'].type = componentItem.events['jump'].type || '_blank'
   componentItem['category'] = componentItem['category'] || 'base'
 
   if (componentItem.component === 'DeTabs') {
@@ -217,7 +219,9 @@ export function historyAdaptor(
     canvasStyleResult.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
   canvasStyleResult['screenAdaptor'] = canvasStyleResult['screenAdaptor'] || 'widthFirst'
   canvasStyleResult['refreshBrowserEnable'] =
-    canvasStyleResult['refreshBrowserEnable'] !== undefined
+    canvasStyleResult['refreshBrowserEnable'] === undefined
+      ? false
+      : canvasStyleResult['refreshBrowserEnable']
   canvasStyleResult['refreshBrowserUnit'] = canvasStyleResult['refreshBrowserUnit'] || 'minute'
   canvasStyleResult['refreshBrowserTime'] = canvasStyleResult['refreshBrowserTime'] || 5
   // 同步宽高比例(大屏使用)
@@ -273,7 +277,16 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   let attachInfo = { source: 'main' }
   if (dvMainStore.canvasAttachInfo && !!dvMainStore.canvasAttachInfo.taskId) {
     attachInfo = { source: 'report', taskId: dvMainStore.canvasAttachInfo.taskId }
+    const showWatermarkExist =
+      dvMainStore.canvasAttachInfo.hasOwnProperty('showWatermark') &&
+      typeof dvMainStore.canvasAttachInfo.showWatermark !== 'undefined' &&
+      dvMainStore.canvasAttachInfo.showWatermark !== null
+    if (showWatermarkExist) {
+      const enable = dvMainStore.canvasAttachInfo.showWatermark === 'true'
+      attachInfo['showWatermark'] = enable
+    }
   }
+
   method(dvId, busiFlagCustom, attachInfo).then(res => {
     const canvasInfo = res.data
     const watermarkInfo = {

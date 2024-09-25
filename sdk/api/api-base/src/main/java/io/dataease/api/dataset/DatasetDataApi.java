@@ -50,6 +50,10 @@ public interface DatasetDataApi {
     @PostMapping("getDatasetCount")
     Long getDatasetCount(@RequestBody DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception;
 
+    @Operation(summary = "获取数据集数据量", hidden = true)
+    @PostMapping("getDatasetTotal")
+    Long getDatasetTotal(@RequestBody DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception;
+
     @Operation(summary = "获取下拉树数据", hidden = true)
     @PostMapping("getFieldTree")
     List<BaseTreeNodeDTO> getFieldValueTree(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;

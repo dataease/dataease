@@ -59,7 +59,7 @@
                         style="margin-right: 16px"
                         @handle-command="cmd => outerParamsOperation(cmd, node, data)"
                         :menu-list="state.optMenu"
-                        icon-name="icon_more_outlined"
+                        :icon-name="icon_more_outlined"
                         placement="bottom-start"
                       ></handle-more>
                     </span>
@@ -94,11 +94,9 @@
                   >
                     <div style="width: 16px"></div>
                     <div style="flex: 1; line-height: 32px">
-                      <Icon
-                        style="margin-top: 4px"
-                        class-name="view-type-icon"
-                        name="filter-params"
-                      />
+                      <Icon name="filter-params"
+                        ><filterParams style="margin-top: 4px" class="svg-icon view-type-icon"
+                      /></Icon>
                       <span>{{ findFilterName(baseFilter.id) }}</span>
                     </div>
                     <div style="flex: 1">
@@ -157,7 +155,7 @@
                       <div style="flex: 1; display: flex; line-height: 32px">
                         <div style="width: 16px; margin-top: 2px; margin-right: 4px">
                           <el-icon>
-                            <Icon name="icon_dataset" />
+                            <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                           </el-icon>
                         </div>
                         <span>{{ baseDatasetInfo.name }}</span>
@@ -189,10 +187,13 @@
                             :value="item.attachId"
                           >
                             <Icon
-                              style="width: 14px; height: 14px"
-                              :name="`field_${fieldType[item.deType]}`"
-                              :className="`field-icon-${fieldType[item.deType]}`"
-                            />
+                              ><component
+                                class="svg-icon"
+                                style="width: 14px; height: 14px"
+                                :class="`field-icon-${fieldType[item.deType]}`"
+                                :is="iconFieldMap[fieldType[item.deType]]"
+                              ></component
+                            ></Icon>
                             <span style="font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
@@ -229,10 +230,12 @@
                           </div>
                           <div>
                             <Icon
-                              class-name="view-type-icon"
-                              style="margin: 0 4px"
-                              :name="viewInfo.chartType"
-                            />
+                              ><component
+                                class="svg-icon view-type-icon"
+                                style="margin: 0 4px"
+                                :is="iconChartMap[viewInfo.chartType]"
+                              ></component
+                            ></Icon>
                           </div>
                           <span style="font-size: 12px"> {{ viewInfo.chartName }}</span>
                         </div>
@@ -284,6 +287,11 @@
 </template>
 
 <script setup lang="ts">
+import _delete from '@/assets/svg/delete.svg'
+import edit from '@/assets/svg/edit.svg'
+import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
+import filterParams from '@/assets/svg/filter-params.svg'
+import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import { ref, reactive, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -297,6 +305,8 @@ import HandleMore from '@/components/handle-more/src/HandleMore.vue'
 import { fieldType } from '@/utils/attr'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { iconChartMap } from '../icon-group/chart-list'
+import { iconFieldMap } from '../icon-group/field-list'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, componentData } = storeToRefs(dvMainStore)
 const outerParamsInfoTree = ref(null)
@@ -312,12 +322,12 @@ const state = reactive({
   optMenu: [
     {
       label: '重命名',
-      svgName: 'edit',
+      svgName: edit,
       command: 'rename'
     },
     {
       label: '删除',
-      svgName: 'delete',
+      svgName: _delete,
       command: 'delete'
     }
   ],

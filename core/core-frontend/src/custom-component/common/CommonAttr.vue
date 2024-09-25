@@ -10,7 +10,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import CommonStyleSet from '@/custom-component/common/CommonStyleSet.vue'
 import CommonEvent from '@/custom-component/common/CommonEvent.vue'
-import TabCarouselSetting from '@/custom-component/common/TabCarouselSetting.vue'
+import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
 import CommonBorderSetting from '@/custom-component/common/CommonBorderSetting.vue'
 import CollapseSwitchItem from '../../components/collapse-switch-item/src/CollapseSwitchItem.vue'
 const snapshotStore = snapshotStoreWithOut()
@@ -197,11 +197,7 @@ const stopEvent = e => {
           @onStyleAttrChange="onStyleAttrChange"
         ></common-border-setting>
       </collapse-switch-item>
-      <TabCarouselSetting
-        v-if="carouselShow"
-        :element="element"
-        :themes="themes"
-      ></TabCarouselSetting>
+      <CarouselSetting v-if="carouselShow" :element="element" :themes="themes"></CarouselSetting>
     </el-collapse>
   </div>
 </template>

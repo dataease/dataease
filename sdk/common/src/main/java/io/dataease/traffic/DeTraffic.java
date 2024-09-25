@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface DeTraffic {
-    int value() default 2;
+    int value() default 0;
 
     String api();
 }

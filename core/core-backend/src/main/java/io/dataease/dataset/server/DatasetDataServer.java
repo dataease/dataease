@@ -74,6 +74,11 @@ public class DatasetDataServer implements DatasetDataApi {
     }
 
     @Override
+    public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+        return datasetDataManage.getDatasetCountWithWhere(datasetGroupInfoDTO.getId());
+    }
+
+    @Override
     public List<BaseTreeNodeDTO> getFieldValueTree(MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         try {
             return datasetDataManage.getFieldValueTree(multFieldValuesRequest);

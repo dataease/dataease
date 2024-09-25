@@ -22,6 +22,7 @@ dataease:
     dataset:
       limit: ${DE_EXPORT_DATASET_LIMIT}
   origin-list: ${DE_ORIGIN_LIST}
+  login_timeout: ${DE_LOGIN_TIMEOUT}
 task:
   executor:
     address: http://sync-task-actuator:9001

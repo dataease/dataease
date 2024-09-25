@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
@@ -8,7 +9,13 @@ import TextLabelThresholdEdit from '@/views/chart/components/editor/editor-senio
 import TextThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextThresholdEdit.vue'
 import { fieldType } from '@/utils/attr'
 import { defaultsDeep } from 'lodash-es'
-
+import { iconFieldMap } from '@/components/icon-group/field-list'
+import PictureGroupThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/PictureGroupThresholdEdit.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import { imgUrlTrans } from '@/utils/imgUtils'
+const dvMainStore = dvMainStoreWithOut()
+const { curComponent } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const props = defineProps({
@@ -320,7 +327,7 @@ init()
         >
           <template #icon>
             <el-icon size="14px">
-              <Icon name="icon_edit_outlined" />
+              <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
             </el-icon>
           </template>
         </el-button>
@@ -396,7 +403,7 @@ init()
             >
               <template #icon>
                 <el-icon size="14px">
-                  <Icon name="icon_edit_outlined" />
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </template>
             </el-button>
@@ -494,7 +501,7 @@ init()
             >
               <template #icon>
                 <el-icon size="14px">
-                  <Icon name="icon_edit_outlined" />
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </template>
             </el-button>
@@ -514,10 +521,13 @@ init()
             <div class="field-style" :class="{ 'field-style-dark': themes === 'dark' }">
               <span>
                 <el-icon>
-                  <Icon
-                    :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
-                    :name="`field_${fieldType[fieldItem.field.deType]}`"
-                  />
+                  <Icon :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                      :is="iconFieldMap[fieldType[fieldItem.field.deType]]"
+                    ></component
+                  ></Icon>
                 </el-icon>
               </span>
               <span :title="fieldItem.field.name" class="field-text">{{
@@ -565,11 +575,13 @@ init()
                 <span v-else-if="item.term === 'not_empty'" :title="t('chart.filter_not_empty')">
                   {{ t('chart.filter_not_empty') }}
                 </span>
+                <span v-else-if="item.term === 'default'" title="默认"> 默认 </span>
               </div>
               <div style="flex: 1; margin: 0 8px">
                 <span
                   v-if="
                     !item.term.includes('null') &&
+                    !item.term.includes('default') &&
                     !item.term.includes('empty') &&
                     item.term !== 'between'
                   "
@@ -587,22 +599,35 @@ init()
                 </span>
                 <span v-else>&nbsp;</span>
               </div>
-              <div
-                :title="t('chart.textColor')"
-                :style="{
-                  backgroundColor: item.color
-                }"
-                class="color-div"
-                :class="{ 'color-div-dark': themes === 'dark' }"
-              ></div>
-              <div
-                :title="t('chart.backgroundColor')"
-                :style="{
-                  backgroundColor: item.backgroundColor
-                }"
-                class="color-div"
-                :class="{ 'color-div-dark': themes === 'dark' }"
-              ></div>
+              <template v-if="chart.type === 'picture-group'">
+                <div title="显示图片" class="pic-group-main">
+                  <img
+                    draggable="false"
+                    v-if="item.url"
+                    class="pic-group-img"
+                    :src="imgUrlTrans(item.url)"
+                  />
+                </div>
+              </template>
+
+              <template v-if="chart.type !== 'picture-group'">
+                <div
+                  :title="t('chart.textColor')"
+                  :style="{
+                    backgroundColor: item.color
+                  }"
+                  class="color-div"
+                  :class="{ 'color-div-dark': themes === 'dark' }"
+                ></div>
+                <div
+                  :title="t('chart.backgroundColor')"
+                  :style="{
+                    backgroundColor: item.backgroundColor
+                  }"
+                  class="color-div"
+                  :class="{ 'color-div-dark': themes === 'dark' }"
+                ></div>
+              </template>
             </div>
           </el-row>
         </div>
@@ -667,7 +692,15 @@ init()
       class="dialog-css"
       append-to-body
     >
+      <picture-group-threshold-edit
+        v-if="chart.type === 'picture-group' && curComponent"
+        :threshold="state.thresholdForm.tableThreshold"
+        :chart="chart"
+        :element="curComponent"
+        @onTableThresholdChange="tableThresholdChange"
+      ></picture-group-threshold-edit>
       <table-threshold-edit
+        v-else
         :threshold="state.thresholdForm.tableThreshold"
         :chart="chart"
         @onTableThresholdChange="tableThresholdChange"
@@ -855,5 +888,17 @@ span {
   &.is-disabled {
     color: #5f5f5f !important;
   }
+}
+
+.pic-group-main {
+  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  border: solid 1px #e1e4e8;
+  border-radius: 2px;
+}
+.pic-group-img {
+  width: 100%;
+  height: 100%;
 }
 </style>

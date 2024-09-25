@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { store } from '@/store'
-import { queryTreeApi } from '@/api/visualization/dataVisualization'
+import { queryTreeApi, queryBusiTreeApi } from '@/api/visualization/dataVisualization'
 import { getDatasetTree } from '@/api/dataset'
 import { listDatasources } from '@/api/datasource'
 import type { BusiTreeRequest, BusiTreeNode } from '@/models/tree/TreeNode'
@@ -47,7 +47,7 @@ export const interactiveStore = defineStore('interactive', {
     }
   },
   actions: {
-    async setInteractive(param: BusiTreeRequest) {
+    async setInteractive(param: BusiTreeRequest, resParam?: object) {
       const flag = busiFlagMap.findIndex(item => item === param.busiFlag)
       if (!hasMenuAuth(flag) && !window.DataEaseBi && !appStore.getIsIframe) {
         const tempData: InnerInteractive = {
@@ -66,8 +66,11 @@ export const interactiveStore = defineStore('interactive', {
         }
         return []
       }
-      const method = apiMap[flag]
-      const res = await method(param)
+      let res = resParam
+      if (!resParam) {
+        const method = apiMap[flag]
+        res = await method(param)
+      }
       this.data[flag] = convertInteractive(res)
       if (flag === 0) {
         wsCache.set('panel-weight', convertLocalStorage(this.data[flag]))
@@ -78,6 +81,10 @@ export const interactiveStore = defineStore('interactive', {
       return res
     },
     async initInteractive(refresh?: boolean) {
+      if (refresh) {
+        await this.loadBusiInteractive()
+        return
+      }
       let index = 4
       while (index--) {
         if (!this.data[index] || refresh) {
@@ -86,6 +93,20 @@ export const interactiveStore = defineStore('interactive', {
           }
           await this.setInteractive(param)
         }
+      }
+    },
+    async loadBusiInteractive() {
+      const param = {}
+      for (let i = 0; i < busiFlagMap.length; i++) {
+        const key = busiFlagMap[i]
+        if (window.DataEaseBi || appStore.getIsIframe || hasMenuAuth(i)) {
+          param[key] = { busiFlag: key }
+        }
+      }
+      const data = await queryBusiTreeApi(param)
+      for (const busiKey in data) {
+        const res = data[busiKey]
+        this.setInteractive(param[busiKey], res)
       }
     },
     clear() {

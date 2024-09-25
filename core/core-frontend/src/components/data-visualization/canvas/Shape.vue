@@ -11,7 +11,7 @@
   >
     <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
       <el-icon>
-        <Icon name="mobile-checkbox"></Icon>
+        <Icon name="mobile-checkbox"><mobileCheckbox class="svg-icon" /></Icon>
       </el-icon>
     </div>
     <div
@@ -46,7 +46,7 @@
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
       >
-        <Icon v-show="shapeLock" class="iconfont icon-suo" name="dv-lock"></Icon>
+        <Icon v-if="shapeLock" name="dv-lock"><dvLock class="svg-icon iconfont icon-suo" /></Icon>
         <!--边框背景-->
         <Board
           v-if="svgInnerEnable"
@@ -97,6 +97,8 @@
 </template>
 
 <script setup lang="ts">
+import mobileCheckbox from '@/assets/svg/mobile-checkbox.svg'
+import dvLock from '@/assets/svg/dv-lock.svg'
 import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize, {
   calculateRadioComponentPositionAndSize
@@ -160,7 +162,7 @@ const state = reactive({
     id: ''
   },
   // 禁止移入Tab中的组件
-  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs', 'Group'],
+  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs', 'Group', 'GroupArea'],
   // 当画布在tab中是 宽度左右拓展的余量
   parentWidthTabOffset: 40,
   canvasChangeTips: 'none',
@@ -524,6 +526,7 @@ const handleMouseDownOnShape = e => {
     if (
       !isMainCanvas(canvasId.value) &&
       !isGroupCanvas(canvasId.value) &&
+      !isGroupArea.value &&
       (left < -30 || left + componentWidth - canvasWidth > 30)
     ) {
       contentDisplay.value = false
@@ -826,6 +829,30 @@ const commonBackgroundSvgInner = computed(() => {
   }
 })
 
+const padding3D = computed(() => {
+  const width = defaultStyle.value.width // 原始元素宽度
+  const height = defaultStyle.value.height // 原始元素高度
+  const rotateX = element.value['multiDimensional'].x // 旋转X角度
+  const rotateY = element.value['multiDimensional'].y // 旋转Y角度
+
+  // 将角度转换为弧度
+  const radX = (rotateX * Math.PI) / 180
+  const radY = (rotateY * Math.PI) / 180
+
+  // 计算旋转后新宽度和高度
+  const newWidth = Math.abs(width * Math.cos(radY)) + Math.abs(height * Math.sin(radX))
+  const newHeight = Math.abs(height * Math.cos(radX)) + Math.abs(width * Math.sin(radY))
+
+  // 计算需要的 padding
+  const paddingX = (newWidth - width) / 2
+  const paddingY = (newHeight - height) / 2
+
+  return {
+    paddingX: `${paddingX}px`,
+    paddingY: `${paddingY}px`
+  }
+})
+
 const componentBackgroundStyle = computed(() => {
   if (element.value.commonBackground && element.value.component !== 'GroupArea') {
     const {
@@ -961,7 +988,25 @@ const tabMoveInCheck = async () => {
 const slotStyle = computed(() => {
   // 3d效果支持
   if (element.value['multiDimensional'] && element.value['multiDimensional']?.enable) {
+    const width = defaultStyle.value.width // 原始元素宽度
+    const height = defaultStyle.value.height // 原始元素高度
+    const rotateX = element.value['multiDimensional'].x // 旋转X角度
+    const rotateY = element.value['multiDimensional'].y // 旋转Y角度
+
+    // 将角度转换为弧度
+    const radX = (rotateX * Math.PI) / 180
+    const radY = (rotateY * Math.PI) / 180
+
+    // 计算旋转后新宽度和高度
+    const newWidth = Math.abs(width * Math.cos(radY)) + Math.abs(height * Math.sin(radX))
+    const newHeight = Math.abs(height * Math.cos(radX)) + Math.abs(width * Math.sin(radY))
+
+    // 计算需要的 padding
+    const paddingX = (newWidth - width) / 2
+    const paddingY = (newHeight - height) / 2
+
     return {
+      padding: `${paddingY}px ${paddingX}px`,
       transform: `rotateX(${element.value['multiDimensional'].x}deg) rotateY(${element.value['multiDimensional'].y}deg) rotateZ(${element.value['multiDimensional'].z}deg)`
     }
   } else {

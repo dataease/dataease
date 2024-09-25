@@ -1,6 +1,7 @@
 package io.dataease.chart.utils;
 
-import io.dataease.api.chart.dto.*;
+import io.dataease.api.chart.dto.ScatterChartDataDTO;
+import io.dataease.api.chart.dto.Series;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
@@ -504,6 +505,11 @@ public class ChartDataBuild {
 
     // antV组合图形
     public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+        return transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, false);
+    }
+
+    public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill, boolean isLine) {
+
         Map<String, Object> map = new HashMap<>();
 
         List<Series> series = new ArrayList<>();
@@ -571,8 +577,16 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
+
                 String category = StringUtils.defaultIfBlank(b.toString(),
                         StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
+
+                if (isLine) {
+                    if (ObjectUtils.isEmpty(xAxisExt)) {
+                        category = StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName());
+                    }
+                }
+
                 axisChartDataDTO.setCategory(category);
                 categories.add(category);
 
@@ -1752,7 +1766,7 @@ public class ChartDataBuild {
         }
     }
 
-    public static Map<String, Object> transSymbolicMapNormalWithDetail(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extBubble, List<String[]> data, List<ChartViewFieldDTO> detailFields, List<String[]> detailData) {
+    public static Map<String, Object> transSymbolicMapNormalWithDetail(ChartViewDTO view, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extBubble, List<String[]> data, List<ChartViewFieldDTO> detailFields, List<String[]> detailData) {
         int detailIndex = xAxis.size();
 
         List<ChartViewFieldDTO> realDetailFields = detailFields.subList(detailIndex, detailFields.size());
@@ -1764,7 +1778,7 @@ public class ChartDataBuild {
             fields.addAll(extBubble);
         if (ObjectUtils.isNotEmpty(yAxis))
             fields.addAll(yAxis);
-        Map<String, Object> map = transTableNormal(fields, null, data, new HashMap<>());
+        Map<String, Object> map = transTableNormal(fields, view, data, new HashMap<>());
         List<Map<String, Object>> tableRow = (List<Map<String, Object>>) map.get("tableRow");
         final int xEndIndex = detailIndex;
         Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> "(" + StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), ")-de-(") + ")"));

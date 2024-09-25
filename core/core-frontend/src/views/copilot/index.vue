@@ -1,4 +1,13 @@
 <script lang="ts" setup>
+import activeBtn_copilot from '@/assets/svg/active-btn_copilot.svg'
+import btn_copilot from '@/assets/svg/btn_copilot.svg'
+import copilot from '@/assets/svg/copilot.svg'
+import icon_loading_outlined from '@/assets/svg/icon_loading_outlined.svg'
+import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
+import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_dataset from '@/assets/svg/icon_dataset.svg'
+import icon_expandRight_filled from '@/assets/svg/icon_expand-right_filled.svg'
 import { ref, shallowRef, computed, watch, nextTick } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
 import {
@@ -13,6 +22,7 @@ import { fieldType } from '@/utils/attr'
 import DialogueChart from '@/views/copilot/DialogueChart.vue'
 import { type Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { cloneDeep } from 'lodash-es'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 const quota = shallowRef([])
 const dimensions = shallowRef([])
 const datasetTree = shallowRef([])
@@ -197,7 +207,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
   <div class="copilot">
     <div class="copilot-analysis">
       <el-icon style="margin-right: 8px; font-size: 24px">
-        <Icon name="copilot" />
+        <Icon name="copilot"><copilot class="svg-icon" /></Icon>
       </el-icon>
       Copilot 对话分析
     </div>
@@ -220,10 +230,15 @@ const queryAnswer = (event?: KeyboardEvent) => {
           >
           </el-input>
           <el-icon v-if="copilotChatLoading" class="copilot-icon circular-input_icon">
-            <Icon name="icon_loading_outlined"></Icon>
+            <Icon name="icon_loading_outlined"><icon_loading_outlined class="svg-icon" /></Icon>
           </el-icon>
           <el-icon v-else class="copilot-icon" @click="queryAnswer" :class="isActive && 'active'">
-            <Icon :name="isActive ? 'active-btn_copilot' : 'btn_copilot'"></Icon>
+            <Icon
+              ><component
+                class="svg-icon"
+                :is="isActive ? activeBtn_copilot : btn_copilot"
+              ></component
+            ></Icon>
           </el-icon>
         </div>
       </div>
@@ -231,7 +246,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         <el-tooltip effect="dark" content="收起" placement="left">
           <p v-show="!showLeft" class="arrow-right" @click="handleShowLeft(true)">
             <el-icon>
-              <Icon name="icon_right_outlined"></Icon>
+              <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
             </el-icon>
           </p>
         </el-tooltip>
@@ -239,7 +254,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         <el-tooltip effect="dark" content="展开" placement="left">
           <p v-show="showLeft" class="left-outlined" @click="handleShowLeft(false)">
             <el-icon>
-              <Icon name="icon_left_outlined"></Icon>
+              <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
             </el-icon>
           </p>
         </el-tooltip>
@@ -261,10 +276,10 @@ const queryAnswer = (event?: KeyboardEvent) => {
             <template #default="{ node, data }">
               <div class="content">
                 <el-icon size="18px" v-if="!data.leaf">
-                  <Icon name="dv-folder"></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <el-icon size="18px" v-if="data.leaf">
-                  <Icon name="icon_dataset"></Icon>
+                  <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                 </el-icon>
                 <span class="label ellipsis" style="margin-left: 8px" :title="node.label">{{
                   node.label
@@ -277,7 +292,9 @@ const queryAnswer = (event?: KeyboardEvent) => {
           <div :class="['field-d', { open: expandedD }]">
             <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
               <ElIcon class="expand">
-                <Icon name="icon_expand-right_filled"></Icon>
+                <Icon name="icon_expand-right_filled"
+                  ><icon_expandRight_filled class="svg-icon"
+                /></Icon>
               </ElIcon>
               &nbsp;{{ $t('chart.dimension') }}
             </div>
@@ -286,10 +303,13 @@ const queryAnswer = (event?: KeyboardEvent) => {
                 <span class="custom-tree-node father">
                   <el-icon>
                     <Icon
-                      :name="`field_${fieldType[data.deExtractType]}`"
-                      :className="`field-icon-${
-                        fieldType[[2, 3].includes(data.deExtractType) ? 2 : 0]
-                      }`"
+                      ><component
+                        class="svg-icon"
+                        :class="`field-icon-${
+                          fieldType[[2, 3].includes(data.deExtractType) ? 2 : 0]
+                        }`"
+                        :is="iconFieldMap[fieldType[data.deExtractType]]"
+                      ></component
                     ></Icon>
                   </el-icon>
                   <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
@@ -300,7 +320,9 @@ const queryAnswer = (event?: KeyboardEvent) => {
           <div :class="['field-q', { open: expandedQ }]">
             <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
               <ElIcon class="expand">
-                <Icon name="icon_expand-right_filled"></Icon>
+                <Icon name="icon_expand-right_filled"
+                  ><icon_expandRight_filled class="svg-icon"
+                /></Icon>
               </ElIcon>
               &nbsp;{{ $t('chart.quota') }}
             </div>
@@ -309,10 +331,13 @@ const queryAnswer = (event?: KeyboardEvent) => {
                 <span class="custom-tree-node father">
                   <el-icon>
                     <Icon
-                      :name="`field_${fieldType[data.deExtractType]}`"
-                      :className="`field-icon-${
-                        fieldType[[2, 3].includes(data.deExtractType) ? 2 : 0]
-                      }`"
+                      ><component
+                        class="svg-icon"
+                        :class="`field-icon-${
+                          fieldType[[2, 3].includes(data.deExtractType) ? 2 : 0]
+                        }`"
+                        :is="iconFieldMap[fieldType[data.deExtractType]]"
+                      ></component
                     ></Icon>
                   </el-icon>
                   <span :title="data.name" class="label-tooltip">{{ data.name }}</span>

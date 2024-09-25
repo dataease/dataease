@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import icon_linkRecord_outlined from '@/assets/svg/icon_link-record_outlined.svg'
+import icon_viewinchat_outlined from '@/assets/svg/icon_viewinchat_outlined.svg'
+import icon_drilling_outlined from '@/assets/svg/icon_drilling_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
@@ -43,6 +47,7 @@ import { storeToRefs } from 'pinia'
 import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
 import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
+import DePictureGroup from '@/custom-component/picture-group/Component.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { viewFieldTimeTrans } from '@/utils/viewUtils'
@@ -64,8 +69,15 @@ const isIframe = computed(() => appStore.getIsIframe)
 
 const emit = defineEmits(['onPointClick'])
 
-const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData, mobileInPc } =
-  storeToRefs(dvMainStore)
+const {
+  nowPanelJumpInfo,
+  publicLinkStatus,
+  dvInfo,
+  curComponent,
+  canvasStyleData,
+  mobileInPc,
+  inMobile
+} = storeToRefs(dvMainStore)
 
 const props = defineProps({
   active: {
@@ -118,12 +130,13 @@ const props = defineProps({
 const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount, scale } = toRefs(props)
 
-const titleShow = computed(
-  () =>
-    element.value.innerType !== 'rich-text' &&
+const titleShow = computed(() => {
+  return (
+    !['rich-text', 'picture-group'].includes(element.value.innerType) &&
     state.title_show &&
     showPosition.value !== 'viewDialog'
-)
+  )
+})
 const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
@@ -373,15 +386,35 @@ const divEmbedded = type => {
   useEmitt().emitter.emit('changeCurrentComponent', type)
 }
 
-const windowsJump = (url, jumpType) => {
+const windowsJump = (url, jumpType, size = 'middle') => {
   try {
     let newWindow
     if ('newPop' === jumpType) {
-      window.open(
+      let sizeX, sizeY
+      if (size === 'large') {
+        sizeX = 0.95
+        sizeY = 0.9
+      } else if (size === 'middle') {
+        sizeX = 0.8
+        sizeY = 0.75
+      } else {
+        sizeX = 0.6
+        sizeY = 0.5
+      }
+      const height = screen.height * sizeY
+      const width = screen.width * sizeX
+      const left = screen.width * ((1 - sizeX) / 2)
+      const top = screen.height * ((1 - sizeY) / 2)
+      newWindow = window.open(
         url,
         '_blank',
-        'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
+        `width=${width},height=${height},left=${left},top=${top},toolbar=no,scrollbars=yes,resizable=yes,location=no`
       )
+    } else if ('_self' === jumpType) {
+      newWindow = window.open(url, jumpType)
+      if (inMobile) {
+        window.location.reload()
+      }
     } else {
       newWindow = window.open(url, jumpType)
     }
@@ -435,7 +468,7 @@ const jumpClick = param => {
             }?jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
-            windowsJump(url, jumpInfo.jumpType)
+            windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
           } else {
             ElMessage.warning(t('visualization.public_link_tips'))
           }
@@ -458,7 +491,7 @@ const jumpClick = param => {
             router.push(parseUrl(url))
             return
           }
-          windowsJump(url, jumpInfo.jumpType)
+          windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
         }
       } else {
         ElMessage.warning('未指定跳转仪表板')
@@ -477,7 +510,7 @@ const jumpClick = param => {
         return
       }
 
-      windowsJump(url, jumpInfo.jumpType)
+      windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
     }
   } else {
   }
@@ -672,7 +705,7 @@ const chartAreaShow = computed(() => {
       return true
     }
   }
-  if (view.value.type === 'rich-text') {
+  if (['rich-text', 'picture-group'].includes(view.value.type)) {
     return true
   }
   if (view.value?.isPlugin) {
@@ -854,22 +887,26 @@ const loadPluginCategory = data => {
               <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
             </template>
             <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_info_outlined" />
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
           <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
             <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_link-record_outlined" />
+              <Icon name="icon_link-record_outlined"
+                ><icon_linkRecord_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </el-tooltip>
           <el-tooltip :effect="toolTip" placement="top" content="已设置跳转" v-if="hasJumpIcon">
             <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_viewinchat_outlined" />
+              <Icon name="icon_viewinchat_outlined"
+                ><icon_viewinchat_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </el-tooltip>
           <el-tooltip :effect="toolTip" placement="top" content="已设置下钻" v-if="hasDrillIcon">
             <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_drilling_outlined" />
+              <Icon name="icon_drilling_outlined"><icon_drilling_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
         </div>
@@ -895,6 +932,16 @@ const loadPluginCategory = data => {
         @onJumpClick="jumpClick"
         @resetLoading="() => (loading = false)"
       />
+      <de-picture-group
+        v-else-if="showChartView(ChartLibraryType.PICTURE_GROUP)"
+        :themes="canvasStyleData.dashboard.themeColor"
+        ref="chartComponent"
+        :element="element"
+        :active="active"
+        :view="view"
+        :show-position="showPosition"
+      >
+      </de-picture-group>
       <de-rich-text-view
         v-else-if="showChartView(ChartLibraryType.RICH_TEXT)"
         :themes="canvasStyleData.dashboard.themeColor"

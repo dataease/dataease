@@ -49,7 +49,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     'legend-selector': null,
     'background-overall-component': ['all'],
     'border-style': ['all'],
-    'basic-style-selector': ['colors', 'alpha', 'gradient'],
+    'basic-style-selector': ['colors', 'alpha', 'gradient', 'radiusColumnBar'],
     'label-selector': ['hPosition', 'color', 'fontSize'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'show'],
     'y-axis-selector': ['name', 'color', 'fontSize', 'axisForm', 'axisLabel', 'position'],

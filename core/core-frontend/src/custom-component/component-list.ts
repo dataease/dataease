@@ -33,7 +33,8 @@ export const BASE_EVENTS = {
     { key: 'refreshView', label: '刷新图表' }
   ],
   jump: {
-    value: 'https://'
+    value: 'https://',
+    type: '_blank'
   },
   download: {
     value: true
@@ -306,7 +307,7 @@ const list = [
     component: 'UserView',
     name: '图表',
     label: '图表',
-    propValue: { textValue: '' },
+    propValue: { textValue: '', urlList: [] },
     icon: 'bar',
     innerType: 'bar',
     editing: false,

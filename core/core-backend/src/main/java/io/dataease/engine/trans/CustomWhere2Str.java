@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Junjun
@@ -135,7 +136,11 @@ public class CustomWhere2Str {
 
         if (StringUtils.equalsIgnoreCase(item.getFilterType(), "enum")) {
             if (ObjectUtils.isNotEmpty(item.getEnumValue())) {
-                res = "(" + whereName + " IN ('" + String.join("','", item.getEnumValue()) + "'))";
+                if (StringUtils.equalsIgnoreCase(field.getType(), "NVARCHAR")) {
+                    res = "(" + whereName + " IN (" + item.getEnumValue().stream().map(str -> "N" + "'" + str + "'").collect(Collectors.joining(",")) + "))";
+                } else {
+                    res = "(" + whereName + " IN ('" + String.join("','", item.getEnumValue()) + "'))";
+                }
             }
         } else {
             if (field.getDeType() == 1 && isCross) {
@@ -156,18 +161,26 @@ public class CustomWhere2Str {
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
-                whereValue = "('" + String.join("','", value.split(",")) + "')";
+                if (StringUtils.equalsIgnoreCase(field.getType(), "NVARCHAR")) {
+                    whereValue = "(" + Arrays.stream(value.split(",")).map(str -> "N" + "'" + str + "'").collect(Collectors.joining(",")) + ")";
+                } else {
+                    whereValue = "('" + String.join("','", value.split(",")) + "')";
+                }
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
-                whereValue = "'%" + value + "%'";
+                if (StringUtils.equalsIgnoreCase(field.getType(), "NVARCHAR")) {
+                    whereValue = "N'%" + value + "%'";
+                } else {
+                    whereValue = "'%" + value + "%'";
+                }
             } else {
                 // 如果是时间字段过滤，当条件是等于和不等于的时候转换成between和not between
                 if (field.getDeType() == 1) {
                     // 如果是动态时间，计算具体值
                     value = fixValue(item);
+                    Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                     if (StringUtils.equalsIgnoreCase(whereTerm, " = ")) {
                         whereTerm = " BETWEEN ";
                         // 把value类似过滤组件处理，获得start time和end time
-                        Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                         if (isCross) {
                             whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
                         } else {
@@ -175,20 +188,35 @@ public class CustomWhere2Str {
                         }
                     } else if (StringUtils.equalsIgnoreCase(whereTerm, " <> ")) {
                         whereTerm = " NOT BETWEEN ";
-                        Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                         if (isCross) {
                             whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
                         } else {
                             whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(stringLongMap.get("startTime")), Utils.transLong2Str(stringLongMap.get("endTime")));
                         }
                     } else {
+                        Long startTime = stringLongMap.get("startTime");
+                        Long endTime = stringLongMap.get("endTime");
                         if (isCross) {
-                            value = Utils.allDateFormat2Long(value) + "";
+                            if (StringUtils.equalsIgnoreCase(whereTerm, " > ") || StringUtils.equalsIgnoreCase(whereTerm, " <= ")) {
+                                value = endTime + "";
+                            } else if (StringUtils.equalsIgnoreCase(whereTerm, " >= ") || StringUtils.equalsIgnoreCase(whereTerm, " < ")) {
+                                value = startTime + "";
+                            }
+                        } else {
+                            if (StringUtils.equalsIgnoreCase(whereTerm, " > ") || StringUtils.equalsIgnoreCase(whereTerm, " <= ")) {
+                                value = Utils.transLong2Str(endTime);
+                            } else if (StringUtils.equalsIgnoreCase(whereTerm, " >= ") || StringUtils.equalsIgnoreCase(whereTerm, " < ")) {
+                                value = Utils.transLong2Str(startTime);
+                            }
                         }
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                     }
                 } else {
-                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
+                    if (StringUtils.equalsIgnoreCase(field.getType(), "NVARCHAR")) {
+                        whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value);
+                    } else {
+                        whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
+                    }
                 }
             }
             SQLObj build = SQLObj.builder()

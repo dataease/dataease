@@ -77,7 +77,7 @@ export const copyStore = defineStore('copy', {
       })
     },
     copy() {
-      if (curComponent.value) {
+      if (curComponent.value && curComponent.value.component !== 'GroupArea') {
         this.copyDataInfo([curComponent.value])
       } else if (composeStore.areaData.components.length) {
         this.copyDataInfo(composeStore.areaData.components)
@@ -136,7 +136,7 @@ export const copyStore = defineStore('copy', {
       snapshotStore.recordSnapshotCache()
     },
     cut(curComponentData = componentData.value) {
-      if (curComponent.value) {
+      if (curComponent.value && curComponent.value.component !== 'GroupArea') {
         this.copyDataInfo([curComponent.value])
         dvMainStore.deleteComponentById(curComponent.value.id, curComponentData)
       } else if (composeStore.areaData.components.length) {

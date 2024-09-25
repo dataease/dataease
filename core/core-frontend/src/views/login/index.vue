@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import DataEase from '@/assets/svg/DataEase.svg'
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
@@ -87,7 +88,7 @@ const getCurLocation = () => {
 }
 
 const formRef = ref<FormInstance | undefined>()
-const duringLogin = ref(false)
+const duringLogin = ref(true)
 const handleLogin = () => {
   if (!formRef.value) return
   formRef.value.validate(async (valid: boolean) => {
@@ -112,14 +113,7 @@ const handleLogin = () => {
           userStore.setExp(exp)
           if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
             const param = {
-              methodName: 'init',
-              args: r => {
-                duringLogin.value = !!r
-                if (r) {
-                  const queryRedirectPath = getCurLocation()
-                  router.push({ path: queryRedirectPath })
-                }
-              }
+              methodName: 'init'
             }
             xpackInvalidPwd?.value.invokeMethod(param)
             return
@@ -144,6 +138,13 @@ const ldapValidate = callback => {
 }
 const ldapFeedback = () => {
   duringLogin.value = false
+}
+const invalidPwdCb = val => {
+  duringLogin.value = !!val
+  if (val) {
+    const queryRedirectPath = getCurLocation()
+    router.push({ path: queryRedirectPath })
+  }
 }
 const xpackLoadFail = ref(false)
 const loadingText = ref('登录中...')
@@ -225,6 +226,7 @@ const switchTab = (name: string) => {
 }
 onMounted(async () => {
   loadArrearance()
+  duringLogin.value = false
   if (!checkPlatform()) {
     const res = await loginCategoryApi()
     const adminLogin = router.currentRoute?.value?.name === 'admin-login'
@@ -310,7 +312,9 @@ onMounted(async () => {
                 v-if="!loginLogoUrl && axiosFinished"
                 className="login-logo-icon"
                 name="DataEase"
-              ></Icon>
+              >
+                <DataEase class="login-logo-icon" />
+              </Icon>
               <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="" />
             </div>
             <div class="login-welcome">
@@ -373,6 +377,7 @@ onMounted(async () => {
                 ref="xpackInvalidPwd"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
                 @load-fail="() => (xpackLoadFail = true)"
+                @call-back="invalidPwdCb"
               />
             </div>
 

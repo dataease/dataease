@@ -1,8 +1,12 @@
 <script lang="tsx" setup>
+import icon_info_filled from '@/assets/svg/icon_info_filled.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { PropType, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
+import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
 
@@ -248,7 +252,9 @@ init()
 <template>
   <el-col>
     <div class="tip">
-      <Icon name="icon_info_filled" class="icon-style"></Icon>
+      <Icon name="icon_info_filled" class="icon-style"
+        ><icon_info_filled class="svg-icon icon-style"
+      /></Icon>
       <span style="padding-left: 10px">{{ t('chart.table_threshold_tip') }}</span>
     </div>
 
@@ -271,11 +277,14 @@ init()
               >
                 <el-icon style="margin-right: 8px">
                   <Icon
-                    :className="`field-icon-${
-                      fieldType[[2, 3].includes(fieldOption.deType) ? 2 : 0]
-                    }`"
-                    :name="`field_${fieldType[fieldOption.deType]}`"
-                  />
+                    ><component
+                      :class="`field-icon-${
+                        fieldType[[2, 3].includes(fieldOption.deType) ? 2 : 0]
+                      }`"
+                      class="svg-icon"
+                      :is="iconFieldMap[fieldType[fieldOption.deType]]"
+                    ></component
+                  ></Icon>
                 </el-icon>
                 {{ fieldOption.name }}
               </el-option>
@@ -289,7 +298,9 @@ init()
             @click="removeThreshold(fieldIndex)"
           >
             <el-icon size="20px" style="color: #646a73">
-              <Icon name="icon_delete-trash_outlined" />
+              <Icon name="icon_delete-trash_outlined"
+                ><icon_deleteTrash_outlined class="svg-icon"
+              /></Icon>
             </el-icon>
           </el-button>
         </el-row>
@@ -422,7 +433,9 @@ init()
                 @click="removeCondition(fieldItem, index)"
               >
                 <el-icon size="20px" style="color: #646a73">
-                  <Icon name="icon_delete-trash_outlined" />
+                  <Icon name="icon_delete-trash_outlined"
+                    ><icon_deleteTrash_outlined class="svg-icon"
+                  /></Icon>
                 </el-icon>
               </el-button>
             </div>
@@ -437,7 +450,7 @@ init()
           @click="addConditions(fieldItem)"
         >
           <template #icon>
-            <Icon name="icon_add_outlined" />
+            <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
           </template>
           {{ t('chart.add_style') }}
         </el-button>
@@ -452,7 +465,7 @@ init()
       @click="addThreshold"
     >
       <template #icon>
-        <Icon name="icon_add_outlined" />
+        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
       </template>
       {{ t('chart.add_condition') }}
     </el-button>

@@ -20,8 +20,9 @@ const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const dashboardPreview = ref(null)
-const embeddedParams = inject('embeddedParams') as object
+const embeddedParamsDiv = inject('embeddedParams') as object
 
+const embeddedParams = embeddedParamsDiv?.dvId ? embeddedParamsDiv : embeddedStore
 const { t } = useI18n()
 const state = reactive({
   canvasDataPreview: null,
@@ -118,9 +119,6 @@ onBeforeMount(async () => {
     :class="isPc ? 'dashboard-preview' : 'dv-common-layout-mobile_embedded'"
     v-if="state.canvasStylePreview"
   >
-    <van-sticky v-if="!isPc">
-      <van-nav-bar :title="state.dvInfo.name" />
-    </van-sticky>
     <de-preview
       ref="dashboardPreview"
       :dv-info="state.dvInfo"

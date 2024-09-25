@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import copilot from '@/assets/svg/copilot.svg'
 import { onMounted, ref } from 'vue'
 const visible = ref(true)
 const emits = defineEmits(['confirm'])
@@ -32,7 +33,7 @@ onMounted(() => {
     <template #reference>
       <div class="copilot-popper-tips-icon">
         <el-icon style="margin: 2px" class="ai-icon">
-          <Icon name="copilot" />
+          <Icon name="copilot"><copilot class="svg-icon" /></Icon>
         </el-icon>
       </div>
     </template>

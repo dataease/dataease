@@ -40,7 +40,7 @@
             <template #default="{ data: { name } }">
               <span class="custom-tree-node">
                 <el-icon>
-                  <Icon name="dv-folder"></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <span :title="name">{{ name }}</span>
               </span>
@@ -70,7 +70,7 @@
             <template #default="{ data: { name } }">
               <span class="custom-tree-node">
                 <el-icon>
-                  <Icon name="dv-folder"></Icon>
+                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <span :title="name">{{ name }}</span>
               </span>
@@ -100,7 +100,8 @@
                 </el-option>
               </el-select> </el-col
             ><el-col :span="2" class="icon-center">
-              <Icon style="width: 20px; height: 20px" name="dv-link-target" /></el-col
+              <Icon name="dv-link-target"
+                ><dvLinkTarget class="svg-icon" style="width: 20px; height: 20px" /></Icon></el-col
             ><el-col :span="11">
               <dataset-select
                 ref="datasetSelector"
@@ -126,6 +127,8 @@
 </template>
 
 <script lang="ts" setup>
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import dvLinkTarget from '@/assets/svg/dv-link-target.svg'
 import {
   ElButton,
   ElDrawer,
