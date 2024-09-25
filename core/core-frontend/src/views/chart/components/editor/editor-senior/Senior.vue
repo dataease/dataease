@@ -455,6 +455,9 @@ span {
   display: flex;
   height: 100%;
   width: 100%;
+  .attr-style {
+    width: 100%;
+  }
 }
 
 .prop {
