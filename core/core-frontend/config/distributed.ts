@@ -29,9 +29,7 @@ export default {
           antv: ['@antv/g2', '@antv/g2plot', '@antv/l7', '@antv/l7plot', '@antv/s2'],
           tinymce: ['tinymce'],
           axios: ['axios'],
-          'vuedraggable-es': ['vuedraggable'],
-          'chart-dark-list_de': ['src/components/icon-group/chart-dark-list.ts'],
-          'chart-list_de': ['src/components/icon-group/chart-list.ts']
+          'vuedraggable-es': ['vuedraggable']
         }
       }
     },
