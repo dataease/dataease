@@ -3761,6 +3761,15 @@ export function getColors(chart, colors, reset) {
         })
       }
     }
+  } else if (equalsAny(chart.type, 'stock-line')) {
+    const averages = ['MA5', 'MA10', 'MA20', 'MA60', 'MA120', 'MA180']
+    for (let i = 0; i < averages.length; i++) {
+      seriesColors.push({
+        name: averages[i],
+        color: colors[i % colors.length],
+        isCustom: false
+      })
+    }
   } else {
     if (chart.data) {
       const data = chart.data.data
