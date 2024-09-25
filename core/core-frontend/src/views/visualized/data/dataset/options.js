@@ -12,7 +12,7 @@ const textEnum = ['eq', 'not_eq', 'like', 'not like', 'null', 'not_null', 'empty
 const textOptions = textEnum.map(formatEnum)
 
 const dateEnum = ['eq', 'not_eq', 'lt', 'gt', 'le', 'ge']
-const dateOptions = dateEnum.map(formatEnum)
+const dateOptions = dateEnum.concat(['null', 'not_null']).map(formatEnum)
 
 const valueEnum = [...dateEnum]
 const valueOptions = valueEnum.map(formatEnum)
