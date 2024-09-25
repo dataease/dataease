@@ -787,6 +787,9 @@ public class ChartViewService {
                     return emptyChartViewDTO(view);
                 }
                 ChartFieldCompareDTO compareCalc = yAxis.get(0).getCompareCalc();
+                if (Objects.isNull(compareCalc)) {
+                    break;
+                }
                 boolean isYoy = StringUtils.isNotEmpty(compareCalc.getType()) && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none");
                 if (isYoy) {
                     List<DatasetTableField> xField = fields.stream().filter(item -> StringUtils.equalsIgnoreCase(item.getId(), compareCalc.getField())).collect(Collectors.toList());
