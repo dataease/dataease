@@ -172,11 +172,11 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   recursionTransObj(customAttrTrans, actualChart.customAttr, scale.value, terminal.value)
   recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
 
-  setupPage(actualChart, resetPageInfo)
   myChart?.facet?.timer?.stop()
   myChart?.facet?.cancelScrollFrame()
   myChart?.destroy()
   myChart = null
+  setupPage(actualChart, resetPageInfo)
   const chartView = chartViewManager.getChartView(
     viewInfo.render,
     viewInfo.type
