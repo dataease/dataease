@@ -1746,7 +1746,7 @@ export const TYPE_CONFIGS = [
     icon: 'stock-line',
     properties: [
       'color-selector',
-      'size-selector',
+      'size-selector-ant-v',
       'tooltip-selector-ant-v',
       'x-axis-selector-ant-v',
       'y-axis-selector-ant-v',
@@ -1760,7 +1760,7 @@ export const TYPE_CONFIGS = [
         'customColor',
         'alpha'
       ],
-      'size-selector': [
+      'size-selector-ant-v': [
         'lineWidth',
         'lineSymbol',
         'lineSymbolSize',
