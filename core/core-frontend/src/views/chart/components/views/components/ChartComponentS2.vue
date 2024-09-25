@@ -596,7 +596,7 @@ const autoStyle = computed(() => {
     height: 20 * scale.value + 8 + 'px',
     width: 100 / scale.value + '%!important',
     left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
-    transform: 'scale(' + scale.value + ')'
+    transform: 'scale(' + scale.value + ') translateZ(0)'
   }
 })
 
