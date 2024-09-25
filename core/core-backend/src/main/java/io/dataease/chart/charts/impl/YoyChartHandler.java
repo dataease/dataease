@@ -120,11 +120,11 @@ public class YoyChartHandler extends DefaultChartHandler {
             expandedResult.setQuerySql(originSql);
         }
         // 同环比数据排序
-        expandedResult.setOriginData(sortData(view, expandedResult.getOriginData()));
+        expandedResult.setOriginData(sortData(view, expandedResult.getOriginData(),formatResult));
         return expandedResult;
     }
 
-    public static List<String[]> sortData(ChartViewDTO view, List<String[]> data) {
+    public static List<String[]> sortData(ChartViewDTO view, List<String[]> data, AxisFormatResult formatResult) {
         // 维度排序
         List<ChartViewFieldDTO> xAxisSortList = view.getXAxis().stream().filter(x -> !StringUtils.equalsIgnoreCase("none", x.getSort())).toList();
         // 指标排序
@@ -135,11 +135,9 @@ public class YoyChartHandler extends DefaultChartHandler {
             ChartViewFieldDTO firstYAxis = yAxisSortList.getFirst();
             boolean asc = firstYAxis.getSort().equalsIgnoreCase("asc");
             // 维度指标
-            List<ChartViewFieldDTO> allAxisList = Stream.of(
-                    view.getXAxis(),
-                    view.getXAxisExt(),
-                    view.getYAxis()
-            ).flatMap(List::stream).toList();
+            List<ChartViewFieldDTO> allAxisList = new ArrayList<>();
+            allAxisList.addAll(formatResult.getAxisMap().get(ChartAxis.xAxis));
+            allAxisList.addAll(formatResult.getAxisMap().get(ChartAxis.yAxis));
             int index = findIndex(allAxisList, firstYAxis.getId());
             return sortData(data, asc, index);
         }
