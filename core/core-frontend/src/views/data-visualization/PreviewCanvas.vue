@@ -193,7 +193,7 @@ defineExpose({
   />
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 .content {
   background-color: #ffffff;
   width: 100%;

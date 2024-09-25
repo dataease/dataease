@@ -309,7 +309,7 @@ defineExpose({
   </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 .content {
   width: 100%;
   height: 100%;
