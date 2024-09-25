@@ -1,5 +1,6 @@
 package io.dataease.plugins.view.service;
 
+import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.service.PluginComponentService;
 import io.dataease.plugins.common.util.PluginSpringContextUtil;
 import io.dataease.plugins.view.entity.PluginViewParam;
@@ -40,7 +41,7 @@ public abstract class ViewPluginService extends PluginComponentService {
         return rsHandler.format(param, lists, isDrill);
     }
 
-    public List<String[]> yoy(PluginViewParam param, List<String[]> lists) {
+    public List<String[]> yoy(PluginViewParam param, List<String[]> lists, Datasource ds) {
         yoyHandler = new DefaultViewYOYHandler();
         return yoyHandler.yoy(param, lists);
     }
