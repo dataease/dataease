@@ -8,6 +8,7 @@ import barRangeDark from '@/assets/svg/bar-range-dark.svg'
 import barStackDark from '@/assets/svg/bar-stack-dark.svg'
 import barStackHorizontalDark from '@/assets/svg/bar-stack-horizontal-dark.svg'
 import bidirectionalBarDark from '@/assets/svg/bidirectional-bar-dark.svg'
+import bubbleMapDark from '@/assets/svg/bubble-map-dark.svg'
 import chartMixDark from '@/assets/svg/chart-mix-dark.svg'
 import chartMixGroupDark from '@/assets/svg/chart-mix-group-dark.svg'
 import chartMixStackDark from '@/assets/svg/chart-mix-stack-dark.svg'
@@ -15,6 +16,7 @@ import chartMixDualLineDark from '@/assets/svg/chart-mix-dual-line-dark.svg'
 import flowMapDark from '@/assets/svg/flow-map-dark.svg'
 import funnelDark from '@/assets/svg/funnel-dark.svg'
 import gaugeDark from '@/assets/svg/gauge-dark.svg'
+import heatMapDark from '@/assets/svg/heat-map-dark.svg'
 import indicatorDark from '@/assets/svg/indicator-dark.svg'
 import lineDark from '@/assets/svg/line-dark.svg'
 import liquidDark from '@/assets/svg/liquid-dark.svg'
@@ -32,6 +34,7 @@ import richTextDark from '@/assets/svg/rich-text-dark.svg'
 import sankeyDark from '@/assets/svg/sankey-dark.svg'
 import scatterDark from '@/assets/svg/scatter-dark.svg'
 import stockLineDark from '@/assets/svg/stock-line-dark.svg'
+import symbolicMapDark from '@/assets/svg/symbolic-map-dark.svg'
 import tableInfoDark from '@/assets/svg/table-info-dark.svg'
 import tableNormalDark from '@/assets/svg/table-normal-dark.svg'
 import tablePivotDark from '@/assets/svg/table-pivot-dark.svg'
@@ -51,6 +54,7 @@ const iconChartDarkMap = {
   'bar-stack-dark': barStackDark,
   'bar-stack-horizontal-dark': barStackHorizontalDark,
   'bidirectional-bar-dark': bidirectionalBarDark,
+  'bubble-map-dark': bubbleMapDark,
   'chart-mix-dark': chartMixDark,
   'chart-mix-group-dark': chartMixGroupDark,
   'chart-mix-stack-dark': chartMixStackDark,
@@ -58,6 +62,7 @@ const iconChartDarkMap = {
   'flow-map-dark': flowMapDark,
   'funnel-dark': funnelDark,
   'gauge-dark': gaugeDark,
+  'heat-map-dark': heatMapDark,
   'indicator-dark': indicatorDark,
   'line-dark': lineDark,
   'liquid-dark': liquidDark,
@@ -75,6 +80,7 @@ const iconChartDarkMap = {
   'sankey-dark': sankeyDark,
   'scatter-dark': scatterDark,
   'stock-line-dark': stockLineDark,
+  'symbolic-map-dark': symbolicMapDark,
   'table-info-dark': tableInfoDark,
   'table-normal-dark': tableNormalDark,
   'table-pivot-dark': tablePivotDark,

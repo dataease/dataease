@@ -66,7 +66,6 @@ import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTempl
 import { XpackComponent } from '@/components/plugin'
 import { useEmbedded } from '@/store/modules/embedded'
 import { iconChartMap } from '@/components/icon-group/chart-list'
-import { iconChartDivideMap } from '@/components/icon-group/chart-divide-list'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import {
   iconFieldCalculatedMap,
@@ -1830,10 +1829,7 @@ const deleteChartFieldItem = id => {
                               <Icon v-else class-name="chart-type-select-icon">
                                 <component
                                   class="svg-icon chart-type-select-icon"
-                                  :is="
-                                    iconChartMap[state.chartTypeOptions[0].icon] ||
-                                    iconChartDivideMap[state.chartTypeOptions[0].icon]
-                                  "
+                                  :is="iconChartMap[state.chartTypeOptions[0].icon]"
                                 ></component>
                               </Icon>
                             </template>

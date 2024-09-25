@@ -17,10 +17,7 @@
             <Icon class-name="view-type-icon"
               ><component
                 class="svg-icon view-type-icon"
-                :is="
-                  iconChartMap[state.curJumpViewInfo.type] ||
-                  iconChartDivideMap[state.curJumpViewInfo.type]
-                "
+                :is="iconChartMap[state.curJumpViewInfo.type]"
               ></component
             ></Icon>
             {{ state.curJumpViewInfo.title }}</span
@@ -268,9 +265,7 @@
                                       ><component
                                         class="svg-icon view-type-icon"
                                         style="width: 14px; height: 14px"
-                                        :is="
-                                          iconChartMap[item.type] || iconChartDivideMap[item.type]
-                                        "
+                                        :is="iconChartMap[item.type]"
                                       ></component
                                     ></Icon>
                                     <span style="float: left; margin-left: 4px; font-size: 14px">{{
@@ -437,7 +432,6 @@
 <script lang="ts" setup>
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconChartMap } from '@/components/icon-group/chart-list'
-import { iconChartDivideMap } from '@/components/icon-group/chart-divide-list'
 import datasetOutline from '@/assets/svg/dataset-outline.svg'
 import dvLinkTarget from '@/assets/svg/dv-link-target.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
