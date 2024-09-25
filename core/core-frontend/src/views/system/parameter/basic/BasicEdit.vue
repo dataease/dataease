@@ -134,7 +134,7 @@ const edit = (list, orgOptions, roleOptions, loginOptions) => {
         }
       ]
     }
-    if (pkey === 'basic.exportFileLiveTime') {
+    if (pkey === 'basic.exportFileLiveTime' || pkey === 'basic.frontTimeOut') {
       rule[pkey.split('.')[1]] = [
         {
           required: true,
@@ -143,6 +143,7 @@ const edit = (list, orgOptions, roleOptions, loginOptions) => {
         }
       ]
     }
+
     item['label'] = `setting_${pkey}`
     item['pkey'] = pkey.split('.')[1]
     let pval = item.pval
