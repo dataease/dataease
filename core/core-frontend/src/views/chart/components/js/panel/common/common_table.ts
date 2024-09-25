@@ -520,6 +520,7 @@ export function getConditions(chart: Chart) {
     const headerValueBgColor = isAlphaColor(tableHeader.tableHeaderBgColor)
       ? tableHeader.tableHeaderBgColor
       : hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
+    const filedValueMap = getFieldValueMap(chart)
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
       let defaultValueColor = valueColor
@@ -541,7 +542,7 @@ export function getConditions(chart: Chart) {
             return null
           }
           return {
-            fill: mappingColor(value, defaultValueColor, field, 'color')
+            fill: mappingColor(value, defaultValueColor, field, 'color', filedValueMap, rowData)
           }
         }
       })
@@ -554,7 +555,14 @@ export function getConditions(chart: Chart) {
           if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
-          const fill = mappingColor(value, defaultBgColor, field, 'backgroundColor')
+          const fill = mappingColor(
+            value,
+            defaultBgColor,
+            field,
+            'backgroundColor',
+            filedValueMap,
+            rowData
+          )
           if (isTransparent(fill)) {
             return null
           }
@@ -566,13 +574,28 @@ export function getConditions(chart: Chart) {
   return res
 }
 
-export function mappingColor(value, defaultColor, field, type) {
+export function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) {
   let color
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
     const t = field.conditions[i]
     if (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) {
-      const tv = parseFloat(t.value)
+      let tv, max, min
+      if (t.type === 'dynamic') {
+        if (t.term === 'between') {
+          max = parseFloat(getValue(t.dynamicMaxField, filedValueMap, rowData))
+          min = parseFloat(getValue(t.dynamicMinField, filedValueMap, rowData))
+        } else {
+          tv = parseFloat(getValue(t.dynamicField, filedValueMap, rowData))
+        }
+      } else {
+        if (t.term === 'between') {
+          min = parseFloat(t.min)
+          max = parseFloat(t.max)
+        } else {
+          tv = parseFloat(t.value)
+        }
+      }
       if (t.term === 'eq') {
         if (value === tv) {
           color = t[type]
@@ -604,8 +627,6 @@ export function mappingColor(value, defaultColor, field, type) {
           flag = true
         }
       } else if (t.term === 'between') {
-        const min = parseFloat(t.min)
-        const max = parseFloat(t.max)
         if (min <= value && value <= max) {
           color = t[type]
           flag = true
@@ -706,6 +727,24 @@ export function mappingColor(value, defaultColor, field, type) {
     }
   }
   return color
+}
+
+function getFieldValueMap(view) {
+  const fieldValueMap = {}
+  if (view.data && view.data.dynamicAssistLines && view.data.dynamicAssistLines.length > 0) {
+    view.data.dynamicAssistLines.forEach(ele => {
+      fieldValueMap[ele.summary + '-' + ele.fieldId] = ele.value
+    })
+  }
+  return fieldValueMap
+}
+
+function getValue(field, filedValueMap, rowData) {
+  if (field.summary === 'value') {
+    return rowData ? rowData[field.field?.dataeaseName] : undefined
+  } else {
+    return filedValueMap[field.summary + '-' + field.fieldId]
+  }
 }
 
 export function handleTableEmptyStrategy(chart: Chart) {

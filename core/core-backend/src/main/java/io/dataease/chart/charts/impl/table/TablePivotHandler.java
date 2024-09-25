@@ -17,6 +17,7 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
@@ -35,6 +36,25 @@ public class TablePivotHandler extends GroupChartHandler {
         T result =  super.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
         Map<String, Object> customCalc = calcCustomExpr(view, filterResult, sqlMap, sqlMeta, provider);
         result.getData().put("customCalc", customCalc);
+        try {
+            var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+            var originSql = result.getQuerySql();
+            var dynamicAssistFields = getDynamicThresholdFields(view);
+            var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+            var assistFields = getAssistFields(dynamicAssistFields, yAxis);
+            if (CollectionUtils.isNotEmpty(assistFields)) {
+                var req = new DatasourceRequest();
+                req.setDsList(dsMap);
+                var assistSql = assistSQL(originSql, assistFields);
+                req.setQuery(assistSql);
+                logger.debug("calcite assistSql sql: " + assistSql);
+                var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
+                result.setAssistData(assistData);
+                result.setDynamicAssistFields(dynamicAssistFields);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
