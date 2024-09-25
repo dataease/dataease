@@ -21,6 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProviderFactory {
 
     public static Provider getProvider(String type) throws DEException {
+        if (type.equalsIgnoreCase("es")) {
+            return SpringContextUtil.getApplicationContext().getBean("esProvider", Provider.class);
+        }
         List<String> list = Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList();
         if (list.contains(type)) {
             return SpringContextUtil.getApplicationContext().getBean("calciteProvider", Provider.class);

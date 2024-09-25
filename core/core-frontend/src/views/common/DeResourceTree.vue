@@ -260,6 +260,8 @@ const afterTreeInit = () => {
   })
 }
 
+const copyLoading = ref(false)
+
 const emit = defineEmits(['nodeClick'])
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
@@ -291,29 +293,36 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
       id: data.id,
       pid: targetPid || '0'
     }
-    copyResource(params).then(data => {
-      const baseUrl =
-        curCanvasType.value === 'dataV'
-          ? `#/dvCanvas?opt=copy&pid=${params.pid}&dvId=${data.data}`
-          : `#/dashboard?opt=copy&pid=${params.pid}&resourceId=${data.data}`
-      if (isEmbedded.value) {
-        embeddedStore.clearState()
-        embeddedStore.setPid(params.pid as string)
-        embeddedStore.setOpt('copy')
-        if (curCanvasType.value === 'dataV') {
-          embeddedStore.setDvId(data.data)
-        } else {
-          embeddedStore.setResourceId(data.data)
+
+    copyLoading.value = true
+
+    copyResource(params)
+      .then(data => {
+        const baseUrl =
+          curCanvasType.value === 'dataV'
+            ? `#/dvCanvas?opt=copy&pid=${params.pid}&dvId=${data.data}`
+            : `#/dashboard?opt=copy&pid=${params.pid}&resourceId=${data.data}`
+        if (isEmbedded.value) {
+          embeddedStore.clearState()
+          embeddedStore.setPid(params.pid as string)
+          embeddedStore.setOpt('copy')
+          if (curCanvasType.value === 'dataV') {
+            embeddedStore.setDvId(data.data)
+          } else {
+            embeddedStore.setResourceId(data.data)
+          }
+          useEmitt().emitter.emit(
+            'changeCurrentComponent',
+            curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
+          )
+          return
         }
-        useEmitt().emitter.emit(
-          'changeCurrentComponent',
-          curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
-        )
-        return
-      }
-      const newWindow = window.open(baseUrl, '_blank')
-      initOpenHandler(newWindow)
-    })
+        const newWindow = window.open(baseUrl, '_blank')
+        initOpenHandler(newWindow)
+      })
+      .finally(() => {
+        copyLoading.value = false
+      })
   } else {
     resourceGroupOpt.value.optInit(nodeType, data, cmd, ['copy'].includes(cmd))
   }
@@ -593,7 +602,7 @@ defineExpose({
         </template>
       </el-dropdown>
     </div>
-    <el-scrollbar class="custom-tree">
+    <el-scrollbar class="custom-tree" v-loading="copyLoading">
       <el-tree
         menu
         ref="resourceListTree"

@@ -110,7 +110,6 @@ public class ChartDataManage {
         }
 
         var dillAxis = new ArrayList<ChartViewFieldDTO>();
-
         DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
         if (table == null) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));

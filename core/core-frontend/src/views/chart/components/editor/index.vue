@@ -1074,7 +1074,19 @@ const onAssistLineChange = val => {
 
 const onThresholdChange = val => {
   view.value.senior.threshold = val
-  renderChart(view.value)
+  let type = undefined
+  view.value.senior.threshold?.tableThreshold?.some(item => {
+    if (item.conditions.some(i => i.type === 'dynamic')) {
+      type = 'calcData'
+      return true
+    }
+    return false
+  })
+  if (type) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onMapMappingChange = val => {
@@ -1766,9 +1778,7 @@ const deleteChartFieldItem = id => {
               </div>
               <el-popover show-arrow :offset="8" placement="bottom" width="200" trigger="click">
                 <template #reference>
-                  <el-icon
-                    v-show="route.path !== '/dvCanvas'"
-                    style="margin-left: 4px; cursor: pointer"
+                  <el-icon style="margin-left: 4px; cursor: pointer"
                     ><Icon><dvInfoSvg class="svg-icon" /></Icon
                   ></el-icon>
                 </template>

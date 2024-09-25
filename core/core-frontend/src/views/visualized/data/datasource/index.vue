@@ -142,7 +142,7 @@ const nickName = ref('')
 const dsName = ref('')
 const userDrawer = ref(false)
 const rawDatasourceList = ref([])
-const showPriority = ref(true)
+const showPriority = ref(false)
 const showSSH = ref(true)
 const datasourceEditor = ref()
 const activeTab = ref('')
@@ -378,6 +378,7 @@ const initSearch = () => {
   state.filterTable = tableData.value.filter(ele =>
     ele.tableName.toLowerCase().includes(nickName.value.toLowerCase())
   )
+  console.log(tableData.value)
   state.paginationConfig.total = state.filterTable.length
 }
 
@@ -862,6 +863,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
 }
 
 const handleClick = (tabName: TabPaneName) => {
+  console.log(tabName)
   switch (tabName) {
     case 'config':
       listDatasourceTables({ datasourceId: nodeInfo.id }).then(res => {
@@ -1372,7 +1374,7 @@ const getMenuList = (val: boolean) => {
                   }}</BaseInfoItem>
                 </el-col>
               </el-row>
-              <template v-if="!['Excel', 'API'].includes(nodeInfo.type)">
+              <template v-if="!['Excel', 'API', 'es'].includes(nodeInfo.type)">
                 <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.host')">{{
@@ -1498,6 +1500,15 @@ const getMenuList = (val: boolean) => {
                     </el-col>
                   </el-row>
                 </template>
+              </template>
+              <template v-if="['es'].includes(nodeInfo.type)">
+                <el-row :gutter="24">
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.datasource_url')">{{
+                      nodeInfo.configuration.url
+                    }}</BaseInfoItem>
+                  </el-col>
+                </el-row>
               </template>
             </template>
           </BaseInfoContent>

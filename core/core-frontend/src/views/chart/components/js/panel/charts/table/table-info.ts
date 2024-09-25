@@ -1,4 +1,12 @@
-import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet, ViewMeta } from '@antv/s2'
+import {
+  type LayoutResult,
+  S2Event,
+  S2Options,
+  TableColCell,
+  TableDataCell,
+  TableSheet,
+  ViewMeta
+} from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
@@ -192,6 +200,60 @@ export class TableInfo extends S2ChartView<TableSheet> {
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 
+    // 自适应铺满
+    if (customAttr.basicStyle.tableColumnMode === 'adapt') {
+      newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
+        newChart.store.set('lastLayoutResult', newChart.facet.layoutResult)
+      })
+      newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (ev: LayoutResult) => {
+        const status = newChart.store.get('status')
+        if (status === 'default') {
+          return
+        }
+        const lastLayoutResult = newChart.store.get('lastLayoutResult') as LayoutResult
+        if (status === 'expanded' && lastLayoutResult) {
+          // 拖拽表头定义宽度，和上一次布局对比，保留除已拖拽列之外的宽度
+          const widthByFieldValue = newChart.options.style?.colCfg?.widthByFieldValue
+          const lastLayoutWidthMap: Record<string, number> = lastLayoutResult?.colLeafNodes.reduce(
+            (p, n) => {
+              p[n.value] = widthByFieldValue?.[n.value] ?? n.width
+              return p
+            },
+            {}
+          )
+          const totalWidth = ev.colLeafNodes.reduce((p, n) => {
+            n.width = lastLayoutWidthMap[n.value]
+            n.x = p
+            return p + n.width
+          }, 0)
+          ev.colsHierarchy.width = totalWidth
+        } else {
+          // 第一次渲染初始化，把图片字段固定为 120 进行计算
+          const urlFields = fields.filter(field => field.deType === 7).map(f => f.dataeaseName)
+          const totalWidthWithImg = ev.colLeafNodes.reduce((p, n) => {
+            return p + (urlFields.includes(n.field) ? 120 : n.width)
+          }, 0)
+          if (containerDom.offsetWidth <= totalWidthWithImg) {
+            // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，不处理
+            newChart.store.set('status', 'default')
+            return
+          }
+          // 图片字段固定 120, 剩余宽度按比例均摊到其他字段进行扩大
+          const totalWidthWithoutImg = ev.colLeafNodes.reduce((p, n) => {
+            return p + (urlFields.includes(n.field) ? 0 : n.width)
+          }, 0)
+          const restWidth = containerDom.offsetWidth - urlFields.length * 120
+          const scale = restWidth / totalWidthWithoutImg
+          const totalWidth = ev.colLeafNodes.reduce((p, n) => {
+            n.width = urlFields.includes(n.field) ? 120 : n.width * scale
+            n.x = p
+            return p + n.width
+          }, 0)
+          ev.colsHierarchy.width = Math.min(containerDom.offsetWidth, totalWidth)
+          newChart.store.set('status', 'expanded')
+        }
+      })
+    }
     // click
     newChart.on(S2Event.DATA_CELL_CLICK, ev => {
       const cell = newChart.getCell(ev.target)
