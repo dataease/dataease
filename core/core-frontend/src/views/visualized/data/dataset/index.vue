@@ -471,6 +471,7 @@ const handleClick = (tabName: TabPaneName) => {
         break
       }
       dataPreviewLoading.value = true
+      total.value = null
       getDatasetPreview(nodeInfo.id)
         .then(res => {
           allFields = (res?.allFields as unknown as Field[]) || []
