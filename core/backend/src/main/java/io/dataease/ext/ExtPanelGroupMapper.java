@@ -37,4 +37,6 @@ public interface ExtPanelGroupMapper {
     List<RelationDTO> queryPanelRelation(@Param("panelId") String panelId, @Param("userId") Long userId);
 
     List<PanelGroup> listPanelByUser(@Param("userId") long userId);
+
+    String queryPanelName(@Param("panelId") String panelId);
 }

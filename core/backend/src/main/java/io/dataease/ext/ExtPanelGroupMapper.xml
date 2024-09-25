@@ -366,4 +366,8 @@
             )
         group by pg.id
     </select>
+
+    <select id="queryPanelName" resultType="java.lang.String">
+        select `name` from `panel_group` where `id` = #{panelId}
+    </select>
 </mapper>

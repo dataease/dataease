@@ -21,7 +21,6 @@ import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTaskDTO;
-import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.panel.PanelExport2App;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.PanelTemplateFileDTO;
@@ -32,6 +31,7 @@ import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
@@ -327,6 +327,10 @@ public class PanelGroupService {
         extPanelLinkJumpMapper.deleteJumpInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpWithPanel(id);
         DeLogUtils.save(sysLogDTO);
+    }
+
+    public String getPanelName(String panelId) {
+        return extPanelGroupMapper.queryPanelName(panelId);
     }
 
 
@@ -722,10 +726,10 @@ public class PanelGroupService {
                 composePermission.add(customFilterPermission);
             }
             dataSetExportRequest.setExpressionTree(gson.toJson(permissionsTreeObjFilter));
-        } else if(StringUtils.isNotEmpty(permissionsTreeObjCustomsFilter.getLogic())){
+        } else if (StringUtils.isNotEmpty(permissionsTreeObjCustomsFilter.getLogic())) {
             dataSetExportRequest.setExpressionTree(customFilter);
         }
-        dataSetExportRequest.setFilename(request.getViewName()+"-details");
+        dataSetExportRequest.setFilename(request.getViewName() + "-details");
 
         return dataSetExportRequest;
     }
