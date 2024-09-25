@@ -1074,7 +1074,19 @@ const onAssistLineChange = val => {
 
 const onThresholdChange = val => {
   view.value.senior.threshold = val
-  renderChart(view.value)
+  let type = undefined
+  view.value.senior.threshold?.tableThreshold?.some(item => {
+    if (item.conditions.some(i => i.type === 'dynamic')) {
+      type = 'calcData'
+      return true
+    }
+    return false
+  })
+  if (type) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onMapMappingChange = val => {
