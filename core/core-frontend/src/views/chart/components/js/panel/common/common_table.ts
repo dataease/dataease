@@ -412,7 +412,6 @@ export function getStyle(chart: Chart): Style {
     }
     switch (basicStyle.tableColumnMode) {
       case 'adapt': {
-        delete style.cellCfg.width
         style.layoutWidthType = 'compact'
         break
       }
