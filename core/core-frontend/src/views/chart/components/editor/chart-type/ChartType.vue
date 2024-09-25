@@ -5,8 +5,6 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import { ElScrollbar } from 'element-plus-secondary'
 import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list'
 import { iconChartMap } from '@/components/icon-group/chart-list'
-import { iconChartDivideMap } from '@/components/icon-group/chart-divide-list'
-import { iconChartDarkDivideMap } from '@/components/icon-group/chart-dark-divide-list'
 
 const props = defineProps({
   propValue: {
@@ -108,9 +106,8 @@ const groupActiveChange = category => {
                   class="svg-icon item-top-icon"
                   :is="
                     props.themes === 'dark'
-                      ? iconChartDarkMap[`${chartInfo.icon}-dark`] ||
-                        iconChartDarkDivideMap[`${chartInfo.icon}-dark`]
-                      : iconChartMap[chartInfo.icon] || iconChartDivideMap[chartInfo.icon]
+                      ? iconChartDarkMap[`${chartInfo.icon}-dark`]
+                      : iconChartMap[chartInfo.icon]
                   "
                 ></component
               ></Icon>

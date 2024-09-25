@@ -20,10 +20,7 @@
             <Icon class-name="view-type-icon"
               ><component
                 class="svg-icon view-type-icon"
-                :is="
-                  iconChartMap[state.curLinkageViewInfo.type] ||
-                  iconChartDivideMap[state.curLinkageViewInfo.type]
-                "
+                :is="iconChartMap[state.curLinkageViewInfo.type]"
               ></component
             ></Icon>
             {{ state.curLinkageViewInfo.title }}</span
@@ -90,10 +87,7 @@
                     <span class="tree-select-field">
                       <Icon class-name="view-type-icon"
                         ><component
-                          :is="
-                            iconChartMap[data.targetViewType] ||
-                            iconChartDivideMap[data.targetViewType]
-                          "
+                          :is="iconChartMap[data.targetViewType]"
                           style="margin-right: 4px"
                           class="svg-icon view-type-icon"
                         ></component
@@ -144,10 +138,7 @@
                         ><component
                           class="svg-icon view-type-icon"
                           style="margin-right: 4px"
-                          :is="
-                            iconChartMap[data.targetViewType] ||
-                            iconChartDivideMap[data.targetViewType]
-                          "
+                          :is="iconChartMap[data.targetViewType]"
                         ></component
                       ></Icon>
                       {{ data.targetViewName }}
@@ -279,7 +270,6 @@
 <script lang="ts" setup>
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconChartMap } from '@/components/icon-group/chart-list'
-import { iconChartDivideMap } from '@/components/icon-group/chart-divide-list'
 import datasetOutline from '@/assets/svg/dataset-outline.svg'
 import dvLinkTarget from '@/assets/svg/dv-link-target.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'

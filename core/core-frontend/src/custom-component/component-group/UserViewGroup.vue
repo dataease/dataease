@@ -1,6 +1,5 @@
 <script setup lang="tsx">
 import { iconChartMap } from '@/components/icon-group/chart-list'
-import { iconChartDivideMap } from '@/components/icon-group/chart-divide-list'
 import { reactive, ref, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
@@ -9,7 +8,6 @@ import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
 import { ElScrollbar } from 'element-plus-secondary'
 import { XpackComponent } from '@/components/plugin'
 import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list'
-import { iconChartDarkDivideMap } from '@/components/icon-group/chart-dark-divide-list'
 
 const props = defineProps({
   propValue: {
@@ -151,9 +149,8 @@ const loadPluginCategory = data => {
                   class="svg-icon item-top-icon"
                   :is="
                     props.themes === 'dark'
-                      ? iconChartDarkMap[`${chartInfo.icon}-dark`] ||
-                        iconChartDarkDivideMap[`${chartInfo.icon}-dark`]
-                      : iconChartMap[chartInfo.icon] || iconChartDivideMap[chartInfo.icon]
+                      ? iconChartDarkMap[`${chartInfo.icon}-dark`]
+                      : iconChartMap[chartInfo.icon]
                   "
                 ></component
               ></Icon>
