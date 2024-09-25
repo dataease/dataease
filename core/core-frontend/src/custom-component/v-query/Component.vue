@@ -111,6 +111,27 @@ const btnStyle = computed(() => {
 
   return style
 })
+
+const btnPlainStyle = computed(() => {
+  const style = {
+    backgroundColor: 'transparent',
+    borderColor: customStyle.btnColor,
+    color: customStyle.btnColor
+  } as CSSProperties
+  if (customStyle.fontSizeBtn) {
+    style.fontSize = customStyle.fontSizeBtn + 'px'
+  }
+
+  if (customStyle.fontWeightBtn) {
+    style.fontWeight = customStyle.fontWeightBtn
+  }
+
+  if (customStyle.fontStyleBtn) {
+    style.fontStyle = customStyle.fontStyleBtn
+  }
+
+  return style
+})
 const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
 })
@@ -619,10 +640,20 @@ const autoStyle = computed(() => {
           </div>
         </div>
         <div class="query-button" v-if="!!listVisible.length">
-          <el-button @click.stop="clearData" v-if="customStyle.btnList.includes('clear')" secondary>
+          <el-button
+            @click.stop="clearData"
+            :style="btnPlainStyle"
+            v-if="customStyle.btnList.includes('clear')"
+            plain
+          >
             {{ t('commons.clear') }}
           </el-button>
-          <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
+          <el-button
+            @click.stop="resetData"
+            :style="btnPlainStyle"
+            v-if="customStyle.btnList.includes('reset')"
+            plain
+          >
             {{ t('chart.reset') }}
           </el-button>
           <el-button
