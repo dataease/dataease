@@ -69,6 +69,14 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
     btnColor: '#3370ff'
   }
 }
+
+if (!chart.value.customStyle.component.hasOwnProperty('placeholderShow')) {
+  chart.value.customStyle.component = {
+    ...chart.value.customStyle.component,
+    placeholderShow: true,
+    placeholder: '请选择'
+  }
+}
 </script>
 
 <template>
@@ -166,12 +174,25 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
               <el-checkbox
                 :effect="themes"
                 size="small"
-                v-model="chart.customStyle.component.textColorShow"
+                v-model="chart.customStyle.component.placeholderShow"
               >
-                提示文字颜色
+                提示词
               </el-checkbox>
             </el-form-item>
             <el-form-item
+              label="提示词"
+              class="form-item"
+              style="padding-left: 20px"
+              :class="'form-item-' + themes"
+            >
+              <el-input
+                :effect="themes"
+                :disabled="!chart.customStyle.component.placeholderShow"
+                v-model.lazy="chart.customStyle.component.placeholder"
+              />
+            </el-form-item>
+            <el-form-item
+              label="提示词颜色"
               class="form-item"
               style="padding-left: 20px"
               :class="'form-item-' + themes"
@@ -181,7 +202,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                 :trigger-width="108"
                 is-custom
                 v-model="chart.customStyle.component.text"
-                :disabled="!chart.customStyle.component.textColorShow"
+                :disabled="!chart.customStyle.component.placeholderShow"
                 :predefine="predefineColors"
               />
             </el-form-item>

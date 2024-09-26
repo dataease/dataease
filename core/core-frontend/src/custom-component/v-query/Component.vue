@@ -63,6 +63,8 @@ const canEdit = ref(false)
 const queryConfig = ref()
 const defaultStyle = {
   border: '',
+  placeholder: '请选择',
+  placeholderShow: true,
   background: '',
   text: '',
   layout: 'horizontal',
@@ -151,7 +153,6 @@ const setCustomStyle = val => {
     layout,
     titleShow,
     titleColor,
-    textColorShow,
     title,
     fontSize,
     fontWeight,
@@ -164,12 +165,16 @@ const setCustomStyle = val => {
     queryConditionSpacing,
     labelColorBtn,
     btnColor,
+    placeholder,
+    placeholderShow,
     labelShow
   } = val
   customStyle.background = bgColorShow ? bgColor || '' : ''
   customStyle.border = borderShow ? borderColor || '' : ''
   customStyle.btnList = [...btnList]
   customStyle.layout = layout
+  customStyle.placeholderShow = placeholderShow ?? true
+  customStyle.placeholder = placeholder ?? '请选择'
   customStyle.titleShow = titleShow
   customStyle.titleColor = titleColor
   customStyle.labelColor = labelShow ? labelColor || '' : ''
@@ -177,7 +182,7 @@ const setCustomStyle = val => {
   customStyle.fontWeight = labelShow ? fontWeight || '' : ''
   customStyle.fontStyle = labelShow ? fontStyle || '' : ''
   customStyle.title = title
-  customStyle.text = textColorShow ? text || '' : ''
+  customStyle.text = customStyle.placeholderShow ? text || '' : ''
   customStyle.titleLayout = titleLayout
   customStyle.fontSizeBtn = fontSizeBtn || '14'
   customStyle.fontWeightBtn = fontWeightBtn
@@ -292,6 +297,13 @@ const getCascadeList = () => {
   return props.element.cascade
 }
 
+const getPlaceholder = computed(() => {
+  return {
+    placeholder: customStyle.placeholder,
+    placeholderShow: customStyle.placeholderShow
+  }
+})
+
 const isConfirmSearch = id => {
   if (componentWithSure.value) return
   queryDataForId(id)
@@ -303,6 +315,7 @@ provide('release-unmount-select', releaseSelect)
 provide('query-data-for-id', queryDataForId)
 provide('com-width', getQueryConditionWidth)
 provide('cascade-list', getCascadeList)
+provide('placeholder', getPlaceholder)
 
 onBeforeUnmount(() => {
   emitter.off(`addQueryCriteria${element.value.id}`)
