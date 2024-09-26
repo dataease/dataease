@@ -610,7 +610,7 @@ defineExpose({
   ::v-deep(p) {
     zoom: var(--de-canvas-scale);
   }
-  ::v-deep(span) {
+  ::v-deep(td span) {
     zoom: var(--de-canvas-scale);
   }
 }
