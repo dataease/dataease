@@ -87,6 +87,7 @@ const removeDistributeModule = () => {
   localStorage.removeItem(key)
 }
 const importLic = file => {
+  removeDistributeModule()
   const reader = new FileReader()
   reader.onload = function (e) {
     const licKey = e.target.result
@@ -97,7 +98,6 @@ const importLic = file => {
   reader.readAsText(file)
 }
 const validateHandler = (param, success) => {
-  removeDistributeModule()
   validateApi(param).then(success)
 }
 const getLicense = result => {

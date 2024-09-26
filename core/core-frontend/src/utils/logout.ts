@@ -51,7 +51,8 @@ const removeCache = () => {
     if (
       key.startsWith('de-plugin-') ||
       key === 'de-platform-client' ||
-      key === 'pwd-validity-period'
+      key === 'pwd-validity-period' ||
+      key === 'xpack-model-distributed'
     ) {
       wsCache.delete(key)
     }

@@ -97,6 +97,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   async drawChart(drawOptions: G2PlotDrawOptions<Column>): Promise<Column> {
     const { chart, container, action } = drawOptions
     if (!chart?.data?.data?.length) {
+      chart.container = container
       clearExtremum(chart)
       return
     }
