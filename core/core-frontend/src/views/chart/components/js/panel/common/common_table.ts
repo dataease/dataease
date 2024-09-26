@@ -573,7 +573,7 @@ export function getConditions(chart: Chart) {
   return res
 }
 
-export function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) {
+export function mappingColor(value, defaultColor, field, type, filedValueMap?, rowData?) {
   let color
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
