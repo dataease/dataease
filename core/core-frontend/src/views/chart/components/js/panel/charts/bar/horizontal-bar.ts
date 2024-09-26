@@ -360,7 +360,7 @@ export class HorizontalStackBar extends HorizontalBar {
     if (mainSort || subSort) {
       return options
     }
-    const quotaSort = yAxis?.[0].sort !== 'none'
+    const quotaSort = yAxis?.[0]?.sort !== 'none'
     if (!quotaSort || !extStack.length || !yAxis.length) {
       return options
     }
