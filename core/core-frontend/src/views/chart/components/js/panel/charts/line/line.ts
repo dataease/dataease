@@ -289,8 +289,11 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   }
   protected configLegend(chart: Chart, options: LineOptions): LineOptions {
     const optionTmp = super.configLegend(chart, options)
+    if (!optionTmp.legend) {
+      return optionTmp
+    }
     const xAxisExt = chart.xAxisExt[0]
-    if (optionTmp.legend && xAxisExt?.customSort?.length > 0) {
+    if (xAxisExt?.customSort?.length > 0) {
       // 图例自定义排序
       const l = optionTmp.legend
       const basicStyle = parseJson(chart.customAttr).basicStyle
@@ -303,11 +306,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
           marker: {
             symbol: l.marker.symbol,
             style: {
-              r: 6,
-              fill: 'rgba(0,0,0,0)',
-              lineWidth: 2,
-              lineJoin: 'round',
-              stroke: basicStyle.colors[index % basicStyle.colors.length]
+              r: 4,
+              fill: basicStyle.colors[index % basicStyle.colors.length]
             }
           }
         })
@@ -320,6 +320,12 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       return {
         ...optionTmp,
         legend
+      }
+    }
+    optionTmp.legend.marker.style = style => {
+      return {
+        r: 5,
+        fill: style.stroke
       }
     }
     return optionTmp
