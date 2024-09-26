@@ -348,9 +348,6 @@ export class StackBar extends Bar {
   }
 
   protected configTotalLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
-    if (!options.label) {
-      return options
-    }
     const { label } = parseJson(chart.customAttr)
     if (label.showTotal) {
       const formatterCfg = label.labelFormatter ?? formatterItem
