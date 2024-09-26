@@ -12,6 +12,7 @@ import * as vueRouter from 'vue-router'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import request from '@/config/axios'
 const { wsCache } = useCache()
+import { isNull } from '@/utils/utils'
 
 const plugin = ref()
 
@@ -103,10 +104,14 @@ onMounted(async () => {
   let distributed = false
   if (wsCache.get(key) === null) {
     const res = await xpackModelApi()
-    wsCache.set('xpack-model-distributed', res.data)
+    wsCache.set('xpack-model-distributed', isNull(res.data) ? 'null' : res.data)
     distributed = res.data
   } else {
     distributed = wsCache.get(key)
+  }
+  if (isNull(distributed)) {
+    emits('loadFail')
+    return
   }
   if (distributed) {
     const moduleName = getModuleName()
