@@ -6,6 +6,7 @@
     @keyup.stop
     @dblclick="setEdit"
     @click="onClick"
+    :style="richTextStyle"
   >
     <chart-error v-if="isError" :err-msg="errMsg" />
     <Editor
@@ -163,7 +164,28 @@ const init = ref({
   inline: true, // 开启内联模式
   branding: false,
   icons: 'vertical-content',
-  vertical_align: element.value.propValue.verticalAlign
+  vertical_align: element.value.propValue.verticalAlign,
+  setup: function (editor) {
+    // 在表格调整大小开始时
+    editor.on('ObjectResizeStart', function (e) {
+      const { target, width, height } = e
+      if (target.nodeName === 'TABLE') {
+        // 将宽高根据缩放比例调整
+        // e.width = width / props.scale
+        // e.height = height / props.scale
+      }
+    })
+
+    // 在表格调整大小结束时
+    editor.on('ObjectResized', function (e) {
+      const { target, width, height } = e
+      if (target.nodeName === 'TABLE') {
+        // 将最终调整的宽高根据缩放比例重设
+        // target.style.width = `${width * props.scale}px`
+        // target.style.height = `${height  scaleFactor}px`
+      }
+    })
+  }
 })
 
 const editStatus = computed(() => {
@@ -561,6 +583,8 @@ const conditionAdaptor = (chart: Chart) => {
   return res
 }
 
+const richTextStyle = computed(() => [{ '--de-canvas-scale': props.scale }])
+
 onMounted(() => {
   viewInit()
 })
@@ -582,6 +606,12 @@ defineExpose({
   div::-webkit-scrollbar {
     width: 0px !important;
     height: 0px !important;
+  }
+  ::v-deep(p) {
+    zoom: var(--de-canvas-scale);
+  }
+  ::v-deep(span) {
+    zoom: var(--de-canvas-scale);
   }
 }
 

@@ -944,6 +944,7 @@ const loadPluginCategory = data => {
       </de-picture-group>
       <de-rich-text-view
         v-else-if="showChartView(ChartLibraryType.RICH_TEXT)"
+        :scale="scale"
         :themes="canvasStyleData.dashboard.themeColor"
         ref="chartComponent"
         :element="element"
