@@ -50,6 +50,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   async drawChart(drawOptions: G2PlotDrawOptions<G2Line>): Promise<G2Line> {
     const { chart, action, container } = drawOptions
     if (!chart.data?.data?.length) {
+      chart.container = container
       clearExtremum(chart)
       return
     }
