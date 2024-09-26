@@ -396,6 +396,15 @@ const conversionPrecision = [
 </script>
 
 <template>
+  <el-form-item class="form-item" :class="'form-item-' + themes">
+    <el-checkbox
+      size="small"
+      :effect="themes"
+      v-model="state.labelForm.show"
+      @change="changeLabelAttr('show')"
+      :label="t('chart.show')"
+    />
+  </el-form-item>
   <el-form
     ref="labelForm"
     :disabled="!state.labelForm.show"
@@ -665,15 +674,6 @@ const conversionPrecision = [
         />
       </el-form-item>
     </template>
-    <el-form-item v-if="showProperty('showTotal')" class="form-item" :class="'form-item-' + themes">
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.labelForm.showTotal"
-        @change="changeLabelAttr('showTotal')"
-        :label="t('chart.total_show')"
-      />
-    </el-form-item>
     <template v-if="false && showProperty('totalFormatter')">
       <el-divider class="m-divider" :class="{ 'divider-dark': themes === 'dark' }" />
       <div v-show="state.labelForm.showTotal">
@@ -1470,6 +1470,16 @@ const conversionPrecision = [
       </el-row>
     </div>
   </el-form>
+  <el-form-item v-if="showProperty('showTotal')" class="form-item" :class="'form-item-' + themes">
+    <el-checkbox
+      size="small"
+      :effect="themes"
+      :disabled="false"
+      v-model="state.labelForm.showTotal"
+      @change="changeLabelAttr('showTotal')"
+      :label="t('chart.total_show')"
+    />
+  </el-form-item>
 </template>
 
 <style lang="less" scoped>
