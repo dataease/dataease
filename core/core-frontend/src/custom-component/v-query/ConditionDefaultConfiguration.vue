@@ -325,10 +325,11 @@ defineExpose({
 <template>
   <div class="list-item top-item" v-if="curComponent.displayType === '8'" @click.stop>
     <div class="label">设置默认值</div>
-    <div class="value">
+    <div class="value" :class="curComponent.hideConditionSwitching && 'hide-condition_switching'">
       <div class="condition-type">
         <el-select
           class="condition-value-select"
+          v-if="!curComponent.hideConditionSwitching"
           popper-class="condition-value-select-popper"
           v-model="curComponent.defaultConditionValueOperatorF"
         >
@@ -346,6 +347,7 @@ defineExpose({
       <div class="condition-type" v-if="[1, 2].includes(curComponent.conditionType)">
         <sapn class="condition-type-tip">{{ curComponent.conditionType === 1 ? '与' : '或' }}</sapn>
         <el-select
+          v-if="!curComponent.hideConditionSwitching"
           class="condition-value-select"
           popper-class="condition-value-select-popper"
           v-model="curComponent.defaultConditionValueOperatorS"
@@ -708,6 +710,16 @@ defineExpose({
       }
       &:first-child {
         margin-top: -0.5px;
+      }
+    }
+
+    &.hide-condition_switching {
+      .bottom-line {
+        width: 307px !important;
+
+        &.next-line {
+          width: 288px !important;
+        }
       }
     }
   }

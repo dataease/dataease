@@ -6,6 +6,7 @@ interface SelectConfig {
   id: string
   conditionValueOperatorF: string
   conditionValueF: string
+  hideConditionSwitching: boolean
   conditionValueOperatorS: string
   conditionValueS: string
   defaultConditionValueOperatorF: string
@@ -90,6 +91,7 @@ const lineWidth = computed(() => {
     <div class="condition-type">
       <el-select
         class="condition-value-select"
+        v-if="!config.hideConditionSwitching"
         @change="handleValueChange"
         :effect="dvInfo.type === 'dataV' ? 'dark' : ''"
         popper-class="condition-value-select-popper"
@@ -109,6 +111,7 @@ const lineWidth = computed(() => {
     <div class="condition-type" v-if="[1, 2].includes(config.conditionType)">
       <sapn class="condition-type-tip">{{ config.conditionType === 1 ? '与' : '或' }}</sapn>
       <el-select
+        v-if="!config.hideConditionSwitching"
         class="condition-value-select"
         @change="handleValueChange"
         :effect="dvInfo.type === 'dataV' ? 'dark' : ''"
