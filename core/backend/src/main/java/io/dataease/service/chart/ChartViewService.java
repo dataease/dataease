@@ -787,17 +787,20 @@ public class ChartViewService {
                     return emptyChartViewDTO(view);
                 }
                 ChartFieldCompareDTO compareCalc = yAxis.get(0).getCompareCalc();
-                boolean isYoy = StringUtils.isNotEmpty(compareCalc.getType()) && !StringUtils.equalsIgnoreCase(compareCalc.getType(),"none");
-                if(isYoy){
-                    List<DatasetTableField> xField = fields.stream().filter(item->StringUtils.equalsIgnoreCase(item.getId(),compareCalc.getField())).collect(Collectors.toList());
-                    if(CollectionUtils.isNotEmpty(xField)){
+                if (Objects.isNull(compareCalc)) {
+                    break;
+                }
+                boolean isYoy = StringUtils.isNotEmpty(compareCalc.getType()) && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none");
+                if (isYoy) {
+                    List<DatasetTableField> xField = fields.stream().filter(item -> StringUtils.equalsIgnoreCase(item.getId(), compareCalc.getField())).collect(Collectors.toList());
+                    if (CollectionUtils.isNotEmpty(xField)) {
                         ChartViewFieldDTO xFieldChartViewFieldDTO = new ChartViewFieldDTO();
                         org.springframework.beans.BeanUtils.copyProperties(xField.get(0), xFieldChartViewFieldDTO);
                         xAxis.add(xFieldChartViewFieldDTO);
                         xAxis.get(0).setSort("desc");
-                        if(Objects.isNull(compareCalc.getCustom())){
+                        if (Objects.isNull(compareCalc.getCustom())) {
                             xAxis.get(0).setDateStyle("y_M_d");
-                        }else{
+                        } else {
                             xAxis.get(0).setDateStyle(compareCalc.getCustom().getTimeType());
                         }
                     }
@@ -1179,7 +1182,7 @@ public class ChartViewService {
             data = resultCustomSort(xAxis, data);
 
             // 插件同环比
-            data = pluginViewYOY(pluginViewParam, view, data);
+            data = pluginViewYOY(pluginViewParam, view, data, ds);
 
             // 请求正确的数据，然后取值
             if (isYOY) {
@@ -2035,9 +2038,9 @@ public class ChartViewService {
         return result;
     }
 
-    private List<String[]> pluginViewYOY(PluginViewParam param, ChartViewDTO view, List<String[]> args) {
+    private List<String[]> pluginViewYOY(PluginViewParam param, ChartViewDTO view, List<String[]> args, Datasource ds) {
         ViewPluginService viewPluginService = getPluginService(view.getType());
-        return viewPluginService.yoy(param, args);
+        return viewPluginService.yoy(param, args, ds);
     }
 
     private ChartViewDTO emptyChartViewDTO(ChartViewDTO view) {

@@ -608,11 +608,13 @@ export function stockLineOptionAntV(container, chart, action) {
   const theme = getTheme(chart)
   const legend = getLegend(chart)
   const basicStyle = JSON.parse(chart.customAttr).color
-  const colors = []
+  let colors = []
   const alpha = basicStyle.alpha
   basicStyle.colors.forEach(ele => {
     colors.push(hexColorToRGBA(ele, alpha))
   })
+  // custom color
+  colors = antVCustomColor(chart)
   const data = cloneDeep(chart.data?.tableRow ?? [])
 
   // 时间字段

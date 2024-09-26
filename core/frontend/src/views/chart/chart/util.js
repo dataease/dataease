@@ -1746,7 +1746,7 @@ export const TYPE_CONFIGS = [
     icon: 'stock-line',
     properties: [
       'color-selector',
-      'size-selector',
+      'size-selector-ant-v',
       'tooltip-selector-ant-v',
       'x-axis-selector-ant-v',
       'y-axis-selector-ant-v',
@@ -1760,7 +1760,7 @@ export const TYPE_CONFIGS = [
         'customColor',
         'alpha'
       ],
-      'size-selector': [
+      'size-selector-ant-v': [
         'lineWidth',
         'lineSymbol',
         'lineSymbolSize',
@@ -3760,6 +3760,15 @@ export function getColors(chart, colors, reset) {
           isCustom: false
         })
       }
+    }
+  } else if (equalsAny(chart.type, 'stock-line')) {
+    const averages = ['MA5', 'MA10', 'MA20', 'MA60', 'MA120', 'MA180']
+    for (let i = 0; i < averages.length; i++) {
+      seriesColors.push({
+        name: averages[i],
+        color: colors[i % colors.length],
+        isCustom: false
+      })
     }
   } else {
     if (chart.data) {

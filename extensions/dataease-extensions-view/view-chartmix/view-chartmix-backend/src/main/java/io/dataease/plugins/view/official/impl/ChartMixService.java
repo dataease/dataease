@@ -1,5 +1,6 @@
 package io.dataease.plugins.view.official.impl;
 
+import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.dto.StaticResource;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import io.dataease.plugins.view.entity.*;
@@ -119,7 +120,7 @@ public class ChartMixService extends ViewPluginService {
     }
 
     @Override
-    public List<String[]> yoy(PluginViewParam pluginViewParam, List<String[]> data) {
+    public List<String[]> yoy(PluginViewParam pluginViewParam, List<String[]> data, Datasource ds) {
         List<PluginViewField> xAxis = new ArrayList<>();
         List<PluginViewField> yAxis = new ArrayList<>();
 
@@ -183,7 +184,7 @@ public class ChartMixService extends ViewPluginService {
                             String cValue = item[dataIndex];
 
                             // 获取计算后的时间，并且与所有维度拼接
-                            String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
+                            String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern(), ds);
                             String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
                             dimension[timeIndex] = lastTime;
 
@@ -317,11 +318,14 @@ public class ChartMixService extends ViewPluginService {
                 return StringUtils.equalsIgnoreCase(calcType, "day_mom")
                         || StringUtils.equalsIgnoreCase(calcType, "month_yoy")
                         || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
+            case "y_W":
+                return StringUtils.equalsIgnoreCase(calcType, "week_mom")
+                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
         }
         return false;
     }
 
-    private String calcLastTime(String cTime, String type, String dateStyle, String datePattern) {
+    private String calcLastTime(String cTime, String type, String dateStyle, String datePattern, Datasource ds) {
         try {
             String lastTime = null;
             Calendar calendar = Calendar.getInstance();
@@ -355,6 +359,12 @@ public class ChartMixService extends ViewPluginService {
                         simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                     } else {
                         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    }
+                } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_W")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'w");
                     }
                 }
                 Date date = simpleDateFormat.parse(cTime);
@@ -390,6 +400,26 @@ public class ChartMixService extends ViewPluginService {
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
                 calendar.add(Calendar.MONTH, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.WEEK_MOM)) {
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                    if (StringUtils.equalsIgnoreCase(ds.getType(), "ck")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'ww");
+                    }
+                } else {
+                    if (StringUtils.equalsIgnoreCase(ds.getType(), "ck")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'ww");
+                    }
+                }
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.DAY_OF_YEAR, 6);// 加6天用一周最后一天计算周，可避免跨年的问题
+                calendar.add(Calendar.WEEK_OF_YEAR, -1);
                 lastTime = simpleDateFormat.format(calendar.getTime());
             }
             return lastTime;
