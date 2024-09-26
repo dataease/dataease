@@ -281,7 +281,6 @@ const editCompare = () => {
 }
 
 const valueFormatter = () => {
-  debugger
   item.value.index = props.index
   item.value.formatterType = props.type
   emit('valueFormatter', item.value)
