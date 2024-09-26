@@ -1777,10 +1777,11 @@ const getDsIconName = data => {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${
-                                fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
-                              }`"
                               ><component
+                                class="svg-icon"
+                                :class="`field-icon-${
+                                  fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
+                                }`"
                                 :is="iconFieldMap[getIconName(scope.row.deType)]"
                               ></component
                             ></Icon>
@@ -1956,10 +1957,11 @@ const getDsIconName = data => {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${
-                                fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
-                              }`"
                               ><component
+                                class="svg-icon"
+                                :class="`field-icon-${
+                                  fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
+                                }`"
                                 :is="iconFieldMap[getIconName(scope.row.deType)]"
                               ></component
                             ></Icon>
