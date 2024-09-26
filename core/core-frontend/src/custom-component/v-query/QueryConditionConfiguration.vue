@@ -1020,6 +1020,7 @@ const weightlessness = () => {
 const parameterCompletion = () => {
   const attributes = {
     timeType: 'fixed',
+    hideConditionSwitching: false,
     required: false,
     defaultMapValue: [],
     mapValue: [],
@@ -1067,7 +1068,7 @@ const parameterCompletion = () => {
     treeFieldList: []
   }
   Object.entries(attributes).forEach(([key, val]) => {
-    !curComponent.value[key] && (curComponent.value[key] = val)
+    curComponent.value[key] ?? (curComponent.value[key] = val)
   })
 
   if (!curComponent.value.timeRange.relativeToCurrentRange) {
@@ -2137,6 +2138,9 @@ defineExpose({
                 </el-radio-group>
               </div>
             </div>
+          </div>
+          <div v-if="curComponent.displayType === '8'">
+            <el-checkbox v-model="curComponent.hideConditionSwitching" label="隐藏条件切换" />
           </div>
           <condition-default-configuration
             ref="defaultConfigurationRef"
