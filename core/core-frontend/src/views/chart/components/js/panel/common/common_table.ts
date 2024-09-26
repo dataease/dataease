@@ -901,6 +901,19 @@ export function configHeaderInteraction(chart: Chart, option: S2Options) {
           event,
           ...props
         })
+        const parent = document.getElementById(chart.container)
+        if (parent?.childNodes?.length) {
+          const child = Array.from(parent.childNodes)
+            .filter(node => node.nodeType === Node.ELEMENT_NODE)
+            .find(node => node.classList.contains('antv-s2-tooltip-container'))
+          if (child) {
+            const left = child.offsetLeft + child.clientWidth
+            if (left > parent.offsetWidth) {
+              const newLeft = parent.offsetWidth - child.clientWidth - 10
+              child.style.left = `${newLeft}px`
+            }
+          }
+        }
       }
     }
   ]

@@ -166,6 +166,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
     } else {
       // header interaction
+      chart.container = container
       this.configHeaderInteraction(chart, s2Options)
     }
 
