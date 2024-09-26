@@ -195,6 +195,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
       }
     } else {
       // header interaction
+      chart.container = container
       this.configHeaderInteraction(chart, s2Options)
     }
     // 开始渲染
