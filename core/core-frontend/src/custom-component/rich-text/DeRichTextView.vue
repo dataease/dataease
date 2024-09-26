@@ -204,6 +204,7 @@ watch(
       canEdit.value = false
       reShow()
       myValue.value = assignment(element.value.propValue.textValue)
+      console.log('===myValue.value=' + myValue.value)
       ed.setContent(myValue.value)
     }
   }
@@ -263,6 +264,23 @@ const initCurFieldsChange = () => {
   }
 }
 
+const jumpTargetAdaptor = () => {
+  setTimeout(() => {
+    const paragraphs = document.querySelectorAll('p')
+    paragraphs.forEach(p => {
+      // 如果 p 标签已经有 onclick 且包含 event.stopPropagation，则跳过
+      if (
+        p.getAttribute('onclick') &&
+        p.getAttribute('onclick').includes('event.stopPropagation()')
+      ) {
+        return // 已经有 stopPropagation，跳过
+      }
+      // 否则添加 onclick 事件
+      p.setAttribute('onclick', 'event.stopPropagation()')
+    })
+  }, 1000)
+}
+
 const assignment = content => {
   const on = content.match(/\[(.+?)\]/g)
   if (on) {
@@ -288,8 +306,10 @@ const assignment = content => {
   //De 本地跳转失效问题
   content = content.replace(/href="#\//g, 'href="/#/')
   content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
+  content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
   resetSelect()
   initFontFamily(content)
+  jumpTargetAdaptor()
   return content
 }
 const initFontFamily = htmlText => {
