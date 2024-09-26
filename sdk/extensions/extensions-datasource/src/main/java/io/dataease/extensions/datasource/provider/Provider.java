@@ -229,9 +229,6 @@ public abstract class Provider {
             case h2:
                 sqlDialect = H2SqlDialect.DEFAULT;
                 break;
-            case es:
-                sqlDialect = EsSqlDialect.DEFAULT;
-                break;
             default:
                 sqlDialect = MysqlSqlDialect.DEFAULT;
         }
