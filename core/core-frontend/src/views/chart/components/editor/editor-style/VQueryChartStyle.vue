@@ -74,7 +74,8 @@ if (!chart.value.customStyle.component.hasOwnProperty('placeholderShow')) {
   chart.value.customStyle.component = {
     ...chart.value.customStyle.component,
     placeholderShow: true,
-    placeholder: '请选择'
+    placeholder: '请选择',
+    placeholderSize: 14
   }
 }
 </script>
@@ -192,19 +193,30 @@ if (!chart.value.customStyle.component.hasOwnProperty('placeholderShow')) {
               />
             </el-form-item>
             <el-form-item
-              label="提示词颜色"
+              label="文本"
               class="form-item"
               style="padding-left: 20px"
               :class="'form-item-' + themes"
             >
-              <el-color-picker
-                :effect="themes"
-                :trigger-width="108"
-                is-custom
-                v-model="chart.customStyle.component.text"
-                :disabled="!chart.customStyle.component.placeholderShow"
-                :predefine="predefineColors"
-              />
+              <div style="display: flex; align-items: center; width: 100%">
+                <el-color-picker
+                  :effect="themes"
+                  :trigger-width="56"
+                  is-custom
+                  v-model="chart.customStyle.component.text"
+                  :disabled="!chart.customStyle.component.placeholderShow"
+                  :predefine="predefineColors"
+                />
+                <el-input-number
+                  v-model="chart.customStyle.component.placeholderSize"
+                  :min="10"
+                  :max="20"
+                  style="margin-left: 8px"
+                  step-strictly
+                  :effect="themes"
+                  controls-position="right"
+                />
+              </div>
             </el-form-item>
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox

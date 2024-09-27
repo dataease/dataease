@@ -484,6 +484,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               nameboxSpacing: 8,
               placeholder: '请选择',
               placeholderShow: true,
+              placeholderSize: 14,
               queryConditionSpacing: 16,
               labelColorBtn: '#ffffff',
               btnColor: '#3370ff'
