@@ -3481,12 +3481,7 @@ const deleteChartFieldItem = id => {
             class="name-edit-form no-margin-bottom"
             prop="chartShowName"
           >
-            <el-input
-              v-model="state.itemForm.chartShowName"
-              class="text"
-              :maxlength="20"
-              clearable
-            />
+            <el-input v-model="state.itemForm.chartShowName" class="text" clearable />
           </el-form-item>
         </el-form>
       </div>
