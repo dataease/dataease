@@ -209,6 +209,19 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
+    // 总计紧贴在单元格后面
+    if (customAttr.basicStyle.showSummary) {
+      newChart.on(S2Event.LAYOUT_BEFORE_RENDER, () => {
+        const totalHeight =
+          customAttr.tableHeader.tableTitleHeight * 2 +
+          customAttr.tableCell.tableItemHeight * (newData.length - 1)
+        if (totalHeight < newChart.options.height) {
+          // 6 是阴影高度
+          newChart.options.height =
+            totalHeight < newChart.options.height - 6 ? totalHeight + 6 : totalHeight
+        }
+      })
+    }
     // 自适应铺满
     if (customAttr.basicStyle.tableColumnMode === 'adapt') {
       newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
