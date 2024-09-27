@@ -249,6 +249,8 @@ const init = () => {
       initSeriesLabel()
       formatterSelector.value?.blur()
     }
+    //初始化标签位置
+    initPosition()
   }
 }
 const checkLabelContent = contentProp => {
@@ -320,32 +322,78 @@ const showPositionV = computed(() => {
   }
   return false
 })
+function initBidirectionalBarPosition() {
+  if (chartType.value === 'bidirectional-bar') {
+    const layout = props.chart.customAttr.basicStyle.layout
+    const oldPosition = state?.labelForm?.position
+    if (state?.labelForm?.position === 'inner' || state?.labelForm?.position === 'outer') {
+      state.labelForm.position = 'middle'
+    }
+    if (layout === 'horizontal') {
+      if (state?.labelForm?.position === 'top') {
+        state.labelForm.position = 'right'
+      }
+      if (state?.labelForm?.position === 'bottom') {
+        state.labelForm.position = 'left'
+      }
+    }
+    if (layout === 'vertical') {
+      if (state?.labelForm?.position === 'left') {
+        state.labelForm.position = 'bottom'
+      }
+      if (state?.labelForm?.position === 'right') {
+        state.labelForm.position = 'top'
+      }
+    }
+    if (oldPosition !== state.labelForm.position) {
+      changeLabelAttr('position')
+    }
+  }
+}
+
+function initPosition() {
+  if (chartType.value === 'bidirectional-bar') {
+    initBidirectionalBarPosition()
+  } else {
+    const oldPosition = state?.labelForm?.position
+    if (showProperty('rPosition')) {
+      if (state?.labelForm?.position !== 'inner') {
+        state.labelForm.position = 'outer'
+      }
+    } else if (showProperty('hPosition')) {
+      if (state?.labelForm?.position === 'top') {
+        state.labelForm.position = 'right'
+      } else if (state?.labelForm?.position === 'bottom') {
+        state.labelForm.position = 'left'
+      } else if (state?.labelForm?.position === 'inner' || state?.labelForm?.position === 'outer') {
+        state.labelForm.position = 'middle'
+      }
+    } else if (showProperty('vPosition')) {
+      if (state?.labelForm?.position === 'left') {
+        state.labelForm.position = 'bottom'
+      } else if (state?.labelForm?.position === 'right') {
+        state.labelForm.position = 'top'
+      } else if (state?.labelForm?.position === 'inner' || state?.labelForm?.position === 'outer') {
+        state.labelForm.position = 'middle'
+      }
+    }
+    if (oldPosition !== state.labelForm.position) {
+      changeLabelAttr('position')
+    }
+  }
+}
+
 watch(
   () => props.chart.customAttr.basicStyle.layout,
   () => {
-    const layout = props.chart.customAttr.basicStyle.layout
-    if (chartType.value === 'bidirectional-bar') {
-      if (layout === 'horizontal') {
-        if (state?.labelForm?.position === 'top') {
-          state.labelForm.position = 'right'
-        }
-        if (state?.labelForm?.position === 'bottom') {
-          state.labelForm.position = 'left'
-        }
-      }
-      if (layout === 'vertical') {
-        if (state?.labelForm?.position === 'left') {
-          state.labelForm.position = 'bottom'
-        }
-        if (state?.labelForm?.position === 'right') {
-          state.labelForm.position = 'top'
-        }
-      }
-      changeLabelAttr('position')
-    }
+    initBidirectionalBarPosition()
   },
   { deep: true }
 )
+
+watch(chartType, (value, oldValue) => {
+  initPosition()
+})
 
 const allFields = computed(() => {
   return defaultTo(props.allFields, []).map(item => ({
