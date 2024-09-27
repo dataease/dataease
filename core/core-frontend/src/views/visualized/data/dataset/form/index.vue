@@ -98,6 +98,7 @@ const maskShow = ref(false)
 const loading = ref(false)
 const updateCustomTime = ref(false)
 const editerName = ref()
+const nameMap = ref({})
 const currentField = ref({
   dateFormat: '',
   id: '',
@@ -720,8 +721,18 @@ const dimensions = computed(() => {
   return allfields.value.filter(ele => ele.groupType === 'd')
 })
 
+const dfsGetName = (list, name) => {
+  list.forEach(ele => {
+    name[ele.id] = ele.tableName
+    if (ele.children?.length) {
+      dfsGetName(ele.children, name)
+    }
+  })
+}
+
 const tabChange = val => {
   if (val === 'preview') return
+  dfsGetName(datasetDrag.value.getNodeList(), nameMap.value)
   allfields.value.forEach(ele => {
     if (!Array.isArray(ele.deTypeArr)) {
       ele.deTypeArr =
@@ -745,6 +756,7 @@ const addComplete = () => {
   }
   cancelMap['/datasetData/previewData']?.()
   datasetPreviewLoading.value = false
+  dfsGetName(datasetDrag.value.getNodeList(), nameMap.value)
 }
 
 const state = reactive({
@@ -1747,7 +1759,13 @@ const getDsIconName = data => {
                         </div>
                       </template>
                     </el-table-column>
-
+                    <el-table-column prop="datasetTableId" label="表名" width="240">
+                      <template #default="scope">
+                        <div v-if="scope.row.extField === 0">
+                          {{ nameMap[scope.row.datasetTableId] }}
+                        </div>
+                      </template>
+                    </el-table-column>
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
@@ -1924,6 +1942,14 @@ const getDsIconName = data => {
                         <div class="column-style">
                           <span v-if="scope.row.extField === 0">{{ scope.row.description }}</span>
                           <span style="color: #8d9199" v-else>&nbsp;</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column prop="datasetTableId" label="表名" width="240">
+                      <template #default="scope">
+                        <div v-if="scope.row.extField === 0">
+                          {{ nameMap[scope.row.datasetTableId] }}
                         </div>
                       </template>
                     </el-table-column>
