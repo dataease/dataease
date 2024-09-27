@@ -106,6 +106,14 @@ const noChildrenFieldChart = chart => {
   return ['area', 'bar'].includes(chart.type)
 }
 
+/**
+ * 支持最值图表的折线图，面积图，柱状图，分组柱状图
+ * @param chart
+ */
+const supportExtremumChartType = chart => {
+  return ['line', 'area', 'bar', 'bar-group'].includes(chart.type)
+}
+
 const chartContainerId = chart => {
   return chart.container + '_'
 }
@@ -131,6 +139,10 @@ function removeDivsWithPrefix(parentDivId, prefix) {
 
 export const extremumEvt = (newChart, chart, _options, container) => {
   chart.container = container
+  if (!supportExtremumChartType(chart)) {
+    clearExtremum(chart)
+    return
+  }
   const { label: labelAttr } = parseJson(chart.customAttr)
   const { yAxis } = parseJson(chart)
   newChart.once('beforerender', ev => {
@@ -145,8 +157,12 @@ export const extremumEvt = (newChart, chart, _options, container) => {
         }
         let showExtremum = false
         if (noChildrenFieldChart(chart) || yAxis.length > 1) {
-          const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(
-            d => d.name === minItem._origin.category || d.name === maxItem._origin.category
+          const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(d =>
+            d.chartShowName
+              ? d.chartShowName
+              : d.name === minItem._origin.category || d.chartShowName
+              ? d.chartShowName
+              : d.name === maxItem._origin.category
           )
           showExtremum = seriesLabelFormatter?.showExtremum
         } else {
@@ -248,8 +264,10 @@ export const createExtremumPoint = (chart, ev) => {
       let attr
       let showExtremum = false
       if (noChildrenFieldChart(chart) || yAxis.length > 1) {
-        const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(
-          d => d.name === pointObj._origin.category
+        const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(d =>
+          d.chartShowName
+            ? d.chartShowName === pointObj._origin.category
+            : d.name === pointObj._origin.category
         )
         showExtremum = seriesLabelFormatter?.showExtremum
         attr = seriesLabelFormatter
