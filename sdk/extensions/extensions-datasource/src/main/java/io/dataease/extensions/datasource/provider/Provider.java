@@ -209,7 +209,7 @@ public abstract class Provider {
                 sqlDialect = ImpalaSqlDialect.DEFAULT;
                 break;
             case sqlServer:
-                sqlDialect = MssqlSqlDialect.DEFAULT;
+                sqlDialect = new MssqlSqlDialect(MssqlSqlDialect.DEFAULT_CONTEXT, coreDatasource.getDsVersion());
                 break;
             case oracle:
                 sqlDialect = OracleSqlDialect.DEFAULT;
