@@ -433,7 +433,7 @@ watch(
             />
           </el-collapse-item>
           <el-collapse-item
-            :themes="themes"
+            :effect="themes"
             v-if="showProperties('label-selector')"
             :title="t('chart.label')"
             name="label"
