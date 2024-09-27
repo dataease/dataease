@@ -18,7 +18,8 @@ import {
   onBeforeMount,
   CSSProperties,
   shallowRef,
-  provide
+  provide,
+  nextTick
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -57,6 +58,7 @@ const props = defineProps({
 })
 const { element, view, scale } = toRefs(props)
 const { t } = useI18n()
+const vQueryRef = ref()
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap } = storeToRefs(dvMainStore)
 const canEdit = ref(false)
@@ -64,6 +66,7 @@ const queryConfig = ref()
 const defaultStyle = {
   border: '',
   placeholder: '请选择',
+  placeholderSize: 14,
   placeholderShow: true,
   background: '',
   text: '',
@@ -166,6 +169,7 @@ const setCustomStyle = val => {
     labelColorBtn,
     btnColor,
     placeholder,
+    placeholderSize,
     placeholderShow,
     labelShow
   } = val
@@ -174,6 +178,14 @@ const setCustomStyle = val => {
   customStyle.btnList = [...btnList]
   customStyle.layout = layout
   customStyle.placeholderShow = placeholderShow ?? true
+  customStyle.placeholderSize = placeholderSize ?? 14
+  nextTick(() => {
+    vQueryRef.value.style.setProperty('--ed-font-size-base', `${customStyle.placeholderSize}px`)
+    vQueryRef.value.style.setProperty(
+      '--ed-component-size',
+      `${customStyle.placeholderSize + 18}px`
+    )
+  })
   customStyle.placeholder = placeholder ?? '请选择'
   customStyle.titleShow = titleShow
   customStyle.titleColor = titleColor
@@ -577,7 +589,7 @@ const autoStyle = computed(() => {
 </script>
 
 <template>
-  <div class="v-query-container" :style="autoStyle" @keydown.stop @keyup.stop>
+  <div class="v-query-container" ref="vQueryRef" :style="autoStyle" @keydown.stop @keyup.stop>
     <p v-if="customStyle.titleShow" class="title" :style="titleStyle">
       {{ customStyle.title }}
     </p>
@@ -697,6 +709,7 @@ const autoStyle = computed(() => {
   height: 100%;
   overflow: auto;
   position: relative;
+  --ed-font-size-base: 14px;
 
   .no-list-label {
     width: 100%;
