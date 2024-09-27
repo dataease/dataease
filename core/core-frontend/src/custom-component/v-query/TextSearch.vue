@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs, onBeforeMount, Ref, type PropType, inject, computed, nextTick } from 'vue'
+import { toRefs, onBeforeMount, type PropType, inject, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 interface SelectConfig {
@@ -52,13 +52,6 @@ const props = defineProps({
   }
 })
 
-const placeholder: Ref = inject('placeholder')
-const placeholderText = computed(() => {
-  if (placeholder.value.placeholderShow) {
-    return placeholder.value.placeholder
-  }
-  return ' '
-})
 const { config } = toRefs(props)
 const setParams = () => {
   const {
@@ -111,7 +104,6 @@ const lineWidth = computed(() => {
       <el-input
         :style="selectStyle"
         @blur="handleValueChange"
-        :placeholder="placeholderText"
         class="condition-value-input"
         v-model="config.conditionValueF"
       />
@@ -133,7 +125,6 @@ const lineWidth = computed(() => {
       <el-input
         :style="selectStyle"
         @blur="handleValueChange"
-        :placeholder="placeholderText"
         class="condition-value-input"
         v-model="config.conditionValueS"
       />
