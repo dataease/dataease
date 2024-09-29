@@ -144,6 +144,8 @@ const stopEvent = e => {
         <component-position :themes="themes" />
       </el-collapse-item>
       <slot name="dataset" />
+      <slot name="carousel" />
+      <slot name="threshold" />
       <el-collapse-item
         :effect="themes"
         title="背景"
