@@ -860,6 +860,10 @@ declare interface ChartLabelAttr {
    * 总计标签格式化设置
    */
   totalFormatter: BaseFormatter
+  /**
+   * 柱状图堆叠指标
+   */
+  showStackQuota: boolean
 }
 /**
  * 提示设置
