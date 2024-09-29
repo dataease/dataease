@@ -195,7 +195,7 @@ const componentBackgroundStyle = computed(() => {
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor
     }
-    if (backgroundImageEnable) {
+    if (backgroundImageEnable || (config.value.innerType === 'VQuery' && backgroundColorSelect)) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
         style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
       } else {
