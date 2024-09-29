@@ -1,46 +1,45 @@
 <script setup lang="ts">
-import CommonAttr from '@/custom-component/common/CommonAttr.vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-
-import { storeToRefs } from 'pinia'
-import { PropType, toRefs } from 'vue'
-import PictureGroupUploadAttr from '@/custom-component/picture-group/PictureGroupUploadAttr.vue'
+import { PropType, reactive, toRefs } from 'vue'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
-import PictureGroupDatasetSelect from '@/custom-component/picture-group/PictureGroupDatasetSelect.vue'
+import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { useEmitt } from '@/hooks/web/useEmitt'
+const snapshotStore = snapshotStoreWithOut()
 
 const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  view: {
+    type: Object as PropType<ChartObj>,
+    required: false,
+    default() {
+      return { ...BASE_VIEW_CONFIG }
+    }
   }
 })
+const { view } = toRefs(props)
+const state = reactive({})
 
-const dvMainStore = dvMainStoreWithOut()
-
-const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
+const onDatasetUpdate = () => {
+  useEmitt().emitter.emit('calcData-' + view.value.id, view)
+  snapshotStore.recordSnapshotCache('calc', view.value.id)
+}
 </script>
 
 <template>
-  <div class="attr-list de-collapse-style">
-    <CommonAttr
+  <el-collapse-item :effect="themes" title="数据集" name="dataset">
+    <dataset-select
+      ref="datasetSelector"
+      v-model="view.tableId"
+      style="flex: 1"
+      :view-id="view.id"
       :themes="themes"
-      :element="curComponent"
-      :background-color-picker-width="197"
-      :background-border-select-width="197"
-    >
-      <template v-slot:dataset>
-        <picture-group-dataset-select
-          :themes="themes"
-          :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
-        >
-        </picture-group-dataset-select>
-      </template>
-      <picture-group-upload-attr
-        :themes="themes"
-        :element="curComponent"
-      ></picture-group-upload-attr>
-    </CommonAttr>
-  </div>
+      @on-dataset-change="onDatasetUpdate"
+      :state-obj="state"
+    />
+  </el-collapse-item>
 </template>
 
 <style lang="less" scoped>
