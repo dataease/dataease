@@ -2139,7 +2139,7 @@ defineExpose({
               </div>
             </div>
           </div>
-          <div v-if="curComponent.displayType === '8'">
+          <div style="margin-bottom: 10.5px" v-if="curComponent.displayType === '8'">
             <el-checkbox v-model="curComponent.hideConditionSwitching" label="隐藏条件切换" />
           </div>
           <condition-default-configuration

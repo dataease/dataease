@@ -15,10 +15,10 @@ import { iconFieldMap } from '@/components/icon-group/field-list'
 const unionTypeFromParent = ref('left')
 const { t } = useI18n()
 const iconName = {
-  left: 'icon_left-association',
-  right: 'icon_right-association',
-  inner: 'icon_intersect',
-  full: 'icon_full-association'
+  left: icon_leftAssociation,
+  right: icon_rightAssociation,
+  inner: icon_intersect,
+  full: icon_fullAssociation
 }
 const props = defineProps({
   tableName: {
