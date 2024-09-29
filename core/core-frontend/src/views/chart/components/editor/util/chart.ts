@@ -1494,7 +1494,7 @@ export const CHART_TYPE_CONFIGS = [
   },
   {
     category: 'other',
-    title: '富文本',
+    title: '其他',
     display: 'hidden',
     details: [
       {
@@ -1503,6 +1503,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'rich-text',
         title: '富文本',
         icon: 'rich-text'
+      },
+      {
+        render: 'custom',
+        category: 'quota',
+        value: 'picture-group',
+        title: '图片组',
+        icon: 'picture-group'
       }
     ]
   }

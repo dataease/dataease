@@ -85,8 +85,8 @@ export default function findComponent(key) {
 
 export function findComponentAttr(component) {
   const key =
-    component.component === 'UserView' && component.innerType === 'Picture'
-      ? 'PictureAttr'
+    component.component === 'UserView' && component.innerType === 'picture-group'
+      ? 'PictureGroupAttr'
       : component.component + 'Attr'
   return componentsMap[key]
 }

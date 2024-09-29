@@ -80,7 +80,7 @@ const otherEditorShow = computed(() => {
     curComponent.value &&
       (!['UserView', 'VQuery'].includes(curComponent.value?.component) ||
         (curComponent.value?.component === 'UserView' &&
-          curComponent.value?.innerType === 'Picture')) &&
+          curComponent.value?.innerType === 'picture-group')) &&
       !batchOptStatus.value
   )
 })
@@ -93,7 +93,7 @@ const viewEditorShow = computed(() => {
   return Boolean(
     curComponent.value &&
       ['UserView', 'VQuery'].includes(curComponent.value.component) &&
-      curComponent.value.innerType !== 'Picture' &&
+      curComponent.value.innerType !== 'picture-group' &&
       !batchOptStatus.value
   )
 })
