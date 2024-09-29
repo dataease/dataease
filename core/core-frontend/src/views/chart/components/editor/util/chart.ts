@@ -339,7 +339,8 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
   showTotal: false,
   totalFontSize: 12,
   totalColor: '#FFF',
-  totalFormatter: formatterItem
+  totalFormatter: formatterItem,
+  showStackQuota: false
 }
 export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,

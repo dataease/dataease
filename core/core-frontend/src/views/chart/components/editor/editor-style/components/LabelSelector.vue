@@ -12,6 +12,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { parseJson } from '../../../js/util'
 
 const { t } = useI18n()
 
@@ -242,6 +243,7 @@ const init = () => {
   if (chart.customAttr) {
     const customAttr = chart.customAttr
     if (customAttr.label) {
+      configCompat(customAttr.label)
       state.labelForm = defaultsDeep(customAttr.label, cloneDeep(COMPUTED_DEFAULT_LABEL.value))
       if (chartType.value === 'liquid' && state.labelForm.fontSize < fontSizeList.value[0].value) {
         state.labelForm.fontSize = fontSizeList.value[0].value
@@ -251,6 +253,11 @@ const init = () => {
     }
     //初始化标签位置
     initPosition()
+  }
+}
+const configCompat = (labelAttr: DeepPartial<ChartLabelAttr>) => {
+  if (labelAttr.showStackQuota === undefined) {
+    labelAttr.showStackQuota = labelAttr.show
   }
 }
 const checkLabelContent = contentProp => {
@@ -444,15 +451,6 @@ const conversionPrecision = [
 </script>
 
 <template>
-  <el-form-item class="form-item" :class="'form-item-' + themes">
-    <el-checkbox
-      size="small"
-      :effect="themes"
-      v-model="state.labelForm.show"
-      @change="changeLabelAttr('show')"
-      :label="t('chart.show')"
-    />
-  </el-form-item>
   <el-form
     ref="labelForm"
     :disabled="!state.labelForm.show"
@@ -460,6 +458,36 @@ const conversionPrecision = [
     label-position="top"
   >
     <el-row v-show="showEmpty" style="margin-bottom: 12px"> 无其他可设置的属性</el-row>
+    <div>
+      <el-form-item
+        v-if="showProperty('showStackQuota')"
+        class="form-item"
+        :class="'form-item-' + themes"
+        style="display: inline-block; margin-right: 8px"
+      >
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="state.labelForm.showStackQuota"
+          @change="changeLabelAttr('showStackQuota')"
+          :label="t('chart.quota')"
+        />
+      </el-form-item>
+      <el-form-item
+        v-if="showProperty('showTotal')"
+        class="form-item"
+        :class="'form-item-' + themes"
+        style="display: inline-block"
+      >
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="state.labelForm.showTotal"
+          @change="changeLabelAttr('showTotal')"
+          :label="t('chart.total_show')"
+        />
+      </el-form-item>
+    </div>
     <div v-if="!isGroupBar">
       <el-space>
         <el-form-item
@@ -1518,16 +1546,6 @@ const conversionPrecision = [
       </el-row>
     </div>
   </el-form>
-  <el-form-item v-if="showProperty('showTotal')" class="form-item" :class="'form-item-' + themes">
-    <el-checkbox
-      size="small"
-      :effect="themes"
-      :disabled="false"
-      v-model="state.labelForm.showTotal"
-      @change="changeLabelAttr('showTotal')"
-      :label="t('chart.total_show')"
-    />
-  </el-form-item>
 </template>
 
 <style lang="less" scoped>

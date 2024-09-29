@@ -432,9 +432,12 @@ watch(
               @onChangeMiscStyleForm="onChangeMiscStyleForm"
             />
           </el-collapse-item>
-          <el-collapse-item
-            :effect="themes"
+          <collapse-switch-item
+            :themes="themes"
             v-if="showProperties('label-selector')"
+            v-model="chart.customAttr.label.show"
+            :change-model="chart.customAttr.label"
+            @modelChange="val => onLabelChange({ data: val }, 'show')"
             :title="t('chart.label')"
             name="label"
           >
@@ -446,7 +449,7 @@ watch(
               :all-fields="props.allFields"
               @onLabelChange="onLabelChange"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
           <collapse-switch-item
             v-if="showProperties('tooltip-selector')"
             v-model="chart.customAttr.tooltip.show"
