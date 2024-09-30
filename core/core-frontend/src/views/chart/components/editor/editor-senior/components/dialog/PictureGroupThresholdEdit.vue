@@ -7,6 +7,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import PictureItem from '@/custom-component/picture-group/PictureItem.vue'
+import PictureOptionPrefix from '@/custom-component/picture-group/PictureOptionPrefix.vue'
 
 const { t } = useI18n()
 
@@ -429,13 +431,25 @@ init()
             >
               <div class="color-title">展示图片</div>
               <el-form-item class="form-item">
-                <el-select v-model="item.url" @change="changeThreshold">
+                <el-select
+                  v-model="item.url"
+                  @change="changeThreshold"
+                  popper-class="picture-group-select"
+                >
+                  <template v-if="item.url" #prefix>
+                    <picture-option-prefix :url="item.url"></picture-option-prefix>
+                  </template>
                   <el-option
                     v-for="urlInfo in element.propValue.urlList"
                     :key="urlInfo.url"
                     :label="urlInfo.name"
                     :value="urlInfo.url"
-                  />
+                  >
+                    <picture-item
+                      :active="item.url === urlInfo.url"
+                      :url-info="urlInfo"
+                    ></picture-item>
+                  </el-option>
                 </el-select>
               </el-form-item>
             </div>
@@ -595,5 +609,32 @@ span {
   align-items: center;
   justify-content: flex-start;
   padding: 0 11px;
+}
+</style>
+
+<style lang="less">
+.picture-group-select {
+  min-width: 50px !important;
+  width: 304px;
+  .ed-scrollbar__view {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .ed-select-dropdown__item {
+    height: 100px !important;
+    text-align: center;
+    padding: 0px 5px;
+  }
+
+  .ed-select-dropdown__item.selected::after {
+    display: none;
+  }
+
+  .ed-select-dropdown__item.hover {
+    background-color: rgba(0, 0, 0, 0) !important;
+  }
+  .ed-select-dropdown__item.selected {
+    background-color: rgba(0, 0, 0, 0) !important;
+  }
 }
 </style>

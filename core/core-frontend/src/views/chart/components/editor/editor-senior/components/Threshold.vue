@@ -907,7 +907,7 @@ span {
   align-items: center;
   flex-wrap: nowrap;
   :nth-child(1) {
-    width: 48px !important;
+    width: 48px;
   }
   :nth-child(2) {
     width: 40px !important;
@@ -985,7 +985,7 @@ span {
   border-radius: 2px;
 }
 .pic-group-img {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>
