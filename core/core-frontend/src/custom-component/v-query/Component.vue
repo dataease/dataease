@@ -180,14 +180,10 @@ const setCustomStyle = val => {
   customStyle.placeholderShow = placeholderShow ?? true
   customStyle.placeholderSize = placeholderSize ?? 14
   nextTick(() => {
-    vQueryRef.value.style.setProperty('--ed-font-size-base', `${customStyle.placeholderSize}px`)
     vQueryRef.value.style.setProperty(
       '--ed-component-size',
       `${customStyle.placeholderSize + 18}px`
     )
-    vQueryRef.value.querySelectorAll('.ed-tag').forEach(ele => {
-      ele.style.setProperty('--ed-tag-font-size', `${customStyle.placeholderSize}px`)
-    })
   })
   customStyle.placeholder = placeholder ?? '请选择'
   customStyle.titleShow = titleShow
@@ -716,10 +712,10 @@ const autoStyle = computed(() => {
   height: 100%;
   overflow: auto;
   position: relative;
-  --ed-font-size-base: 14px;
+  --ed-font-size-base: v-bind(boxWidth);
 
   :deep(.ed-tag) {
-    --ed-tag-font-size: 14px;
+    --ed-tag-font-size: v-bind(boxWidth);
   }
 
   :deep(.ed-select-v2) {
