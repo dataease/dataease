@@ -1,4 +1,3 @@
-getLastStart
 <script lang="ts" setup>
 import more_v from '@/assets/svg/more_v.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
