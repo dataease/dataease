@@ -185,6 +185,9 @@ const setCustomStyle = val => {
       '--ed-component-size',
       `${customStyle.placeholderSize + 18}px`
     )
+    vQueryRef.value.querySelectorAll('.ed-tag').forEach(ele => {
+      ele.style.setProperty('--ed-tag-font-size', `${customStyle.placeholderSize}px`)
+    })
   })
   customStyle.placeholder = placeholder ?? '请选择'
   customStyle.titleShow = titleShow
@@ -495,6 +498,10 @@ watch(
   }
 )
 
+const boxWidth = computed(() => {
+  return `${customStyle.placeholderSize}px`
+})
+
 const queryData = () => {
   let requiredName = ''
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
@@ -710,6 +717,14 @@ const autoStyle = computed(() => {
   overflow: auto;
   position: relative;
   --ed-font-size-base: 14px;
+
+  :deep(.ed-tag) {
+    --ed-tag-font-size: 14px;
+  }
+
+  :deep(.ed-select-v2) {
+    font-size: v-bind(boxWidth);
+  }
 
   .no-list-label {
     width: 100%;
