@@ -16,4 +16,14 @@ public class FilterConfig {
         filter.setOrder(0);
         return filter;
     }
+
+    @Bean
+    public FilterRegistrationBean communityFilter() {
+        FilterRegistrationBean filter = new FilterRegistrationBean<>();
+        filter.setName("communityTokenFilter");
+        filter.setFilter(new CommunityTokenFilter());
+        filter.addUrlPatterns("/*");
+        filter.setOrder(5);
+        return filter;
+    }
 }

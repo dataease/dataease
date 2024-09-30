@@ -1,19 +1,11 @@
 package io.dataease.utils;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.auth.config.SubstituleLoginConfig;
 import io.dataease.exception.DEException;
-import io.dataease.license.utils.LicenseUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Method;
 
 public class TokenUtils {
 
@@ -36,30 +28,7 @@ public class TokenUtils {
         if (StringUtils.length(token) < 100) {
             DEException.throwException("token is invalid");
         }
-        TokenUserBO userBO = userBOByToken(token);
-        if (ObjectUtils.isEmpty(userBO) || LicenseUtil.licenseValid()) {
-            return userBO;
-        }
-        Long userId = userBO.getUserId();
-        String secret = null;
-        if (ObjectUtils.isEmpty(CommonBeanFactory.getBean("loginServer"))) {
-            String pwd = SubstituleLoginConfig.getPwd();
-            secret = Md5Utils.md5(pwd);
-        } else {
-            Object apisixTokenManage = CommonBeanFactory.getBean("apisixTokenManage");
-            Method method = DeReflectUtil.findMethod(apisixTokenManage.getClass(), "userCacheBO");
-            Object o = ReflectionUtils.invokeMethod(method, apisixTokenManage, userId);
-            Method pwdMethod = DeReflectUtil.findMethod(o.getClass(), "getPwd");
-            Object pwdObj = ReflectionUtils.invokeMethod(pwdMethod, o);
-            secret = pwdObj.toString();
-        }
-        Algorithm algorithm = Algorithm.HMAC256(secret);
-        Verification verification = JWT.require(algorithm).withClaim("uid", userId).withClaim("oid", userBO.getDefaultOid());
-        JWTVerifier verifier = verification.build();
-        DecodedJWT decode = JWT.decode(token);
-        algorithm.verify(decode);
-        verifier.verify(token);
-        return userBO;
+        return userBOByToken(token);
     }
 
 
