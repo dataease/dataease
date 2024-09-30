@@ -324,7 +324,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     }
     optionTmp.legend.marker.style = style => {
       return {
-        r: 5,
+        r: 4,
         fill: style.stroke
       }
     }

@@ -308,7 +308,10 @@ export function getLegend(chart: Chart) {
           offsetX: offsetX,
           offsetY: offsetY,
           marker: {
-            symbol: legendSymbol
+            symbol: legendSymbol,
+            style: {
+              r: 4
+            }
           },
           itemHeight: l.fontSize + 4,
           radio: false,
