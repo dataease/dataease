@@ -126,6 +126,9 @@ const baseComponentData = computed(() =>
 )
 const canvasStyle = computed(() => {
   let style = {}
+  if (isMainCanvas(canvasId.value) && !isDashboard()) {
+    style['overflowY'] = 'hidden !important'
+  }
   if (canvasStyleData.value && canvasStyleData.value.width && isMainCanvas(canvasId.value)) {
     style = {
       ...getCanvasStyle(canvasStyleData.value),
@@ -236,30 +239,10 @@ const resetLayout = () => {
     }
   })
 }
-
-const restorePre = () => {
-  if (previewCanvas.value) {
-    //div容器获取tableBox.value.clientWidth
-    let canvasWidth = previewCanvas.value.clientWidth
-    let canvasHeight = previewCanvas.value.clientHeight
-    scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
-    scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
-    scaleMin.value = isDashboard()
-      ? Math.floor(Math.min(scaleWidthPoint.value, scaleHeightPoint.value))
-      : scaleWidthPoint.value
-    if (dashboardActive.value) {
-      cellWidth.value = canvasWidth / pcMatrixCount.value.x
-      cellHeight.value = canvasHeight / pcMatrixCount.value.y
-      scaleMin.value = isMainCanvas(canvasId.value) ? scaleMin.value * 1.2 : outerScale.value * 100
-    }
-    renderReady.value = true
-  }
-}
 const restore = () => {
   if (isReport.value) {
     return
   }
-  restorePre()
   resetLayout()
 }
 
@@ -403,7 +386,9 @@ const filterBtnShow = computed(
 const datasetParamsInit = item => {
   customDatasetParamsRef.value?.optInit(item)
 }
-
+const dataVPreview = computed(
+  () => dvInfo.value.type === 'dataV' && canvasId.value === 'canvas-main'
+)
 defineExpose({
   restore
 })
@@ -414,7 +399,7 @@ defineExpose({
     :id="domId"
     class="canvas-container"
     :style="canvasStyle"
-    :class="{ 'de-download-custom': downloadStatus }"
+    :class="{ 'de-download-custom': downloadStatus, 'datav-preview': dataVPreview }"
     ref="previewCanvas"
     @mousedown="handleMouseDown"
   >
@@ -486,5 +471,9 @@ defineExpose({
 
 .fix-button {
   position: fixed !important;
+}
+
+.datav-preview {
+  overflow-y: hidden !important;
 }
 </style>
