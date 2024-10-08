@@ -132,6 +132,10 @@ const checkBold = type => {
   chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'bold'
 }
 
+const handleCurrentPlaceholderChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
+
 const checkItalic = type => {
   if (!chart.value.customStyle.component.labelShow) return
   chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'italic'
@@ -406,6 +410,7 @@ if (props.element.propValue.length) {
             >
               <el-input
                 :effect="themes"
+                @change="handleCurrentPlaceholderChange"
                 :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
                 v-model.lazy="currentSearch.placeholder"
               />
