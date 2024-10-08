@@ -732,7 +732,7 @@ const dfsGetName = (list, name) => {
 
 const tabChange = val => {
   if (val === 'preview') return
-  dfsGetName(datasetDrag.value.getNodeList(), nameMap.value)
+  reGetName()
   allfields.value.forEach(ele => {
     if (!Array.isArray(ele.deTypeArr)) {
       ele.deTypeArr =
@@ -756,6 +756,10 @@ const addComplete = () => {
   }
   cancelMap['/datasetData/previewData']?.()
   datasetPreviewLoading.value = false
+  reGetName()
+}
+
+const reGetName = () => {
   dfsGetName(datasetDrag.value.getNodeList(), nameMap.value)
 }
 
@@ -1542,6 +1546,7 @@ const getDsIconName = data => {
           {{ t('data_set.be_reported_incorrectly') }}
         </div>
         <dataset-union
+          @reGetName="reGetName"
           @join-editor="joinEditor"
           @changeUpdate="changeUpdate"
           :maskShow="maskShow"
@@ -1761,9 +1766,7 @@ const getDsIconName = data => {
                     </el-table-column>
                     <el-table-column prop="datasetTableId" label="表名" width="240">
                       <template #default="scope">
-                        <div v-if="scope.row.extField === 0">
-                          {{ nameMap[scope.row.datasetTableId] }}
-                        </div>
+                        {{ scope.row.extField === 0 ? nameMap[scope.row.datasetTableId] : '' }}
                       </template>
                     </el-table-column>
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
@@ -1948,9 +1951,7 @@ const getDsIconName = data => {
 
                     <el-table-column prop="datasetTableId" label="表名" width="240">
                       <template #default="scope">
-                        <div v-if="scope.row.extField === 0">
-                          {{ nameMap[scope.row.datasetTableId] }}
-                        </div>
+                        {{ scope.row.extField === 0 ? nameMap[scope.row.datasetTableId] : '' }}
                       </template>
                     </el-table-column>
 
