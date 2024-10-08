@@ -25,6 +25,7 @@ interface SelectConfig {
   displayType: string
   showEmpty: boolean
   id: string
+  placeholder: string
   resultMode: number
   displayId: string
   sort: string
@@ -83,7 +84,7 @@ const setCascadeDefault = inject('set-cascade-default', Function, true)
 
 const placeholderText = computed(() => {
   if (placeholder.value.placeholderShow) {
-    return placeholder.value.placeholder
+    return props.config.placeholder
   }
   return ' '
 })
