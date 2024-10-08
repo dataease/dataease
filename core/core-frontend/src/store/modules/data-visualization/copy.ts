@@ -8,6 +8,7 @@ import eventBus from '@/utils/eventBus'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { maxYComponentCount } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -62,7 +63,7 @@ export const copyStore = defineStore('copy', {
           }
           // dataV 数据大屏
           newComponent.x = newComponent.sizeX * xPositionOffset + 1
-          newComponent.y = 200
+          newComponent.y = maxYComponentCount() + 10
           // dataV 数据大屏
           newComponent.style.left = 0
           newComponent.style.top = 0

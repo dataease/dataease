@@ -731,3 +731,14 @@ export function componentPreSort(componentData) {
     })
   }
 }
+
+export function maxYComponentCount() {
+  if (componentData.value.length === 0) {
+    return 1
+  } else {
+    return componentData.value
+      .filter(item => item.y)
+      .map(item => item.y + item.sizeY) // 计算每个元素的 y + sizeY
+      .reduce((max, current) => Math.max(max, current), 0)
+  }
+}
