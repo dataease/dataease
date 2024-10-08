@@ -59,7 +59,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1,
-      tooltip: '该指标生效时，样式基础样式中的大小属性将失效',
+      tooltip:
+        '该指标生效时，样式基础样式中的大小属性将失效，同时可在样式基础样式中的大小区间配置大小区间',
       allowEmpty: true
     }
   }
@@ -160,8 +161,16 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     const xAxis = deepCopy(chart.xAxis)
     const xAxisExt = deepCopy(chart.xAxisExt)
     const extBubble = deepCopy(chart.extBubble)
-    const { mapSymbolOpacity, mapSymbolSize, mapSymbol, mapSymbolStrokeWidth, colors, alpha } =
-      deepCopy(basicStyle)
+    const {
+      mapSymbolOpacity,
+      mapSymbolSize,
+      mapSymbol,
+      mapSymbolStrokeWidth,
+      colors,
+      alpha,
+      mapSymbolSizeMin,
+      mapSymbolSizeMax
+    } = deepCopy(basicStyle)
     const colorsWithAlpha = colors.map(color => hexColorToRGBA(color, alpha))
     let colorIndex = 0
     // 存储已分配的颜色
@@ -181,7 +190,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           return {
             ...item,
             color,
-            size: item[sizeKey] ?? mapSymbolSize,
+            size: parseInt(item[sizeKey]) ?? mapSymbolSize,
             name: identifier
           }
         })
@@ -214,7 +223,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       })
     }
     if (sizeKey) {
-      pointLayer.size('size', [4, 30])
+      pointLayer.size('size', [mapSymbolSizeMin, mapSymbolSizeMax])
     } else {
       pointLayer.size(mapSymbolSize)
     }
