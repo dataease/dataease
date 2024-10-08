@@ -281,6 +281,14 @@ declare interface ChartBasicStyle {
    * 汇总表总计标签
    */
   summaryLabel: string
+  /**
+   * 符号地图符号大小最小值
+   */
+  mapSymbolSizeMin: number
+  /**
+   * 符号地图符号大小最大值
+   */
+  mapSymbolSizeMax: number
 }
 /**
  * 表头属性

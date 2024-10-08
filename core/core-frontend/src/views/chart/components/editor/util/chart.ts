@@ -1578,7 +1578,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   showSummary: false,
   summaryLabel: '总计',
   seriesColor: [],
-  layout: 'horizontal'
+  layout: 'horizontal',
+  mapSymbolSizeMin: 4,
+  mapSymbolSizeMax: 30
 }
 
 export const BASE_VIEW_CONFIG = {
