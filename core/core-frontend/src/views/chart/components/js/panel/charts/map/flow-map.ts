@@ -47,18 +47,21 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     flowMapStartName: {
       name: `起点名称 / ${t('chart.dimension')}`,
       type: 'd',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     },
     flowMapEndName: {
       name: `终点名称 / ${t('chart.dimension')}`,
       type: 'd',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     },
     yAxis: {
       name: `线条粗细 / ${t('chart.quota')}`,
       type: 'q',
       limit: 1,
-      tooltip: '该指标生效时，样式中线条配置的线条宽度属性将失效'
+      tooltip: '该指标生效时，样式中线条配置的线条宽度属性将失效',
+      allowEmpty: true
     }
   }
   constructor() {

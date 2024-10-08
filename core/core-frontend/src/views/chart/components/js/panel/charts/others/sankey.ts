@@ -24,7 +24,6 @@ const DEFAULT_DATA = []
  */
 export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
   axisConfig = {
-    ...this['axisConfig'],
     xAxis: {
       name: `${t('chart.drag_block_type_axis_start')} / ${t('chart.dimension')}`,
       limit: 1,

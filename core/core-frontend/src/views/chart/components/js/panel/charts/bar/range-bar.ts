@@ -23,7 +23,6 @@ const DEFAULT_DATA = []
  */
 export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
   axisConfig = {
-    ...this['axisConfig'],
     yAxis: {
       name: `${t('chart.drag_block_value_start')} / ${t('chart.time_dimension_or_quota')}`,
       limit: 1,

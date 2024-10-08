@@ -88,6 +88,10 @@ declare type AxisSpec = {
    * 轴提示
    */
   tooltip?: string
+  /**
+   * 允许为空
+   */
+  allowEmpty?: boolean
 }
 /**
  * 图表编辑表单
