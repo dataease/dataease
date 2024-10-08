@@ -236,10 +236,30 @@ const resetLayout = () => {
     }
   })
 }
+
+const restorePre = () => {
+  if (previewCanvas.value) {
+    //div容器获取tableBox.value.clientWidth
+    let canvasWidth = previewCanvas.value.clientWidth
+    let canvasHeight = previewCanvas.value.clientHeight
+    scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
+    scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
+    scaleMin.value = isDashboard()
+      ? Math.floor(Math.min(scaleWidthPoint.value, scaleHeightPoint.value))
+      : scaleWidthPoint.value
+    if (dashboardActive.value) {
+      cellWidth.value = canvasWidth / pcMatrixCount.value.x
+      cellHeight.value = canvasHeight / pcMatrixCount.value.y
+      scaleMin.value = isMainCanvas(canvasId.value) ? scaleMin.value * 1.2 : outerScale.value * 100
+    }
+    renderReady.value = true
+  }
+}
 const restore = () => {
   if (isReport.value) {
     return
   }
+  restorePre()
   resetLayout()
 }
 
