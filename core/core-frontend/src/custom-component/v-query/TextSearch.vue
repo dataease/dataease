@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs, onBeforeMount, type PropType, inject, computed, nextTick } from 'vue'
+import { toRefs, onBeforeMount, type PropType, type Ref, inject, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 interface SelectConfig {
@@ -9,12 +9,21 @@ interface SelectConfig {
   hideConditionSwitching: boolean
   conditionValueOperatorS: string
   conditionValueS: string
+  placeholder: string
   defaultConditionValueOperatorF: string
   defaultConditionValueF: string
   defaultConditionValueOperatorS: string
   defaultConditionValueS: string
   conditionType: number
 }
+const placeholder: Ref = inject('placeholder')
+
+const placeholderText = computed(() => {
+  if (placeholder.value.placeholderShow) {
+    return props.config.placeholder
+  }
+  return ' '
+})
 
 const operators = [
   {
@@ -103,6 +112,7 @@ const lineWidth = computed(() => {
       </el-select>
       <el-input
         :style="selectStyle"
+        :placeholder="placeholderText"
         @blur="handleValueChange"
         class="condition-value-input"
         v-model="config.conditionValueF"
@@ -125,6 +135,7 @@ const lineWidth = computed(() => {
       <el-input
         :style="selectStyle"
         @blur="handleValueChange"
+        :placeholder="placeholderText"
         class="condition-value-input"
         v-model="config.conditionValueS"
       />
