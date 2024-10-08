@@ -75,7 +75,10 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'extBubble', 'filter', 'drill', 'extLabel', 'extTooltip']
   axisConfig: AxisConfig = {
-    ...this['axisConfig'],
+    xAxis: {
+      name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
+      type: 'd'
+    },
     yAxis: {
       ...this['axisConfig'].yAxis,
       limit: undefined
@@ -83,7 +86,8 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     extBubble: {
       name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
       type: 'q',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     }
   }
   async drawChart(drawOptions: G2PlotDrawOptions<G2Scatter>): Promise<G2Scatter> {

@@ -88,11 +88,11 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     'extTooltip'
   ]
   axisConfig: AxisConfig = {
-    ...this['axisConfig'],
     extBubble: {
       name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
       type: 'q',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     },
     xAxis: {
       name: `${t('chart.form_type')} / ${t('chart.dimension')}`,
@@ -413,7 +413,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     if (!(xAxis?.length && yAxis?.length && yAxisExt?.length)) {
       return []
     }
-    const tmp = data[0].data
+    const tmp = data?.[0]?.data
     return setUpSingleDimensionSeriesColor(chart, tmp)
   }
   protected setupOptions(chart: Chart, options: ScatterOptions) {

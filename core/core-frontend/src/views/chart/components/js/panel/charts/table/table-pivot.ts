@@ -107,7 +107,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     },
     xAxisExt: {
       name: `${t('chart.drag_block_table_data_column')} / ${t('chart.dimension')}`,
-      type: 'd'
+      type: 'd',
+      allowEmpty: true
     },
     yAxis: {
       name: `${t('chart.drag_block_table_data_column')} / ${t('chart.quota')}`,

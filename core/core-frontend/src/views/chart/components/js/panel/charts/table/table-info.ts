@@ -73,7 +73,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     const containerDom = document.getElementById(container)
 
     // fields
-    let fields = chart.data.fields
+    let fields = chart.data?.fields ?? []
     const columns = []
     const meta = []
     const axisMap = chart.xAxis.reduce((pre, cur) => {

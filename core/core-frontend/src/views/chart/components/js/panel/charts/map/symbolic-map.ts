@@ -52,13 +52,15 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     xAxisExt: {
       name: `颜色 / ${t('chart.dimension')}`,
       type: 'd',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     },
     extBubble: {
       name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1,
-      tooltip: '该指标生效时，样式基础样式中的大小属性将失效'
+      tooltip: '该指标生效时，样式基础样式中的大小属性将失效',
+      allowEmpty: true
     }
   }
   constructor() {

@@ -15,7 +15,6 @@ const { t } = useI18n()
 
 export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
   axisConfig = {
-    ...this['axisConfig'],
     xAxis: {
       name: `${t('chart.form_type')} / ${t('chart.dimension')}`,
       type: 'd',

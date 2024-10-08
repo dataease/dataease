@@ -44,6 +44,10 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   axis: AxisType[] = [...LINE_AXIS_TYPE]
   axisConfig = {
     ...this['axisConfig'],
+    xAxis: {
+      name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
+      type: 'd'
+    },
     yAxis: {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
       type: 'q'
@@ -288,6 +292,14 @@ export class StackArea extends Area {
     ...this['propertyInner'],
     'label-selector': ['fontSize', 'color', 'labelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter', 'show']
+  }
+  axisConfig = {
+    ...this['axisConfig'],
+    extStack: {
+      name: `${t('chart.stack_item')} / ${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1
+    }
   }
   protected configLabel(chart: Chart, options: AreaOptions): AreaOptions {
     const customAttr = parseJson(chart.customAttr)
