@@ -164,6 +164,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('placeholderShow')) {
 }
 
 if (props.element.propValue.length) {
+  currentPlaceholder.value = props.element.propValue[0].id
   handleCurrentPlaceholder(props.element.propValue[0].id)
 }
 </script>
@@ -389,7 +390,7 @@ if (props.element.propValue.length) {
                   style="width: 100%"
                 >
                   <el-option
-                    v-for="item in element.propValue.filter(ele => ele.displayType !== '8')"
+                    v-for="item in element.propValue"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
