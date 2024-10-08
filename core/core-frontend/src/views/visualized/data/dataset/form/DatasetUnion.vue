@@ -246,6 +246,7 @@ const saveSqlNode = (val: SqlNode, cb) => {
   }
   const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName, sqlVariableDetails }
   dfsNodeBack([obj], [id], state.nodeList)
+  emits('reGetName')
 }
 
 const setChangeStatus = (to, from) => {
