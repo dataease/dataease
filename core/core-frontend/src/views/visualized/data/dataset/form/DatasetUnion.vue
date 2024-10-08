@@ -997,6 +997,7 @@ const confirmRename = () => {
       renameParam.name = ''
       renameParam.id = ''
       dialogRename.value = false
+      emits('reGetName')
     }
   })
 }
@@ -1038,7 +1039,13 @@ const handleActiveNode = ele => {
   handleCommand(ele, 'editerField')
 }
 
-const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'changeUpdate'])
+const emits = defineEmits([
+  'addComplete',
+  'joinEditor',
+  'updateAllfields',
+  'changeUpdate',
+  'reGetName'
+])
 </script>
 
 <template>
