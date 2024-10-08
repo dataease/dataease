@@ -27,7 +27,7 @@ import {
   watch
 } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
+import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util.js'
 import {
   CHART_FONT_FAMILY_MAP,
   DEFAULT_TITLE_STYLE
@@ -578,6 +578,11 @@ const checkFieldIsAllowEmpty = (allField?) => {
   showEmpty.value = false
   if (view.value?.render && view.value?.type) {
     const chartView = chartViewManager.getChartView(view.value.render, view.value.type)
+    const map = parseJson(view.value.customAttr).map
+    if (['bubble-map', 'map'].includes(view.value?.type) && !map?.id) {
+      showEmpty.value = true
+      return
+    }
     const axisConfigMap = new Map(Object.entries(chartView.axisConfig))
     // 验证拖入的字段是否包含在当前数据集字段中，如果一个都不在数据集字段中，则显示空图表
     let includeDatasetField = false
