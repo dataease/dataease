@@ -61,6 +61,23 @@ watch(
   }
 )
 
+const currentPlaceholder = ref()
+const currentSearch = ref({
+  placeholder: ''
+})
+
+const handleCurrentPlaceholder = val => {
+  const obj = props.element.propValue.find(ele => {
+    return ele.id === val
+  }) || {
+    placeholder: ''
+  }
+  if (obj.placeholder === undefined) {
+    obj.placeholder = ''
+  }
+  currentSearch.value = obj
+}
+
 const init = () => {
   state.commonBackground = cloneDeep(props.commonBackgroundPop)
   if (state.commonBackground['outerImage']) {
@@ -142,9 +159,12 @@ if (!chart.value.customStyle.component.hasOwnProperty('placeholderShow')) {
   chart.value.customStyle.component = {
     ...chart.value.customStyle.component,
     placeholderShow: true,
-    placeholder: '请选择',
     placeholderSize: 14
   }
+}
+
+if (props.element.propValue.length) {
+  handleCurrentPlaceholder(props.element.propValue[0].id)
 }
 </script>
 
@@ -338,18 +358,6 @@ if (!chart.value.customStyle.component.hasOwnProperty('placeholderShow')) {
               </el-checkbox>
             </el-form-item>
             <el-form-item
-              label="提示词"
-              class="form-item"
-              style="padding-left: 20px"
-              :class="'form-item-' + themes"
-            >
-              <el-input
-                :effect="themes"
-                :disabled="!chart.customStyle.component.placeholderShow"
-                v-model.lazy="chart.customStyle.component.placeholder"
-              />
-            </el-form-item>
-            <el-form-item
               label="文本"
               class="form-item"
               style="padding-left: 20px"
@@ -374,6 +382,32 @@ if (!chart.value.customStyle.component.hasOwnProperty('placeholderShow')) {
                   controls-position="right"
                 />
               </div>
+              <div style="display: flex; align-items: center; width: 100%; margin-top: 8px">
+                <el-select
+                  v-model="currentPlaceholder"
+                  @change="handleCurrentPlaceholder"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="item in element.propValue.filter(ele => ele.displayType !== '8')"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+              </div>
+            </el-form-item>
+            <el-form-item
+              label="提示词"
+              class="form-item"
+              style="padding-left: 20px"
+              :class="'form-item-' + themes"
+            >
+              <el-input
+                :effect="themes"
+                :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
+                v-model.lazy="currentSearch.placeholder"
+              />
             </el-form-item>
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox

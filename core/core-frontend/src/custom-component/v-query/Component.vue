@@ -65,7 +65,6 @@ const canEdit = ref(false)
 const queryConfig = ref()
 const defaultStyle = {
   border: '',
-  placeholder: '请选择',
   placeholderSize: 14,
   placeholderShow: true,
   background: '',
@@ -168,7 +167,6 @@ const setCustomStyle = val => {
     queryConditionSpacing,
     labelColorBtn,
     btnColor,
-    placeholder,
     placeholderSize,
     placeholderShow,
     labelShow
@@ -185,7 +183,6 @@ const setCustomStyle = val => {
       `${customStyle.placeholderSize + 18}px`
     )
   })
-  customStyle.placeholder = placeholder ?? '请选择'
   customStyle.titleShow = titleShow
   customStyle.titleColor = titleColor
   customStyle.labelColor = labelShow ? labelColor || '' : ''
@@ -310,7 +307,6 @@ const getCascadeList = () => {
 
 const getPlaceholder = computed(() => {
   return {
-    placeholder: customStyle.placeholder,
     placeholderShow: customStyle.placeholderShow
   }
 })

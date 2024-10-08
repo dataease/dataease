@@ -25,6 +25,7 @@ interface SelectConfig {
   timeGranularity: DatePickType
   timeGranularityMultiple: DatePickType
   timeRange: TimeRange
+  placeholder: string
   setTimeRange: boolean
 }
 
@@ -65,7 +66,7 @@ const props = defineProps({
 const placeholder: Ref = inject('placeholder')
 const placeholderText = computed(() => {
   if (placeholder.value.placeholderShow) {
-    return placeholder.value.placeholder
+    return props.config.placeholder
   }
   return ' '
 })

@@ -21,6 +21,7 @@ interface SelectConfig {
   checkedFieldsMap: object
   displayType: string
   id: string
+  placeholder: string
   checkedFields: string[]
   treeFieldList: Array<any>
   dataset: {
@@ -58,7 +59,7 @@ const props = defineProps({
 const placeholder: Ref = inject('placeholder')
 const placeholderText = computed(() => {
   if (placeholder.value.placeholderShow) {
-    return placeholder.value.placeholder
+    return props.config.placeholder
   }
   return ' '
 })
