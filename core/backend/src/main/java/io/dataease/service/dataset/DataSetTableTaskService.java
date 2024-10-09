@@ -271,7 +271,12 @@ public class DataSetTableTaskService {
             return extDataSetTaskMapper.taskList(request);
         } else {
             request.setUserId(AuthUtils.getUser().getUserId());
-            return extDataSetTaskMapper.userTaskList(request);
+            List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.userTaskList(request);
+            dataSetTaskDTOS.forEach(dataSetTaskDTO -> {
+                request.setDatasetId(dataSetTaskDTO.getId());
+                dataSetTaskDTO.setPrivileges(extDataSetTaskMapper.datasetPrivileges(request));
+            });
+            return dataSetTaskDTOS;
         }
     }
 
@@ -312,10 +317,10 @@ public class DataSetTableTaskService {
         record.setStatus(datasetTableTask.getStatus());
         datasetTableTaskMapper.updateByExampleSelective(record, datasetTableTaskExample);
 
-        if(datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Pending.name())){
+        if (datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Pending.name())) {
             scheduleService.pauseTrigger(datasetTableTask);
         }
-        if(datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Underway.name())){
+        if (datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Underway.name())) {
             scheduleService.resumeTrigger(datasetTableTask);
         }
     }
