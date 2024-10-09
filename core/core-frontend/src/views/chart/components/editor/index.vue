@@ -836,7 +836,7 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
 
 const updateChartData = view => {
   curComponent.value['state'] = 'ready'
-  useEmitt().emitter.emit('checkFieldIsAllowEmpty', allFields.value)
+  useEmitt().emitter.emit('checkShowEmpty', { allFields: allFields.value, view: view })
   calcData(view, true, 'updateQuery')
 }
 
