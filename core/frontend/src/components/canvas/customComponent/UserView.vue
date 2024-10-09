@@ -878,7 +878,7 @@ export default {
         if (!sourceCustomAttr[param.property]) {
           this.$set(sourceCustomAttr, param.property, {})
         }
-        sourceCustomAttr[param.property][param.value.modifyName] = param.value[param.value.modifyName]
+        Vue.set(sourceCustomAttr[param.property], param.value.modifyName, param.value[param.value.modifyName])
         this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
         this.chart.customAttr = this.sourceCustomAttrStr
         this.$store.commit('updateComponentViewsData', {
@@ -892,7 +892,7 @@ export default {
         if (param.property === 'margin') {
           sourceCustomStyle[param.property] = param.value
         }
-        sourceCustomStyle[param.property][param.value.modifyName] = param.value[param.value.modifyName]
+        Vue.set(sourceCustomStyle[param.property], param.value.modifyName, param.value[param.value.modifyName])
         this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
         this.chart.customStyle = this.sourceCustomStyleStr
         this.$store.commit('updateComponentViewsData', {
