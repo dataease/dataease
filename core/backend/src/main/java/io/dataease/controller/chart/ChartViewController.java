@@ -165,6 +165,13 @@ public class ChartViewController {
         chartViewCacheService.resetView(id);
     }
 
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_VIEW, paramIndex = 0)
+    @ApiOperation("重置仪表板视图")
+    @PostMapping("/resetAllViewCache/{panelId}")
+    public void resetAllViewCache(@PathVariable String panelId) {
+        chartViewCacheService.resetAllPanelView(panelId);
+    }
+
     @ApiOperation("校验视图Title")
     @PostMapping("/checkTitle")
     public String checkTitle(@RequestBody ChartViewCacheRequest request) {

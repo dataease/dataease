@@ -102,17 +102,22 @@
     </insert>
 
     <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
-      SELECT
-        distinct
-        CONCAT( panel_view_linkage.source_view_id, '#', panel_view_linkage_field.source_field ) AS 'sourceInfo',
-        CONCAT( panel_view_linkage.target_view_id, '#', panel_view_linkage_field.target_field ) AS 'targetInfo'
-        FROM
-            panel_view_linkage
-            LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
-        WHERE
-            panel_view_linkage.panel_id = #{panelId}
-      and panel_view_linkage.linkage_active=1
-      and panel_view_linkage_field.id is not null
+    SELECT DISTINCT
+    	panel_view_linkage.source_view_id,
+    	panel_view_linkage_field.source_field,
+    	panel_view_linkage.target_view_id,
+    	panel_view_linkage_field.target_field,
+    	CONCAT( panel_view_linkage.source_view_id, '#', panel_view_linkage_field.source_field ) AS 'sourceInfo',
+    	CONCAT( panel_view_linkage.target_view_id, '#', panel_view_linkage_field.target_field ) AS 'targetInfo'
+    FROM
+    	panel_view_linkage
+    	LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
+    WHERE
+    	panel_view_linkage.panel_id = #{panelId}
+    	AND panel_view_linkage.linkage_active = 1
+    	AND panel_view_linkage_field.id IS NOT NULL
+    	AND panel_view_linkage.source_view_id IS NOT NULL
+    	AND panel_view_linkage.target_view_id IS NOT NULL
     </select>
 
     <insert id="copyViewLinkage">
