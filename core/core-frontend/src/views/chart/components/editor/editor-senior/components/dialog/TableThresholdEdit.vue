@@ -185,12 +185,13 @@ const init = () => {
   state.thresholdArr = JSON.parse(JSON.stringify(props.threshold)) as TableThreshold[]
   initFields()
 }
-const initOptions = item => {
-  if (item.field) {
-    if ([0, 5, 7].includes(item.field.deType)) {
+const initOptions = (item, fieldObj) => {
+  if (fieldObj) {
+    if ([0, 5, 7].includes(fieldObj.deType)) {
       item.options = JSON.parse(JSON.stringify(textOptions))
-    } else if (item.field.deType === 1) {
+    } else if (fieldObj.deType === 1) {
       item.options = JSON.parse(JSON.stringify(dateOptions))
+      item.type = 'fixed'
     } else {
       item.options = JSON.parse(JSON.stringify(valueOptions))
     }
@@ -250,19 +251,19 @@ const addField = item => {
     state.fields.forEach(ele => {
       if (item.fieldId === ele.id) {
         item.field = JSON.parse(JSON.stringify(ele))
-        initOptions(item)
+        initOptions(item, item.field)
       }
       if (item.dynamicField?.fieldId === ele.id) {
         item.dynamicField.field = JSON.parse(JSON.stringify(ele))
-        initOptions(item)
+        initOptions(item, item.dynamicField.field)
       }
       if (item.dynamicMinField?.fieldId === ele.id) {
         item.dynamicMinField.field = JSON.parse(JSON.stringify(ele))
-        initOptions(item)
+        initOptions(item, item.dynamicMinField.field)
       }
       if (item.dynamicMaxField?.fieldId === ele.id) {
         item.dynamicMaxField.field = JSON.parse(JSON.stringify(ele))
-        initOptions(item)
+        initOptions(item, item.dynamicMaxField.field)
       }
     })
   }
@@ -294,12 +295,9 @@ const dynamicSummaryOptions = [
 
 const getConditionsFields = (fieldItem, conditionItem, conditionItemField) => {
   const fieldItemDeType = state.fields.filter(ele => ele.id === fieldItem.fieldId)?.[0]?.deType
-  if (!fieldItemDeType) {
-    fieldItem.fieldId = null
+  if (fieldItemDeType === undefined || fieldItemDeType === null) {
     conditionItem.fieldId = null
     conditionItemField.fieldId = null
-    changeThreshold()
-    return state.fields
   }
   const result = state.fields.filter(item => item.deType === fieldItemDeType) ?? []
   if (!result.find(ele => ele.id === conditionItemField.fieldId)) {
@@ -343,7 +341,6 @@ const changeConditionItemType = item => {
     item.dynamicMinField.summary = 'value'
     item.dynamicMaxField.summary = 'value'
   }
-  changeThreshold()
 }
 const getFieldOptions = fieldItem => {
   const deType = state.fields.filter(ele => ele.id === fieldItem.fieldId)?.[0]?.deType
