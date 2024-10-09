@@ -357,7 +357,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         return list;
     }
 
-    private ChartSeniorAssistDTO of(ThresholdDynamicFieldDTO dynamicField){
+    private ChartSeniorAssistDTO of(ThresholdDynamicFieldDTO dynamicField) {
         ChartSeniorAssistDTO conditionField = new ChartSeniorAssistDTO();
         conditionField.setFieldId(Long.parseLong(dynamicField.getFieldId()));
         conditionField.setValue(dynamicField.getSummary());
@@ -578,7 +578,8 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                 if (StringUtils.isNotEmpty(compareCalc.getType())
                         && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
                     if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
-                        if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId()) && filterDTO.getFilterType() == 0) {
+                        if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId())
+                                && (filterDTO.getFilterType() == 0 || filterDTO.getFilterType() == 2)) {
                             // -1 year
                             try {
                                 Calendar calendar = Calendar.getInstance();
