@@ -232,7 +232,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           return p
         }, {})
         total.calcFunc = (query, data, _, status) => {
-          return customCalcFunc(query, data, status, totalCfgMap, axisMap, customCalc)
+          return customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, customCalc)
         }
       }
     })
@@ -440,7 +440,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     super('table-pivot', [])
   }
 }
-function customCalcFunc(query, data, status, totalCfgMap, axisMap, customCalc) {
+function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, customCalc) {
   if (!data?.length || !query[EXTRA_FIELD]) {
     return 0
   }
@@ -470,7 +470,7 @@ function customCalcFunc(query, data, status, totalCfgMap, axisMap, customCalc) {
       return result?.[query[EXTRA_FIELD]]
     }
     case 'CUSTOM': {
-      const val = getCustomCalcResult(query, axisMap, status, customCalc || {})
+      const val = getCustomCalcResult(query, axisMap, chart, status, customCalc || {})
       if (val === '') {
         return val
       }
@@ -484,7 +484,7 @@ function customCalcFunc(query, data, status, totalCfgMap, axisMap, customCalc) {
   }
 }
 
-function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
+function getCustomCalcResult(query, axisMap, chart: ChartObj, status: TotalStatus, customCalc) {
   const quotaField = query[EXTRA_FIELD]
   const { row, col } = axisMap
   // 行列交叉总计
@@ -493,12 +493,28 @@ function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
   }
   // 列总计
   if (status.isColTotal && !status.isRowSubTotal) {
-    const { colTotal } = customCalc
+    const { colTotal, rowSubInColTotal } = customCalc
+    const { tableLayoutMode } = chart.customAttr.basicStyle
     const path = getTreePath(query, row)
     let val
-    if (path.length && colTotal) {
-      path.push(quotaField)
-      val = get(colTotal.data, path)
+    if (path.length) {
+      if (tableLayoutMode === 'grid' && colTotal) {
+        path.push(quotaField)
+        val = get(colTotal.data, path)
+      }
+      // 树形模式的行小计放在列总计里面
+      if (tableLayoutMode === 'tree') {
+        const subLevel = getSubLevel(query, row)
+        if (subLevel + 1 === row.length && colTotal) {
+          path.push(quotaField)
+          val = get(colTotal.data, path)
+        }
+        if (subLevel + 1 < row.length && rowSubInColTotal) {
+          const data = rowSubInColTotal?.[subLevel]?.data
+          path.push(quotaField)
+          val = get(data, path)
+        }
+      }
     }
     return val
   }
@@ -528,8 +544,7 @@ function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
     }
     // 列维度为空，行维度不为空
     if (!col.length && row.length) {
-      const path = [query[EXTRA_FIELD]]
-      val = get(rowTotal.data, path)
+      val = get(rowTotal.data, quotaField)
     }
     return val
   }
