@@ -611,6 +611,42 @@
         where cve.id = cv.id and cv.id =#{viewId}
     </update>
 
+    <update id="updateToViewFromCacheBatch">
+            UPDATE chart_view_cache cve
+            JOIN chart_view cv ON cve.id = cv.id
+            SET cv.`name` = cve.`name`,
+                cv.title = cve.title,
+                cv.scene_id = cve.scene_id,
+                cv.table_id = cve.table_id,
+                cv.`type` = cve.`type`,
+                cv.render = cve.render,
+                cv.result_count = cve.result_count,
+                cv.result_mode = cve.result_mode,
+                cv.create_by = cve.create_by,
+                cv.create_time = cve.create_time,
+                cv.update_time = cve.update_time,
+                cv.style_priority = cve.style_priority,
+                cv.chart_type = cve.chart_type,
+                cv.is_plugin = cve.is_plugin,
+                cv.x_axis = cve.x_axis,
+                cv.x_axis_ext = cve.x_axis_ext,
+                cv.y_axis = cve.y_axis,
+                cv.y_axis_ext = cve.y_axis_ext,
+                cv.ext_stack = cve.ext_stack,
+                cv.ext_bubble = cve.ext_bubble,
+                cv.custom_attr = cve.custom_attr,
+                cv.custom_style = cve.custom_style,
+                cv.custom_filter = cve.custom_filter,
+                cv.drill_fields = cve.drill_fields,
+                cv.senior = cve.senior,
+                cv.SNAPSHOT = cve.SNAPSHOT,
+                cv.data_from = cve.data_from,
+                cv.refresh_view_enable = cve.refresh_view_enable,
+                cv.refresh_unit = cve.refresh_unit,
+                cv.refresh_time = cve.refresh_time
+            WHERE cve.scene_id = cv.scene_id AND cv.scene_id = #{panelId};
+        </update>
+
     <delete id="deleteNoUseView">
         delete from chart_view
         where scene_id = #{panelId} and create_time &lt; ( unix_timestamp()- 30 ) * 1000
