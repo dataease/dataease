@@ -420,6 +420,7 @@ const formatDate = computed(() => {
       ['datetimerange', 'daterange'].includes(config.timeGranularityMultiple) ? shortcuts : []
     "
     @change="handleValueChange"
+    :editable="false"
     :range-separator="$t('cron.to')"
     :start-placeholder="placeholderText"
     :end-placeholder="placeholderText"
