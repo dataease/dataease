@@ -697,7 +697,7 @@ const delParams = data => {
     autofocus: false,
     showClose: false
   }).then(() => {
-    gridData.value.splice(form.value.apiConfiguration.indexOf(data), 1)
+    gridData.value.splice(gridData.value.indexOf(data), 1)
   })
 }
 const datasetTypeList = [
