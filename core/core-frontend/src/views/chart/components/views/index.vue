@@ -641,8 +641,12 @@ onMounted(() => {
     return
   }
   useEmitt({
-    name: 'checkFieldIsAllowEmpty',
-    callback: allField => checkFieldIsAllowEmpty(allField)
+    name: 'checkShowEmpty',
+    callback: param => {
+      if (param.view?.id === view.value.id) {
+        checkFieldIsAllowEmpty(param.allFields)
+      }
+    }
   })
   useEmitt({ name: 'chart-type-change', callback: changeChartType })
   useEmitt({ name: 'dataset-change', callback: changeDataset })
