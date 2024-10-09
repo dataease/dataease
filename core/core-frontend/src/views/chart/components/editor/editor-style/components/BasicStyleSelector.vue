@@ -585,6 +585,8 @@ onMounted(() => {
           />
         </el-form-item>
       </el-col>
+    </el-row>
+    <el-row :gutter="8">
       <el-col :span="12" v-if="showProperty('areaBaseColor')">
         <el-form-item
           :label="t('chart.area_base_color')"

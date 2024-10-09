@@ -32,7 +32,8 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties: EditorProperty[] = [...MAP_EDITOR_PROPERTY, 'bubble-animate']
   propertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
-    'tooltip-selector': [...MAP_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel']
+    'tooltip-selector': [...MAP_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel'],
+    'basic-style-selector': [...MAP_EDITOR_PROPERTY_INNER['basic-style-selector'], 'areaBaseColor']
   }
   axis = MAP_AXIS_TYPE
   axisConfig: AxisConfig = {
