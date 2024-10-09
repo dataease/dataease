@@ -46,7 +46,14 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties: EditorProperty[] = [...MAP_EDITOR_PROPERTY, 'legend-selector']
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'alpha', 'areaBorderColor', 'zoom', 'gradient-color'],
+    'basic-style-selector': [
+      'colors',
+      'alpha',
+      'areaBorderColor',
+      'areaBaseColor',
+      'zoom',
+      'gradient-color'
+    ],
     'legend-selector': ['icon', 'fontSize', 'color'],
     'tooltip-selector': [...MAP_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel']
   }
