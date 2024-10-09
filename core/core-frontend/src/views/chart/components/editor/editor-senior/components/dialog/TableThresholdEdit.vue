@@ -7,6 +7,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { cloneDeep } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -229,7 +230,13 @@ const changeThreshold = () => {
 }
 
 const addConditions = item => {
-  item.conditions.push(JSON.parse(JSON.stringify(thresholdCondition)))
+  const newCondition = JSON.parse(JSON.stringify(thresholdCondition))
+  // 获取单元格默认背景颜色
+  const tableCell = props.chart?.customAttr?.tableCell
+  if (tableCell) {
+    newCondition.backgroundColor = cloneDeep(tableCell.tableItemBgColor)
+  }
+  item.conditions.push(newCondition)
   changeThreshold()
 }
 const removeCondition = (item, index) => {
