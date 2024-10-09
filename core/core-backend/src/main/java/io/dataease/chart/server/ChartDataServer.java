@@ -38,6 +38,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -111,7 +113,7 @@ public class ChartDataServer implements ChartDataApi {
             Integer curLimit = getExportLimit();
             if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode())) {
                 Integer limitCount = viewDTO.getResultCount();
-                viewDTO.setResultCount(Math.min(curLimit,limitCount));
+                viewDTO.setResultCount(Math.min(curLimit, limitCount));
             } else {
                 viewDTO.setResultCount(curLimit);
             }
@@ -184,7 +186,7 @@ public class ChartDataServer implements ChartDataApi {
 
                 response.setContentType("application/vnd.ms-excel");
                 //文件名称
-                response.setHeader("Content-disposition", "attachment;filename=" + request.getViewName() + ".xlsx");
+                response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(request.getViewName(), StandardCharsets.UTF_8) + ".xlsx");
                 wb.write(outputStream);
                 outputStream.flush();
                 outputStream.close();
