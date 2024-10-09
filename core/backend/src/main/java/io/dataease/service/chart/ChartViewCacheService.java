@@ -28,4 +28,8 @@ public class ChartViewCacheService {
         extChartViewMapper.updateToViewFromCache(viewId);
     }
 
+    public void resetAllPanelView(String panelId){
+        extChartViewMapper.updateToViewFromCacheBatch(panelId);
+    }
+
 }

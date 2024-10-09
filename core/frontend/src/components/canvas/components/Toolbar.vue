@@ -274,6 +274,7 @@ import { getPanelAllLinkageInfo, saveLinkage } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import { inOtherPlatform } from '@/utils/index'
+import {resetAllViewCache} from "@/api/chart/chart";
 
 export default {
   name: 'Toolbar',
@@ -576,7 +577,9 @@ export default {
       this.$emit('changeAidedDesign')
     },
     closeNotSave() {
-      this.close()
+      resetAllViewCache(this.panelInfo.id).then(rep => {
+        this.close()
+      })
     },
     saveLinkage() {
       this.$store.commit('canvasChange')
