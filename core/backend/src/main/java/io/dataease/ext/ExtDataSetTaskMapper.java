@@ -23,6 +23,8 @@ public interface ExtDataSetTaskMapper {
 
     List<DataSetTaskDTO> userTaskList(DatasetTaskGridRequest request);
 
+    String datasetPrivileges(DatasetTaskGridRequest request);
+
     List<DataSetTaskDTO> taskWithTriggers(DatasetTaskGridRequest request);
 
     List<DataSetTaskDTO> findByPanelId(@Param("panelId") String panelId);

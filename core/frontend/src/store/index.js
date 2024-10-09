@@ -847,7 +847,7 @@ const data = {
       }
     },
     setChangeProperties(state, propertyInfo) {
-      state.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+      Vue.set(state.changeProperties[propertyInfo.custom], propertyInfo.property, propertyInfo.value)
     },
     initCanvasBase(state) {
       this.commit('resetLastValidFilters')

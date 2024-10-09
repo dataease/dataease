@@ -21,4 +21,6 @@ public class DatasetTaskGridRequest extends KeywordRequest {
     private String id;
 
     private Long userId;
+
+    private String datasetId;
 }

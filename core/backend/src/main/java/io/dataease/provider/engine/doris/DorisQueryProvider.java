@@ -145,6 +145,8 @@ public class DorisQueryProvider extends QueryProvider {
                 if (f.getDeExtractType() == 1) {
                     if (f.getDeType() == 2 || f.getDeType() == 3) {
                         fieldName = String.format(DorisConstants.UNIX_TIMESTAMP, originField) + "*1000";
+                    } else if (f.getDeType().equals(DeTypeConstants.DE_STRING)) {
+                        fieldName = String.format(DorisConstants.CAST, originField, DorisConstants.VARCHAR);
                     } else {
                         fieldName = originField;
                     }

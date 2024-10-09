@@ -136,9 +136,12 @@
 
     </select>
 
+    <select id="datasetPrivileges" resultType="String" parameterType="io.dataease.controller.dataset.request.DatasetTaskGridRequest">
+        SELECT get_auths(#{datasetId}, 'dataset', #{userId})
+    </select>
+
     <select id="userTaskList" resultMap="TaskResult" parameterType="io.dataease.controller.dataset.request.DatasetTaskGridRequest">
-        SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{userId}) as
-        `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
+        SELECT dataset_table.name as table_name,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
         left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME and qrtz_triggers.TRIGGER_STATE != 'PAUSED'

@@ -5,12 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 @Setter
 public class PgConfiguration extends JdbcConfiguration {
 
     private String driver = "org.postgresql.Driver";
     private String extraParams = "";
+    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslfactoryarg", "loggerLevel", "loggerFile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath");
+
 
     public String getJdbc() {
         if (StringUtils.isEmpty(extraParams.trim())) {
@@ -27,6 +33,11 @@ public class PgConfiguration extends JdbcConfiguration {
                         .replace("SCHEMA", getSchema().trim());
             }
         } else {
+            for (String illegalParameter : illegalParameters) {
+                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
+                    throw new RuntimeException("Illegal parameter: " + illegalParameter);
+                }
+            }
             return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
