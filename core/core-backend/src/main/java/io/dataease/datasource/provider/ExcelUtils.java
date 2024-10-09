@@ -311,7 +311,7 @@ public class ExcelUtils {
         if (StringUtils.isEmpty(value) || value.length() > 19) {
             return "TEXT";
         }
-        String regex = "^\\d+(\\.\\d+)?$";
+        String regex = "^-?\\d+(\\.\\d+)?$";
         if (!value.matches(regex)) {
             return "TEXT";
         }
