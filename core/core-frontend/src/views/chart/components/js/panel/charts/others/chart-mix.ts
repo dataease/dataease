@@ -58,12 +58,14 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       //用这个字段存放右轴分类
       name: `${t('chart.drag_block_type_axis_right')} / ${t('chart.dimension')}`,
       limit: 1,
-      type: 'd'
+      type: 'd',
+      allowEmpty: true
     },
     yAxisExt: {
       name: `${t('chart.drag_block_value_axis_right')} / ${t('chart.line_quota')}`,
       limit: 1,
-      type: 'q'
+      type: 'q',
+      allowEmpty: true
     }
   }
 
@@ -633,7 +635,8 @@ export class GroupColumnLineMix extends ColumnLineMix {
     xAxisExt: {
       name: `${t('chart.chart_group')} / ${t('chart.dimension')}`,
       type: 'd',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     }
   }
 
@@ -744,7 +747,8 @@ export class StackColumnLineMix extends ColumnLineMix {
     extStack: {
       name: `${t('chart.stack_item')} / ${t('chart.dimension')}`,
       type: 'd',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     }
   }
 
@@ -856,7 +860,8 @@ export class DualLineMix extends ColumnLineMix {
     xAxisExt: {
       name: `${t('chart.drag_block_type_axis_left')} / ${t('chart.dimension')}`,
       type: 'd',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     }
   }
 
