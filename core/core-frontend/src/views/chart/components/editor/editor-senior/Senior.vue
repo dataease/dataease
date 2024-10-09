@@ -32,6 +32,7 @@ import { cloneDeep, defaultsDeep } from 'lodash-es'
 import BubbleAnimateCfg from '@/views/chart/components/editor/editor-senior/components/BubbleAnimateCfg.vue'
 import { XpackComponent } from '@/components/plugin'
 import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
+import { Icon } from 'vant'
 const dvMainStore = dvMainStoreWithOut()
 
 const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData, curComponent } =
@@ -338,28 +339,34 @@ const removeJumpSenior = () => {
                     已设置
                   </span>
                   <button
+                    :class="'label-' + props.themes"
                     class="circle-button_icon"
                     :title="t('chart.delete')"
-                    :class="'label-' + props.themes"
                     :style="{ margin: '0 8px' }"
                     @click="removeLinkageSenior"
                   >
                     <el-icon>
-                      <Icon name="icon_delete-trash_outlined"
-                        ><icon_deleteTrash_outlined class="svg-icon"
+                      <Icon
+                        ><icon_deleteTrash_outlined
+                          :class="chart.linkageActive && 'primary-color'"
+                          class="svg-icon"
                       /></Icon>
                     </el-icon>
                   </button>
                 </template>
                 <button
+                  :class="'label-' + props.themes"
                   class="circle-button_icon"
                   :title="t('chart.edit')"
-                  :class="'label-' + props.themes"
                   @click="linkageSetOpen"
                   :disabled="!chart.linkageActive"
                 >
                   <el-icon>
-                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+                    <Icon
+                      ><icon_edit_outlined
+                        :class="chart.linkageActive && 'primary-color'"
+                        class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </button>
               </span>
@@ -381,28 +388,34 @@ const removeJumpSenior = () => {
                     已设置
                   </span>
                   <button
+                    :class="'label-' + props.themes"
                     class="circle-button_icon"
                     :title="t('chart.delete')"
-                    :class="'label-' + props.themes"
                     :style="{ margin: '0 8px' }"
                     @click="removeJumpSenior"
                   >
                     <el-icon>
-                      <Icon name="icon_delete-trash_outlined"
-                        ><icon_deleteTrash_outlined class="svg-icon"
+                      <Icon
+                        ><icon_deleteTrash_outlined
+                          :class="chart.jumpActive && 'primary-color'"
+                          class="svg-icon"
                       /></Icon>
                     </el-icon>
                   </button>
                 </template>
                 <button
+                  :class="'label-' + props.themes"
                   class="circle-button_icon"
                   :title="t('chart.edit')"
-                  :class="'label-' + props.themes"
                   @click="linkJumpSetOpen"
                   :disabled="!chart.jumpActive"
                 >
                   <el-icon>
-                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+                    <Icon
+                      ><icon_edit_outlined
+                        :class="chart.jumpActive && 'primary-color'"
+                        class="svg-icon"
+                    /></Icon>
                   </el-icon>
                 </button>
               </span>
@@ -492,7 +505,7 @@ span {
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
-  color: #a6a6a6 !important;
+  color: #a6a6a6;
 }
 
 .inner-container {

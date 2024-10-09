@@ -18,7 +18,11 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
-import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  getLabel,
+  getPadding,
+  setGradientColor
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { clearExtremum, extremumEvt } from '@/views/chart/components/js/extremumUitl'
@@ -97,6 +101,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   async drawChart(drawOptions: G2PlotDrawOptions<Column>): Promise<Column> {
     const { chart, container, action } = drawOptions
     if (!chart?.data?.data?.length) {
+      chart.container = container
       clearExtremum(chart)
       return
     }
@@ -270,25 +275,55 @@ export class StackBar extends Bar {
       'showTotal',
       'totalColor',
       'totalFontSize',
-      'totalFormatter'
+      'totalFormatter',
+      'showStackQuota'
     ],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'show']
   }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
-    const baseOptions = super.configLabel(chart, options)
-    if (!baseOptions.label) {
-      return baseOptions
+    let label = getLabel(chart)
+    if (!label) {
+      return options
     }
+    options = { ...options, label }
     const { label: labelAttr } = parseJson(chart.customAttr)
-    baseOptions.label.style.fill = labelAttr.color
-    const label = {
-      ...baseOptions.label,
-      formatter: function (param: Datum) {
-        return valueFormatter(param.value, labelAttr.labelFormatter)
+    if (labelAttr.showStackQuota || labelAttr.showStackQuota === undefined) {
+      label.style.fill = labelAttr.color
+      label = {
+        ...label,
+        formatter: function (param: Datum) {
+          return valueFormatter(param.value, labelAttr.labelFormatter)
+        }
       }
+    } else {
+      label = false
+    }
+    if (labelAttr.showTotal) {
+      const formatterCfg = labelAttr.labelFormatter ?? formatterItem
+      each(groupBy(options.data, 'field'), (values, key) => {
+        const total = values.reduce((a, b) => a + b.value, 0)
+        const value = valueFormatter(total, formatterCfg)
+        if (!options.annotations) {
+          options = {
+            ...options,
+            annotations: []
+          }
+        }
+        options.annotations.push({
+          type: 'text',
+          position: [key, total],
+          content: `${value}`,
+          style: {
+            textAlign: 'center',
+            fontSize: labelAttr.fontSize,
+            fill: labelAttr.color
+          },
+          offsetY: -(parseInt(labelAttr.fontSize as unknown as string) / 2)
+        })
+      })
     }
     return {
-      ...baseOptions,
+      ...options,
       label
     }
   }
@@ -347,38 +382,6 @@ export class StackBar extends Bar {
     return options
   }
 
-  protected configTotalLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
-    if (!options.label) {
-      return options
-    }
-    const { label } = parseJson(chart.customAttr)
-    if (label.showTotal) {
-      const formatterCfg = label.labelFormatter ?? formatterItem
-      each(groupBy(options.data, 'field'), (values, key) => {
-        const total = values.reduce((a, b) => a + b.value, 0)
-        const value = valueFormatter(total, formatterCfg)
-        if (!options.annotations) {
-          options = {
-            ...options,
-            annotations: []
-          }
-        }
-        options.annotations.push({
-          type: 'text',
-          position: [key, total],
-          content: `${value}`,
-          style: {
-            textAlign: 'center',
-            fontSize: label.fontSize,
-            fill: label.color
-          },
-          offsetY: -(parseInt(label.fontSize as unknown as string) / 2)
-        })
-      })
-    }
-    return options
-  }
-
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpStackSeriesColor(chart, data)
   }
@@ -396,8 +399,7 @@ export class StackBar extends Bar {
       this.configYAxis,
       this.configSlider,
       this.configAnalyse,
-      this.configData,
-      this.configTotalLabel
+      this.configData
     )(chart, options, {}, this)
   }
 
@@ -507,6 +509,25 @@ export class GroupStackBar extends StackBar {
     return {
       ...options,
       theme
+    }
+  }
+
+  protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const baseOptions = super.configLabel(chart, options)
+    if (!baseOptions.label) {
+      return baseOptions
+    }
+    const { label: labelAttr } = parseJson(chart.customAttr)
+    baseOptions.label.style.fill = labelAttr.color
+    const label = {
+      ...baseOptions.label,
+      formatter: function (param: Datum) {
+        return valueFormatter(param.value, labelAttr.labelFormatter)
+      }
+    }
+    return {
+      ...baseOptions,
+      label
     }
   }
 

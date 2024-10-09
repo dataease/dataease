@@ -531,7 +531,7 @@ const initOpenHandler = newWindow => {
             is-label
             themes="light"
             placement="bottom"
-            :base-width="315"
+            :base-width="328"
             :icon-name="dvMedia"
             title="媒体"
           >

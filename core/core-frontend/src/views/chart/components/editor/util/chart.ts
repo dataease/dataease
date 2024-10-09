@@ -339,7 +339,8 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
   showTotal: false,
   totalFontSize: 12,
   totalColor: '#FFF',
-  totalFormatter: formatterItem
+  totalFormatter: formatterItem,
+  showStackQuota: false
 }
 export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
@@ -1494,7 +1495,7 @@ export const CHART_TYPE_CONFIGS = [
   },
   {
     category: 'other',
-    title: '富文本',
+    title: '其他',
     display: 'hidden',
     details: [
       {
@@ -1503,6 +1504,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'rich-text',
         title: '富文本',
         icon: 'rich-text'
+      },
+      {
+        render: 'custom',
+        category: 'quota',
+        value: 'picture-group',
+        title: '图片组',
+        icon: 'picture-group'
       }
     ]
   }
@@ -1570,7 +1578,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   showSummary: false,
   summaryLabel: '总计',
   seriesColor: [],
-  layout: 'horizontal'
+  layout: 'horizontal',
+  mapSymbolSizeMin: 4,
+  mapSymbolSizeMax: 30
 }
 
 export const BASE_VIEW_CONFIG = {

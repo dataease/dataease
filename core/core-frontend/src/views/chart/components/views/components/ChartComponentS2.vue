@@ -172,11 +172,11 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   recursionTransObj(customAttrTrans, actualChart.customAttr, scale.value, terminal.value)
   recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
 
-  setupPage(actualChart, resetPageInfo)
   myChart?.facet?.timer?.stop()
   myChart?.facet?.cancelScrollFrame()
   myChart?.destroy()
   myChart = null
+  setupPage(actualChart, resetPageInfo)
   const chartView = chartViewManager.getChartView(
     viewInfo.render,
     viewInfo.type
@@ -596,7 +596,7 @@ const autoStyle = computed(() => {
     height: 20 * scale.value + 8 + 'px',
     width: 100 / scale.value + '%!important',
     left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
-    transform: 'scale(' + scale.value + ')'
+    transform: 'scale(' + scale.value + ') translateZ(0)'
   }
 })
 

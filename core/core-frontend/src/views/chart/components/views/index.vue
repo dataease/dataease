@@ -27,7 +27,7 @@ import {
   watch
 } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
+import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util.js'
 import {
   CHART_FONT_FAMILY_MAP,
   DEFAULT_TITLE_STYLE
@@ -573,13 +573,83 @@ onBeforeMount(() => {
 const listenerEnable = computed(() => {
   return !showPosition.value.includes('viewDialog')
 })
+const showEmpty = ref(false)
+const checkFieldIsAllowEmpty = (allField?) => {
+  showEmpty.value = false
+  if (view.value?.render && view.value?.type) {
+    const chartView = chartViewManager.getChartView(view.value.render, view.value.type)
+    const map = parseJson(view.value.customAttr).map
+    if (['bubble-map', 'map'].includes(view.value?.type) && !map?.id) {
+      showEmpty.value = true
+      return
+    }
+    const axisConfigMap = new Map(Object.entries(chartView.axisConfig))
+    // 验证拖入的字段是否包含在当前数据集字段中，如果一个都不在数据集字段中，则显示空图表
+    let includeDatasetField = false
+    if (allField && allField.length > 0) {
+      axisConfigMap.forEach((value, key) => {
+        if (view.value?.[key]?.length > 0) {
+          view.value[key].forEach(item => {
+            if (!allField.find(field => field.id === item.id)) {
+              includeDatasetField = true
+              return false
+            }
+          })
+          if (includeDatasetField) {
+            return false
+          }
+        }
+      })
+    }
+    if (includeDatasetField) {
+      showEmpty.value = true
+      return
+    }
+    axisConfigMap.forEach((value, key) => {
+      // 不允许为空,并且没限制长度
+      if (!value['allowEmpty'] && !value['limit'] && view.value?.[key]?.length === 0) {
+        showEmpty.value = true
+        return false
+      }
+      // 不允许为空， 限制长度
+      if (
+        !value['allowEmpty'] &&
+        value['limit'] &&
+        view.value?.[key]?.length < parseInt(value['limit'])
+      ) {
+        showEmpty.value = true
+        return false
+      }
+      if (view.value?.type === 'table-info' && view.value?.[key]?.length === 0) {
+        showEmpty.value = true
+        return false
+      }
+    })
+  }
+}
+const changeChartType = () => {
+  checkFieldIsAllowEmpty()
+}
+const changeDataset = () => {
+  checkFieldIsAllowEmpty()
+}
 onMounted(() => {
   if (!view.value.isPlugin) {
-    queryData(true && !showPosition.value.includes('viewDialog'))
+    queryData(!showPosition.value.includes('viewDialog'))
   }
   if (!listenerEnable.value) {
     return
   }
+  useEmitt({
+    name: 'checkShowEmpty',
+    callback: param => {
+      if (param.view?.id === view.value.id) {
+        checkFieldIsAllowEmpty(param.allFields)
+      }
+    }
+  })
+  useEmitt({ name: 'chart-type-change', callback: changeChartType })
+  useEmitt({ name: 'dataset-change', callback: changeDataset })
   useEmitt({
     name: 'clearPanelLinkage',
     callback: function (param) {
@@ -913,7 +983,7 @@ const loadPluginCategory = data => {
       </transition>
     </div>
     <!--这里去渲染不同图库的图表-->
-    <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
+    <div v-if="chartAreaShow && !showEmpty" style="flex: 1; overflow: hidden">
       <plugin-component
         v-if="view.plugin?.isPlugin"
         :jsname="view.plugin.staticMap['index']"
@@ -944,6 +1014,7 @@ const loadPluginCategory = data => {
       </de-picture-group>
       <de-rich-text-view
         v-else-if="showChartView(ChartLibraryType.RICH_TEXT)"
+        :scale="scale"
         :themes="canvasStyleData.dashboard.themeColor"
         ref="chartComponent"
         :element="element"
@@ -990,7 +1061,7 @@ const loadPluginCategory = data => {
       />
     </div>
     <chart-empty-info
-      v-if="!chartAreaShow"
+      v-if="!chartAreaShow || showEmpty"
       :themes="canvasStyleData.dashboard.themeColor"
       :view-icon="view.type"
     ></chart-empty-info>

@@ -107,7 +107,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     },
     xAxisExt: {
       name: `${t('chart.drag_block_table_data_column')} / ${t('chart.dimension')}`,
-      type: 'd'
+      type: 'd',
+      allowEmpty: true
     },
     yAxis: {
       name: `${t('chart.drag_block_table_data_column')} / ${t('chart.quota')}`,
@@ -508,7 +509,7 @@ function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
     const rowPath = getTreePath(query, row)
     const colPath = getTreePath(query, col)
     const path = [...rowPath, ...colPath]
-    const { data } = colSubTotal[subLevel]
+    const { data } = colSubTotal?.[subLevel]
     let val
     if (path.length && data) {
       path.push(quotaField)
@@ -525,6 +526,11 @@ function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
       path.push(quotaField)
       val = get(rowTotal.data, path)
     }
+    // 列维度为空，行维度不为空
+    if (!col.length && row.length) {
+      const path = [query[EXTRA_FIELD]]
+      val = get(rowTotal.data, path)
+    }
     return val
   }
   // 行小计
@@ -534,7 +540,7 @@ function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
     const colPath = getTreePath(query, col)
     const rowPath = getTreePath(query, row)
     const path = [...colPath, ...rowPath]
-    const { data } = rowSubTotal[rowLevel]
+    const { data } = rowSubTotal?.[rowLevel]
     let val
     if (path.length && rowSubTotal) {
       path.push(quotaField)
@@ -546,7 +552,7 @@ function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
   if (status.isRowTotal && status.isColSubTotal) {
     const { colSubInRowTotal } = customCalc
     const colLevel = getSubLevel(query, col)
-    const { data } = colSubInRowTotal[colLevel]
+    const { data } = colSubInRowTotal?.[colLevel]
     const colPath = getTreePath(query, col)
     let val
     if (colPath.length && colSubInRowTotal) {
@@ -559,7 +565,7 @@ function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
   if (status.isColTotal && status.isRowSubTotal) {
     const { rowSubInColTotal } = customCalc
     const rowSubLevel = getSubLevel(query, row)
-    const data = rowSubInColTotal[rowSubLevel]?.data
+    const data = rowSubInColTotal?.[rowSubLevel]?.data
     const path = getTreePath(query, row)
     let val
     if (path.length && rowSubInColTotal) {
@@ -573,7 +579,7 @@ function getCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
     const { rowSubInColSub } = customCalc
     const rowSubLevel = getSubLevel(query, row)
     const colSubLevel = getSubLevel(query, col)
-    const { data } = rowSubInColSub[rowSubLevel][colSubLevel]
+    const { data } = rowSubInColSub?.[rowSubLevel]?.[colSubLevel]
     const rowPath = getTreePath(query, row)
     const colPath = getTreePath(query, col)
     const path = [...rowPath, ...colPath]

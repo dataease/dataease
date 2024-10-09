@@ -17,6 +17,7 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
@@ -35,6 +36,25 @@ public class TablePivotHandler extends GroupChartHandler {
         T result =  super.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
         Map<String, Object> customCalc = calcCustomExpr(view, filterResult, sqlMap, sqlMeta, provider);
         result.getData().put("customCalc", customCalc);
+        try {
+            var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+            var originSql = result.getQuerySql();
+            var dynamicAssistFields = getDynamicThresholdFields(view);
+            var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+            var assistFields = getAssistFields(dynamicAssistFields, yAxis);
+            if (CollectionUtils.isNotEmpty(assistFields)) {
+                var req = new DatasourceRequest();
+                req.setDsList(dsMap);
+                var assistSql = assistSQL(originSql, assistFields);
+                req.setQuery(assistSql);
+                logger.debug("calcite assistSql sql: " + assistSql);
+                var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
+                result.setAssistData(assistData);
+                result.setDynamicAssistFields(dynamicAssistFields);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -54,7 +74,9 @@ public class TablePivotHandler extends GroupChartHandler {
         var rowAxis = view.getXAxis();
         var colAxis = view.getXAxisExt();
         var dataMap = new HashMap<String, Object>();
-        var quotaIds = view.getYAxis().stream().map(ChartViewFieldDTO::getDataeaseName).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(rowAxis)) {
+            return dataMap;
+        }
         // 行总计，列维度聚合加上自定义字段
         var row = tableTotal.getRow();
         if (row.isShowGrandTotals()) {
@@ -96,7 +118,7 @@ public class TablePivotHandler extends GroupChartHandler {
         }
         // 列总计，行维度聚合加上自定义字段
         var col = tableTotal.getCol();
-        if (col.isShowGrandTotals()) {
+        if (col.isShowGrandTotals() && CollectionUtils.isNotEmpty(colAxis)) {
             var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var result = getData(sqlMeta, rowAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
@@ -109,7 +131,7 @@ public class TablePivotHandler extends GroupChartHandler {
             }
         }
         // 列小计，行维度聚合，自定义指标数 * (列维度的数量 - 1)
-        if (col.isShowSubTotals()) {
+        if (col.isShowSubTotals() && colAxis.size() >= 2) {
             var yAxis = getCustomFields(view, col.getCalcSubTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
@@ -153,7 +175,7 @@ public class TablePivotHandler extends GroupChartHandler {
             }
         }
         // 行总计里面的列小计
-        if (row.isShowGrandTotals() && col.isShowSubTotals()) {
+        if (row.isShowGrandTotals() && col.isShowSubTotals() && colAxis.size() >= 2) {
             var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
@@ -174,7 +196,7 @@ public class TablePivotHandler extends GroupChartHandler {
             }
         }
         // 列总计里面的行小计
-        if (col.isShowGrandTotals() && row.isShowGrandTotals()) {
+        if (col.isShowGrandTotals() && row.isShowGrandTotals() && rowAxis.size() >= 2) {
             var yAxis = getCustomFields(view, row.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
@@ -195,7 +217,7 @@ public class TablePivotHandler extends GroupChartHandler {
             }
         }
         // 行小计和列小计相交部分
-        if (row.isShowSubTotals() && col.isShowSubTotals()) {
+        if (row.isShowSubTotals() && col.isShowSubTotals() && colAxis.size() >= 2 && rowAxis.size() >= 2) {
             var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<List<Map<String, Object>>>();
@@ -230,6 +252,14 @@ public class TablePivotHandler extends GroupChartHandler {
 
     private Map<String, Object> buildCustomCalcResult(List<String[]> data, List<ChartViewFieldDTO> dimAxis, List<ChartViewFieldDTO> quotaAxis) {
         var rootResult = new HashMap<String, Object>();
+        if (CollectionUtils.isEmpty(dimAxis)) {
+            var rowData = data.getFirst();
+            for (int i = 0; i < rowData.length; i++) {
+                var qAxis = quotaAxis.get(i);
+                rootResult.put(qAxis.getDataeaseName(), rowData[i]);
+            }
+            return rootResult;
+        }
         for (int i = 0; i < data.size(); i++) {
             var rowData = data.get(i);
             Map<String, Object> curSubMap = rootResult;

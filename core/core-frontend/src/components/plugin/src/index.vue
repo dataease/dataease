@@ -12,6 +12,7 @@ import * as echarts from 'echarts'
 import router from '@/router'
 import tinymce from 'tinymce/tinymce'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { isNull } from '@/utils/utils'
 
 const { wsCache } = useCache()
 
@@ -107,10 +108,15 @@ onMounted(async () => {
   let distributed = false
   if (wsCache.get(key) === null) {
     const res = await xpackModelApi()
-    wsCache.set('xpack-model-distributed', res.data)
+    const resData = isNull(res.data) ? 'null' : res.data
+    wsCache.set('xpack-model-distributed', resData)
     distributed = res.data
   } else {
     distributed = wsCache.get(key)
+  }
+  if (isNull(distributed)) {
+    emits('loadFail')
+    return
   }
   if (distributed) {
     if (window['DEXPack']) {

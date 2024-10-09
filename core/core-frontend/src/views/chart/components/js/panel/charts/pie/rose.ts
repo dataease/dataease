@@ -19,12 +19,21 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 
 export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
   axis: AxisType[] = PIE_AXIS_TYPE
   properties: EditorProperty[] = PIE_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = PIE_EDITOR_PROPERTY_INNER
-  axisConfig = PIE_AXIS_CONFIG
+  axisConfig: AxisConfig = {
+    ...PIE_AXIS_CONFIG,
+    yAxis: {
+      name: `${t('chart.drag_block_pie_radius')} / ${t('chart.quota')}`,
+      type: 'q',
+      limit: 1
+    }
+  }
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Rose>): Promise<G2Rose> {
     const { chart, container, action } = drawOptions

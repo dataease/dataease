@@ -193,40 +193,62 @@ const changeTableThreshold = () => {
         ElMessage.error(t('chart.exp_can_not_empty'))
         return
       }
-      if (ele.term === 'between') {
-        if (
-          !ele.term.includes('null') &&
-          !ele.term.includes('empty') &&
-          (ele.min === '' || ele.max === '')
-        ) {
-          ElMessage.error(t('chart.value_can_not_empty'))
-          return
-        }
-        if (
-          (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) &&
-          (parseFloat(ele.min).toString() === 'NaN' || parseFloat(ele.max).toString() === 'NaN')
-        ) {
-          ElMessage.error(t('chart.value_error'))
-          return
-        }
-        if (
-          (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) &&
-          parseFloat(ele.min) > parseFloat(ele.max)
-        ) {
-          ElMessage.error(t('chart.value_min_max_invalid'))
-          return
+      if (ele.type !== 'dynamic') {
+        if (ele.term === 'between') {
+          if (
+            !ele.term.includes('null') &&
+            !ele.term.includes('empty') &&
+            (ele.min === '' || ele.max === '')
+          ) {
+            ElMessage.error(t('chart.value_can_not_empty'))
+            return
+          }
+          if (
+            (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) &&
+            (parseFloat(ele.min).toString() === 'NaN' || parseFloat(ele.max).toString() === 'NaN')
+          ) {
+            ElMessage.error(t('chart.value_error'))
+            return
+          }
+          if (
+            (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) &&
+            parseFloat(ele.min) > parseFloat(ele.max)
+          ) {
+            ElMessage.error(t('chart.value_min_max_invalid'))
+            return
+          }
+        } else {
+          if (!ele.term.includes('null') && !ele.term.includes('empty') && ele.value === '') {
+            ElMessage.error(t('chart.value_can_not_empty'))
+            return
+          }
+          if (
+            (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) &&
+            parseFloat(ele.value).toString() === 'NaN'
+          ) {
+            ElMessage.error(t('chart.value_error'))
+            return
+          }
         }
       } else {
-        if (!ele.term.includes('null') && !ele.term.includes('empty') && ele.value === '') {
-          ElMessage.error(t('chart.value_can_not_empty'))
-          return
-        }
-        if (
-          (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) &&
-          parseFloat(ele.value).toString() === 'NaN'
-        ) {
-          ElMessage.error(t('chart.value_error'))
-          return
+        if (ele.term === 'between') {
+          if (
+            !ele.term.includes('null') &&
+            !ele.term.includes('empty') &&
+            (!ele.dynamicMinField?.fieldId || !ele.dynamicMaxField?.fieldId)
+          ) {
+            ElMessage.error(t('chart.field_can_not_empty'))
+            return
+          }
+        } else {
+          if (
+            !ele.term.includes('null') &&
+            !ele.term.includes('empty') &&
+            !ele.dynamicField?.fieldId
+          ) {
+            ElMessage.error(t('chart.field_can_not_empty'))
+            return
+          }
         }
       }
     }
@@ -235,7 +257,24 @@ const changeTableThreshold = () => {
   changeThreshold()
   closeTableThreshold()
 }
+const getFieldName = field => (field.chartShowName ? field.chartShowName : field.name)
 
+const getDynamicStyleLabel = (item, fieldObj) => {
+  const handleSummary = field => {
+    if (!field?.field) {
+      return ''
+    }
+    if (field.summary === 'value') {
+      return getFieldName(field.field) + '(' + t('chart.field') + ')'
+    } else {
+      let suffix = field.summary === 'avg' ? t('chart.drag_block_label_value') : ''
+      return getFieldName(field.field) + '(' + t('chart.' + field.summary) + suffix + ')'
+    }
+  }
+  if (item.type === 'dynamic') {
+    return handleSummary(fieldObj)
+  }
+}
 init()
 </script>
 
@@ -519,17 +558,15 @@ init()
             style="flex-direction: column"
           >
             <div class="field-style" :class="{ 'field-style-dark': themes === 'dark' }">
-              <span>
-                <el-icon>
-                  <Icon :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
-                    ><component
-                      class="svg-icon"
-                      :class="`field-icon-${fieldType[fieldItem.field.deType]}`"
-                      :is="iconFieldMap[fieldType[fieldItem.field.deType]]"
-                    ></component
-                  ></Icon>
-                </el-icon>
-              </span>
+              <el-icon>
+                <Icon :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                    :is="iconFieldMap[fieldType[fieldItem.field.deType]]"
+                  ></component
+                ></Icon>
+              </el-icon>
               <span :title="fieldItem.field.name" class="field-text">{{
                 fieldItem.field.name
               }}</span>
@@ -577,7 +614,17 @@ init()
                 </span>
                 <span v-else-if="item.term === 'default'" title="默认"> 默认 </span>
               </div>
-              <div style="flex: 1; margin: 0 8px">
+              <div v-if="item.type !== 'dynamic'" style="flex: 1; margin: 0 8px">
+                <span style="margin: 0 8px">
+                  {{ t('chart.fix') }}
+                </span>
+              </div>
+              <div v-else style="flex: 1; margin: 0 8px">
+                <span style="margin: 0 8px">
+                  {{ t('chart.dynamic') }}
+                </span>
+              </div>
+              <div v-if="item.type !== 'dynamic'" style="flex: 1; margin: 0 8px">
                 <span
                   v-if="
                     !item.term.includes('null') &&
@@ -594,8 +641,41 @@ init()
                     !item.term.includes('empty') &&
                     item.term === 'between'
                   "
+                  :title="item.min + ' ≤= ' + t('chart.drag_block_label_value') + ' ≤ ' + item.max"
                 >
                   {{ item.min }}&nbsp;≤{{ t('chart.drag_block_label_value') }}≤&nbsp;{{ item.max }}
+                </span>
+                <span v-else>&nbsp;</span>
+              </div>
+              <div v-else style="flex: 1; margin: 0 8px">
+                <span
+                  v-if="
+                    !item.term.includes('null') &&
+                    !item.term.includes('default') &&
+                    !item.term.includes('empty') &&
+                    item.term !== 'between'
+                  "
+                  :title="getDynamicStyleLabel(item, item.dynamicField) + ''"
+                >
+                  {{ getDynamicStyleLabel(item, item.dynamicField) }}</span
+                >
+                <span
+                  v-else-if="
+                    !item.term.includes('null') &&
+                    !item.term.includes('empty') &&
+                    item.term === 'between'
+                  "
+                  :title="
+                    getDynamicStyleLabel(item, item.dynamicMinField) +
+                    '≤' +
+                    t('chart.drag_block_label_value') +
+                    '≤' +
+                    getDynamicStyleLabel(item, item.dynamicMaxField)
+                  "
+                >
+                  {{ getDynamicStyleLabel(item, item.dynamicMinField) }}≤{{
+                    t('chart.drag_block_label_value')
+                  }}≤{{ getDynamicStyleLabel(item, item.dynamicMaxField) }}
                 </span>
                 <span v-else>&nbsp;</span>
               </div>
@@ -688,7 +768,7 @@ init()
       v-model="state.editTableThresholdDialog"
       :title="t('chart.threshold')"
       :visible="state.editTableThresholdDialog"
-      width="800px"
+      width="1050px"
       class="dialog-css"
       append-to-body
     >
@@ -826,12 +906,21 @@ span {
   flex-direction: row;
   align-items: center;
   flex-wrap: nowrap;
-
+  :nth-child(1) {
+    width: 48px;
+  }
+  :nth-child(2) {
+    width: 40px !important;
+  }
+  :nth-child(3) {
+    width: 30px !important;
+  }
   &:deep(span) {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     cursor: default;
+    display: block;
   }
 }
 
@@ -868,9 +957,7 @@ span {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-
     background: #f5f6f7;
-
     &.field-style-dark {
       background: #1a1a1a;
     }
@@ -898,7 +985,7 @@ span {
   border-radius: 2px;
 }
 .pic-group-img {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>

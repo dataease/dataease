@@ -31,6 +31,7 @@ public class TokenUtils {
         return userBOByToken(token);
     }
 
+
     public static TokenUserBO validateLinkToken(String linkToken) {
         if (StringUtils.isBlank(linkToken)) {
             String uri = ServletUtils.request().getRequestURI();

@@ -166,7 +166,11 @@ onMounted(() => {
           @click="editLine"
         >
           <el-icon>
-            <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+            <Icon
+              ><icon_edit_outlined
+                :class="state.assistLineCfg.enable && 'primary-color'"
+                class="svg-icon"
+            /></Icon>
           </el-icon>
         </button>
       </span>
@@ -363,7 +367,7 @@ span {
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
-  color: #a6a6a6 !important;
+  color: #a6a6a6;
   &.ed-button {
     color: var(--ed-color-primary) !important;
   }

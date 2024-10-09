@@ -836,6 +836,7 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
 
 const updateChartData = view => {
   curComponent.value['state'] = 'ready'
+  useEmitt().emitter.emit('checkShowEmpty', { allFields: allFields.value, view: view })
   calcData(view, true, 'updateQuery')
 }
 
@@ -1074,7 +1075,19 @@ const onAssistLineChange = val => {
 
 const onThresholdChange = val => {
   view.value.senior.threshold = val
-  renderChart(view.value)
+  let type = undefined
+  view.value.senior.threshold?.tableThreshold?.some(item => {
+    if (item.conditions.some(i => i.type === 'dynamic')) {
+      type = 'calcData'
+      return true
+    }
+    return false
+  })
+  if (type) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onMapMappingChange = val => {
@@ -1766,13 +1779,14 @@ const deleteChartFieldItem = id => {
               </div>
               <el-popover show-arrow :offset="8" placement="bottom" width="200" trigger="click">
                 <template #reference>
-                  <el-icon
-                    v-show="route.path !== '/dvCanvas'"
-                    style="margin-left: 4px; cursor: pointer"
+                  <el-icon style="margin-left: 4px; cursor: pointer"
                     ><Icon><dvInfoSvg class="svg-icon" /></Icon
                   ></el-icon>
                 </template>
-                {{ view.id }}
+                <div style="margin-bottom: 4px; font-size: 14px; color: #646a73">图表ID</div>
+                <div style="font-size: 14px; color: #1f2329">
+                  {{ view.id }}
+                </div>
               </el-popover>
             </div>
           </el-row>
@@ -3468,12 +3482,7 @@ const deleteChartFieldItem = id => {
             class="name-edit-form no-margin-bottom"
             prop="chartShowName"
           >
-            <el-input
-              v-model="state.itemForm.chartShowName"
-              class="text"
-              :maxlength="20"
-              clearable
-            />
+            <el-input v-model="state.itemForm.chartShowName" class="text" clearable />
           </el-form-item>
         </el-form>
       </div>

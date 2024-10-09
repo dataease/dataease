@@ -250,7 +250,7 @@ const init = () => {
 const showProperty = prop => {
   const instance = chartViewManager.getChartView(props.chart.render, props.chart.type)
   if (instance) {
-    return instance.propertyInner['tooltip-selector'].includes(prop)
+    return instance.propertyInner['tooltip-selector']?.includes(prop)
   }
   return props.propertyInner?.includes(prop)
 }

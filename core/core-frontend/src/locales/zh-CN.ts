@@ -996,8 +996,9 @@ export default {
     drag_block_value_axis_left: '左值轴',
     drag_block_value_axis_right: '右值轴',
     drag_block_table_data_column: '数据列',
-    drag_block_pie_angel: '扇区角度',
+    drag_block_pie_angle: '扇区角度',
     drag_block_pie_label: '扇区标签',
+    drag_block_pie_radius: '扇区半径',
     drag_block_gauge_angel: '指针角度',
     drag_block_label_value: '值',
     drag_block_funnel_width: '漏斗层宽',
@@ -2703,7 +2704,11 @@ export default {
       please_insert_end: '请输入结束时间',
       save_form: '保存表单',
       default: '默认',
-      default_built_in: '内建数据库'
+      default_built_in: '内建数据库',
+      lt_check: '值需要小于{0}',
+      gt_check: '值需要大于{0}',
+      le_check: '值需要小于等于{0}',
+      ge_check: '值需要大于等于{0}'
     },
     database: {
       nvarchar: '字符串',

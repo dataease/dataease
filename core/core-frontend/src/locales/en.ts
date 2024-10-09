@@ -365,7 +365,11 @@ export default {
       please_insert_end: 'End Time Column Name',
       save_form: 'Save Form',
       default: 'default',
-      default_built_in: 'Built-in Database'
+      default_built_in: 'Built-in Database',
+      lt_check: 'need less than {0}',
+      gt_check: 'need greater than {0}',
+      le_check: 'need less than or equal to {0}',
+      ge_check: 'need greater than or equal to {0}'
     },
     database: {
       nvarchar: 'Nvarchar',

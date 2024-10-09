@@ -98,6 +98,7 @@ const maskShow = ref(false)
 const loading = ref(false)
 const updateCustomTime = ref(false)
 const editerName = ref()
+const nameMap = ref({})
 const currentField = ref({
   dateFormat: '',
   id: '',
@@ -720,8 +721,18 @@ const dimensions = computed(() => {
   return allfields.value.filter(ele => ele.groupType === 'd')
 })
 
+const dfsGetName = (list, name) => {
+  list.forEach(ele => {
+    name[ele.id] = ele.tableName
+    if (ele.children?.length) {
+      dfsGetName(ele.children, name)
+    }
+  })
+}
+
 const tabChange = val => {
   if (val === 'preview') return
+  reGetName()
   allfields.value.forEach(ele => {
     if (!Array.isArray(ele.deTypeArr)) {
       ele.deTypeArr =
@@ -745,6 +756,11 @@ const addComplete = () => {
   }
   cancelMap['/datasetData/previewData']?.()
   datasetPreviewLoading.value = false
+  reGetName()
+}
+
+const reGetName = () => {
+  dfsGetName(datasetDrag.value.getNodeList(), nameMap.value)
 }
 
 const state = reactive({
@@ -1530,6 +1546,7 @@ const getDsIconName = data => {
           {{ t('data_set.be_reported_incorrectly') }}
         </div>
         <dataset-union
+          @reGetName="reGetName"
           @join-editor="joinEditor"
           @changeUpdate="changeUpdate"
           :maskShow="maskShow"
@@ -1747,7 +1764,11 @@ const getDsIconName = data => {
                         </div>
                       </template>
                     </el-table-column>
-
+                    <el-table-column prop="datasetTableId" label="表名" width="240">
+                      <template #default="scope">
+                        {{ scope.row.extField === 0 ? nameMap[scope.row.datasetTableId] : '' }}
+                      </template>
+                    </el-table-column>
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
@@ -1777,10 +1798,11 @@ const getDsIconName = data => {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${
-                                fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
-                              }`"
                               ><component
+                                class="svg-icon"
+                                :class="`field-icon-${
+                                  fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
+                                }`"
                                 :is="iconFieldMap[getIconName(scope.row.deType)]"
                               ></component
                             ></Icon>
@@ -1927,6 +1949,12 @@ const getDsIconName = data => {
                       </template>
                     </el-table-column>
 
+                    <el-table-column prop="datasetTableId" label="表名" width="240">
+                      <template #default="scope">
+                        {{ scope.row.extField === 0 ? nameMap[scope.row.datasetTableId] : '' }}
+                      </template>
+                    </el-table-column>
+
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
@@ -1956,10 +1984,11 @@ const getDsIconName = data => {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${
-                                fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
-                              }`"
                               ><component
+                                class="svg-icon"
+                                :class="`field-icon-${
+                                  fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
+                                }`"
                                 :is="iconFieldMap[getIconName(scope.row.deType)]"
                               ></component
                             ></Icon>

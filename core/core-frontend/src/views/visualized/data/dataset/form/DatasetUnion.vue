@@ -246,6 +246,7 @@ const saveSqlNode = (val: SqlNode, cb) => {
   }
   const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName, sqlVariableDetails }
   dfsNodeBack([obj], [id], state.nodeList)
+  emits('reGetName')
 }
 
 const setChangeStatus = (to, from) => {
@@ -997,6 +998,7 @@ const confirmRename = () => {
       renameParam.name = ''
       renameParam.id = ''
       dialogRename.value = false
+      emits('reGetName')
     }
   })
 }
@@ -1038,7 +1040,13 @@ const handleActiveNode = ele => {
   handleCommand(ele, 'editerField')
 }
 
-const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'changeUpdate'])
+const emits = defineEmits([
+  'addComplete',
+  'joinEditor',
+  'updateAllfields',
+  'changeUpdate',
+  'reGetName'
+])
 </script>
 
 <template>

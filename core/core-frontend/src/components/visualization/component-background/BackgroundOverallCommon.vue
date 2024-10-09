@@ -141,6 +141,12 @@
               placeholder="选择边框..."
               @change="onBackgroundChange"
             >
+              <template v-if="state.commonBackground.innerImage" #prefix>
+                <border-option-prefix
+                  inner-image-color="state.commonBackground.innerImageColor"
+                  :url="state.commonBackground.innerImage"
+                ></border-option-prefix>
+              </template>
               <el-option
                 v-for="(item, index) in state.BackgroundShowMap['default']"
                 :key="index"
@@ -223,6 +229,8 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import { ElMessage } from 'element-plus-secondary'
 import BoardItem from '@/components/visualization/component-background/BoardItem.vue'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+import PictureOptionPrefix from '@/custom-component/picture-group/PictureOptionPrefix.vue'
+import BorderOptionPrefix from '@/components/visualization/component-background/BorderOptionPrefix.vue'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 const emits = defineEmits(['onBackgroundChange'])

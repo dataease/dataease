@@ -4,6 +4,8 @@ import { flow, hexColorToRGBA, parseJson } from '../../../util'
 import { valueFormatter } from '../../../formatter'
 import { getPadding, getTooltipSeriesTotalMap, setGradientColor } from '../../common/common_antv'
 import { isEmpty } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 
 /**
  * 瀑布图
@@ -62,6 +64,17 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     ]
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
+  axisConfig = {
+    xAxis: {
+      name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
+      type: 'd'
+    },
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
+      type: 'q',
+      limit: 1
+    }
+  }
   async drawChart(drawOptions: G2PlotDrawOptions<G2Waterfall>): Promise<G2Waterfall> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {

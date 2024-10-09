@@ -25,7 +25,7 @@ const props = defineProps({
       >{{ t('chart.drag_block_value_axis') }}</span
     >
     <span v-else-if="props.view.type && props.view.type.includes('pie')">{{
-      t('chart.drag_block_pie_angel')
+      t('chart.drag_block_pie_angle')
     }}</span>
     <span v-else-if="props.view.type && props.view.type.includes('funnel')">{{
       t('chart.drag_block_funnel_width')

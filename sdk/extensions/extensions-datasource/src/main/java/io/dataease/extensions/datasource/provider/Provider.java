@@ -138,7 +138,9 @@ public abstract class Provider {
 
             // 获取数据库version
             ConnectionObj connection = getConnection(value);
-            value.setDsVersion(connection.getConnection().getMetaData().getDatabaseMajorVersion());
+            if (connection != null) {
+                value.setDsVersion(connection.getConnection().getMetaData().getDatabaseMajorVersion());
+            }
 
             SqlParser parser = SqlParser.create(sql, SqlParser.Config.DEFAULT.withLex(Lex.JAVA));
             SqlNode sqlNode = parser.parseStmt();
@@ -207,7 +209,7 @@ public abstract class Provider {
                 sqlDialect = ImpalaSqlDialect.DEFAULT;
                 break;
             case sqlServer:
-                sqlDialect = MssqlSqlDialect.DEFAULT;
+                sqlDialect = new MssqlSqlDialect(MssqlSqlDialect.DEFAULT_CONTEXT, coreDatasource.getDsVersion());
                 break;
             case oracle:
                 sqlDialect = OracleSqlDialect.DEFAULT;

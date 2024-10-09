@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, PropType, reactive, watch } from 'vue'
+import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import {
   COLOR_PANEL,
   DEFAULT_BASIC_STYLE,
@@ -236,6 +236,10 @@ const mapSymbolOptions = [
   { name: t('chart.line_symbol_diamond'), value: 'rhombus' }
 ]
 
+const customSymbolicMapSizeRange = computed(() => {
+  let { extBubble } = JSON.parse(JSON.stringify(props.chart))
+  return ['symbolic-map'].includes(props.chart.type) && extBubble?.length > 0
+})
 onMounted(() => {
   init()
 })
@@ -476,7 +480,49 @@ onMounted(() => {
                 :max="40"
                 v-model="state.basicStyleForm.mapSymbolSize"
                 @change="changeBasicStyle('mapSymbolSize')"
+                :disabled="customSymbolicMapSizeRange"
               />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="alpha-setting">
+        <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+          {{ t('chart.size') }}区间
+        </label>
+        <el-row style="flex: 1">
+          <el-col :span="12">
+            <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+              <el-input
+                type="number"
+                :effect="themes"
+                v-model="state.basicStyleForm.mapSymbolSizeMin"
+                :min="0"
+                :max="100"
+                class="basic-input-number"
+                :controls="false"
+                @change="changeBasicStyle('mapSymbolSizeMin')"
+                :disabled="!customSymbolicMapSizeRange"
+              >
+                <template #suffix> PX </template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+              <el-input
+                type="number"
+                :effect="themes"
+                v-model="state.basicStyleForm.mapSymbolSizeMax"
+                :min="0"
+                :max="100"
+                class="basic-input-number"
+                :controls="false"
+                @change="changeBasicStyle('mapSymbolSizeMax')"
+                :disabled="!customSymbolicMapSizeRange"
+              >
+                <template #suffix> PX </template>
+              </el-input>
             </el-form-item>
           </el-col>
         </el-row>

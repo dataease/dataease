@@ -6,6 +6,7 @@
     @keyup.stop
     @dblclick="setEdit"
     @click="onClick"
+    :style="richTextStyle"
   >
     <chart-error v-if="isError" :err-msg="errMsg" />
     <Editor
@@ -163,7 +164,28 @@ const init = ref({
   inline: true, // 开启内联模式
   branding: false,
   icons: 'vertical-content',
-  vertical_align: element.value.propValue.verticalAlign
+  vertical_align: element.value.propValue.verticalAlign,
+  setup: function (editor) {
+    // 在表格调整大小开始时
+    editor.on('ObjectResizeStart', function (e) {
+      const { target, width, height } = e
+      if (target.nodeName === 'TABLE') {
+        // 将宽高根据缩放比例调整
+        // e.width = width / props.scale
+        // e.height = height / props.scale
+      }
+    })
+
+    // 在表格调整大小结束时
+    editor.on('ObjectResized', function (e) {
+      const { target, width, height } = e
+      if (target.nodeName === 'TABLE') {
+        // 将最终调整的宽高根据缩放比例重设
+        // target.style.width = `${width * props.scale}px`
+        // target.style.height = `${height  scaleFactor}px`
+      }
+    })
+  }
 })
 
 const editStatus = computed(() => {
@@ -182,6 +204,7 @@ watch(
       canEdit.value = false
       reShow()
       myValue.value = assignment(element.value.propValue.textValue)
+      console.log('===myValue.value=' + myValue.value)
       ed.setContent(myValue.value)
     }
   }
@@ -241,6 +264,23 @@ const initCurFieldsChange = () => {
   }
 }
 
+const jumpTargetAdaptor = () => {
+  setTimeout(() => {
+    const paragraphs = document.querySelectorAll('p')
+    paragraphs.forEach(p => {
+      // 如果 p 标签已经有 onclick 且包含 event.stopPropagation，则跳过
+      if (
+        p.getAttribute('onclick') &&
+        p.getAttribute('onclick').includes('event.stopPropagation()')
+      ) {
+        return // 已经有 stopPropagation，跳过
+      }
+      // 否则添加 onclick 事件
+      p.setAttribute('onclick', 'event.stopPropagation()')
+    })
+  }, 1000)
+}
+
 const assignment = content => {
   const on = content.match(/\[(.+?)\]/g)
   if (on) {
@@ -266,8 +306,10 @@ const assignment = content => {
   //De 本地跳转失效问题
   content = content.replace(/href="#\//g, 'href="/#/')
   content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
+  content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
   resetSelect()
   initFontFamily(content)
+  jumpTargetAdaptor()
   return content
 }
 const initFontFamily = htmlText => {
@@ -561,6 +603,8 @@ const conditionAdaptor = (chart: Chart) => {
   return res
 }
 
+const richTextStyle = computed(() => [{ '--de-canvas-scale': props.scale }])
+
 onMounted(() => {
   viewInit()
 })
@@ -582,6 +626,12 @@ defineExpose({
   div::-webkit-scrollbar {
     width: 0px !important;
     height: 0px !important;
+  }
+  ::v-deep(p) {
+    zoom: var(--de-canvas-scale);
+  }
+  ::v-deep(td span) {
+    zoom: var(--de-canvas-scale);
   }
 }
 

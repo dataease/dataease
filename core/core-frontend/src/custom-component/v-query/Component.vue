@@ -18,7 +18,8 @@ import {
   onBeforeMount,
   CSSProperties,
   shallowRef,
-  provide
+  provide,
+  nextTick
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -57,12 +58,15 @@ const props = defineProps({
 })
 const { element, view, scale } = toRefs(props)
 const { t } = useI18n()
+const vQueryRef = ref()
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap } = storeToRefs(dvMainStore)
 const canEdit = ref(false)
 const queryConfig = ref()
 const defaultStyle = {
   border: '',
+  placeholderSize: 14,
+  placeholderShow: true,
   background: '',
   text: '',
   layout: 'horizontal',
@@ -111,6 +115,27 @@ const btnStyle = computed(() => {
 
   return style
 })
+
+const btnPlainStyle = computed(() => {
+  const style = {
+    backgroundColor: 'transparent',
+    borderColor: customStyle.btnColor,
+    color: customStyle.btnColor
+  } as CSSProperties
+  if (customStyle.fontSizeBtn) {
+    style.fontSize = customStyle.fontSizeBtn + 'px'
+  }
+
+  if (customStyle.fontWeightBtn) {
+    style.fontWeight = customStyle.fontWeightBtn
+  }
+
+  if (customStyle.fontStyleBtn) {
+    style.fontStyle = customStyle.fontStyleBtn
+  }
+
+  return style
+})
 const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
 })
@@ -130,7 +155,6 @@ const setCustomStyle = val => {
     layout,
     titleShow,
     titleColor,
-    textColorShow,
     title,
     fontSize,
     fontWeight,
@@ -143,12 +167,22 @@ const setCustomStyle = val => {
     queryConditionSpacing,
     labelColorBtn,
     btnColor,
+    placeholderSize,
+    placeholderShow,
     labelShow
   } = val
   customStyle.background = bgColorShow ? bgColor || '' : ''
   customStyle.border = borderShow ? borderColor || '' : ''
   customStyle.btnList = [...btnList]
   customStyle.layout = layout
+  customStyle.placeholderShow = placeholderShow ?? true
+  customStyle.placeholderSize = placeholderSize ?? 14
+  nextTick(() => {
+    vQueryRef.value.style.setProperty(
+      '--ed-component-size',
+      `${customStyle.placeholderSize + 18}px`
+    )
+  })
   customStyle.titleShow = titleShow
   customStyle.titleColor = titleColor
   customStyle.labelColor = labelShow ? labelColor || '' : ''
@@ -156,7 +190,7 @@ const setCustomStyle = val => {
   customStyle.fontWeight = labelShow ? fontWeight || '' : ''
   customStyle.fontStyle = labelShow ? fontStyle || '' : ''
   customStyle.title = title
-  customStyle.text = textColorShow ? text || '' : ''
+  customStyle.text = customStyle.placeholderShow ? text || '' : ''
   customStyle.titleLayout = titleLayout
   customStyle.fontSizeBtn = fontSizeBtn || '14'
   customStyle.fontWeightBtn = fontWeightBtn
@@ -271,6 +305,12 @@ const getCascadeList = () => {
   return props.element.cascade
 }
 
+const getPlaceholder = computed(() => {
+  return {
+    placeholderShow: customStyle.placeholderShow
+  }
+})
+
 const isConfirmSearch = id => {
   if (componentWithSure.value) return
   queryDataForId(id)
@@ -282,6 +322,7 @@ provide('release-unmount-select', releaseSelect)
 provide('query-data-for-id', queryDataForId)
 provide('com-width', getQueryConditionWidth)
 provide('cascade-list', getCascadeList)
+provide('placeholder', getPlaceholder)
 
 onBeforeUnmount(() => {
   emitter.off(`addQueryCriteria${element.value.id}`)
@@ -449,6 +490,10 @@ watch(
   }
 )
 
+const boxWidth = computed(() => {
+  return `${customStyle.placeholderSize}px`
+})
+
 const queryData = () => {
   let requiredName = ''
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
@@ -536,14 +581,14 @@ const autoStyle = computed(() => {
     width: 100 / scale.value + '%!important',
     left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
     top: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
-    transform: 'scale(' + scale.value + ')',
+    transform: 'scale(' + scale.value + ') translateZ(0)',
     opacity: element.value?.style?.opacity || 1
   } as CSSProperties
 })
 </script>
 
 <template>
-  <div class="v-query-container" :style="autoStyle" @keydown.stop @keyup.stop>
+  <div class="v-query-container" ref="vQueryRef" :style="autoStyle" @keydown.stop @keyup.stop>
     <p v-if="customStyle.titleShow" class="title" :style="titleStyle">
       {{ customStyle.title }}
     </p>
@@ -619,10 +664,20 @@ const autoStyle = computed(() => {
           </div>
         </div>
         <div class="query-button" v-if="!!listVisible.length">
-          <el-button @click.stop="clearData" v-if="customStyle.btnList.includes('clear')" secondary>
+          <el-button
+            @click.stop="clearData"
+            :style="btnPlainStyle"
+            v-if="customStyle.btnList.includes('clear')"
+            plain
+          >
             {{ t('commons.clear') }}
           </el-button>
-          <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
+          <el-button
+            @click.stop="resetData"
+            :style="btnPlainStyle"
+            v-if="customStyle.btnList.includes('reset')"
+            plain
+          >
             {{ t('chart.reset') }}
           </el-button>
           <el-button
@@ -653,6 +708,15 @@ const autoStyle = computed(() => {
   height: 100%;
   overflow: auto;
   position: relative;
+  --ed-font-size-base: v-bind(boxWidth);
+
+  :deep(.ed-tag) {
+    --ed-tag-font-size: v-bind(boxWidth);
+  }
+
+  :deep(.ed-select-v2) {
+    font-size: v-bind(boxWidth);
+  }
 
   .no-list-label {
     width: 100%;

@@ -126,6 +126,9 @@ const baseComponentData = computed(() =>
 )
 const canvasStyle = computed(() => {
   let style = {}
+  if (isMainCanvas(canvasId.value) && !isDashboard()) {
+    style['overflowY'] = 'hidden !important'
+  }
   if (canvasStyleData.value && canvasStyleData.value.width && isMainCanvas(canvasId.value)) {
     style = {
       ...getCanvasStyle(canvasStyleData.value),
@@ -383,7 +386,9 @@ const filterBtnShow = computed(
 const datasetParamsInit = item => {
   customDatasetParamsRef.value?.optInit(item)
 }
-
+const dataVPreview = computed(
+  () => dvInfo.value.type === 'dataV' && canvasId.value === 'canvas-main'
+)
 defineExpose({
   restore
 })
@@ -394,7 +399,7 @@ defineExpose({
     :id="domId"
     class="canvas-container"
     :style="canvasStyle"
-    :class="{ 'de-download-custom': downloadStatus }"
+    :class="{ 'de-download-custom': downloadStatus, 'datav-preview': dataVPreview }"
     ref="previewCanvas"
     @mousedown="handleMouseDown"
   >
@@ -466,5 +471,9 @@ defineExpose({
 
 .fix-button {
   position: fixed !important;
+}
+
+.datav-preview {
+  overflow-y: hidden !important;
 }
 </style>

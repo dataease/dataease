@@ -31,6 +31,10 @@ const DEFAULT_DATA = []
 export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   axisConfig = {
     ...this['axisConfig'],
+    xAxis: {
+      name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
+      type: 'd'
+    },
     yAxis: {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
       type: 'q'
@@ -301,6 +305,14 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
  * 堆叠条形图
  */
 export class HorizontalStackBar extends HorizontalBar {
+  axisConfig = {
+    ...this['axisConfig'],
+    extStack: {
+      name: `${t('chart.stack_item')} / ${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1
+    }
+  }
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': ['color', 'fontSize', 'hPosition', 'labelFormatter'],
@@ -360,7 +372,7 @@ export class HorizontalStackBar extends HorizontalBar {
     if (mainSort || subSort) {
       return options
     }
-    const quotaSort = yAxis?.[0].sort !== 'none'
+    const quotaSort = yAxis?.[0]?.sort !== 'none'
     if (!quotaSort || !extStack.length || !yAxis.length) {
       return options
     }

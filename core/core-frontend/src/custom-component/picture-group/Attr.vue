@@ -1,200 +1,60 @@
 <script setup lang="ts">
+import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch, PropType, computed } from 'vue'
-import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { imgUrlTrans } from '@/utils/imgUtils'
-import eventBus from '@/utils/eventBus'
-import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
-import { useI18n } from '@/hooks/web/useI18n'
-import { toRefs } from 'vue'
-const { t } = useI18n()
+import { PropType } from 'vue'
+import PictureGroupUploadAttr from '@/custom-component/picture-group/PictureGroupUploadAttr.vue'
+import PictureGroupDatasetSelect from '@/custom-component/picture-group/PictureGroupDatasetSelect.vue'
+import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
+import PictureGroupThreshold from '@/custom-component/picture-group/PictureGroupThreshold.vue'
 
 const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
-  },
-  element: {
-    type: Object,
-    default() {
-      return {
-        propValue: {
-          urlList: []
-        }
-      }
-    }
   }
 })
 
 const dvMainStore = dvMainStoreWithOut()
-const snapshotStore = snapshotStoreWithOut()
-const { element } = toRefs(props)
 
-const { curComponent } = storeToRefs(dvMainStore)
-
-const fileList = ref([])
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
-const uploadDisabled = ref(false)
-const files = ref(null)
-const maxImageSize = 15000000
-
-const handlePictureCardPreview = file => {
-  dialogImageUrl.value = file.url
-  dialogVisible.value = true
-}
-
-const handleRemove = (_, fileList) => {
-  uploadDisabled.value = false
-  element.value.propValue['urlList'] = []
-  fileList.value = []
-  snapshotStore.recordSnapshotCache()
-}
-async function upload(file) {
-  uploadFileResult(file.file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
-    element.value.propValue.urlList.push({ name: file.file.name, url: fileUrl })
-  })
-}
-
-const onStyleChange = () => {
-  snapshotStore.recordSnapshotCache()
-}
-
-const goFile = () => {
-  files.value.click()
-}
-
-const reUpload = e => {
-  const file = e.target.files[0]
-  if (file.size > maxImageSize) {
-    sizeMessage()
-    return
-  }
-  uploadFileResult(file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
-    element.value.propValue.url = fileUrl
-    fileList.value = [{ name: file.name, url: imgUrlTrans(element.value.propValue.url) }]
-  })
-}
-
-const sizeMessage = () => {
-  ElMessage.success('图片大小不符合')
-}
-
-const fileListInit = () => {
-  fileList.value = []
-  if (element.value.propValue.urlList && element.value.propValue.urlList.length > 0) {
-    element.value.propValue.urlList.forEach(urlInfo => {
-      fileList.value.push({ name: urlInfo.name, url: imgUrlTrans(urlInfo.url) })
-    })
-  }
-}
-const init = () => {
-  fileListInit()
-}
-
-const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
-})
-
-watch(
-  () => element.value.propValue.url,
-  () => {
-    init()
-  }
-)
-
-onMounted(() => {
-  init()
-  eventBus.on('uploadImg', goFile)
-})
-onBeforeUnmount(() => {
-  eventBus.off('uploadImg', goFile)
-})
+const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 </script>
 
 <template>
-  <el-collapse-item :effect="themes" title="图片组" name="picture">
-    <input
-      id="input"
-      ref="files"
-      type="file"
-      accept=".jpeg,.jpg,.png,.gif,.svg"
-      hidden
-      @click="
-        e => {
-          e.target.value = ''
-        }
-      "
-      @change="reUpload"
-    />
-    <el-row class="img-area" :class="`img-area_${themes}`">
-      <el-col style="width: 130px !important">
-        <el-upload
+  <div class="attr-list de-collapse-style">
+    <CommonAttr
+      :themes="themes"
+      :element="curComponent"
+      :background-color-picker-width="197"
+      :background-border-select-width="197"
+    >
+      <template v-slot:dataset>
+        <picture-group-dataset-select
           :themes="themes"
-          limit="10"
-          action=""
-          accept=".jpeg,.jpg,.png,.gif,.svg"
-          class="avatar-uploader"
-          list-type="picture-card"
-          :class="{ disabled: uploadDisabled }"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
-          :before-upload="beforeUploadCheck"
-          :http-request="upload"
-          :file-list="fileList"
+          :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         >
-          <el-icon><Plus /></el-icon>
-        </el-upload>
-        <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
-      </el-col>
-    </el-row>
-    <el-row>
-      <span
-        style="margin-top: 2px"
-        v-if="!curComponent.propValue.url"
-        class="image-hint"
-        :class="`image-hint_${themes}`"
-      >
-        支持JPG、PNG、GIF、SVG
-      </span>
-
-      <el-button
-        size="small"
-        style="margin: 8px 0 0 -4px"
-        v-if="curComponent.propValue.url"
-        text
-        @click="goFile"
-      >
-        重新上传
-      </el-button>
-    </el-row>
-    <el-row class="pic-adaptor">
-      <el-form-item
-        v-if="curComponent.style.adaptation"
-        class="form-item form-item-custom"
-        label="图片适应方式"
-        size="small"
-        :effect="themes"
-      >
-        <el-radio-group
-          size="small"
-          v-model="curComponent.style.adaptation"
-          @change="onStyleChange"
-          :effect="themes"
-        >
-          <el-radio label="adaptation" :effect="themes">适应组件</el-radio>
-          <el-radio label="original" :effect="themes">原始尺寸</el-radio>
-          <el-radio label="equiratio" :effect="themes">等比适应</el-radio>
-        </el-radio-group>
-      </el-form-item>
-    </el-row>
-  </el-collapse-item>
+        </picture-group-dataset-select>
+      </template>
+      <picture-group-upload-attr
+        :themes="themes"
+        :element="curComponent"
+      ></picture-group-upload-attr>
+      <template v-slot:carousel>
+        <carousel-setting
+          v-if="curComponent?.innerType === 'picture-group'"
+          :element="curComponent"
+          :themes="themes"
+        ></carousel-setting>
+      </template>
+      <template v-slot:threshold>
+        <picture-group-threshold
+          :themes="themes"
+          :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
+        ></picture-group-threshold>
+      </template>
+    </CommonAttr>
+  </div>
 </template>
 
 <style lang="less" scoped>
@@ -254,6 +114,8 @@ onBeforeUnmount(() => {
   }
 }
 .img-area {
+  height: 80px;
+  width: 80px;
   margin-top: 10px;
   overflow: hidden;
 
@@ -308,9 +170,9 @@ onBeforeUnmount(() => {
   }
 }
 
-.form-item-custom {
+.form-item-dark {
   .ed-radio {
-    margin-right: 2px !important;
+    margin-right: 4px !important;
   }
 }
 
