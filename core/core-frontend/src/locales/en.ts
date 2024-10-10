@@ -66,6 +66,32 @@ export default {
       'There is no business menu permission, please contact the administrator for authorization'
   },
   data_set: {
+    ten_wan: '100000',
+    can_go_to: 'Exporting in the background, you can go to',
+    progress_and_download: 'Check the progress and download',
+    this_data_set: 'Are you sure you want to delete this data set?',
+    to_delete_them:
+      'This data set has the following blood relationships. Deletion will cause the charts on the relevant dashboard to become invalid. Are you sure you want to delete them?',
+    check_blood_relationship: 'Check blood relationship',
+    dataset_export: 'Dataset export',
+    pieces_of_data: 'Tip: Supports exporting up to 1,000 pieces of data',
+    enter_parameter_name: 'Please enter parameter name',
+    enter_1_50_characters: 'Please enter 1-50 characters',
+    parameter_default_value: 'Please enter parameter default value',
+    edit_calculation_parameters: 'Edit calculation parameters',
+    add_calculation_parameters: 'Add calculation parameters',
+    parameter_is_supported: 'Only adding one calculation parameter is supported.',
+    enter_a_number: 'Please enter a number',
+    parameter_name: 'Parameter name',
+    parameter_default_value_de: 'Parameter default value',
+    confirm_the_deletion:
+      'If it is not checked, the calculated fields related to it will be deleted. Confirm the deletion?',
+    confirm_to_delete: 'Are you sure to delete {a}?',
+    also_be_deleted:
+      'After deletion, the associated table or sql fragment will be deleted, and its related calculated fields will also be deleted.',
+    deleted_confirm_deletion:
+      'If this field is deleted, its related calculated fields will be deleted. Confirm deletion?',
+    delete_field_a: 'Are you sure to delete field {a}?',
     field_name: 'Field Name',
     field_type: 'Field Type',
     field_notes: 'Field notes',

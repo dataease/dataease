@@ -508,8 +508,8 @@ const deleteField = item => {
     pre = [...result, ...pre]
     return pre
   }, [])
-  tip = idArr.includes(item.id) ? `如果该字段被删除，与其相关的计算字段将被删除，确认删除？` : ''
-  ElMessageBox.confirm(`确认删除字段 ${item.name} 吗`, {
+  tip = idArr.includes(item.id) ? t('data_set.deleted_confirm_deletion') : ''
+  ElMessageBox.confirm(t('data_set.delete_field_a', { a: item.name }), {
     confirmButtonText: t('dataset.confirm'),
     tip,
     cancelButtonText: t('common.cancel'),
@@ -917,14 +917,14 @@ const confirmEditUnion = () => {
       return pre
     }, [])
 
-    ElMessageBox.confirm('字段选择', {
+    ElMessageBox.confirm(t('data_set.field_selection'), {
       confirmButtonText: t('dataset.confirm'),
       cancelButtonText: t('common.cancel'),
       showCancelButton: true,
       tip: `${t('data_set.field')}: ${allfields.value
         .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
         .map(ele => ele.name)
-        .join(',')}, 未被勾选, 与其相关的计算字段将被删除，确认删除？`,
+        .join(',')}, ${t('data_set.confirm_the_deletion')}`,
       confirmButtonType: 'danger',
       type: 'warning',
       autofocus: false,
@@ -1764,7 +1764,11 @@ const getDsIconName = data => {
                         </div>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="datasetTableId" label="表名" width="240">
+                    <el-table-column
+                      prop="datasetTableId"
+                      :label="t('data_set.table_name_de')"
+                      width="240"
+                    >
                       <template #default="scope">
                         {{ scope.row.extField === 0 ? nameMap[scope.row.datasetTableId] : '' }}
                       </template>
@@ -1949,7 +1953,11 @@ const getDsIconName = data => {
                       </template>
                     </el-table-column>
 
-                    <el-table-column prop="datasetTableId" label="表名" width="240">
+                    <el-table-column
+                      prop="datasetTableId"
+                      :label="t('data_set.table_name_de')"
+                      width="240"
+                    >
                       <template #default="scope">
                         {{ scope.row.extField === 0 ? nameMap[scope.row.datasetTableId] : '' }}
                       </template>
