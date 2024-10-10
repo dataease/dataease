@@ -81,12 +81,9 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
 export function downloadCanvas2(type, canvasDom, name, callBack?) {
   toPng(canvasDom)
     .then(dataUrl => {
-      const a = document.createElement('a')
-      a.setAttribute('download', name)
-      a.href = dataUrl
       if (type === 'img') {
         const a = document.createElement('a')
-        a.setAttribute('download', name)
+        a.setAttribute('download', name + '.png')
         a.href = dataUrl
         document.body.appendChild(a)
         a.click()
