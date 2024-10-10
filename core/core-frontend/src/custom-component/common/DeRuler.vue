@@ -27,30 +27,20 @@ const rulerSize = computed(() =>
   props.direction === 'horizontal' ? canvasStyleData.value.width : canvasStyleData.value.height
 )
 
-const curComponentSize = computed(() => {
-  if (curComponent.value) {
-    return (
-      ((props.direction === 'horizontal'
-        ? curComponent.value.style.width
-        : curComponent.value.style.height) *
-        canvasStyleData.value.scale) /
-      100
-    )
-  } else {
-    return 0
-  }
-})
-
 // 计算复合画布内部组件偏移量
 const parentStyle = computed(() => {
   const style = { left: 0, top: 0 }
   if (curComponent.value && curComponent.value.canvasId !== 'canvas-main') {
     componentData.value.forEach(item => {
-      if (curComponent.value.canvasId.index(item.id) > -1) {
+      if (curComponent.value.canvasId.indexOf(item.id) > -1) {
         style.left = item.style.left
         style.top = item.style.top
       }
     })
+    // tab页头部偏移量
+    if (curComponent.value.canvasId.indexOf('Group') === -1) {
+      style.top = style.top + 56
+    }
   }
   return style
 })
