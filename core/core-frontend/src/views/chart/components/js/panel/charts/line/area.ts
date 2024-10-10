@@ -298,7 +298,8 @@ export class StackArea extends Area {
     extStack: {
       name: `${t('chart.stack_item')} / ${t('chart.dimension')}`,
       type: 'd',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     }
   }
   protected configLabel(chart: Chart, options: AreaOptions): AreaOptions {

@@ -49,7 +49,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     xAxisExt: {
       name: `${t('chart.chart_group')} / ${t('chart.dimension')}`,
       type: 'd',
-      limit: 1
+      limit: 1,
+      allowEmpty: true
     },
     yAxis: {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
