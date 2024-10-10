@@ -40,7 +40,7 @@ export const layerStore = defineStore('layer', {
       if (curInfo) {
         const { index, componentData, targetComponent } = curInfo
         if (index < componentData.length - 1) {
-          componentData.splice(targetComponent, 1)
+          componentData.splice(index, 1)
           componentData.push(targetComponent)
           curComponentIndex.value = componentData.length - 1
         }
