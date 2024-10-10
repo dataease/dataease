@@ -17,7 +17,7 @@
         <el-icon class="custom-back-icon hover-icon" @click="previewModel = 'full'"
           ><ArrowLeft
         /></el-icon>
-        <span>{{ state.curTemplate.title }}1 </span>
+        <span>{{ state.curTemplate.title }} </span>
         <el-row class="head-right">
           <el-button
             secondary
@@ -742,6 +742,17 @@ defineExpose({
   overflow-x: auto;
   overflow-y: hidden;
   height: 100%;
+}
+
+.custom-market-tree {
+  ::v-deep(.ed-tree-node__content) {
+    .ed-tree-node__label {
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }
 </style>
 
