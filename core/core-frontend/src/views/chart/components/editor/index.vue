@@ -1881,6 +1881,7 @@ const deleteChartFieldItem = id => {
                       <el-row v-if="showAxis('area')" class="padding-lr drag-data">
                         <span class="data-area-label">
                           {{ t('chart.area') }}
+                          <i class="required"></i>
                         </span>
                         <div class="area-tree-select">
                           <el-tree-select
@@ -1906,6 +1907,10 @@ const deleteChartFieldItem = id => {
                         <div class="form-draggable-title">
                           <span>
                             {{ chartViewInstance.axisConfig.xAxis.name }}
+                            <i
+                              v-if="!chartViewInstance.axisConfig.xAxis?.allowEmpty"
+                              class="required"
+                            ></i>
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -1966,6 +1971,10 @@ const deleteChartFieldItem = id => {
                         <div class="form-draggable-title">
                           <span>
                             {{ chartViewInstance.axisConfig.xAxisExt.name }}
+                            <i
+                              v-if="!chartViewInstance.axisConfig.xAxisExt?.allowEmpty"
+                              class="required"
+                            ></i>
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -2024,6 +2033,10 @@ const deleteChartFieldItem = id => {
                         <div class="form-draggable-title">
                           <span>
                             {{ chartViewInstance.axisConfig.flowMapStartName.name }}
+                            <i
+                              v-if="!chartViewInstance.axisConfig.flowMapStartName?.allowEmpty"
+                              class="required"
+                            ></i>
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -2084,6 +2097,10 @@ const deleteChartFieldItem = id => {
                         <div class="form-draggable-title">
                           <span>
                             {{ chartViewInstance.axisConfig.flowMapEndName.name }}
+                            <i
+                              v-if="!chartViewInstance.axisConfig.flowMapEndName?.allowEmpty"
+                              class="required"
+                            ></i>
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -2144,6 +2161,10 @@ const deleteChartFieldItem = id => {
                         <div class="form-draggable-title">
                           <span>
                             {{ chartViewInstance.axisConfig.extStack.name }}
+                            <i
+                              v-if="!chartViewInstance.axisConfig.extStack?.allowEmpty"
+                              class="required"
+                            ></i>
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -2201,6 +2222,10 @@ const deleteChartFieldItem = id => {
                         <div class="form-draggable-title">
                           <span>
                             {{ chartViewInstance.axisConfig.extColor.name }}
+                            <i
+                              v-if="!chartViewInstance.axisConfig.extColor?.allowEmpty"
+                              class="required"
+                            ></i>
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -2264,6 +2289,10 @@ const deleteChartFieldItem = id => {
                             <span class="data-area-label">
                               <span style="margin-right: 4px">
                                 {{ chartViewInstance.axisConfig.yAxis.name }}
+                                <i
+                                  v-if="!chartViewInstance.axisConfig.yAxis?.allowEmpty"
+                                  class="required"
+                                ></i>
                               </span>
                               <el-tooltip
                                 v-if="chartViewInstance.axisConfig.yAxis.tooltip"
@@ -2346,6 +2375,10 @@ const deleteChartFieldItem = id => {
                           <div class="form-draggable-title">
                             <span>
                               {{ chartViewInstance.axisConfig.extBubble.name }}
+                              <i
+                                v-if="!chartViewInstance.axisConfig.extBubble?.allowEmpty"
+                                class="required"
+                              ></i>
                             </span>
                             <el-tooltip
                               :effect="toolTip"
@@ -2404,6 +2437,10 @@ const deleteChartFieldItem = id => {
                           <div class="form-draggable-title">
                             <span>
                               {{ chartViewInstance.axisConfig.yAxisExt.name }}
+                              <i
+                                v-if="!chartViewInstance.axisConfig.yAxisExt?.allowEmpty"
+                                class="required"
+                              ></i>
                             </span>
                             <el-tooltip
                               :effect="toolTip"
@@ -2466,6 +2503,10 @@ const deleteChartFieldItem = id => {
                           <div class="form-draggable-title">
                             <span>
                               {{ chartViewInstance.axisConfig.yAxis.name }}
+                              <i
+                                v-if="!chartViewInstance.axisConfig.yAxis?.allowEmpty"
+                                class="required"
+                              ></i>
                             </span>
                             <el-tooltip
                               :effect="toolTip"
@@ -2541,6 +2582,10 @@ const deleteChartFieldItem = id => {
                           <div class="form-draggable-title">
                             <span>
                               {{ chartViewInstance.axisConfig.yAxisExt.name }}
+                              <i
+                                v-if="!chartViewInstance.axisConfig.yAxisExt?.allowEmpty"
+                                class="required"
+                              ></i>
                             </span>
                             <el-tooltip
                               :effect="toolTip"
@@ -2618,6 +2663,10 @@ const deleteChartFieldItem = id => {
                           <span class="data-area-label">
                             <span style="margin-right: 4px">
                               {{ chartViewInstance.axisConfig.extBubble.name }}
+                              <i
+                                v-if="!chartViewInstance.axisConfig.extBubble?.allowEmpty"
+                                class="required"
+                              ></i>
                             </span>
                             <el-tooltip
                               v-if="chartViewInstance.axisConfig.extBubble.tooltip"
@@ -4189,6 +4238,14 @@ span {
     display: flex;
     flex-direction: row;
     align-items: center;
+    :deep(.required::after) {
+      content: '*';
+      color: var(--ed-color-danger);
+      margin-left: 4px;
+      font-family: var(--de-custom_font, 'PingFang');
+      font-style: normal;
+      font-weight: 400;
+    }
   }
 
   .form-draggable-title {
@@ -4199,6 +4256,15 @@ span {
 
     span {
       cursor: default;
+    }
+
+    :deep(.required::after) {
+      content: '*';
+      color: var(--ed-color-danger);
+      margin-left: 2px;
+      font-family: var(--de-custom_font, 'PingFang');
+      font-style: normal;
+      font-weight: 400;
     }
 
     .remove-icon {

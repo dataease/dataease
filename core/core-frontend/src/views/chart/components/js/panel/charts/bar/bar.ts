@@ -92,6 +92,10 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   axis: AxisType[] = [...BAR_AXIS_TYPE]
   axisConfig = {
     ...this['axisConfig'],
+    xAxis: {
+      name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
+      type: 'd'
+    },
     yAxis: {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
       type: 'q'

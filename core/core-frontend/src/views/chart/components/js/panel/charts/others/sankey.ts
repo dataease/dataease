@@ -20,9 +20,9 @@ const { t } = useI18n()
 const DEFAULT_DATA = []
 
 /**
- * 区间条形图
+ * 桑基图
  */
-export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
+export class SankeyBar extends G2PlotChartView<SankeyOptions, Sankey> {
   axisConfig = {
     xAxis: {
       name: `${t('chart.drag_block_type_axis_start')} / ${t('chart.dimension')}`,
@@ -32,7 +32,8 @@ export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
     xAxisExt: {
       name: `${t('chart.drag_block_type_axis_end')} / ${t('chart.dimension')}`,
       limit: 1,
-      type: 'd'
+      type: 'd',
+      allowEmpty: true
     },
     yAxis: {
       name: `${t('chart.chart_data')} / ${t('chart.quota')}`,

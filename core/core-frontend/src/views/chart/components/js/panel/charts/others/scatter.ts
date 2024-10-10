@@ -81,7 +81,8 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     },
     yAxis: {
       ...this['axisConfig'].yAxis,
-      limit: undefined
+      limit: undefined,
+      allowEmpty: false
     },
     extBubble: {
       name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
