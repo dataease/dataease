@@ -491,37 +491,34 @@ onMounted(() => {
           {{ t('chart.size') }}区间
         </label>
         <el-row style="flex: 1">
-          <el-col :span="12">
+          <el-col :span="11">
             <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
               <el-input
                 type="number"
                 :effect="themes"
                 v-model="state.basicStyleForm.mapSymbolSizeMin"
-                :min="0"
-                :max="100"
                 class="basic-input-number"
                 :controls="false"
                 @change="changeBasicStyle('mapSymbolSizeMin')"
                 :disabled="!customSymbolicMapSizeRange"
               >
-                <template #suffix> PX </template>
               </el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="1.2">
+            <span>-</span>
+          </el-col>
+          <el-col :span="11">
             <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
               <el-input
                 type="number"
                 :effect="themes"
                 v-model="state.basicStyleForm.mapSymbolSizeMax"
-                :min="0"
-                :max="100"
                 class="basic-input-number"
                 :controls="false"
                 @change="changeBasicStyle('mapSymbolSizeMax')"
                 :disabled="!customSymbolicMapSizeRange"
               >
-                <template #suffix> PX </template>
               </el-input>
             </el-form-item>
           </el-col>
