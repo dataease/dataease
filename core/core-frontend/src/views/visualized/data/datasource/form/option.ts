@@ -122,7 +122,7 @@ export const nameMap = {
   OLTP: 'OLTP',
   OLAP: 'OLAP',
   DL: t('datasource.dl'),
-  OTHER: 'API数据',
+  OTHER: t('data_source.api_data'),
   LOCAL: t('datasource.local_file')
 }
 
