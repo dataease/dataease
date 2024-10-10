@@ -246,7 +246,7 @@ const saveExcelDs = (params, successCb, finallyCb) => {
   if (props.param.editType === 0 && props.param.id && (effectExtField || changeFiled)) {
     ElMessageBox.confirm(t('deDataset.replace_the_data'), {
       confirmButtonText: t('dataset.confirm'),
-      tip: '替换可能会影响自定义数据集、关联数据集、仪表板等，是否替换？',
+      tip: t('data_source.to_replace_it'),
       cancelButtonText: 'Cancel',
       confirmButtonType: 'primary',
       type: 'warning',
@@ -430,7 +430,7 @@ defineExpose({
         <el-form-item
           v-if="sheetFile.name"
           prop="id"
-          label="文件"
+          :label="t('data_source.document')"
           key="sheetFile"
           :rules="[
             {
@@ -457,7 +457,7 @@ defineExpose({
             name="file"
           >
             <template #trigger>
-              <el-button text>重新上传</el-button>
+              <el-button text>{{ t('data_source.reupload') }}</el-button>
             </template>
           </el-upload>
         </el-form-item>
@@ -465,7 +465,7 @@ defineExpose({
           v-else
           prop="id"
           key="sheetId"
-          label="文件"
+          :label="t('data_source.document')"
           :rules="[
             {
               required: true
@@ -493,8 +493,10 @@ defineExpose({
               </el-button>
             </template>
           </el-upload>
-          <p class="upload-tip" style="width: 100%">仅支持xlsx、xls、csv格式的文件</p>
-          <div class="ed-form-item__error" v-if="status">请上传文件</div>
+          <p class="upload-tip" style="width: 100%">{{ t('data_source.and_csv_formats') }}</p>
+          <div class="ed-form-item__error" v-if="status">
+            {{ t('data_source.please_upload_files') }}
+          </div>
         </el-form-item>
         <el-form-item
           :class="status && !sheetFile.name && 'error-status'"
