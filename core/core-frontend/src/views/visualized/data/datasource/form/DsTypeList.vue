@@ -4,6 +4,7 @@ import { dsTypes, typeList, nameMap } from './option'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { XpackComponent } from '@/components/plugin'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
+import { useI18n } from '@/hooks/web/useI18n'
 
 export type DsType = 'OLTP' | 'OLAP' | 'DL' | 'OTHER' | 'LOCAL' | 'latestUse' | 'all'
 const props = defineProps({
@@ -19,6 +20,7 @@ const props = defineProps({
     type: Array
   }
 })
+const { t } = useI18n()
 
 const databaseList = shallowRef([])
 const currentTypeList = computed(() => {
@@ -53,7 +55,7 @@ const currentTypeList = computed(() => {
       })
     })
     dbList = dbList.filter(ele => ele.name.toLowerCase().includes(props.filterText.trim()))
-    dstypes.push({ name: '最近创建', dbList })
+    dstypes.push({ name: t('data_source.recently_created'), dbList })
     return dstypes
   }
   const index = typeList.findIndex(ele => props.currentType === ele)

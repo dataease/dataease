@@ -106,29 +106,29 @@ const changeNameType = element => {
 const activeName = inject('api-active-name')
 const options = [
   {
-    label: '参数',
+    label: t('data_source.parameter'),
     value: 'params'
   },
   {
-    label: '固定值',
+    label: t('data_source.fixed_value'),
     value: 'fixed'
   },
   {
-    label: '时间函数',
+    label: t('data_source.time_function'),
     value: 'timeFun'
   },
   {
-    label: '自定义',
+    label: t('data_source.customize'),
     value: 'custom'
   }
 ]
 const timeFunLists = [
   {
-    label: '当天（yyyy-MM-dd）',
+    label: t('data_source.that_day') + '（yyyy-MM-dd）',
     value: 'currentDay yyyy-MM-dd'
   },
   {
-    label: '当天（yyyy/MM/dd）',
+    label: t('data_source.that_day') + '（yyyy/MM/dd）',
     value: 'currentDay yyyy/MM/dd'
   }
 ]
@@ -230,7 +230,11 @@ const timeFunLists = [
                 v-model="element.value"
                 :disabled="isReadOnly"
                 class="input-with-autocomplete"
-                :placeholder="element.nameType === 'fixed' ? '值' : '可用${参数名}，使用参数'"
+                :placeholder="
+                  element.nameType === 'fixed'
+                    ? t('data_source.value')
+                    : t('data_source.name_use_parameters')
+                "
                 value-key="name"
                 highlight-first-item
               />
@@ -262,7 +266,7 @@ const timeFunLists = [
       <template #icon>
         <icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></icon>
       </template>
-      添加参数
+      {{ t('data_source.add_parameters') }}
     </el-button>
   </div>
 </template>

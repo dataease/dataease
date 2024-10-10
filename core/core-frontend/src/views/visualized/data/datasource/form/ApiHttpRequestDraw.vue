@@ -145,7 +145,7 @@ const rule = reactive<FormRules>({
   url: [
     {
       required: true,
-      message: '请输入请求地址',
+      message: t('data_source.the_request_address'),
       trigger: 'blur'
     }
   ],
@@ -229,7 +229,7 @@ const saveItem = () => {
             apiItem.fields[i].name === paramsList[j].fields[k].name &&
             apiItem.serialNumber !== paramsList[j].serialNumber
           ) {
-            ElMessage.error('已经存在同名参数：' + apiItem.fields[i].name)
+            ElMessage.error(t('data_source.name_already_exists') + apiItem.fields[i].name)
             return
           }
         }
@@ -263,7 +263,7 @@ const next = () => {
             paramsList[i].name === apiItem.name &&
             apiItem.serialNumber !== paramsList[i].serialNumber
           ) {
-            ElMessage.error('已经存在同名的参数表')
+            ElMessage.error(t('data_source.name_already_exists_de'))
             return
           }
         }
@@ -321,7 +321,7 @@ const validate = () => {
           ElMessage.success(t('datasource.validate_success'))
         })
         .catch(() => {
-          ElMessage.error('校验失败')
+          ElMessage.error(t('data_source.verification_failed'))
         })
     }
   })
@@ -444,7 +444,9 @@ defineExpose({
 
 <template>
   <el-drawer
-    :title="activeName === 'table' ? t('datasource.data_table') : '接口参数'"
+    :title="
+      activeName === 'table' ? t('datasource.data_table') : t('data_source.interface_parameters')
+    "
     v-model="edit_api_item"
     custom-class="api-datasource-drawer"
     size="840px"
@@ -470,7 +472,9 @@ defineExpose({
                 {{ active <= 1 ? '2' : '' }}
               </span>
               <span class="title">{{
-                activeName === 'table' ? t('datasource.api_step_2') : '提取参数'
+                activeName === 'table'
+                  ? t('datasource.api_step_2')
+                  : t('data_source.extract_parameters')
               }}</span>
             </div>
           </template>
@@ -557,7 +561,9 @@ defineExpose({
               </el-select>
             </template>
             <template #append>
-              <el-button @click="showApiData">查看数据结构 </el-button>
+              <el-button @click="showApiData"
+                >{{ t('data_source.view_data_structure') }}
+              </el-button>
             </template>
           </el-input>
         </el-form-item>
@@ -704,7 +710,7 @@ defineExpose({
         >
           <empty-background
             v-if="showEmpty"
-            description="暂无数据，请在数据结构勾选字段"
+            :description="t('data_source.the_data_structure')"
             img-type="select"
           />
           <el-auto-resizer v-else>
