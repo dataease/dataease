@@ -4,6 +4,7 @@ import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { getFieldByDQ } from '@/api/chart'
 const snapshotStore = snapshotStoreWithOut()
 
 const props = defineProps({
@@ -23,8 +24,21 @@ const { view } = toRefs(props)
 const state = reactive({})
 
 const onDatasetUpdate = () => {
-  useEmitt().emitter.emit('calcData-' + view.value.id, view)
-  snapshotStore.recordSnapshotCache('calc', view.value.id)
+  if (view.value.tableId && view.value.id) {
+    getFieldByDQ(view.value.tableId, view.value.id, { type: 'table-info' })
+      .then(res => {
+        view.value.xAxis = []
+        view.value.xAxis.push(...res.dimensionList, ...res.quotaList)
+        const viewTarget = view.value
+        useEmitt().emitter.emit('calcData-' + viewTarget.id, viewTarget)
+        snapshotStore.recordSnapshotCache('calc', view.value.id)
+      })
+      .catch(() => {
+        // something do error
+      })
+  } else {
+    view.value.xAxis = []
+  }
 }
 </script>
 
