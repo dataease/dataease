@@ -390,14 +390,16 @@ const editActive = computed<boolean>(() => {
 })
 
 const setEdit = () => {
-  if (computedCanEdit.value && editActive.value) {
-    canEdit.value = true
-    element.value['editing'] = true
-    myValue.value = element.value.propValue.textValue
-    const ed = tinymce.editors[tinymceId]
-    ed.setContent(myValue.value)
-    reShow()
-  }
+  setTimeout(() => {
+    if (computedCanEdit.value && editActive.value) {
+      canEdit.value = true
+      element.value['editing'] = true
+      myValue.value = element.value.propValue.textValue
+      const ed = tinymce.editors[tinymceId]
+      ed.setContent(myValue.value)
+      reShow()
+    }
+  })
 }
 const reShow = () => {
   editShow.value = false
