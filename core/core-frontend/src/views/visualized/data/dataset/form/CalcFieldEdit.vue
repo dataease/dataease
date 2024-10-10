@@ -83,10 +83,10 @@ const formQuota = reactive({
 const dialogFormVisible = ref(false)
 const formQuotaRules = {
   name: [
-    { required: true, message: '请输入参数名称', trigger: 'blur' },
-    { min: 1, max: 50, message: '请输入1-50个字符', trigger: 'blur' }
+    { required: true, message: t('data_set.enter_parameter_name'), trigger: 'blur' },
+    { min: 1, max: 50, message: t('data_set.enter_1_50_characters'), trigger: 'blur' }
   ],
-  value: [{ required: true, message: '请输入参数默认值', trigger: 'blur' }]
+  value: [{ required: true, message: t('data_set.parameter_default_value'), trigger: 'blur' }]
 }
 
 const formQuotaClose = () => {
@@ -271,7 +271,7 @@ defineExpose({
 const parmasTitle = ref('')
 const addParmasToQuota = () => {
   if (disableCaParams.value) return
-  parmasTitle.value = '添加计算参数'
+  parmasTitle.value = t('data_set.add_calculation_parameters')
   if (!fieldForm.params) {
     fieldForm.params = []
   }
@@ -280,7 +280,7 @@ const addParmasToQuota = () => {
 
 const updateParmasToQuota = () => {
   const [o] = fieldForm.params
-  parmasTitle.value = '编辑计算参数'
+  parmasTitle.value = t('data_set.edit_calculation_parameters')
   Object.assign(formQuota, o || {})
   dialogFormVisible.value = true
 }
@@ -471,7 +471,11 @@ initFunction()
             <span>{{ t('chart.quota') }}</span>
             <el-tooltip
               effect="dark"
-              :content="disableCaParams ? '仅支持添加一个计算参数。' : '添加计算参数'"
+              :content="
+                disableCaParams
+                  ? t('data_set.parameter_is_supported')
+                  : t('data_set.add_calculation_parameters')
+              "
               placement="top"
             >
               <el-icon class="hover-icon_quota" @click="addParmasToQuota">
@@ -588,7 +592,7 @@ initFunction()
     <el-dialog
       :before-close="formQuotaClose"
       v-model="dialogFormVisible"
-      title="添加计算参数"
+      :title="t('data_set.add_calculation_parameters')"
       width="500"
     >
       <el-form
@@ -598,22 +602,26 @@ initFunction()
         :model="formQuota"
         :rules="formQuotaRules"
       >
-        <el-form-item label="参数名称" prop="name">
-          <el-input style="width: 100%" v-model="formQuota.name" placeholder="请输入1-50个字符" />
+        <el-form-item :label="t('data_set.parameter_name')" prop="name">
+          <el-input
+            style="width: 100%"
+            v-model="formQuota.name"
+            :placeholder="t('data_set.enter_1_50_characters')"
+          />
         </el-form-item>
-        <el-form-item label="参数默认值" prop="value">
+        <el-form-item :label="t('data_set.parameter_default_value_de')" prop="value">
           <el-input-number
             style="width: 100%"
             v-model="formQuota.value"
-            placeholder="请输入一个数字"
+            :placeholder="t('data_set.enter_a_number')"
             controls-position="right"
           />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="formQuotaClose">取消</el-button>
-          <el-button type="primary" @click="formQuotaConfirm"> 确认 </el-button>
+          <el-button @click="formQuotaClose">{{ t('chart.cancel') }}</el-button>
+          <el-button type="primary" @click="formQuotaConfirm"> {{ t('chart.confirm') }} </el-button>
         </div>
       </template>
     </el-dialog>

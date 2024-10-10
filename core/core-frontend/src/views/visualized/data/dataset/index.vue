@@ -104,7 +104,7 @@ const rootManage = ref(false)
 const showExport = ref(false)
 const rowAuth = ref()
 const exportDatasetLoading = ref(false)
-const limit = ref('10万')
+const limit = ref(t('data_set.ten_wan'))
 const exportForm = ref({})
 const table = ref({})
 const exportFormRef = ref()
@@ -405,7 +405,7 @@ const openMessageLoading = cb => {
   const customClass = `de-message-loading de-message-export`
   ElMessage({
     message: h('p', null, [
-      '后台导出中,可前往',
+      t('data_set.can_go_to'),
       h(
         ElButton,
         {
@@ -418,7 +418,7 @@ const openMessageLoading = cb => {
         },
         t('data_export.export_center')
       ),
-      '查看进度，进行下载'
+      t('data_set.progress_and_download')
     ]),
     iconClass,
     icon: h(RefreshLeft),
@@ -547,20 +547,16 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
             confirmButtonType: 'danger',
             type: 'warning',
             autofocus: false,
-            confirmButtonText: '确定',
+            confirmButtonText: t('userimport.sure'),
             showClose: false,
             dangerouslyUseHTMLString: true,
             message: h('div', null, [
-              h('p', { style: 'margin-bottom: 8px;' }, '确定删除该数据集吗？'),
-              h(
-                'p',
-                { class: 'tip' },
-                '该数据集存在如下血缘关系，删除会造成相关仪表板的图表失效，确定删除？'
-              ),
+              h('p', { style: 'margin-bottom: 8px;' }, t('data_set.this_data_set')),
+              h('p', { class: 'tip' }, t('data_set.to_delete_them')),
               h(
                 ElButton,
                 { text: true, onClick: onClick, style: 'margin-left: -4px;' },
-                '查看血缘关系'
+                t('data_set.check_blood_relationship')
               )
             ])
           }).then(() => {
@@ -956,7 +952,7 @@ const getMenuList = (val: boolean) => {
                     ><icon_download_outlined class="svg-icon"
                   /></Icon>
                 </template>
-                数据集导出
+                {{ t('data_set.dataset_export') }}
               </el-button>
               <el-button type="primary" @click="editorDataset" v-if="nodeInfo.weight >= 7">
                 <template #icon>
@@ -1103,7 +1099,7 @@ const getMenuList = (val: boolean) => {
         </div>
       </el-form-item>
     </el-form>
-    <span class="tip">提示：最多支持导出{{ limit }}条数据</span>
+    <span class="tip">{{ t('data_set.pieces_of_data', { limit: limit }) }}</span>
     <template v-slot:footer>
       <div class="dialog-footer">
         <el-button secondary @click="closeExport">{{ $t('dataset.cancel') }} </el-button>

@@ -381,14 +381,14 @@ const confirmEditUnion = () => {
     }, [])
 
     if (!!idArr.length) {
-      ElMessageBox.confirm('字段选择', {
+      ElMessageBox.confirm(t('data_set.field_selection'), {
         confirmButtonText: t('dataset.confirm'),
         cancelButtonText: t('common.cancel'),
         showCancelButton: true,
         tip: `${t('data_set.field')}: ${allfields.value
           .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
           .map(ele => ele.name)
-          .join(',')}, 未被勾选, 与其相关的计算字段将被删除，确认删除？`,
+          .join(',')}, ${t('data_set.confirm_the_deletion')}`,
         confirmButtonType: 'danger',
         type: 'warning',
         autofocus: false,
@@ -466,11 +466,11 @@ const handleCommand = (ele, command) => {
       }, [])
       fakeDelId = []
       if (!!idArr.length) {
-        ElMessageBox.confirm(`确定要删除 ${ele.tableName} 吗`, {
+        ElMessageBox.confirm(t('data_set.confirm_to_delete', { a: ele.tableName }), {
           confirmButtonText: t('dataset.confirm'),
           cancelButtonText: t('common.cancel'),
           showCancelButton: true,
-          tip: '删除后，被关联的表或sql片段将被删除，与其相关的计算字段也将被删除。',
+          tip: t('data_set.also_be_deleted'),
           confirmButtonType: 'danger',
           type: 'warning',
           autofocus: false,
@@ -1105,7 +1105,7 @@ const emits = defineEmits([
             ></Icon>
           </el-icon>
           <span class="tableName">{{ ele.tableName }}</span>
-          <span class="placeholder">拖拽表或自定义SQL至此处</span>
+          <span class="placeholder">{{ t('data_set.custom_sql_here') }}</span>
           <handle-more
             style="margin-left: auto"
             :iconName="icon_moreVertical_outlined"
