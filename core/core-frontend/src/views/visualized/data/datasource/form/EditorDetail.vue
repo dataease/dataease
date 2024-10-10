@@ -173,21 +173,21 @@ const authMethodList = [
 
 const validateSshHost = (_: any, value: any, callback: any) => {
   if ((value === undefined || value === null || value === '') && form.value.configuration.useSSH) {
-    callback(new Error('SSH主机不能为空'))
+    callback(new Error(t('data_source.cannot_be_empty')))
   }
   return callback()
 }
 
 const validateSshPort = (_: any, value: any, callback: any) => {
   if ((value === undefined || value === null || value === '') && form.value.configuration.useSSH) {
-    callback(new Error('SSH端口不能为空'))
+    callback(new Error(t('data_source.cannot_be_empty_de')))
   }
   return callback()
 }
 
 const validateSshUserName = (_: any, value: any, callback: any) => {
   if ((value === undefined || value === null || value === '') && form.value.configuration.useSSH) {
-    callback(new Error('SSH用户名不能为空'))
+    callback(new Error(t('data_source.cannot_be_empty_de_name')))
   }
   return callback()
 }
@@ -198,7 +198,7 @@ const validateSshPassword = (_: any, value: any, callback: any) => {
     form.value.configuration.useSSH &&
     form.value.configuration.sshType === 'password'
   ) {
-    callback(new Error('SSH密码不能为空'))
+    callback(new Error(t('data_source.cannot_be_empty_de_pwd')))
   }
   return callback()
 }
@@ -209,7 +209,7 @@ const validateSshkey = (_: any, value: any, callback: any) => {
     form.value.configuration.useSSH &&
     form.value.configuration.sshType === 'sshkey'
   ) {
-    callback(new Error('SSH key不能为空'))
+    callback(new Error(t('data_source.cannot_be_empty_de_key')))
   }
   return callback()
 }
@@ -586,13 +586,13 @@ const paramsObjRules = {
   name: [
     {
       required: true,
-      message: '请输入参数名称',
+      message: t('data_source.enter_parameter_name'),
       trigger: 'change'
     },
     {
       min: 2,
       max: 64,
-      message: '参数名称限制2～64字符',
+      message: t('data_source.to_64_characters'),
       trigger: 'blur'
     }
   ]
@@ -602,13 +602,13 @@ const apiObjRules = {
   name: [
     {
       required: true,
-      message: '请输入接口名称',
+      message: t('data_source.the_interface_name'),
       trigger: 'change'
     },
     {
       min: 2,
       max: 64,
-      message: '接口名称限制2～64字符',
+      message: t('data_source.to_64_characters_de'),
       trigger: 'blur'
     }
   ]
@@ -663,7 +663,7 @@ const handleApiParams = (cmd: string, data) => {
     apiObj.value.serialNumber = data.serialNumber
   }
   if (cmd === 'delete') {
-    ElMessageBox.confirm('确定删除吗?', {
+    ElMessageBox.confirm(t('data_source.sure_to_delete'), {
       confirmButtonType: 'danger',
       type: 'warning',
       autofocus: false,
@@ -691,7 +691,7 @@ const editParams = data => {
 }
 
 const delParams = data => {
-  ElMessageBox.confirm('确定删除吗?', {
+  ElMessageBox.confirm(t('data_source.sure_to_delete'), {
     confirmButtonType: 'danger',
     type: 'warning',
     autofocus: false,
@@ -702,12 +702,12 @@ const delParams = data => {
 }
 const datasetTypeList = [
   {
-    label: '重命名',
+    label: t('data_source.rename'),
     svgName: icon_rename_outlined,
     command: 'rename'
   },
   {
-    label: '删除',
+    label: t('data_source.delete'),
     svgName: icon_deleteTrash_outlined,
     command: 'delete'
   }
@@ -724,9 +724,13 @@ defineExpose({
   <div class="editor-detail">
     <div class="detail-inner create-dialog">
       <div v-show="form.type === 'API'" class="info-update">
-        <div :class="activeStep === 1 && 'active'" class="info-text">数据源配置信息</div>
+        <div :class="activeStep === 1 && 'active'" class="info-text">
+          {{ t('data_source.source_configuration_information') }}
+        </div>
         <div class="update-info-line"></div>
-        <div :class="activeStep === 2 && 'active'" class="update-text">数据更新设置</div>
+        <div :class="activeStep === 2 && 'active'" class="update-text">
+          {{ t('data_source.data_update_settings') }}
+        </div>
       </div>
       <div class="title-form_primary base-info" v-show="activeStep !== 2 && form.type === 'API'">
         {{ t('datasource.basic_info') }}
@@ -766,7 +770,7 @@ defineExpose({
           <div class="title-form_primary flex-space table-info-mr" v-show="activeStep !== 2">
             <el-tabs v-model="activeName" class="api-tabs">
               <el-tab-pane :label="t('datasource.data_table')" name="table"></el-tab-pane>
-              <el-tab-pane label="接口参数" name="params"></el-tab-pane>
+              <el-tab-pane :label="t('data_source.connection_method')" name="params"></el-tab-pane>
             </el-tabs>
             <el-button type="primary" style="margin-left: auto" @click="() => addApiItem(null)">
               <template #icon>
@@ -928,10 +932,14 @@ defineExpose({
           </div>
         </template>
         <template v-if="notapiexcelconfig">
-          <el-form-item label="连接方式" prop="type" v-if="form.type !== 'es'">
+          <el-form-item
+            :label="t('data_source.connection_method')"
+            prop="type"
+            v-if="form.type !== 'es'"
+          >
             <el-radio-group v-model="form.configuration.urlType">
-              <el-radio label="hostName">主机名</el-radio>
-              <el-radio label="jdbcUrl">JDBC 连接</el-radio>
+              <el-radio label="hostName">{{ t('data_source.hostname') }}</el-radio>
+              <el-radio label="jdbcUrl">{{ t('data_source.jdbc_connection') }}</el-radio>
             </el-radio-group>
           </el-form-item>
 

@@ -70,7 +70,9 @@ const showPid = computed(() => {
 })
 
 const labelName = computed(() => {
-  return nodeType.value === 'folder' ? t('deDataset.folder_name') : '数据源名称'
+  return nodeType.value === 'folder'
+    ? t('deDataset.folder_name')
+    : t('data_source.data_source_name')
 })
 
 const dialogTitle = computed(() => {
@@ -135,7 +137,8 @@ const createInit = (type, data: Tree, exec, name: string) => {
   datasetForm.name = ''
   nodeType.value = type
   filterText.value = ''
-  placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据源名称'
+  placeholder.value =
+    type === 'folder' ? t('data_source.a_folder_name') : t('data_source.data_source_name_de')
   dsType = data.type
   if (type === 'datasource') {
     request = data.request
@@ -146,7 +149,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
         dfs(res as unknown as Tree[])
         state.tData = (res as unknown as Tree[]) || []
         if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
-          state.tData[0].name = '数据源'
+          state.tData[0].name = t('data_source.data_source')
         }
       })
     }
@@ -226,7 +229,7 @@ const finallyCb = () => {
 }
 const checkPid = pid => {
   if (pid !== 0 && !pid) {
-    ElMessage.error('请选择目标文件夹')
+    ElMessage.error(t('data_source.the_destination_folder'))
     return false
   }
   return true
@@ -284,7 +287,7 @@ const saveDataset = () => {
                     if (res !== undefined) {
                       wsCache.set('ds-new-success', true)
                       emits('handleShowFinishPage', { ...res, pid: params.pid })
-                      ElMessage.success('保存数据源成功')
+                      ElMessage.success(t('data_source.source_saved_successfully'))
                       successCb()
                     }
                   })
@@ -302,7 +305,7 @@ const saveDataset = () => {
                 if (res !== undefined) {
                   wsCache.set('ds-new-success', true)
                   emits('handleShowFinishPage', { ...res, pid: params.pid })
-                  ElMessage.success('保存数据源成功')
+                  ElMessage.success(t('data_source.source_saved_successfully'))
                   successCb()
                 }
               })
@@ -399,7 +402,7 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
           </el-tree>
           <div v-if="searchEmpty" class="empty-search">
             <img :src="nothingTree" />
-            <span>没有找到相关内容</span>
+            <span>{{ t('data_source.relevant_content_found') }}</span>
           </div>
         </div>
       </div>
