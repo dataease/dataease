@@ -678,19 +678,6 @@ onMounted(() => {
       })
     }
   })
-  useEmitt({
-    name: 'calcData-' + view.value.id,
-    callback: function (val) {
-      if (!state.initReady) {
-        return
-      }
-      initTitle()
-      nextTick(() => {
-        view.value.chartExtRequest = filter(false)
-        calcData(val)
-      })
-    }
-  })
 
   useEmitt({
     name: 'calcData-' + view.value.id,
@@ -913,6 +900,10 @@ const loadPluginCategory = data => {
     }
   })
 }
+
+const allEmptyCheck = computed(() => {
+  return ['rich-text', 'picture-group'].includes(element.value.innerType)
+})
 </script>
 
 <template>
@@ -983,7 +974,7 @@ const loadPluginCategory = data => {
       </transition>
     </div>
     <!--这里去渲染不同图库的图表-->
-    <div v-if="chartAreaShow && !showEmpty" style="flex: 1; overflow: hidden">
+    <div v-if="allEmptyCheck || (chartAreaShow && !showEmpty)" style="flex: 1; overflow: hidden">
       <plugin-component
         v-if="view.plugin?.isPlugin"
         :jsname="view.plugin.staticMap['index']"
@@ -1061,7 +1052,7 @@ const loadPluginCategory = data => {
       />
     </div>
     <chart-empty-info
-      v-if="!chartAreaShow || showEmpty"
+      v-if="(!chartAreaShow || showEmpty) && !allEmptyCheck"
       :themes="canvasStyleData.dashboard.themeColor"
       :view-icon="view.type"
     ></chart-empty-info>

@@ -185,16 +185,16 @@ const withInit = () => {
   initCarousel()
 }
 
-const calcData = (view: Chart, callback) => {
+const calcData = (viewCalc: Chart, callback) => {
   isError.value = false
-  const { threshold } = parseJson(view.senior)
+  const { threshold } = parseJson(viewCalc.senior)
   if (!threshold.enable) {
     withInit()
     callback?.()
     return
   }
-  if (view.tableId || view['dataFrom'] === 'template') {
-    const v = JSON.parse(JSON.stringify(view))
+  if (viewCalc.tableId || viewCalc['dataFrom'] === 'template') {
+    const v = JSON.parse(JSON.stringify(viewCalc))
     getData(v)
       .then(res => {
         if (res.code && res.code !== 0) {
@@ -223,7 +223,7 @@ const calcData = (view: Chart, callback) => {
         })
         callback?.()
       })
-  } else if (!view.tableId) {
+  } else if (!viewCalc.tableId) {
     initReady.value = true
     withInit()
     callback?.()
