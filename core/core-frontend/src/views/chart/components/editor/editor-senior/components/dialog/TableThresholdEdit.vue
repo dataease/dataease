@@ -216,6 +216,18 @@ const initFields = () => {
     fields = [...xAxis, ...yAxis]
   }
   state.fields.splice(0, state.fields.length, ...fields)
+  // 字段不存在时
+  let change = false
+  state.thresholdArr.forEach(item => {
+    const fieldItemObj = state.fields.filter(ele => ele.id === item.fieldId)
+    if (fieldItemObj.length === 0) {
+      change = true
+      item.fieldId = null
+    }
+  })
+  if (change) {
+    changeThreshold()
+  }
 }
 const addThreshold = () => {
   state.thresholdArr.push(JSON.parse(JSON.stringify(state.thresholdObj)))
@@ -294,11 +306,20 @@ const dynamicSummaryOptions = [
 ]
 
 const getConditionsFields = (fieldItem, conditionItem, conditionItemField) => {
-  const fieldItemDeType = state.fields.filter(ele => ele.id === fieldItem.fieldId)?.[0]?.deType
-  if (fieldItemDeType === undefined || fieldItemDeType === null) {
+  const fieldItemObj = state.fields.filter(ele => ele.id === fieldItem.fieldId)
+
+  if (
+    fieldItemObj.length === 0 ||
+    fieldItemObj[0]?.deType === undefined ||
+    fieldItemObj[0]?.deType === null
+  ) {
+    fieldItem.fieldId = null
     conditionItem.fieldId = null
     conditionItemField.fieldId = null
+    return []
   }
+
+  const fieldItemDeType = fieldItemObj[0]?.deType
   const result =
     state.fields.filter(item => {
       // 文本、时间、boole、地理位置时，需要同类型的字段
