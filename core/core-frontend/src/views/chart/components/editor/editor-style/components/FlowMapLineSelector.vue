@@ -31,7 +31,7 @@ const flowLineTypeOptions = [
   { name: t('chart.map_line_type_arc_3d'), value: 'arc3d' }
 ]
 const state = reactive({
-  lineForm: {},
+  lineForm: {} as DeepPartial<ChartMiscAttr['flowMapConfig']['lineConfig']>,
   basicStyleForm: {}
 })
 const toolTip = computed(() => {
@@ -47,11 +47,11 @@ watch(
   { deep: true }
 )
 
-const changeStyle = () => {
+const changeStyle = prop => {
   state.basicStyleForm.colors[0] = state.lineForm.mapLineSourceColor
   state.basicStyleForm.colors[1] = state.lineForm.mapLineTargetColor
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData: false }, 'colors')
-  emit('onChangeFlowMapLineForm', state.lineForm)
+  emit('onChangeFlowMapLineForm', state.lineForm, prop)
 }
 const onAlphaChange = v => {
   const _v = parseInt(v)
@@ -69,7 +69,7 @@ const onAlphaChange = v => {
     ) as ChartBasicStyle
     state.lineForm.alpha = oldForm.alpha
   }
-  changeStyle()
+  changeStyle('alpha')
 }
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
@@ -120,7 +120,11 @@ onMounted(() => {
           class="form-item"
           :class="'form-item-' + themes"
         >
-          <el-select :effect="themes" v-model="state.lineForm.mapLineType" @change="changeStyle()">
+          <el-select
+            :effect="themes"
+            v-model="state.lineForm.mapLineType"
+            @change="changeStyle('mapLineType')"
+          >
             <el-option
               v-for="item in flowLineTypeOptions"
               :key="item.name"
@@ -143,7 +147,7 @@ onMounted(() => {
               :min="1"
               :max="10"
               v-model="state.lineForm.mapLineWidth"
-              @change="changeStyle()"
+              @change="changeStyle('mapLineWidth')"
             />
           </el-form-item>
         </el-col>
@@ -157,7 +161,7 @@ onMounted(() => {
             :effect="themes"
             v-model="state.lineForm.mapLineGradient"
             :predefine="predefineColors"
-            @change="changeStyle()"
+            @change="changeStyle('mapLineGradient')"
           >
             {{ t('chart.line') + t('chart.map_line_linear') }}
           </el-checkbox>
@@ -180,7 +184,7 @@ onMounted(() => {
               :effect="themes"
               :trigger-width="108"
               :predefine="predefineColors"
-              @change="changeStyle()"
+              @change="changeStyle('mapLineSourceColor')"
             />
           </el-form-item>
         </el-col>
@@ -198,7 +202,7 @@ onMounted(() => {
               :effect="themes"
               :trigger-width="108"
               :predefine="predefineColors"
-              @change="changeStyle()"
+              @change="changeStyle('mapLineTargetColor')"
             />
           </el-form-item>
         </el-col>
@@ -216,7 +220,7 @@ onMounted(() => {
               :effect="themes"
               :trigger-width="108"
               :predefine="predefineColors"
-              @change="changeStyle()"
+              @change="changeStyle('mapLineSourceColor')"
             />
           </el-form-item>
         </el-col>
@@ -229,7 +233,11 @@ onMounted(() => {
       <el-row style="flex: 1" :gutter="8">
         <el-col :span="13">
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
-            <el-slider :effect="themes" v-model="state.lineForm.alpha" @change="changeStyle()" />
+            <el-slider
+              :effect="themes"
+              v-model="state.lineForm.alpha"
+              @change="changeStyle('alpha')"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="11" style="padding-top: 2px">
@@ -258,7 +266,7 @@ onMounted(() => {
             :effect="themes"
             v-model="state.lineForm.mapLineAnimate"
             :predefine="predefineColors"
-            @change="changeStyle()"
+            @change="changeStyle('mapLineAnimate')"
           >
             {{ t('chart.line') + t('chart.map_line_animate') }}
           </el-checkbox>
@@ -277,7 +285,7 @@ onMounted(() => {
               :min="0"
               :max="20"
               v-model="state.lineForm.mapLineAnimateDuration"
-              @change="changeStyle()"
+              @change="changeStyle('mapLineAnimateDuration')"
             />
           </el-form-item>
         </el-col>

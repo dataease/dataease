@@ -924,9 +924,10 @@ const onTypeChange = (render, type) => {
   calcData(view.value, true)
 }
 
-const onBasicStyleChange = (chartForm: ChartEditorForm<ChartBasicStyle>) => {
+const onBasicStyleChange = (chartForm: ChartEditorForm<ChartBasicStyle>, prop: string) => {
   const { data, requestData } = chartForm
-  view.value.customAttr.basicStyle = data
+  const val = get(data, prop)
+  set(view.value.customAttr.basicStyle, prop, val)
   if (requestData) {
     calcData(view.value)
   } else {
@@ -1123,8 +1124,9 @@ const onChangeQuadrantForm = val => {
   view.value.customAttr.quadrant = val
   renderChart(view.value)
 }
-const onChangeFlowMapLineForm = val => {
-  view.value.customAttr.misc.flowMapConfig.lineConfig = val
+const onChangeFlowMapLineForm = (val, prop) => {
+  const value = get(val, prop)
+  set(view.value.customAttr.misc.flowMapConfig.lineConfig, prop, value)
   renderChart(view.value)
 }
 const onChangeFlowMapPointForm = val => {
