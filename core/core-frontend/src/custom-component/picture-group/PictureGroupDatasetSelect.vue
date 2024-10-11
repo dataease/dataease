@@ -29,7 +29,8 @@ const onDatasetUpdate = () => {
       getFieldByDQ(view.value.tableId, view.value.id, { type: 'table-info' })
         .then(res => {
           view.value.xAxis = []
-          view.value.xAxis.push(...res.dimensionList, ...res.quotaList.pop())
+          res.quotaList.pop()
+          view.value.xAxis.push(...res.dimensionList, ...res.quotaList)
           const viewTarget = view.value
           useEmitt().emitter.emit('calcData-' + viewTarget.id, viewTarget)
           snapshotStore.recordSnapshotCache('calc', view.value.id)
