@@ -242,8 +242,8 @@ const onExtTooltipChange = val => {
 const onChangeQuadrantForm = val => {
   emit('onChangeQuadrantForm', val)
 }
-const onChangeFlowMapLineForm = val => {
-  emit('onChangeFlowMapLineForm', val)
+const onChangeFlowMapLineForm = (val, prop) => {
+  emit('onChangeFlowMapLineForm', val, prop)
 }
 const onChangeFlowMapPointForm = val => {
   emit('onChangeFlowMapPointForm', val)
