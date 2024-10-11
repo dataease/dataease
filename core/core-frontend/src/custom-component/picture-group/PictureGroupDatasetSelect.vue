@@ -46,17 +46,15 @@ const onDatasetUpdate = () => {
 </script>
 
 <template>
-  <el-collapse-item :effect="themes" title="数据集" name="dataset">
-    <dataset-select
-      ref="datasetSelector"
-      v-model="view.tableId"
-      style="flex: 1"
-      :view-id="view.id"
-      :themes="themes"
-      @on-dataset-change="onDatasetUpdate"
-      :state-obj="state"
-    />
-  </el-collapse-item>
+  <dataset-select
+    ref="datasetSelector"
+    v-model="view.tableId"
+    style="flex: 1"
+    :view-id="view.id"
+    :themes="themes"
+    @on-dataset-change="onDatasetUpdate"
+    :state-obj="state"
+  />
 </template>
 
 <style lang="less" scoped>

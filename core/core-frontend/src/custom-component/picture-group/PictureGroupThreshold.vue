@@ -39,6 +39,7 @@ const onThresholdChange = val => {
     name="threshold"
     @modelChange="onThresholdChange"
   >
+    <slot name="dataset" />
     <threshold
       :themes="themes"
       :chart="view"
