@@ -688,7 +688,8 @@ onMounted(() => {
       initTitle()
       nextTick(() => {
         view.value.chartExtRequest = filter(false)
-        calcData(val)
+        const targetVal = val || view.value
+        calcData(targetVal)
       })
     }
   })

@@ -143,9 +143,6 @@ const stopEvent = e => {
       <el-collapse-item :effect="themes" title="位置" name="position" v-if="positionComponentShow">
         <component-position :themes="themes" />
       </el-collapse-item>
-      <slot name="dataset" />
-      <slot name="carousel" />
-      <slot name="threshold" />
       <el-collapse-item
         :effect="themes"
         title="背景"
@@ -199,6 +196,8 @@ const stopEvent = e => {
           @onStyleAttrChange="onStyleAttrChange"
         ></common-border-setting>
       </collapse-switch-item>
+      <slot name="threshold" />
+      <slot name="carousel" />
       <CarouselSetting v-if="carouselShow" :element="element" :themes="themes"></CarouselSetting>
     </el-collapse>
   </div>

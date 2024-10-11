@@ -29,13 +29,6 @@ const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
       :background-color-picker-width="197"
       :background-border-select-width="197"
     >
-      <template v-slot:dataset>
-        <picture-group-dataset-select
-          :themes="themes"
-          :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
-        >
-        </picture-group-dataset-select>
-      </template>
       <picture-group-upload-attr
         :themes="themes"
         :element="curComponent"
@@ -51,7 +44,15 @@ const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
         <picture-group-threshold
           :themes="themes"
           :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
-        ></picture-group-threshold>
+        >
+          <template v-slot:dataset>
+            <picture-group-dataset-select
+              :themes="themes"
+              :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
+            >
+            </picture-group-dataset-select>
+          </template>
+        </picture-group-threshold>
       </template>
     </CommonAttr>
   </div>

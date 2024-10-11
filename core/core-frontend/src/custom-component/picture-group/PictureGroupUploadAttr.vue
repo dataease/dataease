@@ -11,6 +11,7 @@ import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { toRefs } from 'vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const { t } = useI18n()
 
 const props = defineProps({
@@ -58,6 +59,7 @@ async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
     snapshotStore.recordSnapshotCache()
     element.value.propValue.urlList.push({ name: file.file.name, url: fileUrl })
+    useEmitt().emitter.emit('calcData-' + element.value.id)
   })
 }
 
@@ -67,19 +69,6 @@ const onStyleChange = () => {
 
 const goFile = () => {
   files.value.click()
-}
-
-const reUpload = e => {
-  const file = e.target.files[0]
-  if (file.size > maxImageSize) {
-    sizeMessage()
-    return
-  }
-  uploadFileResult(file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
-    element.value.propValue.url = fileUrl
-    fileList.value = [{ name: file.name, url: imgUrlTrans(element.value.propValue.url) }]
-  })
 }
 
 const sizeMessage = () => {
@@ -103,7 +92,7 @@ const toolTip = computed(() => {
 })
 
 watch(
-  () => element.value.propValue.url,
+  () => element.value.propValue['urlList'],
   () => {
     init()
   }
@@ -120,24 +109,11 @@ onBeforeUnmount(() => {
 
 <template>
   <el-collapse-item :effect="themes" title="图片组" name="picture">
-    <input
-      id="input"
-      ref="files"
-      type="file"
-      accept=".jpeg,.jpg,.png,.gif,.svg"
-      hidden
-      @click="
-        e => {
-          e.target.value = ''
-        }
-      "
-      @change="reUpload"
-    />
     <el-row class="img-area" :class="`img-area_${themes}`">
       <el-col style="width: 130px !important">
         <el-upload
           :themes="themes"
-          limit="10"
+          :limit="10"
           action=""
           accept=".jpeg,.jpg,.png,.gif,.svg"
           class="avatar-uploader"
@@ -163,16 +139,6 @@ onBeforeUnmount(() => {
       >
         支持JPG、PNG、GIF、SVG
       </span>
-
-      <el-button
-        size="small"
-        style="margin: 8px 0 0 -4px"
-        v-if="curComponent.propValue.url"
-        text
-        @click="goFile"
-      >
-        重新上传
-      </el-button>
     </el-row>
     <el-row class="pic-adaptor">
       <el-form-item
