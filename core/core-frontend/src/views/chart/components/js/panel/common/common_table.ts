@@ -578,23 +578,24 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
     const t = field.conditions[i]
-    if (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) {
-      let tv, max, min
-      if (t.type === 'dynamic') {
-        if (t.term === 'between') {
-          max = parseFloat(getValue(t.dynamicMaxField, filedValueMap, rowData))
-          min = parseFloat(getValue(t.dynamicMinField, filedValueMap, rowData))
-        } else {
-          tv = parseFloat(getValue(t.dynamicField, filedValueMap, rowData))
-        }
+    let tv, max, min
+    if (t.type === 'dynamic') {
+      if (t.term === 'between') {
+        max = parseFloat(getValue(t.dynamicMaxField, filedValueMap, rowData))
+        min = parseFloat(getValue(t.dynamicMinField, filedValueMap, rowData))
       } else {
-        if (t.term === 'between') {
-          min = parseFloat(t.min)
-          max = parseFloat(t.max)
-        } else {
-          tv = parseFloat(t.value)
-        }
+        tv = getValue(t.dynamicField, filedValueMap, rowData)
       }
+    } else {
+      if (t.term === 'between') {
+        min = parseFloat(t.min)
+        max = parseFloat(t.max)
+      } else {
+        tv = t.value
+      }
+    }
+    if (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) {
+      tv = parseFloat(tv)
       if (t.term === 'eq') {
         if (value === tv) {
           color = t[type]
@@ -640,7 +641,6 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
         color = defaultColor
       }
     } else if (field.field.deType === 0 || field.field.deType === 5) {
-      const tv = t.value
       if (t.term === 'eq') {
         if (value === tv) {
           color = t[type]

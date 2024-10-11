@@ -299,7 +299,18 @@ const getConditionsFields = (fieldItem, conditionItem, conditionItemField) => {
     conditionItem.fieldId = null
     conditionItemField.fieldId = null
   }
-  const result = state.fields.filter(item => item.deType === fieldItemDeType) ?? []
+  const result =
+    state.fields.filter(item => {
+      // 文本、时间、boole、地理位置时，需要同类型的字段
+      if ([0, 1, 4, 5].includes(fieldItemDeType)) {
+        return item.deType === fieldItemDeType
+      } else if ([2, 3].includes(fieldItemDeType)) {
+        // 整型浮点型时，需要整型或者浮点型类型的字段
+        return item.deType === 2 || item.deType === 3
+      } else {
+        return false
+      }
+    }) ?? []
   if (!result.find(ele => ele.id === conditionItemField.fieldId)) {
     conditionItemField.fieldId = result[0]?.id
     addField(conditionItem)
