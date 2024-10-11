@@ -22,11 +22,13 @@ export class RichTextChartView extends AbstractChartView {
   axisConfig: AxisConfig = {
     xAxis: {
       name: `${t('chart.dimension')}`,
-      type: 'd'
+      type: 'd',
+      allowEmpty: true
     },
     yAxis: {
       name: `${t('chart.quota')}`,
-      type: 'q'
+      type: 'q',
+      allowEmpty: true
     }
   }
   constructor() {
