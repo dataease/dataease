@@ -69,6 +69,7 @@ const setupAll = async (
   type: string,
   busiFlag: string,
   outerParams: string,
+  suffixId: string,
   token: string,
   baseUrl: string,
   dvId: string,
@@ -77,7 +78,7 @@ const setupAll = async (
   resourceId: string
 ): Promise<App<Element>> => {
   const app = createApp(AppElement, { componentName: type })
-  app.provide('embeddedParams', { chartId, resourceId, dvId, pid, busiFlag, outerParams })
+  app.provide('embeddedParams', { chartId, resourceId, dvId, pid, busiFlag, outerParams, suffixId })
   await setupI18n(app)
   setupStore(app)
   setupRouter(app)
@@ -87,6 +88,7 @@ const setupAll = async (
   embeddedStore.setType(type)
   embeddedStore.setBusiFlag(busiFlag)
   embeddedStore.setOuterParams(outerParams)
+  embeddedStore.setSuffixId(suffixId)
   embeddedStore.setToken(token)
   embeddedStore.setBaseUrl(baseUrl)
   embeddedStore.setDvId(dvId)
@@ -132,6 +134,7 @@ class DataEaseBi {
   dvId: string
   busiFlag: 'dashboard' | 'dataV'
   outerParams: string
+  suffixId: string
   resourceId: string
   pid: string
   chartId: string
@@ -143,6 +146,7 @@ class DataEaseBi {
     this.token = options.token
     this.busiFlag = options.busiFlag
     this.outerParams = options.outerParams
+    this.suffixId = options.suffixId
     this.baseUrl = options.baseUrl
     this.dvId = options.dvId
     this.pid = options.pid
@@ -157,6 +161,7 @@ class DataEaseBi {
       this.type,
       this.busiFlag,
       this.outerParams,
+      this.suffixId,
       this.token,
       this.baseUrl,
       this.dvId,
@@ -171,6 +176,7 @@ class DataEaseBi {
     embeddedStore.setType(null)
     embeddedStore.setBusiFlag(null)
     embeddedStore.setOuterParams(null)
+    embeddedStore.setSuffixId(null)
     embeddedStore.setToken(null)
     embeddedStore.setBaseUrl(null)
     embeddedStore.setChartId(null)
@@ -180,6 +186,7 @@ class DataEaseBi {
     this.token = null
     this.busiFlag = null
     this.outerParams = null
+    this.suffixId = null
     this.baseUrl = null
     this.dvId = null
     this.pid = null
