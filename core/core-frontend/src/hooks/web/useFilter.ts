@@ -333,7 +333,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               ) ||
               displayType === '8'
             ) {
-              const result = forMatterValue(
+              let result = forMatterValue(
                 +displayType,
                 selectValue,
                 timeGranularity,
@@ -357,12 +357,41 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 const fieldId = isTree
                   ? getFieldId(treeFieldList, result)
                   : item.checkedFieldsMap[curComponentId]
-                const parametersFilter = parameters.reduce((pre, next) => {
+                let parametersFilter = parameters.reduce((pre, next) => {
                   if (next.id === fieldId && !pre.length) {
                     pre.push(next)
                   }
                   return pre
                 }, [])
+
+                if (item.checkedFieldsMapArr?.[curComponentId]?.length) {
+                  const endTimeFieldId = item.checkedFieldsMapArr?.[curComponentId].find(
+                    element => element !== fieldId
+                  )
+                  const resultEnd = Array(2).fill(
+                    endTimeFieldId === item.checkedFieldsMapEnd[curComponentId]
+                      ? result[1]
+                      : result[0]
+                  )
+                  result = Array(2).fill(
+                    endTimeFieldId === item.checkedFieldsMapEnd[curComponentId]
+                      ? result[0]
+                      : result[1]
+                  )
+                  parametersFilter = item.parametersArr[curComponentId].filter(
+                    e => e.id === fieldId
+                  )
+                  filter.push({
+                    componentId: ele.id,
+                    fieldId: endTimeFieldId,
+                    operator,
+                    value: resultEnd,
+                    parameters: item.parametersArr[curComponentId].filter(
+                      e => e.id === endTimeFieldId
+                    ),
+                    isTree
+                  })
+                }
                 filter.push({
                   componentId: ele.id,
                   fieldId,

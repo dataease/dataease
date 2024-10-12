@@ -19,7 +19,8 @@ import {
   toRefs,
   watch,
   defineAsyncComponent,
-  provide
+  provide,
+  unref
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { addQueryCriteriaConfig } from './options'
@@ -191,18 +192,58 @@ const showTypeError = computed(() => {
     }
   }
   let displayTypeField = null
+  let hasParameterTimeArrType = 0
   return curComponent.value.checkedFields.some(id => {
+    if (
+      curComponent.value.checkedFieldsMapArr?.[id]?.length &&
+      ['7', '1'].includes(curComponent.value.displayType)
+    ) {
+      if (hasParameterTimeArrType === 0) {
+        hasParameterTimeArrType = 1
+      }
+
+      if (hasParameterTimeArrType === 2) {
+        return true
+      }
+    }
+
+    if (
+      !curComponent.value.checkedFieldsMapArr?.[id]?.length &&
+      ['7', '1'].includes(curComponent.value.displayType) &&
+      !!curComponent.value.parameters.length
+    ) {
+      if (hasParameterTimeArrType === 0) {
+        hasParameterTimeArrType = 2
+      }
+
+      if (hasParameterTimeArrType === 1) {
+        return true
+      }
+    }
     const arr = fields.value.find(ele => ele.componentId === id)
     const checkId = curComponent.value.checkedFieldsMap?.[id]
-    const field = Object.values(arr?.fields || {})
-      .flat()
-      .find(ele => checkId === ele.id)
+    const field = duplicateRemoval(Object.values(arr?.fields || {}).flat()).find(
+      ele => checkId === ele.id
+    )
     if (!field) return false
     if (displayTypeField === null) {
-      displayTypeField = field?.deType
+      displayTypeField = field
       return false
     }
-    return displayTypeField !== field?.deType
+    if (displayTypeField?.deType === field?.deType && displayTypeField?.deType === 1) {
+      if (!displayTypeField.type?.length && !field.type?.length) {
+        return false
+      }
+      if (displayTypeField.type?.length !== field.type?.length) {
+        return true
+      }
+      for (let index = 0; index < displayTypeField.type.length; index++) {
+        if (displayTypeField.type[index] !== field.type[index]) {
+          return true
+        }
+      }
+    }
+    return displayTypeField.deType !== field?.deType
   })
 })
 
@@ -301,18 +342,15 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
   setType()
 }
 
-const isParametersDisable = (arr, item, componentId) => {
-  const timeId =
-    curComponent.value.checkedFieldsMapStart[componentId] ||
-    curComponent.value.checkedFieldsMapEnd[componentId]
+const isParametersDisable = item => {
   let isDisabled = false
-  if (timeId) {
-    const obj = arr.find(ele => ele.id === timeId)
-    for (let index = 0; index < obj?.type.length; index++) {
-      if (obj?.type[index] !== item.type?.[index]) {
-        isDisabled = true
-      }
+  for (let index = 0; index < notTimeRangeType.value.length; index++) {
+    if (notTimeRangeType.value[index] !== item.type?.[index]) {
+      isDisabled = true
     }
+  }
+  if (notTimeRangeType.value.length && item.deType !== 1) {
+    isDisabled = true
   }
   return isDisabled
 }
@@ -321,18 +359,27 @@ const setParametersArr = (val, componentId) => {
   const timeStartId = curComponent.value.checkedFieldsMapStart[componentId]
   const timeEndId = curComponent.value.checkedFieldsMapEnd[componentId]
   if (timeStartId) {
-    curComponent.value.checkedFieldsMapEnd[componentId] = val.find(ele => ele.id !== timeStartId)
+    curComponent.value.checkedFieldsMapEnd[componentId] = val.find(ele => ele !== timeStartId)
   }
 
   if (timeEndId) {
-    curComponent.value.checkedFieldsMapStart[componentId] = val.find(ele => ele.id !== timeEndId)
+    curComponent.value.checkedFieldsMapStart[componentId] = val.find(ele => ele !== timeEndId)
   }
 
   if (!val.length) {
     curComponent.value.checkedFieldsMap[componentId] = ''
     curComponent.value.checkedFieldsMapEnd[componentId] = ''
     curComponent.value.checkedFieldsMapStart[componentId] = ''
+    curComponent.value.displayType = '1'
+    curComponent.value.parametersArr[componentId] = []
+    curComponent.value.timeGranularity = ''
+    curComponent.value.timeGranularityMultiple = ''
   }
+
+  if (curComponent.value.checkedFieldsMapArr[componentId].length) {
+    setParametersTimeType(componentId)
+  }
+  setTypeChange()
 }
 
 let currentComponentId = ''
@@ -395,22 +442,71 @@ const timeTypeChange = () => {
           : currentParameterId
     }
   }
+
+  curComponent.value.displayType = curComponent.value.checkedFieldsMapArr[currentComponentId].length
+    ? '7'
+    : '1'
+  setParametersTimeType(currentComponentId)
+  setTypeChange()
   timeDialogShow.value = false
 }
 
+const setParametersTimeType = componentId => {
+  curComponent.value.parametersArr[componentId] = duplicateRemoval(
+    unref(fields)
+      .filter(ele => ele.componentId === componentId)
+      .map(ele => Object.values(ele?.fields || {}).flat())
+      .flat()
+      .filter(
+        ele =>
+          [
+            curComponent.value.checkedFieldsMapEnd[componentId],
+            curComponent.value.checkedFieldsMapStart[componentId]
+          ]
+            .filter(ele => !!ele)
+            .includes(ele.id) && !!ele.variableName
+      )
+  )
+  const [v1, v2] = curComponent.value.parametersArr[componentId][0].type
+  curComponent.value.timeGranularityMultiple = typeTimeMap[v2 || v1]
+    ? `${typeTimeMap[v2 || v1]}range`
+    : ''
+  curComponent.value.timeGranularity = typeTimeMap[v2 || v1]
+}
+
 const timeClick = (componentId, timeVal) => {
+  timeParameterType.value =
+    timeVal.id === curComponent.value.checkedFieldsMapStart[componentId]
+      ? 1
+      : timeVal.id === curComponent.value.checkedFieldsMapEnd[componentId]
+      ? 2
+      : 0
   currentComponentId = componentId
   currentParameterId = timeVal.id
   timeName.value = timeVal.variableName
   timeDialogShow.value = true
 }
 
-const setParameters = () => {
+const duplicateRemoval = arr => {
+  const objList = []
+  let idList = arr.map(ele => ele.id)
+  for (let index = 0; index < arr.length; index++) {
+    const element = arr[index]
+    if (idList.includes(element.id)) {
+      objList.push(element)
+      idList = idList.filter(ele => ele !== element.id)
+    }
+  }
+  return objList
+}
+
+const setParameters = field => {
   const fieldArr = Object.values(curComponent.value.checkedFieldsMap).filter(ele => !!ele)
-  curComponent.value.parameters = fields.value
-    .map(ele => Object.values(ele?.fields || {}).flat())
-    .flat()
-    .filter(ele => fieldArr.includes(ele.id) && !!ele.variableName)
+  curComponent.value.parameters = duplicateRemoval(
+    Object.values(field?.fields || {})
+      .flat()
+      .filter(ele => fieldArr.includes(ele.id) && !!ele.variableName)
+  )
   nextTick(() => {
     if (isTimeParameter.value) {
       curComponent.value.timeGranularity =
@@ -426,6 +522,7 @@ const setParameters = () => {
         curComponent.value.optionValueSource = 1
       }
     }
+    setTypeChange()
   })
   setType()
 
@@ -487,6 +584,19 @@ const setTypeChange = () => {
 
 const isTimeParameter = computed(() => {
   return curComponent.value.parameters?.some(ele => ele.deType === 1 && !!ele.variableName)
+})
+
+const notTimeRange = computed(() => {
+  return Object.values(curComponent.value.checkedFieldsMapArr || {}).some(ele => ele?.length !== 0)
+})
+
+const notTimeRangeType = computed(() => {
+  const fieldsArr = unref(fields)
+    .map(ele => Object.values(ele?.fields || {}).flat())
+    .flat()
+  const field = Object.values(curComponent.value.checkedFieldsMapArr || {}).flat()
+  const obj = fieldsArr.find(ele => ele.id === field[0])
+  return obj?.type || []
 })
 
 const timeList = [
@@ -805,6 +915,71 @@ const validate = () => {
       ElMessage.error('请先勾选需要联动的图表及字段')
       return true
     }
+    let displayTypeField = null
+    let errorTips = '所选字段类型不一致，无法进行查询配置'
+    let hasParameterTimeArrType = 0
+    if (
+      ele.checkedFields.some(id => {
+        if (ele.checkedFieldsMapArr?.[id]?.length && ['7', '1'].includes(ele.displayType)) {
+          if (hasParameterTimeArrType === 0) {
+            hasParameterTimeArrType = 1
+          }
+
+          if (hasParameterTimeArrType === 2) {
+            return true
+          }
+        }
+
+        if (
+          !ele.checkedFieldsMapArr?.[id]?.length &&
+          ['7', '1'].includes(ele.displayType) &&
+          !!ele.parameters.length
+        ) {
+          if (hasParameterTimeArrType === 0) {
+            hasParameterTimeArrType = 2
+          }
+
+          if (hasParameterTimeArrType === 1) {
+            return true
+          }
+        }
+
+        if (ele.checkedFieldsMapArr?.[id]?.length === 1 && ele.displayType === '7') {
+          errorTips = '时间参数配置必须配置开始时间和结束时间'
+          return true
+        }
+
+        const arr = fields.value.find(itx => itx.componentId === id)
+        const checkId = ele.checkedFieldsMap?.[id]
+        const field = duplicateRemoval(Object.values(arr?.fields || {}).flat()).find(
+          itx => checkId === itx.id
+        )
+        if (!field) return false
+        if (displayTypeField === null) {
+          displayTypeField = field
+          return false
+        }
+        if (displayTypeField?.deType === field?.deType && displayTypeField?.deType === 1) {
+          if (!displayTypeField.type?.length && !field.type?.length) {
+            return false
+          }
+          if (displayTypeField.type?.length !== field.type?.length) {
+            errorTips = '时间格式不一致'
+            return true
+          }
+          for (let index = 0; index < displayTypeField.type.length; index++) {
+            if (displayTypeField.type[index] !== field.type[index]) {
+              errorTips = '时间格式不一致'
+              return true
+            }
+          }
+        }
+        return displayTypeField.deType !== field?.deType
+      })
+    ) {
+      ElMessage.error(errorTips)
+      return true
+    }
 
     if (ele.required) {
       if (ele.displayType === '8') {
@@ -939,26 +1114,6 @@ const validate = () => {
 
     if (ele.displayType !== '9' && ele.optionValueSource === 1 && !ele.field.id) {
       ElMessage.error(!ele.dataset?.id ? '请选择数据集及选项值字段' : '请选择数据集的选项值字段')
-      return true
-    }
-
-    let displayTypeField = null
-    if (
-      ele.checkedFields.some(id => {
-        const arr = fields.value.find(itx => itx.componentId === id)
-        const checkId = ele.checkedFieldsMap?.[id]
-        const field = Object.values(arr?.fields || {})
-          .flat()
-          .find(itx => checkId === itx.id)
-        if (!field) return false
-        if (displayTypeField === null) {
-          displayTypeField = field?.deType
-          return false
-        }
-        return displayTypeField !== field?.deType
-      })
-    ) {
-      ElMessage.error('所选字段类型不一致，无法进行查询配置')
       return true
     }
   })
@@ -1193,6 +1348,7 @@ const handleCondition = item => {
     obj.checkedFieldsMapArr = {}
     obj.checkedFieldsMapStart = {}
     obj.checkedFieldsMapEnd = {}
+    obj.parametersArr = {}
   }
   curComponent.value = obj
   curComponent.value.dataset.fields = []
@@ -1210,6 +1366,7 @@ const handleCondition = item => {
       curComponent.value.checkedFieldsMapStart[ele.id] = ''
       curComponent.value.checkedFieldsMapEnd[ele.id] = ''
       curComponent.value.checkedFieldsMapArr[ele.id] = []
+      curComponent.value.parametersArr[ele.id] = []
     }
   })
 
@@ -1707,10 +1864,12 @@ defineExpose({
                 collapse-tags-tooltip
                 key="checkedFieldsMapArr"
                 :multiple-limit="2"
+                class="field-select--input"
                 style="margin-left: 12px"
                 popper-class="field-select--dqp"
                 v-if="
                   curComponent.checkedFields.includes(field.componentId) &&
+                  curComponent.checkedFieldsMapArr &&
                   curComponent.checkedFieldsMapArr[field.componentId] &&
                   curComponent.checkedFieldsMapArr[field.componentId].length
                 "
@@ -1755,9 +1914,7 @@ defineExpose({
                   :key="ele.id"
                   :label="ele.name || ele.variableName"
                   :value="ele.id"
-                  :disabled="
-                    isParametersDisable(field.fields[field.activelist], ele, field.componentId)
-                  "
+                  :disabled="isParametersDisable(ele)"
                 >
                   <div class="flex-align-center icon">
                     <el-icon>
@@ -1786,7 +1943,7 @@ defineExpose({
                           ? '结束时间'
                           : ''
                       }}
-                      <el-icon @click="timeClick(field.componentId, ele)">
+                      <el-icon @click.stop="timeClick(field.componentId, ele)">
                         <Icon>
                           <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
                         </Icon>
@@ -1797,7 +1954,7 @@ defineExpose({
               </el-select>
               <el-select
                 key="checkedFieldsMap"
-                @change="setParameters"
+                @change="setParameters(field)"
                 @focus="handleDialogClick"
                 style="margin-left: 12px"
                 popper-class="field-select--dqp"
@@ -1853,7 +2010,9 @@ defineExpose({
                   :label="ele.name || ele.variableName"
                   :value="ele.id"
                   :disabled="
-                    ele.desensitized || (curComponent.displayType === '9' && ele.deType === 1)
+                    ele.desensitized ||
+                    (curComponent.displayType === '9' && ele.deType === 1) ||
+                    isParametersDisable(ele)
                   "
                 >
                   <div
@@ -1875,12 +2034,13 @@ defineExpose({
                     <span
                       v-if="
                         curComponent.checkedFieldsMap[field.componentId] === ele.id &&
-                        field.activelist === 'parameterList'
+                        field.activelist === 'parameterList' &&
+                        isTimeParameter
                       "
                       class="range-time_setting"
                     >
                       时间
-                      <el-icon @click="timeClick(field.componentId, ele)">
+                      <el-icon @click.stop="timeClick(field.componentId, ele)">
                         <Icon>
                           <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
                         </Icon>
@@ -1949,7 +2109,7 @@ defineExpose({
                 <el-option
                   :disabled="
                     !['1', '7'].includes(curComponent.displayType) ||
-                    (curComponent.checkedFieldsMapArr && curComponent.checkedFieldsMapArr.length)
+                    (isTimeParameter && notTimeRange)
                   "
                   label="时间"
                   value="1"
@@ -1957,10 +2117,7 @@ defineExpose({
                 <el-option
                   :disabled="
                     !['1', '7'].includes(curComponent.displayType) ||
-                    (isTimeParameter &&
-                      !(
-                        curComponent.checkedFieldsMapArr && curComponent.checkedFieldsMapArr.length
-                      ))
+                    (isTimeParameter && !notTimeRange)
                   "
                   label="时间范围"
                   value="7"
@@ -2619,6 +2776,12 @@ defineExpose({
           display: flex;
           align-items: center;
           margin-bottom: 8px;
+
+          .field-select--input {
+            .ed-select-tags-wrapper.has-prefix {
+              margin-left: 25px;
+            }
+          }
 
           .ed-checkbox__label {
             display: inline-flex;

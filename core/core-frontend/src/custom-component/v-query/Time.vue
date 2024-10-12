@@ -109,6 +109,7 @@ watch(
 
 const displayTypeChange = () => {
   if (!props.isConfig) return
+  if (multiple.value && config.value.displayType === '7') return
   selectValue.value = config.value.displayType === '7' ? [] : undefined
   multiple.value = config.value.displayType === '7'
   config.value.defaultValue = multiple.value ? [] : undefined
@@ -408,6 +409,7 @@ const formatDate = computed(() => {
 <template>
   <el-date-picker
     v-model="selectValue"
+    v-if="multiple"
     :key="config.timeGranularityMultiple"
     :type="config.timeGranularityMultiple"
     :style="selectStyle"
@@ -415,7 +417,6 @@ const formatDate = computed(() => {
     :disabled-date="disabledDate"
     @calendar-change="calendarChange"
     :format="formatDate"
-    v-if="multiple"
     :shortcuts="
       ['datetimerange', 'daterange'].includes(config.timeGranularityMultiple) ? shortcuts : []
     "
@@ -427,6 +428,7 @@ const formatDate = computed(() => {
   />
   <el-date-picker
     v-else
+    :key="config.timeGranularity + 1"
     v-model="selectValue"
     :type="config.timeGranularity"
     @change="handleValueChange"
