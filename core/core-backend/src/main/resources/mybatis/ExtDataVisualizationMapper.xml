@@ -419,4 +419,25 @@
             visualization_report_filter
         where visualization_report_filter.resource_id = #{dvId} and visualization_report_filter.task_id = #{taskId}
     </select>
+
+    <delete id="deleteDataVBatch">
+        DELETE
+        FROM
+            data_visualization_info dvi
+        WHERE
+            dvi.id IN
+            <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+              #{id}
+            </foreach>
+    </delete>
+    <delete id="deleteViewsBatch">
+        DELETE
+        FROM
+            core_chart_view ccv
+        WHERE
+            ccv.scene_id IN
+            <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+              #{id}
+            </foreach>
+    </delete>
 </mapper>
