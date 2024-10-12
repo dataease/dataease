@@ -24,13 +24,15 @@ const props = withDefaults(
     themes?: EditorTheme
     modelValue?: string | number
     stateObj: any
+    disabled: boolean
     viewId: string
     sourceType: string
   }>(),
   {
     datasetTree: () => [],
     themes: 'dark',
-    sourceType: 'dataset'
+    sourceType: 'dataset',
+    disabled: false
   }
 )
 
@@ -268,6 +270,7 @@ onMounted(() => {
               v-model="selectedNodeName"
               class="data-set-dark"
               @focus="handleFocus"
+              :disabled="disabled"
               :placeholder="'请选择' + sourceName"
             >
               <template #suffix>
