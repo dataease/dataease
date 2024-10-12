@@ -1148,7 +1148,7 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
       const { fieldValue } = dataCellMeta
-      if (fieldValue) {
+      if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 1)
         const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
