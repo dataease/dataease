@@ -29,6 +29,13 @@ public class ExtWhere2Str {
         Map<String, String> paramMap = Utils.mergeParam(fieldParam, chartParam);
         List<SQLObj> list = new ArrayList<>();
         Map<String, String> fieldsDialect = new HashMap<>();
+
+        String dsType = null;
+        if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+            Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+            dsType = next.getValue().getType();
+        }
+
         if (ObjectUtils.isNotEmpty(fields)) {
             for (ChartExtFilterDTO request : fields) {
                 List<String> value = request.getValue();
@@ -58,9 +65,17 @@ public class ExtWhere2Str {
                             originName = calcFieldExp;
                         }
                     } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+                        if (StringUtils.equalsIgnoreCase(dsType, "es")) {
+                            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
+                        } else {
+                            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+                        }
                     } else {
-                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+                        if (StringUtils.equalsIgnoreCase(dsType, "es")) {
+                            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
+                        } else {
+                            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+                        }
                     }
 
                     if (field.getDeType() == 1) {

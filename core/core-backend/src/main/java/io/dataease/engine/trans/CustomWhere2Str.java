@@ -78,6 +78,13 @@ public class CustomWhere2Str {
         if (ObjectUtils.isEmpty(field)) {
             return null;
         }
+
+        String dsType = null;
+        if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+            Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+            dsType = next.getValue().getType();
+        }
+
         Map<String, String> paramMap = Utils.mergeParam(fieldParam, chartParam);
         String whereName = "";
         String originName;
@@ -91,9 +98,17 @@ public class CustomWhere2Str {
                 originName = calcFieldExp;
             }
         } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+            if (StringUtils.equalsIgnoreCase(dsType, "es")) {
+                originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
+            } else {
+                originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+            }
         } else {
-            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+            if (StringUtils.equalsIgnoreCase(dsType, "es")) {
+                originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
+            } else {
+                originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+            }
         }
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

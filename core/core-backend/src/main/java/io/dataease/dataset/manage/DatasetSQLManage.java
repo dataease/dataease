@@ -71,7 +71,7 @@ public class DatasetSQLManage {
                 if (CollectionUtils.isEmpty(filterDTO.getValue())) {
                     continue;
                 }
-                filterParametersAdaptor(parameters,filterDTO,datasetTableId);
+                filterParametersAdaptor(parameters, filterDTO, datasetTableId);
             }
         }
         if (chartExtRequest != null && ObjectUtils.isNotEmpty(chartExtRequest.getFilter())) {
@@ -79,13 +79,13 @@ public class DatasetSQLManage {
                 if (CollectionUtils.isEmpty(filterDTO.getValue())) {
                     continue;
                 }
-                filterParametersAdaptor(parameters,filterDTO,datasetTableId);
+                filterParametersAdaptor(parameters, filterDTO, datasetTableId);
             }
         }
         return parameters;
     }
 
-    private void filterParametersAdaptor(List<SqlVariableDetails> parameters,ChartExtFilterDTO filterDTO,Long datasetTableId){
+    private void filterParametersAdaptor(List<SqlVariableDetails> parameters, ChartExtFilterDTO filterDTO, Long datasetTableId) {
         if (ObjectUtils.isNotEmpty(filterDTO.getParameters())) {
             for (SqlVariableDetails parameter : filterDTO.getParameters()) {
                 if (parameter.getDatasetTableId().equals(datasetTableId)) {
@@ -152,17 +152,22 @@ public class DatasetSQLManage {
                         f.setDatasetTableId(datasetTable.getId());
                         String prefix = "";
                         String suffix = "";
+
+                        DsTypeDTO datasourceType = getDatasourceType(dsMap, datasetTable.getDatasourceId());
                         if (Objects.equals(f.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
                             if (isCross) {
                                 prefix = "`";
                                 suffix = "`";
                             } else {
-                                DsTypeDTO datasourceType = getDatasourceType(dsMap, datasetTable.getDatasourceId());
                                 prefix = datasourceType.getPrefix();
                                 suffix = datasourceType.getSuffix();
                             }
                         }
-                        return table.getTableAlias() + "." + prefix + f.getOriginName() + suffix + " AS " + prefix + alias + suffix;
+                        if (StringUtils.equalsIgnoreCase(datasourceType.getType(), "es")) {
+                            return table.getTableAlias() + "." + prefix + f.getOriginName() + suffix;
+                        } else {
+                            return table.getTableAlias() + "." + prefix + f.getOriginName() + suffix + " AS " + prefix + alias + suffix;
+                        }
                     })
                     .toArray(String[]::new);
             checkedInfo.put(table.getTableAlias(), array);
@@ -494,7 +499,7 @@ public class DatasetSQLManage {
                 datasourceSchemaDTO.setSchemaAlias(schemaAlias);
                 dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
             }
-        } else if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.Es)){
+        } else if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.Es)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(ds.getDatasourceId());
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(coreDatasource.getId())) {
@@ -503,7 +508,7 @@ public class DatasetSQLManage {
                 datasourceSchemaDTO.setSchemaAlias(schemaAlias);
                 dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
             }
-        }else {
+        } else {
             CoreDatasource coreDatasource = engineManage.getDeEngine();
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(coreDatasource.getId())) {
