@@ -58,6 +58,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     xField: 'field',
     yField: 'value',
     seriesField: 'category',
+    isStack: false,
     interactions: [
       {
         type: 'legend-active',
