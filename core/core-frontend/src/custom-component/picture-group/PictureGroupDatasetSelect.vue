@@ -52,6 +52,7 @@ const onDatasetUpdate = () => {
     style="flex: 1"
     :view-id="view.id"
     :themes="themes"
+    :disabled="!view.senior.threshold.enable"
     @on-dataset-change="onDatasetUpdate"
     :state-obj="state"
   />
