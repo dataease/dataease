@@ -125,6 +125,11 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 1
+  },
+  suffixId: {
+    type: String,
+    required: false,
+    default: 'common'
   }
 })
 const dynamicAreaId = ref('')
@@ -987,6 +992,7 @@ const allEmptyCheck = computed(() => {
         :request="request"
         :emitter="emitter"
         :store="store"
+        :suffixId="suffixId"
         ref="chartComponent"
         @onChartClick="chartClick"
         @onPointClick="onPointClick"
@@ -1002,6 +1008,7 @@ const allEmptyCheck = computed(() => {
         :active="active"
         :view="view"
         :show-position="showPosition"
+        :suffixId="suffixId"
       >
       </de-picture-group>
       <de-rich-text-view
@@ -1013,6 +1020,7 @@ const allEmptyCheck = computed(() => {
         :disabled="!['canvas', 'canvasDataV'].includes(showPosition) || disabled"
         :active="active"
         :show-position="showPosition"
+        :suffixId="suffixId"
       />
       <de-indicator
         :scale="scale"
@@ -1021,6 +1029,7 @@ const allEmptyCheck = computed(() => {
         ref="chartComponent"
         :view="view"
         :show-position="showPosition"
+        :suffixId="suffixId"
       />
       <chart-component-g2-plot
         :scale="scale"
@@ -1028,6 +1037,7 @@ const allEmptyCheck = computed(() => {
         :view="view"
         :show-position="showPosition"
         :element="element"
+        :suffixId="suffixId"
         v-else-if="
           showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT, ChartLibraryType.L7)
         "
@@ -1050,6 +1060,7 @@ const allEmptyCheck = computed(() => {
         @onChartClick="chartClick"
         @onDrillFilters="onDrillFilters"
         @onJumpClick="jumpClick"
+        :suffixId="suffixId"
       />
     </div>
     <chart-empty-info

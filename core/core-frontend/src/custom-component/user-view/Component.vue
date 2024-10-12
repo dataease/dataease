@@ -53,6 +53,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  suffixId: {
+    type: String,
+    required: false,
+    default: 'common'
   }
 })
 
@@ -89,6 +94,7 @@ const onPointClick = param => {
       :show-position="showPosition"
       :search-count="searchCount"
       :disabled="disabled"
+      :suffixId="suffixId"
       @onPointClick="onPointClick"
     ></chart>
   </div>

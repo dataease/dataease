@@ -100,10 +100,25 @@ const props = defineProps({
   isSelector: {
     type: Boolean,
     default: false
+  },
+  //图表渲染id后缀
+  suffixId: {
+    type: String,
+    required: false,
+    default: 'common'
   }
 })
-const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, searchCount, scale } =
-  toRefs(props)
+const {
+  config,
+  showPosition,
+  index,
+  canvasStyleData,
+  canvasViewInfo,
+  dvInfo,
+  searchCount,
+  scale,
+  suffixId
+} = toRefs(props)
 let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen', 'datasetParamsInit', 'onPointClick'])
@@ -385,6 +400,7 @@ const deepScale = computed(() => scale.value / 100)
           :scale="deepScale"
           :disabled="true"
           :is-edit="false"
+          :suffix-id="suffixId"
           @onPointClick="onPointClick"
         />
       </div>

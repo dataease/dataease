@@ -25,7 +25,8 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  chartId: null
+  chartId: null,
+  suffixId: 'common'
 })
 
 const embeddedParams = embeddedParamsDiv?.chartId ? embeddedParamsDiv : embeddedStore
@@ -57,6 +58,7 @@ onBeforeMount(async () => {
     return
   }
   state.chartId = embeddedParams.dvId
+  state.suffixId = embeddedParams.suffixId || 'common'
   window.addEventListener('message', winMsgHandle)
 
   // 添加外部参数
@@ -159,6 +161,7 @@ const onPointClick = param => {
       :canvas-view-info="state.canvasViewInfoPreview"
       @userViewEnlargeOpen="userViewEnlargeOpen"
       @onPointClick="onPointClick"
+      :suffix-id="state.suffixId"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>

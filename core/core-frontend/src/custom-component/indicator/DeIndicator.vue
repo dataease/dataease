@@ -37,6 +37,12 @@ const props = defineProps({
   terminal: {
     type: String,
     default: 'pc'
+  },
+  //图表渲染id后缀
+  suffixId: {
+    type: String,
+    required: false,
+    default: 'common'
   }
 })
 
