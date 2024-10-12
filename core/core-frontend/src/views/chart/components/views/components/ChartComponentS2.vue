@@ -76,12 +76,18 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 0
+  },
+  //图表渲染id后缀
+  suffixId: {
+    type: String,
+    required: false,
+    default: 'common'
   }
 })
 
 const emit = defineEmits(['onPointClick', 'onChartClick', 'onDrillFilters', 'onJumpClick'])
 
-const { view, showPosition, scale, terminal, drillLength } = toRefs(props)
+const { view, showPosition, scale, terminal, drillLength, suffixId } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
@@ -116,7 +122,7 @@ let chartData = shallowRef<Partial<Chart['data']>>({
   fields: []
 })
 
-const containerId = 'container-' + showPosition.value + '-' + view.value.id
+const containerId = 'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
 const viewTrack = ref(null)
 
 const calcData = (view: Chart, callback, resetPageInfo = true) => {

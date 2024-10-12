@@ -62,6 +62,12 @@ const props = defineProps({
   terminal: {
     type: String,
     default: 'pc'
+  },
+  //图表渲染id后缀
+  suffixId: {
+    type: String,
+    required: false,
+    default: 'common'
   }
 })
 
@@ -76,7 +82,7 @@ const emit = defineEmits([
 const g2TypeSeries1 = ['bidirectional-bar']
 const g2TypeSeries0 = ['bar-range']
 
-const { view, showPosition, scale, terminal } = toRefs(props)
+const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
@@ -97,7 +103,7 @@ let chartData = shallowRef<Partial<Chart['data']>>({
   fields: []
 })
 
-const containerId = 'container-' + showPosition.value + '-' + view.value.id
+const containerId = 'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
 const viewTrack = ref(null)
 
 const clearLinkage = () => {

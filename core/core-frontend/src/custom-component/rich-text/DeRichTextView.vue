@@ -103,10 +103,16 @@ const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  //图表渲染id后缀
+  suffixId: {
+    type: String,
+    required: false,
+    default: 'common'
   }
 })
 
-const { element, editMode, active, disabled, showPosition } = toRefs(props)
+const { element, editMode, active, disabled, showPosition, suffixId } = toRefs(props)
 
 const state = reactive({
   emptyValue: '-',
@@ -124,7 +130,7 @@ const initReady = ref(false)
 const editShow = ref(true)
 const canEdit = ref(false)
 // 初始化配置
-const tinymceId = 'tinymce-view-' + element.value.id
+const tinymceId = 'tinymce-view-' + element.value.id + '-' + suffixId.value
 const myValue = ref('')
 
 const systemFontFamily = appearanceStore.fontList.map(item => item.name)
