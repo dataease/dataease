@@ -6,6 +6,7 @@ interface AppState {
   token: string
   busiFlag: string
   outerParams: string
+  suffixId: string
   baseUrl: string
   dvId: string
   pid: string
@@ -31,6 +32,7 @@ export const userStore = defineStore('embedded', {
       token: '',
       busiFlag: '',
       outerParams: '',
+      suffixId: '',
       baseUrl: '',
       dvId: '',
       pid: '',
@@ -74,6 +76,9 @@ export const userStore = defineStore('embedded', {
     getOuterParams(): string {
       return this.outerParams
     },
+    getSuffixId(): string {
+      return this.suffixId
+    },
     getBaseUrl(): string {
       return this.baseUrl
     },
@@ -100,6 +105,7 @@ export const userStore = defineStore('embedded', {
         embeddedToken: this.token,
         busiFlag: this.busiFlag,
         outerParams: this.outerParams,
+        suffixId: this.suffixId,
         type: this.type,
         dvId: this.dvId,
         chartId: this.chartId,
@@ -148,6 +154,9 @@ export const userStore = defineStore('embedded', {
     setOuterParams(outerParams: string) {
       this.outerParams = outerParams
     },
+    setSuffixId(suffixId: string) {
+      this.suffixId = suffixId
+    },
     setBaseUrl(baseUrl: string) {
       this.baseUrl = baseUrl
     },
@@ -171,6 +180,7 @@ export const userStore = defineStore('embedded', {
       this.token = data['embeddedToken']
       this.busiFlag = data['busiFlag']
       this.outerParams = data['outerParams']
+      this.suffixId = data['suffixId']
       this.dvId = data['dvId']
       this.chartId = data['chartId']
       this.pid = data['pid']
