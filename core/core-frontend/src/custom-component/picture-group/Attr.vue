@@ -43,6 +43,7 @@ const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
       <template v-slot:threshold>
         <picture-group-threshold
           :themes="themes"
+          :element="curComponent"
           :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         >
           <template v-slot:dataset>

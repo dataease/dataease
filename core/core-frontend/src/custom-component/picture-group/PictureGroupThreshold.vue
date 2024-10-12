@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { PropType, toRefs } from 'vue'
+import { nextTick, onMounted, PropType, toRefs } from 'vue'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
 import { CollapseSwitchItem } from '@/components/collapse-switch-item'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 
@@ -12,6 +13,16 @@ const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  element: {
+    type: Object,
+    default() {
+      return {
+        propValue: {
+          urlList: []
+        }
+      }
+    }
   },
   view: {
     type: Object as PropType<ChartObj>,
@@ -21,13 +32,29 @@ const props = defineProps({
     }
   }
 })
-const { view } = toRefs(props)
+const { view, element } = toRefs(props)
 
 const onThresholdChange = val => {
   // do
   view.value.senior.threshold = val
+  if (val.enable) {
+    element.value.carousel.enable = false
+  }
+  nextTick(() => {
+    useEmitt().emitter.emit('calcData-' + element.value.id)
+  })
   snapshotStore.recordSnapshotCache('calcData', view.value.id)
 }
+
+const closeThreshold = () => {
+  view.value.senior.threshold.enable = false
+}
+onMounted(() => {
+  useEmitt({
+    name: 'carouselValueChange',
+    callback: () => closeThreshold()
+  })
+})
 </script>
 
 <template>
