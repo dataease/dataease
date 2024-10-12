@@ -426,7 +426,10 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   showHorizonBorder: true,
   showVerticalBorder: true,
   isItalic: false,
-  isBolder: false
+  isBolder: false,
+  tableFreeze: false,
+  tableColumnFreezeHead: 0,
+  tableRowFreezeHead: 0
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,
