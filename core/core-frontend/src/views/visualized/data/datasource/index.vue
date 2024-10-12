@@ -1472,6 +1472,7 @@ const getMenuList = (val: boolean) => {
                 </el-row>
 
                 <template v-if="showPriority">
+                  <span>跨源连接池</span>
                   <el-row :gutter="24">
                     <el-col :span="12">
                       <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
@@ -1495,6 +1496,34 @@ const getMenuList = (val: boolean) => {
                         :value="nodeInfo.configuration.queryTimeout"
                         :label="t('datasource.query_timeout')"
                         >{{ nodeInfo.configuration.queryTimeout || '30'
+                        }}{{ t('common.second') }}</BaseInfoItem
+                      >
+                    </el-col>
+                  </el-row>
+                  <span>直连连接池</span>
+                  <el-row :gutter="24">
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
+                        nodeInfo.configuration.directInitialPoolSize || 5
+                      }}</BaseInfoItem>
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.min_pool_size')">{{
+                        nodeInfo.configuration.directMinPoolSize || 5
+                      }}</BaseInfoItem>
+                    </el-col>
+                  </el-row>
+                  <el-row :gutter="24">
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.max_pool_size')">{{
+                        nodeInfo.configuration.directMaxPoolSize || 5
+                      }}</BaseInfoItem>
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem
+                        :value="nodeInfo.configuration.directQueryTimeout"
+                        :label="t('datasource.query_timeout')"
+                        >{{ nodeInfo.configuration.directQueryTimeout || '30'
                         }}{{ t('common.second') }}</BaseInfoItem
                       >
                     </el-col>

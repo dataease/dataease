@@ -12,6 +12,7 @@ import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
 import io.dataease.datasource.dto.DatasourceNodeBO;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
@@ -27,7 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class DataSourceManage {
@@ -35,12 +38,13 @@ public class DataSourceManage {
 
     @Resource
     private DataSourceExtMapper dataSourceExtMapper;
-
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
-
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
+    @Resource
+    private EngineManage engineManage;
+
 
     private DatasourceNodeBO rootNode() {
         return new DatasourceNodeBO(0L, "root", false, 7, -1L, 0, "mysql");
@@ -157,4 +161,21 @@ public class DataSourceManage {
         BeanUtils.copyBean(dto, coreDatasource);
         return dto;
     }
+
+
+    public void initDataSourceConnectionPool() {
+        QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
+        List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
+        CoreDatasource engine = engineManage.deEngine();
+        if (engine != null) {
+            coreDatasources.add(engine);
+        }
+
+        coreDatasources.forEach(datasource -> {
+            DatasourceDTO datasourceDTO = new DatasourceDTO();
+            BeanUtils.copyBean(datasourceDTO, datasource);
+            ProviderFactory.getProvider(datasource.getType()).initConnectionPool(datasourceDTO);
+        });
+    }
+
 }

@@ -5,8 +5,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
-import io.dataease.datasource.provider.EngineProvider;
-import io.dataease.datasource.provider.ProviderUtil;
+import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.exception.DEException;
@@ -36,7 +35,8 @@ public class EngineManage {
     private Environment env;
     @Resource
     private CoreDeEngineMapper deEngineMapper;
-
+    @Resource
+    private CalciteProvider calciteProvider;
     @Resource
     private CoreDatasourceMapper datasourceMapper;
 
@@ -75,12 +75,11 @@ public class EngineManage {
             throw new Exception("未完整设置数据引擎");
         }
         try {
-            EngineProvider provider = ProviderUtil.getEngineProvider(engine.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             DatasourceDTO datasource = new DatasourceDTO();
             BeanUtils.copyBean(datasource, engine);
             datasourceRequest.setDatasource(datasource);
-            provider.checkStatus(datasourceRequest);
+            calciteProvider.checkStatus(datasourceRequest);
         } catch (Exception e) {
             DEException.throwException("校验失败：" + e.getMessage());
         }

@@ -1,11 +1,8 @@
 package io.dataease.datasource.provider;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 import io.dataease.dataset.utils.FieldUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.dao.auto.entity.CoreDriver;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.manage.EngineManage;
+import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.*;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
@@ -16,7 +13,6 @@ import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.*;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.config.CalciteConnectionProperty;
@@ -29,56 +25,20 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 @Component("calciteProvider")
 public class CalciteProvider extends Provider {
-
-    @Resource
-    protected CoreDatasourceMapper coreDatasourceMapper;
-    @Resource
-    private EngineManage engineManage;
-    protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
-    private Map<Long, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
-    private final String FILE_PATH = "/opt/dataease2.0/drivers";
-    private final String CUSTOM_PATH = "/opt/dataease2.0/custom-drivers/";
-    private static String split = "DE";
-
+    protected Map<Long, BasicDataSource> jdbcConnection = new HashMap<>();
     @Resource
     private CommonThreadPool commonThreadPool;
+    private Connection connection = null;
 
-    @PostConstruct
-    public void init() throws Exception {
-        try {
-            String jarPath = FILE_PATH;
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(jarPath).toURI().toURL()}, classLoader);
-            File file = new File(jarPath);
-            File[] array = file.listFiles();
-            Optional.ofNullable(array).ifPresent(files -> {
-                for (File tmp : array) {
-                    if (tmp.getName().endsWith(".jar")) {
-                        try {
-                            extendedJdbcClassLoader.addFile(tmp);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        } catch (Exception e) {
-
-        }
-    }
 
     @Override
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
@@ -93,26 +53,6 @@ public class CalciteProvider extends Provider {
         }
         return schemas;
     }
-
-    @Override
-    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) {
-        List<DatasetTableDTO> tables = new ArrayList<>();
-
-        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30)) {
-            datasourceRequest.setDsVersion(con.getConnection().getMetaData().getDatabaseMajorVersion());
-            List<String> tablesSqls = getTablesSql(datasourceRequest);
-            for (String tablesSql : tablesSqls) {
-                ResultSet resultSet = statement.executeQuery(tablesSql);
-                while (resultSet.next()) {
-                    tables.add(getTableDesc(datasourceRequest, resultSet));
-                }
-            }
-        } catch (Exception e) {
-            DEException.throwException(e.getMessage());
-        }
-        return tables;
-    }
-
 
     @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
@@ -147,12 +87,30 @@ public class CalciteProvider extends Provider {
     }
 
     @Override
+    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) {
+        List<DatasetTableDTO> tables = new ArrayList<>();
+        try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30)) {
+            datasourceRequest.setDsVersion(con.getMetaData().getDatabaseMajorVersion());
+            List<String> tablesSqls = getTablesSql(datasourceRequest);
+            for (String tablesSql : tablesSqls) {
+                ResultSet resultSet = statement.executeQuery(tablesSql);
+                while (resultSet.next()) {
+                    tables.add(getTableDesc(datasourceRequest, resultSet));
+                }
+            }
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
+        }
+        return tables;
+    }
+
+
+    @Override
     public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
         // 不跨数据源
         if (datasourceRequest.getDsList().size() == 1) {
             return jdbcFetchResultField(datasourceRequest);
         }
-
         List<TableField> datasetTableFields = new ArrayList<>();
         List<String[]> list = new LinkedList<>();
         PreparedStatement statement = null;
@@ -223,26 +181,25 @@ public class CalciteProvider extends Provider {
         List<TableField> datasetTableFields = new ArrayList<>();
         DatasourceSchemaDTO datasourceSchemaDTO = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
         datasourceRequest.setDatasource(datasourceSchemaDTO);
-
         DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
-
         String table = datasourceRequest.getTable();
         if (StringUtils.isEmpty(table)) {
             ResultSet resultSet = null;
-            try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30)) {
+            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30)) {
                 if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                     statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
                 }
                 resultSet = statement.executeQuery(datasourceRequest.getQuery());
                 datasetTableFields.addAll(getField(resultSet, datasourceRequest));
             } catch (Exception e) {
+
                 DEException.throwException(e.getMessage());
             } finally {
                 if (resultSet != null) {
                     try {
                         resultSet.close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+
                     }
                 }
             }
@@ -269,13 +226,14 @@ public class CalciteProvider extends Provider {
                     }
                 }
             } catch (Exception e) {
+
                 DEException.throwException(e.getMessage());
             } finally {
                 if (resultSet != null) {
                     try {
                         resultSet.close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+
                     }
                 }
             }
@@ -356,6 +314,7 @@ public class CalciteProvider extends Provider {
             conn = driverClass.connect(configuration.getJdbc(), props);
 
         } catch (Exception e) {
+
             DEException.throwException(e.getMessage());
         }
         connectionObj.setConnection(conn);
@@ -385,16 +344,14 @@ public class CalciteProvider extends Provider {
     public Map<String, Object> jdbcFetchResultField(DatasourceRequest datasourceRequest) throws DEException {
         DatasourceSchemaDTO value = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
         datasourceRequest.setDatasource(value);
-
         DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
-
         Map<String, Object> map = new LinkedHashMap<>();
         List<TableField> fieldList = new ArrayList<>();
         List<String[]> dataList = new LinkedList<>();
 
         // schema
         ResultSet resultSet = null;
-        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getPreparedStatement(con.getConnection(), datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
+        try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource()); Statement statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
             if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                 statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
             }
@@ -412,15 +369,17 @@ public class CalciteProvider extends Provider {
             fieldList = getField(resultSet, datasourceRequest);
             dataList = getData(resultSet, datasourceRequest);
         } catch (SQLException e) {
+
             DEException.throwException("SQL ERROR: " + e.getMessage());
         } catch (Exception e) {
+
             DEException.throwException("Data source connection exception: " + e.getMessage());
         } finally {
             if (resultSet != null) {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+
                 }
             }
         }
@@ -434,12 +393,10 @@ public class CalciteProvider extends Provider {
     public void exec(DatasourceRequest datasourceRequest) throws DEException {
         DatasourceSchemaDTO value = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
         datasourceRequest.setDatasource(value);
-
         DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
-
         // schema
         ResultSet resultSet = null;
-        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getPreparedStatement(con.getConnection(), datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
+        try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource()); Statement statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
             if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                 statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
             }
@@ -456,15 +413,17 @@ public class CalciteProvider extends Provider {
             }
 
         } catch (SQLException e) {
+
             DEException.throwException("SQL ERROR: " + e.getMessage());
         } catch (Exception e) {
+
             DEException.throwException("Data source connection exception: " + e.getMessage());
         } finally {
             if (resultSet != null) {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+
                 }
             }
         }
@@ -474,12 +433,11 @@ public class CalciteProvider extends Provider {
     public int executeUpdate(DatasourceRequest datasourceRequest) throws DEException {
         DatasourceSchemaDTO value = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
         datasourceRequest.setDatasource(value);
-
         DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
 
         // schema
         ResultSet resultSet = null;
-        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getPreparedStatement(con.getConnection(), datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
+        try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource()); Statement statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
             if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                 statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
             }
@@ -504,7 +462,7 @@ public class CalciteProvider extends Provider {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+
                 }
             }
         }
@@ -697,18 +655,18 @@ public class CalciteProvider extends Provider {
         return tableField;
     }
 
-    public Connection initConnection(Map<Long, DatasourceSchemaDTO> dsMap) {
-        Connection connection = getCalciteConnection();
+    public void initConnection(Map<Long, DatasourceSchemaDTO> dsMap) {
+        Connection connection = take();
         CalciteConnection calciteConnection = null;
         try {
             calciteConnection = connection.unwrap(CalciteConnection.class);
         } catch (Exception e) {
+
             DEException.throwException(e);
         }
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
-        SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
-        return connection;
+        buildSchema(datasourceRequest, calciteConnection);
     }
 
     private void registerDriver() {
@@ -717,7 +675,7 @@ public class CalciteProvider extends Provider {
                 Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
                 DriverManager.registerDriver(new DriverShim(driver));
             } catch (Exception e) {
-                e.printStackTrace();
+
             }
         }
     }
@@ -736,9 +694,52 @@ public class CalciteProvider extends Provider {
             Class.forName("org.apache.calcite.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:calcite:", info);
         } catch (Exception e) {
+
             DEException.throwException(e.getMessage());
         }
         return connection;
+    }
+
+    public void pasrseConfig(DatasourceDTO ds) {
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(ds.getType());
+        String configuration = ds.getConfiguration();
+        switch (datasourceType) {
+            case mysql:
+            case mongo:
+            case mariadb:
+            case TiDB:
+            case StarRocks:
+            case doris:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), Mysql.class)).toString();
+                break;
+            case impala:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), Impala.class)).toString();
+                break;
+            case sqlServer:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), Sqlserver.class)).toString();
+                break;
+            case oracle:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), Oracle.class)).toString();
+                break;
+            case db2:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), Db2.class)).toString();
+                break;
+            case ck:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), CK.class)).toString();
+                break;
+            case pg:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), Pg.class)).toString();
+                break;
+            case redshift:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), Redshift.class)).toString();
+                break;
+            case h2:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), H2.class)).toString();
+                break;
+            default:
+                configuration = JsonUtil.toJSONString(JsonUtil.parseObject(ds.getConfiguration(), Mysql.class)).toString();
+        }
+        ds.setConfiguration(configuration);
     }
 
     // 构建root schema
@@ -897,10 +898,10 @@ public class CalciteProvider extends Provider {
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+
                 }
             });
         }
@@ -937,6 +938,7 @@ public class CalciteProvider extends Provider {
                 list.add(row);
             }
         } catch (Exception e) {
+
             DEException.throwException(e.getMessage());
         }
         return list;
@@ -1196,126 +1198,220 @@ public class CalciteProvider extends Provider {
         return StringUtils.isEmpty(customDriver) || customDriver.equalsIgnoreCase("default");
     }
 
-    protected ExtendedJdbcClassLoader getCustomJdbcClassLoader(CoreDriver coreDriver) {
-        if (coreDriver == null) {
-            DEException.throwException("Can not found custom Driver");
-        }
-        ExtendedJdbcClassLoader customJdbcClassLoader = customJdbcClassLoaders.get(coreDriver.getId());
-        if (customJdbcClassLoader == null) {
-            return addCustomJdbcClassLoader(coreDriver);
-        } else {
-            if (StringUtils.isNotEmpty(customJdbcClassLoader.getDriver()) && customJdbcClassLoader.getDriver().equalsIgnoreCase(coreDriver.getDriverClass())) {
-                return customJdbcClassLoader;
-            } else {
-                customJdbcClassLoaders.remove(coreDriver.getId());
-                return addCustomJdbcClassLoader(coreDriver);
-            }
-        }
-    }
-
-    private synchronized ExtendedJdbcClassLoader addCustomJdbcClassLoader(CoreDriver coreDriver) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        while (classLoader.getParent() != null) {
-            classLoader = classLoader.getParent();
-            if (classLoader.toString().contains("ExtClassLoader")) {
-                break;
-            }
-        }
-        try {
-            ExtendedJdbcClassLoader customJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(CUSTOM_PATH + coreDriver.getId()).toURI().toURL()}, classLoader);
-            customJdbcClassLoader.setDriver(coreDriver.getDriverClass());
-            File file = new File(CUSTOM_PATH + coreDriver.getId());
-            File[] array = file.listFiles();
-            Optional.ofNullable(array).ifPresent(files -> {
-                for (File tmp : array) {
-                    if (tmp.getName().endsWith(".jar")) {
-                        try {
-                            customJdbcClassLoader.addFile(tmp);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-            customJdbcClassLoaders.put(coreDriver.getId(), customJdbcClassLoader);
-            return customJdbcClassLoader;
-        } catch (Exception e) {
-            DEException.throwException(e.getMessage());
-        }
-        return null;
-    }
-
-
-    private Connection connection = null;
-
-    public static int capacity = 10;
-
-    public void initConnectionPool() {
-        LogUtil.info("Begin to init datasource pool...");
-        QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
-        List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
-        CoreDatasource engine = engineManage.deEngine();
-        if (engine != null) {
-            coreDatasources.add(engine);
-        }
+    public void initConnectionPool(DatasourceDTO datasourceDTO) {
         Map<Long, DatasourceSchemaDTO> dsMap = new HashMap<>();
-        for (CoreDatasource coreDatasource : coreDatasources) {
-            DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-            BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
-            dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
-        }
-        LogUtil.info("dsMap size..." + dsMap.keySet().size());
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+        dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         try {
+            initConnection(dsMap);
             commonThreadPool.addTask(() -> {
                 try {
-                    connection = initConnection(dsMap);
+                    initConnection(dsMap);
+                    handleDatasource(datasourceDTO, "add");
+                    LogUtil.info("Success to {} datasource connection pool: {}", "add", datasourceDTO.getName());
                 } catch (Exception e) {
+                    LogUtil.error("Failed to init datasource: " + datasourceDTO.getName(), e);
                 }
             });
-
-        } catch (Exception e) {
-
+        } catch (Exception ignore) {
         }
     }
 
-    public void update(DatasourceDTO datasourceDTO) throws DEException {
+    public DatasourceConfiguration setCredential(DatasourceDTO coreDatasource, BasicDataSource basicDataSource) {
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
+        DatasourceConfiguration jdbcConfiguration = new DatasourceConfiguration();
+        String defaultDriver = null;
+        switch (datasourceType) {
+            case mysql:
+            case mariadb:
+            case doris:
+            case TiDB:
+            case StarRocks:
+                Mysql mysqlConfiguration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
+                startSshSession(mysqlConfiguration, null, coreDatasource.getId());
+                basicDataSource.setUrl(mysqlConfiguration.getJdbc());
+                basicDataSource.setValidationQuery("select 1");
+                jdbcConfiguration = mysqlConfiguration;
+                defaultDriver = mysqlConfiguration.getDriver();
+                break;
+            case sqlServer:
+                Sqlserver sqlServerConfiguration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Sqlserver.class);
+                startSshSession(sqlServerConfiguration, null, coreDatasource.getId());
+                basicDataSource.setUrl(sqlServerConfiguration.getJdbc());
+                basicDataSource.setValidationQuery("select 1");
+                jdbcConfiguration = sqlServerConfiguration;
+                defaultDriver = sqlServerConfiguration.getDriver();
+                break;
+            case oracle:
+                Oracle oracleConfiguration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Oracle.class);
+                startSshSession(oracleConfiguration, null, coreDatasource.getId());
+                basicDataSource.setUrl(oracleConfiguration.getJdbc());
+                basicDataSource.setValidationQuery("select 1 from dual");
+                jdbcConfiguration = oracleConfiguration;
+                defaultDriver = oracleConfiguration.getDriver();
+                break;
+            case pg:
+                Pg pgConfiguration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Pg.class);
+                startSshSession(pgConfiguration, null, coreDatasource.getId());
+                basicDataSource.setDriverClassName(pgConfiguration.getDriver());
+                basicDataSource.setUrl(pgConfiguration.getJdbc());
+                jdbcConfiguration = pgConfiguration;
+                defaultDriver = pgConfiguration.getDriver();
+                break;
+            case ck:
+                CK chConfiguration = JsonUtil.parseObject(coreDatasource.getConfiguration(), CK.class);
+                startSshSession(chConfiguration, null, coreDatasource.getId());
+                basicDataSource.setDriverClassName(chConfiguration.getDriver());
+                basicDataSource.setUrl(chConfiguration.getJdbc());
+                jdbcConfiguration = chConfiguration;
+                defaultDriver = chConfiguration.getDriver();
+                break;
+            case mongo:
+                Mongo mongodbConfiguration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mongo.class);
+                startSshSession(mongodbConfiguration, null, coreDatasource.getId());
+                basicDataSource.setDriverClassName(mongodbConfiguration.getDriver());
+                basicDataSource.setUrl(mongodbConfiguration.getJdbc());
+                jdbcConfiguration = mongodbConfiguration;
+                defaultDriver = mongodbConfiguration.getDriver();
+                break;
+            case redshift:
+                Redshift redshiftConfiguration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Redshift.class);
+                startSshSession(redshiftConfiguration, null, coreDatasource.getId());
+                basicDataSource.setPassword(redshiftConfiguration.getPassword());
+                basicDataSource.setDriverClassName(redshiftConfiguration.getDriver());
+                basicDataSource.setUrl(redshiftConfiguration.getJdbc());
+                jdbcConfiguration = redshiftConfiguration;
+                defaultDriver = redshiftConfiguration.getDriver();
+                break;
+            case impala:
+                Impala impalaConfiguration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Impala.class);
+                startSshSession(impalaConfiguration, null, coreDatasource.getId());
+                basicDataSource.setPassword(impalaConfiguration.getPassword());
+                basicDataSource.setDriverClassName(impalaConfiguration.getDriver());
+                basicDataSource.setUrl(impalaConfiguration.getJdbc());
+                jdbcConfiguration = impalaConfiguration;
+                defaultDriver = impalaConfiguration.getDriver();
+                break;
+            case db2:
+                Db2 db2Configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Db2.class);
+                startSshSession(db2Configuration, null, coreDatasource.getId());
+                basicDataSource.setPassword(db2Configuration.getPassword());
+                basicDataSource.setDriverClassName(db2Configuration.getDriver());
+                basicDataSource.setUrl(db2Configuration.getJdbc());
+                jdbcConfiguration = db2Configuration;
+                defaultDriver = db2Configuration.getDriver();
+            default:
+                break;
+        }
+
+        basicDataSource.setUsername(jdbcConfiguration.getUsername());
+        ExtendedJdbcClassLoader classLoader = extendedJdbcClassLoader;
+        if (isDefaultClassLoader(jdbcConfiguration.getCustomDriver())) {
+            basicDataSource.setDriverClassName(defaultDriver);
+            classLoader = extendedJdbcClassLoader;
+        } else {
+        }
+        basicDataSource.setDriverClassLoader(classLoader);
+        basicDataSource.setPassword(jdbcConfiguration.getPassword());
+        return jdbcConfiguration;
+    }
+
+
+    public void addToPool(DatasourceDTO coreDatasource) {
+        BasicDataSource basicDataSource = new BasicDataSource();
+        DatasourceConfiguration datasourceConfiguration = setCredential(coreDatasource, basicDataSource);
+        basicDataSource.setInitialSize(datasourceConfiguration.getDirectInitialPoolSize());// 初始连接数
+        basicDataSource.setMinIdle(datasourceConfiguration.getDirectMinPoolSize()); // 最小连接数
+        basicDataSource.setMaxTotal(datasourceConfiguration.getDirectMaxPoolSize()); // 最大连接数
+        jdbcConnection.put(coreDatasource.getId(), basicDataSource);
+    }
+
+    public void handleDatasource(DatasourceDTO coreDatasource, String type) {
+        BasicDataSource dataSource = null;
+        switch (type) {
+            case "add":
+                dataSource = jdbcConnection.get(coreDatasource.getId());
+                if (dataSource == null) {
+                    addToPool(coreDatasource);
+                }
+                break;
+            case "edit":
+                dataSource = jdbcConnection.get(coreDatasource.getId());
+                if (dataSource != null) {
+                    try {
+                        dataSource.close();
+                    } catch (Exception e) {
+                    }
+                    jdbcConnection.remove(coreDatasource.getId());
+                }
+                addToPool(coreDatasource);
+                break;
+            case "delete":
+                dataSource = jdbcConnection.get(coreDatasource.getId());
+                if (dataSource != null) {
+                    try {
+                        dataSource.close();
+                    } catch (Exception e) {
+                    }
+                    jdbcConnection.remove(coreDatasource.getId());
+                }
+                break;
+            case "check":
+                dataSource = jdbcConnection.get(coreDatasource.getId());
+                if (dataSource == null) {
+                    addToPool(coreDatasource);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void updateConnectionPool(DatasourceDTO datasourceDTO) {
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
         try {
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-            SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
+            CalciteConnection calciteConnection = take().unwrap(CalciteConnection.class);
+            buildSchema(datasourceRequest, calciteConnection);
+            handleDatasource(datasourceDTO, "edit");
         } catch (Exception e) {
+
             DEException.throwException(e.getMessage());
         }
     }
 
-    public void updateDsPoolAfterCheckStatus(DatasourceDTO datasourceDTO) throws DEException {
+    public void updateDsPoolAfterCheckStatus(DatasourceDTO coreDatasource) throws DEException {
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-        BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
+        BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
         try {
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            CalciteConnection calciteConnection = take().unwrap(CalciteConnection.class);
             SchemaPlus rootSchema = calciteConnection.getRootSchema();
             if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) == null) {
                 buildSchema(datasourceRequest, calciteConnection);
             }
+            handleDatasource(datasourceSchemaDTO, "check");
         } catch (Exception e) {
+
             DEException.throwException(e.getMessage());
         }
     }
 
-    public void delete(CoreDatasource datasource) throws DEException {
+    @Override
+    public void deleteConnectionPool(DatasourceDTO datasource) throws DEException {
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, datasource);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         try {
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            CalciteConnection calciteConnection = take().unwrap(CalciteConnection.class);
             SchemaPlus rootSchema = calciteConnection.getRootSchema();
             if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null) {
                 JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
@@ -1323,7 +1419,9 @@ public class CalciteProvider extends Provider {
                 basicDataSource.close();
                 rootSchema.removeSubSchema(datasourceSchemaDTO.getSchemaAlias());
             }
+            handleDatasource(datasourceSchemaDTO, "delete");
         } catch (Exception e) {
+
             DEException.throwException(e.getMessage());
         }
         Provider.getLPorts().remove(datasource.getId());
@@ -1335,11 +1433,39 @@ public class CalciteProvider extends Provider {
 
 
     public Connection take() {
-        if (connection == null) {
-            DEException.throwException("初始化连接池失败!");
+        if (connection == null) { // 第一次检查，无需锁
+            synchronized (Connection.class) { // 同步块
+                if (connection == null) { // 第二次检查，需要锁
+                    connection = getCalciteConnection();
+                }
+            }
         }
         return connection;
     }
 
+    public Connection getConnectionFromPool(DatasourceDTO datasourceDTO) throws Exception {
+        synchronized (datasourceDTO.getId()) {
+            BasicDataSource dataSource = jdbcConnection.get(datasourceDTO.getId());
+            if (dataSource == null) {
+                handleDatasource(datasourceDTO, "add");
+            }
+            dataSource = jdbcConnection.get(datasourceDTO.getId());
+            return dataSource.getConnection();
+        }
+    }
+
+    public void exec(EngineRequest engineRequest) throws Exception {
+        DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), H2.class);
+        int queryTimeout = configuration.getQueryTimeout();
+        DatasourceDTO datasource = new DatasourceDTO();
+        BeanUtils.copyBean(datasource, engineRequest.getEngine());
+        try (Connection connection = getConnectionFromPool(datasource); Statement stat = getStatement(connection, queryTimeout)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(engineRequest.getQuery());
+            preparedStatement.setQueryTimeout(queryTimeout);
+            Boolean result = preparedStatement.execute();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 
 }

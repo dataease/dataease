@@ -8,10 +8,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.provider.ApiUtils;
-import io.dataease.datasource.provider.EngineProvider;
-import io.dataease.datasource.provider.ExcelUtils;
-import io.dataease.datasource.provider.ProviderUtil;
+import io.dataease.datasource.provider.*;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
@@ -49,6 +46,8 @@ public class DatasourceSyncManage {
     private DatasourceTaskServer datasourceTaskServer;
     @Resource
     private ScheduleManager scheduleManager;
+    @Resource
+    private CalciteProvider calciteProvider;
 
     public void extractExcelData(CoreDatasource coreDatasource, String type) {
         if (coreDatasource == null) {
@@ -248,7 +247,7 @@ public class DatasourceSyncManage {
 
         for (int page = 1; page <= totalPage; page++) {
             engineRequest.setQuery(engineProvider.insertSql(engineTableName, dataList, page, pageNumber));
-            engineProvider.exec(engineRequest);
+            calciteProvider.exec(engineRequest);
         }
     }
 
@@ -278,7 +277,7 @@ public class DatasourceSyncManage {
         }
         for (int page = 1; page <= totalPage; page++) {
             engineRequest.setQuery(engineProvider.insertSql(engineTableName, dataList, page, pageNumber));
-            engineProvider.exec(engineRequest);
+            calciteProvider.exec(engineRequest);
         }
     }
 
@@ -291,7 +290,7 @@ public class DatasourceSyncManage {
         for (int i = 0; i < replaceTableSql.length; i++) {
             if (StringUtils.isNotEmpty(replaceTableSql[i])) {
                 engineRequest.setQuery(replaceTableSql[i]);
-                engineProvider.exec(engineRequest);
+                calciteProvider.exec(engineRequest);
             }
         }
     }
@@ -302,7 +301,7 @@ public class DatasourceSyncManage {
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         engineRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
-        engineProvider.exec(engineRequest);
+        calciteProvider.exec(engineRequest);
     }
 
     public void dropEngineTable(String tableName) throws Exception {
@@ -311,7 +310,7 @@ public class DatasourceSyncManage {
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         engineRequest.setQuery(engineProvider.dropTable(tableName));
-        engineProvider.exec(engineRequest);
+        calciteProvider.exec(engineRequest);
     }
 
     public void addSchedule(CoreDatasourceTask datasourceTask) throws DEException {
@@ -357,5 +356,28 @@ public class DatasourceSyncManage {
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, record);
         return datasourceDTO;
+    }
+
+    public void initSyncTask() {
+        List<CoreDatasourceTask> list = datasourceTaskServer.listAll();
+        for (CoreDatasourceTask task : list) {
+            try {
+                if (!StringUtils.equalsIgnoreCase(task.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
+                    if (StringUtils.equalsIgnoreCase(task.getEndLimit(), "1")) {
+                        if (task.getEndTime() != null && task.getEndTime() > 0) {
+                            if (task.getEndTime() > System.currentTimeMillis()) {
+                                addSchedule(task);
+                            }
+                        } else {
+                            addSchedule(task);
+                        }
+                    } else {
+                        addSchedule(task);
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error("Init datasource sync task failed: " + task.getId(), e);
+            }
+        }
     }
 }

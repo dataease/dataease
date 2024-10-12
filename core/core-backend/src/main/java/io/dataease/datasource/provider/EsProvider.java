@@ -29,6 +29,30 @@ import java.util.stream.Collectors;
 public class EsProvider extends Provider {
 
     @Override
+    public void initConnectionPool(DatasourceDTO datasourceDTO) {
+    }
+
+    @Override
+    public void updateConnectionPool(DatasourceDTO datasourceDTO) {
+
+    }
+
+    @Override
+    public void deleteConnectionPool(DatasourceDTO datasourceDTO) {
+
+    }
+
+    @Override
+    public void updateDsPoolAfterCheckStatus(DatasourceDTO datasourceDTO) {
+
+    }
+
+    @Override
+    public void pasrseConfig(DatasourceDTO datasourceDTO) {
+
+    }
+
+    @Override
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
         return new ArrayList<>();
     }

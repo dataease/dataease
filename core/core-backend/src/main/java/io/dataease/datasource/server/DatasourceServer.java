@@ -26,7 +26,6 @@ import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.ApiUtils;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
@@ -82,8 +81,6 @@ public class DatasourceServer implements DatasourceApi {
     private EngineManage engineManage;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
-    @Resource
-    private CalciteProvider calciteProvider;
     @Resource
     private DatasourceSyncManage datasourceSyncManage;
     @Resource
@@ -306,7 +303,7 @@ public class DatasourceServer implements DatasourceApi {
             }
         } else {
             checkParams(dataSourceDTO.getConfiguration());
-            calciteProvider.update(dataSourceDTO);
+            ProviderFactory.getProvider(dataSourceDTO.getType()).updateConnectionPool(dataSourceDTO);
         }
         return dataSourceDTO;
     }
@@ -435,7 +432,7 @@ public class DatasourceServer implements DatasourceApi {
             checkParams(dataSourceDTO.getConfiguration());
             dataSourceManage.checkName(dataSourceDTO);
             dataSourceManage.innerEdit(requestDatasource);
-            calciteProvider.update(dataSourceDTO);
+            ProviderFactory.getProvider(dataSourceDTO.getType()).updateConnectionPool(dataSourceDTO);
         }
         return dataSourceDTO;
     }
@@ -574,13 +571,11 @@ public class DatasourceServer implements DatasourceApi {
                 }
 
             }
-
             datasourceTaskServer.deleteByDSId(datasourceId);
         }
-
         datasourceMapper.deleteById(datasourceId);
         if (!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType())) {
-            calciteProvider.delete(coreDatasource);
+            ProviderFactory.getProvider(coreDatasource.getType()).deleteConnectionPool(datasourceDTO);
         }
 
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
@@ -1133,6 +1128,7 @@ public class DatasourceServer implements DatasourceApi {
             datasourceDTO.setFileName(ExcelUtils.getFileName(datasource));
             datasourceDTO.setSize(ExcelUtils.getSize(datasource));
         }
+        ProviderFactory.getProvider(datasourceDTO.getType()).pasrseConfig(datasourceDTO);
         datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
         datasourceDTO.setCreator(coreUserManage.getUserName(Long.valueOf(datasourceDTO.getCreateBy())));
         return datasourceDTO;
@@ -1144,7 +1140,7 @@ public class DatasourceServer implements DatasourceApi {
         try {
             checkDatasourceStatus(datasourceDTO);
             if (!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType())) {
-                calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
+                ProviderFactory.getProvider(datasourceDTO.getType()).updateDsPoolAfterCheckStatus(datasourceDTO);
             }
         } catch (Exception e) {
             coreDatasource.setStatus("Error");

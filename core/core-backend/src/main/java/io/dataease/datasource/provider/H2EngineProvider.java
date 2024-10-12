@@ -3,39 +3,16 @@ package io.dataease.datasource.provider;
 
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.datasource.request.EngineRequest;
-import io.dataease.datasource.type.H2;
-import io.dataease.extensions.datasource.dto.ConnectionObj;
-import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.TableField;
-import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
 @Service("h2Engine")
 public class H2EngineProvider extends EngineProvider {
 
-
-    public void exec(EngineRequest engineRequest) throws Exception {
-        DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), H2.class);
-        int queryTimeout = configuration.getQueryTimeout();
-        DatasourceDTO datasource = new DatasourceDTO();
-        BeanUtils.copyBean(datasource, engineRequest.getEngine());
-        try (ConnectionObj connection = getConnection(datasource); Statement stat = getStatement(connection.getConnection(), queryTimeout)) {
-            PreparedStatement preparedStatement = connection.getConnection().prepareStatement(engineRequest.getQuery());
-            preparedStatement.setQueryTimeout(queryTimeout);
-            Boolean result = preparedStatement.execute();
-        } catch (Exception e) {
-            throw e;
-        }
-    }
 
     private static final String creatTableSql =
             "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +

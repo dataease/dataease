@@ -7,6 +7,7 @@ import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.SqlDialect;
@@ -16,14 +17,17 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 
 /**
@@ -32,6 +36,44 @@ import java.util.regex.Matcher;
 public abstract class Provider {
 
     public static Logger logger = LoggerFactory.getLogger(Provider.class);
+    private final String FILE_PATH = "/opt/dataease2.0/drivers";
+    protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
+
+
+    @PostConstruct
+    public void init() throws Exception {
+        try {
+            String jarPath = FILE_PATH;
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(jarPath).toURI().toURL()}, classLoader);
+            File file = new File(jarPath);
+            File[] array = file.listFiles();
+            Optional.ofNullable(array).ifPresent(files -> {
+                for (File tmp : array) {
+                    if (tmp.getName().endsWith(".jar")) {
+                        try {
+                            extendedJdbcClassLoader.addFile(tmp);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+
+        }
+    }
+
+
+    public abstract void initConnectionPool(DatasourceDTO datasourceDTO);
+
+    public abstract void updateConnectionPool(DatasourceDTO datasourceDTO);
+
+    public abstract void deleteConnectionPool(DatasourceDTO datasourceDTO);
+
+    public abstract void updateDsPoolAfterCheckStatus(DatasourceDTO datasourceDTO);
+
+    public abstract void pasrseConfig(DatasourceDTO datasourceDTO);
 
     /**
      * 获取schema接口
@@ -152,11 +194,7 @@ public abstract class Provider {
     }
 
     public String replaceTablePlaceHolder(String s, String placeholder) {
-        s = s.replaceAll("\r\n", " ")
-                .replaceAll("\n", " ")
-                .replaceAll(SqlPlaceholderConstants.TABLE_PLACEHOLDER_REGEX, Matcher.quoteReplacement(placeholder))
-                .replaceAll("ASYMMETRIC", "")
-                .replaceAll("SYMMETRIC", "");
+        s = s.replaceAll("\r\n", " ").replaceAll("\n", " ").replaceAll(SqlPlaceholderConstants.TABLE_PLACEHOLDER_REGEX, Matcher.quoteReplacement(placeholder)).replaceAll("ASYMMETRIC", "").replaceAll("SYMMETRIC", "");
         return s;
     }
 
@@ -235,7 +273,7 @@ public abstract class Provider {
         return sqlDialect;
     }
 
-    synchronized public Integer getLport(Long datasourceId) throws Exception {
+    synchronized public Integer getLport(Long datasourceId) {
         for (int i = 10000; i < 20000; i++) {
             if (isPortAvailable(i) && !lPorts.values().contains(i)) {
                 if (datasourceId == null) {
@@ -246,7 +284,8 @@ public abstract class Provider {
                 return i;
             }
         }
-        throw new Exception("localhost无可用端口！");
+        DEException.throwException("localhost无可用端口！");
+        return 10000;
     }
 
     public boolean isPortAvailable(int port) {
@@ -259,7 +298,7 @@ public abstract class Provider {
         }
     }
 
-    public void startSshSession(DatasourceConfiguration configuration, ConnectionObj connectionObj, Long datacourseId) throws Exception {
+    public void startSshSession(DatasourceConfiguration configuration, ConnectionObj connectionObj, Long datacourseId) {
         if (configuration.isUseSSH()) {
             if (datacourseId == null) {
                 configuration.setLPort(getLport(null));
@@ -285,24 +324,24 @@ public abstract class Provider {
         }
     }
 
-    public Session initSession(DatasourceConfiguration configuration) throws Exception {
+    public Session initSession(DatasourceConfiguration configuration) {
         JSch jsch = new JSch();
-        Session session = jsch.getSession(configuration.getSshUserName(), configuration.getSshHost(), configuration.getSshPort());
-        if (!configuration.getSshType().equalsIgnoreCase("password")) {
-            session.setConfig("PreferredAuthentications", "publickey");
-            jsch.addIdentity("sshkey", configuration.getSshKey().getBytes(StandardCharsets.UTF_8), null, configuration.getSshKeyPassword() == null ? null : configuration.getSshKeyPassword().getBytes(StandardCharsets.UTF_8));
-        }
-        if (configuration.getSshType().equalsIgnoreCase("password")) {
-            session.setPassword(configuration.getSshPassword());
-        }
-        session.setConfig("StrictHostKeyChecking", "no");
+        Session session = null;
         try {
+            session = jsch.getSession(configuration.getSshUserName(), configuration.getSshHost(), configuration.getSshPort());
+            if (!configuration.getSshType().equalsIgnoreCase("password")) {
+                session.setConfig("PreferredAuthentications", "publickey");
+                jsch.addIdentity("sshkey", configuration.getSshKey().getBytes(StandardCharsets.UTF_8), null, configuration.getSshKeyPassword() == null ? null : configuration.getSshKeyPassword().getBytes(StandardCharsets.UTF_8));
+            }
+            if (configuration.getSshType().equalsIgnoreCase("password")) {
+                session.setPassword(configuration.getSshPassword());
+            }
+            session.setConfig("StrictHostKeyChecking", "no");
             session.connect(1000 * 5);
+            session.setPortForwardingL(configuration.getLPort(), configuration.getHost(), configuration.getPort());
         } catch (Exception e) {
             DEException.throwException("SSH 连接失败：" + e.getMessage());
         }
-        session.setPortForwardingL(configuration.getLPort(), configuration.getHost(), configuration.getPort());
-
         return session;
     }
 }

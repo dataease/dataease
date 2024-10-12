@@ -130,7 +130,11 @@ const initForm = type => {
       initialPoolSize: 5,
       minPoolSize: 5,
       maxPoolSize: 5,
-      queryTimeout: 30
+      queryTimeout: 30,
+      directInitialPoolSize: 5,
+      directMinPoolSize: 5,
+      directMaxPoolSize: 5,
+      directQueryTimeout: 30
     }
     schemas.value = []
     rule.value = cloneDeep(defaultRule)
@@ -294,6 +298,34 @@ const setRules = () => {
       }
     ],
     'configuration.queryTimeout': [
+      {
+        required: true,
+        message: t('common.inputText') + t('datasource.query_timeout'),
+        trigger: 'blur'
+      }
+    ],
+    'configuration.directInitialPoolSize': [
+      {
+        required: true,
+        message: t('common.inputText') + t('datasource.initial_pool_size'),
+        trigger: 'blur'
+      }
+    ],
+    'configuration.directMinPoolSize': [
+      {
+        required: true,
+        message: t('common.inputText') + t('datasource.min_pool_size'),
+        trigger: 'blur'
+      }
+    ],
+    'configuration.directMaxPoolSize': [
+      {
+        required: true,
+        message: t('common.inputText') + t('datasource.max_pool_size'),
+        trigger: 'blur'
+      }
+    ],
+    'configuration.directQueryTimeout': [
       {
         required: true,
         message: t('common.inputText') + t('datasource.query_timeout'),
@@ -1208,6 +1240,7 @@ defineExpose({
           </el-form-item>
 
           <template v-if="showPriority">
+            <span>跨源连接池</span>
             <el-row :gutter="24" class="mb16">
               <el-col :span="12">
                 <el-form-item
@@ -1263,6 +1296,71 @@ defineExpose({
                 >
                   <el-input-number
                     v-model="form.configuration.queryTimeout"
+                    controls-position="right"
+                    autocomplete="off"
+                    :placeholder="t('common.inputText') + t('datasource.query_timeout')"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <span>直连连接池</span>
+            <el-row :gutter="24" class="mb16">
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.initial_pool_size')"
+                  prop="configuration.directInitialPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.directInitialPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    :placeholder="t('common.inputText') + t('datasource.initial_pool_size')"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.min_pool_size')"
+                  prop="configuration.directMinPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.directMinPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    :placeholder="t('common.inputText') + t('datasource.min_pool_size')"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.max_pool_size')"
+                  prop="configuration.directMaxPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.directMaxPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    :placeholder="t('common.inputText') + t('datasource.max_pool_size')"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  :label="`${t('datasource.query_timeout')}(${t('common.second')})`"
+                  prop="configuration.directQueryTimeout"
+                >
+                  <el-input-number
+                    v-model="form.configuration.directQueryTimeout"
                     controls-position="right"
                     autocomplete="off"
                     :placeholder="t('common.inputText') + t('datasource.query_timeout')"

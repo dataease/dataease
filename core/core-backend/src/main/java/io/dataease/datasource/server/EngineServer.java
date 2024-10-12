@@ -4,8 +4,8 @@ import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
 import io.dataease.datasource.manage.EngineManage;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
@@ -25,8 +25,6 @@ public class EngineServer implements EngineApi {
     private CoreDeEngineMapper deEngineMapper;
     @Resource
     private EngineManage engineManage;
-    @Resource
-    private CalciteProvider calciteProvider;
 
     @Override
     public DatasourceDTO getEngine() {
@@ -45,18 +43,18 @@ public class EngineServer implements EngineApi {
         }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
-        if(coreDeEngine.getId() == null){
+        if (coreDeEngine.getId() == null) {
             coreDeEngine.setId(IDUtils.snowID());
             datasourceDTO.setId(coreDeEngine.getId());
             deEngineMapper.insert(coreDeEngine);
-        }else {
+        } else {
             deEngineMapper.updateById(coreDeEngine);
         }
-        calciteProvider.update(datasourceDTO);
+        ProviderFactory.getProvider(datasourceDTO.getType()).updateConnectionPool(datasourceDTO);
     }
 
     @Override
-    public void validate(DatasourceDTO datasourceDTO) throws Exception{
+    public void validate(DatasourceDTO datasourceDTO) throws Exception {
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
         coreDeEngine.setConfiguration(new String(Base64.getDecoder().decode(coreDeEngine.getConfiguration())));
