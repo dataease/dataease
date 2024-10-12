@@ -16,6 +16,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Mapper
 public interface ExtDataVisualizationMapper {
@@ -51,5 +52,7 @@ public interface ExtDataVisualizationMapper {
 
     List<VisualizationReportFilterVO> queryReportFilter(@Param("dvId") Long dvId,@Param("taskId") Long taskId);
 
+    void deleteDataVBatch(@Param("ids") Set<Long> ids);
 
+    void deleteViewsBatch(@Param("ids") Set<Long> ids);
 }

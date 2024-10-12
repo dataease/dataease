@@ -89,7 +89,11 @@ public class CoreVisualizationManage {
                 });
             }
         }
-        extMapper.batchDel(delIds, System.currentTimeMillis(), AuthUtils.getUser().getUserId());
+        // 删除可视化资源
+        extDataVisualizationMapper.deleteDataVBatch(delIds);
+        // 删除图表信息
+        extDataVisualizationMapper.deleteViewsBatch(delIds);
+
         coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.DELETE);
     }
 
