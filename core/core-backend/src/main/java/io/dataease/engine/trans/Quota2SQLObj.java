@@ -33,6 +33,13 @@ public class Quota2SQLObj {
         List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         Map<String, String> fieldsDialect = new HashMap<>();
+
+        String dsType = null;
+        if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+            Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+            dsType = next.getValue().getType();
+        }
+
         if (!CollectionUtils.isEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 ChartViewFieldDTO y = fields.get(i);
@@ -47,9 +54,17 @@ public class Quota2SQLObj {
                         originField = calcFieldExp;
                     }
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_COPY)) {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
+                    if (StringUtils.equalsIgnoreCase(dsType, "es")) {
+                        originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getOriginName());
+                    } else {
+                        originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
+                    }
                 } else {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
+                    if (StringUtils.equalsIgnoreCase(dsType, "es")) {
+                        originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getOriginName());
+                    } else {
+                        originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -100,7 +115,7 @@ public class Quota2SQLObj {
                 String cast = String.format(SQLConstants.CAST, originField, Objects.equals(y.getDeType(), DeTypeConstants.DE_INT) ? SQLConstants.DEFAULT_INT_FORMAT : SQLConstants.DEFAULT_FLOAT_FORMAT);
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                     fieldName = String.format(SQLConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
-                } else if (y.getSummary() == null){
+                } else if (y.getSummary() == null) {
                     // 透视表自定义汇总不用聚合
                     fieldName = cast;
                 } else {

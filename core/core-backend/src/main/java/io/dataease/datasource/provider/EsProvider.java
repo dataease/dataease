@@ -83,8 +83,8 @@ public class EsProvider extends Provider {
         Map<String, Object> result = new HashMap<>();
         try {
             String response = execQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
-            result.put("dataList", fetchResultData(response));
-            result.put("fieldList", fetchResultField4Sql(response));
+            result.put("data", fetchResultData(response));
+            result.put("fields", fetchResultField4Sql(response));
         } catch (Exception e) {
             e.printStackTrace();
             DEException.throwException(e);
@@ -96,7 +96,13 @@ public class EsProvider extends Provider {
     public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) {
         List<TableField> tableFields = new ArrayList<>();
         try {
-            String response = execQuery(datasourceRequest, "select * from  " + datasourceRequest.getTable() + " limit 0", "?format=json");
+            String sql;
+            if (datasourceRequest.getTable() != null) {
+                sql = "select * from  " + datasourceRequest.getTable() + " limit 0";
+            } else {
+                sql = datasourceRequest.getQuery();
+            }
+            String response = execQuery(datasourceRequest, sql, "?format=json");
             tableFields = fetchResultField4Sql(response);
         } catch (Exception e) {
             DEException.throwException(e);

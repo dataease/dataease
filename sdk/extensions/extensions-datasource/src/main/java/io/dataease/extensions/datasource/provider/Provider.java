@@ -212,7 +212,7 @@ public abstract class Provider {
                 sqlDialect = new MssqlSqlDialect(MssqlSqlDialect.DEFAULT_CONTEXT, coreDatasource.getDsVersion());
                 break;
             case oracle:
-                sqlDialect = OracleSqlDialect.DEFAULT;
+                sqlDialect = new OracleSqlDialect(OracleSqlDialect.DEFAULT_CONTEXT, coreDatasource.getDsVersion());
                 break;
             case db2:
                 sqlDialect = Db2SqlDialect.DEFAULT;
@@ -228,6 +228,9 @@ public abstract class Provider {
                 break;
             case h2:
                 sqlDialect = H2SqlDialect.DEFAULT;
+                break;
+            case es:
+                sqlDialect = EsSqlDialect.DEFAULT;
                 break;
             default:
                 sqlDialect = MysqlSqlDialect.DEFAULT;
@@ -259,26 +262,26 @@ public abstract class Provider {
         }
     }
 
-    public void startSshSession(DatasourceConfiguration configuration, ConnectionObj connectionObj, Long datacourseId) throws Exception {
+    public void startSshSession(DatasourceConfiguration configuration, ConnectionObj connectionObj, Long datasourceId) throws Exception {
         if (configuration.isUseSSH()) {
-            if (datacourseId == null) {
+            if (datasourceId == null) {
                 configuration.setLPort(getLport(null));
                 connectionObj.setLPort(configuration.getLPort());
                 connectionObj.setConfiguration(configuration);
                 Session session = initSession(configuration);
                 connectionObj.setSession(session);
             } else {
-                Integer lport = Provider.getLPorts().get(datacourseId);
+                Integer lport = Provider.getLPorts().get(datasourceId);
                 configuration.setLPort(lport);
                 if (lport != null) {
-                    if (Provider.getSessions().get(datacourseId) == null || !Provider.getSessions().get(datacourseId).isConnected()) {
+                    if (Provider.getSessions().get(datasourceId) == null || !Provider.getSessions().get(datasourceId).isConnected()) {
                         Session session = initSession(configuration);
-                        Provider.getSessions().put(datacourseId, session);
+                        Provider.getSessions().put(datasourceId, session);
                     }
                 } else {
-                    configuration.setLPort(getLport(datacourseId));
+                    configuration.setLPort(getLport(datasourceId));
                     Session session = initSession(configuration);
-                    Provider.getSessions().put(datacourseId, session);
+                    Provider.getSessions().put(datasourceId, session);
                 }
                 configuration.setLPort(lport);
             }

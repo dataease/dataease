@@ -565,14 +565,20 @@ public class DatasetDataManage {
                 provider = ProviderFactory.getProvider(dsList.getFirst());
             }
 
+            String dsType = null;
+            if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+                Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+                dsType = next.getValue().getType();
+            }
+
             Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
             Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
             String querySQL;
             if (multFieldValuesRequest.getResultMode() == 0) {
-                querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
+                querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, !StringUtils.equalsIgnoreCase(dsType, "es"), 0, 1000);
             } else {
-                querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, true);
+                querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, !StringUtils.equalsIgnoreCase(dsType, "es"));
             }
             querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
             logger.debug("calcite data enum sql: " + querySQL);
@@ -812,15 +818,21 @@ public class DatasetDataManage {
             provider = ProviderFactory.getProvider(dsList.getFirst());
         }
 
+        String dsType = null;
+        if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+            Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+            dsType = next.getValue().getType();
+        }
+
         Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         String querySQL;
         if (request.getResultMode() == 0) {
-            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1, 0, 1000);
+            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1 && !StringUtils.equalsIgnoreCase(dsType, "es"), 0, 1000);
         } else {
-            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1);
+            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1 && !StringUtils.equalsIgnoreCase(dsType, "es"));
         }
         querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.debug("calcite data enum sql: " + querySQL);
