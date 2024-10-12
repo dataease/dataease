@@ -311,6 +311,58 @@ onMounted(() => {
     <el-form-item
       class="form-item"
       :class="'form-item-' + themes"
+      v-if="showProperty('tableFreeze')"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableCellForm.tableFreeze"
+        @change="changeTableCell('tableFreeze')"
+      >
+        {{ t('chart.table_freeze') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-row :gutter="8" v-if="showProperty('tableFreeze')">
+      <el-col :span="12">
+        <el-form-item
+          :label="t('chart.table_col_freeze_tip')"
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('tableColumnFreezeHead')"
+        >
+          <el-input-number
+            :effect="themes"
+            controls-position="right"
+            v-model="state.tableCellForm.tableColumnFreezeHead"
+            :disabled="!state.tableCellForm.tableFreeze"
+            :min="1"
+            :max="100"
+            @change="changeTableCell('tableColumnFreezeHead')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item
+          :label="t('chart.tbale_row_freeze_tip')"
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('tableRowFreezeHead')"
+        >
+          <el-input-number
+            :effect="themes"
+            controls-position="right"
+            v-model="state.tableCellForm.tableRowFreezeHead"
+            :disabled="!state.tableCellForm.tableFreeze"
+            :min="1"
+            :max="100"
+            @change="changeTableCell('tableRowFreezeHead')"
+          />
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
       v-if="showProperty('showHorizonBorder')"
     >
       <el-checkbox

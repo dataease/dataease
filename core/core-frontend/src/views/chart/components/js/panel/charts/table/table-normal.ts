@@ -34,6 +34,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
       ...TABLE_EDITOR_PROPERTY_INNER['basic-style-selector'],
       'showSummary',
       'summaryLabel'
+    ],
+    'table-cell-selector': [
+      ...TABLE_EDITOR_PROPERTY_INNER['table-cell-selector'],
+      'tableFreeze',
+      'tableColumnFreezeHead',
+      'tableRowFreezeHead'
     ]
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
@@ -132,7 +138,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
       tooltip: {
         getContainer: () => containerDom,
         renderTooltip: sheet => new SortTooltip(sheet)
-      }
+      },
+      frozenColCount: customAttr.tableCell.tableColumnFreezeHead ?? 0,
+      frozenRowCount: customAttr.tableCell.tableRowFreezeHead ?? 0
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {

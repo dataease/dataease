@@ -410,6 +410,18 @@ declare interface ChartTableCellAttr {
    * 加粗
    */
   isBolder: boolean
+  /**
+   * 冻结
+   */
+  tableFreeze: boolean
+  /**
+   * 冻结列
+   */
+  tableColumnFreezeHead: number
+  /**
+   * 冻结行
+   */
+  tableRowFreezeHead: number
 }
 
 /**
