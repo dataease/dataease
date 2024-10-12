@@ -133,15 +133,12 @@ public abstract class Provider {
     }
 
     public String transSqlDialect(String sql, Map<Long, DatasourceSchemaDTO> dsMap) throws DEException {
-        try {
-            DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
-
+        DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
+        try (ConnectionObj connection = getConnection(value)) {
             // 获取数据库version
-            ConnectionObj connection = getConnection(value);
             if (connection != null) {
                 value.setDsVersion(connection.getConnection().getMetaData().getDatabaseMajorVersion());
             }
-
             SqlParser parser = SqlParser.create(sql, SqlParser.Config.DEFAULT.withLex(Lex.JAVA));
             SqlNode sqlNode = parser.parseStmt();
             return sqlNode.toSqlString(getDialect(value)).toString();

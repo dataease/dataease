@@ -8,10 +8,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.provider.ApiUtils;
-import io.dataease.datasource.provider.EngineProvider;
-import io.dataease.datasource.provider.ExcelUtils;
-import io.dataease.datasource.provider.ProviderUtil;
+import io.dataease.datasource.provider.*;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
@@ -20,6 +17,8 @@ import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.TableField;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.job.schedule.ExtractDataJob;
 import io.dataease.job.schedule.ScheduleManager;
 import io.dataease.utils.BeanUtils;
@@ -49,6 +48,8 @@ public class DatasourceSyncManage {
     private DatasourceTaskServer datasourceTaskServer;
     @Resource
     private ScheduleManager scheduleManager;
+    @Resource
+    private CalciteProvider calciteProvider;
 
     public void extractExcelData(CoreDatasource coreDatasource, String type) {
         if (coreDatasource == null) {
@@ -248,7 +249,7 @@ public class DatasourceSyncManage {
 
         for (int page = 1; page <= totalPage; page++) {
             engineRequest.setQuery(engineProvider.insertSql(engineTableName, dataList, page, pageNumber));
-            engineProvider.exec(engineRequest);
+            calciteProvider.exec(engineRequest);
         }
     }
 
@@ -278,7 +279,7 @@ public class DatasourceSyncManage {
         }
         for (int page = 1; page <= totalPage; page++) {
             engineRequest.setQuery(engineProvider.insertSql(engineTableName, dataList, page, pageNumber));
-            engineProvider.exec(engineRequest);
+            calciteProvider.exec(engineRequest);
         }
     }
 
@@ -291,7 +292,7 @@ public class DatasourceSyncManage {
         for (int i = 0; i < replaceTableSql.length; i++) {
             if (StringUtils.isNotEmpty(replaceTableSql[i])) {
                 engineRequest.setQuery(replaceTableSql[i]);
-                engineProvider.exec(engineRequest);
+                calciteProvider.exec(engineRequest);
             }
         }
     }
@@ -302,7 +303,7 @@ public class DatasourceSyncManage {
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         engineRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
-        engineProvider.exec(engineRequest);
+        calciteProvider.exec(engineRequest);
     }
 
     public void dropEngineTable(String tableName) throws Exception {
@@ -311,7 +312,7 @@ public class DatasourceSyncManage {
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         engineRequest.setQuery(engineProvider.dropTable(tableName));
-        engineProvider.exec(engineRequest);
+        calciteProvider.exec(engineRequest);
     }
 
     public void addSchedule(CoreDatasourceTask datasourceTask) throws DEException {

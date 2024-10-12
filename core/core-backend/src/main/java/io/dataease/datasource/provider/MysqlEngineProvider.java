@@ -26,21 +26,6 @@ import java.util.List;
 @Service("mysqlEngine")
 public class MysqlEngineProvider extends EngineProvider {
 
-
-    public void exec(EngineRequest engineRequest) throws Exception {
-        DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), Mysql.class);
-        int queryTimeout = configuration.getQueryTimeout();
-        DatasourceDTO datasource = new DatasourceDTO();
-        BeanUtils.copyBean(datasource, engineRequest.getEngine());
-        try (ConnectionObj connection = getConnection(datasource); Statement stat = getStatement(connection.getConnection(), queryTimeout)) {
-            PreparedStatement preparedStatement = connection.getConnection().prepareStatement(engineRequest.getQuery());
-            preparedStatement.setQueryTimeout(queryTimeout);
-            Boolean result = preparedStatement.execute();
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
     private static final String creatTableSql =
             "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
                     "Column_Fields;";

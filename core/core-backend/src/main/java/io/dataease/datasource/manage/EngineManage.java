@@ -5,13 +5,12 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
-import io.dataease.datasource.provider.EngineProvider;
-import io.dataease.datasource.provider.ProviderUtil;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -75,12 +74,12 @@ public class EngineManage {
             throw new Exception("未完整设置数据引擎");
         }
         try {
-            EngineProvider provider = ProviderUtil.getEngineProvider(engine.getType());
+
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             DatasourceDTO datasource = new DatasourceDTO();
             BeanUtils.copyBean(datasource, engine);
             datasourceRequest.setDatasource(datasource);
-            provider.checkStatus(datasourceRequest);
+            ProviderFactory.getProvider(engine.getType()).checkStatus(datasourceRequest);
         } catch (Exception e) {
             DEException.throwException("校验失败：" + e.getMessage());
         }
