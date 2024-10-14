@@ -865,7 +865,13 @@ const componentBackgroundStyle = computed(() => {
       innerPadding,
       borderRadius
     } = element.value.commonBackground
-    const style = { padding: innerPadding * scale.value + 'px', borderRadius: borderRadius + 'px' }
+    const innerPaddingTarget = ['Group', 'DeTabs'].includes(element.value.component)
+      ? 0
+      : innerPadding
+    const style = {
+      padding: innerPaddingTarget * scale.value + 'px',
+      borderRadius: borderRadius + 'px'
+    }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor
