@@ -213,6 +213,19 @@ const getOperator = (
   return [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq'
 }
 
+const duplicateRemoval = arr => {
+  const objList = []
+  let idList = arr.map(ele => ele.id)
+  for (let index = 0; index < arr.length; index++) {
+    const element = arr[index]
+    if (idList.includes(element.id)) {
+      objList.push(element)
+      idList = idList.filter(ele => ele !== element.id)
+    }
+  }
+  return objList
+}
+
 export const searchQuery = (queryComponentList, filter, curComponentId, firstLoad) => {
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
@@ -333,7 +346,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               ) ||
               displayType === '8'
             ) {
-              const result = forMatterValue(
+              let result = forMatterValue(
                 +displayType,
                 selectValue,
                 timeGranularity,
@@ -357,12 +370,45 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 const fieldId = isTree
                   ? getFieldId(treeFieldList, result)
                   : item.checkedFieldsMap[curComponentId]
-                const parametersFilter = parameters.reduce((pre, next) => {
-                  if (next.id === fieldId && !pre.length) {
-                    pre.push(next)
-                  }
-                  return pre
-                }, [])
+                let parametersFilter = duplicateRemoval(
+                  parameters.reduce((pre, next) => {
+                    if (next.id === fieldId && !pre.length) {
+                      pre.push(next)
+                    }
+                    return pre
+                  }, [])
+                )
+
+                if (item.checkedFieldsMapArr?.[curComponentId]?.length) {
+                  const endTimeFieldId = item.checkedFieldsMapArr?.[curComponentId].find(
+                    element => element !== fieldId
+                  )
+                  const resultEnd = Array(2).fill(
+                    endTimeFieldId === item.checkedFieldsMapEnd[curComponentId]
+                      ? result[1]
+                      : result[0]
+                  )
+                  result = Array(2).fill(
+                    endTimeFieldId === item.checkedFieldsMapEnd[curComponentId]
+                      ? result[0]
+                      : result[1]
+                  )
+                  parametersFilter = duplicateRemoval(
+                    item.parametersArr[curComponentId].filter(e => e.id === fieldId)
+                  )
+
+                  const parametersFilterEnd = duplicateRemoval(
+                    item.parametersArr[curComponentId].filter(e => e.id === endTimeFieldId)
+                  )
+                  filter.push({
+                    componentId: ele.id,
+                    fieldId: endTimeFieldId,
+                    operator,
+                    value: resultEnd,
+                    parameters: parametersFilterEnd,
+                    isTree
+                  })
+                }
                 filter.push({
                   componentId: ele.id,
                   fieldId,
