@@ -5,6 +5,7 @@ import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/ty
 import { parseJson } from '@/views/chart/components/js/util'
 import {
   type LayoutResult,
+  S2DataConfig,
   S2Event,
   S2Options,
   SHAPE_STYLE_MAP,
@@ -118,28 +119,27 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
     // data config
-    const s2DataConfig = {
+    const s2DataConfig: S2DataConfig = {
       fields: {
         columns: columns
       },
       meta: meta,
-      data: newData,
-      style: this.configStyle(chart)
+      data: newData
     }
 
     const customAttr = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
-      width: containerDom.offsetWidth,
+      width: containerDom.getBoundingClientRect().width,
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
-      style: this.configStyle(chart),
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom,
         renderTooltip: sheet => new SortTooltip(sheet)
       }
     }
+    s2Options.style = this.configStyle(chart, s2DataConfig)
     if (customAttr.tableCell.tableFreeze) {
       s2Options.frozenColCount = customAttr.tableCell.tableColumnFreezeHead ?? 0
       s2Options.frozenRowCount = customAttr.tableCell.tableRowFreezeHead ?? 0
@@ -256,17 +256,22 @@ export class TableNormal extends S2ChartView<TableSheet> {
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
-        const scale = containerDom.offsetWidth / ev.colsHierarchy.width
+        const containerWidth = containerDom.getBoundingClientRect().width
+        const scale = containerWidth / ev.colsHierarchy.width
         if (scale <= 1) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，不处理
           return
         }
         const totalWidth = ev.colLeafNodes.reduce((p, n) => {
-          n.width = n.width * scale
+          n.width = Math.round(n.width * scale)
           n.x = p
           return p + n.width
         }, 0)
-        ev.colsHierarchy.width = Math.min(containerDom.offsetWidth, totalWidth)
+        if (totalWidth > containerWidth) {
+          // 从最后一列减掉
+          ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - containerWidth
+        }
+        ev.colsHierarchy.width = containerWidth
       })
     }
     // click
