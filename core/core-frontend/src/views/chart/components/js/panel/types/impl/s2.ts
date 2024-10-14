@@ -10,7 +10,8 @@ import {
   S2Options,
   Meta,
   SERIES_NUMBER_FIELD,
-  setTooltipContainerStyle
+  setTooltipContainerStyle,
+  S2DataConfig
 } from '@antv/s2'
 import {
   configHeaderInteraction,
@@ -42,8 +43,8 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     return getCustomTheme(chart)
   }
 
-  protected configStyle(chart: Chart): Style {
-    return getStyle(chart)
+  protected configStyle(chart: Chart, s2DataConfig: S2DataConfig): Style {
+    return getStyle(chart, s2DataConfig)
   }
 
   protected configEmptyDataStrategy(chart: Chart): Record<string, any>[] {

@@ -1,5 +1,6 @@
 import {
   type LayoutResult,
+  S2DataConfig,
   S2Event,
   S2Options,
   TableColCell,
@@ -129,7 +130,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
     // data config
-    const s2DataConfig = {
+    const s2DataConfig: S2DataConfig = {
       fields: {
         columns: columns
       },
@@ -138,26 +139,25 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
 
     const customAttr = parseJson(chart.customAttr)
-    const style = this.configStyle(chart)
-    // 自适应列宽模式下，URL 字段的宽度固定为 120
-    if (customAttr.basicStyle.tableColumnMode === 'adapt') {
-      const urlFields = fields.filter(field => field.deType === 7)
-      style.colCfg.widthByFieldValue = urlFields?.reduce((p, n) => {
-        p[n.chartShowName ?? n.name] = 120
-        return p
-      }, {})
-    }
     // options
     const s2Options: S2Options = {
-      width: containerDom.offsetWidth,
+      width: containerDom.getBoundingClientRect().width,
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
-      style,
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom,
         renderTooltip: sheet => new SortTooltip(sheet)
       }
+    }
+    s2Options.style = this.configStyle(chart, s2DataConfig)
+    // 自适应列宽模式下，URL 字段的宽度固定为 120
+    if (customAttr.basicStyle.tableColumnMode === 'adapt') {
+      const urlFields = fields.filter(field => field.deType === 7)
+      s2Options.style.colCfg.widthByFieldValue = urlFields?.reduce((p, n) => {
+        p[n.chartShowName ?? n.name] = 120
+        return p
+      }, {})
     }
     if (customAttr.tableCell.tableFreeze) {
       s2Options.frozenColCount = customAttr.tableCell.tableColumnFreezeHead ?? 0
@@ -240,7 +240,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
         const totalWidthWithImg = ev.colLeafNodes.reduce((p, n) => {
           return p + (urlFields.includes(n.field) ? 120 : n.width)
         }, 0)
-        if (containerDom.offsetWidth <= totalWidthWithImg) {
+        const containerWidth = containerDom.getBoundingClientRect().width
+        if (containerWidth <= totalWidthWithImg) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，不处理
           return
         }
@@ -248,14 +249,17 @@ export class TableInfo extends S2ChartView<TableSheet> {
         const totalWidthWithoutImg = ev.colLeafNodes.reduce((p, n) => {
           return p + (urlFields.includes(n.field) ? 0 : n.width)
         }, 0)
-        const restWidth = containerDom.offsetWidth - urlFields.length * 120
+        const restWidth = containerWidth - urlFields.length * 120
         const scale = restWidth / totalWidthWithoutImg
         const totalWidth = ev.colLeafNodes.reduce((p, n) => {
-          n.width = urlFields.includes(n.field) ? 120 : n.width * scale
+          n.width = urlFields.includes(n.field) ? 120 : Math.round(n.width * scale)
           n.x = p
           return p + n.width
         }, 0)
-        ev.colsHierarchy.width = Math.min(containerDom.offsetWidth, totalWidth)
+        if (totalWidth > containerWidth) {
+          ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - containerWidth
+        }
+        ev.colsHierarchy.width = containerWidth
       })
     }
     // click

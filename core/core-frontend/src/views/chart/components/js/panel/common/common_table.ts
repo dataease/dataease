@@ -22,7 +22,8 @@ import {
   SERIES_NUMBER_FIELD,
   type PivotSheet,
   type Node,
-  type Meta
+  type Meta,
+  S2DataConfig
 } from '@antv/s2'
 import { keys, intersection, filter, cloneDeep, merge, find } from 'lodash-es'
 import { createVNode, render } from 'vue'
@@ -405,7 +406,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
   return theme
 }
 
-export function getStyle(chart: Chart): Style {
+export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
   const style: Style = {}
   let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
@@ -441,18 +442,37 @@ export function getStyle(chart: Chart): Style {
             width: fieldMap[drillEnterField.dataeaseName]?.width
           }
         }
+        // 铺满
+        const totalWidthPercent = dataConfig.meta?.reduce((p, n) => {
+          return p + (fieldMap[n.field]?.width ?? 10)
+        }, 0)
+        const fullFilled = parseInt(totalWidthPercent.toFixed(0)) === 100
+        const widthArr = []
         style.colCfg.width = node => {
-          const width = node.spreadsheet.container.cfg.el.offsetWidth
+          const width = node.spreadsheet.container.cfg.el.getBoundingClientRect().width
           if (!basicStyle.tableFieldWidth?.length) {
             const fieldsSize = chart.data.fields.length
             const columnCount = tableHeader.showIndex ? fieldsSize + 1 : fieldsSize
             return width / columnCount
           }
           const baseWidth = width / 100
-          const resultWidth = fieldMap[node.field]
+          const tmpWidth = fieldMap[node.field]
             ? fieldMap[node.field].width * baseWidth
             : baseWidth * 10
-          return parseInt(resultWidth.toFixed(0))
+          const resultWidth = parseInt(tmpWidth.toFixed(0))
+          if (fullFilled) {
+            widthArr.push(resultWidth)
+            if (widthArr.length === dataConfig.meta.length - 1) {
+              const curTotalWidth = widthArr.reduce((p, n) => {
+                return p + n
+              }, 0)
+              const restWidth = width - curTotalWidth
+              if (restWidth < resultWidth) {
+                return restWidth
+              }
+            }
+          }
+          return resultWidth
         }
         break
       }

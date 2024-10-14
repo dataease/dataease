@@ -11,7 +11,8 @@ import {
   VALUE_FIELD,
   QueryDataType,
   TotalStatus,
-  Aggregation
+  Aggregation,
+  S2DataConfig
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
@@ -239,7 +240,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
     // data config
-    const s2DataConfig = {
+    const s2DataConfig: S2DataConfig = {
       fields: {
         rows: r,
         columns: c,
@@ -249,13 +250,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       data: newData,
       sortParams: sortParams
     }
-    // options
-    const style = this.configStyle(chart)
-    style.hierarchyCollapse = true
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
-      style,
       totals: tableTotal as Totals,
       conditions: this.configConditions(chart),
       tooltip: {
@@ -264,7 +261,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       hierarchyType: basicStyle.tableLayoutMode ?? 'grid',
       dataSet: spreadSheet => new CustomPivotDataset(spreadSheet)
     }
-
+    // options
+    s2Options.style = this.configStyle(chart, s2DataConfig)
+    s2Options.style.hierarchyCollapse = true
     // tooltip
     this.configTooltip(chart, s2Options)
     // 开始渲染
