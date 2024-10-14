@@ -161,7 +161,9 @@ const saveResource = () => {
         snapshotStore.resetStyleChangeTimes()
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         ElMessage.success('保存成功')
-        window.history.pushState({}, '', `#/dvCanvas?dvId=${dvInfo.value.id}`)
+        let url = window.location.href
+        url = url.replace(/\?opt=create/, `?dvId=${dvInfo.value.id}`)
+        window.history.replaceState(null, '', url)
         if (appData.value) {
           initCanvasData(dvInfo.value.id, 'dataV', () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
