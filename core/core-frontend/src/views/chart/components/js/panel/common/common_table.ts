@@ -52,7 +52,8 @@ export function getCustomTheme(chart: Chart): S2Theme {
     },
     splitLine: {
       horizontalBorderColor: borderColor,
-      verticalBorderColor: borderColor
+      verticalBorderColor: borderColor,
+      horizontalBorderWidth: 0
     },
     cornerCell: {
       cell: {
