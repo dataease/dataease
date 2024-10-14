@@ -42,6 +42,7 @@ import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.manage.F2CLicLimitedManage;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.system.manage.SysParameterManage;
@@ -422,6 +423,7 @@ public class ExportCenterManage implements BaseExportApi {
 
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            LicenseUtil.validate();
             AuthUtils.setUser(tokenUserBO);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
@@ -588,7 +590,7 @@ public class ExportCenterManage implements BaseExportApi {
                             }
                         }
                         exportTask.setExportStatus("IN_PROGRESS");
-                        double exportRogress2 = (double) ((double) s / (double) sheetCount);
+                        double exportRogress2 = (double) ((double) s - 1 / (double) sheetCount);
                         double exportRogress = (double) ((double) p / (double) pageSize) * ((double) 1 / sheetCount);
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format((exportRogress + exportRogress2) * 100);
