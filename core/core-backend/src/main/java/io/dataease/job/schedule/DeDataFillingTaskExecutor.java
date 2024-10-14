@@ -18,9 +18,9 @@ public class DeDataFillingTaskExecutor {
     protected static final String IS_TEMP_TASK = "isTempTask";
     protected static final String IS_RETRY_TASK = "isRetryTask";
 
-    private static final String JOB_GROUP = "REPORT_TASK";
-    private static final String RETRY_JOB_GROUP = "RETRY_REPORT_TASK";
-    private static final String TEMP_JOB_GROUP = "TEMP_REPORT_TASK";
+    private static final String JOB_GROUP = "DATA_FILLING_TASK";
+    private static final String RETRY_JOB_GROUP = "RETRY_DATA_FILLING_TASK";
+    private static final String TEMP_JOB_GROUP = "TEMP_DATA_FILLING_TASK";
 
     @Resource
     private ScheduleManager scheduleManager;
