@@ -150,6 +150,8 @@ public interface DatasourceApi {
 
     DatasourceDTO innerGet(Long datasourceId) throws DEException;
 
+    String getName(Long datasourceId) throws DEException;
+
     List<DatasourceDTO> innerList(List<Long> ids, List<String> types) throws DEException;
 
 }

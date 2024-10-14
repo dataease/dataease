@@ -47,6 +47,8 @@ public class DataFillingDTO implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long datasource;
 
+    private String datasourceName;
+
     /**
      * 表单内容
      */
