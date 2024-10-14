@@ -346,7 +346,7 @@ const fullScreenPreview = () => {
           <component-group
             is-label
             placement="bottom"
-            :base-width="315"
+            :base-width="328"
             :icon-name="dvMedia"
             title="媒体"
           >
