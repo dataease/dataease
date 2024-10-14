@@ -175,17 +175,18 @@ function paste() {
 
 function move(keyCode) {
   if (curComponent.value) {
+    const scale = dvMainStore.canvasStyleData.scale / 100
     if (keyCode === leftKey) {
-      curComponent.value.style.left = --curComponent.value.style.left
+      curComponent.value.style.left = curComponent.value.style.left - scale
       groupAreaAdaptor(-1, 0)
     } else if (keyCode === rightKey) {
-      curComponent.value.style.left = ++curComponent.value.style.left
+      curComponent.value.style.left = curComponent.value.style.left + scale
       groupAreaAdaptor(1, 0)
     } else if (keyCode === upKey) {
-      curComponent.value.style.top = --curComponent.value.style.top
+      curComponent.value.style.top = curComponent.value.style.top - scale
       groupAreaAdaptor(0, -1)
     } else if (keyCode === downKey) {
-      curComponent.value.style.top = ++curComponent.value.style.top
+      curComponent.value.style.top = curComponent.value.style.top + scale
       groupAreaAdaptor(0, 1)
     }
     snapshotStore.recordSnapshotCache('key-move')
