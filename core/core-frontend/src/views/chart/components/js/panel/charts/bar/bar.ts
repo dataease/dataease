@@ -436,10 +436,11 @@ export class GroupBar extends StackBar {
   }
 
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
-    const baseOptions = super.configLabel(chart, options)
-    if (!baseOptions.label) {
-      return baseOptions
+    const tmpLabel = getLabel(chart)
+    if (!tmpLabel) {
+      return options
     }
+    const baseOptions = { ...options, label: tmpLabel }
     const { label: labelAttr } = parseJson(chart.customAttr)
     baseOptions.label.style.fill = labelAttr.color
     const label = {
@@ -517,10 +518,11 @@ export class GroupStackBar extends StackBar {
   }
 
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
-    const baseOptions = super.configLabel(chart, options)
-    if (!baseOptions.label) {
-      return baseOptions
+    const tmpLabel = getLabel(chart)
+    if (!tmpLabel) {
+      return options
     }
+    const baseOptions = { ...options, label: tmpLabel }
     const { label: labelAttr } = parseJson(chart.customAttr)
     baseOptions.label.style.fill = labelAttr.color
     const label = {
