@@ -489,6 +489,15 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
+    public String getName(Long datasourceId) throws DEException {
+        CoreDatasource datasource = datasourceMapper.selectById(datasourceId);
+        if (datasource == null) {
+            DEException.throwException("不存在的数据源！");
+        }
+        return datasource.getName();
+    }
+
+    @Override
     public List<DatasourceDTO> innerList(List<Long> ids, List<String> types) throws DEException {
         List<DatasourceDTO> list = new ArrayList<>();
         LambdaQueryWrapper<CoreDatasource> queryWrapper = new LambdaQueryWrapper<>();
