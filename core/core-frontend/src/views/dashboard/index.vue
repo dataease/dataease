@@ -330,7 +330,7 @@ onUnmounted(() => {
 
 <style lang="less">
 .dv-common-layout {
-  height: 100vh;
+  height: calc(100vh - 1px);
   width: 100vw;
 
   .dv-layout-container {

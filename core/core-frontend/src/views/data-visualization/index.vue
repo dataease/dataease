@@ -549,7 +549,7 @@ eventBus.on('handleNew', handleNew)
 }
 
 .dv-common-layout {
-  height: 100vh;
+  height: calc(100vh - 1px);
   width: 100vw;
   overflow: hidden;
   color: @dv-canvas-main-font-color;
