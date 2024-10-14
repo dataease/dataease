@@ -219,7 +219,10 @@ const saveResource = () => {
       canvasSave(() => {
         snapshotStore.resetStyleChangeTimes()
         ElMessage.success('保存成功')
-        window.history.pushState({}, '', `#/dashboard?resourceId=${dvInfo.value.id}`)
+        let url = window.location.href
+        url = url.replace(/\?opt=create/, `?resourceId=${dvInfo.value.id}`)
+        window.history.replaceState(null, '', url)
+
         if (appData.value) {
           initCanvasData(dvInfo.value.id, 'dashboard', () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
