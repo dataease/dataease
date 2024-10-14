@@ -1345,13 +1345,18 @@ public class CalciteProvider extends Provider {
         return connection;
     }
 
-    private Connection getConnectionFromPool(Long dsId) throws SQLException {
-        Connection connection = take();
-        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-        SchemaPlus rootSchema = calciteConnection.getRootSchema();
-        JdbcSchema jdbcSchema = rootSchema.getSubSchema(String.format(SQLConstants.SCHEMA, dsId)).unwrap(JdbcSchema.class);
-        BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
-        return basicDataSource.getConnection();
+    private Connection getConnectionFromPool(Long dsId) {
+        try {
+            Connection connection = take();
+            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            SchemaPlus rootSchema = calciteConnection.getRootSchema();
+            JdbcSchema jdbcSchema = rootSchema.getSubSchema(String.format(SQLConstants.SCHEMA, dsId)).unwrap(JdbcSchema.class);
+            BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
+            return basicDataSource.getConnection();
+        } catch (Exception e) {
+            DEException.throwException("连接无效");
+        }
+        return null;
     }
 
     public void exec(EngineRequest engineRequest) throws Exception {
