@@ -40,9 +40,9 @@ public class CommunityTokenFilter implements Filter {
                 String pwd = SubstituleLoginConfig.getPwd();
                 secret = Md5Utils.md5(pwd);
             } else {
-                Object apisixTokenManage = CommonBeanFactory.getBean("apisixTokenManage");
-                Method method = DeReflectUtil.findMethod(apisixTokenManage.getClass(), "userCacheBO");
-                Object o = ReflectionUtils.invokeMethod(method, apisixTokenManage, userId);
+                Object apisixCacheManage = CommonBeanFactory.getBean("apisixCacheManage");
+                Method method = DeReflectUtil.findMethod(apisixCacheManage.getClass(), "userCacheBO");
+                Object o = ReflectionUtils.invokeMethod(method, apisixCacheManage, userId);
                 Method pwdMethod = DeReflectUtil.findMethod(o.getClass(), "getPwd");
                 Object pwdObj = ReflectionUtils.invokeMethod(pwdMethod, o);
                 secret = pwdObj.toString();
