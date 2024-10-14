@@ -96,7 +96,7 @@ public class ExportCenterManage implements BaseExportApi {
     @Value("${dataease.export.max.size:10}")
     private int max;
 
-    @Value("${dataease.export.dataset.limit:100000000}")
+    @Value("${dataease.export.dataset.limit:100000}")
     private Long limit;
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     private static final String exportData_path = "/opt/dataease2.0/data/exportData/";
@@ -162,9 +162,7 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     private Long getExportLimit() {
-        System.out.println("checkDatasetLimit: " + f2CLicLimitedManage.checkDatasetLimit());
-//        return Math.min(f2CLicLimitedManage.checkDatasetLimit(), limit);
-        return limit;
+        return Math.min(f2CLicLimitedManage.checkDatasetLimit(), limit);
     }
 
     public void download(String id, HttpServletResponse response) throws Exception {
