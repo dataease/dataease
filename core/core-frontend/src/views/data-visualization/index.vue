@@ -11,7 +11,7 @@ import { storeToRefs } from 'pinia'
 import DvToolbar from '../../components/data-visualization/DvToolbar.vue'
 import ComponentToolBar from '../../components/data-visualization/ComponentToolBar.vue'
 import eventBus from '../../utils/eventBus'
-import findComponent from '../../utils/components'
+import { findComponentAttr } from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
 import router from '@/router'
 import Editor from '@/views/chart/components/editor/index.vue'
@@ -375,17 +375,26 @@ onUnmounted(() => {
 
 const previewStatus = computed(() => editMode.value === 'preview')
 
-const commonPropertiesShow = computed(
-  () =>
+const otherEditorShow = computed(() => {
+  return Boolean(
     curComponent.value &&
-    !['UserView', 'GroupArea', 'VQuery'].includes(curComponent.value.component)
-)
+      (!['UserView', 'GroupArea', 'VQuery'].includes(curComponent.value?.component) ||
+        (curComponent.value?.component === 'UserView' &&
+          curComponent.value?.innerType === 'picture-group')) &&
+      !batchOptStatus.value
+  )
+})
 const canvasPropertiesShow = computed(
   () => !curComponent.value || ['GroupArea'].includes(curComponent.value.component)
 )
-const viewsPropertiesShow = computed(
-  () => !!(curComponent.value && ['UserView', 'VQuery'].includes(curComponent.value.component))
-)
+const viewsPropertiesShow = computed(() => {
+  return Boolean(
+    curComponent.value &&
+      ['UserView', 'VQuery'].includes(curComponent.value.component) &&
+      curComponent.value.innerType !== 'picture-group' &&
+      !batchOptStatus.value
+  )
+})
 
 const scrollCanvas = e => {
   deWRulerRef.value.rulerScroll(e)
@@ -475,7 +484,7 @@ eventBus.on('handleNew', handleNew)
       <div style="width: auto; height: 100%" ref="leftSidebarRef">
         <template v-if="!batchOptStatus">
           <dv-sidebar
-            v-if="commonPropertiesShow"
+            v-if="otherEditorShow"
             :title="curComponent['name']"
             :width="240"
             :side-name="'componentProp'"
@@ -483,7 +492,7 @@ eventBus.on('handleNew', handleNew)
             class="left-sidebar"
             :class="{ 'preview-aside': editMode === 'preview' }"
           >
-            <component :is="findComponent(curComponent['component'] + 'Attr')" />
+            <component :is="findComponentAttr(curComponent)" />
           </dv-sidebar>
           <dv-sidebar
             v-show="canvasPropertiesShow"
