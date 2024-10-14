@@ -157,9 +157,11 @@ export class TableInfo extends S2ChartView<TableSheet> {
       tooltip: {
         getContainer: () => containerDom,
         renderTooltip: sheet => new SortTooltip(sheet)
-      },
-      frozenColCount: customAttr.tableCell.tableColumnFreezeHead ?? 0,
-      frozenRowCount: customAttr.tableCell.tableRowFreezeHead ?? 0
+      }
+    }
+    if (customAttr.tableCell.tableFreeze) {
+      s2Options.frozenColCount = customAttr.tableCell.tableColumnFreezeHead ?? 0
+      s2Options.frozenRowCount = customAttr.tableCell.tableRowFreezeHead ?? 0
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
