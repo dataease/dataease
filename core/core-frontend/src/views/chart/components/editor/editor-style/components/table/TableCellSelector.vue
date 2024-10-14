@@ -335,7 +335,7 @@ onMounted(() => {
             controls-position="right"
             v-model="state.tableCellForm.tableColumnFreezeHead"
             :disabled="!state.tableCellForm.tableFreeze"
-            :min="1"
+            :min="0"
             :max="100"
             @change="changeTableCell('tableColumnFreezeHead')"
           />
@@ -353,7 +353,7 @@ onMounted(() => {
             controls-position="right"
             v-model="state.tableCellForm.tableRowFreezeHead"
             :disabled="!state.tableCellForm.tableFreeze"
-            :min="1"
+            :min="0"
             :max="100"
             @change="changeTableCell('tableRowFreezeHead')"
           />
