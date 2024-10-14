@@ -52,7 +52,8 @@ export function getCustomTheme(chart: Chart): S2Theme {
     },
     splitLine: {
       horizontalBorderColor: borderColor,
-      verticalBorderColor: borderColor
+      verticalBorderColor: borderColor,
+      horizontalBorderWidth: 0
     },
     cornerCell: {
       cell: {
@@ -276,13 +277,19 @@ export function getCustomTheme(chart: Chart): S2Theme {
         }
         merge(theme, tmpTheme)
       }
-      if (tableHeader.showVerticalBorder === false) {
+      if (tableHeader.showVerticalBorder === false && tableHeader.showTableHeader !== false) {
         const tmpTheme: S2Theme = {
           splitLine: {
             verticalBorderColor: tableHeaderBgColor,
             verticalBorderWidth: 0
           },
           colCell: {
+            cell: {
+              verticalBorderColor: tableHeaderBgColor,
+              verticalBorderWidth: 0
+            }
+          },
+          cornerCell: {
             cell: {
               verticalBorderColor: tableHeaderBgColor,
               verticalBorderWidth: 0
