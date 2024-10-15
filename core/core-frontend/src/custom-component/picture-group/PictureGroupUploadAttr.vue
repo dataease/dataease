@@ -49,16 +49,22 @@ const handlePictureCardPreview = file => {
   dialogVisible.value = true
 }
 
-const handleRemove = (_, fileList) => {
+const handleRemove = (file, fileListArry) => {
   uploadDisabled.value = false
-  element.value.propValue['urlList'] = []
-  fileList.value = []
+  let file_static_part = file.url.split('static-resource/')[1]
+  let index = element.value.propValue['urlList'].findIndex(
+    item => item.url.split('static-resource/')[1] === file_static_part
+  )
+  if (index !== -1) {
+    element.value.propValue['urlList'].splice(index, 1)
+    useEmitt().emitter.emit('calcData-' + element.value.id)
+  }
   snapshotStore.recordSnapshotCache()
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
     snapshotStore.recordSnapshotCache()
-    element.value.propValue.urlList.push({ name: file.file.name, url: fileUrl })
+    element.value.propValue.urlList.unshift({ name: file.file.name, url: fileUrl })
     useEmitt().emitter.emit('calcData-' + element.value.id)
   })
 }
@@ -123,6 +129,7 @@ onBeforeUnmount(() => {
           :on-remove="handleRemove"
           :before-upload="beforeUploadCheck"
           :http-request="upload"
+          multiple
           :file-list="fileList"
         >
           <el-icon><Plus /></el-icon>
