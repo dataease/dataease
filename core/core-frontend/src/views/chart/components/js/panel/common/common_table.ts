@@ -25,7 +25,7 @@ import {
   type Meta,
   S2DataConfig
 } from '@antv/s2'
-import { keys, intersection, filter, cloneDeep, merge, find } from 'lodash-es'
+import { keys, intersection, filter, cloneDeep, merge, find, repeat } from 'lodash-es'
 import { createVNode, render } from 'vue'
 import TableTooltip from '@/views/chart/components/editor/common/TableTooltip.vue'
 import Exceljs from 'exceljs'
@@ -1031,15 +1031,10 @@ function getTooltipPosition(event) {
   return result
 }
 
-export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
+export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   const { meta, fields } = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
   const colLength = fields?.columns?.length || 0
-  const valueLength = fields?.values?.length || 0
-  if (!(rowLength && valueLength)) {
-    ElMessage.warning('行维度或指标维度为空不可导出！')
-    return
-  }
   const workbook = new Exceljs.Workbook()
   const worksheet = workbook.addWorksheet(chart.title)
   const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
@@ -1056,11 +1051,20 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
     if (rowLength >= 2) {
       worksheet.mergeCells(index + 1, 1, index + 1, rowLength)
     }
+    cell.border = {
+      right: { style: 'thick', color: { argb: '00000000' } }
+    }
   })
   fields?.rows?.forEach((row, index) => {
     const cell = worksheet.getCell(colLength + 1, index + 1)
     cell.value = metaMap[row]?.name ?? row
     cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    cell.border = {
+      bottom: { style: 'thick', color: { argb: '00000000' } }
+    }
+    if (index === fields.rows.length - 1) {
+      cell.border.right = { style: 'thick', color: { argb: '00000000' } }
+    }
   })
   const { layoutResult } = instance.facet
   // 行头
@@ -1083,6 +1087,9 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
     cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (writeColIndex < maxColIndex) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, maxColIndex)
+    }
+    cell.border = {
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
   })
 
@@ -1140,6 +1147,9 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
     if (writeRowIndex < maxColHeight) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, maxColHeight, writeColIndex)
     }
+    cell.border = {
+      bottom: { style: 'thick', color: { argb: '00000000' } }
+    }
   })
   const getNodeStartColIndex = (node: Node) => {
     if (!node.children?.length) {
@@ -1189,4 +1199,137 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
   })
   saveAs(dataBlob, `${chart.title ?? '透视表'}.xlsx`)
+}
+
+export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
+  const { meta, fields } = instance.dataCfg
+  const colLength = fields?.columns?.length || 0
+  const workbook = new Exceljs.Workbook()
+  const worksheet = workbook.addWorksheet(chart.title)
+
+  const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
+    if (n.field) {
+      p[n.field] = n
+    }
+    return p
+  }, {})
+  const layoutResult = instance.facet.layoutResult
+
+  // 角头
+  fields.columns?.forEach((column, index) => {
+    const cell = worksheet.getCell(index + 1, 1)
+    cell.value = metaMap[column]?.name ?? column
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    cell.border = {
+      right: { style: 'thick', color: { argb: '00000000' } }
+    }
+  })
+  const maxColHeight = layoutResult.colsHierarchy.maxLevel + 1
+  const rowName = fields?.rows?.map(row => metaMap[row]?.name ?? row).join('/')
+  const cell = worksheet.getCell(colLength + 1, 1)
+  cell.value = rowName
+  cell.alignment = { vertical: 'middle', horizontal: 'center' }
+  cell.border = {
+    right: { style: 'thick', color: { argb: '00000000' } },
+    bottom: { style: 'thick', color: { argb: '00000000' } }
+  }
+  //行头
+  const { rowLeafNodes } = layoutResult
+  rowLeafNodes.forEach((node, index) => {
+    const cell = worksheet.getCell(maxColHeight + index + 1, 1)
+    cell.value = repeat('  ', node.level) + node.label
+    cell.alignment = { vertical: 'middle', horizontal: 'left' }
+    cell.border = {
+      right: { style: 'thick', color: { argb: '00000000' } }
+    }
+  })
+  // 列头
+  const notLeafNodeWidthMap: Record<string, number> = {}
+  const { colLeafNodes } = layoutResult
+  colLeafNodes.forEach(node => {
+    let curNode = node.parent
+    while (curNode) {
+      const width = notLeafNodeWidthMap[curNode.id] ?? 0
+      notLeafNodeWidthMap[curNode.id] = width + 1
+      curNode = curNode.parent
+    }
+    const { colIndex } = node
+    const writeRowIndex = node.level + 1
+    const writeColIndex = colIndex + 1 + 1
+    const cell = worksheet.getCell(writeRowIndex, writeColIndex)
+    let value = node.label
+    if (node.field === '$$extra$$' && metaMap[value]?.name) {
+      value = metaMap[value].name
+    }
+    cell.value = value
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    if (writeRowIndex < maxColHeight) {
+      worksheet.mergeCells(writeRowIndex, writeColIndex, maxColHeight, writeColIndex)
+    }
+    cell.border = {
+      bottom: { style: 'thick', color: { argb: '00000000' } }
+    }
+  })
+  const colNodes = layoutResult.colNodes
+  const getNodeStartIndex = (node: Node) => {
+    if (!node.children?.length) {
+      return node.colIndex + 1
+    } else {
+      return getNodeStartIndex(node.children[0])
+    }
+  }
+  colNodes.forEach(node => {
+    if (node.isLeaf) {
+      return
+    }
+    const colIndex = getNodeStartIndex(node)
+    const width = notLeafNodeWidthMap[node.id]
+    const writeRowIndex = node.level + 1
+    const mergeRowCount = node.children[0].level - node.level
+    const writeColIndex = colIndex + 1
+    const cell = worksheet.getCell(writeRowIndex, writeColIndex)
+    cell.value = node.label
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    if (mergeRowCount > 1 || width > 1) {
+      worksheet.mergeCells(
+        writeRowIndex,
+        writeColIndex,
+        writeRowIndex + mergeRowCount - 1,
+        writeColIndex + width - 1
+      )
+    }
+  })
+  //  单元格数据
+  for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
+    for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
+      const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
+      const { fieldValue } = dataCellMeta
+      if (fieldValue === 0 || fieldValue) {
+        const meta = metaMap[dataCellMeta.valueField]
+        const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 1 + 1)
+        const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
+        cell.alignment = { vertical: 'middle', horizontal: 'center' }
+        cell.value = value
+      }
+    }
+  }
+  const buffer = await workbook.xlsx.writeBuffer()
+  const dataBlob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  })
+  saveAs(dataBlob, `${chart.title ?? '透视表'}.xlsx`)
+}
+export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
+  const { fields } = instance.dataCfg
+  const rowLength = fields?.rows?.length || 0
+  const valueLength = fields?.values?.length || 0
+  if (!(rowLength && valueLength)) {
+    ElMessage.warning('行维度或指标维度为空不可导出！')
+    return
+  }
+  if (chart.customAttr.basicStyle.tableLayoutMode !== 'tree') {
+    exportGridPivot(instance, chart)
+  } else {
+    exportTreePivot(instance, chart)
+  }
 }
