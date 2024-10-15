@@ -1,6 +1,8 @@
 <template>
   <el-row class="custom-row">
-    <el-row><span class="custom-item-text">文本</span> </el-row>
+    <el-row
+      ><span class="custom-item-text">{{ t('chart.text') }}</span>
+    </el-row>
     <el-row style="margin-top: 8px">
       <el-space wrap>
         <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
@@ -19,7 +21,7 @@
             style="width: 56px"
             :title="t('chart.text_fontsize')"
             v-model="titleForm.fontSize"
-            :placeholder="'大小'"
+            :placeholder="t('chart.size')"
             size="small"
             @change="changeTitleStyle('fontSize')"
           >

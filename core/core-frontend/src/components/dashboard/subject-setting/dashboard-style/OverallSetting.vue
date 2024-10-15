@@ -79,11 +79,11 @@
         v-model="canvasStyleData.refreshBrowserEnable"
         @change="themeChange"
       >
-        整体刷新
+        {{ t('components.overall_refresh') }}
       </el-checkbox>
       <el-tooltip class="item" :effect="toolTip" placement="bottom">
         <template #content>
-          <div>仅公共链接和新Tab预览生效</div>
+          <div>{{ t('components.previews_take_effect') }}</div>
         </template>
         <el-icon
           class="hint-icon"
@@ -229,7 +229,9 @@ const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
 
-const resourceType = computed(() => (dvInfo.value.type === 'dashboard' ? '仪表板' : '数据大屏'))
+const resourceType = computed(() =>
+  dvInfo.value.type === 'dashboard' ? t('dashboard.dashboard') : t('dashboard.big_data_screen')
+)
 
 const onRefreshChange = val => {
   if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {

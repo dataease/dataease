@@ -22,7 +22,7 @@ const rules = {
   coverUrl: [
     {
       required: true,
-      message: '请上传封面',
+      message: t('components.upload_a_cover'),
       trigger: 'change'
     }
   ]
@@ -36,7 +36,9 @@ const resetForm = () => {
   subjectDialogShow.value = false
 }
 const subjectForm = ref(null)
-const title = computed(() => (optType.value === 'new' ? '新建主题' : '编辑主题'))
+const title = computed(() =>
+  optType.value === 'new' ? t('components.a_new_theme') : t('components.edit_theme')
+)
 
 const optInit = (subjectItem, opt) => {
   optType.value = opt
@@ -80,20 +82,20 @@ const onImgChange = imgUrl => {
     >
       <el-form-item class="form-item" prop="name">
         <template #label>
-          <label class="m-label"> 名称 </label>
+          <label class="m-label"> {{ t('common.name') }} </label>
         </template>
         <el-input v-model="subjectForm.name" />
       </el-form-item>
       <el-form-item class="form-item" prop="coverUrl">
         <template #label>
-          <label class="m-label"> 封面 </label>
+          <label class="m-label"> {{ t('components.cover') }} </label>
         </template>
         <de-upload themes="light" :img-url="subjectForm.coverUrl" @onImgChange="onImgChange" />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button secondary @click="resetForm()">取消</el-button>
-      <el-button type="primary" @click="saveSubject()">确认</el-button>
+      <el-button secondary @click="resetForm()">{{ t('common.cancel') }}</el-button>
+      <el-button type="primary" @click="saveSubject()">{{ t('chart.confirm') }}</el-button>
     </template>
   </el-dialog>
 </template>

@@ -206,6 +206,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const emit = defineEmits(['reload'])
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import { useI18n } from '@/hooks/web/useI18n'
 import SubjectEditDialog from '@/components/dashboard/subject-setting/pre-subject/SubjectEditDialog.vue'
 
 const subjectEditDialogRef = ref(null)
@@ -221,7 +222,7 @@ const props = defineProps({
 })
 
 const { initialSpeed } = toRefs(props)
-
+const { t } = useI18n()
 const state = reactive({
   temp: null,
   sliders: [],
@@ -264,7 +265,7 @@ const querySubjectWithGroup = () => {
 
 const subjectDelete = id => {
   deleteSubject(id).then(() => {
-    ElMessage.success('删除成功')
+    ElMessage.success(t('chart.delete_success'))
     querySubjectWithGroup()
   })
 }
@@ -274,7 +275,7 @@ const subjectEditFinish = subjectItem => {
   saveOrUpdateSubject(subjectItem)
     .then(() => {
       subjectEditDialogRef.value.resetForm()
-      ElMessage.success('保存成功')
+      ElMessage.success(t('dataset.save_success'))
       querySubjectWithGroup()
     })
     .catch(() => {
@@ -295,7 +296,7 @@ const saveSelfSubject = () => {
   const canvasStyle = deepCopy(canvasStyleData.value)
   canvasStyle.themeId = guid()
   const subjectItemNew = {
-    name: '新建主题',
+    name: t('components.a_new_theme'),
     coverUrl: null,
     details: JSON.stringify(canvasStyle)
   }
