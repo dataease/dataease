@@ -49,7 +49,7 @@ const handlePictureCardPreview = file => {
   dialogVisible.value = true
 }
 
-const handleRemove = (file, fileListArry) => {
+const handleRemove = (file, fileListArray) => {
   uploadDisabled.value = false
   let file_static_part = file.url.split('static-resource/')[1]
   let index = element.value.propValue['urlList'].findIndex(
