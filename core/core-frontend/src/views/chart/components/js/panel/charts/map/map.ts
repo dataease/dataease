@@ -88,6 +88,12 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     if (!misc.mapAutoLegend && legend.show) {
       let minValue = misc.mapLegendMin
       let maxValue = misc.mapLegendMax
+      let legendNumber = 9
+      if (misc.mapLegendRangeType === 'custom') {
+        maxValue = 0
+        minValue = 0
+        legendNumber = misc.mapLegendNumber
+      }
       getMaxAndMinValueByData(sourceData, 'value', maxValue, minValue, (max, min) => {
         maxValue = max
         minValue = min
@@ -96,7 +102,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           data: {
             max: maxValue,
             min: minValue,
-            legendNumber: 9
+            legendNumber: legendNumber
           }
         })
       })
@@ -257,7 +263,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options: ChoroplethOptions,
     _context: Record<string, any>
   ): ChoroplethOptions {
-    const { basicStyle } = parseJson(chart.customAttr)
+    const { basicStyle, misc } = parseJson(chart.customAttr)
+    const colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
     if (basicStyle.suspension === false && basicStyle.showZoom === undefined) {
       return options
     }
@@ -282,7 +289,49 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     const customLegend = {
       position: 'bottomleft',
-      customContent: (_: string, items: CategoryLegendListItem[]) => {
+      domStyles: {
+        'l7plot-legend__category-value': {
+          fontSize: legend.fontSize + 'px',
+          color: legend.color
+        },
+        'l7plot-legend__category-marker': {
+          ...LEGEND_SHAPE_STYLE_MAP[legend.icon]
+        }
+      }
+    }
+    if (!misc.mapAutoLegend && misc.mapLegendRangeType === 'custom') {
+      // 获取图例区间数据
+      const items = []
+      // 区间数组
+      const ranges = misc.mapLegendCustomRange
+        .slice(0, -1)
+        .map((item, index) => [item, misc.mapLegendCustomRange[index + 1]])
+      ranges.forEach((range, index) => {
+        const tmpRange = [range[0]?.toFixed(0), range[1]?.toFixed(0)]
+        const colorIndex = index % colors.length
+        items.push({
+          value: tmpRange,
+          color: colors[colorIndex]
+        })
+      })
+      customLegend['items'] = items
+      const findColorByValue = (value, intervals) => {
+        if (value) {
+          for (const interval of intervals) {
+            if (value >= interval.value[0] && value <= interval.value[1]) {
+              return interval.color
+            }
+          }
+        }
+        // 或者可以返回 undefined
+        return null
+      }
+      options.color.value = t => {
+        const c = findColorByValue(t.value, items)
+        return c ? c : null
+      }
+    } else {
+      customLegend['customContent'] = (_: string, items: CategoryLegendListItem[]) => {
         const showItems = items?.length > 30 ? items.slice(0, 30) : items
         if (showItems?.length) {
           const containerDom = createDom(CONTAINER_TPL) as HTMLElement
@@ -311,15 +360,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           return listDom
         }
         return ''
-      },
-      domStyles: {
-        'l7plot-legend__category-value': {
-          fontSize: legend.fontSize + 'px',
-          color: legend.color
-        },
-        'l7plot-legend__category-marker': {
-          ...LEGEND_SHAPE_STYLE_MAP[legend.icon]
-        }
       }
     }
     defaultsDeep(options, { legend: customLegend })

@@ -585,7 +585,7 @@ export const getDynamicColorScale = (
   minValue: number,
   maxValue: number,
   intervals: number,
-  colors: string[]
+  colors?: string[]
 ) => {
   const step = (maxValue - minValue) / intervals
 
@@ -593,8 +593,8 @@ export const getDynamicColorScale = (
   for (let i = 0; i < intervals; i++) {
     colorScale.push({
       value: [minValue + i * step, minValue + (i + 1) * step],
-      color: colors[i],
-      label: `${(minValue + i * step).toFixed(2)} - ${(minValue + (i + 1) * step).toFixed(2)}`
+      color: colors?.[i],
+      label: `${(minValue + i * step).toFixed(0)} - ${(minValue + (i + 1) * step).toFixed(0)}`
     })
   }
 
