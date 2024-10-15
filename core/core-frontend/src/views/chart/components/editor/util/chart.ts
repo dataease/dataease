@@ -275,6 +275,8 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   mapLegendMax: 0,
   mapLegendMin: 0,
   mapLegendNumber: 9,
+  mapLegendRangeType: 'quantize',
+  mapLegendCustomRange: [],
   flowMapConfig: {
     lineConfig: {
       mapLineAnimate: true,

@@ -682,6 +682,15 @@ declare interface ChartMiscAttr {
    */
   mapLegendNumber: number
   /**
+   * 自定义区间类型，等间距，自定义
+   */
+  mapLegendRangeType: 'quantize' | 'custom'
+  /**
+   * 自定义区间类型为自定义(custom)时生效
+   * 自定义区间值
+   */
+  mapLegendCustomRange: number[]
+  /**
    * 流向地图配置
    */
   flowMapConfig: {
