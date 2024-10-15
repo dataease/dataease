@@ -509,7 +509,7 @@ public class ExportCenterManage implements BaseExportApi {
                 for (Long s = 1L; s < sheetCount + 1; s++) {
                     Long sheetSize;
                     if (s.equals(sheetCount)) {
-                        sheetSize = totalCount - sheetCount * (s - 1) * sheetLimit;
+                        sheetSize = totalCount - (s - 1) * sheetLimit;
                     } else {
                         sheetSize = sheetLimit;
                     }
@@ -590,8 +590,8 @@ public class ExportCenterManage implements BaseExportApi {
                             }
                         }
                         exportTask.setExportStatus("IN_PROGRESS");
-                        double exportRogress2 = (double) ((double) s - 1 / (double) sheetCount);
-                        double exportRogress = (double) ((double) p / (double) pageSize) * ((double) 1 / sheetCount);
+                        double exportRogress2 = (double) ((double) s - 1) / ((double) sheetCount);
+                        double exportRogress = (double) ((double) (p + 1) / (double) pageSize) * ((double) 1 / sheetCount);
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format((exportRogress + exportRogress2) * 100);
                         exportTask.setExportProgress(formattedResult);
