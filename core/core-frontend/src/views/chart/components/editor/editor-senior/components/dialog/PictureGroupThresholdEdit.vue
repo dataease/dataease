@@ -314,10 +314,13 @@ init()
               >
                 <el-icon style="margin-right: 8px">
                   <Icon
-                    :className="`field-icon-${
-                      fieldType[[2, 3].includes(fieldOption.deType) ? 2 : 0]
-                    }`"
-                    ><component :is="iconFieldMap[fieldType[fieldOption.deType]]"></component
+                    ><component
+                      :class="`field-icon-${
+                        fieldType[[2, 3].includes(fieldOption.deType) ? 2 : 0]
+                      }`"
+                      class="svg-icon"
+                      :is="iconFieldMap[fieldType[fieldOption.deType]]"
+                    ></component
                   ></Icon>
                 </el-icon>
                 {{ fieldOption.name }}
