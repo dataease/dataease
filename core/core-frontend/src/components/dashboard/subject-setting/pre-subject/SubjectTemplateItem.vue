@@ -59,6 +59,7 @@ import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
+import { useI18n } from '@/hooks/web/useI18n'
 
 const { canvasStyleData } = storeToRefs(dvMainStore)
 
@@ -67,6 +68,7 @@ const state = reactive({
   subjectItemDetails: null,
   canEdit: false
 })
+const { t } = useI18n()
 
 const props = defineProps({
   subjectItem: {
@@ -83,7 +85,7 @@ const themeSelected = computed(() => {
 })
 const emit = defineEmits(['subjectDelete', 'onSubjectChange', 'subjectEdit'])
 const subjectDelete = () => {
-  ElMessageBox.confirm('确定删除[' + subjectItem.value.name + ']吗?', {
+  ElMessageBox.confirm(t('components.to_delete_', [subjectItem.value.name]), {
     confirmButtonType: 'danger',
     type: 'warning',
     autofocus: false,

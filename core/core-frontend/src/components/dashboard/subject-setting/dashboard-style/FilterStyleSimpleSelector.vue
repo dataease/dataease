@@ -4,7 +4,7 @@
       <div style="width: 100%; padding: 16px 8px 0">
         <el-row :gutter="8">
           <el-col :span="12">
-            <el-form-item class="form-item" label="标题水平位置">
+            <el-form-item class="form-item" :label="t('components.title_horizontal_position')">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_left') }}
@@ -50,7 +50,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item class="form-item" label="标题显示位置">
+            <el-form-item class="form-item" :label="t('components.title_display_position')">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_top') }}
@@ -82,7 +82,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item class="form-item" label="标题颜色">
+            <el-form-item class="form-item" :label="t('components.title_color')">
               <el-color-picker
                 v-model="filterStyle.titleColor"
                 :trigger-width="197"
@@ -93,7 +93,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item class="form-item" label="标签颜色">
+            <el-form-item class="form-item" :label="t('components.label_color')">
               <el-color-picker
                 v-model="filterStyle.labelColor"
                 :trigger-width="197"
@@ -108,7 +108,7 @@
       </div>
 
       <el-collapse-item
-        title="输入框样式"
+        :title="t('components.input_box_style')"
         name="input_style_filter_selector"
         class="inner-collapse"
       >

@@ -106,17 +106,21 @@ const saveSelfSubject = () => {
   <div class="attr-container">
     <el-row>
       <el-collapse v-model="canvasAttrActiveNames">
-        <el-collapse-item title="仪表板风格" name="style">
+        <el-collapse-item :title="t('components.dashboard_style')" name="style">
           <de-slider ref="slider" />
           <el-button class="button-panel__style" text size="small" @click="saveSelfSubject">
             {{ $t('commons.save') }}
           </el-button>
         </el-collapse-item>
-        <el-collapse-item title="整体配置" name="overallSetting">
+        <el-collapse-item :title="t('components.overall_configuration')" name="overallSetting">
           <overall-setting @onThemeColorChange="themeColorChange" />
         </el-collapse-item>
 
-        <el-collapse-item title="仪表板背景" name="background" class="content-no-padding-bottom">
+        <el-collapse-item
+          :title="t('components.dashboard_background')"
+          name="background"
+          class="content-no-padding-bottom"
+        >
           <canvas-background themes="light"></canvas-background>
         </el-collapse-item>
         <el-collapse-item
@@ -133,7 +137,11 @@ const saveSelfSubject = () => {
             :background-border-select-width="197"
           />
         </el-collapse-item>
-        <el-collapse-item :title="'图表配色'" name="graphical" class="no-padding no-border-bottom">
+        <el-collapse-item
+          :title="t('components.chart_color')"
+          name="graphical"
+          class="no-padding no-border-bottom"
+        >
           <component-color-selector v-if="state.collapseShow" @onColorChange="onColorChange" />
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.chart_title')" name="viewTitle">
@@ -147,7 +155,7 @@ const saveSelfSubject = () => {
           <filter-style-simple-selector />
         </el-collapse-item>
         <el-collapse-item
-          title="高级样式设置"
+          :title="t('components.advanced_style_settings')"
           name="seniorStyleSetting"
           class="no-padding no-border-bottom"
         >

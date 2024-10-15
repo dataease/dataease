@@ -106,7 +106,7 @@ const closeEditCanvasName = () => {
     return
   }
   if (inputName.value.trim().length > 64 || inputName.value.trim().length < 1) {
-    ElMessage.warning('名称字段长度1-64个字符')
+    ElMessage.warning(t('components.length_1_64_characters'))
     editCanvasName()
     return
   }
@@ -134,7 +134,7 @@ const previewInner = () => {
 
 const previewOuter = () => {
   if (!dvInfo.value.id) {
-    ElMessage.warning('请先保存当前页面')
+    ElMessage.warning(t('components.current_page_first'))
     return
   }
   canvasSave(() => {
@@ -174,11 +174,11 @@ const resourceOptFinish = param => {
 
 const saveCanvasWithCheck = () => {
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
-    ElMessageBox.confirm('已切换至新组织，无权保存其他组织的资源', {
+    ElMessageBox.confirm(t('components.from_other_organizations'), {
       confirmButtonType: 'primary',
       type: 'warning',
-      confirmButtonText: '关闭页面',
-      cancelButtonText: '取消',
+      confirmButtonText: t('components.close_the_page'),
+      cancelButtonText: t('common.cancel'),
       autofocus: false,
       showClose: false
     }).then(() => {
@@ -218,7 +218,7 @@ const saveResource = () => {
     try {
       canvasSave(() => {
         snapshotStore.resetStyleChangeTimes()
-        ElMessage.success('保存成功')
+        ElMessage.success(t('common.save_success'))
         let url = window.location.href
         url = url.replace(/\?opt=create/, `?resourceId=${dvInfo.value.id}`)
         window.history.replaceState(null, '', url)
@@ -251,7 +251,7 @@ const backToMain = () => {
     url = url + '?dvId=' + dvInfo.value.id
   }
   if (styleChangeTimes.value > 0) {
-    ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
+    ElMessageBox.confirm(t('components.sure_to_exit'), {
       confirmButtonType: 'primary',
       type: 'warning',
       autofocus: false,
@@ -300,7 +300,7 @@ const openDataBoardSetting = () => {
 
 const openMobileSetting = () => {
   if (!dvInfo.value.id || dvInfo.value.dataState === 'prepare') {
-    ElMessage.warning('请先保存当前页面')
+    ElMessage.warning(t('components.current_page_first'))
     return
   }
   useEmitt().emitter.emit('mobileConfig')
@@ -366,11 +366,11 @@ const batchOptStatusChange = value => {
 
 const openOuterParamsSet = () => {
   if (componentData.value.length === 0) {
-    ElMessage.warning('当前仪表板为空，请先添加组件')
+    ElMessage.warning(t('components.add_components_first'))
     return
   }
   if (!dvInfo.value.id) {
-    ElMessage.warning('请先保存当前页面')
+    ElMessage.warning(t('components.current_page_first'))
     return
   }
   //设置需要先触发保存
@@ -418,7 +418,7 @@ const saveLinkageSetting = () => {
     linkageInfo: targetLinkageInfo.value
   }
   saveLinkage(request).then(() => {
-    ElMessage.success('保存成功')
+    ElMessage.success(t('save_success.common'))
     // 刷新联动信息
     getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
       dvMainStore.setNowPanelTrackInfo(rsp.data)
@@ -497,7 +497,7 @@ const initOpenHandler = newWindow => {
         </div>
         <div class="left-area" v-if="batchOptStatus">
           <el-col class="adapt-count">
-            <span>已选 {{ curBatchOptComponents.length }} 项</span>
+            <span>{{ t('user.selection_info', [curBatchOptComponents.length]) }}</span>
           </el-col>
         </div>
         <div class="middle-area" v-if="!batchOptStatus && !linkageSettingStatus">
@@ -507,7 +507,7 @@ const initOpenHandler = newWindow => {
             is-label
             :icon-name="dvView"
             themes="light"
-            title="图表"
+            :title="t('chart.datalist')"
           >
             <user-view-group themes="light" :dv-model="dvModel"></user-view-group>
           </component-group>
@@ -517,7 +517,7 @@ const initOpenHandler = newWindow => {
             is-label
             themes="light"
             :icon-name="dvFilter"
-            title="查询组件"
+            :title="t('visualization.filter_component')"
           >
             <query-group themes="light" :dv-model="dvModel"></query-group>
           </component-group>
@@ -526,7 +526,7 @@ const initOpenHandler = newWindow => {
             themes="light"
             :base-width="115"
             :icon-name="dvText"
-            title="富文本"
+            :title="t('components.rich_text')"
           >
             <text-group themes="light" :dv-model="dvModel"></text-group>
           </component-group>
@@ -536,7 +536,7 @@ const initOpenHandler = newWindow => {
             placement="bottom"
             :base-width="328"
             :icon-name="dvMedia"
-            title="媒体"
+            :title="t('components.media')"
           >
             <media-group themes="light" :dv-model="dvModel"></media-group>
           </component-group>
@@ -549,13 +549,13 @@ const initOpenHandler = newWindow => {
             is-label
             :base-width="115"
             :icon-name="dvMoreCom"
-            title="更多"
+            :title="'visualization.more'"
           >
             <db-more-com-group themes="light" :dv-model="dvModel"></db-more-com-group>
           </component-group>
           <component-button-label
             :icon-name="icon_copy_filled"
-            title="复用"
+            :title="t('visualization.multiplexing')"
             is-label
             @customClick="multiplexingCanvasOpen"
           ></component-button-label>
@@ -564,32 +564,45 @@ const initOpenHandler = newWindow => {
 
       <div class="right-area" v-if="!batchOptStatus && !linkageSettingStatus">
         <template v-if="editMode !== 'preview'">
-          <el-tooltip effect="dark" content="外部参数设置" placement="bottom">
+          <el-tooltip
+            effect="dark"
+            :content="t('visualization.outer_param_set')"
+            placement="bottom"
+          >
             <component-button
-              tips="外部参数设置"
+              :tips="t('visualization.outer_param_set')"
               @custom-click="openOuterParamsSet"
               :icon-name="icon_params_setting"
             />
           </el-tooltip>
-          <el-tooltip effect="dark" content="批量操作" placement="bottom">
+          <el-tooltip effect="dark" :content="t('visualization.batch_opt')" placement="bottom">
             <component-button
-              tips="批量操作"
+              :tips="t('visualization.batch_opt')"
               @custom-click="batchOptStatusChange(true)"
               :icon-name="dvBatch"
             />
           </el-tooltip>
 
-          <el-tooltip effect="dark" content="仪表板配置" placement="bottom">
+          <el-tooltip
+            effect="dark"
+            :content="t('components.dashboard_configuration')"
+            placement="bottom"
+          >
             <component-button
-              tips="仪表板配置"
+              :tips="t('components.dashboard_configuration')"
               @custom-click="openDataBoardSetting"
               :icon-name="dvDashboard"
             />
           </el-tooltip>
           <div class="divider"></div>
-          <el-tooltip :offset="14" effect="dark" content="切换至移动端布局" placement="bottom">
+          <el-tooltip
+            :offset="14"
+            effect="dark"
+            :content="t('components.to_mobile_layout')"
+            placement="bottom"
+          >
             <component-button
-              tips="切换至移动端布局"
+              :tips="t('components.to_mobile_layout')"
               @custom-click="openMobileSetting"
               :icon-name="icon_phone_outlined"
             />
@@ -598,7 +611,7 @@ const initOpenHandler = newWindow => {
 
         <el-dropdown v-if="editMode === 'edit'" trigger="hover">
           <el-button class="preview-button" style="float: right; margin-right: 12px">
-            预览
+            {{ t('visualization.preview') }}
           </el-button>
           <template #dropdown>
             <el-dropdown-menu class="drop-style">
@@ -606,13 +619,13 @@ const initOpenHandler = newWindow => {
                 <el-icon style="margin-right: 8px; font-size: 16px">
                   <Icon name="icon_pc_fullscreen"><icon_pc_fullscreen class="svg-icon" /></Icon>
                 </el-icon>
-                全屏预览
+                {{ t('visualization.fullscreen_preview') }}
               </el-dropdown-item>
               <el-dropdown-item @click="previewOuter()">
                 <el-icon style="margin-right: 8px; font-size: 16px">
                   <Icon name="dv-preview-outer"><dvPreviewOuter class="svg-icon" /></Icon>
                 </el-icon>
-                新页面预览
+                {{ t('work_branch.new_page_preview') }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -625,7 +638,7 @@ const initOpenHandler = newWindow => {
           @click="edit()"
           type="primary"
         >
-          编辑
+          {{ t('data_set.edit') }}
         </el-button>
 
         <el-button
@@ -635,7 +648,7 @@ const initOpenHandler = newWindow => {
           style="float: right; margin-right: 12px"
           type="primary"
         >
-          保存
+          {{ t('data_set.save') }}
         </el-button>
       </div>
 
@@ -648,7 +661,7 @@ const initOpenHandler = newWindow => {
           :disabled="curBatchOptComponents.length === 0"
           style="float: right; margin-right: 12px"
         >
-          复制</el-button
+          {{ t('data_set.copy') }}</el-button
         >
 
         <el-button
@@ -659,11 +672,14 @@ const initOpenHandler = newWindow => {
           :disabled="curBatchOptComponents.length === 0"
           style="float: right; margin-right: 12px"
         >
-          删除</el-button
+          {{ t('data_set.delete') }}</el-button
         >
 
-        <el-button @click="saveBatchChange" style="float: right; margin-right: 12px" type="primary"
-          >完成</el-button
+        <el-button
+          @click="saveBatchChange"
+          style="float: right; margin-right: 12px"
+          type="primary"
+          >{{ t('components.complete') }}</el-button
         >
       </div>
 
@@ -673,13 +689,13 @@ const initOpenHandler = newWindow => {
           @click="cancelLinkageSetting()"
           style="float: right; margin-right: 12px"
         >
-          取消</el-button
+          {{ t('userimport.cancel') }}</el-button
         >
         <el-button
           @click="saveLinkageSetting"
           style="float: right; margin-right: 12px"
           type="primary"
-          >确定</el-button
+          >{{ t('userimport.sure') }}</el-button
         >
       </div>
     </div>

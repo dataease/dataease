@@ -7,7 +7,7 @@
             :effect="themes"
             class="form-item"
             :class="'form-item-' + themes"
-            label="联动、钻取、跳转的图标颜色"
+            :label="t('components.jump_icon_color')"
           >
             <el-color-picker
               :effect="themes"
@@ -24,7 +24,7 @@
             :effect="themes"
             class="form-item"
             :class="'form-item-' + themes"
-            label="钻取层级展示颜色"
+            :label="t('components.level_display_color')"
           >
             <el-color-picker
               v-model="seniorStyleSetting.drillLayerColor"

@@ -159,7 +159,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="分页器配色" class="form-item">
+              <el-form-item :label="t('components.pager_color')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
                   v-model="seniorForm.pagerColor"
