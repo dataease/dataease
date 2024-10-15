@@ -148,17 +148,17 @@ const datasourceEditor = ref()
 const activeTab = ref('')
 const menuList = [
   {
-    label: '移动到',
+    label: t('data_set.move_to'),
     svgName: icon_intoItem_outlined,
     command: 'move'
   },
   {
-    label: '重命名',
+    label: t('data_set.rename'),
     svgName: icon_rename_outlined,
     command: 'rename'
   },
   {
-    label: '删除',
+    label: t('common.delete'),
     divided: true,
     svgName: icon_deleteTrash_outlined,
     command: 'delete'
@@ -173,12 +173,12 @@ const typeMap = dsTypes.reduce((pre, next) => {
 const datasetTypeList = computed(() => {
   return [
     {
-      label: '新建数据源',
+      label: t('datasource.create'),
       svgName: icon_dataset,
       command: 'datasource'
     },
     {
-      label: '新建文件夹',
+      label: t('deDataset.new_folder'),
       divided: true,
       svgName: dvFolder,
       command: 'folder'
@@ -285,12 +285,12 @@ const validateDS = () => {
         }
       }
       if (error === 0) {
-        ElMessage.success('校验成功')
+        ElMessage.success(t('data_source.verification_successful'))
       } else {
-        ElMessage.error('校验失败')
+        ElMessage.error(t('data_source.verification_failed'))
       }
     } else {
-      ElMessage.success('校验成功')
+      ElMessage.success(t('data_source.verification_successful'))
     }
   })
 }
@@ -321,7 +321,9 @@ const formatSimpleCron = (info?: SyncSetting) => {
     case 'SIMPLE_CRON':
       const type = t(`common.${simpleCronType}`)
       strArr.push(
-        `${t('dataset.simple_cron')}: ${t('common.every')}${simpleCronValue}${type}更新一次`
+        `${t('dataset.simple_cron')}: ${t('common.every')}${simpleCronValue}${type}${t(
+          'data_source.update_once'
+        )}`
       )
       strArr.push(`${t('dataset.start_time')}: ${start}`)
       strArr.push(`${t('dataset.end_time')}: ${end}`)
@@ -413,21 +415,21 @@ const infoList = computed(() => {
 })
 const saveDsFolder = (params, successCb, finallyCb, cmd) => {
   let method = move
-  let message = '移动成功'
+  let message = t('data_set.moved_successfully')
 
   switch (cmd) {
     case 'move':
       method = move
-      message = '移动成功'
+      message = t('data_set.moved_successfully')
 
       break
     case 'rename':
       method = reName
-      message = '重命名成功'
+      message = t('data_set.rename_successful')
       break
     default:
       method = createFolder
-      message = '新建成功'
+      message = t('data_source.create_successfully')
       break
   }
   method(params)
@@ -496,20 +498,20 @@ const dfsDatasourceTree = (ds, id) => {
 const creatDsFolder = ref()
 const sortList = [
   {
-    name: '按创建时间升序',
+    name: t('data_source.by_creation_time'),
     value: 'time_asc'
   },
   {
-    name: '按创建时间降序',
+    name: t('data_source.by_creation_time_de'),
     value: 'time_desc',
     divided: true
   },
   {
-    name: '按照名称升序',
+    name: t('data_source.order_by_name'),
     value: 'name_asc'
   },
   {
-    name: '按照名称降序',
+    name: t('data_source.order_by_name_de'),
     value: 'name_desc'
   }
 ]
@@ -755,7 +757,7 @@ const handleCopy = async data => {
       lastSyncTime
     })
     datasource.id = ''
-    datasource.name = '复制数据源'
+    datasource.name = t('datasource.copy')
     if (datasource.type === 'API') {
       for (let i = 0; i < datasource.apiConfiguration.length; i++) {
         datasource.apiConfiguration[i].deTableName = ''
@@ -790,7 +792,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
       showClose: false
     }
     if (!!data.children?.length) {
-      options.tip = '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。'
+      options.tip = t('data_source.operate_with_caution')
     } else {
       delete options.tip
     }
@@ -810,16 +812,16 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
             confirmButtonType: 'danger',
             type: 'warning',
             autofocus: false,
-            confirmButtonText: '确定',
+            confirmButtonText: t('common.sure'),
             showClose: false,
             dangerouslyUseHTMLString: true,
             message: h('div', null, [
-              h('p', { style: 'margin-bottom: 8px;' }, '确定删除该数据源吗？'),
-              h('p', { class: 'tip' }, '有数据集正在使用此数据源，删除后数据集不可用，确认删除？'),
+              h('p', { style: 'margin-bottom: 8px;' }, t('datasource.this_data_source')),
+              h('p', { class: 'tip' }, t('data_source.confirm_to_delete')),
               h(
                 ElButton,
                 { text: true, onClick: onClick, style: 'margin-left: -4px;' },
-                '查看血缘关系'
+                t('data_source.view_blood_relationship')
               )
             ])
           }).then(() => {
@@ -847,15 +849,17 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
         }
       })
     } else {
-      ElMessageBox.confirm('确定删除该文件夹吗', options as ElMessageBoxOptions).then(() => {
-        deleteById(data.id as number).then(() => {
-          if (data.id === nodeInfo.id) {
-            Object.assign(nodeInfo, cloneDeep(defaultInfo))
-          }
-          listDs()
-          ElMessage.success(t('dataset.delete_success'))
-        })
-      })
+      ElMessageBox.confirm(t('data_set.delete_this_folder'), options as ElMessageBoxOptions).then(
+        () => {
+          deleteById(data.id as number).then(() => {
+            if (data.id === nodeInfo.id) {
+              Object.assign(nodeInfo, cloneDeep(defaultInfo))
+            }
+            listDs()
+            ElMessage.success(t('dataset.delete_success'))
+          })
+        }
+      )
     }
   } else {
     creatDsFolder.value.createInit(nodeType, data, cmd)
@@ -997,7 +1001,7 @@ const getMenuList = (val: boolean) => {
           <div class="icon-methods">
             <span class="title"> {{ t('datasource.datasource') }} </span>
             <div v-if="rootManage" class="flex-align-center">
-              <el-tooltip effect="dark" content="新建文件夹" placement="top">
+              <el-tooltip effect="dark" :content="t('deDataset.new_folder')" placement="top">
                 <el-icon
                   class="custom-icon btn"
                   :style="{ marginRight: '20px' }"
@@ -1127,7 +1131,7 @@ const getMenuList = (val: boolean) => {
       }"
     >
       <template v-if="!state.datasourceTree.length && mounted">
-        <empty-background description="暂无数据源" img-type="none">
+        <empty-background :description="t('data_source.no_data_source')" img-type="none">
           <el-button v-if="rootManage" @click="() => createDatasource()" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
@@ -1169,7 +1173,7 @@ const getMenuList = (val: boolean) => {
                     ><icon_dataset_outlined class="svg-icon"
                   /></Icon>
                 </template>
-                新建数据集
+                {{ t('data_set.a_new_dataset') }}
               </el-button>
               <el-button
                 v-if="nodeInfo.type !== 'Excel' && nodeInfo.weight >= 7"
@@ -1198,7 +1202,7 @@ const getMenuList = (val: boolean) => {
                           ><icon_edit_outlined class="svg-icon"
                         /></Icon>
                       </template>
-                      替换数据
+                      {{ t('data_source.replace_data') }}
                     </el-button>
                   </template>
                 </el-upload>
@@ -1221,7 +1225,7 @@ const getMenuList = (val: boolean) => {
                           ><icon_newItem_outlined class="svg-icon"
                         /></Icon>
                       </template>
-                      追加数据
+                      {{ t('data_source.append_data') }}
                     </el-button>
                   </template>
                 </el-upload>
@@ -1230,7 +1234,7 @@ const getMenuList = (val: boolean) => {
                 <template #icon>
                   <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                 </template>
-                编辑
+                {{ t('chart.edit') }}
               </el-button>
             </div>
           </div>
@@ -1277,7 +1281,7 @@ const getMenuList = (val: boolean) => {
                 key="status"
                 prop="status"
                 v-if="['api'].includes(nodeInfo.type.toLowerCase())"
-                label="最近更新状态"
+                :label="t('data_source.latest_update_status')"
               >
                 <template #default="scope">
                   <div class="flex-align-center">
@@ -1307,7 +1311,7 @@ const getMenuList = (val: boolean) => {
                 key="lastUpdateTime"
                 prop="lastUpdateTime"
                 v-if="['excel', 'api'].includes(nodeInfo.type.toLowerCase())"
-                label="最近更新时间"
+                :label="t('data_source.latest_update_time')"
               >
                 <template v-slot:default="scope">
                   <span>{{ timestampFormatDate(scope.row.lastUpdateTime) }}</span>
@@ -1320,7 +1324,7 @@ const getMenuList = (val: boolean) => {
                 width="108"
               >
                 <template #default="scope">
-                  <el-tooltip effect="dark" content="新建数据集" placement="top">
+                  <el-tooltip effect="dark" :content="t('data_set.a_new_dataset')" placement="top">
                     <el-button
                       @click.stop="createDataset(scope.row.tableName)"
                       text
@@ -1364,7 +1368,7 @@ const getMenuList = (val: boolean) => {
               </el-row>
               <el-row :gutter="24">
                 <el-col v-if="nodeInfo.type === 'Excel'" :span="12">
-                  <BaseInfoItem label="文件">
+                  <BaseInfoItem :label="t('data_source.document')">
                     <ExcelInfo :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfo>
                   </BaseInfoItem>
                 </el-col>
@@ -1428,7 +1432,7 @@ const getMenuList = (val: boolean) => {
                     "
                     class="de-expand"
                     @click="showSSH = !showSSH"
-                    >SSH 设置
+                    >{{ t('data_source.ssh_settings') }}
                     <el-icon>
                       <Icon
                         ><component
@@ -1441,15 +1445,19 @@ const getMenuList = (val: boolean) => {
                 <template v-if="showSSH">
                   <el-row :gutter="24" v-if="nodeInfo.configuration.useSSH">
                     <el-col :span="12">
-                      <BaseInfoItem label="主机">{{ nodeInfo.configuration.sshHost }}</BaseInfoItem>
+                      <BaseInfoItem :label="t('data_source.host')">{{
+                        nodeInfo.configuration.sshHost
+                      }}</BaseInfoItem>
                     </el-col>
                     <el-col :span="12">
-                      <BaseInfoItem label="端口">{{ nodeInfo.configuration.sshPort }}</BaseInfoItem>
+                      <BaseInfoItem :label="t('data_source.port')">{{
+                        nodeInfo.configuration.sshPort
+                      }}</BaseInfoItem>
                     </el-col>
                   </el-row>
                   <el-row :gutter="24" v-if="nodeInfo.configuration.useSSH">
                     <el-col :span="12">
-                      <BaseInfoItem label="用户名">{{
+                      <BaseInfoItem :label="t('datasource.user_name')">{{
                         nodeInfo.configuration.sshUserName
                       }}</BaseInfoItem>
                     </el-col>
@@ -1543,7 +1551,10 @@ const getMenuList = (val: boolean) => {
                 </el-row>
                 <el-row>
                   <el-col :span="19">
-                    <span>数据时间： {{ timestampFormatDate(api['updateTime']) }}</span>
+                    <span
+                      >{{ t('data_source.data_time') }}
+                      {{ timestampFormatDate(api['updateTime']) }}</span
+                    >
                   </el-col>
                 </el-row>
 
@@ -1563,7 +1574,7 @@ const getMenuList = (val: boolean) => {
               <template #icon>
                 <icon name="icon_replace_outlined"><icon_replace_outlined class="svg-icon" /></icon>
               </template>
-              全部更新
+              {{ t('data_source.update_all') }}
             </el-button>
           </BaseInfoContent>
           <BaseInfoContent
@@ -1626,7 +1637,7 @@ const getMenuList = (val: boolean) => {
                         fixed
                         ><template #empty>
                           <empty-background
-                            description="暂无数据"
+                            :description="t('data_set.no_data')"
                             img-type="noneWhite"
                           /> </template
                       ></el-table-v2>
@@ -1639,7 +1650,7 @@ const getMenuList = (val: boolean) => {
         </template>
       </template>
       <template v-else-if="mounted">
-        <empty-background description="请在左侧选择数据源" img-type="select" />
+        <empty-background :description="t('data_source.on_the_left')" img-type="select" />
       </template>
     </div>
     <EditorDatasource @refresh="refresh" ref="datasourceEditor"></EditorDatasource>
@@ -1749,7 +1760,7 @@ const getMenuList = (val: boolean) => {
             <span>{{ timestampFormatDate(scope.row.endTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="taskStatus" label="更新结果">
+        <el-table-column prop="taskStatus" :label="t('data_source.update_result')">
           <template #default="scope">
             <div class="flex-align-center">
               <template v-if="scope.row.taskStatus === 'Completed'">
@@ -1784,7 +1795,7 @@ const getMenuList = (val: boolean) => {
       v-model="dialogErrorInfo"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
-      title="失败详情"
+      :title="t('data_source.failure_details')"
       width="600px"
     >
       <span>{{ dialogMsg }}</span>

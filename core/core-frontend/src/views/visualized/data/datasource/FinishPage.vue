@@ -5,12 +5,14 @@ import { ref } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useCache } from '@/hooks/web/useCache'
 import { setShowFinishPage } from '@/api/datasource'
+import { useI18n } from '@/hooks/web/useI18n'
 
 defineProps({
   name: propTypes.string.def(''),
   disabled: propTypes.bool.def(false)
 })
 
+const { t } = useI18n()
 const { wsCache } = useCache()
 const emits = defineEmits(['createDataset', 'backToDatasourceList', 'continueCreating'])
 const checked = ref(false)
@@ -39,27 +41,35 @@ const handleChange = (val: boolean) => {
         <Icon name="icon_succeed_colorful"><icon_succeed_colorful class="svg-icon" /></Icon>
       </el-icon>
 
-      <div class="succeed-text">创建成功</div>
+      <div class="succeed-text">{{ t('data_source.successfully_created') }}</div>
       <div class="btn-list">
-        <el-button @click="continueCreating" secondary> 继续创建 </el-button>
-        <el-button @click="backToDatasourceList" type="primary"> 返回数据源列表 </el-button>
+        <el-button @click="continueCreating" secondary>
+          {{ t('data_source.continue_to_create') }}
+        </el-button>
+        <el-button @click="backToDatasourceList" type="primary">
+          {{ t('data_source.data_source_list') }}
+        </el-button>
       </div>
       <div class="nolonger-tips">
-        <el-checkbox @change="handleChange" v-model="checked" label="下次不再提示" />
+        <el-checkbox
+          @change="handleChange"
+          v-model="checked"
+          :label="t('data_source.prompts_next_time')"
+        />
       </div>
 
       <div class="maybe-want" v-permission="['dataset']">
-        <div class="title">您可能还想</div>
+        <div class="title">{{ t('data_source.also_want_to') }}</div>
         <div class="ds-info">
           <el-icon class="ds">
             <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
           </el-icon>
           <div class="info">
             <p class="name">{{ $t('auth.dataset') }}</p>
-            <p class="size">为下一步的仪表板或大屏做准备</p>
+            <p class="size">{{ t('data_source.or_large_screen') }}</p>
           </div>
           <el-button class="create" secondary :disabled="disabled" @click="createDataset">
-            去创建
+            {{ t('data_source.go_to_create') }}
           </el-button>
         </div>
       </div>
