@@ -2781,6 +2781,9 @@ defineExpose({
             .ed-select-tags-wrapper.has-prefix {
               margin-left: 25px;
             }
+            .ed-tag {
+              max-width: 65px;
+            }
           }
 
           .ed-checkbox__label {
