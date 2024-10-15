@@ -375,10 +375,10 @@ onMounted(() => {
               v-for="(_value, index) in state.legendForm.miscForm.mapLegendCustomRange"
             >
               <el-col :span="8">
-                <lable class="ed-form-item__label">
+                <label class="ed-form-item__label">
                   {{ index === 0 ? '最小值' : '' }}
                   {{ index === state.legendForm.miscForm.mapLegendNumber ? '最大值' : '' }}
-                </lable>
+                </label>
               </el-col>
               <el-col :span="16">
                 <el-form-item class="form-item" :class="'form-item-' + themes">
