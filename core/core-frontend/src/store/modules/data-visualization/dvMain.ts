@@ -996,7 +996,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         let errorMes = ''
         Object.keys(this.nowPanelOuterParamsBaseInfo).forEach(key => {
           const targetInfo = this.nowPanelOuterParamsBaseInfo[key]
-          const userParams = paramsPre[key]
+          const userParams = paramsPre ? paramsPre[key] : null
           const userParamsIsNull = !userParams || userParams.length === 0
           if (targetInfo.required && userParamsIsNull) {
             // 要求用户必填 但是用户没有输入参数
@@ -1016,7 +1016,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         })
         if (errorCount > 0) {
           ElMessage.error('参数错误 ' + errorMes + '为必填参数')
-          return
+          throw new Error('参数错误 ' + errorMes + '为必填参数')
         }
       } else {
         return

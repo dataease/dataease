@@ -2,7 +2,7 @@
 import { getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
-import { computed, nextTick, ref, toRefs, watch, onBeforeUnmount, onMounted } from 'vue'
+import { computed, nextTick, ref, toRefs, watch, onBeforeUnmount, onMounted, reactive } from 'vue'
 import { changeRefComponentsSizeWithScalePoint } from '@/utils/changeComponentsSizeWithScale'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -104,6 +104,9 @@ const refreshTimer = ref(null)
 const renderReady = ref(false)
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
+})
+const state = reactive({
+  initState: true
 })
 
 const curSearchCount = computed(() => {
@@ -304,9 +307,9 @@ const winMsgHandle = event => {
     isMainCanvas(canvasId.value)
   ) {
     const attachParams = msgInfo.params
-    if (attachParams) {
-      dvMainStore.addOuterParamsFilter(attachParams, baseComponentData.value, 'outer')
-    }
+    state.initState = false
+    dvMainStore.addOuterParamsFilter(attachParams, baseComponentData.value, 'outer')
+    state.initState = true
   }
 }
 
@@ -402,6 +405,7 @@ defineExpose({
     :class="{ 'de-download-custom': downloadStatus, 'datav-preview': dataVPreview }"
     ref="previewCanvas"
     @mousedown="handleMouseDown"
+    v-if="state.initState"
   >
     <!--弹框触发区域-->
     <canvas-filter-btn v-if="filterBtnShow"></canvas-filter-btn>

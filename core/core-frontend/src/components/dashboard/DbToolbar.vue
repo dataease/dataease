@@ -549,7 +549,7 @@ const initOpenHandler = newWindow => {
             is-label
             :base-width="115"
             :icon-name="dvMoreCom"
-            :title="'visualization.more'"
+            :title="t('visualization.more')"
           >
             <db-more-com-group themes="light" :dv-model="dvModel"></db-more-com-group>
           </component-group>
