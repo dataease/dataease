@@ -258,10 +258,20 @@
                 </el-row>
                 <el-row>
                   <el-checkbox v-model="state.outerParamsInfo.enabledDefault">默认值 </el-checkbox>
+                  <el-tooltip class="item" placement="bottom">
+                    <template #content>
+                      <div>
+                        请使用JSON数组格式 示例: <br />单值 ["name1"], 多值 ["name1","name2"]
+                      </div>
+                    </template>
+                    <el-icon class="hint-icon">
+                      <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+                    </el-icon>
+                  </el-tooltip>
                 </el-row>
                 <el-input
                   :ref="el => setArgRef(el, state.outerParamsInfo.paramsInfoId)"
-                  :placeholder="'请输入参数'"
+                  placeholder='请输入参数,如:["name1"]'
                   v-model="state.outerParamsInfo.defaultValue"
                   type="textarea"
                   :autosize="{ minRows: 4, maxRows: 8 }"
@@ -295,7 +305,7 @@ import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import { ref, reactive, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ElCol, ElInput, ElMessage } from 'element-plus-secondary'
+import { ElCol, ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import generateID from '@/utils/generateID'
@@ -307,12 +317,14 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { iconChartMap } from '../icon-group/chart-list'
 import { iconFieldMap } from '../icon-group/field-list'
+import Icon from '../icon-custom/src/Icon.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, componentData } = storeToRefs(dvMainStore)
 const outerParamsInfoTree = ref(null)
 const { t } = useI18n()
 const curEditDataId = ref(null)
 const snapshotStore = snapshotStoreWithOut()
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 
 const state = reactive({
   filterExpand: true,
@@ -572,9 +584,24 @@ const cancel = () => {
   state.outerParamsSetVisible = false
 }
 
+const jsonArrayCheck = params => {
+  try {
+    const result = JSON.parse(params)
+    return result instanceof Array
+  } catch (error) {
+    return false
+  }
+}
+
 const save = () => {
   const outerParamsCopy = deepCopy(state.outerParams)
+  let checkErrorNum = 0
+  let checkMessage = ''
   outerParamsCopy.outerParamsInfoArray?.forEach(outerParamsInfo => {
+    if (outerParamsInfo.defaultValue && !jsonArrayCheck(outerParamsInfo.defaultValue)) {
+      checkErrorNum++
+      checkMessage = checkMessage + `【${outerParamsInfo.paramName}】`
+    }
     outerParamsInfo.targetViewInfoList = []
     outerParamsInfo.filterInfo?.forEach(baseFilterInfo => {
       // 存在过滤器选项被选
@@ -601,6 +628,14 @@ const save = () => {
       }
     })
   })
+  if (checkErrorNum > 0) {
+    ElMessage({
+      message: `参数${checkMessage}默认值格式不正确！`,
+      type: 'warning',
+      showClose: true
+    })
+    return
+  }
   updateOuterParamsSet(outerParamsCopy).then(() => {
     ElMessage({
       message: t('commons.save_success'),
@@ -1074,5 +1109,12 @@ defineExpose({
   height: 10px;
   margin-bottom: 12px;
   margin-right: -80px;
+}
+
+.hint-icon {
+  cursor: pointer;
+  font-size: 14px;
+  color: #646a73;
+  margin: 10px 0 0 4px;
 }
 </style>
