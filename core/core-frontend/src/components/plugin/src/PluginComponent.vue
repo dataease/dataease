@@ -110,7 +110,10 @@ onMounted(async () => {
     distributed = wsCache.get(key)
   }
   if (isNull(distributed)) {
-    emits('loadFail')
+    setTimeout(() => {
+      emits('loadFail')
+      loading.value = false
+    }, 1000)
     return
   }
   if (distributed) {
