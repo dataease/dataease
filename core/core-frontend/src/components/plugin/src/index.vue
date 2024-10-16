@@ -98,11 +98,14 @@ const pluginProxy = ref(null)
 const invokeMethod = param => {
   if (pluginProxy.value['invokeMethod']) {
     pluginProxy.value['invokeMethod'](param)
-  } else {
+  } else if (param.methodName && pluginProxy.value[param.methodName]) {
     pluginProxy.value[param.methodName](param.args)
   }
 }
-
+const emits = defineEmits(['loadFail'])
+defineExpose({
+  invokeMethod
+})
 onMounted(async () => {
   const key = 'xpack-model-distributed'
   let distributed = false
@@ -115,7 +118,10 @@ onMounted(async () => {
     distributed = wsCache.get(key)
   }
   if (isNull(distributed)) {
-    emits('loadFail')
+    setTimeout(() => {
+      emits('loadFail')
+      loading.value = false
+    }, 1000)
     return
   }
   if (distributed) {
@@ -142,11 +148,6 @@ onMounted(async () => {
   } else {
     loadComponent()
   }
-})
-
-const emits = defineEmits(['loadFail'])
-defineExpose({
-  invokeMethod
 })
 </script>
 
