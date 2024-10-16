@@ -104,7 +104,7 @@ public class TableInfoHandler extends DefaultChartHandler {
             }
         }
 
-        String originSql = SQLProvider.createQuerySQL(sqlMeta, false, !StringUtils.equalsIgnoreCase(dsMap.get(0).getType(), "es"), view);// 明细表强制加排序
+        String originSql = SQLProvider.createQuerySQL(sqlMeta, false, !StringUtils.equalsIgnoreCase(dsMap.entrySet().iterator().next().getValue().getType(), "es"), view);// 明细表强制加排序
         String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * chartExtRequest.getPageSize() : "");
         var querySql = originSql + limit;
 
