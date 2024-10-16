@@ -164,6 +164,10 @@ declare interface Axis extends ChartViewField {
    * 自定义排序项
    */
   customSort: string[]
+  /**
+   * 是否隐藏
+   */
+  hide: boolean
 }
 declare interface ChartViewField {
   /**

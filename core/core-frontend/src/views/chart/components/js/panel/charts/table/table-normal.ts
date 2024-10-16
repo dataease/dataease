@@ -93,6 +93,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // add drill list
     fields.forEach(ele => {
       const f = axisMap[ele.dataeaseName]
+      if (f?.hide === true) {
+        return
+      }
       columns.push(ele.dataeaseName)
       meta.push({
         field: ele.dataeaseName,
@@ -139,7 +142,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
         renderTooltip: sheet => new SortTooltip(sheet)
       }
     }
+    // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
+    // 行列冻结
     if (customAttr.tableCell.tableFreeze) {
       s2Options.frozenColCount = customAttr.tableCell.tableColumnFreezeHead ?? 0
       s2Options.frozenRowCount = customAttr.tableCell.tableRowFreezeHead ?? 0

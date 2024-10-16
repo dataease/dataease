@@ -281,6 +281,8 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   if (opt === 'details') {
     if (!viewInfo.value.type?.includes('table')) {
       assign(viewInfo.value, DETAIL_CHART_ATTR)
+      viewInfo.value.xAxis.forEach(i => (i.hide = false))
+      viewInfo.value.yAxis.forEach(i => (i.hide = false))
     } else {
       assign(viewInfo.value, DETAIL_TABLE_ATTR)
     }

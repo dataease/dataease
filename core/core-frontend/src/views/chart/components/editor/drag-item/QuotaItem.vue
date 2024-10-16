@@ -72,7 +72,8 @@ const emit = defineEmits([
   'onNameEdit',
   'editItemFilter',
   'editItemCompare',
-  'valueFormatter'
+  'valueFormatter',
+  'onToggleHide'
 ])
 
 const { item, chart } = toRefs(props)
@@ -162,6 +163,9 @@ const clickItem = param => {
     case 'formatter':
       valueFormatter()
       break
+    case 'toggleHide':
+      toggleHide()
+      break
     default:
       break
   }
@@ -169,7 +173,7 @@ const clickItem = param => {
 
 const beforeClickItem = type => {
   return {
-    type: type
+    type
   }
 }
 
@@ -285,7 +289,15 @@ const valueFormatter = () => {
   item.value.formatterType = props.type
   emit('valueFormatter', item.value)
 }
-
+const toggleHide = () => {
+  item.value.index = props.index
+  item.value.hide = !item.value.hide
+  item.value.axisType = props.type
+  emit('onToggleHide', item.value)
+}
+const showHideIcon = computed(() => {
+  return ['tale-info', 'table-normal'].includes(props.chart.type) && item.value.hide
+})
 onMounted(() => {
   isEnableCompare()
   getItemTagType()
@@ -352,6 +364,15 @@ onMounted(() => {
             -{{ t('chart.' + item.compareCalc.type) }}
           </span>
         </span>
+        <el-icon style="margin-left: 8px">
+          <Icon>
+            <Hide
+              v-show="showHideIcon"
+              :class="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
+              class="svg-icon inner-class"
+            />
+          </Icon>
+        </el-icon>
         <el-tooltip :effect="toolTip" placement="top">
           <template #content>
             <span>{{ t('chart.delete') }}</span>
@@ -733,6 +754,17 @@ onMounted(() => {
               <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
             </el-icon>
             <span>{{ t('chart.show_name_set') }}</span>
+          </el-dropdown-item>
+          <el-dropdown-item
+            class="menu-item-padding"
+            v-if="['table-normal', 'table-info'].includes(chart.type)"
+            :command="beforeClickItem('toggleHide')"
+          >
+            <el-icon>
+              <icon v-if="item.hide === true" name="view"><View class="svg-icon" /></icon>
+              <icon v-else name="hide"><Hide class="svg-icon" /></icon>
+            </el-icon>
+            <span>{{ item.hide === true ? t('chart.show') : t('chart.hide') }}</span>
           </el-dropdown-item>
           <el-dropdown-item class="menu-item-padding" :command="beforeClickItem('remove')">
             <el-icon>
