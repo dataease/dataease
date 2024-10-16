@@ -31,10 +31,15 @@ const props = defineProps({
         propValue: ''
       }
     }
+  },
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'preview'
   }
 })
 
-const { element } = toRefs(props)
+const { element, showPosition } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
 const { editMode, curComponent, canvasStyleData } = storeToRefs(dvMainStore)
 
@@ -140,17 +145,16 @@ const varStyle = computed(() => [
 
 const init = () => {
   timeId = setInterval(() => {
-    if (textOut.value && text.value) {
-      const textValue = text.value.clientWidth * 100
-      const fontLength = document.getElementsByClassName('marquee-txt')[0]?.innerText?.length
-      const fontSizeLength = fontLength * element.value.style.fontSize * canvasStyleData.value.scale
-      if (textValue < fontSizeLength) {
-        scrollScale0.value = (textValue * 100) / textValue + '%'
-        scrollScale100.value = '100%'
-      } else {
-        scrollScale0.value = '100%'
-        scrollScale100.value = (-(fontSizeLength + 5000) * 100) / textValue + '%'
-      }
+    const outerId =
+      showPosition.value === 'edit'
+        ? 'shape-id-' + element.value.id
+        : 'wrapper-outer-id-' + element.value.id
+    const componentOut = document.getElementById(outerId)
+    if (componentOut && text.value) {
+      const textValue = text.value.clientWidth
+      const textOutValue = componentOut.clientWidth
+      scrollScale0.value = (textOutValue * 100) / textValue + '%'
+      scrollScale100.value = '-100%'
     } else {
       scrollScale0.value = '100%'
       scrollScale100.value = '-100%'

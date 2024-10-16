@@ -122,6 +122,7 @@ const {
 let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen', 'datasetParamsInit', 'onPointClick'])
+const wrapperId = 'wrapper-outer-id-' + config.value.id
 
 const viewDemoInnerId = computed(() => 'enlarge-inner-content-' + config.value.id)
 const htmlToImage = () => {
@@ -343,6 +344,7 @@ const deepScale = computed(() => scale.value / 100)
   <div
     class="wrapper-outer"
     :class="showPosition + '-' + config.component"
+    :id="wrapperId"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
     v-loading="downLoading"
