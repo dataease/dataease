@@ -89,7 +89,7 @@ public class TableInfoHandler extends DefaultChartHandler {
             pageInfo.setPageSize(chartExtRequest.getPageSize());
         }
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-        if(view.getIsExcelExport()){
+        if (view.getIsExcelExport()) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO fieldDTO = null;
                 for (ChartViewFieldDTO allField : allFields) {
@@ -104,7 +104,7 @@ public class TableInfoHandler extends DefaultChartHandler {
             }
         }
 
-        String originSql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);// 明细表强制加排序
+        String originSql = SQLProvider.createQuerySQL(sqlMeta, false, !StringUtils.equalsIgnoreCase(dsMap.get(0).getType(), "es"), view);// 明细表强制加排序
         String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * chartExtRequest.getPageSize() : "");
         var querySql = originSql + limit;
 
