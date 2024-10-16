@@ -9,9 +9,16 @@ import { deepCopy } from '@/utils/utils'
 export const configCarouselTooltip = (chart, view, data, scene) => {
   if (['bubble-map', 'map'].includes(chart.type)) {
     data = view.source.data.dataArray
-      ?.filter(i => i.value)
+      ?.filter(i => i.dimensionList?.length > 0)
       .reduce((acc, current) => {
-        if (!acc.some(obj => obj.adcode === current.adcode)) {
+        const existingItem = acc.find(obj => {
+          if (obj.abbrev === 'China') {
+            return obj.adcode === current.adcode
+          } else {
+            return obj.abbrev === current.abbrev
+          }
+        })
+        if (!existingItem) {
           acc.push(current)
         }
         return acc
