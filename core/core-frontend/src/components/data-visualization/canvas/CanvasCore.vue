@@ -1586,6 +1586,7 @@ defineExpose({
         @input="handleInput"
         :dv-info="dvInfo"
         :canvas-active="canvasActive"
+        :show-position="'edit'"
       />
       <component
         v-else-if="item.component.includes('Svg')"
@@ -1603,6 +1604,7 @@ defineExpose({
         :dv-info="dvInfo"
         :active="item.id === curComponentId"
         :canvas-active="canvasActive"
+        :show-position="'edit'"
       />
       <component
         v-else
@@ -1620,6 +1622,7 @@ defineExpose({
         :dv-info="dvInfo"
         :active="item.id === curComponentId"
         :canvas-active="canvasActive"
+        :show-position="'edit'"
       />
     </Shape>
     <!-- 右击菜单 -->
