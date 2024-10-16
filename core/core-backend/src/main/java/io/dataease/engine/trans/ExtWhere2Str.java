@@ -172,6 +172,10 @@ public class ExtWhere2Str {
                                 whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(Long.parseLong(value.get(0))), Utils.transLong2Str(Long.parseLong(value.get(1))));
                             }
                         }
+                    } else if (request.getDatasetTableField().getDeType() == 2
+                            || request.getDatasetTableField().getDeType() == 3
+                            || request.getDatasetTableField().getDeType() == 4) {
+                        whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, value.get(0), value.get(1));
                     } else {
                         whereValue = String.format(SQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                     }
