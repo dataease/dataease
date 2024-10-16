@@ -2,10 +2,8 @@ package io.dataease.service.exportCenter;
 
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentUserDto;
-import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.ProxyAuthService;
 import io.dataease.commons.constants.ParamConstants;
-import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.chart.ChartViewController;
 import io.dataease.controller.request.chart.ChartExtRequest;
@@ -356,19 +354,6 @@ public class ExportCenterService {
         ExportTask record = new ExportTask();
         record.setExportStatus("FAILED");
         exportTaskMapper.updateByExampleSelective(record, exportTaskExample);
-        exportTaskExample.clear();
-        criteria = exportTaskExample.createCriteria();
-        criteria.andExportMachineNameEqualTo(hostName()).andExportStatusEqualTo("PENDING");
-        exportTaskMapper.selectByExampleWithBLOBs(exportTaskExample).parallelStream().forEach(exportTask -> {
-            if (exportTask.getExportFromType().equalsIgnoreCase("dataset")) {
-                DataSetExportRequest request = new Gson().fromJson(exportTask.getParams(), DataSetExportRequest.class);
-                startDatasetTask(exportTask, request);
-            }
-            if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
-                PanelViewDetailsRequest request = new Gson().fromJson(exportTask.getParams(), PanelViewDetailsRequest.class);
-                startViewTask(exportTask, request);
-            }
-        });
     }
 
     private String hostName() {
@@ -403,7 +388,7 @@ public class ExportCenterService {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-        CurrentUserDto user = proxyAuthService.queryCacheUserDto(exportTask.getUserId());
+        CurrentUserDto user = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             AuthUtils.setUser(user);
             try {
@@ -558,14 +543,6 @@ public class ExportCenterService {
                     outputStream.flush();
                 }
                 wb.close();
-
-                if (ObjectUtils.isNotEmpty(user)) {
-                    String viewId = request.getViewId();
-                    ChartViewWithBLOBs chartViewWithBLOBs = chartViewService.get(viewId);
-                    String pid = chartViewWithBLOBs.getSceneId();
-                    DeLogUtils.save(SysLogConstants.OPERATE_TYPE.EXPORT, SysLogConstants.SOURCE_TYPE.VIEW, viewId, pid, null, null);
-                }
-
                 exportTask.setExportPogress("100");
                 exportTask.setExportStatus("SUCCESS");
 
@@ -602,8 +579,7 @@ public class ExportCenterService {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-        CurrentUserDto user = proxyAuthService.queryCacheUserDto(exportTask.getUserId());
-
+        CurrentUserDto user = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             AuthUtils.setUser(user);
             try {
