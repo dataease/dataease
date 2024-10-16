@@ -11,8 +11,6 @@ import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
-import VanSticky from 'vant/es/sticky'
-import VanNavBar from 'vant/es/nav-bar'
 import request from '@/config/axios'
 import 'vant/es/nav-bar/style'
 import 'vant/es/sticky/style'
@@ -29,7 +27,8 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0
+  curPreviewGap: 0,
+  initState: true
 })
 const dvMainStore = dvMainStoreWithOut()
 
@@ -106,9 +105,9 @@ onBeforeMount(async () => {
       nextTick(() => {
         dashboardPreview.value.restore()
       })
-      if (attachParams) {
-        dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult, 'outer')
-      }
+      state.initState = false
+      dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult, 'outer')
+      state.initState = true
     }
   )
 })
@@ -117,7 +116,7 @@ onBeforeMount(async () => {
 <template>
   <div
     :class="isPc ? 'dashboard-preview' : 'dv-common-layout-mobile_embedded'"
-    v-if="state.canvasStylePreview"
+    v-if="state.canvasStylePreview && state.initState"
   >
     <de-preview
       ref="dashboardPreview"

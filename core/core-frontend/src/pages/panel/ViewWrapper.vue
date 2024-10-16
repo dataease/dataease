@@ -26,7 +26,8 @@ const state = reactive({
   canvasViewInfoPreview: null,
   dvInfo: null,
   chartId: null,
-  suffixId: 'common'
+  suffixId: 'common',
+  initState: true
 })
 
 const embeddedParams = embeddedParamsDiv?.chartId ? embeddedParamsDiv : embeddedStore
@@ -37,9 +38,9 @@ const winMsgHandle = event => {
   // 校验targetSourceId
   if (msgInfo && msgInfo.type === 'attachParams' && msgInfo.targetSourceId === state.chartId + '') {
     const attachParams = msgInfo.params
-    if (attachParams) {
-      dvMainStore.addOuterParamsFilter(attachParams, state.canvasDataPreview, 'outer')
-    }
+    state.initState = false
+    dvMainStore.addOuterParamsFilter(attachParams, state.canvasDataPreview, 'outer')
+    state.initState = true
   }
 }
 
@@ -89,9 +90,10 @@ onBeforeMount(async () => {
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
-      if (attachParams) {
-        dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult)
-      }
+      state.initState = false
+      dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult)
+      state.initState = true
+
       viewInfo.value = canvasViewInfoPreview[chartId]
       ;(
         (canvasDataResult as unknown as Array<{
@@ -151,7 +153,7 @@ const onPointClick = param => {
 </script>
 
 <template>
-  <div class="de-view-wrapper" v-if="!!config">
+  <div class="de-view-wrapper" v-if="!!config && state.initState">
     <ComponentWrapper
       style="width: 100%; height: 100%"
       :view-info="viewInfo"

@@ -22,7 +22,8 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0
+  curPreviewGap: 0,
+  initState: true
 })
 
 const props = defineProps({
@@ -111,9 +112,11 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       if (jumpParam) {
         dvMainStore.addViewTrackFilter(jumpParam)
       }
-      if (attachParam) {
-        dvMainStore.addOuterParamsFilter(attachParam)
-      }
+      state.initState = false
+
+      dvMainStore.addOuterParamsFilter(attachParam)
+      state.initState = true
+
       if (props.publicLinkStatus) {
         // 设置浏览器title为当前仪表板名称
         document.title = dvInfo.name
@@ -156,7 +159,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="content">
+  <div class="content" v-if="state.initState">
     <de-preview
       ref="dvPreview"
       v-if="state.canvasStylePreview"
