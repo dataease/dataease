@@ -105,6 +105,9 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
     fields.forEach(ele => {
       const f = axisMap[ele.dataeaseName]
+      if (f?.hide === true) {
+        return
+      }
       columns.push(ele.dataeaseName)
       meta.push({
         field: ele.dataeaseName,
@@ -153,7 +156,9 @@ export class TableInfo extends S2ChartView<TableSheet> {
     s2Options.style = this.configStyle(chart, s2DataConfig)
     // 自适应列宽模式下，URL 字段的宽度固定为 120
     if (customAttr.basicStyle.tableColumnMode === 'adapt') {
-      const urlFields = fields.filter(field => field.deType === 7)
+      const urlFields = fields.filter(
+        field => field.deType === 7 && !axisMap[field.dataeaseName]?.hide
+      )
       s2Options.style.colCfg.widthByFieldValue = urlFields?.reduce((p, n) => {
         p[n.chartShowName ?? n.name] = 120
         return p
@@ -236,7 +241,9 @@ export class TableInfo extends S2ChartView<TableSheet> {
           return
         }
         // 第一次渲染初始化，把图片字段固定为 120 进行计算
-        const urlFields = fields.filter(field => field.deType === 7).map(f => f.dataeaseName)
+        const urlFields = fields
+          .filter(field => field.deType === 7 && !axisMap[field.dataeaseName]?.hide)
+          .map(f => f.dataeaseName)
         const totalWidthWithImg = ev.colLeafNodes.reduce((p, n) => {
           return p + (urlFields.includes(n.field) ? 120 : n.width)
         }, 0)

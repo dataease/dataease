@@ -1398,7 +1398,20 @@ const saveQuotaEditCompare = () => {
   }
   closeQuotaEditCompare()
 }
-
+const onToggleHide = item => {
+  recordSnapshotInfo('render')
+  switch (item.axisType) {
+    case 'dimension':
+      view.value.xAxis[item.index].hide = item.hide
+      break
+    case 'quota':
+      view.value.yAxis[item.index].hide = item.hide
+      break
+    default:
+      break
+  }
+  renderChart(view.value)
+}
 const valueFormatter = item => {
   recordSnapshotInfo('render')
   state.valueFormatterItem = JSON.parse(JSON.stringify(item))
@@ -1964,6 +1977,7 @@ const deleteChartFieldItem = id => {
                                 @onNameEdit="showRename"
                                 @onCustomSort="onCustomSort"
                                 @valueFormatter="valueFormatter"
+                                @onToggleHide="onToggleHide"
                               />
                             </template>
                           </draggable>
@@ -2366,6 +2380,7 @@ const deleteChartFieldItem = id => {
                                   @editItemFilter="showQuotaEditFilter"
                                   @editItemCompare="showQuotaEditCompare"
                                   @valueFormatter="valueFormatter"
+                                  @onToggleHide="onToggleHide"
                                 />
                               </template>
                             </draggable>

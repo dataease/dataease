@@ -485,7 +485,7 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
         delete style.layoutWidthType
         style.colCfg.width = node => {
           const width = node.spreadsheet.container.cfg.el.offsetWidth
-          const fieldsSize = chart.data?.fields?.length
+          const fieldsSize = node.spreadsheet.dataCfg.meta.length
           if (!fieldsSize) {
             return 0
           }

@@ -58,7 +58,8 @@ const emit = defineEmits([
   'onCustomSort',
   'onDimensionItemChange',
   'onNameEdit',
-  'valueFormatter'
+  'valueFormatter',
+  'onToggleHide'
 ])
 
 const { item } = toRefs(props)
@@ -97,6 +98,9 @@ const clickItem = param => {
     case 'formatter':
       valueFormatter()
       break
+    case 'toggleHide':
+      toggleHide()
+      break
     default:
       break
   }
@@ -104,7 +108,7 @@ const clickItem = param => {
 
 const beforeClickItem = type => {
   return {
-    type: type
+    type
   }
 }
 
@@ -192,6 +196,15 @@ const showSort = () => {
   }
   return !isChartMix || isDimensionOrDimensionStack
 }
+const toggleHide = () => {
+  item.value.index = props.index
+  item.value.hide = !item.value.hide
+  item.value.axisType = props.type
+  emit('onToggleHide', item.value)
+}
+const showHideIcon = computed(() => {
+  return ['table-info', 'table-normal'].includes(props.chart.type) && item.value.hide
+})
 onMounted(() => {
   getItemTagType()
 })
@@ -251,7 +264,9 @@ onMounted(() => {
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
           </span>
         </el-tooltip>
-
+        <el-icon style="margin-left: 8px">
+          <Icon><Hide v-show="showHideIcon" class="svg-icon inner-class" /></Icon>
+        </el-icon>
         <el-tooltip :effect="toolTip" placement="top">
           <template #content>
             <span>{{ t('chart.delete') }}</span>
@@ -592,6 +607,17 @@ onMounted(() => {
               <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
             </el-icon>
             <span>{{ t('chart.show_name_set') }}</span>
+          </el-dropdown-item>
+          <el-dropdown-item
+            class="menu-item-padding"
+            v-if="['table-normal', 'table-info'].includes(chart.type)"
+            :command="beforeClickItem('toggleHide')"
+          >
+            <el-icon>
+              <icon v-if="item.hide === true" name="view"><View class="svg-icon" /></icon>
+              <icon v-else name="hide"><Hide class="svg-icon" /></icon>
+            </el-icon>
+            <span>{{ item.hide === true ? t('chart.show') : t('chart.hide') }}</span>
           </el-dropdown-item>
           <el-dropdown-item
             class="menu-item-padding"
