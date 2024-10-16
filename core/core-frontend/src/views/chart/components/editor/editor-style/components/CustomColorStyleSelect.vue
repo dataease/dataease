@@ -210,6 +210,7 @@ const customColorPickerRef = ref<InstanceType<typeof ElColorPicker>>()
 
 function selectColorCase(option) {
   state.value.basicStyleForm[colorSchemeName.value] = option.value
+  changeBasicStyle(colorSchemeName.value)
   colorCaseSelectorRef.value?.hide()
   changeColorOption(option)
 }
