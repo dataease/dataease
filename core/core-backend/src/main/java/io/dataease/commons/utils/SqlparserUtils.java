@@ -598,11 +598,19 @@ public class SqlparserUtils {
         if (sqlVariableDetails.getOperator().equals("in")) {
             return "'" + String.join("','", sqlVariableDetails.getValue()) + "'";
         } else if (sqlVariableDetails.getOperator().equals("between")) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
-            if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
-                return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1))));
+            if (sqlVariableDetails.getDeType() == 1) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
+                if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
+                    return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1))));
+                } else {
+                    return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(0))));
+                }
             } else {
-                return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(0))));
+                if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
+                    return sqlVariableDetails.getValue().get(1);
+                } else {
+                    return sqlVariableDetails.getValue().get(0);
+                }
             }
         } else {
             return (String) sqlVariableDetails.getValue().get(0);
