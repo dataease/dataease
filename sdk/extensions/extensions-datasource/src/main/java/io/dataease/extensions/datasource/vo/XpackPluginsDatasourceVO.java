@@ -21,6 +21,8 @@ public class XpackPluginsDatasourceVO implements Serializable {
 
     private String type;
 
+    private Integer flag;
+
     private String extraParams;
 
     private String prefix;
