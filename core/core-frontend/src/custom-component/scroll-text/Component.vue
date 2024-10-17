@@ -16,6 +16,7 @@ const textOut = ref(null)
 const scrollScale0 = ref('100%')
 const scrollScale100 = ref('100%')
 let timeId = null
+const textOutClientWidth = ref(200)
 
 const props = defineProps({
   propValue: {
@@ -134,9 +135,7 @@ const varStyle = computed(() => [
     '--scroll-speed': `${
       element.value.style.scrollSpeed === 0 || !textOut.value
         ? 0
-        : (textOut.value.clientWidth * 100) /
-          canvasStyleData.value.scale /
-          element.value.style.scrollSpeed
+        : (textOutClientWidth.value + text.value.clientWidth) / element.value.style.scrollSpeed
     }s`,
     '--scroll-scale0': `${scrollScale0.value}`,
     '--scroll-scale100': `${scrollScale100.value}`
@@ -152,8 +151,8 @@ const init = () => {
     const componentOut = document.getElementById(outerId)
     if (componentOut && text.value) {
       const textValue = text.value.clientWidth
-      const textOutValue = componentOut.clientWidth
-      scrollScale0.value = (textOutValue * 100) / textValue + '%'
+      textOutClientWidth.value = componentOut.clientWidth
+      scrollScale0.value = (textOutClientWidth.value * 100) / textValue + '%'
       scrollScale100.value = '-100%'
     } else {
       scrollScale0.value = '100%'
@@ -161,13 +160,6 @@ const init = () => {
     }
   }, 1000)
 }
-
-const textStyle = computed(() => {
-  return {
-    verticalAlign: element.value['style'].verticalAlign
-  }
-})
-
 onMounted(() => {
   init()
 })
@@ -188,7 +180,6 @@ onMounted(() => {
       :contenteditable="canEdit"
       :class="{ 'can-edit': canEdit, 'marquee-txt': marqueeTxt }"
       tabindex="0"
-      :style="textStyle"
       @paste="clearStyle"
       @mousedown="handleMousedown"
       @blur="handleBlur"
@@ -197,7 +188,7 @@ onMounted(() => {
     ></div>
   </div>
   <div v-else class="v-text preview" ref="textOut" :style="varStyle">
-    <div class="marquee-txt" :style="textStyle" ref="text" v-html="element['propValue']"></div>
+    <div class="marquee-txt" ref="text" v-html="element['propValue']"></div>
   </div>
 </template>
 
@@ -205,11 +196,9 @@ onMounted(() => {
 .v-text {
   width: 100%;
   height: 100%;
-  display: table;
+  display: flex;
+  align-items: center;
   div {
-    display: table-cell;
-    width: 100%;
-    height: 100%;
     outline: none;
     word-break: break-all;
     padding: 4px;
@@ -218,6 +207,9 @@ onMounted(() => {
 
   .can-edit {
     cursor: text;
+    width: 100%;
+    display: grid;
+    align-items: center;
     height: 100%;
   }
 }
