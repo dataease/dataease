@@ -318,7 +318,7 @@ onMounted(async () => {
               <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="" />
             </div>
             <div class="login-welcome">
-              {{ slogan || '欢迎使用 DataEase 数据可视化分析工具' }}
+              {{ slogan || '人人可用的开源 BI 工具' }}
             </div>
             <div class="login-form">
               <div class="default-login-tabs" v-if="activeName === 'simple'">
