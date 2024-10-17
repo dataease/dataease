@@ -176,6 +176,18 @@ const getResult = (
   return [valueF || '', valueS || ''].filter(ele => ele !== '')
 }
 
+const getResultNum = (
+  defaultNumValueEnd,
+  numValueEnd,
+  numValueStart,
+  defaultNumValueStart,
+  firstLoad
+) => {
+  const valueS = firstLoad ? defaultNumValueStart : numValueStart
+  const valueE = firstLoad ? defaultNumValueEnd : numValueEnd
+  return [valueS || '', valueE || ''].filter(ele => ele !== '')
+}
+
 const getOperator = (
   displayType,
   multiple,
@@ -193,6 +205,11 @@ const getOperator = (
   if (+displayType === 9) {
     return multiple ? 'in' : 'eq'
   }
+
+  if (+displayType === 22) {
+    return 'between'
+  }
+
   const valueF = firstLoad ? defaultConditionValueF : conditionValueF
   const valueS = firstLoad ? defaultConditionValueS : conditionValueS
   const operatorF = firstLoad ? defaultConditionValueOperatorF : conditionValueOperatorF
@@ -240,6 +257,10 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             const {
               selectValue: value,
               timeGranularityMultiple,
+              defaultNumValueEnd,
+              numValueEnd,
+              numValueStart,
+              defaultNumValueStart,
               conditionType = 0,
               treeFieldList = [],
               defaultConditionValueOperatorF = 'eq',
@@ -323,6 +344,14 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 defaultConditionValueS,
                 conditionValueF,
                 conditionValueS,
+                firstLoad
+              )
+            } else if (displayType === '22') {
+              selectValue = getResultNum(
+                defaultNumValueEnd,
+                numValueEnd,
+                numValueStart,
+                defaultNumValueStart,
                 firstLoad
               )
             } else {
@@ -409,6 +438,38 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                     isTree
                   })
                 }
+
+                if (item.checkedFieldsMapArrNum?.[curComponentId]?.length) {
+                  const endTimeFieldId = item.checkedFieldsMapArrNum?.[curComponentId].find(
+                    element => element !== fieldId
+                  )
+                  const resultEnd = Array(2).fill(
+                    endTimeFieldId === item.checkedFieldsMapEndNum[curComponentId]
+                      ? result[1]
+                      : result[0]
+                  )
+                  result = Array(2).fill(
+                    endTimeFieldId === item.checkedFieldsMapEndNum[curComponentId]
+                      ? result[0]
+                      : result[1]
+                  )
+                  parametersFilter = duplicateRemoval(
+                    item.parametersArr[curComponentId].filter(e => e.id === fieldId)
+                  )
+
+                  const parametersFilterEnd = duplicateRemoval(
+                    item.parametersArr[curComponentId].filter(e => e.id === endTimeFieldId)
+                  )
+                  filter.push({
+                    componentId: ele.id,
+                    fieldId: endTimeFieldId,
+                    operator,
+                    value: resultEnd,
+                    parameters: parametersFilterEnd,
+                    isTree
+                  })
+                }
+
                 filter.push({
                   componentId: ele.id,
                   fieldId,

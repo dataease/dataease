@@ -148,7 +148,7 @@ const datasourceEditor = ref()
 const activeTab = ref('')
 const menuList = [
   {
-    label: t('data_set.move_to'),
+    label: t('chart.move_to'),
     svgName: icon_intoItem_outlined,
     command: 'move'
   },

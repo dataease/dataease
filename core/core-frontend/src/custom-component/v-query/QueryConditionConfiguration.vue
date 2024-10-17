@@ -416,7 +416,7 @@ const setParametersArrNum = (val, componentId) => {
     curComponent.value.checkedFieldsMap[componentId] = ''
     curComponent.value.checkedFieldsMapEndNum[componentId] = ''
     curComponent.value.checkedFieldsMapStartNum[componentId] = ''
-    curComponent.value.parametersArrNum[componentId] = []
+    curComponent.value.parametersArr[componentId] = []
   }
 
   if (curComponent.value.checkedFieldsMapArrNum[componentId].length) {
@@ -628,6 +628,7 @@ const setParametersTimeType = componentId => {
             .includes(ele.id) && !!ele.variableName
       )
   )
+  if (!curComponent.value.parametersArr[componentId].length) return
   const [v1, v2] = curComponent.value.parametersArr[componentId][0].type
   curComponent.value.timeGranularityMultiple = typeTimeMap[v2 || v1]
     ? `${typeTimeMap[v2 || v1]}range`
@@ -757,7 +758,14 @@ const setTypeChange = () => {
 }
 
 const isTimeParameter = computed(() => {
-  return curComponent.value.parameters?.some(ele => ele.deType === 1 && !!ele.variableName)
+  return curComponent.value.checkedFields.some(ele => {
+    return curComponent.value.parameters?.some(
+      itx =>
+        itx.deType === 1 &&
+        !!itx.variableName &&
+        curComponent.value.checkedFieldsMap[ele] === itx.id
+    )
+  })
 })
 
 const isNumParameter = computed(() => {
@@ -767,25 +775,31 @@ const isNumParameter = computed(() => {
 })
 
 const notNumRange = computed(() => {
-  return Object.values(curComponent.value.checkedFieldsMapArrNum || {}).some(
-    ele => ele?.length !== 0
-  )
+  return curComponent.value.checkedFields.some(ele => {
+    return curComponent.value.checkedFieldsMapArrNum[ele]?.length > 0
+  })
 })
 
 const canNotNumRange = computed(() => {
   if (
     curComponent.value.checkedFields.every(id => {
-      return curComponent.value.checkedFieldsMapArrNum?.[id]?.length
+      return curComponent.value.checkedFieldsMapArrNum?.[id]?.length > 0
     })
   ) {
     return false
   } else {
-    return curComponent.value.parameters?.some(ele => [2, 3].includes(ele.deType))
+    return curComponent.value.checkedFields.some(ele => {
+      return curComponent.value.parameters?.some(
+        itx => [2, 3].includes(itx.deType) && curComponent.value.checkedFieldsMap[ele] === itx.id
+      )
+    })
   }
 })
 
 const notTimeRange = computed(() => {
-  return Object.values(curComponent.value.checkedFieldsMapArr || {}).some(ele => ele?.length !== 0)
+  return curComponent.value.checkedFields.some(ele => {
+    return curComponent.value.checkedFieldsMapArr[ele]?.length > 0
+  })
 })
 
 const notTimeRangeType = computed(() => {
@@ -2172,6 +2186,7 @@ defineExpose({
                         curComponent.checkedFieldsMapArr[field.componentId].includes(ele.id) &&
                         field.activelist === 'parameterList'
                       "
+                      @click.stop="timeClick(field.componentId, ele)"
                       class="range-time_setting"
                     >
                       {{
@@ -2181,7 +2196,7 @@ defineExpose({
                           ? '结束时间'
                           : ''
                       }}
-                      <el-icon @click.stop="timeClick(field.componentId, ele)">
+                      <el-icon>
                         <Icon>
                           <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
                         </Icon>
@@ -2201,7 +2216,7 @@ defineExpose({
                 class="field-select--input"
                 style="margin-left: 12px"
                 popper-class="field-select--dqp"
-                v-if="
+                v-else-if="
                   curComponent.checkedFields.includes(field.componentId) &&
                   curComponent.checkedFieldsMapArrNum &&
                   curComponent.checkedFieldsMapArrNum[field.componentId] &&
@@ -2268,6 +2283,7 @@ defineExpose({
                         curComponent.checkedFieldsMapArrNum[field.componentId].includes(ele.id) &&
                         field.activelist === 'parameterList'
                       "
+                      @click.stop="numClick(field.componentId, ele)"
                       class="range-time_setting"
                     >
                       {{
@@ -2277,7 +2293,7 @@ defineExpose({
                           ? '最大值'
                           : ''
                       }}
-                      <el-icon @click.stop="numClick(field.componentId, ele)">
+                      <el-icon>
                         <Icon>
                           <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
                         </Icon>
@@ -2287,7 +2303,6 @@ defineExpose({
                 </el-option>
               </el-select>
               <el-select
-                key="checkedFieldsMapNum"
                 @change="setParameters(field)"
                 @focus="handleDialogClick"
                 style="margin-left: 12px"
@@ -2366,6 +2381,12 @@ defineExpose({
                       {{ ele.name || ele.variableName }}
                     </span>
                     <span
+                      @click.stop="
+                        () =>
+                          isNumParameter
+                            ? numClick(field.componentId, ele)
+                            : timeClick(field.componentId, ele)
+                      "
                       v-if="
                         curComponent.checkedFieldsMap[field.componentId] === ele.id &&
                         field.activelist === 'parameterList' &&
@@ -2374,14 +2395,7 @@ defineExpose({
                       class="range-time_setting"
                     >
                       {{ isNumParameter ? '数值' : '时间' }}
-                      <el-icon
-                        @click.stop="
-                          () =>
-                            isNumParameter
-                              ? numClick(field.componentId, ele)
-                              : timeClick(field.componentId, ele)
-                        "
-                      >
+                      <el-icon>
                         <Icon>
                           <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
                         </Icon>
@@ -2616,10 +2630,13 @@ defineExpose({
                     <template v-if="curComponent.field.id" #prefix>
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[getDetype(curComponent.field.id, curComponent.dataset.fields)]
-                          }`"
                           ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[
+                                getDetype(curComponent.field.id, curComponent.dataset.fields)
+                              ]
+                            }`"
                             :is="
                               iconFieldMap[
                                 fieldType[
@@ -2673,12 +2690,13 @@ defineExpose({
                     <template v-if="curComponent.displayId" #prefix>
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[
-                              getDetype(curComponent.displayId, curComponent.dataset.fields)
-                            ]
-                          }`"
                           ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[
+                                getDetype(curComponent.displayId, curComponent.dataset.fields)
+                              ]
+                            }`"
                             :is="
                               iconFieldMap[
                                 fieldType[
@@ -2734,10 +2752,11 @@ defineExpose({
                     <template v-if="curComponent.sortId" #prefix>
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[getDetype(curComponent.sortId, curComponent.dataset.fields)]
-                          }`"
                           ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[getDetype(curComponent.sortId, curComponent.dataset.fields)]
+                            }`"
                             :is="
                               iconFieldMap[
                                 fieldType[
@@ -2761,7 +2780,7 @@ defineExpose({
                         :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
                       >
                         <el-icon>
-                          <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                          <Icon
                             ><component
                               :class="`field-icon-${fieldType[ele.deType]}`"
                               class="svg-icon"
@@ -3144,8 +3163,8 @@ defineExpose({
             .ed-select-tags-wrapper.has-prefix {
               margin-left: 25px;
             }
-            .ed-tag {
-              max-width: 65px;
+            .ed-select__tags-text {
+              max-width: 38px !important;
             }
           }
 
