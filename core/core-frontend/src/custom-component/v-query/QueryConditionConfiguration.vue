@@ -193,7 +193,44 @@ const showTypeError = computed(() => {
   }
   let displayTypeField = null
   let hasParameterTimeArrType = 0
+  let hasParameterNumArrType = 0
+  let allNum =
+    curComponent.value.checkedFields.every(id => {
+      return curComponent.value.checkedFieldsMapArrNum?.[id]?.length
+    }) && ['22'].includes(curComponent.value.displayType)
   return curComponent.value.checkedFields.some(id => {
+    if (allNum) {
+      return false
+    }
+
+    if (
+      curComponent.value.checkedFieldsMapArrNum?.[id]?.length &&
+      ['22', '2'].includes(curComponent.value.displayType)
+    ) {
+      if (hasParameterNumArrType === 0) {
+        hasParameterNumArrType = 1
+      }
+
+      if (hasParameterNumArrType === 2) {
+        return true
+      }
+    }
+
+    if (
+      !curComponent.value.checkedFieldsMapArrNum?.[id]?.length &&
+      ['22', '2'].includes(curComponent.value.displayType) &&
+      curComponent.value.parameters.some(ele => [2, 3].includes(ele.deType)) &&
+      curComponent.value.checkedFieldsMap[id]
+    ) {
+      if (hasParameterNumArrType === 0) {
+        hasParameterNumArrType = 2
+      }
+
+      if (hasParameterNumArrType === 1) {
+        return true
+      }
+    }
+
     if (
       curComponent.value.checkedFieldsMapArr?.[id]?.length &&
       ['7', '1'].includes(curComponent.value.displayType)
@@ -243,7 +280,9 @@ const showTypeError = computed(() => {
         }
       }
     }
-    return displayTypeField.deType !== field?.deType
+    return [2, 3].includes(field?.deType) && [2, 3].includes(displayTypeField.deType)
+      ? false
+      : displayTypeField.deType !== field?.deType
   })
 })
 
@@ -344,18 +383,54 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
 
 const isParametersDisable = item => {
   let isDisabled = false
-  for (let index = 0; index < notTimeRangeType.value.length; index++) {
-    if (notTimeRangeType.value[index] !== item.type?.[index]) {
+  if (!isNumParameter.value) {
+    for (let index = 0; index < notTimeRangeType.value.length; index++) {
+      if (notTimeRangeType.value[index] !== item.type?.[index]) {
+        isDisabled = true
+      }
+    }
+    if (notTimeRangeType.value.length && item.deType !== 1) {
       isDisabled = true
     }
-  }
-  if (notTimeRangeType.value.length && item.deType !== 1) {
-    isDisabled = true
   }
   return isDisabled
 }
 
+const setParametersArrNum = (val, componentId) => {
+  if (curComponent.value.checkedFieldsMapArr?.[componentId]?.length) {
+    curComponent.value.checkedFieldsMapArr[componentId] = []
+    curComponent.value.checkedFieldsMapEnd[componentId] = ''
+    curComponent.value.checkedFieldsMapStart[componentId] = ''
+  }
+  const timeStartId = curComponent.value.checkedFieldsMapStartNum[componentId]
+  const timeEndId = curComponent.value.checkedFieldsMapEndNum[componentId]
+  if (timeStartId) {
+    curComponent.value.checkedFieldsMapEndNum[componentId] = val.find(ele => ele !== timeStartId)
+  }
+
+  if (timeEndId) {
+    curComponent.value.checkedFieldsMapStartNum[componentId] = val.find(ele => ele !== timeEndId)
+  }
+
+  if (!val.length) {
+    curComponent.value.checkedFieldsMap[componentId] = ''
+    curComponent.value.checkedFieldsMapEndNum[componentId] = ''
+    curComponent.value.checkedFieldsMapStartNum[componentId] = ''
+    curComponent.value.parametersArr[componentId] = []
+  }
+
+  if (curComponent.value.checkedFieldsMapArrNum[componentId].length) {
+    setParametersNumType(componentId)
+  }
+  setTypeChange()
+}
+
 const setParametersArr = (val, componentId) => {
+  if (curComponent.value.checkedFieldsMapArrNum?.[componentId]?.length) {
+    curComponent.value.checkedFieldsMapArrNum[componentId] = []
+    curComponent.value.checkedFieldsMapEndNum[componentId] = ''
+    curComponent.value.checkedFieldsMapStartNum[componentId] = ''
+  }
   const timeStartId = curComponent.value.checkedFieldsMapStart[componentId]
   const timeEndId = curComponent.value.checkedFieldsMapEnd[componentId]
   if (timeStartId) {
@@ -387,6 +462,10 @@ let currentParameterId = ''
 const timeDialogShow = ref(false)
 const timeParameterType = ref(0)
 const timeName = ref('')
+
+const numDialogShow = ref(false)
+const numParameterType = ref(0)
+const numName = ref('')
 
 const timeTypeChange = () => {
   if (!curComponent.value.checkedFieldsMapArr[currentComponentId]) {
@@ -451,6 +530,88 @@ const timeTypeChange = () => {
   timeDialogShow.value = false
 }
 
+const numTypeChange = () => {
+  if (!curComponent.value.checkedFieldsMapArrNum[currentComponentId]) {
+    curComponent.value.checkedFieldsMapArrNum[currentComponentId] = []
+  }
+
+  if (numParameterType.value === 0) {
+    curComponent.value.checkedFieldsMap[currentComponentId] = currentParameterId
+    curComponent.value.checkedFieldsMapArrNum[currentComponentId] = []
+    curComponent.value.checkedFieldsMapStartNum[currentComponentId] = ''
+    curComponent.value.checkedFieldsMapEndNum[currentComponentId] = ''
+  }
+
+  if (numParameterType.value === 1) {
+    curComponent.value.checkedFieldsMapStartNum[currentComponentId] = currentParameterId
+    curComponent.value.checkedFieldsMapArrNum[currentComponentId] = [
+      ...new Set([
+        ...curComponent.value.checkedFieldsMapArrNum[currentComponentId],
+        currentParameterId
+      ])
+    ]
+
+    if (curComponent.value.checkedFieldsMapArrNum[currentComponentId].length === 1) {
+      curComponent.value.checkedFieldsMapEndNum[currentComponentId] = ''
+    } else {
+      curComponent.value.checkedFieldsMapEndNum[currentComponentId] =
+        curComponent.value.checkedFieldsMapArrNum[currentComponentId].length === 2
+          ? curComponent.value.checkedFieldsMapArrNum[currentComponentId].find(
+              ele => ele !== currentParameterId
+            )
+          : currentParameterId
+    }
+  }
+
+  if (numParameterType.value === 2) {
+    curComponent.value.checkedFieldsMapArrNum[currentComponentId] = [
+      ...new Set([
+        ...curComponent.value.checkedFieldsMapArrNum[currentComponentId],
+        currentParameterId
+      ])
+    ]
+
+    curComponent.value.checkedFieldsMapEndNum[currentComponentId] = currentParameterId
+
+    if (curComponent.value.checkedFieldsMapArrNum[currentComponentId].length === 1) {
+      curComponent.value.checkedFieldsMapStartNum[currentComponentId] = ''
+    } else {
+      curComponent.value.checkedFieldsMapStartNum[currentComponentId] =
+        curComponent.value.checkedFieldsMapArrNum[currentComponentId].length === 2
+          ? curComponent.value.checkedFieldsMapArrNum[currentComponentId].find(
+              ele => ele !== currentParameterId
+            )
+          : currentParameterId
+    }
+  }
+
+  curComponent.value.displayType = curComponent.value.checkedFieldsMapArrNum[currentComponentId]
+    .length
+    ? '22'
+    : '2'
+  setParametersNumType(currentComponentId)
+  setTypeChange()
+  numDialogShow.value = false
+}
+
+const setParametersNumType = componentId => {
+  curComponent.value.parametersArr[componentId] = duplicateRemoval(
+    unref(fields)
+      .filter(ele => ele.componentId === componentId)
+      .map(ele => Object.values(ele?.fields || {}).flat())
+      .flat()
+      .filter(
+        ele =>
+          [
+            curComponent.value.checkedFieldsMapEndNum[componentId],
+            curComponent.value.checkedFieldsMapStartNum[componentId]
+          ]
+            .filter(ele => !!ele)
+            .includes(ele.id) && !!ele.variableName
+      )
+  )
+}
+
 const setParametersTimeType = componentId => {
   curComponent.value.parametersArr[componentId] = duplicateRemoval(
     unref(fields)
@@ -467,11 +628,25 @@ const setParametersTimeType = componentId => {
             .includes(ele.id) && !!ele.variableName
       )
   )
+  if (!curComponent.value.parametersArr[componentId].length) return
   const [v1, v2] = curComponent.value.parametersArr[componentId][0].type
   curComponent.value.timeGranularityMultiple = typeTimeMap[v2 || v1]
     ? `${typeTimeMap[v2 || v1]}range`
     : ''
   curComponent.value.timeGranularity = typeTimeMap[v2 || v1]
+}
+
+const numClick = (componentId, timeVal) => {
+  numParameterType.value =
+    timeVal.id === curComponent.value.checkedFieldsMapStartNum[componentId]
+      ? 1
+      : timeVal.id === curComponent.value.checkedFieldsMapEndNum[componentId]
+      ? 2
+      : 0
+  currentComponentId = componentId
+  currentParameterId = timeVal.id
+  numName.value = timeVal.variableName
+  numDialogShow.value = true
 }
 
 const timeClick = (componentId, timeVal) => {
@@ -542,7 +717,7 @@ const setType = () => {
 
     if (field?.deType !== undefined) {
       let displayType = curComponent.value.displayType
-      if (curComponent.value.displayType === '9') {
+      if (['9', '22'].includes(curComponent.value.displayType)) {
         return
       }
       if (!(field?.deType === 1 && curComponent.value.displayType === '7')) {
@@ -583,11 +758,48 @@ const setTypeChange = () => {
 }
 
 const isTimeParameter = computed(() => {
-  return curComponent.value.parameters?.some(ele => ele.deType === 1 && !!ele.variableName)
+  return curComponent.value.checkedFields.some(ele => {
+    return curComponent.value.parameters?.some(
+      itx =>
+        itx.deType === 1 &&
+        !!itx.variableName &&
+        curComponent.value.checkedFieldsMap[ele] === itx.id
+    )
+  })
+})
+
+const isNumParameter = computed(() => {
+  return curComponent.value.parameters?.some(
+    ele => [2, 3].includes(ele.deType) && !!ele.variableName
+  )
+})
+
+const notNumRange = computed(() => {
+  return curComponent.value.checkedFields.some(ele => {
+    return curComponent.value.checkedFieldsMapArrNum[ele]?.length > 0
+  })
+})
+
+const canNotNumRange = computed(() => {
+  if (
+    curComponent.value.checkedFields.every(id => {
+      return curComponent.value.checkedFieldsMapArrNum?.[id]?.length > 0
+    })
+  ) {
+    return false
+  } else {
+    return curComponent.value.checkedFields.some(ele => {
+      return curComponent.value.parameters?.some(
+        itx => [2, 3].includes(itx.deType) && curComponent.value.checkedFieldsMap[ele] === itx.id
+      )
+    })
+  }
 })
 
 const notTimeRange = computed(() => {
-  return Object.values(curComponent.value.checkedFieldsMapArr || {}).some(ele => ele?.length !== 0)
+  return curComponent.value.checkedFields.some(ele => {
+    return curComponent.value.checkedFieldsMapArr[ele]?.length > 0
+  })
 })
 
 const notTimeRangeType = computed(() => {
@@ -918,8 +1130,38 @@ const validate = () => {
     let displayTypeField = null
     let errorTips = '所选字段类型不一致，无法进行查询配置'
     let hasParameterTimeArrType = 0
+    let hasParameterNumArrType = 0
     if (
       ele.checkedFields.some(id => {
+        if (ele.checkedFieldsMapArrNum?.[id]?.length) {
+          if (hasParameterNumArrType === 0) {
+            hasParameterNumArrType = 1
+          }
+
+          if (hasParameterNumArrType === 2) {
+            return true
+          }
+        }
+
+        if (
+          !ele.checkedFieldsMapArrNum?.[id]?.length &&
+          ['22'].includes(ele.displayType) &&
+          !!ele.parameters.length
+        ) {
+          if (hasParameterNumArrType === 0) {
+            hasParameterNumArrType = 2
+          }
+
+          if (hasParameterNumArrType === 1) {
+            return true
+          }
+        }
+
+        if (ele.checkedFieldsMapArrNum?.[id]?.length === 1 && ele.displayType === '22') {
+          errorTips = '数值参数配置必须配置最大值和最小值'
+          return true
+        }
+
         if (ele.checkedFieldsMapArr?.[id]?.length && ['7', '1'].includes(ele.displayType)) {
           if (hasParameterTimeArrType === 0) {
             hasParameterTimeArrType = 1
@@ -1112,7 +1354,7 @@ const validate = () => {
       return true
     }
 
-    if (ele.displayType !== '9' && ele.optionValueSource === 1 && !ele.field.id) {
+    if (!['9', '22'].includes(ele.displayType) && ele.optionValueSource === 1 && !ele.field.id) {
       ElMessage.error(!ele.dataset?.id ? '请选择数据集及选项值字段' : '请选择数据集的选项值字段')
       return true
     }
@@ -1314,6 +1556,10 @@ const parameterCompletion = () => {
     arbitraryTimeRange: new Date(),
     setTimeRange: false,
     showEmpty: false,
+    defaultNumValueStart: null,
+    defaultNumValueEnd: null,
+    numValueEnd: null,
+    numValueStart: null,
     timeRange: {
       intervalType: 'none',
       dynamicWindow: false,
@@ -1346,8 +1592,11 @@ const handleCondition = item => {
   const obj = conditions.value.find(ele => ele.id === item.id)
   if (!obj.checkedFieldsMapArr) {
     obj.checkedFieldsMapArr = {}
+    obj.checkedFieldsMapArrNum = {}
     obj.checkedFieldsMapStart = {}
+    obj.checkedFieldsMapStartNum = {}
     obj.checkedFieldsMapEnd = {}
+    obj.checkedFieldsMapEndNum = {}
     obj.parametersArr = {}
   }
   curComponent.value = obj
@@ -1364,8 +1613,11 @@ const handleCondition = item => {
     if (!curComponent.value.checkedFieldsMap[ele.id]) {
       curComponent.value.checkedFieldsMap[ele.id] = ''
       curComponent.value.checkedFieldsMapStart[ele.id] = ''
+      curComponent.value.checkedFieldsMapStartNum[ele.id] = ''
       curComponent.value.checkedFieldsMapEnd[ele.id] = ''
+      curComponent.value.checkedFieldsMapEndNum[ele.id] = ''
       curComponent.value.checkedFieldsMapArr[ele.id] = []
+      curComponent.value.checkedFieldsMapArrNum[ele.id] = []
       curComponent.value.parametersArr[ele.id] = []
     }
   })
@@ -1425,7 +1677,7 @@ const showError = computed(() => {
   if (!checkedFields.length || !arr.length) {
     return true
   }
-  if ([1, 7, 8].includes(+displayType)) {
+  if ([1, 7, 8, 22].includes(+displayType)) {
     return false
   }
 
@@ -1862,7 +2114,7 @@ defineExpose({
                 multiple
                 collapse-tags
                 collapse-tags-tooltip
-                key="checkedFieldsMapArr"
+                key="checkedFieldsMapArrTime"
                 :multiple-limit="2"
                 class="field-select--input"
                 style="margin-left: 12px"
@@ -1934,6 +2186,7 @@ defineExpose({
                         curComponent.checkedFieldsMapArr[field.componentId].includes(ele.id) &&
                         field.activelist === 'parameterList'
                       "
+                      @click.stop="timeClick(field.componentId, ele)"
                       class="range-time_setting"
                     >
                       {{
@@ -1943,7 +2196,7 @@ defineExpose({
                           ? '结束时间'
                           : ''
                       }}
-                      <el-icon @click.stop="timeClick(field.componentId, ele)">
+                      <el-icon>
                         <Icon>
                           <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
                         </Icon>
@@ -1953,7 +2206,103 @@ defineExpose({
                 </el-option>
               </el-select>
               <el-select
-                key="checkedFieldsMap"
+                @change="val => setParametersArrNum(val, field.componentId)"
+                @focus="handleDialogClick"
+                multiple
+                collapse-tags
+                collapse-tags-tooltip
+                key="checkedFieldsMapArr"
+                :multiple-limit="2"
+                class="field-select--input"
+                style="margin-left: 12px"
+                popper-class="field-select--dqp"
+                v-else-if="
+                  curComponent.checkedFields.includes(field.componentId) &&
+                  curComponent.checkedFieldsMapArrNum &&
+                  curComponent.checkedFieldsMapArrNum[field.componentId] &&
+                  curComponent.checkedFieldsMapArrNum[field.componentId].length
+                "
+                v-model="curComponent.checkedFieldsMapArrNum[field.componentId]"
+                clearable
+              >
+                <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
+                  <el-icon>
+                    <Icon
+                      ><component
+                        :class="`field-icon-${
+                          fieldType[
+                            getDetype(
+                              curComponent.checkedFieldsMap[field.componentId],
+                              Object.values(field.fields)
+                            )
+                          ]
+                        }`"
+                        :is="
+                          iconFieldMap[
+                            fieldType[
+                              getDetype(
+                                curComponent.checkedFieldsMap[field.componentId],
+                                Object.values(field.fields)
+                              )
+                            ]
+                          ]
+                        "
+                      ></component
+                    ></Icon>
+                  </el-icon>
+                </template>
+                <template #header>
+                  <el-tabs stretch class="params-select--header" v-model="field.activelist">
+                    <el-tab-pane disabled label="维度" name="dimensionList"></el-tab-pane>
+                    <el-tab-pane disabled label="指标" name="quotaList"></el-tab-pane>
+                    <el-tab-pane label="参数" name="parameterList"></el-tab-pane>
+                  </el-tabs>
+                </template>
+                <el-option
+                  v-for="ele in field.fields[field.activelist]"
+                  :key="ele.id"
+                  :label="ele.name || ele.variableName"
+                  :value="ele.id"
+                  :disabled="![2, 3].includes(ele.deType)"
+                >
+                  <div class="flex-align-center icon">
+                    <el-icon>
+                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                        ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldType[ele.deType]}`"
+                          :is="iconFieldMap[fieldType[ele.deType]]"
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                    <span :title="ele.name || ele.variableName" class="ellipsis">
+                      {{ ele.name || ele.variableName }}
+                    </span>
+                    <span
+                      v-if="
+                        curComponent.checkedFieldsMapArrNum[field.componentId].includes(ele.id) &&
+                        field.activelist === 'parameterList'
+                      "
+                      @click.stop="numClick(field.componentId, ele)"
+                      class="range-time_setting"
+                    >
+                      {{
+                        curComponent.checkedFieldsMapStartNum[field.componentId] === ele.id
+                          ? '最小值'
+                          : curComponent.checkedFieldsMapEndNum[field.componentId] === ele.id
+                          ? '最大值'
+                          : ''
+                      }}
+                      <el-icon>
+                        <Icon>
+                          <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
+                        </Icon>
+                      </el-icon>
+                    </span>
+                  </div>
+                </el-option>
+              </el-select>
+              <el-select
                 @change="setParameters(field)"
                 @focus="handleDialogClick"
                 style="margin-left: 12px"
@@ -2032,15 +2381,21 @@ defineExpose({
                       {{ ele.name || ele.variableName }}
                     </span>
                     <span
+                      @click.stop="
+                        () =>
+                          isNumParameter
+                            ? numClick(field.componentId, ele)
+                            : timeClick(field.componentId, ele)
+                      "
                       v-if="
                         curComponent.checkedFieldsMap[field.componentId] === ele.id &&
                         field.activelist === 'parameterList' &&
-                        isTimeParameter
+                        (isTimeParameter || isNumParameter)
                       "
                       class="range-time_setting"
                     >
-                      时间
-                      <el-icon @click.stop="timeClick(field.componentId, ele)">
+                      {{ isNumParameter ? '数值' : '时间' }}
+                      <el-icon>
                         <Icon>
                           <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
                         </Icon>
@@ -2094,12 +2449,19 @@ defineExpose({
                   label="下拉树"
                   value="9"
                 />
-                <el-option
-                  v-if="curComponent.displayType === '2'"
-                  :disabled="curComponent.displayType !== '2'"
-                  label="数字下拉"
-                  value="2"
-                />
+
+                <template v-if="['2', '22'].includes(curComponent.displayType)">
+                  <el-option
+                    :disabled="!['2', '22'].includes(curComponent.displayType) || notNumRange"
+                    label="数字下拉"
+                    value="2"
+                  />
+                  <el-option
+                    :disabled="!['2', '22'].includes(curComponent.displayType) || canNotNumRange"
+                    label="数值区间"
+                    value="22"
+                  />
+                </template>
                 <el-option
                   v-else
                   :disabled="curComponent.displayType !== '5'"
@@ -2211,7 +2573,7 @@ defineExpose({
           </div>
           <div
             class="list-item top-item"
-            v-if="!['1', '7', '8', '9'].includes(curComponent.displayType)"
+            v-if="!['1', '7', '8', '9', '22'].includes(curComponent.displayType)"
           >
             <div class="label">选项值来源</div>
             <div class="value">
@@ -2268,10 +2630,13 @@ defineExpose({
                     <template v-if="curComponent.field.id" #prefix>
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[getDetype(curComponent.field.id, curComponent.dataset.fields)]
-                          }`"
                           ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[
+                                getDetype(curComponent.field.id, curComponent.dataset.fields)
+                              ]
+                            }`"
                             :is="
                               iconFieldMap[
                                 fieldType[
@@ -2325,12 +2690,13 @@ defineExpose({
                     <template v-if="curComponent.displayId" #prefix>
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[
-                              getDetype(curComponent.displayId, curComponent.dataset.fields)
-                            ]
-                          }`"
                           ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[
+                                getDetype(curComponent.displayId, curComponent.dataset.fields)
+                              ]
+                            }`"
                             :is="
                               iconFieldMap[
                                 fieldType[
@@ -2386,10 +2752,11 @@ defineExpose({
                     <template v-if="curComponent.sortId" #prefix>
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${
-                            fieldType[getDetype(curComponent.sortId, curComponent.dataset.fields)]
-                          }`"
                           ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[getDetype(curComponent.sortId, curComponent.dataset.fields)]
+                            }`"
                             :is="
                               iconFieldMap[
                                 fieldType[
@@ -2413,7 +2780,7 @@ defineExpose({
                         :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
                       >
                         <el-icon>
-                          <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                          <Icon
                             ><component
                               :class="`field-icon-${fieldType[ele.deType]}`"
                               class="svg-icon"
@@ -2574,6 +2941,21 @@ defineExpose({
     <template #footer>
       <el-button secondary @click="timeDialogShow = false">取消</el-button>
       <el-button type="primary" @click="timeTypeChange">确认</el-button>
+    </template>
+  </el-dialog>
+  <el-dialog :title="numName" v-model="numDialogShow" width="420px">
+    <el-form label-position="top">
+      <el-form-item label="类型" class="form-item" prop="name">
+        <el-radio-group v-model="numParameterType">
+          <el-radio :label="0">数值</el-radio>
+          <el-radio :label="1">最小值</el-radio>
+          <el-radio :label="2">最大值</el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button secondary @click="numDialogShow = false">取消</el-button>
+      <el-button type="primary" @click="numTypeChange">确认</el-button>
     </template>
   </el-dialog>
   <CascadeDialog @saveCascade="saveCascade" ref="cascadeDialog"></CascadeDialog>
@@ -2781,8 +3163,8 @@ defineExpose({
             .ed-select-tags-wrapper.has-prefix {
               margin-left: 25px;
             }
-            .ed-tag {
-              max-width: 65px;
+            .ed-select__tags-text {
+              max-width: 38px !important;
             }
           }
 

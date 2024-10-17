@@ -320,6 +320,13 @@ defineExpose({
   mult,
   single
 })
+const handleInputStart = value => {
+  curComponent.value.defaultNumValueStart = value.replace(/[^\d.]/g, '')
+}
+
+const handleInputEnd = value => {
+  curComponent.value.defaultNumValueEnd = value.replace(/[^\d.]/g, '')
+}
 </script>
 
 <template>
@@ -365,7 +372,32 @@ defineExpose({
       </div>
     </div>
   </div>
-  <div v-if="!['1', '7', '8'].includes(curComponent.displayType) && showFlag" class="list-item">
+  <div class="list-item top-item" v-if="curComponent.displayType === '22'" @click.stop>
+    <div class="label">
+      <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
+    </div>
+    <div class="setting-content" style="display: flex; align-items: center">
+      <el-input-number
+        :disabled="!curComponent.defaultValueCheck"
+        placeholder="请输入最小值"
+        style="width: 192.5px"
+        controls-position="right"
+        v-model="curComponent.defaultNumValueStart"
+      />
+      <div class="num-value_line"></div>
+      <el-input-number
+        placeholder="请输入最大值"
+        style="width: 192.5px"
+        controls-position="right"
+        :disabled="!curComponent.defaultValueCheck"
+        v-model="curComponent.defaultNumValueEnd"
+      />
+    </div>
+  </div>
+  <div
+    v-if="!['1', '7', '8', '22'].includes(curComponent.displayType) && showFlag"
+    class="list-item"
+  >
     <div class="label">选项类型</div>
     <div class="value">
       <el-radio-group
@@ -437,7 +469,7 @@ defineExpose({
       </el-tooltip>
     </div>
   </div>
-  <div v-if="!['8'].includes(curComponent.displayType)" class="list-item">
+  <div v-if="!['8', '22'].includes(curComponent.displayType)" class="list-item">
     <div class="label">
       <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
     </div>
@@ -607,6 +639,13 @@ defineExpose({
   .setting-content {
     width: 100%;
     padding-left: 24px;
+
+    .num-value_line {
+      background: #1f2329;
+      width: 12px;
+      height: 1px;
+      margin: 0 8px;
+    }
   }
 
   &.top-item {
