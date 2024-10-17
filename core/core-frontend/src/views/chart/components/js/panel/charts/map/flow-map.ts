@@ -30,7 +30,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['mapBaseStyle', 'mapLineStyle', 'zoom']
+    'basic-style-selector': ['mapBaseStyle', 'mapLineStyle', 'zoom', 'showLabel']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'filter', 'flowMapStartName', 'flowMapEndName', 'yAxis']
   axisConfig: AxisConfig = {
@@ -84,7 +84,8 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
         token: key ?? undefined,
         style: mapStyle,
         pitch: misc.mapPitch,
-        zoom: 2.5
+        zoom: 2.5,
+        showLabel: !(basicStyle.showLabel === false)
       })
     })
     mapRendering(container)

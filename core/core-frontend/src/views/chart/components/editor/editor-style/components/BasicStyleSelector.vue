@@ -603,12 +603,21 @@ onMounted(() => {
         </el-form-item>
       </el-col>
     </el-row>
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('showLabel')">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.showLabel"
+        @change="changeBasicStyle('showLabel')"
+      >
+        {{ t('chart.show_label') }}
+      </el-checkbox>
+    </el-form-item>
     <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('zoom')">
       <el-checkbox
         size="small"
         :effect="themes"
         v-model="state.basicStyleForm.showZoom"
-        :predefine="predefineColors"
         @change="changeBasicStyle('showZoom')"
       >
         {{ t('chart.show_zoom') }}

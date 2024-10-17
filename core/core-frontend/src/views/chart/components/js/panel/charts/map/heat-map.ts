@@ -27,7 +27,7 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'heatMapStyle', 'zoom']
+    'basic-style-selector': ['colors', 'heatMapStyle', 'zoom', 'showLabel']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   axisConfig: AxisConfig = {
@@ -50,8 +50,8 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
     const { chart, container } = drawOption
     const xAxis = deepCopy(chart.xAxis)
     const yAxis = deepCopy(chart.yAxis)
-    let basicStyle
-    let miscStyle
+    let basicStyle: DeepPartial<ChartBasicStyle>
+    let miscStyle: DeepPartial<ChartMiscAttr>
     if (chart.customAttr) {
       basicStyle = parseJson(chart.customAttr).basicStyle
       miscStyle = parseJson(chart.customAttr).misc
@@ -66,7 +66,8 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
         token: key ?? undefined,
         style: mapStyle,
         pitch: miscStyle.mapPitch,
-        zoom: 2.5
+        zoom: 2.5,
+        showLabel: !(basicStyle.showLabel === false)
       })
     })
     mapRendering(container)
