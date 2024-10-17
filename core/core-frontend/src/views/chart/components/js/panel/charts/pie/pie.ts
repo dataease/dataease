@@ -54,6 +54,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
       colorField: 'field',
       appendPadding: getPadding(chart),
       color,
+      animation: false,
       pieStyle: {
         lineWidth: 0
       },
