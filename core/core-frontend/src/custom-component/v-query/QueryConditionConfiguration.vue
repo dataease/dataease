@@ -697,6 +697,21 @@ const setParameters = field => {
         curComponent.value.optionValueSource = 1
       }
     }
+    if (curComponent.value.displayType === '22') {
+      const isNumParameter = curComponent.value.checkedFields.some(ele => {
+        return curComponent.value.parameters?.some(
+          itx => [2, 3].includes(itx.deType) && curComponent.value.checkedFieldsMap[ele] === itx.id
+        )
+      })
+
+      const isSingle = curComponent.value.checkedFields.every(id => {
+        return !curComponent.value.checkedFieldsMapArr?.[id]?.length
+      })
+
+      if (isSingle && isNumParameter) {
+        curComponent.value.displayType = '2'
+      }
+    }
     setTypeChange()
   })
   setType()

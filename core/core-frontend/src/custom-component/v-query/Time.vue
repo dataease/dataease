@@ -79,6 +79,7 @@ const maxDate = new Date('2100/1/1')
 watch(
   () => config.value.defaultValue,
   val => {
+    if (props.isConfig) return
     const isMultiple = config.value.displayType === '7'
     if (isMultiple) {
       multiple.value = isMultiple
