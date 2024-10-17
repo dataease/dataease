@@ -15,6 +15,7 @@ import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
 import { downloadCanvas2 } from '@/utils/imgUtils'
 import { setTitle } from '@/utils/utils'
+import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -186,6 +187,7 @@ defineExpose({
       :is-selector="props.isSelector"
       :download-status="downloadStatus"
     ></de-preview>
+    <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
   </div>
   <XpackComponent
     jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="

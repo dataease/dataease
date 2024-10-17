@@ -13,6 +13,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
 import { setTitle } from '@/utils/utils'
+import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -171,6 +172,7 @@ defineExpose({
       :is-selector="props.isSelector"
     ></de-preview>
   </div>
+  <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
   <XpackComponent
     jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
     @loaded="XpackLoaded"

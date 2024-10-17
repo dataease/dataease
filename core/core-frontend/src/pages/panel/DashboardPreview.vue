@@ -14,6 +14,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'
 import 'vant/es/nav-bar/style'
 import 'vant/es/sticky/style'
+import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
@@ -128,6 +129,7 @@ onBeforeMount(async () => {
       show-position="preview"
     ></de-preview>
   </div>
+  <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
 </template>
 
 <style lang="less" scoped>

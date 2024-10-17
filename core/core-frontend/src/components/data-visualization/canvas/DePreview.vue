@@ -18,6 +18,7 @@ import CanvasFilterBtn from '@/custom-component/canvas-filter-btn/Component.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
+import EmptyBackground from '../../empty-background/src/EmptyBackground.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
@@ -450,6 +451,7 @@ defineExpose({
     </template>
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
+  <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
   <de-fullscreen ref="fullScreeRef"></de-fullscreen>
   <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
