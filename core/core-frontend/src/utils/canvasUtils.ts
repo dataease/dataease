@@ -131,7 +131,7 @@ export function historyItemAdaptor(
   // 定时报告过滤组件适配 如果当前是定时报告默认切有设置对应的过滤组件默认值，则替换过滤组件
   if (
     componentItem.component === 'VQuery' &&
-    attachInfo.source === 'report' &&
+    attachInfo?.source === 'report' &&
     !!reportFilterInfo
   ) {
     componentItem.propValue.forEach((filterItem, index) => {
@@ -180,7 +180,7 @@ export function historyItemAdaptor(
     componentItem.actionSelection = componentItem.actionSelection || deepCopy(ACTION_SELECTION)
   }
   // 2 为基础版本 此处需要增加仪表板矩阵密度
-  if ((!canvasVersion || canvasVersion === 2) && canvasInfo.type === 'dashboard') {
+  if ((!canvasVersion || canvasVersion === 2) && canvasInfo?.type === 'dashboard') {
     matrixAdaptor(componentItem)
   }
   // 组件事件适配
@@ -233,7 +233,7 @@ export function historyAdaptor(
     canvasStyleResult['popupButtonAvailable'] === undefined
       ? true
       : canvasStyleResult['popupButtonAvailable'] //兼容弹框区域按钮开关
-  const reportFilterInfo = canvasInfo.reportFilterInfo
+  const reportFilterInfo = canvasInfo?.reportFilterInfo
   canvasDataResult.forEach(componentItem => {
     historyItemAdaptor(componentItem, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)
   })
@@ -657,6 +657,7 @@ export async function decompressionPre(params, callBack) {
       const deTemplateDataTemp = response.data
       const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
       const appData = deTemplateDataTemp['appData']
+      const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
       sourceComponentData.forEach(componentItem => {
         // 2 为基础版本 此处需要增加仪表板矩阵密度
         if (
@@ -666,7 +667,6 @@ export async function decompressionPre(params, callBack) {
           matrixAdaptor(componentItem)
         }
       })
-      const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
       //历史字段适配
       sourceCanvasStyle.component['seniorStyleSetting'] =
         sourceCanvasStyle.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
@@ -685,6 +685,7 @@ export async function decompressionPre(params, callBack) {
     .catch(e => {
       console.error(e)
     })
+  historyAdaptor(deTemplateData.canvasStyleData, deTemplateData.componentData, null, null, null)
   callBack(deTemplateData)
 }
 
