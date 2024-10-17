@@ -30,7 +30,14 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'alpha', 'mapBaseStyle', 'symbolicMapStyle', 'zoom'],
+    'basic-style-selector': [
+      'colors',
+      'alpha',
+      'mapBaseStyle',
+      'symbolicMapStyle',
+      'zoom',
+      'showLabel'
+    ],
     'label-selector': ['color', 'fontSize', 'showFields', 'customContent'],
     'tooltip-selector': [
       'color',
@@ -89,7 +96,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
         style: mapStyle,
         pitch: miscStyle.mapPitch,
         center: [104.434765, 38.256735],
-        zoom: 1.8
+        zoom: 2.5,
+        showLabel: !(basicStyle.showLabel === false)
       })
     })
     mapRendering(container)

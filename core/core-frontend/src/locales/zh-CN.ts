@@ -1541,7 +1541,8 @@ export default {
     map_symbol_octagon: '八角形',
     map_symbol_hexagram: '菱形',
     tip: '提示',
-    hide: '隐藏'
+    hide: '隐藏',
+    show_label: '显示标签'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

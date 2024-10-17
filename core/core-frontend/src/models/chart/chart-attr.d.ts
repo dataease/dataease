@@ -289,6 +289,10 @@ declare interface ChartBasicStyle {
    * 符号地图符号大小最大值
    */
   mapSymbolSizeMax: number
+  /**
+   * 显示标签
+   */
+  showLabel: boolean
 }
 /**
  * 表头属性

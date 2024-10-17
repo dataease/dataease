@@ -1585,7 +1585,8 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   seriesColor: [],
   layout: 'horizontal',
   mapSymbolSizeMin: 4,
-  mapSymbolSizeMax: 30
+  mapSymbolSizeMax: 30,
+  showLabel: true
 }
 
 export const BASE_VIEW_CONFIG = {
