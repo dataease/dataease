@@ -1624,15 +1624,51 @@ const handleCondition = item => {
       curComponent.value.dataset.fields = res.data
     })
   }
+  if (!curComponent.value.checkedFieldsMapStart) {
+    curComponent.value.checkedFieldsMapStart = {}
+  }
+  if (!curComponent.value.checkedFieldsMapStartNum) {
+    curComponent.value.checkedFieldsMapStartNum = {}
+  }
+  if (!curComponent.value.checkedFieldsMapEnd) {
+    curComponent.value.checkedFieldsMapEnd = {}
+  }
+  if (!curComponent.value.checkedFieldsMapEndNum) {
+    curComponent.value.checkedFieldsMapEndNum = {}
+  }
+  if (!curComponent.value.checkedFieldsMapArr) {
+    curComponent.value.checkedFieldsMapArr = {}
+  }
+  if (!curComponent.value.checkedFieldsMapArrNum) {
+    curComponent.value.checkedFieldsMapArrNum = {}
+  }
+  if (!curComponent.value.parametersArr) {
+    curComponent.value.parametersArr = {}
+  }
   datasetFieldList.value.forEach(ele => {
     if (!curComponent.value.checkedFieldsMap[ele.id]) {
       curComponent.value.checkedFieldsMap[ele.id] = ''
+    }
+    if (!curComponent.value.checkedFieldsMapStart[ele.id]) {
       curComponent.value.checkedFieldsMapStart[ele.id] = ''
+    }
+
+    if (!curComponent.value.checkedFieldsMapStartNum[ele.id]) {
       curComponent.value.checkedFieldsMapStartNum[ele.id] = ''
+    }
+    if (!curComponent.value.checkedFieldsMapEnd[ele.id]) {
       curComponent.value.checkedFieldsMapEnd[ele.id] = ''
+    }
+    if (!curComponent.value.checkedFieldsMapEndNum[ele.id]) {
       curComponent.value.checkedFieldsMapEndNum[ele.id] = ''
+    }
+    if (!curComponent.value.checkedFieldsMapArr[ele.id]) {
       curComponent.value.checkedFieldsMapArr[ele.id] = []
+    }
+    if (!curComponent.value.checkedFieldsMapArrNum[ele.id]) {
       curComponent.value.checkedFieldsMapArrNum[ele.id] = []
+    }
+    if (!curComponent.value.parametersArr[ele.id]) {
       curComponent.value.parametersArr[ele.id] = []
     }
   })
@@ -3179,7 +3215,7 @@ defineExpose({
               margin-left: 25px;
             }
             .ed-select__tags-text {
-              max-width: 38px !important;
+              max-width: 30px !important;
             }
           }
 
