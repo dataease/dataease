@@ -1001,7 +1001,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (targetInfo.required && userParamsIsNull) {
             // 要求用户必填 但是用户没有输入参数
             errorCount++
-            errorMes = errorMes + key + ';'
+            errorMes = errorMes + '[' + key + ']'
           } else if (
             userParamsIsNull &&
             targetInfo.enabledDefault &&
@@ -1015,8 +1015,8 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         })
         if (errorCount > 0) {
-          ElMessage.error('参数错误 ' + errorMes + '为必填参数')
-          throw new Error('参数错误 ' + errorMes + '为必填参数')
+          ElMessage.error('参数' + errorMes + '不能为空')
+          throw new Error('参数' + errorMes + '不能为空')
         }
       } else {
         return
