@@ -288,22 +288,9 @@ const timestampFormatDate = value => {
   }
   return new Date(value).toLocaleString()
 }
+import { PATH_URL } from '@/config/axios/service'
 const downloadClick = item => {
-  downloadFile(item.id)
-    .then(res => {
-      const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-      const link = document.createElement('a')
-      link.style.display = 'none'
-      link.href = URL.createObjectURL(blob)
-      link.download = item.fileName // 下载的文件名
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(link.href)
-    })
-    .finally(() => {
-      exportDatasetLoading.value = false
-    })
+  window.open(PATH_URL + '/exportCenter/download/' + item.id, '_blank')
 }
 
 const retry = item => {
