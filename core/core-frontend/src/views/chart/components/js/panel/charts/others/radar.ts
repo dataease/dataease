@@ -220,6 +220,20 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     }
   }
 
+  protected configLegend(chart: Chart, options: RadarOptions): RadarOptions {
+    const optionTmp = super.configLegend(chart, options)
+    if (!optionTmp.legend) {
+      return optionTmp
+    }
+    optionTmp.legend.marker.style = style => {
+      return {
+        r: 4,
+        fill: style.stroke
+      }
+    }
+    return optionTmp
+  }
+
   protected setupOptions(chart: Chart, options: RadarOptions): RadarOptions {
     return flow(
       this.configTheme,
