@@ -12,15 +12,21 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, editMode } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
 const scale = ref(60)
+const scaleChangeReady = ref(true)
 
 const handleScaleChange = () => {
-  snapshotStore.recordSnapshotCache()
-  // 画布比例设一个最小值，不能为 0
-  scale.value = ~~scale.value || 10
-  scale.value = scale.value < 10 ? 10 : scale.value
-  scale.value = scale.value > 200 ? 200 : scale.value
-
-  changeSizeWithScale(scale.value)
+  if (scaleChangeReady.value) {
+    scaleChangeReady.value = false
+    setTimeout(() => {
+      snapshotStore.recordSnapshotCache()
+      // 画布比例设一个最小值，不能为 0
+      scale.value = ~~scale.value || 10
+      scale.value = scale.value < 10 ? 10 : scale.value
+      scale.value = scale.value > 200 ? 200 : scale.value
+      changeSizeWithScale(scale.value)
+      scaleChangeReady.value = true
+    }, 0)
+  }
 }
 
 const scaleDecrease = (speed = 1) => {
