@@ -295,7 +295,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           color: legend.color
         },
         'l7plot-legend__category-marker': {
-          ...LEGEND_SHAPE_STYLE_MAP[legend.icon]
+          ...LEGEND_SHAPE_STYLE_MAP[legend.icon],
+          width: '8px',
+          height: '8px'
         }
       }
     }

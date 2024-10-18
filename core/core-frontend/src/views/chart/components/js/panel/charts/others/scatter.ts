@@ -248,6 +248,20 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     }
   }
 
+  protected configLegend(chart: Chart, options: ScatterOptions): ScatterOptions {
+    const optionTmp = super.configLegend(chart, options)
+    if (!optionTmp.legend) {
+      return optionTmp
+    }
+    optionTmp.legend.marker.style = style => {
+      return {
+        r: 4,
+        fill: style.fill
+      }
+    }
+    return optionTmp
+  }
+
   protected setupOptions(chart: Chart, options: ScatterOptions) {
     return flow(
       this.configTheme,

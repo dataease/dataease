@@ -401,6 +401,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     }
     return chart
   }
+
   protected configColor(chart: Chart, options: ScatterOptions): ScatterOptions {
     const { xAxis, yAxis, yAxisExt } = chart
     if (!(xAxis?.length && yAxis?.length && yAxisExt?.length)) {
@@ -408,6 +409,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     }
     return this.configSingleDimensionColor(chart, options)
   }
+
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     const { xAxis, yAxis, yAxisExt } = chart
     if (!(xAxis?.length && yAxis?.length && yAxisExt?.length)) {
@@ -416,6 +418,21 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const tmp = data?.[0]?.data
     return setUpSingleDimensionSeriesColor(chart, tmp)
   }
+
+  protected configLegend(chart: Chart, options: ScatterOptions): ScatterOptions {
+    const optionTmp = super.configLegend(chart, options)
+    if (!optionTmp.legend) {
+      return optionTmp
+    }
+    optionTmp.legend.marker.style = style => {
+      return {
+        r: 4,
+        fill: style.fill
+      }
+    }
+    return optionTmp
+  }
+
   protected setupOptions(chart: Chart, options: ScatterOptions) {
     return flow(
       this.configTheme,
