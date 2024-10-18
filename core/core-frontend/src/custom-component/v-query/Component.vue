@@ -865,6 +865,13 @@ const autoStyle = computed(() => {
           .label-wrapper-tooltip {
             display: inline-flex !important;
             cursor: pointer;
+            padding: 4px 8px;
+            height: 26px;
+            width: 58px;
+            border-radius: 4px;
+            border: 1px solid #dee0e3;
+            background: #fff;
+            box-shadow: 0px 4px 8px 0px rgba(31, 35, 41, 0.1);
           }
         }
         .label {
@@ -876,6 +883,7 @@ const autoStyle = computed(() => {
           position: absolute;
           right: 0;
           top: 0;
+          overflow: visible;
         }
       }
     }
