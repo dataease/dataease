@@ -305,6 +305,8 @@ export default {
       task_distribute_setting: '任務下發設置',
       form_template_setting: '表單模板設置',
       template_setting: '模板設置',
+      form_filter_setting: '表單過濾設置',
+      filter_setting: '過濾設置',
       component: '組件標題',
       receive_object: '接收對象',
       receive_fit_column: '接收對象匹配字段',

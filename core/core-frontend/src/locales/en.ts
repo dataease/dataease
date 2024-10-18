@@ -567,6 +567,8 @@ export default {
       task_distribute_setting: 'Task Distribute Setting',
       form_template_setting: 'From Template Setting',
       template_setting: 'Template Setting',
+      form_filter_setting: 'From Filter Setting',
+      filter_setting: 'Filter Setting',
       component: 'Component Name',
       receive_object: 'Receive Object',
       receive_fit_column: 'Receive Fit Column',

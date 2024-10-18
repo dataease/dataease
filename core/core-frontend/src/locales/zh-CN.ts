@@ -2904,6 +2904,8 @@ export default {
       receive_fit_column: '接收对象匹配字段',
       form_template_setting: '表单模板设置',
       template_setting: '模板设置',
+      form_filter_setting: '表单过滤设置',
+      filter_setting: '过滤设置',
       component: '组件标题',
       receiver: '接收人',
       receiver_not_null: '接收人不能为空！',
