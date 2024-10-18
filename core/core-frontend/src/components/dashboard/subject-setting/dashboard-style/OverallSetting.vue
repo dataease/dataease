@@ -230,7 +230,7 @@ const toolTip = computed(() => {
 })
 
 const resourceType = computed(() =>
-  dvInfo.value.type === 'dashboard' ? t('dashboard.dashboard') : t('dashboard.big_data_screen')
+  dvInfo.value.type === 'dashboard' ? t('work_branch.dashboard') : t('dashboard.big_data_screen')
 )
 
 const onRefreshChange = val => {
