@@ -69,5 +69,6 @@ public class TaskInfoVO implements Serializable {
 
 
     private String formExtSetting;
+    private String formFilterSetting;
 
 }
