@@ -13,7 +13,10 @@ import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -100,8 +103,10 @@ public class ExtWhere2Str {
                                     originName = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, "'1970-01-01 '", originName), SQLConstants.DEFAULT_DATE_FORMAT);
                                 }
                             }
-                            // 此处获取标准格式的日期
-                            whereName = originName;
+                            // 此处获取标准格式的日期，同时此处是仪表板过滤，仪表板中图表的日期均已经格式化，所以要强制加上日期转换
+                            whereName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, originName,
+                                    SQLConstants.DEFAULT_DATE_FORMAT,
+                                    SQLConstants.DEFAULT_DATE_FORMAT);
                         }
                     } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
