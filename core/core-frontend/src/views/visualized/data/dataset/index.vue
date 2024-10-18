@@ -1234,6 +1234,10 @@ const getMenuList = (val: boolean) => {
     &.auto {
       height: auto;
     }
+
+    :deep(.ed-table-v2__header-cell) {
+      background-color: #f5f6f7 !important;
+    }
   }
 
   .dataset-list {
@@ -1356,11 +1360,5 @@ const getMenuList = (val: boolean) => {
       display: inline-flex;
     }
   }
-}
-</style>
-
-<style lang="less">
-.ed-table-v2__header-cell {
-  background-color: #f5f6f7;
 }
 </style>
