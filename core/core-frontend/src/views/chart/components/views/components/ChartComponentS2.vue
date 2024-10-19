@@ -259,7 +259,9 @@ const initScroll = () => {
       }
       const rowHeight = customAttr.tableCell.tableItemHeight
       const headerHeight =
-        customAttr.tableHeader.showTableHeader === false ? 1 : customAttr.tableHeader.tableTitleHeight
+        customAttr.tableHeader.showTableHeader === false
+          ? 1
+          : customAttr.tableHeader.tableTitleHeight
       const scrollBarSize = myChart.theme.scrollBar.size
       const scrollHeight =
         rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
