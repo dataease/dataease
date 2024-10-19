@@ -303,4 +303,9 @@ public class ChartDataServer implements ChartDataApi {
     public List<String> getFieldData(ChartViewDTO view, Long fieldId, String fieldType) throws Exception {
         return chartDataManage.getFieldData(view, fieldId, fieldType);
     }
+
+    @Override
+    public List<String> getDrillFieldData(ChartViewDTO view, Long fieldId) throws Exception {
+        return chartDataManage.getDrillFieldData(view, fieldId);
+    }
 }

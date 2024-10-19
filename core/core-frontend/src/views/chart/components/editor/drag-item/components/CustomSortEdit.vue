@@ -1,7 +1,7 @@
-<script lang="tsx" setup>
+<script lang="ts" setup>
 import icon_drag_outlined from '@/assets/svg/icon_drag_outlined.svg'
 import draggable from 'vuedraggable'
-import { getFieldData } from '@/api/chart'
+import { getFieldData, getDrillFieldData } from '@/api/chart'
 import { reactive, watch, ref } from 'vue'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -45,7 +45,13 @@ const init = () => {
       user: wsCache.get('user.uid')
     }
   }
-  getFieldData(props.field.id, props.fieldType, chart)
+  const param = {
+    fieldId: props.field.id,
+    fieldType: props.fieldType,
+    data: chart
+  }
+  let reqMethod = props.fieldType === 'drillFields' ? getDrillFieldData : getFieldData
+  reqMethod(param)
     .then(response => {
       const strArr = response.data
       state.sortList = strArr.map(ele => {
