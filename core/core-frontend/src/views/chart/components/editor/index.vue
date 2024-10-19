@@ -531,6 +531,12 @@ const onCustomExtColorSort = item => {
   customSortAxis.value = 'extColor'
   customSort()
 }
+const onDrillCustomSort = item => {
+  recordSnapshotInfo('render')
+  state.customSortField = view.value.drillFields[item.index]
+  customSortAxis.value = 'drillFields'
+  customSort()
+}
 const onMove = e => {
   recordSnapshotInfo('calcData')
   state.moveId = e.draggedContext.element.id
@@ -1256,6 +1262,10 @@ const saveRename = ref => {
           axis = view.value.extColor[index]
           view.value.extColor[index].chartShowName = chartShowName
           break
+        case 'drillFields':
+          axisType = 'drillFields'
+          axis = view.value.drillFields[index]
+          view.value.drillFields[index].chartShowName = chartShowName
         default:
           break
       }
@@ -2826,6 +2836,8 @@ const deleteChartFieldItem = id => {
                                 :themes="props.themes"
                                 @onDimensionItemChange="drillItemChange"
                                 @onDimensionItemRemove="drillItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onDrillCustomSort"
                               />
                             </template>
                           </draggable>

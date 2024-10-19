@@ -29,4 +29,8 @@ public interface ChartDataApi {
     @Operation(summary = "获取字段值")
     @PostMapping("getFieldData/{fieldId}/{fieldType}")
     List<String> getFieldData(@RequestBody ChartViewDTO view, @PathVariable Long fieldId, @PathVariable String fieldType) throws Exception;
+
+    @Operation(summary = "获取下钻字段值")
+    @PostMapping("getDrillFieldData/{fieldId}")
+    List<String> getDrillFieldData(@RequestBody ChartViewDTO view, @PathVariable Long fieldId) throws Exception;
 }

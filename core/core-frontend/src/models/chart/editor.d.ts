@@ -58,6 +58,7 @@ declare type AxisType =
   | 'flowMapStartName'
   | 'flowMapEndName'
   | 'extColor'
+  | 'drillFields'
 /**
  * 轴配置
  */

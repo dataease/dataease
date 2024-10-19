@@ -312,7 +312,6 @@ public class ChartDataManage {
                             ChartViewFieldDTO nextDrillField = drill.get(i + 1);
                             if (!fields.contains(nextDrillField.getId())) {
                                 nextDrillField.setSource(FieldSource.DRILL);
-                                nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
                                 xAxis.add(nextDrillField);
                                 dillAxis.add(nextDrillField);
                                 fields.add(nextDrillField.getId());
@@ -790,5 +789,25 @@ public class ChartDataManage {
                 chartViewManege.disuse(disuseChartIdList);
             }
         }
+    }
+
+    public List<String> getDrillFieldData(ChartViewDTO view, Long fieldId) throws Exception {
+        List<ChartViewFieldDTO> drillField = view.getDrillFields();
+        ChartViewFieldDTO targetField = null;
+        for (int i = 0; i < drillField.size(); i++) {
+            ChartViewFieldDTO tmp = drillField.get(i);
+            if (tmp.getId().equals(fieldId)) {
+                targetField = tmp;
+                break;
+            }
+        }
+        if (targetField == null) {
+            return Collections.emptyList();
+        }
+        view.setXAxis(Collections.singletonList(targetField));
+
+        List<String[]> sqlData = sqlData(view, view.getChartExtRequest(), fieldId);
+        List<String[]> result = customSort(Optional.ofNullable(targetField.getCustomSort()).orElse(new ArrayList<>()), sqlData, 0);
+        return result.stream().map(i -> i[0]).distinct().collect(Collectors.toList());
     }
 }
