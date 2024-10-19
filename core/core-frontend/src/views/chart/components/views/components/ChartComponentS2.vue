@@ -233,52 +233,56 @@ const mouseLeave = () => {
   initScroll()
 }
 
+let scrollTimer
 const initScroll = () => {
-  // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
-  const customAttr = actualChart?.customAttr
-  const senior = actualChart?.senior
-  if (
-    myChart &&
-    senior?.scrollCfg?.open &&
-    chartData.value.tableRow?.length &&
-    (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
-  ) {
-    // 防止多次渲染
-    myChart.facet.timer?.stop()
-    // 已滚动的距离
-    let scrolledOffset = myChart.store.get('scrollY') || 0
-    // 平滑滚动，兼容原有的滚动速率设置
-    // 假设原设定为 2 行间隔 2 秒，换算公式为: 滚动到底部的时间 = 未展示部分行数 / 2行 * 2秒
-    const offsetHeight = document.getElementById(containerId).offsetHeight
-    // 没显示就不滚了
-    if (!offsetHeight) {
-      return
+  scrollTimer && clearTimeout(scrollTimer)
+  scrollTimer = setTimeout(() => {
+    // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
+    const customAttr = actualChart?.customAttr
+    const senior = actualChart?.senior
+    if (
+      myChart &&
+      senior?.scrollCfg?.open &&
+      chartData.value.tableRow?.length &&
+      (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
+    ) {
+      // 防止多次渲染
+      myChart.facet.timer?.stop()
+      // 已滚动的距离
+      let scrolledOffset = myChart.store.get('scrollY') || 0
+      // 平滑滚动，兼容原有的滚动速率设置
+      // 假设原设定为 2 行间隔 2 秒，换算公式为: 滚动到底部的时间 = 未展示部分行数 / 2行 * 2秒
+      const offsetHeight = document.getElementById(containerId).offsetHeight
+      // 没显示就不滚了
+      if (!offsetHeight) {
+        return
+      }
+      const rowHeight = customAttr.tableCell.tableItemHeight
+      const headerHeight =
+        customAttr.tableHeader.showTableHeader === false ? 1 : customAttr.tableHeader.tableTitleHeight
+      const scrollBarSize = myChart.theme.scrollBar.size
+      const scrollHeight =
+        rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
+      // 显示内容没撑满
+      if (scrollHeight < scrollBarSize) {
+        return
+      }
+      // 到底了重置一下,1是误差
+      if (scrolledOffset >= scrollHeight - 1) {
+        myChart.store.set('scrollY', 0)
+        myChart.render()
+        scrolledOffset = 0
+      }
+      const viewedHeight = offsetHeight - headerHeight - scrollBarSize + scrolledOffset
+      const scrollViewCount = chartData.value.tableRow.length - viewedHeight / rowHeight
+      const duration = (scrollViewCount / senior.scrollCfg.row) * senior.scrollCfg.interval
+      myChart.facet.scrollWithAnimation(
+        { offsetY: { value: scrollHeight, animate: false } },
+        duration,
+        initScroll
+      )
     }
-    const rowHeight = customAttr.tableCell.tableItemHeight
-    const headerHeight =
-      customAttr.tableHeader.showTableHeader === false ? 1 : customAttr.tableHeader.tableTitleHeight
-    const scrollBarSize = myChart.theme.scrollBar.size
-    const scrollHeight =
-      rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
-    // 显示内容没撑满
-    if (scrollHeight < scrollBarSize) {
-      return
-    }
-    // 到底了重置一下,1是误差
-    if (scrolledOffset >= scrollHeight - 1) {
-      myChart.store.set('scrollY', 0)
-      myChart.render()
-      scrolledOffset = 0
-    }
-    const viewedHeight = offsetHeight - headerHeight - scrollBarSize + scrolledOffset
-    const scrollViewCount = chartData.value.tableRow.length - viewedHeight / rowHeight
-    const duration = (scrollViewCount / senior.scrollCfg.row) * senior.scrollCfg.interval
-    myChart.facet.scrollWithAnimation(
-      { offsetY: { value: scrollHeight, animate: false } },
-      duration,
-      initScroll
-    )
-  }
+  }, 1500)
 }
 
 const showPage = computed(() => {
