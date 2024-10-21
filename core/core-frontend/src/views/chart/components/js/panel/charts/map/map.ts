@@ -296,8 +296,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         },
         'l7plot-legend__category-marker': {
           ...LEGEND_SHAPE_STYLE_MAP[legend.icon],
-          width: '8px',
-          height: '8px'
+          width: '9px',
+          height: '9px',
+          border: '0.01px solid #f4f4f4'
         }
       }
     }
@@ -311,9 +312,15 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       ranges.forEach((range, index) => {
         const tmpRange = [range[0]?.toFixed(0), range[1]?.toFixed(0)]
         const colorIndex = index % colors.length
+        // 当区间第一个值小于最小值时，颜色取地图底色
+        const isLessThanMin = range[0] < ranges[0][0]
+        let rangeColor = colors[colorIndex]
+        if (isLessThanMin) {
+          rangeColor = hexColorToRGBA(basicStyle.areaBaseColor, basicStyle.alpha)
+        }
         items.push({
           value: tmpRange,
-          color: colors[colorIndex]
+          color: rangeColor
         })
       })
       customLegend['items'] = items
@@ -331,6 +338,17 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       options.color.value = t => {
         const c = findColorByValue(t.value, items)
         return c ? c : null
+      }
+      customLegend['domStyles'] = {
+        ...customLegend['domStyles'],
+        'l7plot-legend l7plot-legend__category': {
+          'box-shadow': '0px 0px 0px 0px',
+          'background-color': 'var(--bgColor)',
+          padding: 0
+        },
+        'l7plot-legend__list-item': {
+          'margin-bottom': '3px'
+        }
       }
     } else {
       customLegend['customContent'] = (_: string, items: CategoryLegendListItem[]) => {
@@ -366,6 +384,11 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     defaultsDeep(options, { legend: customLegend })
     return options
+  }
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.customAttr.basicStyle.areaBaseColor = '#f4f4f4'
+    return chart
   }
 
   protected setupOptions(

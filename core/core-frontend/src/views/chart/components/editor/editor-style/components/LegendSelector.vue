@@ -356,7 +356,6 @@ onMounted(() => {
                 <el-input-number
                   :effect="themes"
                   v-model="state.legendForm.miscForm.mapLegendNumber"
-                  size="small"
                   :precision="0"
                   :min="1"
                   :max="9"
@@ -385,7 +384,6 @@ onMounted(() => {
                   <el-input-number
                     :effect="themes"
                     v-model="state.legendForm.miscForm.mapLegendCustomRange[index]"
-                    size="small"
                     clearable
                     :value-on-clear="mapLegendCustomRangeCacheList[index]"
                     controls-position="right"

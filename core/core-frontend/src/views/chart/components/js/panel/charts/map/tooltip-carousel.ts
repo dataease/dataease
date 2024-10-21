@@ -12,7 +12,7 @@ export const configCarouselTooltip = (chart, view, data, scene) => {
       ?.filter(i => i.dimensionList?.length > 0)
       .reduce((acc, current) => {
         const existingItem = acc.find(obj => {
-          if (obj.abbrev === 'China') {
+          if (!obj.abbrev || obj.abbrev === 'China') {
             return obj.adcode === current.adcode
           } else {
             return obj.abbrev === current.abbrev
