@@ -144,10 +144,9 @@ const varStyle = computed(() => [
 
 const init = () => {
   timeId = setInterval(() => {
-    const outerId =
-      showPosition.value === 'edit'
-        ? 'shape-id-' + element.value.id
-        : 'wrapper-outer-id-' + element.value.id
+    const outerId = ['canvas', 'canvasDataV', 'edit'].includes(showPosition.value)
+      ? 'shape-id-' + element.value.id
+      : 'wrapper-outer-id-' + element.value.id
     const componentOut = document.getElementById(outerId)
     if (componentOut && text.value) {
       const textValue = text.value.clientWidth

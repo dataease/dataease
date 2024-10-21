@@ -1586,7 +1586,7 @@ defineExpose({
         @input="handleInput"
         :dv-info="dvInfo"
         :canvas-active="canvasActive"
-        :show-position="'edit'"
+        :show-position="'canvas'"
       />
       <component
         v-else-if="item.component.includes('Svg')"
