@@ -3,12 +3,18 @@ import { store } from '@/store'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 interface MapStore {
   mapCache: Record<string, FeatureCollection>
-  mapKey: string
+  mapKey: {
+    key: string
+    securityCode: string
+  }
 }
 export const useMapStore = defineStore('map', {
   state: (): MapStore => ({
     mapCache: {},
-    mapKey: ''
+    mapKey: {
+      key: '',
+      securityCode: ''
+    }
   }),
   actions: {
     setMap({ id, geoJson }) {

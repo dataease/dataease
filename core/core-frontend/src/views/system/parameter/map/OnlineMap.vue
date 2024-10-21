@@ -4,19 +4,33 @@
       <div class="geo-title">
         <span>{{ t('online_map.onlinemap') }}</span>
       </div>
-      <div class="online-form-item">
-        <div class="map-item">
-          <div class="map-item-label">
-            <span class="form-label">Key</span>
+      <el-row>
+        <el-col>
+          <div class="online-form-item">
+            <div class="map-item">
+              <div class="map-item-label">
+                <span class="form-label">Key</span>
+              </div>
+            </div>
+            <div class="map-item">
+              <el-input v-model="mapEditor.key" />
+            </div>
+            <div class="map-item">
+              <div class="map-item-label">
+                <span class="form-label">{{ t('chart.security_code') }}</span>
+              </div>
+            </div>
+            <div class="map-item">
+              <el-input v-model="mapEditor.securityCode" />
+            </div>
           </div>
-        </div>
-        <div class="map-item">
-          <el-input v-model="key" />
-        </div>
-      </div>
-      <el-button type="primary" :disabled="!key" @click="saveHandler">{{
-        t('commons.save')
-      }}</el-button>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-button type="primary" :disabled="!mapEditor.key" @click="saveHandler">
+          {{ t('commons.save') }}
+        </el-button>
+      </el-row>
     </el-aside>
     <el-main>
       <div v-show="mapLoaded" v-if="!mapReloading" class="de-map-container" :id="domId" />
@@ -30,23 +44,26 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { queryMapKeyApi, saveMapKeyApi } from '@/api/setting/sysParameter'
 import { ElMessage } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 const { t } = useI18n()
-const key = ref('')
+const mapEditor = reactive({
+  key: '',
+  securityCode: ''
+})
 const mapInstance = ref(null)
 const mapReloading = ref(false)
 const domId = ref('de-map-container')
 const mapLoaded = ref(false)
 
 const loadMap = () => {
-  if (!key.value) {
+  if (!mapEditor.key) {
     return
   }
-  const mykey = key.value
+  const mykey = mapEditor.key
   const url = `https://webapi.amap.com/maps?v=2.0&key=${mykey}`
 
   loadScript(url)
@@ -84,7 +101,7 @@ const createMapInstance = () => {
   mapLoaded.value = true
 }
 const saveHandler = () => {
-  saveMapKeyApi({ key: key.value })
+  saveMapKeyApi(mapEditor)
     .then(() => {
       ElMessage.success(t('commons.save_success'))
       initLoad()
@@ -96,7 +113,8 @@ const saveHandler = () => {
 const initLoad = () => {
   queryMapKeyApi()
     .then(res => {
-      key.value = res.data
+      mapEditor.key = res.data.key
+      mapEditor.securityCode = res.data.securityCode
       loadMap()
     })
     .catch(e => {
@@ -154,7 +172,6 @@ onMounted(() => {
       }
     }
     .online-form-item {
-      height: 64px;
       margin-bottom: 16px;
       .map-item {
         height: 32px;

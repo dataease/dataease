@@ -114,8 +114,13 @@ export abstract class L7ChartView<
   }
 
   protected getMapKey = async () => {
-    if (!mapStore.mapKey) {
+    if (!mapStore.mapKey.key) {
       await queryMapKeyApi().then(res => mapStore.setKey(res.data))
+    }
+    if (mapStore.mapKey.securityCode) {
+      window._AMapSecurityConfig = {
+        securityJsCode: mapStore.mapKey.securityCode
+      }
     }
     return mapStore.mapKey
   }

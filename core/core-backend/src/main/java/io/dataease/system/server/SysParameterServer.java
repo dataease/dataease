@@ -27,13 +27,12 @@ public class SysParameterServer implements SysParameterApi {
 
     @Override
     public void saveOnlineMap(OnlineMapEditor editor) {
-        sysParameterManage.saveOnlineMap(editor.getKey());
+        sysParameterManage.saveOnlineMap(editor);
     }
 
     @Override
-    public String queryOnlineMap() {
-        String key = sysParameterManage.queryOnlineMap();
-        return StringUtils.isNotBlank(key) ? key : "";
+    public OnlineMapEditor queryOnlineMap() {
+        return sysParameterManage.queryOnlineMap();
     }
 
     @Override

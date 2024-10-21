@@ -74,14 +74,17 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     const xAxisExt = deepCopy(chart.xAxisExt)
     const { basicStyle, misc } = deepCopy(parseJson(chart.customAttr))
 
-    const mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
-    const key = await this.getMapKey()
+    let mapStyle = basicStyle.mapStyleUrl
+    if (basicStyle.mapStyle !== 'custom') {
+      mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
+    }
+    const mapKey = await this.getMapKey()
     // 底层
     const scene = new Scene({
       id: container,
       logoVisible: false,
       map: new GaodeMap({
-        token: key ?? undefined,
+        token: mapKey?.key ?? undefined,
         style: mapStyle,
         pitch: misc.mapPitch,
         zoom: 2.5,

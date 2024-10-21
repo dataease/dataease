@@ -10,4 +10,6 @@ import java.io.Serializable;
 public class OnlineMapEditor implements Serializable {
     @Schema(description = "在线地图key", requiredMode = Schema.RequiredMode.REQUIRED)
     private String key;
+    @Schema(description = "在线地图安全密钥", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String securityCode;
 }

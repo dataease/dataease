@@ -30,7 +30,7 @@ public interface SysParameterApi {
 
     @Operation(summary = "查询在线地图")
     @GetMapping("/queryOnlineMap")
-    String queryOnlineMap();
+    OnlineMapEditor queryOnlineMap();
 
     @Operation(summary = "查询基础设置(非xpack)")
     @GetMapping("basic/query")
