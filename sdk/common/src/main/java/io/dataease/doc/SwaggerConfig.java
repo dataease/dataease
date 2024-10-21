@@ -41,7 +41,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("DataEaseAPI")
-                        .description("人人可用的开源数据可视化分析工具")
+                        .description("人人可用的开源 BI 工具")
                         .termsOfService("https://dataease.io")
                         .contact(contact)
                         .version(version));
