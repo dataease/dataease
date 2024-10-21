@@ -604,7 +604,6 @@ defineExpose({
     clearable
     :style="selectStyle"
     collapse-tags
-    :remote="config.optionValueSource === 1"
     :options="options"
     collapse-tags-tooltip
   ></el-select-v2>
@@ -620,7 +619,6 @@ defineExpose({
     :style="selectStyle"
     filterable
     @clear="clear"
-    :remote="config.optionValueSource === 1"
     radio
     @visible-change="visibleChange"
     :popper-class="
