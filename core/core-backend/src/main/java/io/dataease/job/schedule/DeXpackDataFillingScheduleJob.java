@@ -2,6 +2,7 @@ package io.dataease.job.schedule;
 
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.LogUtil;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +19,14 @@ public class DeXpackDataFillingScheduleJob implements Job {
         JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
         DeDataFillingTaskExecutor deTaskExecutor = CommonBeanFactory.getBean(DeDataFillingTaskExecutor.class);
         assert deTaskExecutor != null;
-        LicenseUtil.validate();
-        boolean taskLoaded = deTaskExecutor.execute(jobDataMap);
-        if (!taskLoaded) {
-            Objects.requireNonNull(CommonBeanFactory.getBean(ScheduleManager.class)).removeJob(jobKey, trigger.getKey());
+        try {
+            LicenseUtil.validate();
+            boolean taskLoaded = deTaskExecutor.execute(jobDataMap);
+            if (!taskLoaded) {
+                Objects.requireNonNull(CommonBeanFactory.getBean(ScheduleManager.class)).removeJob(jobKey, trigger.getKey());
+            }
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e.getCause());
         }
     }
 }
