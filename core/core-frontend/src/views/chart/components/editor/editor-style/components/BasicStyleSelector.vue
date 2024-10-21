@@ -400,6 +400,7 @@ onMounted(() => {
             <el-input
               :effect="themes"
               v-model="state.basicStyleForm.mapStyleUrl"
+              maxlength="50"
               @change="changeBasicStyle('mapStyleUrl')"
             />
           </el-form-item>
@@ -625,6 +626,73 @@ onMounted(() => {
         {{ t('chart.show_label') }}
       </el-checkbox>
     </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('autoFit')">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.autoFit"
+        @change="changeBasicStyle('autoFit')"
+      >
+        {{ t('chart.auto_fit') }}
+      </el-checkbox>
+    </el-form-item>
+    <div
+      class="alpha-setting"
+      v-if="showProperty('zoomLevel') && state.basicStyleForm.autoFit === false"
+    >
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+        {{ t('chart.zoom_level') }}
+      </label>
+      <el-row style="flex: 1" :gutter="8">
+        <el-col>
+          <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+            <el-slider
+              :effect="themes"
+              :min="3"
+              :max="18"
+              v-model="state.basicStyleForm.zoomLevel"
+              @change="changeBasicStyle('zoomLevel')"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
+    <template v-if="showProperty('mapCenter') && state.basicStyleForm.autoFit === false">
+      <el-row :gutter="8">
+        <el-col :span="12">
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            :label="t('chart.longitude')"
+          >
+            <el-input-number
+              controls-position="right"
+              :min="-180"
+              :max="180"
+              :effect="props.themes"
+              v-model.number="state.basicStyleForm.mapCenter.longitude"
+              @change="changeBasicStyle('mapCenter.longitude')"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            :label="t('chart.latitude')"
+          >
+            <el-input-number
+              controls-position="right"
+              :min="-90"
+              :max="90"
+              :effect="props.themes"
+              v-model.number="state.basicStyleForm.mapCenter.latitude"
+              @change="changeBasicStyle('mapCenter.latitude')"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </template>
     <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('zoom')">
       <el-checkbox
         size="small"

@@ -13,6 +13,7 @@ import { Scene } from '@antv/l7-scene'
 import { LineLayer } from '@antv/l7-layers'
 import { PointLayer } from '@antv/l7-layers'
 import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
+import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 const { t } = useI18n()
 
 /**
@@ -30,7 +31,15 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['mapBaseStyle', 'mapLineStyle', 'zoom', 'showLabel']
+    'basic-style-selector': [
+      'mapBaseStyle',
+      'mapLineStyle',
+      'zoom',
+      'showLabel',
+      'autoFit',
+      'mapCenter',
+      'zoomLevel'
+    ]
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'filter', 'flowMapStartName', 'flowMapEndName', 'yAxis']
   axisConfig: AxisConfig = {
@@ -74,6 +83,13 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     const xAxisExt = deepCopy(chart.xAxisExt)
     const { basicStyle, misc } = deepCopy(parseJson(chart.customAttr))
 
+    let center: [number, number] = [
+      DEFAULT_BASIC_STYLE.mapCenter.longitude,
+      DEFAULT_BASIC_STYLE.mapCenter.latitude
+    ]
+    if (basicStyle.autoFit === false) {
+      center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+    }
     let mapStyle = basicStyle.mapStyleUrl
     if (basicStyle.mapStyle !== 'custom') {
       mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
@@ -87,7 +103,8 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
         token: mapKey?.key ?? undefined,
         style: mapStyle,
         pitch: misc.mapPitch,
-        zoom: 2.5,
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5,
         showLabel: !(basicStyle.showLabel === false)
       })
     })
@@ -157,7 +174,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     const config: L7Config = new LineLayer({
       name: 'line',
       blend: 'normal',
-      autoFit: true
+      autoFit: !(basicStyle.autoFit === false)
     })
       .source(data, {
         parser: {
