@@ -135,19 +135,21 @@ onMounted(() => {
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
         <span style="display: flex; color: #646a73">
-          <el-icon v-if="'asc' === item.sort">
-            <Icon name="icon_sort-a-to-z_outlined"
-              ><icon_sortAToZ_outlined class="svg-icon"
-            /></Icon>
-          </el-icon>
-          <el-icon v-if="'desc' === item.sort">
-            <Icon name="icon_sort-z-to-a_outlined"
-              ><icon_sortZToA_outlined class="svg-icon"
-            /></Icon>
-          </el-icon>
-          <el-icon v-if="'custom_sort' === item.sort">
-            <Icon name="icon_sort_outlined"><icon_sort_outlined class="svg-icon" /></Icon>
-          </el-icon>
+          <template v-if="index !== 0">
+            <el-icon v-if="'asc' === item.sort">
+              <Icon name="icon_sort-a-to-z_outlined"
+                ><icon_sortAToZ_outlined class="svg-icon"
+              /></Icon>
+            </el-icon>
+            <el-icon v-if="'desc' === item.sort">
+              <Icon name="icon_sort-z-to-a_outlined"
+                ><icon_sortZToA_outlined class="svg-icon"
+              /></Icon>
+            </el-icon>
+            <el-icon v-if="'custom_sort' === item.sort">
+              <Icon name="icon_sort_outlined"><icon_sort_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </template>
           <el-icon>
             <Icon :className="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
               ><component
@@ -185,7 +187,7 @@ onMounted(() => {
           class="drop-style"
           :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
         >
-          <el-dropdown-item @click.prevent>
+          <el-dropdown-item v-if="index !== 0" @click.prevent>
             <el-dropdown
               :effect="themes"
               popper-class="data-dropdown_popper_mr9"
