@@ -19,7 +19,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -189,7 +188,7 @@ public class ChartViewThresholdManage {
                     suffixText = "后";
                 }
                 String timeText = "";
-                if (StringUtils.equalsAnyIgnoreCase(format, "HH")) {
+                if (StringUtils.containsIgnoreCase(format, "HH")) {
                     timeText = " " + time;
                 }
                 return count + " " + unitText + suffixText + timeText;
@@ -316,7 +315,7 @@ public class ChartViewThresholdManage {
                 if ((Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_FLOAT)) && StringUtils.equals("dynamic", item.getValueType())) {
                     item.setField(fieldDTO);
                     item.setValue(formatValue(rows, item));
-                } else if (Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_TIME)) {
+                } else if (Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_TIME) && StringUtils.equals("dynamic", item.getValueType())) {
                     item.setField(fieldDTO);
                     item.setValue(dynamicFormatValue(item));
                 }
@@ -339,9 +338,9 @@ public class ChartViewThresholdManage {
                 int unit = Integer.parseInt(map.get("unit").toString());
                 int suffix = Integer.parseInt(map.get("suffix").toString());
                 String time = map.get("time").toString();
-                String timeValue = getCustomTimeValue(format, unit, suffix, count);
-                if (StringUtils.containsIgnoreCase(format, "yyyy-MM-dd HH")) {
-                    return timeValue + time;
+                String timeValue = getCustomTimeValue(format, unit, suffix, count, false);
+                if (StringUtils.containsIgnoreCase(format, "yyyy-MM-dd HH") && StringUtils.isNotBlank(time)) {
+                    return timeValue + " " + time;
                 }
                 return timeValue;
             } else {
@@ -349,39 +348,46 @@ public class ChartViewThresholdManage {
                 String fullFormat = "yyyy-MM-dd HH:mm:ss";
                 int length = format.length();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fullFormat.substring(0, length));
+                int count = timeFlag == 1 ? 0 : 1;
+                int suffix = timeFlag - 1;
                 if (StringUtils.equalsIgnoreCase("YYYY", format)) {
-                    return getCustomTimeValue(format, 1, timeFlag - 1, timeFlag == 1 ? 0 : 1);
+                    return getCustomTimeValue(format, 1, suffix, count, true);
                 } else if (StringUtils.equalsIgnoreCase("YYYY-MM", format)) {
                     if (timeFlag == 4) {
-                        return now.toLocalDate().withMonth(1).withDayOfMonth(1).format(formatter);
+                        return now.withMonth(1).withDayOfMonth(1).format(formatter);
                     } else if (timeFlag == 5) {
-                        return now.toLocalDate().withMonth(12).withDayOfMonth(31).format(formatter);
+                        return now.withMonth(12).withDayOfMonth(31).format(formatter);
                     } else {
-                        return getCustomTimeValue(format, 2, timeFlag - 1, timeFlag == 1 ? 0 : 1);
+                        return getCustomTimeValue(format, 2, suffix, count, true);
                     }
                 } else {
                     if (timeFlag == 4) {
-                        return now.toLocalDate().withDayOfMonth(1).format(formatter);
+                        return now.withDayOfMonth(1).format(formatter);
                     } else if (timeFlag == 5) {
-                        return now.toLocalDate().plusMonths(1).withDayOfMonth(1).minusDays(1).format(formatter);
+                        return now.plusMonths(1).withDayOfMonth(1).minusDays(1).format(formatter);
                     } else {
-                        return getCustomTimeValue(format, 3, timeFlag - 1, timeFlag == 1 ? 0 : 1);
+                        return getCustomTimeValue(format, 3, suffix, count, true);
                     }
                 }
             }
 
         } catch (Exception e) {
-            LogUtil.error("动态时间配置错误，请重新配置！");
+            LogUtil.error("动态时间配置错误，请重新配置！" + e.getMessage());
             return value;
         }
     }
 
-    private String getCustomTimeValue(String format, int unit, int suffix, int count) {
-        LocalDate now = LocalDate.now();
-        String fullFormat = "yyyy-MM-dd";
-        int length = Math.min(format.length(), fullFormat.length());
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fullFormat.substring(0, length));
+    private String getCustomTimeValue(String format, int unit, int suffix, int count, boolean hasTime) {
+        LocalDateTime now = LocalDateTime.now();
+        String fullFormat = "yyyy-MM-dd HH:mm:ss";
+        int len = format.length();
+        if (!hasTime) {
+            len = Math.min(len, 10);
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fullFormat.substring(0, len));
+        if (count == 0) {
+            return now.format(formatter);
+        }
         if (unit == 1) {
             if (suffix == 1) {
                 return now.minusYears(count).format(formatter);
