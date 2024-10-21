@@ -270,7 +270,10 @@ export default {
       lt_check: '值需要小于{0}: {1}',
       gt_check: '值需要大于{0}: {1}',
       le_check: '值需要小于等于{0}: {1}',
-      ge_check: '值需要大于等于{0}: {1}'
+      ge_check: '值需要大于等于{0}: {1}',
+      status: '填報狀態',
+      status_0: '未填报',
+      status_1: '已填报'
     },
     database: {
       nvarchar: '字符串',
