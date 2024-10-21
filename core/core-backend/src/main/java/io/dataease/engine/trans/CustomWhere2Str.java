@@ -151,8 +151,9 @@ public class CustomWhere2Str {
 
         if (StringUtils.equalsIgnoreCase(item.getFilterType(), "enum")) {
             if (ObjectUtils.isNotEmpty(item.getEnumValue())) {
-                if (StringUtils.equalsIgnoreCase(field.getType(), "NVARCHAR")) {
-                    res = "(" + whereName + " IN (" + item.getEnumValue().stream().map(str -> "N" + "'" + str + "'").collect(Collectors.joining(",")) + "))";
+                if (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) {
+                    res = "(" + whereName + " IN (" + item.getEnumValue().stream().map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + "))";
                 } else {
                     res = "(" + whereName + " IN ('" + String.join("','", item.getEnumValue()) + "'))";
                 }
@@ -176,14 +177,16 @@ public class CustomWhere2Str {
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
-                if (StringUtils.equalsIgnoreCase(field.getType(), "NVARCHAR")) {
-                    whereValue = "(" + Arrays.stream(value.split(",")).map(str -> "N" + "'" + str + "'").collect(Collectors.joining(",")) + ")";
+                if (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) {
+                    whereValue = "(" + Arrays.stream(value.split(",")).map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + ")";
                 } else {
                     whereValue = "('" + String.join("','", value.split(",")) + "')";
                 }
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
-                if (StringUtils.equalsIgnoreCase(field.getType(), "NVARCHAR")) {
-                    whereValue = "N'%" + value + "%'";
+                if (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) {
+                    whereValue = "'" + SQLConstants.MSSQL_N_PREFIX + "%" + value + "%'";
                 } else {
                     whereValue = "'%" + value + "%'";
                 }
@@ -227,7 +230,8 @@ public class CustomWhere2Str {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                     }
                 } else {
-                    if (StringUtils.equalsIgnoreCase(field.getType(), "NVARCHAR")) {
+                    if (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                            || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value);
                     } else {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
