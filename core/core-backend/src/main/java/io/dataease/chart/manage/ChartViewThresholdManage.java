@@ -3,6 +3,7 @@ package io.dataease.chart.manage;
 import io.dataease.api.chart.request.ThresholdCheckRequest;
 import io.dataease.api.chart.vo.ThresholdCheckVO;
 import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
@@ -18,6 +19,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -126,12 +130,13 @@ public class ChartViewThresholdManage {
             String enumValueText = String.join(",", enumValue);
             return fieldName + " 属于 " + "( " + enumValueText + " )";
         } else {
+            Integer deType = map.getDeType();
             String valueType = item.getValueType();
-            return fieldName + " " + translateTerm(item.getTerm()) + " " + formatFieldValue(item.getValue(), valueType);
+            return fieldName + " " + translateTerm(item.getTerm()) + " " + formatFieldValue(item.getValue(), valueType, deType);
         }
     }
 
-    private String formatFieldValue(String value, String valueType) {
+    private String formatFieldValue(String value, String valueType, Integer deType) {
         if (StringUtils.isBlank(valueType)) {
             valueType = "fixed";
         }
@@ -144,7 +149,68 @@ public class ChartViewThresholdManage {
             return "最小值";
         } else if (StringUtils.equals("average", value)) {
             return "平均值";
+        } else if (deType == 1) {
+            return formatDynamicTimeLabel(value);
         } else {
+            return value;
+        }
+    }
+
+    private String formatDynamicTimeLabel(String value) {
+        if (StringUtils.isBlank(value)) {
+            return value;
+        }
+        try {
+            Map map = JsonUtil.parseObject(value, Map.class);
+            String format = map.get("format").toString();
+            int timeFlag = Integer.parseInt(map.get("timeFlag").toString());
+
+            if (timeFlag == 9) {
+                int count = Integer.parseInt(map.get("count").toString());
+                int unit = Integer.parseInt(map.get("unit").toString());
+                int suffix = Integer.parseInt(map.get("suffix").toString());
+                String time = map.get("time").toString();
+
+                List<String> unitLabels = null;
+                if (StringUtils.equalsIgnoreCase("YYYY", format)) {
+                    unitLabels = List.of("年");
+                } else if (StringUtils.equalsIgnoreCase("YYYY-MM", format)) {
+                    unitLabels = List.of("年", "月");
+                } else if (StringUtils.equalsIgnoreCase("YYYY-MM-DD", format)) {
+                    unitLabels = List.of("年", "月", "日");
+                } else if (StringUtils.equalsIgnoreCase("HH:mm:ss", format)) {
+                    DEException.throwException("纯时间格式不支持动态格式");
+                } else {
+                    unitLabels = List.of("年", "月", "日");
+                }
+                String unitText = unitLabels.get(unit - 1);
+                String suffixText = "前";
+                if (suffix == 2) {
+                    suffixText = "后";
+                }
+                String timeText = "";
+                if (StringUtils.equalsAnyIgnoreCase(format, "HH")) {
+                    timeText = " " + time;
+                }
+                return count + " " + unitText + suffixText + timeText;
+            } else {
+                List<String> shortLabels = null;
+                if (StringUtils.equalsIgnoreCase("YYYY", format)) {
+                    shortLabels = List.of("当年", "去年", "明年");
+                } else if (StringUtils.equalsIgnoreCase("YYYY-MM", format)) {
+                    shortLabels = List.of("当月", "上个月", "下个月", "年初", "年末");
+                } else if (StringUtils.equalsIgnoreCase("YYYY-MM-DD", format)) {
+                    shortLabels = List.of("今天", "昨天", "明天", "月初", "月末");
+                } else if (StringUtils.equalsIgnoreCase("HH:mm:ss", format)) {
+                    shortLabels = List.of("当前", "1小时前", "1小时后");
+                } else {
+                    shortLabels = List.of("今天", "昨天", "明天", "月初", "月末");
+                }
+                return shortLabels.get(timeFlag - 1);
+            }
+
+        } catch (Exception e) {
+            LogUtil.error("动态时间配置错误，请重新配置！");
             return value;
         }
     }
@@ -250,10 +316,90 @@ public class ChartViewThresholdManage {
                 if ((Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_FLOAT)) && StringUtils.equals("dynamic", item.getValueType())) {
                     item.setField(fieldDTO);
                     item.setValue(formatValue(rows, item));
+                } else if (Objects.equals(fieldDTO.getDeType(), DeTypeConstants.DE_TIME)) {
+                    item.setField(fieldDTO);
+                    item.setValue(dynamicFormatValue(item));
                 }
             }
         });
     }
+
+    private String dynamicFormatValue(FilterTreeItem item) {
+        String value = item.getValue();
+
+        if (StringUtils.isBlank(value)) {
+            return value;
+        }
+        try {
+            Map map = JsonUtil.parseObject(value, Map.class);
+            String format = map.get("format").toString();
+            int timeFlag = Integer.parseInt(map.get("timeFlag").toString());
+            if (timeFlag == 9) {
+                int count = Integer.parseInt(map.get("count").toString());
+                int unit = Integer.parseInt(map.get("unit").toString());
+                int suffix = Integer.parseInt(map.get("suffix").toString());
+                String time = map.get("time").toString();
+                String timeValue = getCustomTimeValue(format, unit, suffix, count);
+                if (StringUtils.containsIgnoreCase(format, "yyyy-MM-dd HH")) {
+                    return timeValue + time;
+                }
+                return timeValue;
+            } else {
+                LocalDateTime now = LocalDateTime.now();
+                String fullFormat = "yyyy-MM-dd HH:mm:ss";
+                int length = format.length();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fullFormat.substring(0, length));
+                if (StringUtils.equalsIgnoreCase("YYYY", format)) {
+                    return getCustomTimeValue(format, 1, timeFlag - 1, timeFlag == 1 ? 0 : 1);
+                } else if (StringUtils.equalsIgnoreCase("YYYY-MM", format)) {
+                    if (timeFlag == 4) {
+                        return now.toLocalDate().withMonth(1).withDayOfMonth(1).format(formatter);
+                    } else if (timeFlag == 5) {
+                        return now.toLocalDate().withMonth(12).withDayOfMonth(31).format(formatter);
+                    } else {
+                        return getCustomTimeValue(format, 2, timeFlag - 1, timeFlag == 1 ? 0 : 1);
+                    }
+                } else {
+                    if (timeFlag == 4) {
+                        return now.toLocalDate().withDayOfMonth(1).format(formatter);
+                    } else if (timeFlag == 5) {
+                        return now.toLocalDate().plusMonths(1).withDayOfMonth(1).minusDays(1).format(formatter);
+                    } else {
+                        return getCustomTimeValue(format, 3, timeFlag - 1, timeFlag == 1 ? 0 : 1);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            LogUtil.error("动态时间配置错误，请重新配置！");
+            return value;
+        }
+    }
+
+    private String getCustomTimeValue(String format, int unit, int suffix, int count) {
+        LocalDate now = LocalDate.now();
+        String fullFormat = "yyyy-MM-dd";
+        int length = Math.min(format.length(), fullFormat.length());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fullFormat.substring(0, length));
+        if (unit == 1) {
+            if (suffix == 1) {
+                return now.minusYears(count).format(formatter);
+            }
+            return now.plusYears(count).format(formatter);
+        } else if (unit == 2) {
+            if (suffix == 1) {
+                return now.minusMonths(count).format(formatter);
+            }
+            return now.plusMonths(count).format(formatter);
+        } else {
+            if (suffix == 1) {
+                return now.minusDays(count).format(formatter);
+            }
+            return now.plusDays(count).format(formatter);
+        }
+    }
+
 
     private String formatValue(List<Map<String, Object>> rows, FilterTreeItem item) {
         DatasetTableFieldDTO field = item.getField();
