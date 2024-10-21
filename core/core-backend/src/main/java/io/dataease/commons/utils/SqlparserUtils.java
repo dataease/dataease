@@ -536,7 +536,7 @@ public class SqlparserUtils {
                     }
                 }
                 if (filterParameter != null) {
-                    sql = sql.replace(matcher.group(), transFilter(filterParameter));
+                    sql = sql.replace(matcher.group(), transFilter(filterParameter, dsMap));
                 } else {
                     if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                         if (!isEdit && isFromDataSet && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
@@ -594,9 +594,14 @@ public class SqlparserUtils {
     }
 
 
-    private static String transFilter(SqlVariableDetails sqlVariableDetails) {
+    private static String transFilter(SqlVariableDetails sqlVariableDetails, Map<Long, DatasourceSchemaDTO> dsMap) {
         if (sqlVariableDetails.getOperator().equals("in")) {
-            return "'" + String.join("','", sqlVariableDetails.getValue()) + "'";
+            if (StringUtils.equalsIgnoreCase(dsMap.entrySet().iterator().next().getValue().getType(), DatasourceConfiguration.DatasourceType.sqlServer.getType())
+                    && sqlVariableDetails.getDeType() == 0) {
+                return "N'" + String.join("', N'", sqlVariableDetails.getValue()) + "'";
+            } else {
+                return "'" + String.join("','", sqlVariableDetails.getValue()) + "'";
+            }
         } else if (sqlVariableDetails.getOperator().equals("between")) {
             if (sqlVariableDetails.getDeType() == 1) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
