@@ -205,6 +205,10 @@ declare interface ChartBasicStyle {
    * 地图主题风格
    */
   mapStyle: string
+  /**
+   * 自定义地图风格url
+   */
+  mapStyleUrl: string
   heatMapType?: string
   heatMapIntensity?: number
   heatMapRadius?: number

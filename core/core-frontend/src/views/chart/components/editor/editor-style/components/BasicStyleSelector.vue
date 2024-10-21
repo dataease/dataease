@@ -213,13 +213,10 @@ const mapStyleOptions = [
   { name: t('chart.map_style_darkblue'), value: 'darkblue' },
   { name: t('chart.map_style_light'), value: 'light' },
   { name: t('chart.map_style_dark'), value: 'dark' },
-  { name: t('chart.map_style_whitesmoke'), value: 'whitesmoke' },
   { name: t('chart.map_style_fresh'), value: 'fresh' },
   { name: t('chart.map_style_grey'), value: 'grey' },
-  { name: t('chart.map_style_graffiti'), value: 'graffiti' },
-  { name: t('chart.map_style_macaron'), value: 'macaron' },
   { name: t('chart.map_style_blue'), value: 'blue' },
-  { name: t('chart.map_style_wine'), value: 'wine' }
+  { name: t('commons.custom'), value: 'custom' }
 ]
 const heatMapTypeOptions = [
   { name: t('chart.heatmap_classics'), value: 'heatmap' },
@@ -374,7 +371,7 @@ onMounted(() => {
       <el-row style="flex: 1">
         <el-col>
           <el-form-item
-            :label="t('chart.chart_map') + t('chart.map_style')"
+            :label="t('chart.map_style')"
             class="form-item"
             :class="'form-item-' + themes"
           >
@@ -390,6 +387,21 @@ onMounted(() => {
                 :value="item.value"
               />
             </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row style="flex: 1" v-if="state.basicStyleForm.mapStyle === 'custom'">
+        <el-col>
+          <el-form-item
+            :label="t('chart.map_style_url')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-input
+              :effect="themes"
+              v-model="state.basicStyleForm.mapStyleUrl"
+              @change="changeBasicStyle('mapStyleUrl')"
+            />
           </el-form-item>
         </el-col>
       </el-row>

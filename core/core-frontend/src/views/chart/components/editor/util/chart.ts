@@ -1586,7 +1586,8 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   layout: 'horizontal',
   mapSymbolSizeMin: 4,
   mapSymbolSizeMax: 30,
-  showLabel: true
+  showLabel: true,
+  mapStyleUrl: ''
 }
 
 export const BASE_VIEW_CONFIG = {
