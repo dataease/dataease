@@ -373,7 +373,7 @@ const resetSelect = (node?) => {
 
 const computedCanEdit = computed<boolean>(() => {
   return (
-    ['canvas', 'canvasDataV'].includes(showPosition.value) &&
+    ['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) &&
     editStatus.value &&
     canEdit.value === false &&
     !isError.value &&
