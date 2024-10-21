@@ -383,7 +383,7 @@ watch(
             type="textarea"
             autosize
             v-model="tempRemark"
-            :maxlength="50"
+            :maxlength="512"
             clearable
             :placeholder="t('chart.remark_placeholder')"
           />
