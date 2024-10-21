@@ -242,39 +242,12 @@ const callbackExportSuc = () => {
 const downLoadAll = () => {
   if (multipleSelection.value.length === 0) {
     tableData.value.forEach(item => {
-      downloadFile(item.id)
-        .then(res => {
-          const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-          const link = document.createElement('a')
-          link.style.display = 'none'
-          link.href = URL.createObjectURL(blob)
-          link.download = item.fileName // 下载的文件名
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-          URL.revokeObjectURL(link.href)
-        })
-        .finally(() => {
-          exportDatasetLoading.value = false
-        })
+      window.open(PATH_URL + '/exportCenter/download/' + item.id)
     })
     return
   }
   multipleSelection.value.map(ele => {
-    downloadFile(ele.id)
-      .then(res => {
-        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = URL.createObjectURL(blob)
-        link.download = ele.fileName // 下载的文件名
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      })
-      .finally(() => {
-        exportDatasetLoading.value = false
-      })
+    window.open(PATH_URL + '/exportCenter/download/' + ele.id)
   })
 }
 const showMsg = item => {
@@ -290,7 +263,7 @@ const timestampFormatDate = value => {
 }
 import { PATH_URL } from '@/config/axios/service'
 const downloadClick = item => {
-  window.open(PATH_URL + '/exportCenter/download/' + item.id, '_blank')
+  window.open(PATH_URL + '/exportCenter/download/' + item.id)
 }
 
 const retry = item => {
