@@ -185,7 +185,7 @@ const getResultNum = (
 ) => {
   const valueS = firstLoad ? defaultNumValueStart : numValueStart
   const valueE = firstLoad ? defaultNumValueEnd : numValueEnd
-  return [valueS || '', valueE || ''].filter(ele => ele !== '')
+  return [valueS ?? '', valueE ?? ''].filter(ele => ele !== '')
 }
 
 const getOperator = (
