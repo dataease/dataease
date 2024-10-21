@@ -1540,7 +1540,9 @@ export default {
     tip: '提示',
     hide: '隐藏',
     show_label: '显示标签',
-    security_code: '安全密钥'
+    security_code: '安全密钥',
+    auto_fit: '自适应缩放',
+    zoom_level: '缩放等级'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

@@ -297,6 +297,27 @@ declare interface ChartBasicStyle {
    * 显示标签
    */
   showLabel: boolean
+  /**
+   * 自适应缩放
+   */
+  autoFit: boolean
+  /**
+   * 地图中心点经纬度
+   */
+  mapCenter: {
+    /**
+     * 经度
+     */
+    longitude: number
+    /**
+     * 纬度
+     */
+    latitude: number
+  },
+  /**
+   * 缩放等级
+   */
+  zoomLevel: number
 }
 /**
  * 表头属性

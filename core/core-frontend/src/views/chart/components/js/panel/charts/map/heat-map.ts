@@ -27,7 +27,15 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'heatMapStyle', 'zoom', 'showLabel']
+    'basic-style-selector': [
+      'colors',
+      'heatMapStyle',
+      'zoom',
+      'showLabel',
+      'autoFit',
+      'mapCenter',
+      'zoomLevel'
+    ]
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   axisConfig: AxisConfig = {
@@ -56,6 +64,13 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
       basicStyle = parseJson(chart.customAttr).basicStyle
       miscStyle = parseJson(chart.customAttr).misc
     }
+    let center: [number, number] = [
+      DEFAULT_BASIC_STYLE.mapCenter.longitude,
+      DEFAULT_BASIC_STYLE.mapCenter.latitude
+    ]
+    if (basicStyle.autoFit === false) {
+      center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+    }
     let mapStyle = basicStyle.mapStyleUrl
     if (basicStyle.mapStyle !== 'custom') {
       mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
@@ -69,7 +84,8 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
         token: mapKey?.key ?? undefined,
         style: mapStyle,
         pitch: miscStyle.mapPitch,
-        zoom: 2.5,
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5,
         showLabel: !(basicStyle.showLabel === false)
       })
     })
@@ -83,7 +99,7 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
     const config: L7Config = new HeatmapLayer({
       name: 'line',
       blend: 'normal',
-      autoFit: true
+      autoFit: !(basicStyle.autoFit === false)
     })
       .source(chart.data?.data, {
         parser: {
