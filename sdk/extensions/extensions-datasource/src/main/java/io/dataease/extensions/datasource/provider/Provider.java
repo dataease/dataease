@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author Junjun
@@ -129,7 +130,8 @@ public abstract class Provider {
         String s = transSqlDialect(sql, dsMap);
         String tableDialect = sqlMeta.getTableDialect();
         s = replaceTablePlaceHolder(s, tableDialect);
-        return replaceCalcFieldPlaceHolder(s, sqlMeta);
+        s = replaceCalcFieldPlaceHolder(s, sqlMeta);
+        return replaceMssqlN(s);
     }
 
     public String transSqlDialect(String sql, Map<Long, DatasourceSchemaDTO> dsMap) throws DEException {
@@ -154,6 +156,16 @@ public abstract class Provider {
                 .replaceAll(SqlPlaceholderConstants.TABLE_PLACEHOLDER_REGEX, Matcher.quoteReplacement(placeholder))
                 .replaceAll("ASYMMETRIC", "")
                 .replaceAll("SYMMETRIC", "");
+        return s;
+    }
+
+    public String replaceMssqlN(String s) {
+        Pattern compile = Pattern.compile("'-DENS-.*?'");
+        Matcher matcher = compile.matcher(s);
+        while (matcher.find()) {
+            String v = matcher.group();
+            s = s.replaceAll(v, "N" + v.replace("-DENS-", ""));
+        }
         return s;
     }
 
