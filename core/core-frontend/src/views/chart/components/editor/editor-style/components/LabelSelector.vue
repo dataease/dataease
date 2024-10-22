@@ -448,6 +448,9 @@ const conversionPrecision = [
   { name: t('chart.reserve_one'), value: 1 },
   { name: t('chart.reserve_two'), value: 2 }
 ]
+const noFullDisplay = computed(() => {
+  return !['symbolic-map', 'liquid', 'gauge', 'indicator'].includes(props.chart.type)
+})
 </script>
 
 <template>
@@ -459,6 +462,15 @@ const conversionPrecision = [
   >
     <el-row v-show="showEmpty" style="margin-bottom: 12px"> 无其他可设置的属性</el-row>
     <div>
+      <el-form-item v-if="noFullDisplay" class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="state.labelForm.fullDisplay"
+          @change="changeLabelAttr('fullDisplay')"
+          :label="t('chart.full_display')"
+        />
+      </el-form-item>
       <el-form-item
         v-if="showProperty('showStackQuota')"
         class="form-item"

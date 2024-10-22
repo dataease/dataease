@@ -310,10 +310,14 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     const tmpOptions = super.configLabel(chart, options)
     if (tmpOptions.label) {
       const extColor = deepCopy(chart.extColor)
+      const layout = []
+      if (!tmpOptions.label.fullDisplay) {
+        layout.push(...tmpOptions.label.layout)
+      }
       const label = {
         ...tmpOptions.label,
         position: 'middle',
-        layout: [{ type: 'hide-overlap' }, { type: 'limit-in-canvas' }],
+        layout,
         formatter: data => {
           const value = data[extColor[0]?.dataeaseName]
           if (!isNaN(Number(value))) {

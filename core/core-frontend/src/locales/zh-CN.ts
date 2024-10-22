@@ -1543,7 +1543,8 @@ export default {
     security_code: '安全密钥',
     auto_fit: '自适应缩放',
     zoom_level: '缩放等级',
-    central_point: '中心点'
+    central_point: '中心点',
+    full_display: '全量显示'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

@@ -157,12 +157,10 @@ export const extremumEvt = (newChart, chart, _options, container) => {
         }
         let showExtremum = false
         if (noChildrenFieldChart(chart) || yAxis.length > 1) {
-          const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(d =>
-            d.chartShowName
-              ? d.chartShowName
-              : d.name === minItem._origin.category || d.chartShowName
-              ? d.chartShowName
-              : d.name === maxItem._origin.category
+          const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(
+            d =>
+              (d.chartShowName ? d.chartShowName : d.name === minItem._origin.category) ||
+              (d.chartShowName ? d.chartShowName : d.name === maxItem._origin.category)
           )
           showExtremum = seriesLabelFormatter?.showExtremum
         } else {

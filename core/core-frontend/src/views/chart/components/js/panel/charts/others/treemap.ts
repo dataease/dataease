@@ -200,6 +200,9 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
         return res
       }
     }
+    if (labelAttr.fullDisplay) {
+      label.layout = [{ type: 'limit-in-plot' }]
+    }
     return { ...options, label }
   }
 

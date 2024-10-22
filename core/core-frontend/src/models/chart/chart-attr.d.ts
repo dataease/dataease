@@ -313,7 +313,7 @@ declare interface ChartBasicStyle {
      * 纬度
      */
     latitude: number
-  },
+  }
   /**
    * 缩放等级
    */
@@ -922,6 +922,10 @@ declare interface ChartLabelAttr {
    * 柱状图堆叠指标
    */
   showStackQuota: boolean
+  /**
+   * 全部显示
+   */
+  fullDisplay: boolean
 }
 /**
  * 提示设置

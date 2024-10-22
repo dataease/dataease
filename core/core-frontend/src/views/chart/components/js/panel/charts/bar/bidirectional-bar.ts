@@ -429,9 +429,14 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       if (customAttr.label) {
         const l = customAttr.label
         if (l.show) {
+          const layout = []
+          if (!labelAttr.fullDisplay) {
+            const tmpOptions = super.configLabel(chart, options)
+            layout.push(...tmpOptions.label.layout)
+          }
           label = {
             position: l.position,
-            layout: [{ type: 'limit-in-canvas' }],
+            layout,
             style: {
               fill: l.color,
               fontSize: l.fontSize

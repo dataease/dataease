@@ -72,7 +72,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
       xField: 'field',
       yField: 'value',
       seriesField: 'category',
-      appendPadding: getPadding(chart),
+      appendPadding: [10, 10, 10, 10],
       point: {
         size: 4,
         shape: 'circle',

@@ -295,6 +295,11 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       if (customAttr.label) {
         const l = customAttr.label
         if (l.show) {
+          const layout = []
+          if (!l.fullDisplay) {
+            layout.push({ type: 'hide-overlap' })
+            layout.push({ type: 'limit-in-shape' })
+          }
           label = {
             offset: 0,
             style: {
@@ -304,7 +309,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
             content: datum => {
               return datum['name']
             },
-            layout: [{ type: 'limit-in-shape' }]
+            layout
           }
         } else {
           label = false
