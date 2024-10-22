@@ -648,7 +648,7 @@ onMounted(() => {
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
             <el-slider
               :effect="themes"
-              :min="3"
+              :min="1"
               :max="18"
               v-model="state.basicStyleForm.zoomLevel"
               @change="changeBasicStyle('zoomLevel')"
