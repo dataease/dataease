@@ -47,9 +47,9 @@ quartz:
 dataease:
   version: '@project.version@'
   xpack-front-distributed: true
-  origin-list: http://192.168.1.9:9080
+  origin-list: http://127.0.0.1:9080
   apisix-api:
-    domain: http://192.168.1.9:9180
+    domain: http://127.0.0.1:9180
     key: edd1c9f034335f136f87ad84b625c8f1
 
 # springdoc-openapi项目配置
