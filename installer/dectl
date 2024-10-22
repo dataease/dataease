@@ -49,18 +49,21 @@ function usage() {
 }
 function _generate_compose_file_args() {
    if [[ $DE_INSTALL_MODE != "community" ]];then
-      compose_files="${compose_files} -f docker-compose-apisix.yml"
-      if [[ -f $DE_RUNNING_BASE/docker-compose-task.yml ]];then
+      if [[ -f $DE_RUNNING_BASE/docker-compose-apisix.yml ]] && [[ "$DE_EXTERNAL_APISIX" != "true" ]];then
+         compose_files="${compose_files} -f docker-compose-apisix.yml"
+      fi
+      
+      if [[ -f $DE_RUNNING_BASE/docker-compose-task.yml ]] && [[ "$DE_EXTERNAL_SYNC_TASK" != "true" ]];then
          compose_files="${compose_files} -f docker-compose-task.yml"
       fi
 
-      if [[ -f $DE_RUNNING_BASE/docker-compose-selenium.yml ]];then
+      if [[ -f $DE_RUNNING_BASE/docker-compose-selenium.yml ]] && [[ "$DE_EXTERNAL_SELENIUM" != "true" ]];then
          compose_files="${compose_files} -f docker-compose-selenium.yml"
       fi
    fi
 }
 function _check_apisix_init() {
-   if [[ $DE_INSTALL_MODE != "community" ]];then
+   if [[ $DE_INSTALL_MODE != "community" ]] && [[ "$DE_EXTERNAL_APISIX" != "true" ]];then
       _prepare_apisix
    fi
 }
