@@ -2,7 +2,7 @@ package io.dataease.constant;
 
 import java.util.Arrays;
 
-public enum DadaFillingFinishTaskEnum {
+public enum DataFillingFinishTaskEnum {
 
     OPEN(0), FINISHED(1);
 
@@ -16,14 +16,14 @@ public enum DadaFillingFinishTaskEnum {
         this.flag = flag;
     }
 
-    DadaFillingFinishTaskEnum(Integer flag) {
+    DataFillingFinishTaskEnum(Integer flag) {
         this.flag = flag;
     }
 
-    DadaFillingFinishTaskEnum() {
+    DataFillingFinishTaskEnum() {
     }
 
-    public static DadaFillingFinishTaskEnum fromValue(Integer flag) {
+    public static DataFillingFinishTaskEnum fromValue(Integer flag) {
         return Arrays.stream(values()).filter(v -> v.flag.equals(flag)).findFirst().get();
     }
 }
