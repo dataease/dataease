@@ -312,16 +312,21 @@ export class StackArea extends Area {
         label: false
       }
     }
+    const layout = []
+    if (!labelAttr.fullDisplay) {
+      const tmpOptions = super.configLabel(chart, options)
+      layout.push(...tmpOptions.label.layout)
+    }
     const label: Label = {
       position: labelAttr.position as any,
       offsetY: -8,
+      layout,
       style: {
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize
       },
       formatter: function (param: Datum) {
-        const res = valueFormatter(param.value, labelAttr.labelFormatter)
-        return res
+        return valueFormatter(param.value, labelAttr.labelFormatter)
       }
     }
     return { ...options, label }

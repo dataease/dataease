@@ -233,6 +233,10 @@ export class SankeyBar extends G2PlotChartView<SankeyOptions, Sankey> {
   protected configLabel(chart: Chart, options: SankeyOptions): SankeyOptions {
     const labelAttr = parseJson(chart.customAttr).label
     if (labelAttr.show) {
+      const layout = []
+      if (!labelAttr.fullDisplay) {
+        layout.push(...[{ type: 'hide-overlap' }, { type: 'limit-in-canvas' }])
+      }
       const label = {
         //...tmpOptions.label,
         formatter: ({ name }) => name,
@@ -247,7 +251,7 @@ export class SankeyBar extends G2PlotChartView<SankeyOptions, Sankey> {
             offsetX: isLast ? -8 : 8
           }
         },
-        layout: [{ type: 'hide-overlap' }, { type: 'limit-in-canvas' }]
+        layout
       }
       return {
         ...options,

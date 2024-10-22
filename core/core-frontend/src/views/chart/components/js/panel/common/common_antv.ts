@@ -151,9 +151,24 @@ export function getLabel(chart: Chart) {
     if (customAttr.label) {
       const l = customAttr.label
       if (l.show) {
+        const layout = []
+        if (!l.fullDisplay) {
+          if (chart.type === 'bar-stack') {
+            layout.push({ type: 'interval-hide-overlap' })
+          } else if (
+            chart.type.indexOf('-horizontal') > -1 ||
+            ['bidirectional-bar', 'progress-bar', 'pie', 'pie-donut', 'radar'].includes(chart.type)
+          ) {
+            layout.push({ type: 'hide-overlap' })
+          } else {
+            layout.push({ type: 'limit-in-plot' })
+            layout.push({ type: 'fixed-overlap' })
+            layout.push({ type: 'hide-overlap' })
+          }
+        }
         label = {
           position: l.position,
-          layout: [{ type: 'limit-in-canvas' }],
+          layout,
           style: {
             fill: l.color,
             fontSize: l.fontSize
@@ -839,13 +854,19 @@ export function transAxisPosition(position: string): string {
 export function configL7Label(chart: Chart): false | LabelOptions {
   const customAttr = parseJson(chart.customAttr)
   const label = customAttr.label
+  const style = {
+    fill: label.color,
+    fontSize: label.fontSize,
+    textAllowOverlap: true,
+    fontWeight: 'bold'
+  }
+  if (!label.fullDisplay) {
+    style.textAllowOverlap = false
+    style.padding = [2, 2]
+  }
   return {
     visible: label.show,
-    style: {
-      fill: label.color,
-      fontSize: label.fontSize,
-      fontWeight: 'bold'
-    }
+    style
   }
 }
 

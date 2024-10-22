@@ -92,7 +92,6 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       label: {
         field: '_DE_LABEL_',
         style: {
-          textAllowOverlap: true,
           textAnchor: 'center'
         }
       },

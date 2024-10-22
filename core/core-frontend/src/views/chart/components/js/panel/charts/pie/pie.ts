@@ -129,9 +129,26 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
         label: false
       }
     }
+    const layout = []
+    const type =
+      labelAttr.position === 'inner'
+        ? labelAttr.fullDisplay
+          ? 'limit-in-plot'
+          : 'custom-layout'
+        : labelAttr.fullDisplay
+        ? 'hide-overlap'
+        : 'limit-in-plot'
+
+    if (type === 'custom-layout') {
+      const tmpOptions = super.configLabel(chart, options)
+      layout.push({ type: 'limit-in-plot' })
+      layout.push(...tmpOptions.label.layout)
+    } else {
+      layout.push({ type })
+    }
     const label = {
       type: labelAttr.position === 'outer' ? 'spider' : labelAttr.position,
-      layout: [{ type: 'limit-in-plot' }],
+      layout,
       autoRotate: false,
       style: {
         fill: labelAttr.color,

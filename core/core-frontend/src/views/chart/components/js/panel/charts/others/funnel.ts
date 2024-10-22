@@ -124,9 +124,13 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
       if (customAttr.label?.show) {
         // label
         if (showQuota) {
+          const layout = []
+          if (!l.fullDisplay) {
+            layout.push(...[{ type: 'hide-overlap' }, { type: 'limit-in-plot' }])
+          }
           label = {
             position: l.position,
-            layout: [{ type: 'limit-in-canvas' }],
+            layout,
             style: {
               fill: l.color,
               fontSize: l.fontSize

@@ -144,7 +144,6 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       fields: [],
       ...tmpOptions.label,
       offsetY: -8,
-      layout: [{ type: 'hide-overlap' }, { type: 'limit-in-plot' }],
       formatter: (data: Datum, _point) => {
         if (data.EXTREME) {
           return ''
