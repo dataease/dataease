@@ -241,6 +241,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (!resData?.length) {
         if (!isDataEaseBi) {
           document.title = 'DataEase'
+          setLinkIcon()
         }
         return
       }
@@ -258,6 +259,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         this.showDemoTips = data.showDemoTips
         this.demoTipsContent = data.demoTipsContent
         this.loaded = true
+        setLinkIcon()
         return
       }
       this.navigate = data.navigate
@@ -319,17 +321,21 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         document.title = 'DataEase'
         setTitle('DataEase')
       }
-      const link = document.querySelector('link[rel="icon"]')
-      if (link) {
-        if (this.web) {
-          link['href'] = baseUrl + this.web
-        } else {
-          link['href'] = '/dataease.svg'
-        }
-      }
+      setLinkIcon(this.web)
     }
   }
 })
+
+const setLinkIcon = (linkWeb?: string) => {
+  const link = document.querySelector('link[rel="icon"]')
+  if (link) {
+    if (linkWeb) {
+      link['href'] = baseUrl + linkWeb
+    } else {
+      link['href'] = '/dataease.svg'
+    }
+  }
+}
 
 export const useAppearanceStoreWithOut = () => {
   return useAppearanceStore(store)
