@@ -40,6 +40,7 @@ public class TaskInfoVO implements Serializable {
     private String fitColumn;
 
     private Integer rateType;
+    private Integer oneTimeType;
 
     private String rateVal;
 
