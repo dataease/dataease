@@ -18,7 +18,7 @@ public interface ResourceMonitorMapper {
     @Select("select count(id) from core_dataset_group")
     int datasetCount();
 
-    @Select("select count(id) from data_visualization_info where delete_flag = 0")
+    @Select("select count(id) from data_visualization_info where delete_flag = 0 and pid != -1")
     int vCount();
 
     @Select("select id, name, pid, type, status from core_datasource")
@@ -27,7 +27,7 @@ public interface ResourceMonitorMapper {
     @Select("select id, name, pid, node_type from core_dataset_group")
     List<DatasetFreeResource> queryFreeDataset();
 
-    @Select("select id, name, pid, node_type, type from data_visualization_info where delete_flag = 0")
+    @Select("select id, name, pid, node_type, type from data_visualization_info where delete_flag = 0 and pid != -1")
     List<VisualFreeResource> queryFreeVusial();
 
     @Delete("delete from core_datasource")
