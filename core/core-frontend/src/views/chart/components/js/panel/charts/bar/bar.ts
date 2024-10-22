@@ -488,7 +488,12 @@ export class GroupBar extends StackBar {
     this.baseOptions = {
       ...this.baseOptions,
       isGroup: true,
-      isStack: false
+      isStack: false,
+      meta: {
+        category: {
+          type: 'cat'
+        }
+      }
     }
     this.axis = [...BAR_AXIS_TYPE, 'xAxisExt']
   }

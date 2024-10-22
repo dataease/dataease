@@ -1542,7 +1542,8 @@ export default {
     show_label: '显示标签',
     security_code: '安全密钥',
     auto_fit: '自适应缩放',
-    zoom_level: '缩放等级'
+    zoom_level: '缩放等级',
+    central_point: '中心点'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
