@@ -23,6 +23,8 @@ dataease:
       limit: ${DE_EXPORT_DATASET_LIMIT}
   origin-list: ${DE_ORIGIN_LIST}
   login_timeout: ${DE_LOGIN_TIMEOUT}
+  selenium-server: ${DE_SELENIUM_SERVER}
+  dataease-servers: ${DE_SERVERS}
 task:
   executor:
     address: http://sync-task-actuator:9001
