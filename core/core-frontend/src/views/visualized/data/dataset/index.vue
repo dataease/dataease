@@ -510,7 +510,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
       return
     }
     router.push({
-      name: 'dataset-form',
+      path: '/dataset-form',
       params: {
         id: data.id
       }
