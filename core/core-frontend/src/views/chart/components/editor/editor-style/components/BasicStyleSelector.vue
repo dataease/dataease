@@ -663,7 +663,7 @@ onMounted(() => {
           <el-form-item
             class="form-item"
             :class="'form-item-' + themes"
-            :label="t('chart.longitude')"
+            :label="t('chart.central_point') + t('chart.longitude')"
           >
             <el-input-number
               controls-position="right"
@@ -679,7 +679,7 @@ onMounted(() => {
           <el-form-item
             class="form-item"
             :class="'form-item-' + themes"
-            :label="t('chart.latitude')"
+            :label="t('chart.central_point') + t('chart.latitude')"
           >
             <el-input-number
               controls-position="right"

@@ -1590,8 +1590,8 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   mapStyleUrl: '',
   autoFit: true,
   mapCenter: {
-    longitude: 116,
-    latitude: 39
+    longitude: 117.232,
+    latitude: 39.354
   },
   zoomLevel: 7
 }
