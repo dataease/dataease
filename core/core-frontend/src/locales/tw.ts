@@ -272,8 +272,8 @@ export default {
       le_check: '值需要小于等于{0}: {1}',
       ge_check: '值需要大于等于{0}: {1}',
       status: '填報狀態',
-      status_0: '未填报',
-      status_1: '已填报'
+      status_0: '未填報',
+      status_1: '已完成'
     },
     database: {
       nvarchar: '字符串',

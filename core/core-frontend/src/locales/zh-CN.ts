@@ -2870,7 +2870,7 @@ export default {
       ge_check: '值需要大于等于{0}: {1}',
       status: '填报状态',
       status_0: '未填报',
-      status_1: '已填报'
+      status_1: '已完成'
     },
     database: {
       nvarchar: '字符串',
