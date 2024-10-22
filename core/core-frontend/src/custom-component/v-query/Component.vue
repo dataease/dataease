@@ -274,6 +274,13 @@ const queryDataForId = id => {
                 ? next.name
                 : ''
           }
+        } else if (next.displayType === '22') {
+          if (
+            (next.numValueStart !== 0 && !next.numValueStart) ||
+            (next.numValueEnd !== 0 && !next.numValueEnd)
+          ) {
+            requiredName = next.name
+          }
         } else if (
           (Array.isArray(next.selectValue) && !next.selectValue.length) ||
           (next.selectValue !== 0 && !next.selectValue)
@@ -511,6 +518,13 @@ const queryData = () => {
             [conditionValueF || '', conditionValueS || ''].filter(ele => ele !== '').length < 2
               ? next.name
               : ''
+        }
+      } else if (next.displayType === '22') {
+        if (
+          (next.numValueEnd !== 0 && !next.numValueEnd) ||
+          (next.numValueStart !== 0 && !next.numValueStart)
+        ) {
+          requiredName = next.name
         }
       } else if (
         (Array.isArray(next.selectValue) && !next.selectValue.length) ||

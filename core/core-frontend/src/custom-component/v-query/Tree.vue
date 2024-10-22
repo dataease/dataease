@@ -59,7 +59,7 @@ const props = defineProps({
 const placeholder: Ref = inject('placeholder')
 const placeholderText = computed(() => {
   if (placeholder.value.placeholderShow) {
-    return props.config.placeholder
+    return ['', undefined].includes(props.config.placeholder) ? ' ' : props.config.placeholder
   }
   return ' '
 })
@@ -186,7 +186,8 @@ watch(
 )
 let cacheId = ''
 let treeOptionList = shallowRef([])
-
+const filterMethod = (value, data) =>
+  (data.label ?? '').toLowerCase().includes((value ?? '').toLowerCase())
 const dfs = arr => {
   return (arr || []).map(ele => {
     let children = []
@@ -243,6 +244,7 @@ const selectStyle = computed(() => {
     showBtn
     :placeholder="placeholderText"
     collapse-tags
+    :filter-node-method="filterMethod"
     :showWholePath="showWholePath"
     collapse-tags-tooltip
     key="multipleTree"
@@ -256,6 +258,7 @@ const selectStyle = computed(() => {
     :data="treeOptionList"
     check-strictly
     clearable
+    :filter-node-method="filterMethod"
     :placeholder="placeholderText"
     :render-after-expand="false"
     v-else-if="!multiple && !loading"

@@ -1253,6 +1253,17 @@ const validate = () => {
         return true
       }
 
+      if (ele.displayType === '22') {
+        if (
+          (ele.defaultNumValueEnd !== 0 && !ele.defaultNumValueEnd) ||
+          (ele.defaultNumValueStart !== 0 && !ele.defaultNumValueStart)
+        ) {
+          ElMessage.error('查询条件为必填项,默认值不能为空')
+          return true
+        }
+        return false
+      }
+
       if (
         (Array.isArray(ele.defaultValue) && !ele.defaultValue.length) ||
         (ele.defaultValue !== 0 && !ele.defaultValue)
