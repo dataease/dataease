@@ -2969,7 +2969,7 @@ export default {
     name: '告警名称',
     grid_title: '告警管理',
     grid: '告警列表',
-    record: '告警记录',
+    record: '检测记录',
     module_name: '阈值告警',
     setting: '阈值告警设置'
   }
