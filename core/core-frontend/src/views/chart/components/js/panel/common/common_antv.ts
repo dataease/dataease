@@ -157,7 +157,14 @@ export function getLabel(chart: Chart) {
             layout.push({ type: 'interval-hide-overlap' })
           } else if (
             chart.type.indexOf('-horizontal') > -1 ||
-            ['bidirectional-bar', 'progress-bar', 'pie', 'pie-donut', 'radar'].includes(chart.type)
+            [
+              'bidirectional-bar',
+              'progress-bar',
+              'pie-donut',
+              'radar',
+              'waterfall',
+              't-heatmap'
+            ].includes(chart.type)
           ) {
             layout.push({ type: 'hide-overlap' })
           } else {
