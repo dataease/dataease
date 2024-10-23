@@ -14,8 +14,9 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useCache } from '@/hooks/web/useCache'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-const dvMainStore = dvMainStoreWithOut()
+import treeSort from '@/utils/treeSortUtils'
 
+const dvMainStore = dvMainStoreWithOut()
 const { wsCache } = useCache('localStorage')
 const userStore = useUserStoreWithOut()
 
@@ -43,18 +44,20 @@ const loadingDatasetTree = ref(false)
 const orgCheck = ref(true)
 
 const datasetTree = ref<Tree[]>([])
-const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
-})
 
 const sourceName = computed(() => (props.sourceType === 'datasource' ? '数据源' : '数据集'))
+
+const sortTypeChange = arr => {
+  const sortType = wsCache.get('TreeSort-dataset') || 'time_desc'
+  datasetTree.value = treeSort(arr, sortType)
+}
 
 const initDataset = () => {
   loadingDatasetTree.value = true
   const method = props.sourceType === 'datasource' ? getDatasourceList : getDatasetTree
   method({})
     .then(res => {
-      datasetTree.value = (res as unknown as Tree[]) || []
+      sortTypeChange((res as unknown as Tree[]) || [])
     })
     .finally(() => {
       loadingDatasetTree.value = false
