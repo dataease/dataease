@@ -397,11 +397,13 @@ export function initCanvasDataMobile(dvId, busiFlag, callBack) {
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       const componentData = canvasDataResult.filter(ele => !!ele.inMobile)
       canvasDataResult.forEach(ele => {
-        const { mx, my, mSizeX, mSizeY } = ele
+        const { mx, my, mSizeX, mSizeY, mStyle, mCommonBackground } = ele
         ele.x = mx
         ele.y = my
         ele.sizeX = mSizeX
         ele.sizeY = mSizeY
+        ele.mStyle = mStyle || ele.Style
+        ele.mCommonBackground = mCommonBackground || ele.commonBackground
         if (ele.component === 'DeTabs') {
           ele.propValue.forEach(tabItem => {
             tabItem.componentData.forEach(tabComponent => {
@@ -413,6 +415,14 @@ export function initCanvasDataMobile(dvId, busiFlag, callBack) {
           })
         }
       })
+      if (!!canvasViewInfoPreview) {
+        Object.keys(canvasViewInfoPreview).forEach(key => {
+          const viewInfo = canvasViewInfoPreview[key]
+          const { customAttrMobile, customStyleMobile } = viewInfo
+          viewInfo['customAttr'] = customAttrMobile || viewInfo['customAttr']
+          viewInfo['customStyle'] = customStyleMobile || viewInfo['customStyle']
+        })
+      }
       dvMainStore.setComponentData(componentData)
       dvMainStore.setCanvasStyle(canvasStyleResult)
       dvMainStore.updateCurDvInfo(dvInfo)

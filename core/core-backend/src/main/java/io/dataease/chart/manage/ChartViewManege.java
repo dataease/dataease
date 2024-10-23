@@ -335,7 +335,9 @@ public class ChartViewManege {
         record.setExtLabel(objectMapper.writeValueAsString(dto.getExtLabel()));
         record.setExtTooltip(objectMapper.writeValueAsString(dto.getExtTooltip()));
         record.setCustomAttr(objectMapper.writeValueAsString(dto.getCustomAttr()));
+        record.setCustomAttrMobile(objectMapper.writeValueAsString(dto.getCustomAttrMobile()));
         record.setCustomStyle(objectMapper.writeValueAsString(dto.getCustomStyle()));
+        record.setCustomStyleMobile(objectMapper.writeValueAsString(dto.getCustomStyleMobile()));
         record.setSenior(objectMapper.writeValueAsString(dto.getSenior()));
         record.setDrillFields(objectMapper.writeValueAsString(dto.getDrillFields()));
         record.setCustomFilter(objectMapper.writeValueAsString(dto.getCustomFilter()));
@@ -363,7 +365,9 @@ public class ChartViewManege {
         dto.setExtLabel(JsonUtil.parseList(record.getExtLabel(), tokenType));
         dto.setExtTooltip(JsonUtil.parseList(record.getExtTooltip(), tokenType));
         dto.setCustomAttr(JsonUtil.parse(record.getCustomAttr(), Map.class));
+        dto.setCustomAttrMobile(JsonUtil.parse(record.getCustomAttrMobile(), Map.class));
         dto.setCustomStyle(JsonUtil.parse(record.getCustomStyle(), Map.class));
+        dto.setCustomStyleMobile(JsonUtil.parse(record.getCustomStyleMobile(), Map.class));
         dto.setSenior(JsonUtil.parse(record.getSenior(), Map.class));
         dto.setDrillFields(JsonUtil.parseList(record.getDrillFields(), tokenType));
         dto.setCustomFilter(JsonUtil.parseObject(record.getCustomFilter(), FilterTreeObj.class));
