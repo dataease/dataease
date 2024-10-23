@@ -2,40 +2,42 @@
   <div style="width: 100%; padding-bottom: 8px">
     <el-form label-position="top" style="width: 100%">
       <div style="width: 100%; padding: 16px 8px 0">
-        <el-col :span="24">
-          <el-form-item
-            :effect="themes"
-            class="form-item"
-            :class="'form-item-' + themes"
-            :label="t('components.jump_icon_color')"
-          >
-            <el-color-picker
+        <el-row :gutter="8">
+          <el-col :span="12">
+            <el-form-item
               :effect="themes"
-              v-model="seniorStyleSetting.linkageIconColor"
-              :trigger-width="197"
-              is-custom
-              :predefine="state.predefineColors"
-              @change="themeChange"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item
-            :effect="themes"
-            class="form-item"
-            :class="'form-item-' + themes"
-            :label="t('components.level_display_color')"
-          >
-            <el-color-picker
-              v-model="seniorStyleSetting.drillLayerColor"
+              class="form-item"
+              :class="'form-item-' + themes"
+              :label="t('components.jump_icon_color')"
+            >
+              <el-color-picker
+                :effect="themes"
+                v-model="seniorStyleSetting.linkageIconColor"
+                :trigger-width="197"
+                is-custom
+                :predefine="state.predefineColors"
+                @change="themeChange"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
               :effect="themes"
-              :trigger-width="197"
-              is-custom
-              :predefine="state.predefineColors"
-              @change="themeChange"
-            />
-          </el-form-item>
-        </el-col>
+              class="form-item"
+              :class="'form-item-' + themes"
+              :label="t('components.level_display_color')"
+            >
+              <el-color-picker
+                v-model="seniorStyleSetting.drillLayerColor"
+                :effect="themes"
+                :trigger-width="197"
+                is-custom
+                :predefine="state.predefineColors"
+                @change="themeChange"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </div>
     </el-form>
   </div>
