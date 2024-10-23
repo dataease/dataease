@@ -22,6 +22,7 @@ const mobileLoading = ref(true)
 const mobileStyle = ref(null)
 const emits = defineEmits(['pcMode'])
 const snapshotStore = snapshotStoreWithOut()
+const canvasViewInfoMobile = ref({})
 
 const getComponentStyleDefault = () => {
   return {
@@ -51,6 +52,7 @@ const iframeSrc = computed(() => {
     : './mobile.html#/panel'
 })
 const handleLoad = () => {
+  canvasViewInfoMobile.value = JSON.parse(JSON.stringify(unref(canvasViewInfo)))
   mobileStatusChange(
     'panelInit',
     JSON.parse(
@@ -140,6 +142,14 @@ const hanedleMessage = event => {
         }
       }
     })
+    // 将图表的修改信息还原
+    if (!!canvasViewInfoMobile.value) {
+      Object.keys(canvasViewInfoMobile.value).forEach(key => {
+        const { customAttr, customStyle } = canvasViewInfoMobile.value[key]
+        canvasViewInfo.value[key]['customAttrMobile'] = customAttr
+        canvasViewInfo.value[key]['customStyleMobile'] = customStyle
+      })
+    }
   }
   if (event.data.type === 'mobileSaveFromMobile') {
     saveCanvasWithCheckFromMobile()
@@ -285,7 +295,9 @@ const save = () => {
         <MobileBackgroundSelector @styleChange="changeTimes++"></MobileBackgroundSelector>
       </div>
       <div class="config-mobile-tab-style" v-show="activeCollapse === 'componentStyle'">
-        <component-style-editor></component-style-editor>
+        <component-style-editor
+          :canvas-view-info-mobile="canvasViewInfoMobile"
+        ></component-style-editor>
       </div>
       <div class="config-mobile-tab" v-show="activeCollapse === 'com'">
         <div

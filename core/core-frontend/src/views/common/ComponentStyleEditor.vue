@@ -5,7 +5,14 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewEditor from '@/views/chart/components/editor/index.vue'
 import { computed } from 'vue'
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, canvasViewInfo, batchOptStatus } = storeToRefs(dvMainStore)
+const { curComponent, batchOptStatus } = storeToRefs(dvMainStore)
+
+defineProps({
+  canvasViewInfoMobile: {
+    type: Object,
+    required: true
+  }
+})
 
 const otherEditorShow = computed(() => {
   return Boolean(
@@ -35,7 +42,7 @@ const viewEditorShow = computed(() => {
     <template v-if="viewEditorShow">
       <view-editor
         :themes="'light'"
-        :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
+        :view="canvasViewInfoMobile[curComponent ? curComponent.id : 'default']"
       ></view-editor>
     </template>
   </div>

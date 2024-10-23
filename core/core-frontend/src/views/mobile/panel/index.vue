@@ -5,7 +5,7 @@ import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { XpackComponent } from '@/components/plugin'
 import DePreviewMobile from './MobileInPc.vue'
-import { mobileViewStyleSwitch } from '@/utils/canvasUtils'
+import { findComponentById, mobileViewStyleSwitch } from '@/utils/canvasUtils'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 
@@ -21,6 +21,12 @@ const checkItemPosition = component => {
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
+    Object.keys(canvasViewInfo).forEach(viewId => {
+      const viewInfo = canvasViewInfo[viewId]
+      const { customAttrMobile, customStyleMobile } = viewInfo
+      viewInfo.customAttr = customAttrMobile || viewInfo.customAttr
+      viewInfo.customStyle = customStyleMobile || viewInfo.customStyle
+    })
     componentData.forEach(ele => {
       const { mx, my, mSizeX, mSizeY, mStyle, mCommonBackground } = ele
       ele.x = mx
@@ -64,14 +70,16 @@ const hanedleMessage = event => {
   }
   // 进行内部组件渲染 type render 渲染 calcData 计算  主组件渲染
   if (event.data.type === 'componentStyleChange') {
-    const { type, innerOptType, component } = event.data.value
+    const { type, component } = event.data.value
     if (type === 'renderChart') {
       mobileViewStyleSwitch(component)
       useEmitt().emitter.emit('renderChart-' + component.id, component)
     } else if (type === 'calcData') {
       mobileViewStyleSwitch(component)
       useEmitt().emitter.emit('calcData-' + component.id, component)
-    } else if (type === 'component') {
+    } else if (['style', 'commonBackground'].includes(type)) {
+      const mobileComponent = findComponentById(component.id)
+      mobileComponent[type] = component[type]
     }
   }
 
