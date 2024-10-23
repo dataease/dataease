@@ -449,7 +449,7 @@ const conversionPrecision = [
   { name: t('chart.reserve_two'), value: 2 }
 ]
 const noFullDisplay = computed(() => {
-  return !['symbolic-map', 'liquid', 'gauge', 'indicator'].includes(props.chart.type)
+  return !['liquid', 'gauge', 'indicator'].includes(props.chart.type)
 })
 </script>
 

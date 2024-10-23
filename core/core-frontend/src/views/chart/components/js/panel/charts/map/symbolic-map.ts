@@ -408,6 +408,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           .color(label.color)
           .size(label.fontSize)
           .style({
+            textAllowOverlap: label.fullDisplay,
             textAnchor: 'center',
             textOffset: [0, 0]
           })
