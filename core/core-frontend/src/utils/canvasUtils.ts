@@ -750,7 +750,7 @@ export function componentSwitch(componentData, changeComponent) {
 
 export function findComponentById(componentId) {
   let result
-  componentData.forEach(item => {
+  componentData.value.forEach(item => {
     if (item.id === componentId) {
       result = item
     } else if (item.component === 'Group') {
@@ -776,6 +776,6 @@ export function mobileViewStyleSwitch(component) {
   if (component) {
     const viewInfo = canvasViewInfo.value[component.id]
     viewInfo.customStyle = component.customStyle
-    viewInfo.customStyleMobile = component.customStyleMobile
+    viewInfo.customAttr = component.customAttr
   }
 }

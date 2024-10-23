@@ -1077,10 +1077,24 @@ const onFunctionCfgChange = val => {
 
 const onBackgroundChange = val => {
   curComponent.value.commonBackground = val
+  if (mobileInPc.value) {
+    //移动端设计
+    useEmitt().emitter.emit('onMobileStatusChange', {
+      type: 'componentStyleChange',
+      value: { type: 'commonBackground', component: JSON.parse(JSON.stringify(curComponent.value)) }
+    })
+  }
 }
 
 const onStyleAttrChange = val => {
   curComponent.value.style[val.property] = val.value
+  if (mobileInPc.value) {
+    //移动端设计
+    useEmitt().emitter.emit('onMobileStatusChange', {
+      type: 'componentStyleChange',
+      value: { type: 'style', component: JSON.parse(JSON.stringify(curComponent.value)) }
+    })
+  }
 }
 
 const onAssistLineChange = val => {
