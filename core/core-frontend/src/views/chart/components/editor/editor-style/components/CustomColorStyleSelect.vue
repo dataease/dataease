@@ -172,7 +172,7 @@ const changeSeriesColor = () => {
   })
   if (changed) {
     state.value.basicStyleForm[seriesColorName.value] = cloneDeep(seriesColorState.seriesColor)
-    changeBasicStyle('seriesColor')
+    changeBasicStyle(seriesColorName.value)
   }
 }
 watch(
@@ -230,10 +230,13 @@ const changeColorOption = (option?) => {
       c.color = items[0].colors[i % length]
     })
     changeBasicStyle()
+    setupSeriesColor()
   }
 }
 const resetCustomColor = () => {
-  changeColorOption()
+  state.value.basicStyleForm[seriesColorName.value] = []
+  changeBasicStyle(seriesColorName.value)
+  setupSeriesColor()
 }
 
 const switchColorCase = () => {
@@ -264,7 +267,7 @@ const switchColor = (index, c) => {
   customColorPickerRef.value?.show()
 }
 
-function changeBasicStyle(prop = 'colors') {
+function changeBasicStyle(prop = colorsName.value) {
   emits('changeBasicStyle', prop)
 }
 
