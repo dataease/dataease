@@ -44,8 +44,11 @@ import dayjs from 'dayjs'
 import ConditionDefaultConfiguration from '@/custom-component/v-query/ConditionDefaultConfiguration.vue'
 import { iconChartMap } from '@/components/icon-group/chart-list'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import treeSort from '@/utils/treeSortUtils'
+import { useCache } from '@/hooks/web/useCache'
 
 const { t } = useI18n()
+const { wsCache } = useCache()
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
 const defaultConfigurationRef = ref(null)
@@ -879,16 +882,20 @@ const cancelClick = () => {
 
 const initDataset = () => {
   getDatasetTree({}).then(res => {
-    datasetTree.value = (res as unknown as Tree[]) || []
+    const result = (res as unknown as Tree[]) || []
+    if (result[0]?.id === '0') {
+      sortTypeChange(dfs(result[0].children))
+    } else {
+      sortTypeChange(dfs(result))
+    }
   })
 }
 
-const computedTree = computed(() => {
-  if (datasetTree.value[0]?.id === '0') {
-    return dfs(datasetTree.value[0].children)
-  }
-  return dfs(datasetTree.value)
-})
+const sortTypeChange = arr => {
+  const sortType = wsCache.get('TreeSort-dataset') || 'time_desc'
+  datasetTree.value = treeSort(arr, sortType)
+}
+
 let newDatasetId = ''
 let oldDatasetId = ''
 const handleCurrentChange = node => {
@@ -2655,8 +2662,9 @@ defineExpose({
               <template v-if="curComponent.optionValueSource === 1">
                 <div class="value">
                   <el-tree-select
+                    :teleported="false"
                     v-model="curComponent.dataset.id"
-                    :data="computedTree"
+                    :data="datasetTree"
                     placeholder="请选择数据集"
                     @change="handleDatasetChange"
                     @current-change="handleCurrentChange"
@@ -2674,9 +2682,12 @@ defineExpose({
                         <el-icon size="18px" v-if="data.leaf">
                           <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                         </el-icon>
-                        <span class="label ellipsis" style="margin-left: 8px" :title="node.label">{{
-                          node.label
-                        }}</span>
+                        <span
+                          class="label-tree ellipsis"
+                          style="margin-left: 8px"
+                          :title="node.label"
+                          >{{ node.label }}</span
+                        >
                       </div>
                     </template>
                   </el-tree-select>
@@ -3651,7 +3662,8 @@ defineExpose({
   .content {
     display: flex;
     align-items: center;
-    .label {
+    width: 100%;
+    .label-tree {
       margin-left: 5px;
       width: calc(100% - 45px);
     }
