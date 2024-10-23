@@ -559,6 +559,9 @@ public class DatasetGroupManage {
             return;
         }
         fullName.add(parent.getName());
+        if (parent.getId().equals(parent.getPid())) {
+            return;
+        }
         if (parent.getPid() != null && parent.getPid() != 0) {
             geFullName(parent.getPid(), fullName);
         }
