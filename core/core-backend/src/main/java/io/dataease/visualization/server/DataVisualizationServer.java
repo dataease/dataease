@@ -781,6 +781,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<DataVisualizationInfo> list = new ArrayList<>();
         DataVisualizationInfo dataVisualizationInfo = visualizationInfoMapper.selectById(id);
         list.add(dataVisualizationInfo);
+        if (dataVisualizationInfo.getPid().equals(dataVisualizationInfo.getId())) {
+            return list;
+        }
         getParent(list, dataVisualizationInfo);
         Collections.reverse(list);
         return list;
