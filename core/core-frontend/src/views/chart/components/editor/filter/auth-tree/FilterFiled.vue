@@ -473,9 +473,17 @@ const emits = defineEmits(['update:item', 'del'])
             <div class="bottom-line"></div>
           </template>
           <template v-else-if="!['null', 'empty', 'not_null', 'not_empty'].includes(item.term)">
+            <el-input
+              v-if="item.deType === 1 && item.filterTypeTime === 'dynamicDate' && !item.timeValue"
+              @click="handleClick"
+              readonly
+              class="w70 mar5"
+              size="small"
+              v-model="item.timeValue"
+            />
             <el-tooltip
               class="item"
-              v-if="item.deType === 1 && item.filterTypeTime === 'dynamicDate'"
+              v-else-if="item.deType === 1 && item.filterTypeTime === 'dynamicDate'"
               effect="light"
               :content="item.timeValue"
               placement="top"
@@ -599,7 +607,13 @@ const emits = defineEmits(['update:item', 'del'])
         /></Icon>
       </el-icon>
     </div>
-    <el-dialog append-to-body v-model="dialogVisible" title="日期设置" width="500">
+    <el-dialog
+      class="create-dialog"
+      append-to-body
+      v-model="dialogVisible"
+      title="日期设置"
+      width="420"
+    >
       <TimeDialog ref="timeDialog"></TimeDialog>
       <template #footer>
         <div class="dialog-footer">
