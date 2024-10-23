@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-05-07
+ * @since 2024-10-23
  */
 @TableName("core_chart_view")
 public class CoreChartView implements Serializable {
@@ -102,9 +102,19 @@ public class CoreChartView implements Serializable {
     private String customAttr;
 
     /**
+     * 图形属性_移动端
+     */
+    private String customAttrMobile;
+
+    /**
      * 组件样式
      */
     private String customStyle;
+
+    /**
+     * 组件样式_移动端
+     */
+    private String customStyleMobile;
 
     /**
      * 结果过滤
@@ -137,7 +147,7 @@ public class CoreChartView implements Serializable {
     private Long updateTime;
 
     /**
-     * 缩略图
+     * 缩略图 
      */
     private String snapshot;
 
@@ -206,15 +216,20 @@ public class CoreChartView implements Serializable {
      */
     private Boolean aggregate;
 
+    /**
+     * 流向地图起点名称field
+     */
     private String flowMapStartName;
 
+    /**
+     * 流向地图终点名称field
+     */
     private String flowMapEndName;
 
     /**
      * 颜色维度field
      */
     private String extColor;
-
 
     public Long getId() {
         return id;
@@ -352,12 +367,28 @@ public class CoreChartView implements Serializable {
         this.customAttr = customAttr;
     }
 
+    public String getCustomAttrMobile() {
+        return customAttrMobile;
+    }
+
+    public void setCustomAttrMobile(String customAttrMobile) {
+        this.customAttrMobile = customAttrMobile;
+    }
+
     public String getCustomStyle() {
         return customStyle;
     }
 
     public void setCustomStyle(String customStyle) {
         this.customStyle = customStyle;
+    }
+
+    public String getCustomStyleMobile() {
+        return customStyleMobile;
+    }
+
+    public void setCustomStyleMobile(String customStyleMobile) {
+        this.customStyleMobile = customStyleMobile;
     }
 
     public String getCustomFilter() {
@@ -564,7 +595,9 @@ public class CoreChartView implements Serializable {
         ", extLabel = " + extLabel +
         ", extTooltip = " + extTooltip +
         ", customAttr = " + customAttr +
+        ", customAttrMobile = " + customAttrMobile +
         ", customStyle = " + customStyle +
+        ", customStyleMobile = " + customStyleMobile +
         ", customFilter = " + customFilter +
         ", drillFields = " + drillFields +
         ", senior = " + senior +
@@ -585,9 +618,9 @@ public class CoreChartView implements Serializable {
         ", copyFrom = " + copyFrom +
         ", copyId = " + copyId +
         ", aggregate = " + aggregate +
-        ", flowMapStartName=" + flowMapStartName +
-        ", flowMapEndName=" + flowMapEndName +
-        ", extColor=" + extColor +
+        ", flowMapStartName = " + flowMapStartName +
+        ", flowMapEndName = " + flowMapEndName +
+        ", extColor = " + extColor +
         "}";
     }
 }

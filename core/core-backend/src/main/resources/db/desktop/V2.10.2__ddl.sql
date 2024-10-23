@@ -7,3 +7,8 @@ FROM
 WHERE
 	dvi.delete_flag =1;
 delete from data_visualization_info dvi where dvi.delete_flag =1;
+
+
+ALTER TABLE `core_chart_view`
+    ADD COLUMN `custom_attr_mobile` longtext NULL COMMENT '图形属性_移动端',
+ADD COLUMN `custom_style_mobile` longtext NULL COMMENT '组件样式_移动端';

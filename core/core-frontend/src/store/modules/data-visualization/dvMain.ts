@@ -307,6 +307,13 @@ export const dvMainStore = defineStore('dataVisualization', {
           this.canvasState['curPointArea'] = this.curComponent['category']
         }
       }
+      // 移动端通知
+      if (this.mobileInPc) {
+        useEmitt().emitter.emit('curComponentChange', {
+          type: 'curComponentChange',
+          value: JSON.parse(JSON.stringify(this.curComponent))
+        })
+      }
     },
     setBashMatrixInfo(bashMatrixInfo) {
       this.bashMatrixInfo = bashMatrixInfo

@@ -14,6 +14,7 @@ import { backCanvasData } from '@/utils/canvasUtils'
 import { storeToRefs } from 'pinia'
 import { debounce } from 'lodash-es'
 import mobileHeader from '@/assets/img/mobile-header.png'
+import ComponentStyleEditor from '@/views/common/ComponentStyleEditor.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
@@ -90,6 +91,11 @@ const hanedleMessage = event => {
     loadCanvasData()
   }
 
+  if (event.data.type === 'curComponentChange') {
+    // 移动端CurComponent引用不在主dvMain中
+    dvMainStore.setCurComponent({ component: event.data.value, index: 0 })
+  }
+
   if (event.data.type === 'delFromMobile') {
     changeTimes.value++
     componentData.value.some(ele => {
@@ -158,6 +164,9 @@ const setMobileStyle = debounce(() => {
     transformOrigin: '0 0'
   }
 }, 100)
+const curComponentChangeHandle = info => {
+  // do change
+}
 onMounted(() => {
   window.addEventListener('message', hanedleMessage)
   window.addEventListener('resize', setMobileStyle)
@@ -166,6 +175,12 @@ onMounted(() => {
     name: 'onMobileStatusChange',
     callback: ({ type, value }) => {
       mobileStatusChange(type, value)
+    }
+  })
+  useEmitt({
+    name: 'curComponentChange',
+    callback: info => {
+      curComponentChangeHandle(info)
     }
   })
   setMobileStyle()
@@ -252,43 +267,44 @@ const save = () => {
       <div class="config-mobile-sidebar">移动端配置</div>
       <el-tabs size="small" v-model="activeCollapse">
         <el-tab-pane label="可视化组件" name="com"> </el-tab-pane>
-        <el-tab-pane label="样式" name="style"> </el-tab-pane>
+        <el-tab-pane label="组件样式" name="componentStyle"> </el-tab-pane>
+        <el-tab-pane label="整体样式" name="style"> </el-tab-pane>
       </el-tabs>
-      <div class="config-mobile-tab">
-        <MobileBackgroundSelector
-          v-if="activeCollapse === 'style'"
-          @styleChange="changeTimes++"
-        ></MobileBackgroundSelector>
-        <template v-else>
-          <div
-            :style="{ height: '198px', width: '198px' }"
-            class="mobile-wrapper-inner-adaptor"
-            v-for="item in componentDataNotInMobile"
-            :key="item.id"
-          >
-            <div class="component-outer">
-              <ComponentWrapper
-                v-show="item.isShow"
-                canvas-id="canvas-main"
-                :canvas-style-data="canvasStyleData"
-                :dv-info="dvInfo"
-                :canvas-view-info="canvasViewInfo"
-                :view-info="canvasViewInfo[item.id]"
-                :config="item"
-                :style="getComponentStyleDefault()"
-                show-position="preview"
-                :search-count="0"
-                :scale="80"
-              />
-            </div>
-            <div class="mobile-com-mask" @click="addToMobile(item)">
-              <span v-show="item.component === 'DeStreamMedia'" style="color: #909399"
-                >IOS可能无法显示</span
-              >
-            </div>
-            <div class="pc-select-to-mobile" @click="addToMobile(item)" v-if="!mobileLoading"></div>
+      <div class="config-mobile-tab" v-show="activeCollapse === 'style'">
+        <MobileBackgroundSelector @styleChange="changeTimes++"></MobileBackgroundSelector>
+      </div>
+      <div class="config-mobile-tab-style" v-show="activeCollapse === 'componentStyle'">
+        <component-style-editor></component-style-editor>
+      </div>
+      <div class="config-mobile-tab" v-show="activeCollapse === 'com'">
+        <div
+          :style="{ height: '198px', width: '198px' }"
+          class="mobile-wrapper-inner-adaptor"
+          v-for="item in componentDataNotInMobile"
+          :key="item.id"
+        >
+          <div class="component-outer">
+            <ComponentWrapper
+              v-show="item.isShow"
+              canvas-id="canvas-main"
+              :canvas-style-data="canvasStyleData"
+              :dv-info="dvInfo"
+              :canvas-view-info="canvasViewInfo"
+              :view-info="canvasViewInfo[item.id]"
+              :config="item"
+              :style="getComponentStyleDefault()"
+              show-position="preview"
+              :search-count="0"
+              :scale="80"
+            />
           </div>
-        </template>
+          <div class="mobile-com-mask" @click="addToMobile(item)">
+            <span v-show="item.component === 'DeStreamMedia'" style="color: #909399"
+              >IOS可能无法显示</span
+            >
+          </div>
+          <div class="pc-select-to-mobile" @click="addToMobile(item)" v-if="!mobileLoading"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -484,6 +500,14 @@ const save = () => {
 
     .config-mobile-tab {
       padding: 16px 8px;
+    }
+    .config-mobile-tab-style {
+      padding: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      ::v-deep(.editor-light) {
+        border-left: none !important;
+      }
     }
     .mobile-wrapper-inner-adaptor {
       position: relative;

@@ -210,7 +210,6 @@ watch(
       canEdit.value = false
       reShow()
       myValue.value = assignment(element.value.propValue.textValue)
-      console.log('===myValue.value=' + myValue.value)
       ed.setContent(myValue.value)
     }
   }
