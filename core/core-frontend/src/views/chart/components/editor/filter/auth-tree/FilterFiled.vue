@@ -75,13 +75,6 @@ const checkListWithFilter = computed(() => {
 const checkResult = computed(() => {
   return checklist.value.join(',')
 })
-const computedWidth = computed(() => {
-  const { term, fieldId, filterType } = item.value
-  const isNull = ['null', 'empty', 'not_null', 'not_empty'].includes(term) && filterType === 'logic'
-  return {
-    width: !fieldId ? '270px' : isNull ? '670px' : '750px'
-  }
-})
 
 const sysParamsIln = computed(() => {
   if (['in', 'not in'].includes(item.value.term)) {
@@ -269,7 +262,6 @@ const cancelfixValue = () => {
 const delChecks = idx => {
   checklist.value.splice(idx, 1)
 }
-
 const selectItem = ({ name, id, deType }) => {
   activeName.value = name
   Object.assign(item.value, {
@@ -287,6 +279,7 @@ const selectItem = ({ name, id, deType }) => {
   filterListInit(deType)
   checklist.value = []
 }
+
 const filterListInit = deType => {
   filterList.value = [
     {
@@ -306,11 +299,11 @@ const filterListInit = deType => {
 const filterListTime = [
   {
     value: 'dateValue',
-    label: '日期值'
+    label: '固定值'
   },
   {
     value: 'dynamicDate',
-    label: '动态日期'
+    label: '动态值'
   }
 ]
 const clearAll = () => {
@@ -349,12 +342,7 @@ const emits = defineEmits(['update:item', 'del'])
 
 <template>
   <div class="white-nowrap">
-    <div
-      class="filed"
-      :style="computedWidth"
-      @mouseover="showDel = true"
-      @mouseleave="showDel = false"
-    >
+    <div class="filed" @mouseover="showDel = true" @mouseleave="showDel = false">
       <span class="filed-title">{{ t('auth.filter_fields') }}</span>
 
       <el-dropdown trigger="click" :hide-on-click="false">
@@ -422,11 +410,13 @@ const emits = defineEmits(['update:item', 'del'])
             >
             </el-option>
           </el-select>
+          <span class="filed-title">{{ t('auth.fixed_value') }}</span>
         </template>
         <template v-else>
-          <span class="filed-title">时间类型</span>
           <el-select
             size="small"
+            class="w100"
+            style="margin-left: 16px"
             @change="filterTypeChangeTime"
             v-model="item.filterTypeTime"
             :placeholder="t('auth.select')"
@@ -440,7 +430,6 @@ const emits = defineEmits(['update:item', 'del'])
             </el-option>
           </el-select>
         </template>
-        <span class="filed-title">{{ t('auth.fixed_value') }}</span>
         <template v-if="item.filterType === 'logic'">
           <el-select
             class="w100"
@@ -627,6 +616,7 @@ const emits = defineEmits(['update:item', 'del'])
   white-space: nowrap;
 }
 .filed {
+  width: fit-content;
   height: 41.4px;
   padding: 1px 3px 1px 10px;
   box-sizing: border-box;
