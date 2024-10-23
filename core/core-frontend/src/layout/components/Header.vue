@@ -248,7 +248,7 @@ onMounted(() => {
       &.is-active {
         border-bottom: none;
         color: #ffffff !important;
-        background-color: var(--ed-color-primary);
+        background-color: var(--ed-color-primary) !important;
       }
     }
 
