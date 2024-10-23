@@ -177,40 +177,31 @@ defineExpose({
 </script>
 
 <template>
-  <div class="time-dialog">
-    <div class="setting">
-      <div class="setting-label">时间粒度</div>
-      <div class="setting-value select">
-        <el-select
-          @change="timeGranularityChange"
-          placeholder="请选择时间粒度"
-          v-model="curComponent.timeGranularity"
-        >
-          <el-option
-            v-for="ele in timeList"
-            :key="ele.value"
-            :label="ele.label"
-            :value="ele.value"
-          />
-        </el-select>
-      </div>
-    </div>
-    <div class="setting">
-      <div class="setting-label">相对当前</div>
-      <div class="setting-value select">
-        <el-select v-model="curComponent.relativeToCurrent">
-          <el-option
-            v-for="item in relativeToCurrentList"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </div>
-    </div>
-    <div class="setting" v-if="curComponent.relativeToCurrent === 'custom'">
+  <el-form label-position="top">
+    <el-form-item label="时间粒度">
+      <el-select
+        @change="timeGranularityChange"
+        style="width: 100%"
+        placeholder="请选择时间粒度"
+        v-model="curComponent.timeGranularity"
+      >
+        <el-option v-for="ele in timeList" :key="ele.value" :label="ele.label" :value="ele.value" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="相对当前">
+      <el-select style="width: 100%" v-model="curComponent.relativeToCurrent">
+        <el-option
+          v-for="item in relativeToCurrentList"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+    </el-form-item>
+    <el-form-item v-if="curComponent.relativeToCurrent === 'custom'">
       <div
-        class="setting-input"
+        style="width: 100%"
+        class="no-with-date"
         :class="curComponent.timeGranularity === 'datetime' && 'with-date'"
       >
         <el-input-number v-model="curComponent.timeNum" :min="0" controls-position="right" />
@@ -236,73 +227,38 @@ defineExpose({
           v-model="curComponent.arbitraryTime"
         />
       </div>
-    </div>
-    <div class="setting">
-      <div class="setting-label">预览</div>
-      <div class="setting-value" style="width: 325px">
-        <DynamicTime style="width: 100%" :config="curComponent" isConfig></DynamicTime>
-      </div>
-    </div>
-  </div>
+    </el-form-item>
+    <el-form-item label="预览">
+      <DynamicTime style="width: 100%" :config="curComponent" isConfig></DynamicTime>
+    </el-form-item>
+  </el-form>
 </template>
 
 <style lang="less" scoped>
-.time-dialog {
-  .setting {
-    &.setting {
-      margin-top: 8px;
-    }
-    &.parameters {
-      width: 100%;
-      padding-left: 24px;
-      .ed-date-editor {
-        width: 325px !important;
-      }
-    }
-    margin-left: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    .setting-label {
-      width: 80px;
-      margin-right: 8px;
-    }
-
-    .setting-value {
-      margin: 8px 0;
-      &.select {
-        margin-top: 0;
-        .ed-select {
-          width: 325px;
-        }
-      }
-    }
-
-    .setting-input {
-      display: flex;
-      padding-left: 126px;
-      justify-content: flex-end;
-      align-items: center;
-      &.range {
-        padding-left: 0px;
-      }
-      & > div + div {
-        margin-left: 8px;
-      }
-
-      &.with-date {
-        .ed-input-number {
-          width: 71px;
-        }
-        .ed-select {
-          width: 62px;
-        }
-
-        .ed-date-editor.ed-input {
-          width: 106px;
-        }
-      }
-    }
+.no-with-date {
+  .ed-input-number {
+    width: 120px;
   }
+  .ed-select {
+    width: 118px;
+    margin-left: 8px;
+  }
+}
+.with-date {
+  .ed-input-number {
+    width: 80px;
+  }
+  .ed-select {
+    width: 80px;
+    margin-left: 8px;
+  }
+
+  .ed-date-editor.ed-input {
+    width: 106px;
+  }
+}
+
+:deep(.date-editor_granularity .ed-input__wrapper) {
+  width: 100%;
 }
 </style>
