@@ -743,3 +743,39 @@ export function maxYComponentCount() {
       .reduce((max, current) => Math.max(max, current), 0)
   }
 }
+
+export function componentSwitch(componentData, changeComponent) {
+  componentData.map(obj => (obj.id === changeComponent.id ? changeComponent : obj))
+}
+
+export function findComponentById(componentId) {
+  let result
+  componentData.forEach(item => {
+    if (item.id === componentId) {
+      result = item
+    } else if (item.component === 'Group') {
+      item.propValue.forEach(groupItem => {
+        if (groupItem.id === componentId) {
+          result = groupItem
+        }
+      })
+    } else if (item.component === 'DeTabs') {
+      item.propValue.forEach(tabItem => {
+        tabItem.componentData.forEach(tabComponent => {
+          if (tabComponent.id === componentId) {
+            result = tabComponent
+          }
+        })
+      })
+    }
+  })
+  return result
+}
+
+export function mobileViewStyleSwitch(component) {
+  if (component) {
+    const viewInfo = canvasViewInfo.value[component.id]
+    viewInfo.customStyle = component.customStyle
+    viewInfo.customStyleMobile = component.customStyleMobile
+  }
+}

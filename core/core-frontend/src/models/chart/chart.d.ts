@@ -45,7 +45,9 @@ declare interface Chart {
   customFilter: {}
   senior: CustomSenior
   customAttr: CustomAttr
+  customAttrMobile: CustomAttr
   customStyle: CustomStyle
+  customStyleMobile: CustomStyle
   drillFields: ChartViewField[]
   drillFilters: Filter[]
   datasetMode: 0 | 1

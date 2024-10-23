@@ -5,6 +5,7 @@ import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { XpackComponent } from '@/components/plugin'
 import DePreviewMobile from './MobileInPc.vue'
+import { mobileViewStyleSwitch } from '@/utils/canvasUtils'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 
@@ -49,6 +50,18 @@ const hanedleMessage = event => {
     eventBus.emit('doCanvasInit-canvas-main')
     if (isEmbedded) return
     panelInit.value = true
+  }
+  // 进行内部组件渲染 type render 渲染 calcData 计算  主组件渲染
+  if (event.data.type === 'componentStyleChange') {
+    const { type, innerOptType, component } = event.data.value
+    if (type === 'renderChart') {
+      mobileViewStyleSwitch(component)
+      useEmitt().emitter.emit('renderChart-' + component.id, component)
+    } else if (type === 'calcData') {
+      mobileViewStyleSwitch(component)
+      useEmitt().emitter.emit('calcData-' + component.id, component)
+    } else if (type === 'component') {
+    }
   }
 
   if (event.data.type === 'addToMobile') {
@@ -97,7 +110,9 @@ const initIframe = () => {
     panelInit.value = true
   })
 }
-
+const curComponentChangeHandle = (type, value) => {
+  window.parent.postMessage({ type: type, value: value }, '*')
+}
 onBeforeMount(() => {
   window.parent.postMessage({ type: 'panelInit', value: true }, '*')
   window.addEventListener('message', hanedleMessage)
@@ -105,6 +120,12 @@ onBeforeMount(() => {
     name: 'onMobileStatusChange',
     callback: ({ type, value }) => {
       mobileStatusChange(type, value)
+    }
+  })
+  useEmitt({
+    name: 'curComponentChange',
+    callback: ({ type, value }) => {
+      curComponentChangeHandle(type, value)
     }
   })
 })
