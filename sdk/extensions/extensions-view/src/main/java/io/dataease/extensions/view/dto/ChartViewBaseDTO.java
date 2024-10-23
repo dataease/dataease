@@ -115,9 +115,18 @@ public class ChartViewBaseDTO implements Serializable {
     private Map<String, Object> customAttr;
 
     /**
+     * 移动端图形属性
+     */
+    private Map<String, Object> customAttrMobile;
+
+    /**
      * 组件样式
      */
     private Map<String, Object> customStyle;
+    /**
+     * 移动端组件样式
+     */
+    private Map<String, Object> customStyleMobile;
 
     /**
      * 结果过滤
