@@ -2971,6 +2971,7 @@ export default {
     grid: '告警列表',
     record: '检测记录',
     module_name: '阈值告警',
-    setting: '阈值告警设置'
+    setting: '阈值告警设置',
+    no_view_tip: '请在设置阈值告警前先保存'
   }
 }
