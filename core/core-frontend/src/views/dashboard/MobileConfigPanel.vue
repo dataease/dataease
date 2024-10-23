@@ -111,19 +111,30 @@ const hanedleMessage = event => {
     componentData.value.forEach(ele => {
       const com = event.data.value[ele.id]
       if (!!com) {
-        const { x, y, sizeX, sizeY } = com
+        const { x, y, sizeX, sizeY, style, commonBackground } = com
         ele.mx = x
         ele.my = y
         ele.mSizeX = sizeX
         ele.mSizeY = sizeY
+        ele.mStyle = style
+        ele.mCommonBackground = commonBackground
         if (ele.component === 'DeTabs') {
           ele.propValue.forEach(tabItem => {
             tabItem.componentData.forEach(tabComponent => {
-              const { x: tx, y: ty, sizeX: tSizeX, sizeY: tSizeY } = com.tab[tabComponent.id]
+              const {
+                x: tx,
+                y: ty,
+                sizeX: tSizeX,
+                sizeY: tSizeY,
+                style: tStyle,
+                commonBackground: tCommonBackground
+              } = com.tab[tabComponent.id]
               tabComponent.mx = tx
               tabComponent.my = ty
               tabComponent.mSizeX = tSizeX
               tabComponent.mSizeY = tSizeY
+              tabComponent.mStyle = tStyle
+              tabComponent.mCommonBackground = tCommonBackground
             })
           })
         }

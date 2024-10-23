@@ -22,21 +22,32 @@ const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
     componentData.forEach(ele => {
-      const { mx, my, mSizeX, mSizeY } = ele
+      const { mx, my, mSizeX, mSizeY, mStyle, mCommonBackground } = ele
       ele.x = mx
       ele.y = my
       ele.sizeX = mSizeX
       ele.sizeY = mSizeY
+      ele.style = mStyle || ele.style
+      ele.commonBackground = mCommonBackground || ele.commonBackground
 
       if (ele.component === 'DeTabs') {
         ele.propValue.forEach(tabItem => {
           tabItem.componentData.forEach(tabComponent => {
-            const { mx: tx, my: ty, mSizeX: tSizeX, mSizeY: tSizeY } = tabComponent
+            const {
+              mx: tx,
+              my: ty,
+              mSizeX: tSizeX,
+              mSizeY: tSizeY,
+              mStyle: tStyle,
+              mCommonBackground: tCommonBackground
+            } = tabComponent
             if (tSizeX && tSizeY) {
               tabComponent.x = tx
               tabComponent.y = ty
               tabComponent.sizeX = tSizeX
               tabComponent.sizeY = tSizeY
+              tabComponent.style = tStyle || tabComponent.style
+              tabComponent.commonBackground = tCommonBackground || tabComponent.commonBackground
             }
           })
         })
@@ -80,18 +91,36 @@ const hanedleMessage = event => {
       {
         type: `${event.data.type}FromMobile`,
         value: dvMainStore.componentData.reduce((pre, next) => {
-          const { x, y, sizeX, sizeY, id, component } = next
-          pre[id] = { x, y, sizeX, sizeY, component }
+          const { x, y, sizeX, sizeY, id, component, style, commonBackground } = next
+          pre[id] = {
+            x,
+            y,
+            sizeX,
+            sizeY,
+            component,
+            style: JSON.parse(JSON.stringify(style)),
+            commonBackground: JSON.parse(JSON.stringify(commonBackground))
+          }
           if (next.component === 'DeTabs') {
             pre[id].tab = {}
             next.propValue.forEach(tabItem => {
               tabItem.componentData.forEach(tabComponent => {
-                const { x: tx, y: ty, sizeX: tSizeX, sizeY: tSizeY, id: tId } = tabComponent
+                const {
+                  x: tx,
+                  y: ty,
+                  sizeX: tSizeX,
+                  sizeY: tSizeY,
+                  id: tId,
+                  style: tStyle,
+                  commonBackground: tCommonBackground
+                } = tabComponent
                 pre[id].tab[tId] = {
                   x: tx,
                   y: ty,
                   sizeX: tSizeX,
-                  sizeY: tSizeY
+                  sizeY: tSizeY,
+                  style: JSON.parse(JSON.stringify(tStyle)),
+                  commonBackground: JSON.parse(JSON.stringify(tCommonBackground))
                 }
               })
             })
