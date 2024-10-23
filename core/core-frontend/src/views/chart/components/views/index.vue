@@ -951,7 +951,15 @@ const allEmptyCheck = computed(() => {
         >
           <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
             <template #content>
-              <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
+              <div
+                style="
+                  width: 500px;
+                  word-break: break-all;
+                  word-wrap: break-word;
+                  white-space: pre-wrap;
+                "
+                v-html="state.title_remark.remark"
+              ></div>
             </template>
             <el-icon :size="iconSize" class="inner-icon">
               <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
