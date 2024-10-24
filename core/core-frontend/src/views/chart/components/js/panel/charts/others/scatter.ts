@@ -126,13 +126,6 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
               }
             ]
           }
-        },
-        {
-          type: 'tooltip',
-          cfg: {
-            start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
-            end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
-          }
         }
       ]
     }

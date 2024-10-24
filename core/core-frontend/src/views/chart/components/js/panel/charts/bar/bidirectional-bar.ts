@@ -131,7 +131,6 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
         },
         position: 'bottom'
       },
-      interactions: [{ type: 'active-region' }],
       yField: ['value', 'valueExt'],
       appendPadding: getPadding(chart),
       meta: {
