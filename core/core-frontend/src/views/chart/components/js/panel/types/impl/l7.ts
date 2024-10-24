@@ -28,6 +28,10 @@ export class L7Wrapper<
 > extends ChartWrapper<S> {
   private readonly config: O | Array<O>
   private readonly scene: S | null = null
+
+  public getScene() {
+    return this.scene
+  }
   constructor(scene: S, l7config: O | Array<O> | undefined) {
     super()
     this.chartInstance = scene
@@ -42,7 +46,7 @@ export class L7Wrapper<
   }
   render = () => {
     if (this.scene && this.config) {
-      this.scene.on('loaded', () => {
+      if (this.scene.loaded) {
         if (Array.isArray(this.config)) {
           this.config?.forEach(p => {
             this.handleConfig(p)
@@ -50,7 +54,17 @@ export class L7Wrapper<
         } else {
           this.handleConfig(this.config)
         }
-      })
+      } else {
+        this.scene.on('loaded', () => {
+          if (Array.isArray(this.config)) {
+            this.config?.forEach(p => {
+              this.handleConfig(p)
+            })
+          } else {
+            this.handleConfig(this.config)
+          }
+        })
+      }
     }
   }
 
