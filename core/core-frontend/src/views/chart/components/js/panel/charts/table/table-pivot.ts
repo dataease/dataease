@@ -97,7 +97,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'tableBorderColor',
       'tableScrollBarColor',
       'alpha',
-      'tableLayoutMode'
+      'tableLayoutMode',
+      'showHoverStyle'
     ]
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'yAxis', 'filter']
@@ -172,8 +173,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     })
 
     // total config
-    const customAttr = parseJson(chart.customAttr)
-    const { tableTotal, basicStyle } = customAttr
+    const { basicStyle, tooltip, tableTotal } = parseJson(chart.customAttr)
     tableTotal.row.subTotalsDimensions = r
     tableTotal.col.subTotalsDimensions = c
 
@@ -259,7 +259,10 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         getContainer: () => containerDom
       },
       hierarchyType: basicStyle.tableLayoutMode ?? 'grid',
-      dataSet: spreadSheet => new CustomPivotDataset(spreadSheet)
+      dataSet: spreadSheet => new CustomPivotDataset(spreadSheet),
+      interaction: {
+        hoverHighlight: !(basicStyle.showHoverStyle === false)
+      }
     }
     // options
     s2Options.style = this.configStyle(chart, s2DataConfig)
@@ -269,7 +272,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     // 开始渲染
     const s2 = new PivotSheet(containerDom, s2DataConfig, s2Options as unknown as S2Options)
     // tooltip
-    const { show } = customAttr.tooltip
+    const { show } = tooltip
     if (show) {
       s2.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(s2, event, meta))
       s2.on(S2Event.ROW_CELL_HOVER, event => this.showTooltip(s2, event, meta))

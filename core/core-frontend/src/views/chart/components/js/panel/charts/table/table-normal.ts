@@ -34,7 +34,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     'basic-style-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['basic-style-selector'],
       'showSummary',
-      'summaryLabel'
+      'summaryLabel',
+      'showHoverStyle'
     ],
     'table-cell-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-cell-selector'],
@@ -130,28 +131,31 @@ export class TableNormal extends S2ChartView<TableSheet> {
       data: newData
     }
 
-    const customAttr = parseJson(chart.customAttr)
+    const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
       width: containerDom.getBoundingClientRect().width,
       height: containerDom.offsetHeight,
-      showSeriesNumber: customAttr.tableHeader.showIndex,
+      showSeriesNumber: tableHeader.showIndex,
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom,
         renderTooltip: sheet => new SortTooltip(sheet)
+      },
+      interaction: {
+        hoverHighlight: !(basicStyle.showHoverStyle === false)
       }
     }
     // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
     // 行列冻结
-    if (customAttr.tableCell.tableFreeze) {
-      s2Options.frozenColCount = customAttr.tableCell.tableColumnFreezeHead ?? 0
-      s2Options.frozenRowCount = customAttr.tableCell.tableRowFreezeHead ?? 0
+    if (tableCell.tableFreeze) {
+      s2Options.frozenColCount = tableCell.tableColumnFreezeHead ?? 0
+      s2Options.frozenRowCount = tableCell.tableRowFreezeHead ?? 0
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
-      let indexLabel = customAttr.tableHeader.indexLabel
+      let indexLabel = tableHeader.indexLabel
       if (!indexLabel) {
         indexLabel = ''
       }
@@ -165,15 +169,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // tooltip
     this.configTooltip(chart, s2Options)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
-    if (customAttr.tableHeader.showTableHeader === false) {
+    if (tableHeader.showTableHeader === false) {
       s2Options.style.colCfg.height = 1
-      if (customAttr.tableCell.showHorizonBorder === false) {
+      if (tableCell.showHorizonBorder === false) {
         s2Options.style.colCfg.height = 0
       }
-      s2Options.interaction = {
-        resize: {
-          colCellVertical: false
-        }
+      s2Options.interaction.resize = {
+        colCellVertical: false
       }
       s2Options.colCell = (node, sheet, config) => {
         node.label = ' '
@@ -186,10 +188,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
 
     // 总计
-    if (customAttr.basicStyle.showSummary) {
+    if (basicStyle.showSummary) {
       // 设置汇总行高度和表头一致
       const heightByField = {}
-      heightByField[newData.length] = customAttr.tableHeader.tableTitleHeight
+      heightByField[newData.length] = tableHeader.tableTitleHeight
       s2Options.style.rowCfg = { heightByField }
       // 计算汇总加入到数据里，冻结最后一行
       s2Options.frozenTrailingRowCount = 1
@@ -211,11 +213,11 @@ export class TableNormal extends S2ChartView<TableSheet> {
           return new TableDataCell(viewMeta, viewMeta.spreadsheet)
         }
         if (viewMeta.colIndex === 0) {
-          if (customAttr.tableHeader.showIndex) {
-            viewMeta.fieldValue = customAttr.basicStyle.summaryLabel ?? '总计'
+          if (tableHeader.showIndex) {
+            viewMeta.fieldValue = basicStyle.summaryLabel ?? '总计'
           } else {
             if (xAxis.length) {
-              viewMeta.fieldValue = customAttr.basicStyle.summaryLabel ?? '总计'
+              viewMeta.fieldValue = basicStyle.summaryLabel ?? '总计'
             }
           }
         }
@@ -225,11 +227,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     // 总计紧贴在单元格后面
-    if (customAttr.basicStyle.showSummary) {
+    if (basicStyle.showSummary) {
       newChart.on(S2Event.LAYOUT_BEFORE_RENDER, () => {
         const totalHeight =
-          customAttr.tableHeader.tableTitleHeight * 2 +
-          customAttr.tableCell.tableItemHeight * (newData.length - 1)
+          tableHeader.tableTitleHeight * 2 + tableCell.tableItemHeight * (newData.length - 1)
         if (totalHeight < newChart.options.height) {
           // 6 是阴影高度
           newChart.options.height =
@@ -238,7 +239,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       })
     }
     // 自适应铺满
-    if (customAttr.basicStyle.tableColumnMode === 'adapt') {
+    if (basicStyle.tableColumnMode === 'adapt') {
       newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
         newChart.store.set('lastLayoutResult', newChart.facet.layoutResult)
       })
@@ -308,7 +309,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       action(param)
     })
     // tooltip
-    const { show } = customAttr.tooltip
+    const { show } = tooltip
     if (show) {
       newChart.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
       newChart.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(newChart, event, meta))

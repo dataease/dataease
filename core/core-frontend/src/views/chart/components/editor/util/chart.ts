@@ -1594,7 +1594,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
     longitude: 117.232,
     latitude: 39.354
   },
-  zoomLevel: 7
+  zoomLevel: 7,
+  customIcon: '',
+  showHoverStyle: true
 }
 
 export const BASE_VIEW_CONFIG = {

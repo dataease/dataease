@@ -184,7 +184,12 @@ export function getCustomTheme(chart: Chart): S2Theme {
         dataCell: {
           cell: {
             horizontalBorderColor: tableBorderColor,
-            verticalBorderColor: tableBorderColor
+            verticalBorderColor: tableBorderColor,
+            interactionState: {
+              hoverFocus: {
+                borderOpacity: basicStyle.showHoverStyle === false ? 0 : 1
+              }
+            }
           }
         },
         scrollBar: {
