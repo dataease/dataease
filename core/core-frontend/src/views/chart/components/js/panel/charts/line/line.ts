@@ -101,13 +101,6 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
           }
         },
         {
-          type: 'tooltip',
-          cfg: {
-            start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
-            end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
-          }
-        },
-        {
           type: 'active-region',
           cfg: {
             start: [{ trigger: 'element:mousemove', action: 'active-region:show' }],
