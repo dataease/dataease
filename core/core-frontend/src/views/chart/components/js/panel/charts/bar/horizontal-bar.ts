@@ -475,7 +475,8 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configSlider
+      this.configSlider,
+      this.configAnalyseHorizontal
     )(chart, options, {}, this)
   }
 
@@ -485,6 +486,5 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       ...this.baseOptions,
       isPercent: true
     }
-    this.properties = this.properties.filter(item => item !== 'assist-line')
   }
 }

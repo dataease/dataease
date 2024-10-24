@@ -657,7 +657,8 @@ export class PercentageStackBar extends GroupStackBar {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configSlider
+      this.configSlider,
+      this.configAnalyse
     )(chart, options, {}, this)
   }
   constructor() {
@@ -669,7 +670,6 @@ export class PercentageStackBar extends GroupStackBar {
       isGroup: false,
       groupField: undefined
     }
-    this.properties = this.properties.filter(item => item !== 'assist-line')
     this.axis = [...BAR_AXIS_TYPE, 'extStack']
   }
 }

@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, PropType, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { fieldType } from '@/utils/attr'
@@ -11,6 +11,10 @@ import { iconFieldMap } from '@/components/icon-group/field-list'
 const { t } = useI18n()
 
 const props = defineProps({
+  chart: {
+    type: Object as PropType<ChartObj>,
+    required: true
+  },
   line: {
     type: Array,
     required: true
@@ -167,6 +171,13 @@ const getQuotaExtField = id => {
   }
 }
 
+const getFieldOptions = computed(() => {
+  if (['percentage-bar-stack', 'percentage-bar-stack-horizontal'].includes(props.chart.type)) {
+    return state.fieldOptions.filter(item => item.value === '0')
+  }
+  return state.fieldOptions
+})
+
 onMounted(() => {
   init()
 })
@@ -199,7 +210,7 @@ onMounted(() => {
         <el-col :span="3">
           <el-select v-model="item.field" class="select-item" @change="changeAssistLine">
             <el-option
-              v-for="opt in state.fieldOptions"
+              v-for="opt in getFieldOptions"
               :key="opt.value"
               :label="opt.label"
               :value="opt.value"
