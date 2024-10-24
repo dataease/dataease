@@ -18,7 +18,8 @@ const {
   curOriginThemes,
   dataPrepareState,
   nowPanelTrackInfo,
-  nowPanelJumpInfo
+  nowPanelJumpInfo,
+  mobileInPc
 } = storeToRefs(dvMainStore)
 
 let defaultCanvasInfo = {
@@ -52,6 +53,16 @@ export const snapshotStore = defineStore('snapshot', {
       if (this.snapshotCacheTimes) {
         this.recordSnapshot('snapshotCatchToStore')
       }
+    },
+    recordSnapshotCacheToMobile(type) {
+      if (mobileInPc.value && curComponent.value) {
+        //移动端设计
+        useEmitt().emitter.emit('onMobileStatusChange', {
+          type: 'componentStyleChange',
+          value: { type: type, component: JSON.parse(JSON.stringify(curComponent.value)) }
+        })
+      }
+      this.recordSnapshotCache(type)
     },
     recordSnapshotCache(type?, viewId = 'all') {
       if (dataPrepareState.value) {

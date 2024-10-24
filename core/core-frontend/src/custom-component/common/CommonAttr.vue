@@ -37,24 +37,11 @@ const props = withDefaults(
 
 const { themes, element, showStyle } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
+const { dvInfo, batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
 const activeName = ref(element.value.collapseName)
-
-const styleKeys = computed(() => {
-  if (element.value) {
-    const curComponentStyleKeys = Object.keys(element.value.style)
-    return styleData.filter(item => curComponentStyleKeys.includes(item.key))
-  } else {
-    return []
-  }
-})
 
 const onChange = () => {
   element.value.collapseName = activeName
-}
-
-const isIncludesColor = str => {
-  return str.toLowerCase().includes('color')
 }
 
 const positionComponentShow = computed(() => {
@@ -71,30 +58,12 @@ const onBackgroundChange = val => {
 }
 
 const onStyleAttrChange = ({ key, value }) => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCacheToMobile('style')
   emits('onAttrChange', { custom: 'style', property: key, value: value })
 }
 
 const containerRef = ref()
 const containerWidth = ref()
-
-const colSpan = computed(() => {
-  if (containerWidth.value <= 240) {
-    return 24
-  } else {
-    return 12
-  }
-})
-
-const colorPickerWidth = computed(() => {
-  if (containerWidth.value <= 280) {
-    return 125
-  } else if (containerWidth.value <= 240) {
-    return 108
-  } else {
-    return 197
-  }
-})
 
 const borderSettingShow = computed(() => {
   return !!element.value.style['borderStyle']
@@ -110,7 +79,7 @@ const eventsShow = computed(() => {
 })
 
 const carouselShow = computed(() => {
-  return element.value.component === 'DeTabs' && element.value.carousel
+  return element.value.component === 'DeTabs' && element.value.carousel && !mobileInPc.value
 })
 
 const backgroundCustomShow = computed(() => {
@@ -129,12 +98,6 @@ onMounted(() => {
     })
   })
 })
-const stopEvent = e => {
-  if (e && e.code === 'Enter') {
-    e.stopPropagation()
-    e.preventDefault()
-  }
-}
 </script>
 
 <template>
@@ -173,7 +136,7 @@ const stopEvent = e => {
         ></common-style-set>
       </el-collapse-item>
       <el-collapse-item
-        v-if="element && element.events && eventsShow"
+        v-if="element && element.events && eventsShow && !mobileInPc"
         :effect="themes"
         title="事件"
         name="events"

@@ -7,7 +7,11 @@
         name="videoLinks"
         v-if="curComponent && curComponent.videoLinks"
       >
-        <video-links :link-info="curComponent.videoLinks" :themes="themes"></video-links>
+        <video-links
+          v-show="!mobileInPc"
+          :link-info="curComponent.videoLinks"
+          :themes="themes"
+        ></video-links>
       </el-collapse-item>
     </CommonAttr>
   </div>
@@ -19,7 +23,7 @@ import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { storeToRefs } from 'pinia'
 import VideoLinks from '@/custom-component/de-video/VideoLinks.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, mobileInPc } = storeToRefs(dvMainStore)
 withDefaults(
   defineProps<{
     themes?: EditorTheme

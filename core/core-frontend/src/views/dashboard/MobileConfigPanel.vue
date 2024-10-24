@@ -94,8 +94,13 @@ const hanedleMessage = event => {
   }
 
   if (event.data.type === 'curComponentChange') {
-    // 移动端CurComponent引用不在主dvMain中
+    // 移动端CurComponent引用不在主dvMain中 1111
     dvMainStore.setCurComponent({ component: event.data.value, index: 0 })
+    if (!!event.data.value) {
+      activeCollapse.value = 'componentStyle'
+    } else {
+      activeCollapse.value = 'com'
+    }
   }
 
   if (event.data.type === 'delFromMobile') {

@@ -10,11 +10,7 @@ import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
-import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
-import Icon from '../../components/icon-custom/src/Icon.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { cloneDeep } from 'lodash-es'
-import FilterTree from '@/views/chart/components/editor/filter/FilterTree.vue'
 const { t } = useI18n()
 
 const props = defineProps({
@@ -27,7 +23,7 @@ const props = defineProps({
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, mobileInPc } = storeToRefs(dvMainStore)
 
 const fileList = ref([])
 const dialogImageUrl = ref('')
@@ -35,8 +31,6 @@ const dialogVisible = ref(false)
 const uploadDisabled = ref(false)
 const files = ref(null)
 const maxImageSize = 15000000
-const datasetSelector = ref(null)
-const filterTree = ref(null)
 const state = reactive({})
 
 const handlePictureCardPreview = file => {
@@ -130,7 +124,7 @@ onBeforeUnmount(() => {
       :background-color-picker-width="197"
       :background-border-select-width="197"
     >
-      <el-collapse-item :effect="themes" title="图片" name="picture">
+      <el-collapse-item :effect="themes" title="图片" name="picture" v-show="!mobileInPc">
         <el-row class="img-area" :class="`img-area_${themes}`">
           <el-col style="width: 130px !important">
             <el-upload

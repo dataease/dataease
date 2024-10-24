@@ -1799,7 +1799,14 @@ const deleteChartFieldItem = id => {
     <template v-if="mobileInPc">
       <el-container direction="vertical">
         <el-scrollbar class="drag_main_area">
-          <template v-if="view.plugin?.isPlugin">
+          <VQueryChartStyle
+            v-if="view.type === 'VQuery' && curComponent"
+            :element="curComponent"
+            :common-background-pop="curComponent?.commonBackground"
+            :chart="view"
+            :themes="themes"
+          />
+          <template v-else-if="view.plugin?.isPlugin">
             <plugin-component
               :jsname="view.plugin.staticMap['editor-style']"
               :view="view"

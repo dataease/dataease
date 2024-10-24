@@ -18,7 +18,7 @@ const props = defineProps({
 
 const dvMainStore = dvMainStoreWithOut()
 
-const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo, mobileInPc } = storeToRefs(dvMainStore)
 </script>
 
 <template>
@@ -32,15 +32,16 @@ const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
       <picture-group-upload-attr
         :themes="themes"
         :element="curComponent"
+        v-if="!mobileInPc"
       ></picture-group-upload-attr>
-      <template v-slot:carousel>
+      <template v-slot:carousel v-if="!mobileInPc">
         <carousel-setting
           v-if="curComponent?.innerType === 'picture-group'"
           :element="curComponent"
           :themes="themes"
         ></carousel-setting>
       </template>
-      <template v-slot:threshold>
+      <template v-slot:threshold v-if="!mobileInPc">
         <picture-group-threshold
           :themes="themes"
           :element="curComponent"
