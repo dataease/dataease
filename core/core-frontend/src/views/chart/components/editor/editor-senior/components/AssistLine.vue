@@ -212,6 +212,7 @@ onMounted(() => {
       class="dialog-css"
     >
       <assist-line-edit
+        :chart="props.chart"
         :line="state.assistLineCfg.assistLine"
         :quota-fields="quotaFields"
         :quota-ext-fields="quotaExtFields"
