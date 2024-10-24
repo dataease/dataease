@@ -1038,3 +1038,14 @@ export function convertToAlphaColor(color: string, alpha: number): string {
   }
   return 'rgba(255,255,255,1)'
 }
+
+export function svgStrToUrl(svgStr: string): string {
+  let file = ''
+  try {
+    if (svgStr) {
+      const blob = new Blob([svgStr], { type: 'image/svg+xml' })
+      file = URL.createObjectURL(blob)
+    }
+  } catch (e) {}
+  return file
+}

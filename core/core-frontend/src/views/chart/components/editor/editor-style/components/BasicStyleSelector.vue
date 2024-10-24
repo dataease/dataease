@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, PropType, reactive, watch } from 'vue'
+import { computed, onMounted, PropType, reactive, watch, ref } from 'vue'
 import {
   COLOR_PANEL,
   DEFAULT_BASIC_STYLE,
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
-import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { cloneDeep, debounce, defaultsDeep } from 'lodash-es'
 import { SERIES_NUMBER_FIELD } from '@antv/s2'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { isNumber } from 'mathjs'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, UploadProps } from 'element-plus-secondary'
+import { svgStrToUrl } from '../../../js/util'
 
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
@@ -40,21 +42,9 @@ const state = reactive({
   fieldColumnWidth: {
     fieldId: '',
     width: 0
-  }
-})
-watch(
-  [
-    () => props.chart.customAttr.basicStyle,
-    () => props.chart.customAttr.misc,
-    () => props.chart.customAttr.tableHeader,
-    () => props.chart.xAxis,
-    () => props.chart.yAxis
-  ],
-  () => {
-    init()
   },
-  { deep: true }
-)
+  fileList: []
+})
 const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
 const changeBasicStyle = (prop?: string, requestData = false) => {
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData }, prop)
@@ -82,6 +72,13 @@ const init = () => {
   const basicStyle = cloneDeep(props.chart.customAttr.basicStyle)
   const miscStyle = cloneDeep(props.chart.customAttr.misc)
   configCompat(basicStyle)
+  if (
+    basicStyle.mapSymbol === 'custom' &&
+    state.basicStyleForm.customIcon !== basicStyle.customIcon
+  ) {
+    const file = svgStrToUrl(basicStyle.customIcon)
+    file && (state.fileList[0] = { url: file })
+  }
   state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
   state.miscForm = defaultsDeep(miscStyle, cloneDeep(DEFAULT_MISC)) as ChartMiscAttr
   if (!state.customColor) {
@@ -90,6 +87,18 @@ const init = () => {
   }
   initTableColumnWidth()
 }
+const debouncedInit = debounce(init, 500)
+watch(
+  [
+    () => props.chart.customAttr.basicStyle,
+    () => props.chart.customAttr.misc,
+    () => props.chart.customAttr.tableHeader,
+    () => props.chart.xAxis,
+    () => props.chart.yAxis
+  ],
+  debouncedInit,
+  { deep: true }
+)
 const configCompat = (basicStyle: ChartBasicStyle) => {
   // 悬浮改为图例和缩放按钮
   if (basicStyle.suspension === false && basicStyle.showZoom === undefined) {
@@ -230,8 +239,42 @@ const mapSymbolOptions = [
   { name: t('chart.map_symbol_pentagon'), value: 'pentagon' },
   { name: t('chart.map_symbol_hexagon'), value: 'hexagon' },
   { name: t('chart.map_symbol_octagon'), value: 'octogon' },
-  { name: t('chart.line_symbol_diamond'), value: 'rhombus' }
+  { name: t('chart.line_symbol_diamond'), value: 'rhombus' },
+  { name: t('commons.custom'), value: 'custom' }
 ]
+const iconUpload = ref()
+const onIconChange: UploadProps['onChange'] = async uploadFile => {
+  const rawFile = uploadFile.raw
+  let validIcon = true
+  if (rawFile.type !== 'image/svg+xml') {
+    ElMessage.error('请选择正确的 SVG 文件！')
+    validIcon = false
+  }
+  if (rawFile.size / 1024 / 1024 > 1) {
+    ElMessage.error('文件大小不能超过 1MB!')
+    validIcon = false
+  }
+  if (!validIcon) {
+    iconUpload.value?.clearFiles()
+    state.fileList.splice(0)
+    const svg = state.basicStyleForm.customIcon
+    if (svg) {
+      const file = svgStrToUrl(svg)
+      file && (state.fileList[0] = { url: file })
+    }
+  } else {
+    state.basicStyleForm.customIcon = await rawFile.text()
+    changeBasicStyle('customIcon')
+  }
+}
+
+const changeMapSymbol = () => {
+  if (state.basicStyleForm.mapSymbol === 'custom' && state.basicStyleForm.customIcon) {
+    const file = svgStrToUrl(state.basicStyleForm.customIcon)
+    file && (state.fileList[0] = { url: file })
+  }
+  changeBasicStyle('mapSymbol')
+}
 
 const customSymbolicMapSizeRange = computed(() => {
   let { extBubble } = JSON.parse(JSON.stringify(props.chart))
@@ -477,11 +520,24 @@ onMounted(() => {
     <div class="map-flow-style" v-if="showProperty('symbolicMapStyle')">
       <el-row style="flex: 1">
         <el-col>
-          <el-form-item :label="'符号形状'" class="form-item" :class="'form-item-' + themes">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <template v-if="state.basicStyleForm.mapSymbol === 'custom'" #label>
+              <span class="data-area-label">
+                <span style="margin-right: 4px">符号形状</span>
+                <el-tooltip class="item" effect="dark" placement="bottom">
+                  <template #content>
+                    <div>支持 1MB 以内的 SVG 文件</div>
+                  </template>
+                  <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+                    <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                </el-tooltip>
+              </span>
+            </template>
             <el-select
               :effect="themes"
               v-model="state.basicStyleForm.mapSymbol"
-              @change="changeBasicStyle('mapSymbol')"
+              @change="changeMapSymbol()"
             >
               <el-option
                 v-for="item in mapSymbolOptions"
@@ -490,6 +546,28 @@ onMounted(() => {
                 :value="item.value"
               />
             </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row style="flex: 1" v-if="state.basicStyleForm.mapSymbol === 'custom'">
+        <el-col>
+          <el-form-item class="form-item uploader" :class="'form-item-' + themes">
+            <div class="avatar-uploader-container" :class="`img-area_${themes}`">
+              <el-upload
+                action="#"
+                accept=".svg"
+                class="avatar-uploader"
+                list-type="picture-card"
+                ref="iconUpload"
+                :effect="themes"
+                :auto-upload="false"
+                :file-list="state.fileList"
+                :on-change="onIconChange"
+                :limit="1"
+              >
+                <el-icon><Plus /></el-icon>
+              </el-upload>
+            </div>
           </el-form-item>
         </el-col>
       </el-row>
@@ -550,7 +628,7 @@ onMounted(() => {
           </el-col>
         </el-row>
       </div>
-      <div class="alpha-setting">
+      <div v-if="state.basicStyleForm.mapSymbol !== 'custom'" class="alpha-setting">
         <label class="alpha-label" :class="{ dark: 'dark' === themes }">
           {{ t('chart.not_alpha') }}
         </label>
@@ -568,7 +646,7 @@ onMounted(() => {
           </el-col>
         </el-row>
       </div>
-      <div class="alpha-setting">
+      <div v-if="state.basicStyleForm.mapSymbol !== 'custom'" class="alpha-setting">
         <label class="alpha-label" :class="{ dark: 'dark' === themes }">
           {{ t('visualization.borderWidth') }}
         </label>
@@ -1345,9 +1423,6 @@ onMounted(() => {
   </div>
 </template>
 <style scoped lang="less">
-.form-item {
-}
-
 .color-picker-style {
   cursor: pointer;
   z-index: 1003;
@@ -1423,5 +1498,100 @@ onMounted(() => {
   :deep(span) {
     font-size: 12px;
   }
+}
+.avatar-uploader-container {
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
+    .ed-icon {
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: var(--ed-color-primary);
+      }
+    }
+  }
+
+  &.img-area_dark {
+    :deep(.ed-upload-list__item).is-ready {
+      border-color: #434343;
+    }
+    :deep(.ed-upload--picture-card) {
+      background: #373737;
+      border-color: #434343;
+      .ed-icon {
+        color: #ebebeb;
+      }
+    }
+  }
+
+  &.img-area_light {
+    :deep(.ed-upload-list__item).is-ready {
+      border-color: #dee0e3;
+    }
+  }
+  :deep(.ed-upload-list__item-preview) {
+    display: none !important;
+  }
+  :deep(.ed-upload-list__item-delete) {
+    margin-left: 0 !important;
+  }
+  :deep(.ed-upload-list__item-status-label) {
+    display: none !important;
+  }
+  :deep(.ed-icon--close-tip) {
+    display: none !important;
+  }
+}
+.avatar-uploader {
+  width: 90px;
+  height: 80px;
+  overflow: hidden;
+}
+.avatar-uploader {
+  width: 90px;
+  :deep(.ed-upload) {
+    width: 80px;
+    height: 80px;
+    line-height: 90px;
+  }
+
+  :deep(.ed-upload-list li) {
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
+    .ed-icon {
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: var(--ed-color-primary);
+      }
+    }
+  }
+}
+.uploader {
+  :deep(.ed-form-item__content) {
+    justify-content: center;
+  }
+}
+.data-area-label {
+  text-align: left;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>

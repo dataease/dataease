@@ -6,7 +6,7 @@ import {
   L7Wrapper
 } from '@/views/chart/components/js/panel/types/impl/l7'
 import { MAP_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/map/common'
-import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import { hexColorToRGBA, parseJson, svgStrToUrl } from '@/views/chart/components/js/util'
 import { deepCopy } from '@/utils/utils'
 import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
@@ -101,19 +101,31 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     if (basicStyle.autoFit === false) {
       center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
     }
-    // 底层
-    const scene = new Scene({
-      id: container,
-      logoVisible: false,
-      map: new GaodeMap({
-        token: mapKey?.key ?? undefined,
-        style: mapStyle,
-        pitch: miscStyle.mapPitch,
-        center,
-        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5,
-        showLabel: !(basicStyle.showLabel === false)
+    const chartObj = drawOption.chartObj as unknown as L7Wrapper<L7Config, Scene>
+    let scene = chartObj?.getScene()
+    if (!scene) {
+      scene = new Scene({
+        id: container,
+        logoVisible: false,
+        map: new GaodeMap({
+          token: mapKey?.key ?? undefined,
+          style: mapStyle,
+          pitch: miscStyle.mapPitch,
+          center,
+          zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5,
+          showLabel: !(basicStyle.showLabel === false)
+        })
       })
-    })
+    } else {
+      if (scene.getLayers()?.length) {
+        await scene.removeAllLayer()
+        scene.setCenter(center)
+        scene.setPitch(miscStyle.mapPitch)
+        scene.setZoom(basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5)
+        scene.setMapStyle(mapStyle)
+        scene.map.showLabel = !(basicStyle.showLabel === false)
+      }
+    }
     mapRendering(container)
     scene.once('loaded', () => {
       mapRendered(container)
@@ -122,7 +134,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       return new L7Wrapper(scene, undefined)
     }
     const configList: L7Config[] = []
-    const symbolicLayer = this.buildSymbolicLayer(chart, basicStyle)
+    const symbolicLayer = await this.buildSymbolicLayer(chart, scene)
     configList.push(symbolicLayer)
     const tooltipLayer = this.buildTooltip(chart, container, symbolicLayer)
     if (tooltipLayer) {
@@ -179,7 +191,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
    * 构建符号图层
    * @param chart
    */
-  buildSymbolicLayer = (chart, basicStyle) => {
+  buildSymbolicLayer = async (chart, scene: Scene) => {
+    const { basicStyle } = parseJson(chart.customAttr) as ChartAttr
     const xAxis = deepCopy(chart.xAxis)
     const xAxisExt = deepCopy(chart.xAxisExt)
     const extBubble = deepCopy(chart.extBubble)
@@ -225,24 +238,51 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           y: xAxis[1].dataeaseName
         }
       })
-      .shape(mapSymbol)
       .active(true)
     if (xAxisExt[0]?.dataeaseName) {
-      pointLayer.color(xAxisExt[0]?.dataeaseName, colorsWithAlpha)
-      pointLayer.style({
-        stroke: {
-          field: 'color'
-        },
-        strokeWidth: mapSymbolStrokeWidth,
-        opacity: mapSymbolOpacity / 10
-      })
+      if (basicStyle.mapSymbol === 'custom' && basicStyle.customIcon) {
+        const parser = new DOMParser()
+        for (let index = 0; index < Math.min(colorsWithAlpha.length, colorIndex + 1); index++) {
+          const color = colorsWithAlpha[index]
+          const fillRegex = /(fill="[^"]*")/g
+          const svgStr = basicStyle.customIcon.replace(fillRegex, '')
+          const doc = parser.parseFromString(svgStr, 'image/svg+xml')
+          const svgEle = doc.documentElement
+          svgEle.setAttribute('fill', color)
+          await scene.addImage(`icon-${color}`, svgStrToUrl(svgEle.outerHTML))
+        }
+        pointLayer.shape('color', c => {
+          return `icon-${c}`
+        })
+      } else {
+        pointLayer.shape(mapSymbol).color(xAxisExt[0]?.dataeaseName, colorsWithAlpha)
+        pointLayer.style({
+          stroke: {
+            field: 'color'
+          },
+          strokeWidth: mapSymbolStrokeWidth,
+          opacity: mapSymbolOpacity / 10
+        })
+      }
     } else {
-      pointLayer.color(colorsWithAlpha[0])
-      pointLayer.style({
-        stroke: colorsWithAlpha[0],
-        strokeWidth: mapSymbolStrokeWidth,
-        opacity: mapSymbolOpacity / 10
-      })
+      if (basicStyle.mapSymbol === 'custom' && basicStyle.customIcon) {
+        const parser = new DOMParser()
+        const color = colorsWithAlpha[0]
+        const fillRegex = /(fill="[^"]*")/g
+        const svgStr = basicStyle.customIcon.replace(fillRegex, '')
+        const doc = parser.parseFromString(svgStr, 'image/svg+xml')
+        const svgEle = doc.documentElement
+        svgEle.setAttribute('fill', color)
+        await scene.addImage(`customIcon`, svgStrToUrl(svgEle.outerHTML))
+        pointLayer.shape('customIcon')
+      } else {
+        pointLayer.color(colorsWithAlpha[0])
+        pointLayer.style({
+          stroke: colorsWithAlpha[0],
+          strokeWidth: mapSymbolStrokeWidth,
+          opacity: mapSymbolOpacity / 10
+        })
+      }
     }
     if (sizeKey) {
       pointLayer.size('size', [mapSymbolSizeMin, mapSymbolSizeMax])

@@ -299,7 +299,6 @@ let mapL7Timer: number
 const renderL7 = async (chart: ChartObj, chartView: L7ChartView<any, any>, callback) => {
   mapL7Timer && clearTimeout(mapL7Timer)
   mapL7Timer = setTimeout(async () => {
-    myChart?.destroy()
     myChart = await chartView.drawChart({
       chartObj: myChart,
       container: containerId,

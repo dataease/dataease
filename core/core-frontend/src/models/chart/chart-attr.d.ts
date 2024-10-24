@@ -318,6 +318,10 @@ declare interface ChartBasicStyle {
    * 缩放等级
    */
   zoomLevel: number
+  /**
+   * 符号地图自定义符号形状
+   */
+  customIcon: string
 }
 /**
  * 表头属性
