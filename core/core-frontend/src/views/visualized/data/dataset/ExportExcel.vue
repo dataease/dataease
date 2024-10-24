@@ -263,7 +263,7 @@ const timestampFormatDate = value => {
 }
 import { PATH_URL } from '@/config/axios/service'
 const downloadClick = item => {
-  window.open(PATH_URL + '/exportCenter/download/' + item.id, 'aaa.xls')
+  window.open(PATH_URL + '/exportCenter/download/' + item.id)
 }
 
 const retry = item => {

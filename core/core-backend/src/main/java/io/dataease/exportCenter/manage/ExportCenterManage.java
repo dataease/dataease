@@ -66,6 +66,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -170,7 +172,8 @@ public class ExportCenterManage implements BaseExportApi {
         CoreExportTask exportTask = exportTaskMapper.selectById(id);
         OutputStream outputStream = response.getOutputStream();
         response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-disposition", "attachment;filename=" + exportTask.getFileName());
+
+        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(exportTask.getFileName(), StandardCharsets.UTF_8));
         InputStream fileInputStream = new FileInputStream(exportData_path + id + "/" + exportTask.getFileName());
         byte[] buffer = new byte[4096];
         int bytesRead;
