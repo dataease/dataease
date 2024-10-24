@@ -412,7 +412,12 @@ export class StackBar extends Bar {
     this.baseOptions = {
       ...this.baseOptions,
       isStack: true,
-      isGroup: false
+      isGroup: false,
+      meta: {
+        category: {
+          type: 'cat'
+        }
+      }
     }
     this.axis = [...this.axis, 'extStack']
   }
@@ -668,7 +673,12 @@ export class PercentageStackBar extends GroupStackBar {
       isStack: true,
       isPercent: true,
       isGroup: false,
-      groupField: undefined
+      groupField: undefined,
+      meta: {
+        category: {
+          type: 'cat'
+        }
+      }
     }
     this.axis = [...BAR_AXIS_TYPE, 'extStack']
   }

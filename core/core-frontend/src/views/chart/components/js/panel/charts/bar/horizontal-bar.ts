@@ -403,7 +403,12 @@ export class HorizontalStackBar extends HorizontalBar {
     this.baseOptions = {
       ...this.baseOptions,
       isGroup: false,
-      isStack: true
+      isStack: true,
+      meta: {
+        category: {
+          type: 'cat'
+        }
+      }
     }
     this.axis = [...this.axis, 'extStack']
   }
