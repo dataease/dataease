@@ -398,7 +398,7 @@ onMounted(() => {
 }
 .no-padding {
   :deep(.ed-collapse-item__content) {
-    padding: 0;
+    padding: 0 !important;
   }
 }
 .no-border-bottom {
