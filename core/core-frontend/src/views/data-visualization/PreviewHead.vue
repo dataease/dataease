@@ -26,7 +26,12 @@ const embeddedStore = useEmbedded()
 
 const favorited = ref(false)
 const preview = () => {
-  const baseUrl = isDataEaseBi.value ? embeddedStore.baseUrl : ''
+  const href = window.location.href
+  let baseUrl = isDataEaseBi.value ? embeddedStore.baseUrl : href.substring(0, href.indexOf('#'))
+  if (baseUrl.includes('oidcbi/') || baseUrl.includes('casbi/')) {
+    baseUrl = baseUrl.replace('oidcbi/', '')
+    baseUrl = baseUrl.replace('casbi/', '')
+  }
   const url = baseUrl + '#/preview?dvId=' + dvInfo.value.id
   const newWindow = window.open(url, '_blank')
   initOpenHandler(newWindow)
