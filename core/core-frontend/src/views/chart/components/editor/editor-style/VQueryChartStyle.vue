@@ -12,8 +12,13 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { cloneDeep } from 'lodash-es'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
 const { t } = useI18n()
 const styleActiveNames = ref(['basicStyle'])
+const dvMainStore = dvMainStoreWithOut()
+const { mobileInPc } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   element: {
@@ -33,6 +38,7 @@ const props = defineProps({
     default: 'dark'
   }
 })
+const { chart, commonBackgroundPop } = toRefs(props)
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
@@ -54,10 +60,47 @@ const state = reactive({
   dialogVisible: false
 })
 
+const mobileStyleChange = () => {
+  if (mobileInPc.value) {
+    //移动端设计
+    useEmitt().emitter.emit('onMobileStatusChange', {
+      type: 'componentStyleChange',
+      value: { type: 'renderChart', component: JSON.parse(JSON.stringify(chart.value)) }
+    })
+  }
+}
+
+const mobileBackgroundChange = () => {
+  if (mobileInPc.value) {
+    //移动端设计
+    useEmitt().emitter.emit('onMobileStatusChange', {
+      type: 'componentStyleChange',
+      value: { type: 'commonBackground', component: JSON.parse(JSON.stringify(props.element)) }
+    })
+  }
+}
+
+watch(
+  [() => state.commonBackground, () => commonBackgroundPop.value],
+  () => {
+    mobileBackgroundChange()
+  },
+  { deep: true }
+)
+
+watch(
+  [() => chart.value.customStyle],
+  () => {
+    mobileStyleChange()
+  },
+  { deep: true }
+)
+
 watch(
   () => props.commonBackgroundPop,
   () => {
     init()
+    mobileBackgroundChange()
   }
 )
 
@@ -147,7 +190,6 @@ const checkItalic = type => {
   if (!chart.value.customStyle.component.labelShow) return
   chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'italic'
 }
-const { chart, commonBackgroundPop } = toRefs(props)
 const initParams = () => {
   if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
     chart.value.customStyle.component = {

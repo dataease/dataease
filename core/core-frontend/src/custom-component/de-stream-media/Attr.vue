@@ -8,6 +8,7 @@
         v-if="curComponent && curComponent.streamMediaLinks"
       >
         <stream-media-links
+          v-show="!mobileInPc"
           :link-info="curComponent.streamMediaLinks"
           :themes="themes"
         ></stream-media-links>
@@ -20,10 +21,9 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { storeToRefs } from 'pinia'
-import VideoLinks from '@/custom-component/de-video/VideoLinks.vue'
 import StreamMediaLinks from '@/custom-component/de-stream-media/StreamMediaLinks.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, mobileInPc } = storeToRefs(dvMainStore)
 withDefaults(
   defineProps<{
     themes?: EditorTheme

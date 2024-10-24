@@ -303,7 +303,7 @@ const init = () => {
 }
 queryBackground()
 const commitStyle = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCacheToMobile('commonBackground')
 }
 
 const handleRemove = () => {
@@ -325,7 +325,7 @@ const upload = file => {
 }
 
 const onBackgroundChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCacheToMobile('commonBackground')
   emits('onBackgroundChange', state.commonBackground)
 }
 
