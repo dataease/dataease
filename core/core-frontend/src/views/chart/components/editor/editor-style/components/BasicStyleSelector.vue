@@ -1023,6 +1023,20 @@ onMounted(() => {
         @blur="changeBasicStyle('summaryLabel')"
       />
     </el-form-item>
+    <el-form-item
+      v-if="showProperty('showHoverStyle')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.showHoverStyle"
+        @change="changeBasicStyle('showHoverStyle')"
+      >
+        {{ t('chart.show_hover_style') }}
+      </el-checkbox>
+    </el-form-item>
     <!--table2 end-->
     <!--gauge start-->
     <el-form-item

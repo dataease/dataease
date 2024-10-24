@@ -1544,7 +1544,8 @@ export default {
     auto_fit: '自适应缩放',
     zoom_level: '缩放等级',
     central_point: '中心点',
-    full_display: '全量显示'
+    full_display: '全量显示',
+    show_hover_style: '显示鼠标悬浮样式'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

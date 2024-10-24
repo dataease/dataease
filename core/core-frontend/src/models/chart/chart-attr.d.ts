@@ -322,6 +322,10 @@ declare interface ChartBasicStyle {
    * 符号地图自定义符号形状
    */
   customIcon: string
+  /**
+   * 表格鼠标悬浮样式
+   */
+  showHoverStyle: boolean
 }
 /**
  * 表头属性

@@ -59,7 +59,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
       'tableBorderColor',
       'tableScrollBarColor',
       'alpha',
-      'tablePageMode'
+      'tablePageMode',
+      'showHoverStyle'
     ],
     'table-cell-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-cell-selector'],
@@ -141,21 +142,24 @@ export class TableInfo extends S2ChartView<TableSheet> {
       data: newData
     }
 
-    const customAttr = parseJson(chart.customAttr)
+    const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
       width: containerDom.getBoundingClientRect().width,
       height: containerDom.offsetHeight,
-      showSeriesNumber: customAttr.tableHeader.showIndex,
+      showSeriesNumber: tableHeader.showIndex,
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom,
         renderTooltip: sheet => new SortTooltip(sheet)
+      },
+      interaction: {
+        hoverHighlight: !(basicStyle.showHoverStyle === false)
       }
     }
     s2Options.style = this.configStyle(chart, s2DataConfig)
     // 自适应列宽模式下，URL 字段的宽度固定为 120
-    if (customAttr.basicStyle.tableColumnMode === 'adapt') {
+    if (basicStyle.tableColumnMode === 'adapt') {
       const urlFields = fields.filter(
         field => field.deType === 7 && !axisMap[field.dataeaseName]?.hide
       )
@@ -164,13 +168,13 @@ export class TableInfo extends S2ChartView<TableSheet> {
         return p
       }, {})
     }
-    if (customAttr.tableCell.tableFreeze) {
-      s2Options.frozenColCount = customAttr.tableCell.tableColumnFreezeHead ?? 0
-      s2Options.frozenRowCount = customAttr.tableCell.tableRowFreezeHead ?? 0
+    if (tableCell.tableFreeze) {
+      s2Options.frozenColCount = tableCell.tableColumnFreezeHead ?? 0
+      s2Options.frozenRowCount = tableCell.tableRowFreezeHead ?? 0
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
-      let indexLabel = customAttr.tableHeader.indexLabel
+      let indexLabel = tableHeader.indexLabel
       if (!indexLabel) {
         indexLabel = ''
       }
@@ -194,15 +198,13 @@ export class TableInfo extends S2ChartView<TableSheet> {
     // tooltip
     this.configTooltip(chart, s2Options)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
-    if (customAttr.tableHeader.showTableHeader === false) {
+    if (tableHeader.showTableHeader === false) {
       s2Options.style.colCfg.height = 1
-      if (customAttr.tableCell.showHorizonBorder === false) {
+      if (tableCell.showHorizonBorder === false) {
         s2Options.style.colCfg.height = 0
       }
-      s2Options.interaction = {
-        resize: {
-          colCellVertical: false
-        }
+      s2Options.interaction.resize = {
+        colCellVertical: false
       }
       s2Options.colCell = (node, sheet, config) => {
         node.label = ' '
@@ -217,7 +219,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 
     // 自适应铺满
-    if (customAttr.basicStyle.tableColumnMode === 'adapt') {
+    if (basicStyle.tableColumnMode === 'adapt') {
       newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
         newChart.store.set('lastLayoutResult', newChart.facet.layoutResult)
       })
@@ -298,7 +300,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
       action(param)
     })
     // tooltip
-    const { show } = customAttr.tooltip
+    const { show } = tooltip
     if (show) {
       newChart.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
       newChart.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
