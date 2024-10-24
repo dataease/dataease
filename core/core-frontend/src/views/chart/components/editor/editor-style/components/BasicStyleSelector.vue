@@ -237,6 +237,19 @@ const customSymbolicMapSizeRange = computed(() => {
   let { extBubble } = JSON.parse(JSON.stringify(props.chart))
   return ['symbolic-map'].includes(props.chart.type) && extBubble?.length > 0
 })
+const mapCustomRangeValidate = prop => {
+  if (!state.basicStyleForm.mapSymbolSizeMin || state.basicStyleForm.mapSymbolSizeMin < 0) {
+    state.basicStyleForm.mapSymbolSizeMin = 0
+  }
+  if (!state.basicStyleForm.mapSymbolSizeMax || state.basicStyleForm.mapSymbolSizeMax < 1) {
+    state.basicStyleForm.mapSymbolSizeMax = 1
+  }
+  if (state.basicStyleForm.mapSymbolSizeMax < state.basicStyleForm.mapSymbolSizeMin) {
+    ElMessage.warning('第二个区间值必须大于第一个区间值')
+    return
+  }
+  changeBasicStyle(prop)
+}
 onMounted(() => {
   init()
 })
@@ -512,7 +525,7 @@ onMounted(() => {
                 v-model="state.basicStyleForm.mapSymbolSizeMin"
                 class="basic-input-number"
                 :controls="false"
-                @change="changeBasicStyle('mapSymbolSizeMin')"
+                @blur="mapCustomRangeValidate('mapSymbolSizeMin')"
                 :disabled="!customSymbolicMapSizeRange"
               >
               </el-input>
@@ -529,7 +542,7 @@ onMounted(() => {
                 v-model="state.basicStyleForm.mapSymbolSizeMax"
                 class="basic-input-number"
                 :controls="false"
-                @change="changeBasicStyle('mapSymbolSizeMax')"
+                @blur="mapCustomRangeValidate('mapSymbolSizeMax')"
                 :disabled="!customSymbolicMapSizeRange"
               >
               </el-input>
