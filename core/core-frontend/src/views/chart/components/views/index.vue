@@ -917,6 +917,18 @@ const loadPluginCategory = data => {
 const allEmptyCheck = computed(() => {
   return ['rich-text', 'picture-group'].includes(element.value.innerType)
 })
+/**
+ * 标题提示的最大宽度
+ */
+const titleTooltipWidth = computed(() => {
+  if (inMobile.value) {
+    return `${screen.width - 10}px`
+  }
+  if (mobileInPc.value) {
+    return '270px'
+  }
+  return '500px'
+})
 </script>
 
 <template>
@@ -959,12 +971,12 @@ const allEmptyCheck = computed(() => {
           <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
             <template #content>
               <div
-                style="
-                  width: 500px;
-                  word-break: break-all;
-                  word-wrap: break-word;
-                  white-space: pre-wrap;
-                "
+                :style="{
+                  maxWidth: titleTooltipWidth,
+                  wordBreak: 'break-all',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'pre-wrap'
+                }"
                 v-html="state.title_remark.remark"
               ></div>
             </template>
