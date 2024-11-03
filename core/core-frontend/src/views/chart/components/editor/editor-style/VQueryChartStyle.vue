@@ -126,6 +126,7 @@ const handleCurrentPlaceholder = val => {
     obj.placeholder = ''
   }
   currentSearch.value = obj
+  snapshotStore.recordSnapshotCacheToMobile('propValue')
 }
 
 const init = () => {
@@ -182,8 +183,20 @@ const checkBold = type => {
   chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'bold'
 }
 
+const handleCurrentPlaceholderCustomChange = () => {
+  if (mobileInPc.value) {
+    //移动端设计
+    useEmitt().emitter.emit('onMobileStatusChange', {
+      type: 'componentStyleChange',
+      value: { type: 'renderChart', component: JSON.parse(JSON.stringify(chart.value)) }
+    })
+  } else {
+    snapshotStore.recordSnapshotCache()
+  }
+}
+
 const handleCurrentPlaceholderChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCacheToMobile('propValue')
 }
 
 const checkItalic = type => {
@@ -409,6 +422,7 @@ initParams()
               <el-checkbox
                 :effect="themes"
                 size="small"
+                @change="handleCurrentPlaceholderCustomChange"
                 v-model="chart.customStyle.component.placeholderShow"
               >
                 提示词
@@ -427,10 +441,12 @@ initParams()
                   is-custom
                   v-model="chart.customStyle.component.text"
                   :disabled="!chart.customStyle.component.placeholderShow"
+                  @change="handleCurrentPlaceholderCustomChange"
                   :predefine="predefineColors"
                 />
                 <el-input-number
                   v-model="chart.customStyle.component.placeholderSize"
+                  @change="handleCurrentPlaceholderCustomChange"
                   :min="10"
                   :max="20"
                   style="margin-left: 8px"

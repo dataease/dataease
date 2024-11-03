@@ -409,6 +409,7 @@ watch(
               class="attr-selector"
               :chart="chart"
               :quota-fields="props.quotaData"
+              :mobile-in-pc="mobileInPc"
               @onMiscChange="onMiscChange"
             />
           </el-collapse-item>
@@ -445,9 +446,12 @@ watch(
               @onLabelChange="onLabelChange"
             />
           </collapse-switch-item>
-          <!-- tooltip 为鼠标悬停 移动端看不到效果 不再单独配置 -->
+          <!-- tooltip 为鼠标悬停 移动端table看不到效果 不再单独配置 -->
           <collapse-switch-item
-            v-if="showProperties('tooltip-selector') && !mobileInPc"
+            v-if="
+              showProperties('tooltip-selector') &&
+              (!mobileInPc || (mobileInPc && chart.type.indexOf('table') === -1))
+            "
             v-model="chart.customAttr.tooltip.show"
             :themes="themes"
             :change-model="chart.customAttr.tooltip"

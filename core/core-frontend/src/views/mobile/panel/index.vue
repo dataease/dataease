@@ -83,7 +83,7 @@ const hanedleMessage = event => {
     } else if (type === 'updateTitle') {
       mobileViewStyleSwitch(component)
       useEmitt().emitter.emit('updateTitle-' + component.id)
-    } else if (['style', 'commonBackground', 'events'].includes(type)) {
+    } else if (['style', 'commonBackground', 'events', 'propValue'].includes(type)) {
       const mobileComponent = findComponentById(component.id)
       mobileComponent[type] = component[type]
     }
