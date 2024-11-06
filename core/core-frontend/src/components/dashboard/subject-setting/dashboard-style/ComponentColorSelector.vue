@@ -20,7 +20,7 @@
           <el-checkbox
             size="small"
             :effect="themes"
-            v-model="colorForm.basicStyle.gradient"
+            v-model="colorForm['basicStyle']['gradient']"
             @change="changeColorCase('gradient')"
           >
             {{ $t('chart.gradient') }}{{ $t('chart.color') }}
@@ -36,7 +36,7 @@
               <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
                 <el-slider
                   :effect="themes"
-                  v-model="colorForm.basicStyle.alpha"
+                  v-model="colorForm['basicStyle']['alpha']"
                   @change="changeColorCase('alpha')"
                 />
               </el-form-item>
@@ -50,7 +50,7 @@
                 <el-input
                   type="number"
                   :effect="themes"
-                  v-model="colorForm.basicStyle.alpha"
+                  v-model="colorForm['basicStyle']['alpha']"
                   :min="0"
                   :max="100"
                   class="alpha-input-number"
@@ -78,7 +78,7 @@
               <el-form-item :label="t('chart.table_header_bg')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
-                  v-model="colorForm.tableHeader.tableHeaderBgColor"
+                  v-model="colorForm['tableHeader']['tableHeaderBgColor']"
                   size="small"
                   :predefine="predefineColors"
                   is-custom
@@ -91,7 +91,7 @@
               <el-form-item :label="t('chart.table_item_bg')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
-                  v-model="colorForm.tableCell.tableItemBgColor"
+                  v-model="colorForm['tableCell']['tableItemBgColor']"
                   size="small"
                   :predefine="predefineColors"
                   :effect="themes"
@@ -106,7 +106,7 @@
               <el-form-item :label="t('chart.table_header_font_color')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
-                  v-model="colorForm.tableHeader.tableHeaderFontColor"
+                  v-model="colorForm['tableHeader']['tableHeaderFontColor']"
                   :effect="themes"
                   size="small"
                   :predefine="predefineColors"
@@ -119,7 +119,7 @@
               <el-form-item :label="t('chart.table_item_font_color')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
-                  v-model="colorForm.tableCell.tableFontColor"
+                  v-model="colorForm['tableCell']['tableFontColor']"
                   size="small"
                   :predefine="predefineColors"
                   :effect="themes"
@@ -134,7 +134,7 @@
               <el-form-item :label="t('chart.table_border_color')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
-                  v-model="colorForm.basicStyle.tableBorderColor"
+                  v-model="colorForm.basicStyle['tableBorderColor']"
                   size="small"
                   :predefine="predefineColors"
                   :effect="themes"
@@ -147,7 +147,7 @@
               <el-form-item :label="t('chart.table_scroll_bar_color')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
-                  v-model="colorForm.basicStyle.tableScrollBarColor"
+                  v-model="colorForm.basicStyle['tableScrollBarColor']"
                   size="small"
                   :predefine="predefineColors"
                   color-format="rgb"
