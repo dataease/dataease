@@ -22,7 +22,7 @@ import { storeToRefs } from 'pinia'
 import { S2ChartView } from '@/views/chart/components/js/panel/types/impl/s2'
 import { ElPagination } from 'element-plus-secondary'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
-import { defaultsDeep, cloneDeep } from 'lodash-es'
+import { defaultsDeep, cloneDeep, debounce } from 'lodash-es'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy } from '@/utils/utils'
@@ -193,29 +193,31 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   recursionTransObj(customAttrTrans, actualChart.customAttr, scale.value, terminal.value)
   recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
 
+  setupPage(actualChart, resetPageInfo)
+  nextTick(() => debouceRender(resetPageInfo))
+}
+
+const debouceRender = debounce(resetPageInfo => {
   myChart?.facet?.timer?.stop()
   myChart?.facet?.cancelScrollFrame()
   myChart?.destroy()
-  myChart = null
-  setupPage(actualChart, resetPageInfo)
+  myChart?.getCanvasElement()?.remove()
   const chartView = chartViewManager.getChartView(
-    viewInfo.render,
-    viewInfo.type
+    actualChart.render,
+    actualChart.type
   ) as S2ChartView<any>
-  timer = setTimeout(() => {
-    myChart = chartView.drawChart({
-      container: containerId,
-      chart: toRaw(actualChart),
-      chartObj: myChart,
-      pageInfo: state.pageInfo,
-      action,
-      resizeAction
-    })
-    myChart?.render()
-    dvMainStore.setViewInstanceInfo(viewInfo.id, myChart)
-    initScroll()
-  }, 500)
-}
+  myChart = chartView.drawChart({
+    container: containerId,
+    chart: toRaw(actualChart),
+    chartObj: myChart,
+    pageInfo: state.pageInfo,
+    action,
+    resizeAction
+  })
+  myChart?.render()
+  dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
+  initScroll()
+}, 500)
 
 const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   const customAttr = chart.customAttr
@@ -581,24 +583,12 @@ const resize = (width, height) => {
   }
   timer = setTimeout(() => {
     if (!myChart?.facet) {
-      const chartView = chartViewManager.getChartView(
-        actualChart.render,
-        actualChart.type
-      ) as S2ChartView<any>
-      myChart = chartView.drawChart({
-        container: containerId,
-        chart: toRaw(actualChart),
-        chartObj: myChart,
-        pageInfo: state.pageInfo,
-        action,
-        resizeAction
-      })
-      dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
+      debouceRender(false)
     } else {
       myChart?.facet?.timer?.stop()
       myChart?.changeSheetSize(width, height)
+      myChart?.render()
     }
-    myChart?.render()
     initScroll()
   }, 500)
 }
@@ -620,7 +610,7 @@ onMounted(() => {
     }
     preSize[0] = size.inlineSize
     preSize[1] = size.blockSize
-    resize(size.inlineSize, Math.ceil(size.blockSize))
+    resize(size.inlineSize, Math.round(size.blockSize))
   })
 
   resizeObserver.observe(document.getElementById(containerId))
