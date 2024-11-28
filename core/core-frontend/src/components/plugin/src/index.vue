@@ -3,6 +3,7 @@ import noLic from './nolic.vue'
 import { ref, useAttrs, onMounted } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
 import { load, loadDistributed, xpackModelApi } from '@/api/plugin'
+import configGlobal from '@/components/config-global/src/ConfigGlobal.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { i18n } from '@/plugins/vue-i18n'
 import * as Vue from 'vue'
@@ -152,13 +153,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <component
-    :key="attrs.jsname"
-    ref="pluginProxy"
-    :is="plugin"
-    v-loading="loading"
-    v-bind="attrs"
-  ></component>
+  <configGlobal>
+    <component
+      :key="attrs.jsname"
+      ref="pluginProxy"
+      :is="plugin"
+      v-loading="loading"
+      v-bind="attrs"
+    ></component>
+  </configGlobal>
 </template>
-
-<style lang="less" scoped></style>
