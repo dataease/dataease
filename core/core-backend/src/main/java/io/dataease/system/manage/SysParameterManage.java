@@ -172,9 +172,4 @@ public class SysParameterManage {
         }
         return vo;
     }
-
-    public void insert(CoreSysSetting coreSysSetting) {
-        coreSysSettingMapper.insert(coreSysSetting);
-    }
-
 }

@@ -38,7 +38,6 @@ import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
-import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.i18n.Translator;
@@ -105,11 +104,6 @@ public class ExportCenterManage implements BaseExportApi {
     private Long limit;
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     private static final String exportData_path = "/opt/dataease2.0/data/exportData/";
-
-    public Integer getExtractPageSize() {
-        return extractPageSize;
-    }
-
     @Value("${dataease.export.page.size:50000}")
     private Integer extractPageSize;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
@@ -128,7 +122,7 @@ public class ExportCenterManage implements BaseExportApi {
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
     private DatasetDataManage datasetDataManage;
-    private final Long sheetLimit = 1000000L;
+
     @Autowired(required = false)
     private DataFillingApi dataFillingApi = null;
 
@@ -518,17 +512,10 @@ public class ExportCenterManage implements BaseExportApi {
                 Long totalCount = datasetDataManage.getDatasetTotal(dto, replaceSql, null);
                 Long curLimit = getExportLimit();
                 totalCount = totalCount > curLimit ? curLimit : totalCount;
-
+                Long sheetLimit = 1000000L;
                 Long sheetCount = (totalCount / sheetLimit) + (totalCount % sheetLimit > 0 ? 1 : 0);
                 Workbook wb = new SXSSFWorkbook();
-                CellStyle cellStyle = wb.createCellStyle();
-                Font font = wb.createFont();
-                font.setFontHeightInPoints((short) 12);
-                font.setBold(true);
-                cellStyle.setFont(font);
-                cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
+                FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx");
                 for (Long s = 1L; s < sheetCount + 1; s++) {
                     Long sheetSize;
                     if (s.equals(sheetCount)) {
@@ -552,7 +539,14 @@ public class ExportCenterManage implements BaseExportApi {
                         Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList);
                         List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
                         if (p.equals(0L)) {
-                            detailsSheet = wb.createSheet("数据" + s);
+                            detailsSheet = wb.createSheet("数据-" + s);
+                            CellStyle cellStyle = wb.createCellStyle();
+                            Font font = wb.createFont();
+                            font.setFontHeightInPoints((short) 12);
+                            font.setBold(true);
+                            cellStyle.setFont(font);
+                            cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
                             List<String> header = new ArrayList<>();
                             for (DatasetTableFieldDTO field : allFields) {
                                 header.add(field.getName());
@@ -623,7 +617,6 @@ public class ExportCenterManage implements BaseExportApi {
                         exportTaskMapper.updateById(exportTask);
                     }
                 }
-                FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx");
                 wb.write(fileOutputStream);
                 fileOutputStream.flush();
                 fileOutputStream.close();
@@ -654,46 +647,53 @@ public class ExportCenterManage implements BaseExportApi {
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateById(exportTask);
+                chartDataServer.findExcelData(request);
+
                 Workbook wb = new SXSSFWorkbook();
+
+                //给单元格设置样式
                 CellStyle cellStyle = wb.createCellStyle();
                 Font font = wb.createFont();
+                //设置字体大小
                 font.setFontHeightInPoints((short) 12);
+                //设置字体加粗
                 font.setBold(true);
+                //给字体设置样式
                 cellStyle.setFont(font);
+                //设置单元格背景颜色
                 cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+                //设置单元格填充样式(使用纯色背景颜色填充)
                 cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-                List<Object[]> details = new ArrayList<>();
-                Sheet detailsSheet;
-                Integer sheetIndex = 1;
-                if ("dataset".equals(request.getDownloadType()) || request.getViewInfo().getType().equalsIgnoreCase("table-info")) {
-                    request.getViewInfo().getChartExtRequest().setPageSize(Long.valueOf(extractPageSize));
-                    ChartViewDTO chartViewDTO = chartDataServer.findExcelData(request);
-                    for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
-                        request.getViewInfo().getChartExtRequest().setGoPage(i);
-                        chartDataServer.findExcelData(request);
-                        details.addAll(request.getDetails());
-                        if (((details.size() + extractPageSize) > sheetLimit) || i == chartViewDTO.getTotalPage()) {
-                            detailsSheet = wb.createSheet("数据" + sheetIndex);
-                            Integer[] excelTypes = request.getExcelTypes();
-                            details.add(0, request.getHeader());
-                            ViewDetailField[] detailFields = request.getDetailFields();
-                            Object[] header = request.getHeader();
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
-                            sheetIndex++;
-                            details.clear();
-                            exportTask.setExportStatus("IN_PROGRESS");
-                            double exportRogress = (double) (i / chartViewDTO.getTotalPage() + 1);
-                            DecimalFormat df = new DecimalFormat("#.##");
-                            String formattedResult = df.format((exportRogress) * 100);
-                            exportTask.setExportProgress(formattedResult);
-                            exportTaskMapper.updateById(exportTask);
-                        }
+                if (CollectionUtils.isEmpty(request.getMultiInfo())) {
+                    if (request.getViewInfo().getType().equalsIgnoreCase("chart-mix-dual-line")) {
+
+                    } else {
+                        List<Object[]> details = request.getDetails();
+                        Integer[] excelTypes = request.getExcelTypes();
+                        details.add(0, request.getHeader());
+                        ViewDetailField[] detailFields = request.getDetailFields();
+                        Object[] header = request.getHeader();
+                        Sheet detailsSheet = wb.createSheet("数据");
+                        ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
                     }
                 } else {
-                    downloadNotTableInfoData(request, wb);
-                }
+                    //多个sheet
+                    for (int i = 0; i < request.getMultiInfo().size(); i++) {
+                        ChartExcelRequestInner requestInner = request.getMultiInfo().get(i);
 
+                        List<Object[]> details = requestInner.getDetails();
+                        Integer[] excelTypes = requestInner.getExcelTypes();
+                        details.add(0, requestInner.getHeader());
+                        ViewDetailField[] detailFields = requestInner.getDetailFields();
+                        Object[] header = requestInner.getHeader();
+
+                        //明细sheet
+                        Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
+
+                        ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                    }
+                }
                 try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx")) {
                     wb.write(outputStream);
                     outputStream.flush();
@@ -713,48 +713,6 @@ public class ExportCenterManage implements BaseExportApi {
         Running_Task.put(exportTask.getId(), future);
     }
 
-    private void downloadNotTableInfoData(ChartExcelRequest request, Workbook wb) {
-        chartDataServer.findExcelData(request);
-        //给单元格设置样式
-        CellStyle cellStyle = wb.createCellStyle();
-        Font font = wb.createFont();
-        //设置字体大小
-        font.setFontHeightInPoints((short) 12);
-        //设置字体加粗
-        font.setBold(true);
-        //给字体设置样式
-        cellStyle.setFont(font);
-        //设置单元格背景颜色
-        cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        //设置单元格填充样式(使用纯色背景颜色填充)
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        if (CollectionUtils.isEmpty(request.getMultiInfo())) {
-            if (request.getViewInfo().getType().equalsIgnoreCase("chart-mix-dual-line")) {
-            } else {
-                List<Object[]> details = request.getDetails();
-                Integer[] excelTypes = request.getExcelTypes();
-                details.add(0, request.getHeader());
-                ViewDetailField[] detailFields = request.getDetailFields();
-                Object[] header = request.getHeader();
-                Sheet detailsSheet = wb.createSheet("数据");
-                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
-            }
-        } else {
-            //多个sheet
-            for (int i = 0; i < request.getMultiInfo().size(); i++) {
-                ChartExcelRequestInner requestInner = request.getMultiInfo().get(i);
-
-                List<Object[]> details = requestInner.getDetails();
-                Integer[] excelTypes = requestInner.getExcelTypes();
-                details.add(0, requestInner.getHeader());
-                ViewDetailField[] detailFields = requestInner.getDetailFields();
-                Object[] header = requestInner.getHeader();
-                //明细sheet
-                Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
-                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
-            }
-        }
-    }
 
     private void setFileSize(String filePath, CoreExportTask exportTask) {
         File file = new File(filePath);

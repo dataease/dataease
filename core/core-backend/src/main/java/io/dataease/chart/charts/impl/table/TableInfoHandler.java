@@ -44,7 +44,7 @@ public class TableInfoHandler extends DefaultChartHandler {
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("basicStyle");
         var tablePageMode = (String) mapSize.get("tablePageMode");
         formatResult.getContext().put("tablePageMode", tablePageMode);
-        if (StringUtils.equalsIgnoreCase(tablePageMode, "page")) {
+        if (StringUtils.equalsIgnoreCase(tablePageMode, "page") && !view.getIsExcelExport()) {
             if (chartExtRequest.getGoPage() == null) {
                 chartExtRequest.setGoPage(1L);
             }

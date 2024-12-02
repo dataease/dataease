@@ -110,21 +110,6 @@
                     <version>${selenium-java.version}</version>
                 </dependency>
                 <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-base</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-permissions</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-sync</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
                     <groupId>org.eclipse.angus</groupId>
                     <artifactId>angus-mail</artifactId>
                     <version>${angus-mail.version}</version>
