@@ -1,0 +1,50 @@
+name: Desktop Builder
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'DataEase Branch'
+        required: true
+        default: "dev-v2"
+      tag:
+        description: 'tag'
+        required: true
+        default: "dev-v2"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout dataease repo
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.branch }}
+    - name: Cache local Maven repository
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - name: Set up JDK 21
+      uses: actions/setup-java@v1
+      with:
+        java-version: 21
+        server-id: github
+        settings-path: ${{ github.workspace }}
+    - name: Build with Maven
+      run: |
+        mvn clean install
+        cd core
+        mvn clean package -Pdesktop -U -Dmaven.test.skip=true
+        ls -alt core-backend/target
+    - name: setup ossutil
+      uses: yizhoumo/setup-ossutil@v2
+      with:
+        ossutil-version: '1.7.19'
+        endpoint: ${{ secrets.OSS_ENDPOINT }}
+        access-key-id: ${{ secrets.OSS_KEY_ID }}
+        access-key-secret: ${{ secrets.OSS_KEY_SECRET }}
+    - name: upload jar to OSS
+      run: ossutil cp -f core/core-backend/target/CoreApplication.jar oss://${{ secrets.OSS_BUCKET_PATH }}/app-${{ github.event.inputs.tag }}.jar
