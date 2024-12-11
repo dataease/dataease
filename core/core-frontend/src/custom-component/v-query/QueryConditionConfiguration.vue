@@ -324,6 +324,7 @@ const typeList = [
 const handleCheckAllChange = (val: boolean) => {
   curComponent.value.checkedFields = val ? fields.value.map(ele => ele.componentId) : []
   isIndeterminate.value = false
+  val && setSameId()
 }
 
 const setTreeDefault = () => {
@@ -375,12 +376,41 @@ const handleCheckedFieldsChange = (value: string[]) => {
   if (curComponent.value.displayType === '8') return
   setType()
 }
+const setSameId = () => {
+  const comIdMap = {}
+  Object.keys(curComponent.value.checkedFieldsMap).forEach(ele => {
+    if (curComponent.value.checkedFieldsMap[ele]) {
+      fields.value.forEach(itx => {
+        if (
+          itx.componentId === ele &&
+          curComponent.value.checkedFields?.includes(itx.componentId)
+        ) {
+          comIdMap[itx.id] = curComponent.value.checkedFieldsMap[itx.componentId]
+        }
+      })
+    }
+  })
 
+  Object.keys(curComponent.value.checkedFieldsMap).forEach(ele => {
+    if (!curComponent.value.checkedFieldsMap[ele]) {
+      fields.value.forEach(itx => {
+        if (
+          itx.componentId === ele &&
+          curComponent.value.checkedFields?.includes(itx.componentId) &&
+          comIdMap[itx.id]
+        ) {
+          curComponent.value.checkedFieldsMap[itx.componentId] = comIdMap[itx.id]
+        }
+      })
+    }
+  })
+}
 const handleCheckedFieldsChangeTree = (value: string[]) => {
   handleDialogClick()
   const checkedCount = value.length
   checkAll.value = checkedCount === fields.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
+  setSameId()
   if (curComponent.value.displayType === '8') return
   if (curComponent.value.displayType === '9') {
     setTreeDefault()
