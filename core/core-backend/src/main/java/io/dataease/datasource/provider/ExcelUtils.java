@@ -195,9 +195,6 @@ public class ExcelUtils {
         String filePath = saveFile(file, excelId);
 
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
-            if (excelSheetData.getExcelLabel().length() > 40) {
-                DEException.throwException(excelSheetData.getExcelLabel() + "长度不能大于40！");
-            }
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
             excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
@@ -209,9 +206,6 @@ public class ExcelUtils {
              * dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制
              */
             for (TableField field : excelSheetData.getFields()) {
-                if (field.getOriginName().length() > 40) {
-                    DEException.throwException(excelSheetData.getExcelLabel() + "的字段" + field.getOriginName() + "长度不能大于40！");
-                }
                 //TEXT LONG DATETIME DOUBLE
                 if (field.getFieldType().equalsIgnoreCase("TEXT")) {
                     field.setDeType(0);
