@@ -217,7 +217,7 @@ public class ExtWhere2Str {
                                 whereValue = String.format(SQLConstants.WHERE_BETWEEN, Long.parseLong(value.get(0)), Long.parseLong(value.get(1)));
                             } else {
                                 if (StringUtils.equalsIgnoreCase(request.getDatasetTableField().getType(), "date")) {
-                                    whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2StrShort(Long.parseLong(value.get(0))), Utils.transLong2StrShort(Long.parseLong(value.get(1))));
+                                    whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2StrShort(Long.parseLong(value.get(0))), Utils.transLong2StrShort(Long.parseLong(value.get(1))) + " 23:59:59");
                                 } else {
                                     whereValue = String.format(SQLConstants.WHERE_BETWEEN, Utils.transLong2Str(Long.parseLong(value.get(0))), Utils.transLong2Str(Long.parseLong(value.get(1))));
                                 }
