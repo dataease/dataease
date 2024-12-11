@@ -2653,6 +2653,8 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    select_target_resource: '请选择目标资源',
+    target_dashboard_dataV: '目标仪表板\\数据大屏',
     effective_during_link: '公共链接生效',
     condition_style_set: '条件样式设置',
     cell_merge_tips: '合并单元格后，行列冻结、自动换行会失效。',

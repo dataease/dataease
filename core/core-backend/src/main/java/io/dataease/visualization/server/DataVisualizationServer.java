@@ -35,6 +35,7 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.manage.CoreLicManage;
 import io.dataease.log.DeLog;
@@ -509,7 +510,41 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-        return coreVisualizationManage.tree(request);
+        String busiFlag = request.getBusiFlag();
+        if(busiFlag.equals("dashboard-dataV")){
+            BusiNodeRequest requestDv = new BusiNodeRequest();
+            BeanUtils.copyBean(requestDv,request);
+            requestDv.setBusiFlag("dashboard");
+            List<BusiNodeVO> dashboardResult =  coreVisualizationManage.tree(requestDv);
+            requestDv.setBusiFlag("dataV");
+            List<BusiNodeVO> dataVResult =  coreVisualizationManage.tree(requestDv);
+            List<BusiNodeVO> result = new ArrayList<>();
+            if(!CollectionUtils.isEmpty(dashboardResult)){
+                BusiNodeVO dashboardResultParent = new BusiNodeVO();
+                dashboardResultParent.setName(Translator.get("i18n_menu.panel"));
+                dashboardResultParent.setId(-101L);
+                if(dashboardResult.get(0).getId() == 0){
+                    dashboardResultParent.setChildren(dashboardResult.get(0).getChildren());
+                }else{
+                    dashboardResultParent.setChildren(dashboardResult);
+                }
+                result.add(dashboardResultParent);
+            }
+            if(!CollectionUtils.isEmpty(dataVResult)){
+                BusiNodeVO dataVResultParent = new BusiNodeVO();
+                dataVResultParent.setName(Translator.get("i18n_menu.screen"));
+                dataVResultParent.setId(-102L);
+                if(dataVResult.get(0).getId() == 0){
+                    dataVResultParent.setChildren(dataVResult.get(0).getChildren());
+                }else{
+                    dataVResultParent.setChildren(dataVResult);
+                }
+                result.add(dataVResultParent);
+            }
+            return result;
+        }else{
+            return coreVisualizationManage.tree(request);
+        }
     }
 
     @Override

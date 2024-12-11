@@ -143,7 +143,13 @@
                       <div class="m-row">
                         <div style="flex: 1">
                           <el-form-item>
-                            <template #label> {{ curSource }} </template>
+                            <template #label>
+                              {{
+                                dvInfo.type === 'dashboard'
+                                  ? t('visualization.cur_dashboard')
+                                  : t('visualization.cur_screen')
+                              }}
+                            </template>
                             <el-select style="width: 100%" v-model="dvInfo.name" disabled>
                               <el-option
                                 :key="dvInfo.name"
@@ -640,15 +646,9 @@ const resourceType = computed(() =>
   dvInfo.value.type === 'dashboard' ? t('work_branch.dashboard') : t('work_branch.big_data_screen')
 )
 
-const selectSourceTips =
-  dvInfo.type === 'dashboard'
-    ? t('visualization.select_target_dashboard_tips')
-    : t('visualization.select_target_screen_tips')
+const selectSourceTips = t('visualization.select_target_resource')
 
-const targetSource =
-  dvInfo.value.type === 'dashboard'
-    ? t('visualization.target_dashboard')
-    : t('visualization.target_screen')
+const targetSource = t('visualization.target_dashboard_dataV')
 
 const curSource =
   dvInfo.value.type === 'dashboard'
@@ -760,7 +760,7 @@ const init = viewItem => {
   } else {
     checkJumpStr = checkAllAxisStr
   }
-  const request = { busiFlag: dvInfo.value.type } as BusiTreeRequest
+  const request = { busiFlag: 'dashboard-dataV' } as BusiTreeRequest
   // 获取可关联的仪表板
   queryTreeApi(request).then(rsp => {
     if (rsp && rsp[0]?.id === '0') {

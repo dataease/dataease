@@ -2651,6 +2651,8 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    select_target_resource: '請選擇目標資源',
+    target_dashboard_dataV: '目標儀表板\\數據大屏',
     condition_style_set: '條件樣式設定',
     cell_merge_tips: '合併單元格後，行列凍結、自動換行將失效。',
     image: '圖片',
