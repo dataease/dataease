@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://123.57.152.118:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: Password123@mysql
+    password: 123456
   messages:
     basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
   flyway:
