@@ -364,6 +364,11 @@ const dsChange = (val: string) => {
     })
 }
 
+const handleDsChange = () => {
+  setFlag()
+  dsChange()
+}
+
 const copyInfo = async (value: string) => {
   try {
     await toClipboard(value)
@@ -488,7 +493,7 @@ const mousedownDrag = () => {
         </p>
         <el-tree-select
           :check-strictly="false"
-          @change="dsChange"
+          @change="handleDsChange"
           :placeholder="t('dataset.pls_slc_data_source')"
           class="ds-list"
           popper-class="tree-select-ds_popper"
