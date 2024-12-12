@@ -62,6 +62,7 @@ const handleClose = () => {
 const { wsCache } = useCache()
 const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
 const xpack = wsCache.get('xpack-model-distributed')
+const desktop = wsCache.get('app.desktop')
 
 onUnmounted(() => {
   clearInterval(timer)
@@ -440,7 +441,7 @@ defineExpose({
           </template>
         </el-table-column>
         <el-table-column
-          v-show="xpack"
+          v-if="!desktop"
           prop="orgName"
           :label="t('data_set.organization')"
           width="200"
