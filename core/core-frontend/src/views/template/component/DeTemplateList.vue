@@ -19,7 +19,7 @@
       >
         <span class="text-template-overflow" :title="ele.name">{{ ele.name }}</span>
         <span class="more" @click.stop>
-          <el-dropdown trigger="click" size="small" @command="type => clickMore(type, ele)">
+          <el-dropdown trigger="click" @command="type => clickMore(type, ele)">
             <el-icon class="el-icon-more"><MoreFilled /></el-icon>
             <template #dropdown>
               <el-dropdown-menu class="de-template-dropdown">

@@ -23,6 +23,7 @@ import {
   shallowRef,
   h
 } from 'vue'
+import { debounce } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
 import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
@@ -352,7 +353,7 @@ const handleShowLeft = () => {
   LeftWidth.value = showLeft.value ? 240 : 0
 }
 
-const dsChange = (val: string) => {
+const dsChange = debounce((val: string) => {
   dsLoading.value = true
   getTables({ datasourceId: val })
     .then(res => {
@@ -362,7 +363,7 @@ const dsChange = (val: string) => {
     .finally(() => {
       dsLoading.value = false
     })
-}
+}, 300)
 
 const handleDsChange = () => {
   setFlag()

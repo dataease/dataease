@@ -1,3 +1,5 @@
+import { SymbolicMap } from '@/views/chart/components/js/panel/charts/map/symbolic-map'
+
 /**
  * 高级设置
  */
@@ -151,6 +153,8 @@ declare interface ChartThreshold {
    * 折线阈值
    */
   lineThreshold: TableThreshold[]
+
+  symbolicBubbleThreshold: TableThreshold[]
 }
 declare interface TableThreshold {
   /**

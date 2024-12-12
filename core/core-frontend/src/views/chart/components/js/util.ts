@@ -999,6 +999,19 @@ export function isAlphaColor(color: string): boolean {
   return false
 }
 
+export function getColorFormAlphaColor(color: string): string {
+  if (isAlphaColor(color)) {
+    if (color.startsWith('#')) {
+      return color.slice(0, 7)
+    }
+    if (color.startsWith('rgb') || color.startsWith('RGB')) {
+      const list = color.split(',')
+      return list[0] + ',' + list[1] + ',' + list[2] + ')'
+    }
+  }
+  return color
+}
+
 export function isTransparent(color: string): boolean {
   if (!color?.trim()) {
     return true

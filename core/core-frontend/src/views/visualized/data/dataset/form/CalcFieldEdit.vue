@@ -592,6 +592,8 @@ initFunction()
     <el-dialog
       :before-close="formQuotaClose"
       v-model="dialogFormVisible"
+      append-to-body
+      class="create-dialog"
       :title="t('data_set.add_calculation_parameters')"
       width="500"
     >

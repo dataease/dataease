@@ -2653,6 +2653,8 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    select_target_resource: '请选择目标资源',
+    target_dashboard_dataV: '目标仪表板\\数据大屏',
     effective_during_link: '公共链接生效',
     condition_style_set: '条件样式设置',
     cell_merge_tips: '合并单元格后，行列冻结、自动换行会失效。',
@@ -4258,6 +4260,8 @@ export default {
     enable_switch_tips: '管理员已设置所有用户开启 MFA 认证',
     reset_key_tips: '重置 FMA',
     step_1: '安装应用',
-    step_2: '绑定 MFA 验证器'
+    step_2: '绑定 MFA 验证器',
+    unbind_confirm: '确定解除 MFA 多因子认证绑定吗？',
+    mfa_code: 'MFA 验证码'
   }
 }

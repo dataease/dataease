@@ -221,8 +221,8 @@ public interface UserApi {
     @PostMapping("/mfaBind")
     void mfaBind(@RequestBody MfaLoginDTO dto);
 
-    @PostMapping("/mfaUnbind")
-    void mfaUnbind();
+    @PostMapping("/mfaUnbind/{code}")
+    String mfaUnbind(@PathVariable("code") String code);
 
     @PostMapping("/mfaRest/{id}")
     void resetBind(@PathVariable("id") Long id);
