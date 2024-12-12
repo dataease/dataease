@@ -22,6 +22,9 @@ export default {
       }
     ]
     function isLoginStatus() {
+      if (wsCache.get('app.desktop')) {
+        return true
+      }
       return wsCache.get('user.token') && wsCache.get('user.uid')
     }
 
@@ -45,17 +48,17 @@ export default {
       if (!prefix.endsWith('/')) {
         prefix += '/'
       }
-      console.log('newSockJS')
-      const socket = new SockJS(prefix + 'websocket?userId=' + wsCache.get('user.uid'))
+      const userId = wsCache.get('app.desktop') ? 1 : wsCache.get('user.uid')
+      const socket = new SockJS(prefix + 'websocket?userId=' + userId)
       stompClient = Stomp.over(socket)
       const heads = {
-        userId: wsCache.get('user.uid')
+        userId: userId
       }
       stompClient.connect(
         heads,
         () => {
           channels.forEach(channel => {
-            stompClient.subscribe('/user/' + wsCache.get('user.uid') + channel.topic, res => {
+            stompClient.subscribe('/user/' + userId + channel.topic, res => {
               res && res.body && useEmitt().emitter.emit(channel.event, res.body)
             })
           })
