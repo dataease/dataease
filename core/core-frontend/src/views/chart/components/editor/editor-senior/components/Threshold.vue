@@ -848,6 +848,138 @@ init()
             </div>
             <div v-for="(item, index) in fieldItem.conditions" :key="index" class="line-style">
               <div style="flex: 1">
+                <span v-if="item.term === 'eq'" :title="t('chart.filter_eq')">
+                  {{ t('chart.filter_eq') }}</span
+                >
+                <span v-else-if="item.term === 'not_eq'" :title="t('chart.filter_not_eq')">
+                  {{ t('chart.filter_not_eq') }}</span
+                >
+                <span v-if="item.term === 'lt'" :title="t('chart.filter_lt')">
+                  {{ t('chart.filter_lt') }}
+                </span>
+                <span v-else-if="item.term === 'gt'" :title="t('chart.filter_gt')">
+                  {{ t('chart.filter_gt') }}
+                </span>
+                <span v-else-if="item.term === 'le'" :title="t('chart.filter_le')">
+                  {{ t('chart.filter_le') }}
+                </span>
+                <span v-else-if="item.term === 'ge'" :title="t('chart.filter_ge')">
+                  {{ t('chart.filter_ge') }}
+                </span>
+                <span v-else-if="item.term === 'between'" :title="t('chart.filter_between')">
+                  {{ t('chart.filter_between') }}
+                </span>
+                <span v-else-if="item.term === 'default'" title="默认"> 默认 </span>
+              </div>
+              <div v-if="item.type !== 'dynamic'" style="flex: 1; margin: 0 8px">
+                <span style="margin: 0 8px">
+                  {{ t('chart.fix') }}
+                </span>
+              </div>
+              <div v-else style="flex: 1; margin: 0 8px">
+                <span style="margin: 0 8px">
+                  {{ t('chart.dynamic') }}
+                </span>
+              </div>
+              <div v-if="item.type !== 'dynamic'" style="flex: 1; margin: 0 8px">
+                <span
+                  v-if="
+                    !item.term.includes('null') &&
+                    !item.term.includes('default') &&
+                    !item.term.includes('empty') &&
+                    item.term !== 'between'
+                  "
+                  :title="item.value + ''"
+                  >{{ item.value }}</span
+                >
+                <span
+                  v-else-if="
+                    !item.term.includes('null') &&
+                    !item.term.includes('empty') &&
+                    item.term === 'between'
+                  "
+                  :title="item.min + ' ≤= ' + t('chart.drag_block_label_value') + ' ≤ ' + item.max"
+                >
+                  {{ item.min }}&nbsp;≤{{ t('chart.drag_block_label_value') }}≤&nbsp;{{ item.max }}
+                </span>
+                <span v-else>&nbsp;</span>
+              </div>
+              <template v-if="chart.type !== 'picture-group'">
+                <div
+                  :title="t('chart.color')"
+                  :style="{
+                    backgroundColor: item.color
+                  }"
+                  class="color-div"
+                  :class="{ 'color-div-dark': themes === 'dark' }"
+                ></div>
+              </template>
+            </div>
+          </el-row>
+        </div>
+      </el-col>
+    </el-col>
+
+    <!--  symbolic map  -->
+    <el-col v-show="showProperty('symbolicBubbleThreshold')">
+      <el-col>
+        <div class="inner-container">
+          <span class="label" :class="'label-' + props.themes">{{
+            $t('visualization.condition_style_set')
+          }}</span>
+          <span class="right-btns">
+            <span
+              class="set-text-info"
+              :class="{ 'set-text-info-dark': themes === 'dark' }"
+              v-if="state.thresholdForm?.tableThreshold?.length > 0"
+            >
+              $t('visualization.already_setting')
+            </span>
+            <el-button
+              :title="t('chart.edit')"
+              :class="'label-' + props.themes"
+              :style="{ width: '24px', marginLeft: '6px' }"
+              :disabled="!state.thresholdForm.enable"
+              class="circle-button"
+              text
+              size="small"
+              @click="editLineThreshold"
+            >
+              <template #icon>
+                <el-icon size="14px">
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+                </el-icon>
+              </template>
+            </el-button>
+          </span>
+        </div>
+
+        <div
+          class="threshold-container"
+          :class="{ 'threshold-container-dark': themes === 'dark' }"
+          v-if="state.thresholdForm.lineThreshold?.length > 0"
+        >
+          <el-row
+            v-for="(fieldItem, fieldIndex) in state.thresholdForm.lineThreshold"
+            :key="fieldIndex"
+            style="flex-direction: column"
+          >
+            <div class="field-style" :class="{ 'field-style-dark': themes === 'dark' }">
+              <el-icon>
+                <Icon :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                    :is="iconFieldMap[fieldType[fieldItem.field.deType]]"
+                  ></component
+                ></Icon>
+              </el-icon>
+              <span :title="fieldItem.field.name" class="field-text">{{
+                fieldItem.field.name
+              }}</span>
+            </div>
+            <div v-for="(item, index) in fieldItem.conditions" :key="index" class="line-style">
+              <div style="flex: 1">
                 <span v-if="item.term === 'lt'" :title="t('chart.filter_lt')">
                   {{ t('chart.filter_lt') }}
                 </span>

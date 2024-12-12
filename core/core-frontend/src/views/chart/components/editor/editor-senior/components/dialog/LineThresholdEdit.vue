@@ -2,7 +2,7 @@
 import icon_info_filled from '@/assets/svg/icon_info_filled.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
-import { PropType, reactive } from 'vue'
+import { computed, PropType, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
@@ -34,30 +34,84 @@ const thresholdCondition = {
   max: '1',
   type: 'fixed'
 }
-const valueOptions = [
-  {
-    label: '',
-    options: [
+const valueOptions = computed(() => {
+  if (props.chart.type === 'symbolic-map') {
+    return [
       {
-        value: 'lt',
-        label: t('chart.filter_lt')
+        label: '',
+        options: [
+          {
+            value: 'eq',
+            label: t('chart.filter_eq')
+          },
+          {
+            value: 'not_eq',
+            label: t('chart.filter_not_eq')
+          }
+        ]
       },
       {
-        value: 'gt',
-        label: t('chart.filter_gt')
-      }
-    ]
-  },
-  {
-    label: '',
-    options: [
+        label: '',
+        options: [
+          {
+            value: 'lt',
+            label: t('chart.filter_lt')
+          },
+          {
+            value: 'gt',
+            label: t('chart.filter_gt')
+          }
+        ]
+      },
       {
-        value: 'between',
-        label: t('chart.filter_between')
+        label: '',
+        options: [
+          {
+            value: 'le',
+            label: t('chart.filter_le')
+          },
+          {
+            value: 'ge',
+            label: t('chart.filter_ge')
+          }
+        ]
+      },
+      {
+        label: '',
+        options: [
+          {
+            value: 'between',
+            label: t('chart.filter_between')
+          }
+        ]
       }
     ]
   }
-]
+  return [
+    {
+      label: '',
+      options: [
+        {
+          value: 'lt',
+          label: t('chart.filter_lt')
+        },
+        {
+          value: 'gt',
+          label: t('chart.filter_gt')
+        }
+      ]
+    },
+    {
+      label: '',
+      options: [
+        {
+          value: 'between',
+          label: t('chart.filter_between')
+        }
+      ]
+    }
+  ]
+})
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
@@ -76,21 +130,32 @@ const init = () => {
 }
 const initOptions = (item, fieldObj) => {
   if (fieldObj) {
-    item.options = JSON.parse(JSON.stringify(valueOptions))
+    item.options = JSON.parse(JSON.stringify(valueOptions.value))
     item.conditions &&
       item.conditions.forEach(ele => {
         ele.term = ''
       })
   }
 }
+
+const isSymbolicMap = computed(() => {
+  return props.chart.type === 'symbolic-map'
+})
+
 const initFields = () => {
   let fields = []
-  const yAxis = JSON.parse(JSON.stringify(props.chart.yAxis))
-  fields = [...yAxis]
+  if (isSymbolicMap.value) {
+    const extBubble = JSON.parse(JSON.stringify(props.chart.extBubble))
+    fields = [...extBubble]
+  } else {
+    const yAxis = JSON.parse(JSON.stringify(props.chart.yAxis))
+    fields = [...yAxis]
+  }
   state.fields.splice(0, state.fields.length, ...fields)
   // 字段不存在时
   let change = false
   state.thresholdArr.forEach(item => {
+    item.options = JSON.parse(JSON.stringify(valueOptions.value))
     const fieldItemObj = state.fields.filter(ele => ele.id === item.fieldId)
     if (fieldItemObj.length === 0) {
       change = true
@@ -327,7 +392,10 @@ init()
             </el-col>
 
             <el-col :span="3">
-              <el-form-item class="form-item" :label="t('chart.textColor')">
+              <el-form-item
+                class="form-item"
+                :label="isSymbolicMap ? t('chart.color') : t('chart.textColor')"
+              >
                 <el-color-picker
                   is-custom
                   size="large"

@@ -6,7 +6,12 @@ import {
   L7Wrapper
 } from '@/views/chart/components/js/panel/types/impl/l7'
 import { MAP_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/map/common'
-import { hexColorToRGBA, parseJson, svgStrToUrl } from '@/views/chart/components/js/util'
+import {
+  getColorFormAlphaColor,
+  hexColorToRGBA,
+  parseJson,
+  svgStrToUrl
+} from '@/views/chart/components/js/util'
 import { deepCopy } from '@/utils/utils'
 import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
@@ -15,6 +20,7 @@ import { LayerPopup } from '@antv/l7'
 import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import { filter } from 'lodash-es'
 const { t } = useI18n()
 
 /**
@@ -28,7 +34,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     'symbolic-style-selector',
     'title-selector',
     'label-selector',
-    'tooltip-selector'
+    'tooltip-selector',
+    'threshold'
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
@@ -52,7 +59,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       'show',
       'backgroundColor',
       'carousel'
-    ]
+    ],
+    threshold: ['lineThreshold']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'extBubble', 'filter', 'extLabel', 'extTooltip']
   axisConfig: AxisConfig = {
@@ -228,8 +236,18 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     // 存储已分配的颜色
     const colorAssignments = new Map()
     const sizeKey = extBubble.length > 0 ? extBubble[0].dataeaseName : ''
+
+    //todo 条件颜色
+    const { threshold } = parseJson(chart.senior)
+    let conditions = []
+    if (threshold.enable) {
+      conditions = threshold.lineThreshold ?? []
+    }
+    const extBubbleIds = chart.extBubble.map(i => i.id)
+    conditions = filter(conditions, c => extBubbleIds.includes(c.fieldId))
+
     const data = chart.data?.tableRow
-      ? chart.data.tableRow.map(item => {
+      ? chart.data.tableRow.map((item, index) => {
           // 颜色标识
           const identifier = item[xAxisExt[0]?.dataeaseName]
           // 检查该标识是否已有颜色分配，如果没有则分配
@@ -238,6 +256,57 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
             color = colorsWithAlpha[colorIndex++ % colorsWithAlpha.length]
             // 记录分配的颜色
             colorAssignments.set(identifier, color)
+          }
+          if (conditions.length > 0) {
+            for (let i = 0; i < conditions.length; i++) {
+              const c = conditions[i]
+              const value = item[c.field.dataeaseName]
+              for (const t of c.conditions) {
+                const v = t.value
+
+                //保存一下颜色到map
+                const _color = getColorFormAlphaColor(t.color)
+
+                if (t.term === 'between') {
+                  const start = parseFloat(t.min)
+                  const end = parseFloat(t.max)
+                  if (start <= value && value <= end) {
+                    color = t.color
+                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                  }
+                } else if ('lt' === t.term) {
+                  if (value < v) {
+                    color = t.color
+                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                  }
+                } else if ('le' === t.term) {
+                  if (value <= v) {
+                    color = t.color
+                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                  }
+                } else if ('gt' === t.term) {
+                  if (value > v) {
+                    color = t.color
+                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                  }
+                } else if ('ge' === t.term) {
+                  if (value >= v) {
+                    color = t.color
+                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                  }
+                } else if ('eq' === t.term) {
+                  if (value === v) {
+                    color = t.color
+                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                  }
+                } else if ('not_eq' === t.term) {
+                  if (value !== v) {
+                    color = t.color
+                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                  }
+                }
+              }
+            }
           }
           return {
             ...item,
