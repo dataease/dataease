@@ -94,6 +94,7 @@ watch(
           >
             <el-color-picker
               :title="t('visualization.color')"
+              :disabled="!styleForm.borderActive"
               v-model="styleForm.borderColor"
               class="color-picker-style"
               :triggerWidth="65"
@@ -115,6 +116,7 @@ watch(
               :min="0"
               :max="50"
               :effect="themes"
+              :disabled="!styleForm.borderActive"
               controls-position="right"
               v-model="styleMounted.borderWidth"
               class="color-picker-style"
@@ -134,6 +136,7 @@ watch(
           >
             <el-color-picker
               :title="t('visualization.color')"
+              :disabled="!styleForm.borderActive"
               v-model="styleForm.borderColor"
               class="color-picker-style"
               :triggerWidth="65"
@@ -153,6 +156,7 @@ watch(
           >
             <el-input-number
               :title="t('visualization.board_radius')"
+              :disabled="!styleForm.borderActive"
               :effect="themes"
               :min="0"
               :max="200"
@@ -173,6 +177,7 @@ watch(
           >
             <el-select
               :effect="themes"
+              :disabled="!styleForm.borderActive"
               v-model="styleForm.borderStyle"
               size="small"
               style="width: 65px"
@@ -195,6 +200,7 @@ watch(
           >
             <el-input-number
               :title="t('visualization.board_width')"
+              :disabled="!styleForm.borderActive"
               :min="0"
               :max="50"
               :effect="themes"
