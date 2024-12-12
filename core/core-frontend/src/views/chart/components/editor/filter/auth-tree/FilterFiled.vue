@@ -408,7 +408,7 @@ const emits = defineEmits(['update:item', 'del'])
                   <span>+</span>
                 </li>
               </ul>
-              <el-button @click="selectAll">
+              <el-button style="width: 100%" type="primary" @click="selectAll">
                 {{ t('auth.select_all') }}
               </el-button>
             </div>
