@@ -352,6 +352,9 @@ public class CalciteProvider extends Provider {
             case redshift:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Redshift.class);
                 break;
+            case h2:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), H2.class);
+                break;
             case ck:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), CK.class);
                 break;

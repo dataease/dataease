@@ -60,6 +60,13 @@ const configRules = {
       trigger: 'blur'
     }
   ],
+  'configuration.jdbc': [
+    {
+      required: true,
+      message: t('datasource.please_input_jdbc_url'),
+      trigger: 'blur'
+    }
+  ],
   'configuration.extraParams': [
     {
       required: false,
@@ -135,6 +142,7 @@ const defaultInfo = {
   fileName: '',
   configuration: {
     host: '',
+    jdbc: '',
     port: 8081,
     dataBase: '',
     username: '',
@@ -282,14 +290,33 @@ defineExpose({
           />
         </el-select>
       </el-form-item>
-      <el-form-item :label="t('datasource.host')" prop="configuration.host">
+      <el-form-item
+        :label="t('datasource.host')"
+        prop="configuration.jdbc"
+        v-if="nodeInfo.type === 'h2'"
+      >
+        <el-input
+          v-model="nodeInfo.configuration.jdbc"
+          :placeholder="t('data_source.jdbc_connection_string')"
+          autocomplete="off"
+        />
+      </el-form-item>
+      <el-form-item
+        :label="t('datasource.host')"
+        prop="configuration.host"
+        v-if="nodeInfo.type !== 'h2'"
+      >
         <el-input
           v-model="nodeInfo.configuration.host"
           :placeholder="t('datasource._ip_address')"
           autocomplete="off"
         />
       </el-form-item>
-      <el-form-item :label="t('datasource.port')" prop="configuration.port">
+      <el-form-item
+        :label="t('datasource.port')"
+        prop="configuration.port"
+        v-if="nodeInfo.type !== 'h2'"
+      >
         <el-input-number
           v-model="nodeInfo.configuration.port"
           autocomplete="off"
