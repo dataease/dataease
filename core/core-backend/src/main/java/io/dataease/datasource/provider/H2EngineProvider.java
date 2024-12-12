@@ -82,39 +82,39 @@ public class H2EngineProvider extends EngineProvider {
     }
 
     private String createTableSql(final List<TableField> tableFields) {
-        StringBuilder columnFields = new StringBuilder("`");
+        StringBuilder columnFields = new StringBuilder("\"");
         StringBuilder key = new StringBuilder();
         for (TableField tableField : tableFields) {
             if (!tableField.isChecked()) {
                 continue;
             }
             if (tableField.isPrimaryKey()) {
-                key.append("`").append(tableField.getName()).append("`, ");
+                key.append("\"").append(tableField.getName()).append("\", ");
             }
-            columnFields.append(tableField.getName()).append("` ");
+            columnFields.append(tableField.getName()).append("\" ");
             int size = tableField.getPrecision() * 4;
             switch (tableField.getDeType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",`");
+                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",\"");
                     } else {
-                        columnFields.append("longtext").append(",`");
+                        columnFields.append("longtext").append(",\"");
                     }
                     break;
                 case 1:
-                    columnFields.append("varchar(2048)").append(",`");
+                    columnFields.append("varchar(2048)").append(",\"");
                     break;
                 case 2:
-                    columnFields.append("bigint(20)").append(",`");
+                    columnFields.append("bigint(20)").append(",\"");
                     break;
                 case 3:
-                    columnFields.append("decimal(27,8)").append(",`");
+                    columnFields.append("decimal(27,8)").append(",\"");
                     break;
                 case 4:
-                    columnFields.append("TINYINT(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
+                    columnFields.append("TINYINT(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",\"");
                     break;
                 default:
-                    columnFields.append("longtext").append(",`");
+                    columnFields.append("longtext").append(",\"");
                     break;
             }
         }
