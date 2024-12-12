@@ -812,6 +812,7 @@ defineExpose({
     width: 800px;
     padding-top: 16px;
     height: calc(100vh - 280px);
+    min-height: 700px;
 
     .dropdown-icon {
       .down-outlined {
