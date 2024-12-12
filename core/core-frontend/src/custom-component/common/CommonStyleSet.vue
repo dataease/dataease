@@ -166,6 +166,20 @@
             </el-icon>
           </div>
         </el-tooltip>
+        <el-tooltip v-if="styleForm.textDecoration !== undefined" effect="dark" placement="bottom">
+          <template #content>
+            {{ t('visualization.text_decoration') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{ dark: themes === 'dark', active: styleForm.textDecoration === 'underline' }"
+            @click="checkTextDecoration"
+          >
+            <el-icon>
+              <Icon name="style-underline"><styleUnderline class="svg-icon" /></Icon>
+            </el-icon>
+          </div>
+        </el-tooltip>
         <template v-if="styleForm.textAlign">
           <div class="m-divider" :class="'custom-divider-' + themes"></div>
           <div style="display: flex">
@@ -298,6 +312,7 @@ import dvStyleActiveFont from '@/assets/svg/dv-style-activeFont.svg'
 import dvStyleFontFamily from '@/assets/svg/dv-style-fontFamily.svg'
 import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
 import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
+import styleUnderline from '@/assets/svg/style-underline.svg'
 import icon_leftAlignment_outlined from '@/assets/svg/icon_left-alignment_outlined.svg'
 import icon_centerAlignment_outlined from '@/assets/svg/icon_center-alignment_outlined.svg'
 import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outlined.svg'
@@ -308,6 +323,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
+import { ElIcon } from 'element-plus-secondary'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -567,6 +583,15 @@ const checkItalic = () => {
   changeStyle({ key: 'fontStyle', value: styleForm.value.fontStyle })
 }
 
+const checkTextDecoration = () => {
+  if (styleForm.value.textDecoration === 'normal') {
+    styleForm.value.textDecoration = 'underline'
+  } else {
+    styleForm.value.textDecoration = 'normal'
+  }
+  changeStyle({ key: 'textDecoration', value: styleForm.value.textDecoration })
+}
+
 function setPosition(key, p: 'left' | 'center' | 'right') {
   styleForm.value[key] = p
   changeStyle({ key: key, value: p })
@@ -708,5 +733,48 @@ watch(
 
 .dark-icon {
   color: #ffffff;
+}
+
+.icon-checkbox {
+  :deep(.ed-checkbox__input) {
+    display: none;
+  }
+  :deep(.ed-checkbox__label) {
+    padding: 0;
+  }
+}
+
+.icon-btn {
+  font-size: 16px;
+  line-height: 16px;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  border-radius: 4px;
+  padding-top: 4px;
+
+  color: #1f2329;
+
+  cursor: pointer;
+
+  &.dark {
+    color: #a6a6a6;
+    &.active {
+      color: var(--ed-color-primary);
+      background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &.active {
+    color: var(--ed-color-primary);
+    background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+  }
 }
 </style>

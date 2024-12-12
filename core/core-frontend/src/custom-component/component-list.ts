@@ -559,7 +559,11 @@ const list = [
       headFontColor: '#000000',
       headFontActiveColor: '#000000',
       titleHide: false,
-      showTabTitle: true
+      showTabTitle: true,
+      // #13540
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+      textDecoration: 'normal'
     }
   },
   {
