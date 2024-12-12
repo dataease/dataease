@@ -85,5 +85,8 @@ public class EngineServer implements EngineApi {
         engineManage.validate(deEngineMapper.selectById(id));
     }
 
-
+    @Override
+    public boolean surportSetKey() throws Exception {
+        return !getEngine().getType().equalsIgnoreCase("h2");
+    }
 }

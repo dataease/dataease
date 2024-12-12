@@ -174,3 +174,5 @@ export const listSyncRecord = (page: number, limit: number, dsId: number | strin
   request.post({ url: '/datasource/listSyncRecord/' + dsId + '/' + page + '/' + limit })
 
 export const getDeEngine = () => request.get({ url: '/engine/getEngine' })
+
+export const surportSetKey = () => request.get({ url: '/engine/surportSetKey' })

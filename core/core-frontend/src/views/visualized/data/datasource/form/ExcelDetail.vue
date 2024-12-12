@@ -25,6 +25,7 @@ import { cloneDeep, debounce } from 'lodash-es'
 import { uploadFile } from '@/api/datasource'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { boolean } from 'mathjs'
 
 export interface Param {
   editType: number
@@ -63,10 +64,14 @@ const props = defineProps({
       })
     },
     type: Object
+  },
+  isSurportSetKey: {
+    type: boolean,
+    required: true
   }
 })
 
-const { param } = toRefs(props)
+const { param, isSurportSetKey } = toRefs(props)
 
 const { t } = useI18n()
 const { emitter } = useEmitt()
@@ -737,7 +742,7 @@ defineExpose({
               class-name="checkbox-table"
               :label="t('datasource.set_key')"
               width="100"
-              v-if="param.editType === 0"
+              v-if="param.editType === 0 && isSurportSetKey"
             >
               <template #default="scope">
                 <el-checkbox

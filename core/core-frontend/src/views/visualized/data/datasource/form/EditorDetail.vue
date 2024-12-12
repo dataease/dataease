@@ -26,6 +26,7 @@ import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
 import { XpackComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { boolean } from 'mathjs'
 const { t } = useI18n()
 const prop = defineProps({
   form: {
@@ -56,10 +57,14 @@ const prop = defineProps({
     required: false,
     default: 1,
     type: Number
+  },
+  isSurportSetKey: {
+    type: boolean,
+    required: true
   }
 })
 
-const { form, activeStep } = toRefs(prop)
+const { form, activeStep, isSurportSetKey } = toRefs(prop)
 
 const state = reactive({
   itemRef: []

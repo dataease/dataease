@@ -24,4 +24,7 @@ public interface EngineApi {
 
     @PostMapping("/validate/{id}")
     void validateById(@PathVariable Long id) throws Exception;
+
+    @GetMapping("/surportSetKey")
+    boolean surportSetKey() throws Exception;
 }

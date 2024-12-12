@@ -47,7 +47,8 @@ import {
   listSyncRecord,
   uploadFile,
   perDeleteDatasource,
-  getSimpleDs
+  getSimpleDs,
+  surportSetKey
 } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
@@ -472,6 +473,7 @@ const saveDsFolder = (params, successCb, finallyCb, cmd) => {
 
 const dsLoading = ref(false)
 const mounted = ref(false)
+const isSurportSetKey = ref(false)
 const symmetricKey = ref('')
 
 const listDs = () => {
@@ -510,6 +512,15 @@ const listDs = () => {
     })
 }
 
+const setSurportSetKey = () => {
+  surportSetKey()
+    .then(response => {
+      isSurportSetKey.value = response.data
+    })
+    .catch(error => {
+      console.warn(error?.message)
+    })
+}
 const changeDsStatus = (ds, id, extraFlag) => {
   ds.some(ele => {
     if (ele.id === id) {
@@ -627,7 +638,7 @@ const handleNodeClick = data => {
   })
 }
 const createDatasource = (data?: Tree) => {
-  datasourceEditor.value.init(null, data?.id)
+  datasourceEditor.value.init(null, data?.id, null, isSurportSetKey.value)
 }
 const showRecord = ref(false)
 const dsListTree = ref()
@@ -747,7 +758,7 @@ const editDatasource = (editType?: number) => {
       isPlugin: arr && arr.length > 0,
       staticMap: arr[0]?.staticMap
     })
-    datasourceEditor.value.init(datasource)
+    datasourceEditor.value.init(datasource, null, null, isSurportSetKey.value)
   })
 }
 
@@ -979,7 +990,7 @@ const uploadExcel = editType => {
         return
       }
       nodeInfo.editType = editType
-      datasourceEditor.value.init(nodeInfo, nodeInfo.id, res)
+      datasourceEditor.value.init(nodeInfo, nodeInfo.id, res, isSurportSetKey.value)
     })
     .finally(() => {
       replaceLoading.value = false
@@ -1005,9 +1016,10 @@ onMounted(() => {
   wsCache.delete('ds-info-id')
   loadInit()
   listDs()
+  setSurportSetKey()
   const { opt } = router.currentRoute.value.query
   if (opt && opt === 'create') {
-    datasourceEditor.value.init(null, null)
+    datasourceEditor.value.init(null, null, null, isSurportSetKey.value)
   }
   querySymmetricKey().then(res => {
     symmetricKey.value = res.data
