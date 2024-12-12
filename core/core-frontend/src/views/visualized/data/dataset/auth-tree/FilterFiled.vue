@@ -403,9 +403,9 @@ const emits = defineEmits(['update:item', 'del'])
                   <span>+</span>
                 </li>
               </ul>
-              <button class="select-all" @click="selectAll">
+              <el-button type="primary" @click="selectAll">
                 {{ t('auth.select_all') }}
-              </button>
+              </el-button>
             </div>
             <div class="mod-left right-de">
               <div class="right-top clearfix">
@@ -447,23 +447,19 @@ const emits = defineEmits(['update:item', 'del'])
                   >
                     <label>{{ i }}</label>
                   </el-tooltip>
-                  <el-icon @click="delChecks(idx)" style="opacity: 1">
-                    <Icon name="icon_delete-trash_outlined"
-                      ><icon_deleteTrash_outlined class="svg-icon"
-                    /></Icon>
+                  <el-icon @click="delChecks(idx)" style="color: #646a73">
+                    <Icon><icon_deleteTrash_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </li>
               </ul>
               <div class="right-menu-foot">
                 <div class="footer-left">&nbsp;</div>
-                <div class="confirm-btn" @click="confirm">
+                <el-button type="primary" @click="confirm">
                   {{ t('auth.sure') }}
-                </div>
+                </el-button>
                 <div class="footer-right">
-                  <el-icon @click="clearAll">
-                    <Icon name="icon_delete-trash_outlined"
-                      ><icon_deleteTrash_outlined class="svg-icon"
-                    /></Icon>
+                  <el-icon style="color: #646a73" @click="clearAll">
+                    <Icon><icon_deleteTrash_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </div>
               </div>
@@ -893,44 +889,6 @@ const emits = defineEmits(['update:item', 'del'])
       }
     }
 
-    .select-all {
-      box-sizing: border-box;
-      margin: 0;
-      overflow: visible;
-      position: relative;
-      font-weight: 400;
-      white-space: nowrap;
-      border: 1px solid transparent;
-      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-      user-select: none;
-      touch-action: manipulation;
-      padding: 0 15px;
-      font-size: 12px;
-      outline: 0;
-      color: #fff;
-      border-color: #2e74ff;
-      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-      -webkit-appearance: button;
-      cursor: pointer;
-      border-radius: 0;
-      background: #2153d4;
-      padding-left: 5px;
-      text-align: center;
-      display: inline-block;
-      width: 100%;
-      height: 25px;
-
-      &:hover {
-        border: 1px solid transparent;
-        background: #4794ff;
-        color: #fff;
-      }
-    }
-
     .right-top {
       color: rgba(0, 0, 0, 0.65);
       text-align: left;
@@ -968,7 +926,7 @@ const emits = defineEmits(['update:item', 'del'])
       height: 30px;
       text-align: right;
       line-height: 30px;
-      margin-top: 5px;
+      margin-top: 9px;
       border-top: 1px solid hsla(0, 0%, 59%, 0.1);
 
       .footer-left {
@@ -979,35 +937,6 @@ const emits = defineEmits(['update:item', 'del'])
       .footer-right {
         float: right;
         padding-left: 10px;
-        cursor: pointer;
-      }
-
-      .confirm-btn {
-        box-sizing: border-box;
-        position: relative;
-        font-weight: 400;
-        white-space: nowrap;
-        text-align: center;
-        background-image: none;
-        border: 1px solid transparent;
-        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-        user-select: none;
-        touch-action: manipulation;
-        height: 28px;
-        padding: 0 15px;
-        font-size: 12px;
-        border-radius: 2px;
-        outline: 0;
-        color: #fff;
-        background-color: #2e74ff;
-        border-color: #2e74ff;
-        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
-        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        -webkit-appearance: button;
         cursor: pointer;
       }
     }
