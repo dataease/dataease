@@ -368,6 +368,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
 .copilot {
   width: 100%;
   height: 100%;
+  max-height: calc(100vh - 56px);
 
   .copilot-analysis {
     background-color: #fff;
@@ -386,12 +387,15 @@ const queryAnswer = (event?: KeyboardEvent) => {
     .dialogue {
       flex: 1;
       position: relative;
+      max-height: 100%;
+
       .copilot-dialogue {
         padding: 0 160px;
         padding-top: 24px;
         position: relative;
         overflow-y: auto;
         padding-bottom: 25px;
+        max-height: 100%;
       }
       .question-input {
         min-height: 47px;
