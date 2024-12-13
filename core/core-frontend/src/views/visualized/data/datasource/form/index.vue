@@ -80,7 +80,7 @@ const currentDsType = ref('')
 const emits = defineEmits(['refresh'])
 const { emitter } = useEmitt()
 const isPlugin = ref(false)
-const isSurportSetKey = ref(false)
+const isSupportSetKey = ref(false)
 const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
@@ -583,10 +583,10 @@ watch(
   { deep: true }
 )
 
-const init = (nodeInfo: Form | Param, id?: string, res?: object, surportSetKey: boolean) => {
+const init = (nodeInfo: Form | Param, id?: string, res?: object, supportSetKey: boolean) => {
   isPlugin.value = nodeInfo?.isPlugin
   pluginIndex.value = isPlugin.value ? nodeInfo?.staticMap?.index : null
-  isSurportSetKey.value = surportSetKey
+  isSupportSetKey.value = supportSetKey
   editDs.value = !!nodeInfo
   showFinishPage.value = false
 
@@ -801,7 +801,7 @@ defineExpose({
             :form="form"
             :editDs="editDs"
             :active-step="activeApiStep"
-            :is-surportSetKey="isSurportSetKey"
+            :is-supportSetKey="isSupportSetKey"
             v-if="
               activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible && !isPlugin
             "
@@ -821,7 +821,7 @@ defineExpose({
           <template v-if="activeStep !== 0 && currentDsType == 'Excel'">
             <excel-detail
               :editDs="editDs"
-              :is-surportSetKey="isSurportSetKey"
+              :is-supportSetKey="isSupportSetKey"
               ref="excel"
               :param="form2"
             ></excel-detail>

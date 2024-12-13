@@ -86,7 +86,7 @@ public class EngineServer implements EngineApi {
     }
 
     @Override
-    public boolean surportSetKey() throws Exception {
+    public boolean supportSetKey() throws Exception {
         return !getEngine().getType().equalsIgnoreCase("h2");
     }
 }

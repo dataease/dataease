@@ -109,7 +109,7 @@ const columns = shallowRef([])
 const valueList = shallowRef([])
 const tableData = shallowRef([])
 const apiItemBasicInfo = ref<FormInstance>()
-const isSurportSetKey = ref(false)
+const isSupportSetKey = ref(false)
 const isNumber = (rule, value, callback) => {
   if (!value) {
     callback(new Error(t('datasource.please_input_query_timeout')))
@@ -168,10 +168,10 @@ const editItem = ref(false)
 const copyItem = ref(false)
 const copyDs = ref(false)
 provide('api-active-name', activeName)
-const initApiItem = (val: ApiItem, from, name, edit, surportSetKey) => {
+const initApiItem = (val: ApiItem, from, name, edit, supportSetKey) => {
   copyItem.value = val.copy
   copyDs.value = from.copy
-  isSurportSetKey.value = surportSetKey
+  isSupportSetKey.value = supportSetKey
   activeName.value = name
   editItem.value = edit
   apiItemList = from.apiConfiguration
@@ -819,7 +819,7 @@ defineExpose({
               prop="primaryKey"
               class-name="checkbox-table"
               :label="t('datasource.set_key')"
-              v-if="apiItem.type !== 'params' && isSurportSetKey"
+              v-if="apiItem.type !== 'params' && isSupportSetKey"
               width="100"
             >
               <template #default="scope">

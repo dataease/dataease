@@ -48,7 +48,7 @@ import {
   uploadFile,
   perDeleteDatasource,
   getSimpleDs,
-  surportSetKey
+  supportSetKey
 } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
@@ -473,7 +473,7 @@ const saveDsFolder = (params, successCb, finallyCb, cmd) => {
 
 const dsLoading = ref(false)
 const mounted = ref(false)
-const isSurportSetKey = ref(false)
+const isSupportSetKey = ref(false)
 const symmetricKey = ref('')
 
 const listDs = () => {
@@ -512,10 +512,10 @@ const listDs = () => {
     })
 }
 
-const setSurportSetKey = () => {
-  surportSetKey()
+const setSupportSetKey = () => {
+  supportSetKey()
     .then(response => {
-      isSurportSetKey.value = response.data
+      isSupportSetKey.value = response.data
     })
     .catch(error => {
       console.warn(error?.message)
@@ -638,7 +638,7 @@ const handleNodeClick = data => {
   })
 }
 const createDatasource = (data?: Tree) => {
-  datasourceEditor.value.init(null, data?.id, null, isSurportSetKey.value)
+  datasourceEditor.value.init(null, data?.id, null, isSupportSetKey.value)
 }
 const showRecord = ref(false)
 const dsListTree = ref()
@@ -758,7 +758,7 @@ const editDatasource = (editType?: number) => {
       isPlugin: arr && arr.length > 0,
       staticMap: arr[0]?.staticMap
     })
-    datasourceEditor.value.init(datasource, null, null, isSurportSetKey.value)
+    datasourceEditor.value.init(datasource, null, null, isSupportSetKey.value)
   })
 }
 
@@ -829,7 +829,7 @@ const handleCopy = async data => {
         datasource.apiConfiguration[i].deTableName = ''
       }
     }
-    datasourceEditor.value.init(datasource, null, null, isSurportSetKey.value)
+    datasourceEditor.value.init(datasource, null, null, isSupportSetKey.value)
   })
 }
 
@@ -990,7 +990,7 @@ const uploadExcel = editType => {
         return
       }
       nodeInfo.editType = editType
-      datasourceEditor.value.init(nodeInfo, nodeInfo.id, res, isSurportSetKey.value)
+      datasourceEditor.value.init(nodeInfo, nodeInfo.id, res, isSupportSetKey.value)
     })
     .finally(() => {
       replaceLoading.value = false
@@ -1016,10 +1016,10 @@ onMounted(() => {
   wsCache.delete('ds-info-id')
   loadInit()
   listDs()
-  setSurportSetKey()
+  setSupportSetKey()
   const { opt } = router.currentRoute.value.query
   if (opt && opt === 'create') {
-    datasourceEditor.value.init(null, null, null, isSurportSetKey.value)
+    datasourceEditor.value.init(null, null, null, isSupportSetKey.value)
   }
   querySymmetricKey().then(res => {
     symmetricKey.value = res.data

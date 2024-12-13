@@ -65,13 +65,13 @@ const props = defineProps({
     },
     type: Object
   },
-  isSurportSetKey: {
+  isSupportSetKey: {
     type: boolean,
     required: true
   }
 })
 
-const { param, isSurportSetKey } = toRefs(props)
+const { param, isSupportSetKey } = toRefs(props)
 
 const { t } = useI18n()
 const { emitter } = useEmitt()
@@ -742,7 +742,7 @@ defineExpose({
               class-name="checkbox-table"
               :label="t('datasource.set_key')"
               width="100"
-              v-if="param.editType === 0 && isSurportSetKey"
+              v-if="param.editType === 0 && isSupportSetKey"
             >
               <template #default="scope">
                 <el-checkbox

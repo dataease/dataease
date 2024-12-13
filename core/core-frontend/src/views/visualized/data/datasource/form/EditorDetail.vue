@@ -58,13 +58,13 @@ const prop = defineProps({
     default: 1,
     type: Number
   },
-  isSurportSetKey: {
+  isSupportSetKey: {
     type: boolean,
     required: true
   }
 })
 
-const { form, activeStep, isSurportSetKey } = toRefs(prop)
+const { form, activeStep, isSupportSetKey } = toRefs(prop)
 
 const state = reactive({
   itemRef: []
@@ -419,7 +419,7 @@ const addApiItem = item => {
       form.value,
       activeName.value,
       editItem,
-      isSurportSetKey.value
+      isSupportSetKey.value
     )
   })
 }

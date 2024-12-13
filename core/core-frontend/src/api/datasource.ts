@@ -175,4 +175,4 @@ export const listSyncRecord = (page: number, limit: number, dsId: number | strin
 
 export const getDeEngine = () => request.get({ url: '/engine/getEngine' })
 
-export const surportSetKey = () => request.get({ url: '/engine/surportSetKey' })
+export const supportSetKey = () => request.get({ url: '/engine/supportSetKey' })
