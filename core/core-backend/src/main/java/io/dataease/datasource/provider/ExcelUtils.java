@@ -321,6 +321,10 @@ public class ExcelUtils {
         if (StringUtils.isEmpty(value) || value.length() > 19) {
             return "TEXT";
         }
+        String numberFormatRegex = "^[1-9]\\d*$";
+        if (!value.matches(numberFormatRegex)) {
+            return "TEXT";
+        }
         String regex = "^-?\\d+(\\.\\d+)?$";
         if (!value.matches(regex)) {
             return "TEXT";
