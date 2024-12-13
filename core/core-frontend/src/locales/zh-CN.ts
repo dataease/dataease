@@ -2653,6 +2653,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    text_decoration: '下滑线',
     select_target_resource: '请选择目标资源',
     target_dashboard_dataV: '目标仪表板\\数据大屏',
     effective_during_link: '公共链接生效',
