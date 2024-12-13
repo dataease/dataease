@@ -74,7 +74,7 @@ public class TableHeatmapHandler extends DefaultChartHandler {
         logger.debug("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         //自定义排序
-        data = ChartDataUtil.resultCustomSort(xAxis, data);
+        data = ChartDataUtil.resultCustomSort(xAxis, yAxis, view.getSortPriority(), data);
         //数据重组逻辑可重载
         var result = this.buildResult(view, formatResult, filterResult, data);
         T calcResult = (T) new ChartCalcDataResult();

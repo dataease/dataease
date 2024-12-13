@@ -107,7 +107,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
             detailData = (List<String[]>) provider.fetchResultField(datasourceRequest1).get("data");
         }
         //自定义排序
-        data = ChartDataUtil.resultCustomSort(xAxis, data);
+        data = ChartDataUtil.resultCustomSort(xAxis, yAxis, view.getSortPriority(), data);
         //数据重组逻辑可重载
         var result = customBuildResult(view, formatResult, filterResult, data, detailFields, detailData);
         T calcResult = (T) new ChartCalcDataResult();

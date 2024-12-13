@@ -1,5 +1,7 @@
 package io.dataease.extensions.view.util;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -10,13 +12,38 @@ import java.util.*;
 
 public class ChartDataUtil {
     // 对结果排序
-    public static List<String[]> resultCustomSort(List<ChartViewFieldDTO> xAxis, List<String[]> data) {
+    public static List<String[]> resultCustomSort(List<ChartViewFieldDTO> xAxis,List<ChartViewFieldDTO> yAxis, List<SortAxis> sortPriority, List<String[]> data) {
         List<String[]> res = new ArrayList<>(data);
-        if (xAxis.size() > 0) {
+        var axisList = new ArrayList<ChartViewFieldDTO>();
+        axisList.addAll(xAxis);
+        axisList.addAll(yAxis);
+        var dataIndexMap = new HashMap<Long, Integer>(axisList.size());
+        for (int i = 0; i < axisList.size(); i++) {
+            dataIndexMap.put(axisList.get(i).getId(), i);
+        }
+        if (CollectionUtils.isNotEmpty(sortPriority)) {
+            var tmp = new ArrayList<ChartViewFieldDTO>();
+            var ids = new HashSet<Long>();
+            for (SortAxis sortAxis : sortPriority) {
+                for (ChartViewFieldDTO axis : axisList) {
+                    if (sortAxis.getId().equals(axis.getId())){
+                        tmp.add(axis);
+                        ids.add(axis.getId());
+                    }
+                }
+            }
+            for (ChartViewFieldDTO axis : axisList) {
+                if (!ids.contains(axis.getId())) {
+                    tmp.add(axis);
+                }
+            }
+            axisList = tmp;
+        }
+        if (axisList.size() > 0) {
             // 找到对应维度
-            for (int i = 0; i < xAxis.size(); i++) {
-                ChartViewFieldDTO item = xAxis.get(i);
-                if (StringUtils.equalsIgnoreCase(item.getSort(), "custom_sort")) {
+            for (int i = 0; i < axisList.size(); i++) {
+                ChartViewFieldDTO item = axisList.get(i);
+                if (StringUtils.equalsIgnoreCase(item.getSort(), "custom_sort") && Objects.equals(item.getGroupType(), "d")) {
                     // 获取自定义值与data对应列的结果
                     if (i > 0) {
                         // 首先根据优先级高的字段分类，在每个前置字段相同的组里排序
@@ -24,10 +51,10 @@ public class ChartDataUtil {
                         for (String[] d : res) {
                             StringBuilder stringBuilder = new StringBuilder();
                             for (int j = 0; j < i; j++) {
-                                if (StringUtils.equalsIgnoreCase(xAxis.get(j).getSort(), "none")) {
+                                if (StringUtils.equalsIgnoreCase(axisList.get(j).getSort(), "none")) {
                                     continue;
                                 }
-                                stringBuilder.append(d[j]);
+                                stringBuilder.append(d[dataIndexMap.get(axisList.get(j).getId())]);
                             }
                             if (ObjectUtils.isEmpty(map.get(stringBuilder.toString()))) {
                                 map.put(stringBuilder.toString(), new ArrayList<>());
@@ -38,12 +65,16 @@ public class ChartDataUtil {
                         List<String[]> list = new ArrayList<>();
                         while (iterator.hasNext()) {
                             Map.Entry<String, List<String[]>> next = iterator.next();
-                            list.addAll(customSort(Optional.ofNullable(item.getCustomSort()).orElse(new ArrayList<>()), next.getValue(), i));
+                            if (next.getValue().size() == 1) {
+                                list.addAll(next.getValue());
+                            } else {
+                                list.addAll(customSort(Optional.ofNullable(item.getCustomSort()).orElse(new ArrayList<>()), next.getValue(), dataIndexMap.get(axisList.get(i).getId())));
+                            }
                         }
                         res.clear();
                         res.addAll(list);
                     } else {
-                        res = customSort(Optional.ofNullable(item.getCustomSort()).orElse(new ArrayList<>()), res, i);
+                        res = customSort(Optional.ofNullable(item.getCustomSort()).orElse(new ArrayList<>()), res, dataIndexMap.get(axisList.get(i).getId()));
                     }
                 }
             }
@@ -53,37 +84,40 @@ public class ChartDataUtil {
 
     public static List<String[]> customSort(List<String> custom, List<String[]> data, int index) {
         List<String[]> res = new ArrayList<>();
-
-        List<Integer> indexArr = new ArrayList<>();
-        List<String[]> joinArr = new ArrayList<>();
+        
+        // 数据行在自定义排序的范围内，记录该数据行的内容以及下标
+        List<Integer> indexInCustomSort = new ArrayList<>();
+        List<String[]> dataInCustomSort = new ArrayList<>();
         for (int i = 0; i < custom.size(); i++) {
             String ele = custom.get(i);
             for (int j = 0; j < data.size(); j++) {
                 String[] d = data.get(j);
                 if (StringUtils.equalsIgnoreCase(ele, d[index])) {
-                    joinArr.add(d);
-                    indexArr.add(j);
+                    dataInCustomSort.add(d);
+                    indexInCustomSort.add(j);
                 }
             }
         }
-        // 取得 joinArr 就是两者的交集
-        List<Integer> indexArrData = new ArrayList<>();
+        // 记录总数据的下标
+        List<Integer> dataIndexArr = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
-            indexArrData.add(i);
+            dataIndexArr.add(i);
         }
-        List<Integer> indexResult = new ArrayList<>();
-        for (int i = 0; i < indexArrData.size(); i++) {
-            if (!indexArr.contains(indexArrData.get(i))) {
-                indexResult.add(indexArrData.get(i));
+        // 记录不包含自定义排序行的下标
+        List<Integer> indexNotInCustomSort = new ArrayList<>();
+        for (int i = 0; i < dataIndexArr.size(); i++) {
+            if (!indexInCustomSort.contains(dataIndexArr.get(i))) {
+                indexNotInCustomSort.add(dataIndexArr.get(i));
             }
         }
 
-        List<String[]> subArr = new ArrayList<>();
-        for (int i = 0; i < indexResult.size(); i++) {
-            subArr.add(data.get(indexResult.get(i)));
+        List<String[]> dataNotInCustomSort = new ArrayList<>();
+        for (int i = 0; i < indexNotInCustomSort.size(); i++) {
+            dataNotInCustomSort.add(data.get(indexNotInCustomSort.get(i)));
         }
-        res.addAll(joinArr);
-        res.addAll(subArr);
+        // 自定义排序行放到前面，剩下的放到后面
+        res.addAll(dataInCustomSort);
+        res.addAll(dataNotInCustomSort);
         return res;
     }
 

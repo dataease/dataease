@@ -1671,6 +1671,7 @@ export const BASE_VIEW_CONFIG = {
   extLabel: [],
   extTooltip: [],
   customFilter: {},
+  sortPriority: [],
   customAttr: {
     basicStyle: DEFAULT_BASIC_STYLE,
     misc: DEFAULT_MISC,

@@ -1917,7 +1917,9 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
       'When Customizing, Supports SVG, JPG, JPEG, and PNG files up to 1MB',
     size_range: 'Size Range',
     x_axis_constant_line: 'X-axis Constant Line',
-    y_axis_constant_line: 'Y-axis Constant Line'
+    y_axis_constant_line: 'Y-axis Constant Line',
+    sort_priority: 'Sort Priority Setting',
+    sort_priority_tip: 'Top-down, sorting priority from highest to lowest'
   },
   dataset: {
     scope_edit: 'Only effective when editing',

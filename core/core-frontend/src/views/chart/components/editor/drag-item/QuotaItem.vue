@@ -9,6 +9,7 @@ import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import icon_functions_outlined from '@/assets/svg/icon_functions_outlined.svg'
 import icon_describe_outlined from '@/assets/svg/icon_describe_outlined.svg'
+import icon_sort_priority from '@/assets/svg/icon_sort_priority.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
@@ -73,7 +74,8 @@ const emit = defineEmits([
   'editItemFilter',
   'editItemCompare',
   'valueFormatter',
-  'onToggleHide'
+  'onToggleHide',
+  'editSortPriority'
 ])
 
 const { item, chart } = toRefs(props)
@@ -165,6 +167,9 @@ const clickItem = param => {
       break
     case 'toggleHide':
       toggleHide()
+      break
+    case 'sortPriority':
+      emit('editSortPriority')
       break
     default:
       break
@@ -298,6 +303,16 @@ const toggleHide = () => {
 const showHideIcon = computed(() => {
   return ['tale-info', 'table-normal'].includes(props.chart.type) && item.value.hide
 })
+
+const showSort = computed(() => {
+  return (
+    props.type !== 'extLabel' &&
+    props.type !== 'extTooltip' &&
+    props.type !== 'extBubble' &&
+    !['chart-mix', 'indicator', 'liquid', 'gauge'].includes(chart.value.type)
+  )
+})
+
 onMounted(() => {
   isEnableCompare()
   getItemTagType()
@@ -339,16 +354,18 @@ onMounted(() => {
         <el-tooltip :effect="toolTip" placement="top">
           <template #content>
             <table>
-              <tr>
-                <td>{{ t('dataset.field_origin_name') }}</td>
-                <td>:</td>
-                <td>{{ item.name }}</td>
-              </tr>
-              <tr>
-                <td>{{ t('chart.show_name') }}</td>
-                <td>:</td>
-                <td>{{ item.chartShowName ? item.chartShowName : item.name }}</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>{{ t('dataset.field_origin_name') }}</td>
+                  <td>:</td>
+                  <td>{{ item.name }}</td>
+                </tr>
+                <tr>
+                  <td>{{ t('chart.show_name') }}</td>
+                  <td>:</td>
+                  <td>{{ item.chartShowName ? item.chartShowName : item.name }}</td>
+                </tr>
+              </tbody>
             </table>
           </template>
           <span class="item-span-style">
@@ -658,16 +675,7 @@ onMounted(() => {
             </el-dropdown>
           </el-dropdown-item>
 
-          <el-dropdown-item
-            @click.prevent
-            v-if="
-              props.type !== 'extLabel' &&
-              props.type !== 'extTooltip' &&
-              props.type !== 'extBubble' &&
-              !['chart-mix', 'indicator', 'liquid', 'gauge'].includes(chart.type)
-            "
-            :divided="chart.type !== 'table-info'"
-          >
+          <el-dropdown-item @click.prevent v-if="showSort" :divided="chart.type !== 'table-info'">
             <el-dropdown
               :effect="themes"
               placement="right-start"
@@ -735,6 +743,15 @@ onMounted(() => {
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
+          </el-dropdown-item>
+
+          <el-dropdown-item
+            v-if="showSort"
+            class="menu-item-padding"
+            :icon="icon_sort_priority"
+            :command="beforeClickItem('sortPriority')"
+          >
+            <span>{{ t('chart.sort_priority') }}</span>
           </el-dropdown-item>
 
           <el-dropdown-item

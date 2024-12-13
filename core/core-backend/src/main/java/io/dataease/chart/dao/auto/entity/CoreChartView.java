@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-10-23
+ * @since 2024-12-12
  */
 @TableName("core_chart_view")
 public class CoreChartView implements Serializable {
@@ -102,19 +102,9 @@ public class CoreChartView implements Serializable {
     private String customAttr;
 
     /**
-     * 图形属性_移动端
-     */
-    private String customAttrMobile;
-
-    /**
      * 组件样式
      */
     private String customStyle;
-
-    /**
-     * 组件样式_移动端
-     */
-    private String customStyleMobile;
 
     /**
      * 结果过滤
@@ -230,6 +220,21 @@ public class CoreChartView implements Serializable {
      * 颜色维度field
      */
     private String extColor;
+
+    /**
+     * 图形属性_移动端
+     */
+    private String customAttrMobile;
+
+    /**
+     * 组件样式_移动端
+     */
+    private String customStyleMobile;
+
+    /**
+     * 字段排序优先级
+     */
+    private String sortPriority;
 
     public Long getId() {
         return id;
@@ -367,28 +372,12 @@ public class CoreChartView implements Serializable {
         this.customAttr = customAttr;
     }
 
-    public String getCustomAttrMobile() {
-        return customAttrMobile;
-    }
-
-    public void setCustomAttrMobile(String customAttrMobile) {
-        this.customAttrMobile = customAttrMobile;
-    }
-
     public String getCustomStyle() {
         return customStyle;
     }
 
     public void setCustomStyle(String customStyle) {
         this.customStyle = customStyle;
-    }
-
-    public String getCustomStyleMobile() {
-        return customStyleMobile;
-    }
-
-    public void setCustomStyleMobile(String customStyleMobile) {
-        this.customStyleMobile = customStyleMobile;
     }
 
     public String getCustomFilter() {
@@ -575,6 +564,30 @@ public class CoreChartView implements Serializable {
         this.extColor = extColor;
     }
 
+    public String getCustomAttrMobile() {
+        return customAttrMobile;
+    }
+
+    public void setCustomAttrMobile(String customAttrMobile) {
+        this.customAttrMobile = customAttrMobile;
+    }
+
+    public String getCustomStyleMobile() {
+        return customStyleMobile;
+    }
+
+    public void setCustomStyleMobile(String customStyleMobile) {
+        this.customStyleMobile = customStyleMobile;
+    }
+
+    public String getSortPriority() {
+        return sortPriority;
+    }
+
+    public void setSortPriority(String sortPriority) {
+        this.sortPriority = sortPriority;
+    }
+
     @Override
     public String toString() {
         return "CoreChartView{" +
@@ -595,9 +608,7 @@ public class CoreChartView implements Serializable {
         ", extLabel = " + extLabel +
         ", extTooltip = " + extTooltip +
         ", customAttr = " + customAttr +
-        ", customAttrMobile = " + customAttrMobile +
         ", customStyle = " + customStyle +
-        ", customStyleMobile = " + customStyleMobile +
         ", customFilter = " + customFilter +
         ", drillFields = " + drillFields +
         ", senior = " + senior +
@@ -621,6 +632,9 @@ public class CoreChartView implements Serializable {
         ", flowMapStartName = " + flowMapStartName +
         ", flowMapEndName = " + flowMapEndName +
         ", extColor = " + extColor +
+        ", customAttrMobile = " + customAttrMobile +
+        ", customStyleMobile = " + customStyleMobile +
+        ", sortPriority = " + sortPriority +
         "}";
     }
 }

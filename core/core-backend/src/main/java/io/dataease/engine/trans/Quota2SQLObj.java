@@ -85,6 +85,7 @@ public class Quota2SQLObj {
                             .orderField(originField)
                             .orderAlias(fieldAlias)
                             .orderDirection(y.getSort())
+                            .id(y.getId())
                             .build());
                 }
             }

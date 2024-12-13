@@ -1875,7 +1875,9 @@ export default {
     symbolic_map_symbol_shape_tip: '自定义时, 支持 1MB 以内的 SVG, JPG, JPEG, PNG 文件',
     size_range: '大小区间',
     x_axis_constant_line: 'X 轴恒线',
-    y_axis_constant_line: 'Y 轴恒线'
+    y_axis_constant_line: 'Y 轴恒线',
+    sort_priority: '排序优先级设置',
+    sort_priority_tip: '自上而下，排序优先级从高到低'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

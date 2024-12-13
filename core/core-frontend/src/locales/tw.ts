@@ -1873,7 +1873,9 @@ export default {
     symbolic_map_symbol_shape_tip: '自訂時, 支援 1MB 以內的 SVG, JPG, JPEG, PNG 檔案',
     size_range: '大小區間',
     x_axis_constant_line: 'X 軸恆線',
-    y_axis_constant_line: 'Y 軸恆線'
+    y_axis_constant_line: 'Y 軸恆線',
+    sort_priority: '排序優先級設置',
+    sort_priority_tip: '自上而下，排序優先級從高到低'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
