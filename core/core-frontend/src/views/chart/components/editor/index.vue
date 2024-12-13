@@ -2001,17 +2001,19 @@ const deleteChartFieldItem = id => {
               </div>
             </el-row>
 
-            <el-row style="height: calc(100vh - 110px); overflow-y: auto">
-              <div v-if="view.type === 'VQuery' && curComponent" class="query-style-tab">
-                <div style="padding-top: 1px">
-                  <VQueryChartStyle
-                    :element="curComponent"
-                    :common-background-pop="curComponent?.commonBackground"
-                    :chart="view"
-                    :themes="themes"
-                  />
+            <el-row style="height: calc(100vh - 110px)">
+              <el-scrollbar v-if="view.type === 'VQuery' && curComponent">
+                <div class="query-style-tab">
+                  <div style="padding-top: 1px">
+                    <VQueryChartStyle
+                      :element="curComponent"
+                      :common-background-pop="curComponent?.commonBackground"
+                      :chart="view"
+                      :themes="themes"
+                    />
+                  </div>
                 </div>
-              </div>
+              </el-scrollbar>
               <el-tabs
                 v-else
                 v-model="tabActive"

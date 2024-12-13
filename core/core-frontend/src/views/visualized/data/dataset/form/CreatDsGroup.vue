@@ -4,7 +4,6 @@ import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlin
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useEmitt } from '@/hooks/web/useEmitt'
 import {
   getDatasetTree,
   moveDatasetTree,

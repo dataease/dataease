@@ -1,12 +1,7 @@
 <script lang="ts" setup>
 import iconSetting from '@/assets/svg/icon-setting.svg'
-import TopDocCard from '@/layout/components/TopDocCard.vue'
 import copilot from '@/assets/svg/copilot.svg'
 import LangSelector from '@/layout/components/LangSelector.vue'
-import topEnterpriseTrial from '@/assets/svg/top-enterprise-trial.svg'
-import topHelpDoc from '@/assets/svg/top-help-doc.svg'
-import topProductBbs from '@/assets/svg/top-product-bbs.svg'
-import topTechnology from '@/assets/svg/top-technology.svg'
 import { useRouter } from 'vue-router'
 import TopDesktopCard from './TopDesktopCard.vue'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'

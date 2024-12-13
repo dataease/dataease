@@ -31,9 +31,6 @@ import router from '@/router'
 
 const { result_code } = config
 import { useCache } from '@/hooks/web/useCache'
-import { useI18n } from '@/hooks/web/useI18n'
-const { t } = useI18n()
-
 const { wsCache } = useCache()
 const requestStore = useRequestStoreWithOut()
 const embeddedStore = useEmbedded()

@@ -10,7 +10,6 @@ import { RefreshLeft } from '@element-plus/icons-vue'
 import {
   exportTasks,
   exportRetry,
-  downloadFile,
   exportDelete,
   exportDeleteAll,
   exportDeletePost
@@ -28,7 +27,6 @@ const drawerLoading = ref(false)
 const drawer = ref(false)
 const msgDialogVisible = ref(false)
 const msg = ref('')
-const exportDatasetLoading = ref(false)
 const activeName = ref('ALL')
 const multipleSelection = ref([])
 const description = ref(t('data_set.no_tasks_yet'))

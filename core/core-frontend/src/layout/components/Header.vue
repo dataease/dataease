@@ -102,15 +102,6 @@ const initAiBase = async () => {
   })
 }
 
-const initCopilotBase = async () => {
-  const aiCopilotCheck = wsCache.get('DE-COPILOT-TIPS-CHECK')
-  // if (aiCopilotCheck === 'CHECKED') {
-  //   showOverlayCopilot.value = false
-  // } else {
-  //   showOverlayCopilot.value = true
-  // }
-}
-
 const aiTipsConfirm = () => {
   wsCache.set('DE-AI-TIPS-CHECK', 'CHECKED')
   showOverlay.value = false
@@ -131,7 +122,6 @@ onMounted(() => {
   initShowToolbox()
   initShowMsg()
   initAiBase()
-  initCopilotBase()
 
   msgCountApi().then(res => {
     badgeCount.value = (res?.data > 99 ? '99+' : res?.data) || '0'
