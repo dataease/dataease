@@ -414,7 +414,13 @@ const addApiItem = item => {
     apiItem.serialNumber = serialNumber1 + serialNumber2
   }
   nextTick(() => {
-    editApiItem.value.initApiItem(apiItem, form.value, activeName.value, editItem)
+    editApiItem.value.initApiItem(
+      apiItem,
+      form.value,
+      activeName.value,
+      editItem,
+      isSurportSetKey.value
+    )
   })
 }
 

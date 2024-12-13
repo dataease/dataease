@@ -829,7 +829,7 @@ const handleCopy = async data => {
         datasource.apiConfiguration[i].deTableName = ''
       }
     }
-    datasourceEditor.value.init(datasource)
+    datasourceEditor.value.init(datasource, null, null, isSurportSetKey.value)
   })
 }
 
