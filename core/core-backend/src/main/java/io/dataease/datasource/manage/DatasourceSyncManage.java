@@ -17,21 +17,18 @@ import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.TableField;
-import io.dataease.extensions.datasource.factory.ProviderFactory;
-import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.job.schedule.ExtractDataJob;
 import io.dataease.job.schedule.ScheduleManager;
 import io.dataease.utils.BeanUtils;
-import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +50,7 @@ public class DatasourceSyncManage {
     @Resource
     private CalciteProvider calciteProvider;
 
+    @Async
     public void extractExcelData(CoreDatasource coreDatasource, String type) {
         if (coreDatasource == null) {
             LogUtil.error("Can not find CoreDatasource: " + coreDatasource.getName());
@@ -87,7 +85,7 @@ public class DatasourceSyncManage {
                 }
                 datasetTableTaskLog.setTaskStatus(TaskStatus.Error.toString());
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
-
+                DEException.throwException(e);
             } finally {
                 datasourceTaskServer.saveLog(datasetTableTaskLog);
             }

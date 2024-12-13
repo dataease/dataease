@@ -329,6 +329,9 @@ public class ExcelUtils {
             Double d = Double.valueOf(value);
             double eps = 1e-10;
             if (d - Math.floor(d) < eps) {
+                if(value.contains(".")){
+                    return "DOUBLE";
+                }
                 return "LONG";
             } else {
                 return "DOUBLE";

@@ -274,9 +274,7 @@ public class DatasourceServer implements DatasourceApi {
                     }
                 }
             }
-            commonThreadPool.addTask(() -> {
-                datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
-            });
+            datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
@@ -423,16 +421,12 @@ public class DatasourceServer implements DatasourceApi {
                         DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
                     }
                 }
-                commonThreadPool.addTask(() -> {
-                    datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
-                });
+                datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
                 dataSourceManage.checkName(dataSourceDTO);
                 ExcelUtils.mergeSheets(requestDatasource, sourceData);
                 dataSourceManage.innerEdit(requestDatasource);
             } else {
-                commonThreadPool.addTask(() -> {
-                    datasourceSyncManage.extractExcelData(requestDatasource, "add_scope");
-                });
+                datasourceSyncManage.extractExcelData(requestDatasource, "add_scope");
                 ExcelUtils.mergeSheets(requestDatasource, sourceData);
                 dataSourceManage.checkName(dataSourceDTO);
                 dataSourceManage.innerEdit(requestDatasource);
