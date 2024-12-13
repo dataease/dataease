@@ -256,7 +256,7 @@ const backHandler = (url: string) => {
 const openHandler = ref(null)
 
 const onDvNameChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onDvNameChange')
 }
 
 const getFullScale = () => {

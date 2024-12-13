@@ -561,7 +561,7 @@ const sizeChange = key => {
 }
 
 const changeStyle = params => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('changeStyle')
   emits('onStyleAttrChange', params)
 }
 

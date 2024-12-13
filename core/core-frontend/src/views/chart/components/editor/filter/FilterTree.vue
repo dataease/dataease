@@ -40,7 +40,7 @@ const changeFilter = val => {
   }
   dfsTreeDelete(items)
   emits('filter-data', { logic, items })
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('changeFilter')
   dialogVisible.value = false
 }
 

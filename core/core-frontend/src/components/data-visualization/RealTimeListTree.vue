@@ -246,7 +246,7 @@ const hideComponent = () => {
 const showComponent = () => {
   setTimeout(() => {
     layerStore.showComponent()
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('showComponent')
   })
 }
 
@@ -269,7 +269,7 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
   componentData.value.splice(comLength - 1 - oldIndex, 1)
   componentData.value.splice(comLength - 1 - newIndex, 0, target)
   dvMainStore.setCurComponent({ component: target, index: transformIndex(comLength - oldIndex) })
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('dragOnEnd')
 }
 const iconMap = {
   bar: bar,
@@ -391,7 +391,7 @@ const areaClick = area => {
 }
 
 const canvasChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('canvasChange')
 }
 </script>
 

@@ -108,7 +108,7 @@ const editComponentName = () => {
 }
 
 const onComponentNameChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onComponentNameChange')
 }
 </script>
 

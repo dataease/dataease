@@ -189,20 +189,20 @@ const onPositionChange = key => {
     groupSizeStyleAdaptor(curComponent.value)
   }
 
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onPositionChange')
 }
 
 const maintainRadioChange = () => {
   curComponent.value.aspectRatio = curComponent.value.style.width / curComponent.value.style.height
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('maintainRadioChange')
 }
 const multiDimensionalChange = () => {
   // do change
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('multiDimensionalChange')
 }
 
 const snapshotChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('snapshotChange')
 }
 
 const positionInit = () => {

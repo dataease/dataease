@@ -127,7 +127,7 @@ const calcEdit = ref()
 const route = useRoute()
 
 const onComponentNameChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onComponentNameChange')
 }
 
 const closeEditComponentName = () => {

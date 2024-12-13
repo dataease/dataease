@@ -465,7 +465,7 @@ const exportAsImage = () => {
 const deleteComponent = () => {
   eventBus.emit('removeMatrixItem-' + canvasId.value, index.value)
   dvMainStore.setCurComponent({ component: null, index: null })
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('deleteComponent')
 }
 
 const datasetParamsInit = () => {

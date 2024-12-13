@@ -106,7 +106,7 @@ const onChange = () => {
   } else {
     curActiveTabInner.value.streamMediaLinks = state.streamMediaInfoTemp
   }
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('stream-onChange')
   useEmitt().emitter.emit('streamMediaLinksChange-' + curComponent.value.id)
 }
 init()

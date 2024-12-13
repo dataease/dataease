@@ -93,7 +93,7 @@ const saveMultiplexing = () => {
   const canvasViewInfoPreview = previewStateInfo.canvasViewInfoPreview
   nextTick(() => {
     copyStore.copyMultiplexingComponents(canvasViewInfoPreview)
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('saveMultiplexing')
   })
 }
 

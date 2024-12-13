@@ -42,17 +42,17 @@ const handleRemove = (_, fileList) => {
   uploadDisabled.value = false
   curComponent.value.propValue.url = null
   fileList.value = []
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('handleRemove')
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('pic-upload')
     curComponent.value.propValue.url = fileUrl
   })
 }
 
 const onStyleChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('pic-onStyleChange')
 }
 
 const goFile = () => {
@@ -66,7 +66,7 @@ const reUpload = e => {
     return
   }
   uploadFileResult(file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('uploadFileResult')
     curComponent.value.propValue.url = fileUrl
     fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
   })

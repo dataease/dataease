@@ -163,7 +163,7 @@ const goFile = () => {
 }
 
 const onBackgroundChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onBackgroundChange')
   commonBackgroundPop.value.outerImage = state.commonBackground['outerImage']
 }
 onMounted(() => {
@@ -196,7 +196,7 @@ const handleCurrentPlaceholderCustomChange = () => {
       value: { type: 'renderChart', component: JSON.parse(JSON.stringify(chart.value)) }
     })
   } else {
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('handleCurrentPlaceholderCustomChange')
   }
 }
 

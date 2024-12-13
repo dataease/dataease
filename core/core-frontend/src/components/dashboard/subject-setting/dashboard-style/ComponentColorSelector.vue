@@ -237,7 +237,7 @@ const changeColorOption = (modifyName = 'value') => {
 }
 
 const changePagerColorChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('changePagerColorChange')
 }
 
 const changeColorCase = modifyName => {

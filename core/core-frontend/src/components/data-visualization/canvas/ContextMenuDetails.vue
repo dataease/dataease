@@ -45,7 +45,7 @@ const lock = () => {
       lockStore.lock(component)
     })
   }
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('lock')
   menuOpt('lock')
 }
 
@@ -94,7 +94,7 @@ const hide = () => {
       layerStore.hideComponentWithComponent(component.id)
     })
   }
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('hide')
   menuOpt('hide')
 }
 
@@ -106,12 +106,12 @@ const show = () => {
       layerStore.showComponent(component.id)
     })
   }
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('show')
   menuOpt('show')
 }
 const categoryChange = type => {
   if (curComponent.value) {
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('categoryChange')
     curComponent.value['category'] = type
     if (type === 'hidden') {
       dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'hidden' })
@@ -138,7 +138,7 @@ const deleteComponent = () => {
     })
   }
   eventBus.emit('hideArea-canvas-main')
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('deleteComponent')
   menuOpt('deleteComponent')
 }
 

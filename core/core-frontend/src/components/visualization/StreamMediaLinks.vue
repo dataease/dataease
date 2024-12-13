@@ -98,7 +98,7 @@ const onSubmit = () => {
   } else {
     curActiveTabInner.value.streamMediaLinks = state.streamMediaInfoTemp
   }
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onSubmit')
   eventBus.emit('streamMediaLinksChange-' + curComponent.value.id)
   popoverClose()
 }

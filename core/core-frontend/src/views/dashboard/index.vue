@@ -142,7 +142,7 @@ const doUseCache = flag => {
     snapshotStore.snapshotPublish(canvasCacheSeries)
     dataInitState.value = true
     setTimeout(() => {
-      snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache('doUseCache')
       // 使用缓存时，初始化的保存按钮为激活状态
       snapshotStore.recordSnapshotCache('renderChart')
     }, 1500)
@@ -162,7 +162,7 @@ const initLocalCanvasData = () => {
       dvInfo.value.optType = 'copy'
       dvInfo.value.pid = sourcePid
       setTimeout(() => {
-        snapshotStore.recordSnapshotCache()
+        snapshotStore.recordSnapshotCache('initLocalCanvasData')
       }, 1500)
     }
     onInitReady({ resourceId: resourceId })
@@ -236,7 +236,7 @@ onMounted(async () => {
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
         dvMainStore.setAppDataInfo(deTemplateData['appData'])
         setTimeout(() => {
-          snapshotStore.recordSnapshotCache()
+          snapshotStore.recordSnapshotCache('template')
         }, 1500)
         if (dvMainStore.getAppDataInfo()) {
           eventBus.emit('save')

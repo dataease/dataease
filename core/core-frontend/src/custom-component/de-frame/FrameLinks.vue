@@ -76,7 +76,7 @@ const init = () => {
 const onBlur = () => {
   state.linkInfoTemp.src = checkAddHttp(state.linkInfoTemp.src)
   curComponent.value.frameLinks.src = state.linkInfoTemp.src
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('frame-onBlur')
   useEmitt().emitter.emit('frameLinksChange-' + curComponent.value.id)
 }
 init()

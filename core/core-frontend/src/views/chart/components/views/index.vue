@@ -903,7 +903,7 @@ const vClickOutside = {
 }
 
 function onTitleChange() {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onTitleChange')
 }
 
 const toolTip = computed(() => {

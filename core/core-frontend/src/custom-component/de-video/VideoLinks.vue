@@ -93,13 +93,13 @@ const onChange = () => {
   }
 
   curComponent.value.videoLinks = state.linkInfoTemp
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('video-onChange')
   useEmitt().emitter.emit('videoLinksChange-' + curComponent.value.id)
 }
 const onBlur = () => {
   state.linkInfoTemp.src = checkAddHttp(state.linkInfoTemp.src)
   curComponent.value.frameLinks.src = state.linkInfoTemp.src
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('video-onBlur')
   useEmitt().emitter.emit('frameLinksChange-' + curComponent.value.id)
 }
 init()
