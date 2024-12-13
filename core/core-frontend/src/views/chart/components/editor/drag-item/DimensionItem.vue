@@ -470,9 +470,9 @@ onMounted(() => {
                     >
                       {{ t('chart.y_W') }}
                       <el-icon class="sub-menu-content--icon">
-                        <Icon name="icon_done_outlined" v-if="'y_W' === item.dateStyle"
-                          ><icon_done_outlined class="svg-icon"
-                        /></Icon>
+                        <Icon name="icon_done_outlined" v-if="'y_W' === item.dateStyle">
+                          <icon_done_outlined class="svg-icon" />
+                        </Icon>
                       </el-icon>
                     </span>
                   </el-dropdown-item>
@@ -483,28 +483,9 @@ onMounted(() => {
                     >
                       {{ t('chart.y_M_d') }}
                       <el-icon class="sub-menu-content--icon">
-                        <Icon name="icon_done_outlined" v-if="'y_M_d' === item.dateStyle"
-                          ><icon_done_outlined class="svg-icon"
-                        /></Icon>
-                      </el-icon>
-                    </span>
-                  </el-dropdown-item>
-                  <el-dropdown-item
-                    class="menu-item-padding"
-                    v-if="
-                      !(chart.type.includes('bar-range') && ['quota', 'quotaExt'].includes(type))
-                    "
-                    :command="beforeDateStyle('M_d')"
-                  >
-                    <span
-                      class="sub-menu-content"
-                      :class="'M_d' === item.dateStyle ? 'content-active' : ''"
-                    >
-                      {{ t('chart.M_d') }}
-                      <el-icon class="sub-menu-content--icon">
-                        <Icon name="icon_done_outlined" v-if="'M_d' === item.dateStyle"
-                          ><icon_done_outlined class="svg-icon"
-                        /></Icon>
+                        <Icon name="icon_done_outlined" v-if="'y_M_d' === item.dateStyle">
+                          <icon_done_outlined class="svg-icon" />
+                        </Icon>
                       </el-icon>
                     </span>
                   </el-dropdown-item>
