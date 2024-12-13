@@ -148,7 +148,7 @@ if (uid.value === '1') {
 
         <div class="uinfo-main-item de-container">
           <div class="about-parent" ref="divLanguageRef" v-click-outside="openLanguage">
-            <span>语言</span>
+            <span>{{ $t('commons.language') }}</span>
             <el-icon class="el-icon-animate">
               <ArrowRight />
             </el-icon>
