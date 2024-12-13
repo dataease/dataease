@@ -23,4 +23,6 @@ public class XpackOidcVO implements Serializable {
     private boolean usePkce;
 
     private String redirectUri;
+
+    private String mapping;
 }
