@@ -87,7 +87,7 @@ const handlePictureCardPreview = file => {
 }
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('deUpload')
     imgUrlInner.value = fileUrl
     emits('onImgChange', fileUrl)
   })
@@ -100,7 +100,7 @@ const reUpload = e => {
     return
   }
   uploadFileResult(file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('uploadFileResult')
     imgUrlInner.value = fileUrl
     emits('onImgChange', fileUrl)
   })

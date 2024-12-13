@@ -50,6 +50,7 @@ declare interface Chart {
   customStyleMobile: CustomStyle
   drillFields: ChartViewField[]
   drillFilters: Filter[]
+  sortPriority: ChartViewField[]
   datasetMode: 0 | 1
   datasourceType: string
   totalItems: number

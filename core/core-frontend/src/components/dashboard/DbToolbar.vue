@@ -456,7 +456,7 @@ const saveLinkageSetting = () => {
 }
 
 const onDvNameChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onDvNameChange')
 }
 const appStore = useAppStoreWithOut()
 const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)

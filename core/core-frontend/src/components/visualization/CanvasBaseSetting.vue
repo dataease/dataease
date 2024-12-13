@@ -107,7 +107,7 @@ const onFontFamilyChange = () => {
   snapshotStore.recordSnapshotCache('renderChart')
 }
 const onThemeChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onThemeChange')
 }
 
 withDefaults(

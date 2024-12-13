@@ -211,7 +211,7 @@ const commitStyle = () => {
     type: 'setCanvasStyle',
     value: JSON.parse(JSON.stringify(unref(canvasStyleDataCopy)))
   })
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('commitStyle')
 }
 
 onMounted(() => {

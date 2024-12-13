@@ -486,7 +486,7 @@ const saveLinkageSetting = () => {
   saveLinkage(request)
     .then(() => {
       curComponent.value.actionSelection.linkageActive = customLinkageActive.value.linkageActive
-      snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache('saveLinkageSetting')
       ElMessage.success('保存成功')
       // 刷新联动信息
       getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {

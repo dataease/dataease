@@ -205,12 +205,12 @@ const onBasicStyleChange = (val, prop) => {
 }
 
 const onBackgroundChange = (val, prop) => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onBackgroundChange')
   state.initReady && emit('onBackgroundChange', val, prop)
 }
 
 const onActiveChange = val => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onActiveChange')
   state.initReady &&
     emit('onStyleAttrChange', {
       custom: 'style',

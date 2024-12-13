@@ -59,7 +59,7 @@ const closeDialog = () => {
 }
 const save = () => {
   config.value.propValue = deepCopy(sortList.value)
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('tab-sort-save')
   eventBus.emit('onTabSortChange-' + config.value.id)
   closeDialog()
 }

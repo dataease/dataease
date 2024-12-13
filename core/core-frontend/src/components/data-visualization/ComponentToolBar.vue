@@ -19,7 +19,7 @@ const handleScaleChange = () => {
   if (scaleChangeReady.value) {
     scaleChangeReady.value = false
     setTimeout(() => {
-      snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache('handleScaleChange')
       // 画布比例设一个最小值，不能为 0
       scale.value = ~~scale.value || 10
       scale.value = scale.value < 10 ? 10 : scale.value

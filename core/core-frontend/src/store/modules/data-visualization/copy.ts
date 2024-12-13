@@ -134,7 +134,7 @@ export const copyStore = defineStore('copy', {
           i++
         }
       }, moveTime)
-      snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache('paste')
     },
     cut(curComponentData = componentData.value) {
       if (curComponent.value && curComponent.value.component !== 'GroupArea') {
@@ -155,7 +155,7 @@ export const copyStore = defineStore('copy', {
           components: []
         })
       }
-      snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache('cut')
       this.isCut = true
     },
 

@@ -6,6 +6,7 @@ const { t } = useI18n()
  * 指标卡图表
  */
 export class IndicatorChartView extends AbstractChartView {
+  selectorSpec: EditorSelectorSpec
   properties: EditorProperty[] = [
     'background-overall-component',
     'border-style',

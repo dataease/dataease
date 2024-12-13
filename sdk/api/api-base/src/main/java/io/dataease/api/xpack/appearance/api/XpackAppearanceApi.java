@@ -19,6 +19,6 @@ public interface XpackAppearanceApi {
     @GetMapping("/query")
     List<AppearanceItemVO> query();
 
-    @GetMapping(value = "/image/{imageId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "/image/{imageId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, "image/svg+xml"})
     ResponseEntity<byte[]> image(@PathVariable("imageId") String imageId);
 }

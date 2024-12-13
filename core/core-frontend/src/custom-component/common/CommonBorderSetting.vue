@@ -52,7 +52,7 @@ const styleInit = () => {
 const styleForm = computed<any>(() => styleInfo.value)
 
 const changeStyle = params => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('border-changeStyle')
   emits('onStyleAttrChange', params)
 }
 

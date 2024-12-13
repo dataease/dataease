@@ -59,12 +59,12 @@ const handleRemove = (file, fileListArray) => {
     element.value.propValue['urlList'].splice(index, 1)
     useEmitt().emitter.emit('calcData-' + element.value.id)
   }
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('picture-handleRemove')
 }
 async function upload(file) {
   if (element.value.propValue.urlList.length < 10) {
     uploadFileResult(file.file, fileUrl => {
-      snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache('pic-upload')
       element.value.propValue.urlList.unshift({ name: file.file.name, url: fileUrl })
       useEmitt().emitter.emit('calcData-' + element.value.id)
     })
@@ -72,7 +72,7 @@ async function upload(file) {
 }
 
 const onStyleChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('pic-onStyleChange')
 }
 
 const goFile = () => {

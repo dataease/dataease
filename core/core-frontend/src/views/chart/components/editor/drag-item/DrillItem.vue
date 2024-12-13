@@ -7,6 +7,7 @@ import icon_sort_outlined from '@/assets/svg/icon_sort_outlined.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_sort_priority from '@/assets/svg/icon_sort_priority.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { onMounted, ref, toRefs, watch } from 'vue'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
@@ -52,7 +53,8 @@ const emit = defineEmits([
   'onDimensionItemRemove',
   'onCustomSort',
   'onDimensionItemChange',
-  'onNameEdit'
+  'onNameEdit',
+  'editSortPriority'
 ])
 
 const { item } = toRefs(props)
@@ -75,6 +77,9 @@ const clickItem = param => {
       break
     case 'remove':
       removeItem()
+      break
+    case 'sortPriority':
+      emit('editSortPriority')
       break
     default:
       break
@@ -163,16 +168,18 @@ onMounted(() => {
         <el-tooltip :effect="themes === 'dark' ? 'ndark' : 'dark'" placement="top">
           <template #content>
             <table>
-              <tr>
-                <td>{{ t('dataset.field_origin_name') }}</td>
-                <td>:</td>
-                <td>{{ item.name }}</td>
-              </tr>
-              <tr>
-                <td>{{ t('chart.show_name') }}</td>
-                <td>:</td>
-                <td>{{ item.chartShowName ? item.chartShowName : item.name }}</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>{{ t('dataset.field_origin_name') }}</td>
+                  <td>:</td>
+                  <td>{{ item.name }}</td>
+                </tr>
+                <tr>
+                  <td>{{ t('chart.show_name') }}</td>
+                  <td>:</td>
+                  <td>{{ item.chartShowName ? item.chartShowName : item.name }}</td>
+                </tr>
+              </tbody>
             </table>
           </template>
           <span class="item-span-style">
@@ -278,6 +285,14 @@ onMounted(() => {
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item
+            v-if="index !== 0"
+            :icon="icon_sort_priority"
+            :command="beforeClickItem('sortPriority')"
+            class="menu-item-padding"
+          >
+            <span>{{ t('chart.sort_priority') }}</span>
           </el-dropdown-item>
           <el-dropdown-item class="menu-item-padding" :command="beforeClickItem('rename')">
             <el-icon>

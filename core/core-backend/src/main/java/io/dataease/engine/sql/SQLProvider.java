@@ -4,6 +4,8 @@ import io.dataease.engine.constant.SQLConstants;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.SortAxis;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.stringtemplate.v4.ST;
@@ -11,6 +13,7 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupString;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -116,6 +119,25 @@ public class SQLProvider {
         List<SQLObj> orders = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(xOrders)) orders.addAll(xOrders);
         if (ObjectUtils.isNotEmpty(yOrders)) orders.addAll(yOrders);
+        if (!orders.isEmpty() && CollectionUtils.isNotEmpty(view.getSortPriority())) {
+            var sortPriority = view.getSortPriority();
+            var tmp = new ArrayList<SQLObj>();
+            var ids = new HashSet<Long>();
+            for (SortAxis sortAxis : sortPriority) {
+                for (SQLObj order : orders) {
+                    if (sortAxis.getId().equals(order.getId())){
+                        tmp.add(order);
+                        ids.add(order.getId());
+                    }
+                }
+            }
+            for (SQLObj order : orders) {
+                if (!ids.contains(order.getId())) {
+                    tmp.add(order);
+                }
+            }
+            orders = tmp;
+        }
         // check datasource 是否需要排序
         if (needOrder && ObjectUtils.isEmpty(orders)) {
             if (ObjectUtils.isNotEmpty(xFields) || ObjectUtils.isNotEmpty(yFields)) {

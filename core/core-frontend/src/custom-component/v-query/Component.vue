@@ -202,7 +202,7 @@ const setCustomStyle = val => {
   customStyle.labelColorBtn = labelColorBtn || '#ffffff'
   customStyle.labelShow = labelShow ?? true
   customStyle.btnColor = btnColor || '#3370ff'
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('setCustomStyle')
 }
 
 watch(
@@ -436,7 +436,7 @@ const drop = e => {
     })
   })
   element.value.propValue = [...list.value]
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('drop')
 }
 
 const editeQueryConfig = (queryId: string) => {
@@ -458,7 +458,7 @@ const addCriteriaConfigOut = () => {
 const delQueryConfig = index => {
   list.value.splice(index, 1)
   element.value.propValue = [...list.value]
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('delQueryConfig')
 }
 
 const resetData = () => {

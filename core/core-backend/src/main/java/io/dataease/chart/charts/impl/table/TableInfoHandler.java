@@ -19,10 +19,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -129,7 +126,7 @@ public class TableInfoHandler extends DefaultChartHandler {
         logger.debug("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         //自定义排序
-        data = ChartDataUtil.resultCustomSort(xAxis, data);
+        data = ChartDataUtil.resultCustomSort(xAxis, Collections.emptyList(), view.getSortPriority(), data);
         //数据重组逻辑可重载
         var result = this.buildResult(view, formatResult, filterResult, data);
         T calcResult = (T) new ChartCalcDataResult();

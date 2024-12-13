@@ -113,7 +113,7 @@ const onLegendChange = (val, prop) => {
 
 const onBackgroundChange = val => {
   dvMainStore.setBatchChangeBackground(val)
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onBackgroundChange')
 }
 const onBasicStyleChange = (val, prop) => {
   //基础样式差异化处理

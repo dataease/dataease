@@ -1506,7 +1506,7 @@ const confirmClick = () => {
     queryElement.value.cascade = cloneDeep(cascadeArr)
     cascadeArr = []
     queryElement.value.propValue = cloneDeep(conditions.value)
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('confirmClick')
     nextTick(() => {
       emits('queryData')
     })

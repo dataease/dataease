@@ -33,4 +33,6 @@ public class SQLObj {
     private String whereTermAndValue;
 
     private String limitFiled;
+
+    private Long id;
 }

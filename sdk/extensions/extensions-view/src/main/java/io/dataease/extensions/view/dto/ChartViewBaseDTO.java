@@ -234,5 +234,9 @@ public class ChartViewBaseDTO implements Serializable {
     private List<CalParam> calParams;
 
     private List<ChartViewFieldDTO> extColor;
+    /**
+     * 字段排序优先级
+     */
+    List<SortAxis> sortPriority;
 
 }

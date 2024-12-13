@@ -76,6 +76,7 @@ public class Dimension2SQLObj {
                             .orderField(originField)
                             .orderAlias(fieldAlias)
                             .orderDirection(x.getSort())
+                            .id(x.getId())
                             .build());
                 }
             }

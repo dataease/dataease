@@ -159,7 +159,7 @@ const hideComponent = () => {
 const showComponent = () => {
   setTimeout(() => {
     layerStore.showComponent()
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('showComponent')
   })
 }
 

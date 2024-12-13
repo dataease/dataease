@@ -76,7 +76,7 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
   const source = componentData.value[newIndex]
   dvMainStore.setCurTabName(source.title)
   eventBus.emit('onTabSortChange-' + tabElement.value?.id)
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('dragOnEnd')
 }
 
 const menuAsideClose = (param, index) => {

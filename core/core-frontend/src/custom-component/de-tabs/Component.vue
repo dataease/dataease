@@ -266,7 +266,7 @@ const curPreviewGap = computed(() =>
 function sureCurTitle() {
   state.curItem.title = state.textarea
   state.dialogVisible = false
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('sureCurTitle')
 }
 
 function addTab() {
@@ -279,7 +279,7 @@ function addTab() {
   }
   element.value.propValue.push(newTab)
   editableTabsValue.value = newTab.name
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('addTab')
 }
 
 function deleteCur(param) {
@@ -321,11 +321,11 @@ function handleCommand(command) {
       break
     case 'deleteCur':
       deleteCur(command.param)
-      snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache('deleteCur')
       break
     case 'copyCur':
       copyCur(command.param)
-      snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache('copyCur')
       break
   }
 }

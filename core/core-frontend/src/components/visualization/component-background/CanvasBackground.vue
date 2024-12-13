@@ -210,7 +210,7 @@ const upload = file => {
 }
 
 const onBackgroundChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('onBackgroundChange')
 }
 
 const bgForm = ref()

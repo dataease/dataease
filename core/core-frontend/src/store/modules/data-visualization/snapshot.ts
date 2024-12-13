@@ -36,6 +36,7 @@ let defaultCanvasInfo = {
 export const snapshotStore = defineStore('snapshot', {
   state: () => {
     return {
+      snapshotDisableTime: 1, // 镜像禁用时间，解决redo undo 造成的样式变更
       styleChangeTimes: -1, // 组件样式修改次数
       cacheStyleChangeTimes: 0, // 仪表板未缓存的组件样式修改次数
       snapshotCacheTimes: 0, // 当前未计入镜像中的修改变动次数, 此为定时缓存，缓存间隔时间5秒一次 针对类型样式这种变动不大的修改
@@ -99,6 +100,7 @@ export const snapshotStore = defineStore('snapshot', {
         // undo 是当前没有记录
         this.snapshotPublish(componentSnapshot)
         this.styleChangeTimes++
+        this.snapshotDisableTime = Date.now() + 3000
       }
     },
 
@@ -109,7 +111,7 @@ export const snapshotStore = defineStore('snapshot', {
         snapshotInfo.dvInfo.id = dvInfo.value.id
         snapshotInfo.dvInfo.pid = dvInfo.value.pid
         this.snapshotPublish(snapshotInfo)
-        this.styleChangeTimes++
+        this.snapshotDisableTime = Date.now() + 3000
       }
     },
     snapshotPublish(snapshotInfo) {
@@ -180,9 +182,9 @@ export const snapshotStore = defineStore('snapshot', {
       this.recordSnapshot()
     },
 
-    recordSnapshot() {
+    recordSnapshot(type) {
       // 移动端设计时暂不保存镜像
-      if (dataPrepareState.value && !mobileInPc.value) {
+      if (dataPrepareState.value && !mobileInPc.value && Date.now() > this.snapshotDisableTime) {
         this.styleChangeTimes = ++this.styleChangeTimes
         const snapshotComponentData = deepCopy(componentData.value)
         dvMainStore.removeGroupArea(snapshotComponentData)
