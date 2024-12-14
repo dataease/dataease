@@ -95,7 +95,9 @@ public class TokenCacheUtils {
         if (useRedis()) {
             ValueOperations valueOperations = cacheHandler();
             Object obj = valueOperations.get(ONLINE_TOKEN_POOL_KEY + userId);
-            if (ObjectUtils.isNotEmpty(obj)) return (OnlineUserModel) obj;
+            if (ObjectUtils.isNotEmpty(obj)) {
+                return gson.fromJson(gson.toJson(obj), OnlineUserModel.class);
+            }
             return null;
         }
         Object o = CacheUtils.get(ONLINE_TOKEN_POOL_KEY, userId);
