@@ -107,7 +107,7 @@
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Integer</value-type>
         <expiry>
-            <ttl unit="hours">8</ttl>
+            <ttl unit="minutes">${dataease.login_timeout}</ttl>
         </expiry>
         <listeners>
             <listener>
