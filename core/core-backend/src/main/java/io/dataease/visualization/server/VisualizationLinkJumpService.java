@@ -15,6 +15,7 @@ import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.utils.ModelUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkJump;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkJumpInfo;
@@ -74,7 +75,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @Override
     public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId) {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
-        List<VisualizationLinkJumpDTO> resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId, AuthUtils.getUser().getUserId());
+        List<VisualizationLinkJumpDTO> resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
         Optional.ofNullable(resultLinkJumpList).orElse(new ArrayList<>()).forEach(resultLinkJump -> {
             if (resultLinkJump.getChecked()) {
                 Long sourceViewId = resultLinkJump.getSourceViewId();
@@ -99,7 +100,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Override
     public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId) {
-        return extVisualizationLinkJumpMapper.queryWithViewId(dvId, viewId, AuthUtils.getUser().getUserId());
+        return extVisualizationLinkJumpMapper.queryWithViewId(dvId, viewId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
     }
 
     @Transactional

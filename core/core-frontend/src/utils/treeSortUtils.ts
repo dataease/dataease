@@ -4,7 +4,6 @@ import _ from 'lodash'
 export function treeParentWeight(tree: BusiTreeNode[], pWeight) {
   const pWeightResult = {}
   weightCheckCircle(tree, pWeightResult, pWeight)
-  console.log('===test===' + JSON.stringify(pWeightResult))
   return pWeightResult
 }
 

@@ -85,14 +85,17 @@
 
 
     <delete id="deleteViewLinkageField">
-      DELETE pvl
-        FROM
-            visualization_linkage pvl,
-            visualization_linkage_field pvlf
-        WHERE
-            pvl.id = pvlf.linkage_id
-            AND pvl.source_view_id = #{sourceViewId}
-            AND pvl.dv_id = #{dvId}
+        DELETE FROM visualization_linkage
+        WHERE id IN (
+            SELECT id FROM (
+                SELECT pvl.id
+                FROM visualization_linkage pvl
+                JOIN visualization_linkage_field pvlf
+                    ON pvl.id = pvlf.linkage_id
+                WHERE pvl.source_view_id = #{sourceViewId}
+                  AND pvl.dv_id = #{dvId}
+            ) AS temp_table
+        )
     </delete>
 
     <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
