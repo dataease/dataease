@@ -4213,7 +4213,7 @@ DROP TABLE IF EXISTS `core_opt_recent`;
 CREATE TABLE `core_opt_recent`
 (
     `id`            bigint NOT NULL COMMENT 'ID',
-    `resource_id`   bigint NOT NULL COMMENT '资源ID',
+    `resource_id`   bigint DEFAULT NULL COMMENT '资源ID',
     `uid`           bigint NOT NULL COMMENT '用户ID',
     `resource_type` int    NOT NULL COMMENT '资源类型',
     `opt_type`      int DEFAULT NULL COMMENT '1 新建 2 修改',

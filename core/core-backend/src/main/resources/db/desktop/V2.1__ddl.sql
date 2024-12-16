@@ -70,6 +70,10 @@ VALUES (30, 0, 1, 'toolbox', null, 7, 'icon_template', '/toolbox', 1, 1, 0);
 INSERT INTO `core_menu`
 VALUES (31, 30, 2, 'template-setting', 'toolbox/template-setting', 1, 'icon_template', '/template-setting', 0, 1, 1);
 
+
+ALTER TABLE `core_opt_recent`
+    MODIFY COLUMN `resource_id` bigint NULL COMMENT '资源ID';
+
 ALTER TABLE core_opt_recent
     ADD `resource_name` varchar(255) NULL COMMENT '资源名称';
 
