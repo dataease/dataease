@@ -561,6 +561,8 @@ export default {
     embedded_secret_len_change:
       'The key length has changed. The key will be reset soon. Are you sure?',
     embedded_management: 'Embedded management',
+    embedded_del_confirm: 'Are you sure you want to delete {0} applications?',
+    embedded_search_placeholder: 'Search by application name, APP ID, and cross-domain settings.',
     to_5_applications: 'You can create up to 5 applications',
     update_app_secret: 'Are you sure you want to update the APP Secret?',
     operate_with_caution:

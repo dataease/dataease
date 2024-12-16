@@ -545,6 +545,8 @@ export default {
     cross_domain_settings: '跨域設定',
     embedded_secret_len_change: '金鑰長度變化，金鑰即將重置，是否確認',
     embedded_management: '嵌入式管理',
+    embedded_del_confirm: '確定刪除 {0} 個應用嗎？',
+    embedded_search_placeholder: '通過應用名稱、APP ID、跨域設置搜索',
     to_5_applications: '最多支援創建5個應用程式',
     update_app_secret: '確定更新APP Secret嗎？ ',
     operate_with_caution: '重置後現有的APP Secret將會失效，請謹慎操作。 ',

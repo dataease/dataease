@@ -548,6 +548,8 @@ export default {
     cross_domain_settings: '跨域设置',
     embedded_secret_len_change: '密钥长度变化，密钥即将重置，是否确认',
     embedded_management: '嵌入式管理',
+    embedded_del_confirm: '确定删除 {0} 个应用吗？',
+    embedded_search_placeholder: '通过应用名称、APP ID、跨域设置搜索',
     to_5_applications: '最多支持创建 {0} 个应用',
     update_app_secret: '确定更新APP Secret吗？',
     operate_with_caution: '重置后现有的APP Secret将会失效，请谨慎操作。',

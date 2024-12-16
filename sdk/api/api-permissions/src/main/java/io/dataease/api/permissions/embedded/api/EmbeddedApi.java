@@ -1,5 +1,6 @@
 package io.dataease.api.permissions.embedded.api;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.embedded.dto.EmbeddedCreator;
@@ -8,6 +9,7 @@ import io.dataease.api.permissions.embedded.dto.EmbeddedOrigin;
 import io.dataease.api.permissions.embedded.dto.EmbeddedResetRequest;
 import io.dataease.api.permissions.embedded.vo.EmbeddedGridVO;
 import io.dataease.license.config.XpackResource;
+import io.dataease.model.KeywordRequest;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,8 +30,8 @@ public interface EmbeddedApi {
 
     @Operation(summary = "查询")
     @ApiOperationSupport(order = 1)
-    @GetMapping("/queryGrid")
-    List<EmbeddedGridVO> queryGrid();
+    @PostMapping("/pager/{goPage}/{pageSize}")
+    IPage<EmbeddedGridVO> queryGrid(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody KeywordRequest request);
 
     @Operation(summary = "创建")
     @ApiOperationSupport(order = 2)
@@ -46,6 +48,11 @@ public interface EmbeddedApi {
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
+
+    @Operation(summary = "批量删除")
+    @ApiOperationSupport(order = 4)
+    @PostMapping("/batchDelete")
+    void batchDelete(@RequestBody List<Long> ids);
 
     @ApiOperationSupport(order = 5)
     @Operation(summary = "重置密钥")
