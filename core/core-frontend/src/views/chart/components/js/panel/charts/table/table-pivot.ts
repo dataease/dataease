@@ -560,7 +560,7 @@ function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, custom
   }
 }
 
-function getCustomCalcResult(query, axisMap, chart: ChartObj, status: TotalStatus, customCalc) {
+function getTreeCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
   const quotaField = query[EXTRA_FIELD]
   const { row, col } = axisMap
   // 行列交叉总计
@@ -570,26 +570,18 @@ function getCustomCalcResult(query, axisMap, chart: ChartObj, status: TotalStatu
   // 列总计
   if (status.isColTotal && !status.isRowSubTotal) {
     const { colTotal, rowSubInColTotal } = customCalc
-    const { tableLayoutMode } = chart.customAttr.basicStyle
     const path = getTreePath(query, row)
     let val
     if (path.length) {
-      if (tableLayoutMode === 'grid' && colTotal) {
+      const subLevel = getSubLevel(query, row)
+      if (subLevel + 1 === row.length && colTotal) {
         path.push(quotaField)
         val = get(colTotal.data, path)
       }
-      // 树形模式的行小计放在列总计里面
-      if (tableLayoutMode === 'tree') {
-        const subLevel = getSubLevel(query, row)
-        if (subLevel + 1 === row.length && colTotal) {
-          path.push(quotaField)
-          val = get(colTotal.data, path)
-        }
-        if (subLevel + 1 < row.length && rowSubInColTotal) {
-          const data = rowSubInColTotal?.[subLevel]?.data
-          path.push(quotaField)
-          val = get(data, path)
-        }
+      if (subLevel + 1 < row.length && rowSubInColTotal) {
+        const data = rowSubInColTotal?.[subLevel]?.data
+        path.push(quotaField)
+        val = get(data, path)
       }
     }
     return val
@@ -614,13 +606,133 @@ function getCustomCalcResult(query, axisMap, chart: ChartObj, status: TotalStatu
     const { rowTotal } = customCalc
     const path = getTreePath(query, col)
     let val
-    if (path.length && rowTotal) {
-      path.push(quotaField)
-      val = get(rowTotal.data, path)
+    if (rowTotal) {
+      if (path.length) {
+        path.push(quotaField)
+        val = get(rowTotal.data, path)
+      }
+      // 列维度为空，行维度不为空
+      if (!col.length && row.length) {
+        val = get(rowTotal.data, quotaField)
+      }
     }
-    // 列维度为空，行维度不为空
-    if (!col.length && row.length) {
-      val = get(rowTotal.data, quotaField)
+    return val
+  }
+  // 行小计
+  if (status.isRowSubTotal) {
+    // 列维度为空，行小计直接当成列总计
+    if (
+      (!status.isColTotal && !status.isColSubTotal) ||
+      (!col.length && status.isColTotal && status.isRowSubTotal)
+    ) {
+      const { rowSubTotal } = customCalc
+      const rowLevel = getSubLevel(query, row)
+      const colPath = getTreePath(query, col)
+      const rowPath = getTreePath(query, row)
+      const path = [...colPath, ...rowPath]
+      const data = rowSubTotal?.[rowLevel]?.data
+      let val
+      if (path.length && rowSubTotal) {
+        path.push(quotaField)
+        val = get(data, path)
+      }
+      return val
+    }
+  }
+  // 行总计里面的列小计
+  if (status.isRowTotal && status.isColSubTotal) {
+    const { colSubInRowTotal } = customCalc
+    const colLevel = getSubLevel(query, col)
+    const { data } = colSubInRowTotal?.[colLevel]
+    const colPath = getTreePath(query, col)
+    let val
+    if (colPath.length && colSubInRowTotal) {
+      colPath.push(quotaField)
+      val = get(data, colPath)
+    }
+    return val
+  }
+  // 列总计里面的行小计
+  if (status.isColTotal && status.isRowSubTotal) {
+    const { rowSubInColTotal } = customCalc
+    const rowSubLevel = getSubLevel(query, row)
+    const data = rowSubInColTotal?.[rowSubLevel]?.data
+    const path = getTreePath(query, row)
+    let val
+    if (path.length && rowSubInColTotal) {
+      path.push(quotaField)
+      val = get(data, path)
+    }
+    return val
+  }
+  // 列小计里面的行小计
+  if (status.isColSubTotal && status.isRowSubTotal) {
+    const { rowSubInColSub } = customCalc
+    const rowSubLevel = getSubLevel(query, row)
+    const colSubLevel = getSubLevel(query, col)
+    const data = rowSubInColSub?.[rowSubLevel]?.[colSubLevel]?.data
+    const rowPath = getTreePath(query, row)
+    const colPath = getTreePath(query, col)
+    const path = [...rowPath, ...colPath]
+    let val
+    if (path.length && rowSubInColSub) {
+      path.push(quotaField)
+      val = get(data, path)
+    }
+    return val
+  }
+  return NaN
+}
+
+function getGridCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
+  const quotaField = query[EXTRA_FIELD]
+  const { row, col } = axisMap
+  // 行列交叉总计
+  if (status.isRowTotal && status.isColTotal) {
+    return customCalc.rowColTotal?.data?.[quotaField]
+  }
+  // 列总计
+  if (status.isColTotal && !status.isRowSubTotal) {
+    const { colTotal } = customCalc
+    const path = getTreePath(query, row)
+    let val
+    if (path.length) {
+      if (colTotal) {
+        path.push(quotaField)
+        val = get(colTotal.data, path)
+      }
+    }
+    return val
+  }
+  // 列小计
+  if (status.isColSubTotal && !status.isRowTotal && !status.isRowSubTotal) {
+    const { colSubTotal } = customCalc
+    const subLevel = getSubLevel(query, col)
+    const rowPath = getTreePath(query, row)
+    const colPath = getTreePath(query, col)
+    const path = [...rowPath, ...colPath]
+    const data = colSubTotal?.[subLevel]?.data
+    let val
+    if (path.length && data) {
+      path.push(quotaField)
+      val = get(data, path)
+    }
+    return val
+  }
+  // 行总计
+  if (status.isRowTotal && !status.isColSubTotal) {
+    const { rowTotal } = customCalc
+    const path = getTreePath(query, col)
+    let val
+    if (rowTotal) {
+      if (path.length) {
+        path.push(quotaField)
+        val = get(rowTotal.data, path)
+      }
+      // 列维度为空，行维度不为空
+      if (!col.length && row.length) {
+        val = get(rowTotal.data, quotaField)
+      }
     }
     return val
   }
@@ -681,6 +793,13 @@ function getCustomCalcResult(query, axisMap, chart: ChartObj, status: TotalStatu
     }
     return val
   }
+}
+function getCustomCalcResult(query, axisMap, chart: ChartObj, status: TotalStatus, customCalc) {
+  const { tableLayoutMode } = chart.customAttr.basicStyle
+  if (tableLayoutMode === 'tree') {
+    return getTreeCustomCalcResult(query, axisMap, status, customCalc)
+  }
+  return getGridCustomCalcResult(query, axisMap, status, customCalc)
 }
 
 function getSubLevel(query, axis) {
