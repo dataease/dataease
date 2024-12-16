@@ -388,8 +388,20 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       tableBorderColor = hexColorToRGBA(tableBorderColor, basicStyle.alpha)
     }
     const tableHeaderFontColor = hexColorToRGBA(tableHeader.tableHeaderFontColor, basicStyle.alpha)
+    const tableHeaderColFontColor = hexColorToRGBA(
+      tableHeader.tableHeaderColFontColor,
+      basicStyle.alpha
+    )
+    const tableHeaderCornerFontColor = hexColorToRGBA(
+      tableHeader.tableHeaderCornerFontColor,
+      basicStyle.alpha
+    )
     const fontStyle = tableHeader.isItalic ? 'italic' : 'normal'
+    const colFontStyle = tableHeader.isColItalic ? 'italic' : 'normal'
+    const cornerFontStyle = tableHeader.isCornerItalic ? 'italic' : 'normal'
     const fontWeight = tableHeader.isBolder === false ? 'normal' : 'bold'
+    const colFontWeight = tableHeader.isColBolder === false ? 'normal' : 'bold'
+    const cornerFontWeight = tableHeader.isCornerBolder === false ? 'normal' : 'bold'
     const pivotTheme = {
       rowCell: {
         cell: {
@@ -398,38 +410,59 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           verticalBorderColor: tableBorderColor
         },
         text: {
-          fill: tableHeaderFontColor,
-          fontSize: tableHeader.tableTitleFontSize,
-          textAlign: tableHeader.tableHeaderAlign,
+          fill: tableHeaderColFontColor,
+          fontSize: tableHeader.tableTitleColFontSize,
+          textAlign: tableHeader.tableHeaderColAlign,
           textBaseline: 'top',
-          fontStyle,
-          fontWeight
+          fontStyle: colFontStyle,
+          fontWeight: colFontWeight
         },
         bolderText: {
-          fill: tableHeaderFontColor,
-          fontSize: tableHeader.tableTitleFontSize,
-          textAlign: tableHeader.tableHeaderAlign,
-          fontStyle,
-          fontWeight
+          fill: tableHeaderColFontColor,
+          fontSize: tableHeader.tableTitleColFontSize,
+          textAlign: tableHeader.tableHeaderColAlign,
+          fontStyle: colFontStyle,
+          fontWeight: colFontWeight
         },
         measureText: {
-          fill: tableHeaderFontColor,
-          fontSize: tableHeader.tableTitleFontSize,
-          textAlign: tableHeader.tableHeaderAlign,
-          fontStyle,
-          fontWeight
+          fill: tableHeaderColFontColor,
+          fontSize: tableHeader.tableTitleColFontSize,
+          textAlign: tableHeader.tableHeaderColAlign,
+          fontStyle: colFontStyle,
+          fontWeight: colFontWeight
         },
         seriesText: {
-          fill: tableHeaderFontColor,
-          fontSize: tableHeader.tableTitleFontSize,
-          textAlign: tableHeader.tableHeaderAlign,
-          fontStyle,
-          fontWeight
+          fill: tableHeaderColFontColor,
+          fontSize: tableHeader.tableTitleColFontSize,
+          textAlign: tableHeader.tableHeaderColAlign,
+          fontStyle: colFontStyle,
+          fontWeight: colFontWeight
         }
       },
       cornerCell: {
         cell: {
           backgroundColor: tableHeaderCornerBgColor
+        },
+        text: {
+          fill: tableHeaderCornerFontColor,
+          fontSize: tableHeader.tableTitleCornerFontSize,
+          textAlign: tableHeader.tableHeaderCornerAlign,
+          fontStyle: cornerFontStyle,
+          fontWeight: cornerFontWeight
+        },
+        bolderText: {
+          fill: tableHeaderCornerFontColor,
+          fontSize: tableHeader.tableTitleCornerFontSize,
+          textAlign: tableHeader.tableHeaderCornerAlign,
+          fontStyle: cornerFontStyle,
+          fontWeight: cornerFontWeight
+        },
+        measureText: {
+          fill: tableHeaderCornerFontColor,
+          fontSize: tableHeader.tableTitleCornerFontSize,
+          textAlign: tableHeader.tableHeaderCornerAlign,
+          fontStyle: cornerFontStyle,
+          fontWeight: cornerFontWeight
         }
       }
     }

@@ -44,7 +44,9 @@ export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
     tableHeaderBgColor: '#1E90FF',
     tableHeaderCornerBgColor: '#1E90FF',
     tableHeaderColBgColor: '#1E90FF',
-    tableHeaderFontColor: '#000000'
+    tableHeaderFontColor: '#000000',
+    tableHeaderCornerFontColor: '#000000',
+    tableHeaderColFontColor: '#000000'
   },
   tableCell: {
     tableItemBgColor: '#FFFFFF',
@@ -94,7 +96,9 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     tableHeaderBgColor: '#1E90FF',
     tableHeaderCornerBgColor: '#1E90FF',
     tableHeaderColBgColor: '#1E90FF',
-    tableHeaderFontColor: '#000000'
+    tableHeaderFontColor: '#000000',
+    tableHeaderCornerFontColor: '#000000',
+    tableHeaderColFontColor: '#000000'
   },
   tableCell: {
     tableItemBgColor: '#FFFFFF',
@@ -143,7 +147,9 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     tableHeaderBgColor: '#1E90FF',
     tableHeaderCornerBgColor: '#1E90FF',
     tableHeaderColBgColor: '#1E90FF',
-    tableHeaderFontColor: '#FFFFFF'
+    tableHeaderFontColor: '#FFFFFF',
+    tableHeaderCornerFontColor: '#FFFFFF',
+    tableHeaderColFontColor: '#FFFFFF'
   },
   tableCell: {
     tableItemBgColor: '#131E42',
@@ -418,11 +424,17 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   indexLabel: t('relation.index'),
   showIndex: false,
   tableHeaderAlign: 'left',
+  tableHeaderCornerAlign: 'left',
+  tableHeaderColAlign: 'left',
   tableHeaderBgColor: '#1E90FF',
   tableHeaderCornerBgColor: '#1E90FF',
   tableHeaderColBgColor: '#1E90FF',
   tableHeaderFontColor: '#000000',
+  tableHeaderCornerFontColor: '#000000',
+  tableHeaderColFontColor: '#000000',
   tableTitleFontSize: 12,
+  tableTitleCornerFontSize: 12,
+  tableTitleColFontSize: 12,
   tableTitleHeight: 36,
   tableHeaderSort: false,
   showColTooltip: false,
@@ -431,7 +443,11 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   showHorizonBorder: true,
   showVerticalBorder: true,
   isItalic: false,
-  isBolder: true
+  isCornerItalic: false,
+  isColItalic: false,
+  isBolder: true,
+  isCornerBolder: true,
+  isColBolder: true
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',

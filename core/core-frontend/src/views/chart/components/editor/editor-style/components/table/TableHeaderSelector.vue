@@ -7,7 +7,7 @@ import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outl
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
-import { ElSpace } from 'element-plus-secondary'
+import { ElDivider, ElSpace } from 'element-plus-secondary'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { convertToAlphaColor, isAlphaColor } from '@/views/chart/components/js/util'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -94,67 +94,24 @@ onMounted(() => {
     ref="tableHeaderForm"
     label-position="top"
   >
-    <el-row :gutter="8">
-      <el-col :span="12">
-        <el-form-item
-          :label="
-            chart.type === 'table-pivot'
-              ? t('chart.rowBackgroundColor')
-              : t('chart.backgroundColor')
-          "
-          class="form-item"
-          :class="'form-item-' + themes"
-          v-if="showProperty('tableHeaderBgColor')"
-        >
-          <el-color-picker
-            :effect="themes"
-            v-model="state.tableHeaderForm.tableHeaderBgColor"
-            is-custom
-            :trigger-width="108"
-            :predefine="predefineColors"
-            show-alpha
-            @change="changeTableHeader('tableHeaderBgColor')"
-          />
-        </el-form-item>
-      </el-col>
-
-      <template v-if="chart.type === 'table-pivot' && showProperty('tableHeaderBgColor')">
-        <el-col :span="12">
-          <el-form-item
-            :label="t('chart.colBackgroundColor')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-color-picker
-              :effect="themes"
-              v-model="state.tableHeaderForm.tableHeaderColBgColor"
-              is-custom
-              :trigger-width="108"
-              :predefine="predefineColors"
-              show-alpha
-              @change="changeTableHeader('tableHeaderColBgColor')"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item
-            :label="t('chart.cornerBackgroundColor')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-color-picker
-              :effect="themes"
-              v-model="state.tableHeaderForm.tableHeaderCornerBgColor"
-              is-custom
-              :trigger-width="108"
-              :predefine="predefineColors"
-              show-alpha
-              @change="changeTableHeader('tableHeaderCornerBgColor')"
-            />
-          </el-form-item>
-        </el-col>
-      </template>
-    </el-row>
+    <el-form-item
+      :label="
+        chart.type === 'table-pivot' ? t('chart.rowBackgroundColor') : t('chart.backgroundColor')
+      "
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableHeaderBgColor')"
+    >
+      <el-color-picker
+        :effect="themes"
+        v-model="state.tableHeaderForm.tableHeaderBgColor"
+        is-custom
+        :trigger-width="108"
+        :predefine="predefineColors"
+        show-alpha
+        @change="changeTableHeader('tableHeaderBgColor')"
+      />
+    </el-form-item>
 
     <el-space>
       <el-form-item
@@ -313,6 +270,359 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
     </el-space>
+
+    <template v-if="chart.type === 'table-pivot' && showProperty('tableHeaderBgColor')">
+      <el-divider class="m-divider" :class="{ 'divider-dark': themes === 'dark' }" />
+      <el-form-item
+        :label="t('chart.colBackgroundColor')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-color-picker
+          :effect="themes"
+          v-model="state.tableHeaderForm.tableHeaderColBgColor"
+          is-custom
+          :trigger-width="108"
+          :predefine="predefineColors"
+          show-alpha
+          @change="changeTableHeader('tableHeaderColBgColor')"
+        />
+      </el-form-item>
+      <el-space>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('tableHeaderFontColor')"
+          :label="t('chart.text')"
+        >
+          <el-color-picker
+            :effect="themes"
+            v-model="state.tableHeaderForm.tableHeaderColFontColor"
+            is-custom
+            :predefine="predefineColors"
+            @change="changeTableHeader('tableHeaderColFontColor')"
+          />
+        </el-form-item>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('tableTitleFontSize')"
+        >
+          <template #label>&nbsp;</template>
+          <el-select
+            style="width: 58px"
+            :effect="themes"
+            v-model="state.tableHeaderForm.tableTitleColFontSize"
+            @change="changeTableHeader('tableTitleColFontSize')"
+          >
+            <el-option
+              v-for="option in fontSizeList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-space>
+      <el-space :class="{ 'mobile-style': mobileInPc }">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            :effect="themes"
+            class="icon-checkbox"
+            v-model="state.tableHeaderForm.isColBolder"
+            @change="changeTableHeader('isColBolder')"
+          >
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.bolder') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: state.tableHeaderForm.isColBolder }"
+              >
+                <el-icon>
+                  <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-checkbox>
+        </el-form-item>
+
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            :effect="themes"
+            class="icon-checkbox"
+            v-model="state.tableHeaderForm.isColItalic"
+            @change="changeTableHeader('isColItalic')"
+          >
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.italic') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: state.tableHeaderForm.isColItalic }"
+              >
+                <el-icon>
+                  <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-checkbox>
+        </el-form-item>
+
+        <div class="position-divider" :class="'position-divider--' + themes"></div>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('tableHeaderAlign')"
+        >
+          <el-radio-group
+            class="icon-radio-group"
+            v-model="state.tableHeaderForm.tableHeaderColAlign"
+            @change="changeTableHeader('tableHeaderColAlign')"
+          >
+            <el-radio label="left">
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_left') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: state.tableHeaderForm.tableHeaderColAlign === 'left'
+                  }"
+                >
+                  <el-icon>
+                    <Icon name="icon_left-alignment_outlined"
+                      ><icon_leftAlignment_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-radio>
+            <el-radio label="center">
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_center') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: state.tableHeaderForm.tableHeaderColAlign === 'center'
+                  }"
+                >
+                  <el-icon>
+                    <Icon name="icon_center-alignment_outlined"
+                      ><icon_centerAlignment_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-radio>
+            <el-radio label="right">
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_right') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: state.tableHeaderForm.tableHeaderColAlign === 'right'
+                  }"
+                >
+                  <el-icon>
+                    <Icon name="icon_right-alignment_outlined"
+                      ><icon_rightAlignment_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-space>
+
+      <el-divider class="m-divider" :class="{ 'divider-dark': themes === 'dark' }" />
+      <el-form-item
+        :label="t('chart.cornerBackgroundColor')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-color-picker
+          :effect="themes"
+          v-model="state.tableHeaderForm.tableHeaderCornerBgColor"
+          is-custom
+          :trigger-width="108"
+          :predefine="predefineColors"
+          show-alpha
+          @change="changeTableHeader('tableHeaderCornerBgColor')"
+        />
+      </el-form-item>
+      <el-space>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('tableHeaderFontColor')"
+          :label="t('chart.text')"
+        >
+          <el-color-picker
+            :effect="themes"
+            v-model="state.tableHeaderForm.tableHeaderCornerFontColor"
+            is-custom
+            :predefine="predefineColors"
+            @change="changeTableHeader('tableHeaderCornerFontColor')"
+          />
+        </el-form-item>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('tableTitleFontSize')"
+        >
+          <template #label>&nbsp;</template>
+          <el-select
+            style="width: 58px"
+            :effect="themes"
+            v-model="state.tableHeaderForm.tableTitleCornerFontSize"
+            @change="changeTableHeader('tableTitleCornerFontSize')"
+          >
+            <el-option
+              v-for="option in fontSizeList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-space>
+      <el-space :class="{ 'mobile-style': mobileInPc }">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            :effect="themes"
+            class="icon-checkbox"
+            v-model="state.tableHeaderForm.isCornerBolder"
+            @change="changeTableHeader('isCornerBolder')"
+          >
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.bolder') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: state.tableHeaderForm.isCornerBolder }"
+              >
+                <el-icon>
+                  <Icon name="icon_bold_outlined"><icon_bold_outlined class="svg-icon" /></Icon>
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-checkbox>
+        </el-form-item>
+
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            :effect="themes"
+            class="icon-checkbox"
+            v-model="state.tableHeaderForm.isCornerItalic"
+            @change="changeTableHeader('isCornerItalic')"
+          >
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.italic') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: state.tableHeaderForm.isCornerItalic }"
+              >
+                <el-icon>
+                  <Icon name="icon_italic_outlined"><icon_italic_outlined class="svg-icon" /></Icon>
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-checkbox>
+        </el-form-item>
+
+        <div class="position-divider" :class="'position-divider--' + themes"></div>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('tableHeaderAlign')"
+        >
+          <el-radio-group
+            class="icon-radio-group"
+            v-model="state.tableHeaderForm.tableHeaderCornerAlign"
+            @change="changeTableHeader('tableHeaderCornerAlign')"
+          >
+            <el-radio label="left">
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_left') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: state.tableHeaderForm.tableHeaderCornerAlign === 'left'
+                  }"
+                >
+                  <el-icon>
+                    <Icon name="icon_left-alignment_outlined"
+                      ><icon_leftAlignment_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-radio>
+            <el-radio label="center">
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_center') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: state.tableHeaderForm.tableHeaderCornerAlign === 'center'
+                  }"
+                >
+                  <el-icon>
+                    <Icon name="icon_center-alignment_outlined"
+                      ><icon_centerAlignment_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-radio>
+            <el-radio label="right">
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_right') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: state.tableHeaderForm.tableHeaderCornerAlign === 'right'
+                  }"
+                >
+                  <el-icon>
+                    <Icon name="icon_right-alignment_outlined"
+                      ><icon_rightAlignment_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-space>
+
+      <el-divider class="m-divider" :class="{ 'divider-dark': themes === 'dark' }" />
+    </template>
+
     <el-row :gutter="8">
       <el-col :span="12">
         <el-form-item
@@ -469,5 +779,13 @@ onMounted(() => {
 }
 .mobile-style {
   margin-top: 25px;
+}
+.m-divider {
+  margin: 0 0 16px;
+  border-color: rgba(31, 35, 41, 0.15);
+
+  &.divider-dark {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
 }
 </style>
