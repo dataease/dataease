@@ -19,31 +19,33 @@ public class PgConfiguration extends JdbcConfiguration {
 
 
     public String getJdbc() {
+        String jdbcUrl = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
             if (StringUtils.isEmpty(getSchema())) {
-                return "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
+                jdbcUrl = "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
                         .replace("HOSTNAME", getHost().trim())
                         .replace("PORT", getPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim());
             } else {
-                return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?currentSchema=SCHEMA"
+                jdbcUrl = "jdbc:postgresql://HOSTNAME:PORT/DATABASE?currentSchema=SCHEMA"
                         .replace("HOSTNAME", getHost().trim())
                         .replace("PORT", getPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim())
                         .replace("SCHEMA", getSchema().trim());
             }
         } else {
-            for (String illegalParameter : illegalParameters) {
-                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
-                    throw new RuntimeException("Illegal parameter: " + illegalParameter);
-                }
-            }
-            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+            jdbcUrl = "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
-
         }
+
+        for (String illegalParameter : illegalParameters) {
+            if (jdbcUrl.toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(jdbcUrl).contains(illegalParameter.toLowerCase())) {
+                throw new RuntimeException("Illegal parameter: " + illegalParameter);
+            }
+        }
+        return jdbcUrl;
     }
 }

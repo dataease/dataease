@@ -19,20 +19,21 @@ public class MysqlConfiguration extends JdbcConfiguration {
     private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations", "allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath");
 
     public String getJdbc() {
+        String jdbcUrl = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
-            return "jdbc:mysql://HOSTNAME:PORT/DATABASE".replace("HOSTNAME", getHost().trim()).replace("PORT", getPort().toString().trim()).replace("DATABASE", getDataBase().trim());
+            jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE".replace("HOSTNAME", getHost().trim()).replace("PORT", getPort().toString().trim()).replace("DATABASE", getDataBase().trim());
         } else {
-            for (String illegalParameter : getIllegalParameters()) {
-                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
-                    throw new RuntimeException("Illegal parameter: " + illegalParameter);
-                }
-            }
-
-            return "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS".replace("HOSTNAME", getHost().trim()).replace("PORT", getPort().toString().trim()).replace("DATABASE", getDataBase().trim()).replace("EXTRA_PARAMS", getExtraParams().trim());
+            jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS".replace("HOSTNAME", getHost().trim()).replace("PORT", getPort().toString().trim()).replace("DATABASE", getDataBase().trim()).replace("EXTRA_PARAMS", getExtraParams().trim());
         }
+        for (String illegalParameter : getIllegalParameters()) {
+            if (jdbcUrl.toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(jdbcUrl).contains(illegalParameter.toLowerCase())) {
+                throw new RuntimeException("Illegal parameter: " + illegalParameter);
+            }
+        }
+        return jdbcUrl;
     }
 
-    public List<String> getIllegalParameters(){
+    public List<String> getIllegalParameters() {
         List<String> newIllegalParameters = new ArrayList<>();
         newIllegalParameters.addAll(illegalParameters);
         newIllegalParameters.addAll(Arrays.asList("allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath"));
