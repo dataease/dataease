@@ -1,7 +1,6 @@
 package io.dataease.listener;
 
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -12,7 +11,7 @@ import java.util.Objects;
 
 public class EhCacheStartListener implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     @Override
-    public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
+    public void initialize(ConfigurableApplicationContext applicationContext) {
         Resource resource = new ClassPathResource("application.yml");
         YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
         factory.setResources(resource);
