@@ -223,7 +223,12 @@ const timeFunLists = [
             </el-col>
 
             <el-col :span="1">
-              <el-button text :disabled="isDisable()" @click="remove(index)">
+              <el-button
+                class="api-variable_del"
+                text
+                :disabled="isDisable()"
+                @click="remove(index)"
+              >
                 <template #icon>
                   <Icon name="icon_delete-trash_outlined"
                     ><icon_deleteTrash_outlined class="svg-icon"
@@ -246,6 +251,22 @@ const timeFunLists = [
 </template>
 
 <style lang="less">
+.api-variable_del {
+  .ed-icon {
+    color: #646a73;
+    font-size: 16px;
+  }
+
+  &:hover {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:focus {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:active {
+    background: rgba(31, 35, 41, 0.2) !important;
+  }
+}
 .api-key-value {
   & > .ed-input,
   .ed-autocomplete {
