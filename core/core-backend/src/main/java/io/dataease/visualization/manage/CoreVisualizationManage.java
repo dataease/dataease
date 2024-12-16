@@ -199,15 +199,12 @@ public class CoreVisualizationManage {
             }
             queryWrapper.eq("dvResource.type", request.getType());
         }
-        if (StringUtils.isNotBlank(request.getKeyword())) {
-            queryWrapper.like("dvResource.name", request.getKeyword());
-        }
         String info = CommunityUtils.getInfo();
         if (StringUtils.isNotBlank(info)) {
             queryWrapper.notExists(String.format(info, "core_opt_recent.resource_id"));
         }
         queryWrapper.orderBy(true, request.isAsc(), "core_opt_recent.time");
         Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
-        return extDataVisualizationMapper.findRecent(page, uid, queryWrapper);
+        return extDataVisualizationMapper.findRecent(page, uid, request.getKeyword(), queryWrapper);
     }
 }

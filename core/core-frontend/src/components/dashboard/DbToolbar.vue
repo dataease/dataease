@@ -81,6 +81,7 @@ const outerParamsSetRef = ref(null)
 const { wsCache } = useCache('localStorage')
 const userStore = useUserStoreWithOut()
 const isIframe = computed(() => appStore.getIsIframe)
+const desktop = wsCache.get('app.desktop')
 
 const props = defineProps({
   createType: {
@@ -619,18 +620,20 @@ const initOpenHandler = newWindow => {
             />
           </el-tooltip>
           <div class="divider"></div>
-          <el-tooltip
-            :offset="14"
-            effect="dark"
-            :content="t('components.to_mobile_layout')"
-            placement="bottom"
-          >
-            <component-button
-              :tips="t('components.to_mobile_layout')"
-              @custom-click="openMobileSetting"
-              :icon-name="icon_phone_outlined"
-            />
-          </el-tooltip>
+          <template v-if="!desktop">
+            <el-tooltip
+              :offset="14"
+              effect="dark"
+              :content="t('components.to_mobile_layout')"
+              placement="bottom"
+            >
+              <component-button
+                :tips="t('components.to_mobile_layout')"
+                @custom-click="openMobileSetting"
+                :icon-name="icon_phone_outlined"
+              />
+            </el-tooltip>
+          </template>
         </template>
 
         <el-dropdown v-if="editMode === 'edit'" trigger="hover">

@@ -233,7 +233,11 @@
                  LEFT JOIN core_store ON dvResource.id = core_store.resource_id
             AND core_store.uid = #{uid}
                  INNER JOIN core_opt_recent ON dvResource.resource_id = core_opt_recent.resource_id
-            AND core_opt_recent.uid = #{uid} ${ew.customSqlSegment}
+            AND core_opt_recent.uid = #{uid}
+             <if test="keyword">
+                AND LOWER(dvResource.name) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
+             </if>
+             ${ew.customSqlSegment}
     </select>
 
     <insert id="copyLinkJump">

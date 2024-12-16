@@ -37,7 +37,7 @@ public interface ExtDataVisualizationMapper {
 
     DataVisualizationVO findDvInfo(@Param("dvId") Long dvId,@Param("dvType") String dvType);
 
-    IPage<VisualizationResourcePO> findRecent(IPage<VisualizationResourcePO> page, @Param("uid") Long uid, @Param("ew") QueryWrapper<Object> ew);
+    IPage<VisualizationResourcePO> findRecent(IPage<VisualizationResourcePO> page, @Param("uid") Long uid, @Param("keyword") String keyword, @Param("ew") QueryWrapper<Object> ew);
 
     void copyLinkJump(@Param("copyId") Long copyId);
 
