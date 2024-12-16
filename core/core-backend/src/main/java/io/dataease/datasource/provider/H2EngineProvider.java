@@ -25,7 +25,7 @@ public class H2EngineProvider extends EngineProvider {
     }
 
     @Override
-    public String insertSql(String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber,List<TableField> tableFields) {
+    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber,List<TableField> tableFields) {
         String engineTableName;
         switch (extractType) {
             case all_scope:

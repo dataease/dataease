@@ -31,7 +31,7 @@ public class MysqlEngineProvider extends EngineProvider {
     }
 
     @Override
-    public String insertSql(String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields) {
+    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields) {
         String engineTableName;
         switch (extractType) {
             case all_scope:
@@ -62,17 +62,20 @@ public class MysqlEngineProvider extends EngineProvider {
             values.append("('").append(String.join("','", Arrays.asList(strings1)))
                     .append("'),");
         }
-        List<TableField> keys = tableFields.stream().filter(tableField -> tableField.isPrimaryKey() && tableField.isChecked()).toList();
-        List<TableField> notKeys = tableFields.stream().filter(tableField -> tableField.isChecked() && !tableField.isPrimaryKey()).toList();
         String insetSql = (insertSql + values.substring(0, values.length() - 1)).replaceAll("'null'", "null");
-        if (CollectionUtils.isNotEmpty(keys) && extractType.equals(DatasourceServer.UpdateType.add_scope)) {
-            insetSql = insetSql + " ON DUPLICATE KEY UPDATE ";
-            List<String> updateColumes = new ArrayList<>();
-            for (TableField notKey : notKeys) {
-                updateColumes.add("column = VALUES(column)".replace("column", notKey.getName()));
+        if (dsType.equalsIgnoreCase("api")) {
+            List<TableField> keys = tableFields.stream().filter(tableField -> tableField.isPrimaryKey() && tableField.isChecked()).toList();
+            List<TableField> notKeys = tableFields.stream().filter(tableField -> tableField.isChecked() && !tableField.isPrimaryKey()).toList();
+            if (CollectionUtils.isNotEmpty(keys) && extractType.equals(DatasourceServer.UpdateType.add_scope)) {
+                insetSql = insetSql + " ON DUPLICATE KEY UPDATE ";
+                List<String> updateColumes = new ArrayList<>();
+                for (TableField notKey : notKeys) {
+                    updateColumes.add("column = VALUES(column)".replace("column", notKey.getName()));
+                }
+                insetSql = insetSql + updateColumes.stream().collect(Collectors.joining(","));
             }
-            insetSql = insetSql + updateColumes.stream().collect(Collectors.joining(","));
         }
+
         return insetSql;
     }
 

@@ -22,7 +22,7 @@ public abstract class EngineProvider {
 
     public abstract String createTableSql(String name, List<TableField> tableFields, CoreDeEngine engine);
 
-    public abstract String insertSql(String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields);
+    public abstract String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields);
 
 
 }
