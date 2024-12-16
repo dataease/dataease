@@ -38,7 +38,7 @@ const openBlank = () => {
 .doc-card {
   padding: 8px 0;
   width: 96px;
-  height: 66px;
+  min-height: 66px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -56,6 +56,9 @@ const openBlank = () => {
   line-height: 22px;
   font-weight: 400;
   margin-top: 4px;
+  width: 96px;
+  word-break: break-word;
+  text-align: center;
 }
 
 .item-top-icon {

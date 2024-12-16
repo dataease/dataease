@@ -50,7 +50,7 @@ export default HeaderMenuItem
     margin-top: -2px;
   }
   .popper-class-menu {
-    width: 152px;
+    min-width: 152px;
     border-radius: 4px;
     border: 1px solid #dee0e3 !important;
 
