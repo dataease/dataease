@@ -116,30 +116,14 @@
           id="template-show-area"
           class="template-right"
         >
-          <el-row v-show="state.marketActiveTab !== t('work_branch.recommend')">
-            <category-template-v2
-              :search-text="state.searchText"
-              :label="state.marketActiveTab"
-              :full-template-show-list="state.currentMarketTemplateShowList"
-              :template-span="state.templateSpan"
-              :base-url="state.baseUrl"
-              :template-cur-width="state.templateCurWidth"
-              :cur-position="state.curPosition"
-              :create-auth="createAuth"
-              @templateApply="templateApply"
-              @templatePreview="templatePreview"
-            />
-          </el-row>
-          <el-row v-show="state.marketActiveTab === t('work_branch.recommend')">
-            <el-row
-              style="display: inline; width: 100%; margin-bottom: 16px"
-              v-for="(categoryItem, index) in categoriesComputed"
-              :key="index"
-            >
+          <el-row v-if="state.marketActiveTab === null"
+            ><TemplateSkeleton :width="state.templateCurWidth"
+          /></el-row>
+          <template v-else>
+            <el-row v-show="state.marketActiveTab !== t('work_branch.recommend')">
               <category-template-v2
-                v-if="categoryItem.label !== t('work_branch.recent')"
                 :search-text="state.searchText"
-                :label="categoryItem.label"
+                :label="state.marketActiveTab"
                 :full-template-show-list="state.currentMarketTemplateShowList"
                 :template-span="state.templateSpan"
                 :base-url="state.baseUrl"
@@ -150,7 +134,28 @@
                 @templatePreview="templatePreview"
               />
             </el-row>
-          </el-row>
+            <el-row v-show="state.marketActiveTab === t('work_branch.recommend')">
+              <el-row
+                style="display: inline; width: 100%; margin-bottom: 16px"
+                v-for="(categoryItem, index) in categoriesComputed"
+                :key="index"
+              >
+                <category-template-v2
+                  v-if="categoryItem.label !== t('work_branch.recent')"
+                  :search-text="state.searchText"
+                  :label="categoryItem.label"
+                  :full-template-show-list="state.currentMarketTemplateShowList"
+                  :template-span="state.templateSpan"
+                  :base-url="state.baseUrl"
+                  :template-cur-width="state.templateCurWidth"
+                  :cur-position="state.curPosition"
+                  :create-auth="createAuth"
+                  @templateApply="templateApply"
+                  @templatePreview="templatePreview"
+                />
+              </el-row>
+            </el-row>
+          </template>
         </div>
         <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
           <div style="text-align: center">
@@ -183,6 +188,7 @@ import { useCache } from '@/hooks/web/useCache'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
+import TemplateSkeleton from '@/views/template-market/component/TemplateSkeleton.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
