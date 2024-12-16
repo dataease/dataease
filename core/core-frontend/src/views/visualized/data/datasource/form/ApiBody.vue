@@ -191,7 +191,7 @@ const emits = defineEmits(['headersChange'])
 </script>
 
 <template>
-  <div>
+  <div class="radio-group_api">
     <el-radio-group v-model="apiBody.type">
       <el-radio :disabled="isReadOnly" :label="BODY_TYPE.FORM_DATA" @change="modeChange">
         {{ t('datasource.body_form_data') }}
@@ -264,6 +264,12 @@ const emits = defineEmits(['headersChange'])
 </template>
 
 <style lang="less" scoped>
+.radio-group_api {
+  :deep(.ed-radio) {
+    height: 22px !important;
+    line-height: 22px !important;
+  }
+}
 .ms-body {
   padding: 15px 0;
 }
