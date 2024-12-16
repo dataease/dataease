@@ -1919,7 +1919,13 @@ export default {
       'When Customizing, Supports SVG, JPG, JPEG, and PNG files up to 1MB',
     size_range: 'Size Range',
     x_axis_constant_line: 'X-axis Constant Line',
-    y_axis_constant_line: 'Y-axis Constant Line'
+    y_axis_constant_line: 'Y-axis Constant Line',
+    chart_circle_packing: 'Circle Packing Chart',
+    circle_packing_name: 'Circle Name',
+    circle_packing_value: 'Circle Size',
+    circle_packing_border_color: 'Border color',
+    circle_packing_border_width: 'Border width',
+    circle_packing_padding: 'Circle padding'
   },
   dataset: {
     scope_edit: 'Only effective when editing',

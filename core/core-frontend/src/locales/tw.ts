@@ -1877,7 +1877,13 @@ export default {
     x_axis_constant_line: 'X 軸恆線',
     y_axis_constant_line: 'Y 軸恆線',
     sort_priority: '排序優先級設置',
-    sort_priority_tip: '自上而下，排序優先級從高到低'
+    sort_priority_tip: '自上而下，排序優先級從高到低',
+    chart_circle_packing: '圓形填充圖',
+    circle_packing_name: '圓形名稱',
+    circle_packing_value: '圓形大小',
+    circle_packing_border_color: '邊線顏色',
+    circle_packing_border_width: '邊線寬度',
+    circle_packing_padding: 'Circle padding'
   },
   dataset: {
     scope_edit: '僅編輯時生效',

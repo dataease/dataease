@@ -185,7 +185,6 @@ export function getLabel(chart: Chart) {
             layout.push({ type: 'hide-overlap' })
           } else {
             layout.push({ type: 'limit-in-plot' })
-            layout.push({ type: 'fixed-overlap' })
             layout.push({ type: 'hide-overlap' })
           }
         }

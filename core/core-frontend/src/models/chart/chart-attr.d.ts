@@ -350,6 +350,18 @@ declare interface ChartBasicStyle {
    * 雷达图面积颜色开关
    */
   radarAreaColor: boolean
+  /**
+   * 圆形填充图边线颜色
+   */
+  circleBorderColor: string
+  /**
+   * 圆形填充图边线宽度
+   */
+  circleBorderWidth: number
+  /**
+   * 圆形填充图间距
+   */
+  circlePadding: number
 }
 /**
  * 表头属性

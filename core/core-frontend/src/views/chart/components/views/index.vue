@@ -352,6 +352,13 @@ const chartClick = param => {
     ElMessage.error(t('chart.drill_field_error'))
     return
   }
+  if (
+    view.value.type === 'circle-packing' &&
+    (param.data?.childNodeCount === 0 || param.data.name === t('commons.all'))
+  ) {
+    ElMessage.error(t('chart.last_layer'))
+    return
+  }
   if (state.drillClickDimensionList.length < props.view.drillFields.length - 1) {
     state.drillClickDimensionList.push({
       dimensionList: param.data.dimensionList,

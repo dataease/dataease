@@ -1520,6 +1520,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'sankey',
         title: t('chart.chart_sankey'),
         icon: 'sankey'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'circle-packing',
+        title: t('chart.chart_circle_packing'),
+        icon: 'circle-packing'
       }
     ]
   },

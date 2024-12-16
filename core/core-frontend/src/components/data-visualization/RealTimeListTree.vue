@@ -80,6 +80,7 @@ import RealTimeGroup from '@/components/data-visualization/RealTimeGroup.vue'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -329,7 +330,8 @@ const iconMap = {
   'word-cloud-origin': wordCloudOrigin,
   't-heatmap-origin': tHeatmapOrigin,
   'picture-group-origin': pictureGroupOrigin,
-  group: group
+  group: group,
+  'circle-packing-origin': circlePackingOrigin
 }
 const getIconName = item => {
   if (item.component === 'UserView') {

@@ -1919,7 +1919,13 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     x_axis_constant_line: 'X-axis Constant Line',
     y_axis_constant_line: 'Y-axis Constant Line',
     sort_priority: 'Sort Priority Setting',
-    sort_priority_tip: 'Top-down, sorting priority from highest to lowest'
+    sort_priority_tip: 'Top-down, sorting priority from highest to lowest',
+    chart_circle_packing: 'Circle packing chart',
+    circle_packing_name: 'Circle name',
+    circle_packing_value: 'Circle size',
+    circle_packing_border_color: 'Border color',
+    circle_packing_border_width: 'Border width',
+    circle_packing_padding: 'Circle padding'
   },
   dataset: {
     scope_edit: 'Only effective when editing',

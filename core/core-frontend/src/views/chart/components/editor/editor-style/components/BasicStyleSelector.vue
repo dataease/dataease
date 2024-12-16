@@ -13,7 +13,7 @@ import { SERIES_NUMBER_FIELD } from '@antv/s2'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { isNumber } from 'mathjs'
-import { ElMessage, UploadProps } from 'element-plus-secondary'
+import { ElFormItem, ElInputNumber, ElMessage, UploadProps } from 'element-plus-secondary'
 import { svgStrToUrl } from '../../../js/util'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -1389,6 +1389,69 @@ onMounted(() => {
       </el-row>
     </div>
     <!-- pie/rose end -->
+    <!-- circle-packing start -->
+    <div v-if="showProperty('circleBorderStyle')">
+      <div class="alpha-setting">
+        <el-row style="display: flex; width: 100%">
+          <el-col :span="10">
+            <el-form-item
+              :label="t('chart.circle_packing_border_color')"
+              class="form-item"
+              :class="'form-item-' + themes"
+            >
+              <el-color-picker
+                v-model="state.basicStyleForm.circleBorderColor"
+                class="color-picker-style"
+                :triggerWidth="65"
+                is-custom
+                show-alpha
+                :predefine="state.predefineColors"
+                @change="changeBasicStyle('circleBorderColor')"
+              >
+              </el-color-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="14">
+            <el-form-item
+              :label="t('chart.circle_packing_border_width')"
+              class="form-item"
+              :class="'form-item-' + themes"
+            >
+              <el-input-number
+                :min="0"
+                :max="50"
+                :effect="themes"
+                controls-position="right"
+                v-model="state.basicStyleForm.circleBorderWidth"
+                class="color-picker-style"
+                @change="changeBasicStyle('circleBorderWidth')"
+              >
+              </el-input-number>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <el-row>
+        <el-form-item
+          style="width: 150px"
+          :label="t('chart.circle_packing_padding')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-input-number
+            :min="0"
+            :max="10"
+            :effect="themes"
+            controls-position="right"
+            v-model="state.basicStyleForm.circlePadding"
+            class="color-picker-style"
+            @change="changeBasicStyle('circlePadding')"
+          >
+          </el-input-number>
+        </el-form-item>
+      </el-row>
+    </div>
+    <!-- circle-packing end -->
   </div>
 </template>
 <style scoped lang="less">

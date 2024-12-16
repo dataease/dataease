@@ -1879,7 +1879,13 @@ export default {
     x_axis_constant_line: 'X 轴恒线',
     y_axis_constant_line: 'Y 轴恒线',
     sort_priority: '排序优先级设置',
-    sort_priority_tip: '自上而下，排序优先级从高到低'
+    sort_priority_tip: '自上而下，排序优先级从高到低',
+    chart_circle_packing: '圆形填充图',
+    circle_packing_name: '圆形名称',
+    circle_packing_value: '圆形大小',
+    circle_packing_border_color: '边线颜色',
+    circle_packing_border_width: '边线宽度',
+    circle_packing_padding: '圓形間距'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
