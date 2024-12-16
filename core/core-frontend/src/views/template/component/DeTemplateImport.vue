@@ -11,7 +11,7 @@
         <div class="flex-template">
           <el-input
             v-model="state.templateInfo.name"
-            :placeholder="t('common.inputText') + t('template_manage.template_name')"
+            :placeholder="t('template_manage.enter_template_name_hint')"
             clearable
           />
           <el-button style="margin-left: 10px" icon="Upload" secondary @click="goFile">

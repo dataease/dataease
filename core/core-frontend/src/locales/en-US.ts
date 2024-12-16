@@ -3377,6 +3377,7 @@ export default {
     edit_template: 'Edit template',
     import_template: 'Import template',
     template_name: 'Template name',
+    enter_template_name_hint: ' Please enter template name',
     keywords: 'Search keywords',
     catalog_name: 'Category name',
     search_result: 'Search results',
@@ -3939,7 +3940,7 @@ export default {
       'After data filling is enabled, the form data can be stored in the Datasource. Once enabled, it is not allowed to be closed later. ',
     new_folder: 'New folder',
     form_manage: 'Form management',
-    my_job: 'My report',
+    my_job: 'My reports',
     disable_data_fill_hint:
       'After closing data filling, the form data will fail to submit. Are you sure you want to close it? ',
     enable_data_fill_hint:

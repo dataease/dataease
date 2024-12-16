@@ -3301,6 +3301,7 @@ export default {
     edit_template: '编辑模板',
     import_template: '导入模板',
     template_name: '模板名称',
+    enter_template_name_hint: '请输入模板名称',
     keywords: '搜索关键字',
     catalog_name: '分类名称',
     search_result: '的搜索结果',

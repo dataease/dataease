@@ -3298,6 +3298,7 @@ export default {
     edit_template: '編輯模板',
     import_template: '導入模板',
     template_name: '模板名稱',
+    enter_template_name_hint: '請輸入模板名稱',
     keywords: '搜尋關鍵字',
     catalog_name: '分類名稱',
     search_result: '的搜尋結果',
