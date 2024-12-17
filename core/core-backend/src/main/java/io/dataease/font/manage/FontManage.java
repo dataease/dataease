@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.io.ResourceLoader;
 
+import java.awt.*;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -181,9 +182,10 @@ public class FontManage {
                 unit = "KB";
                 size = Double.valueOf(String.format("%.2f", (double) length / 1024));
             }
+            Font font = Font.createFont(Font.TRUETYPE_FONT, new File(filePath));
             fontDto.setSize(size);
             fontDto.setSizeType(unit);
-
+            fontDto.setName(font.getFontName());
         } catch (Exception e) {
             DEException.throwException(e);
         }

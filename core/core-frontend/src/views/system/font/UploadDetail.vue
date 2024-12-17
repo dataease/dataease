@@ -20,6 +20,7 @@ const uploadExcel = () => {
   loading.value = true
   return uploadFontFile(formData)
     .then(res => {
+      ruleForm.name = res.data.name
       ruleForm.size = res.data.size
       ruleForm.sizeType = res.data.sizeType
       ruleForm.fileTransName = res.data.fileTransName
