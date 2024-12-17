@@ -1885,7 +1885,7 @@ export default {
     circle_packing_value: '圆形大小',
     circle_packing_border_color: '边线颜色',
     circle_packing_border_width: '边线宽度',
-    circle_packing_padding: '圓形間距'
+    circle_packing_padding: '圆形间距'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

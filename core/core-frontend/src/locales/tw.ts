@@ -1883,7 +1883,7 @@ export default {
     circle_packing_value: '圓形大小',
     circle_packing_border_color: '邊線顏色',
     circle_packing_border_width: '邊線寬度',
-    circle_packing_padding: 'Circle padding'
+    circle_packing_padding: '圓形間距'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
