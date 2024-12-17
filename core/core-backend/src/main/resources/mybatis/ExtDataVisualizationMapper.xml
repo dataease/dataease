@@ -413,8 +413,8 @@
                core_chart_view.table_id,
                core_chart_view.`type`,
                core_chart_view.render,
-               core_chart_view.scene_id as 'visualization_id', core_dataset_table_field.id AS 'field_id', core_dataset_table_field.origin_name,
-               core_dataset_table_field.`name` AS 'field_name', core_dataset_table_field.type AS 'field_type', core_dataset_table_field.de_type
+               core_chart_view.scene_id as `visualization_id`, core_dataset_table_field.id AS `field_id`, core_dataset_table_field.origin_name,
+               core_dataset_table_field.`name` AS `field_name`, core_dataset_table_field.type AS `field_type`, core_dataset_table_field.de_type
         FROM core_chart_view
                  LEFT JOIN core_dataset_table_field
                            ON core_chart_view.table_id = core_dataset_table_field.dataset_group_id
