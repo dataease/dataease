@@ -507,12 +507,11 @@ const canvasChange = () => {
                 }"
                 @click="onClick($event, transformIndex(index))"
               >
-                <div style="width: 22px; padding-left: 3px">
-                  <el-icon
-                    v-show="['Group', 'DeTabs'].includes(getComponent(index)?.component)"
-                    class="component-expand"
-                    @click="expandClick(getComponent(index))"
-                  >
+                <div
+                  v-show="['Group', 'DeTabs'].includes(getComponent(index)?.component)"
+                  style="width: 22px; padding-left: 3px"
+                >
+                  <el-icon class="component-expand" @click="expandClick(getComponent(index))">
                     <Icon
                       v-if="getComponent(index)?.expand"
                       name="dv-expand-down"

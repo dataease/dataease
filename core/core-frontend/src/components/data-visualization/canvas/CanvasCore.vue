@@ -201,6 +201,7 @@ const {
   themes
 } = toRefs(props)
 
+const mainCanvasFlag = isMainCanvas(canvasId.value)
 const editorX = ref(0)
 const editorY = ref(0)
 const start = ref({
@@ -1605,11 +1606,12 @@ defineExpose({
       :class="{ lock: item.isLock && editMode === 'edit' }"
       :base-cell-info="baseCellInfo"
       :canvas-active="canvasActive"
+      :is-tab-move-check="mainCanvasFlag"
       @onStartResize="onStartResize($event, item, index)"
       @onStartMove="onStartMove($event, item, index)"
-      @onMouseUp="onMouseUp($event, item, index)"
-      @onDragging="onDragging($event, item, index)"
-      @onResizing="onResizing($event, item, index)"
+      @onMouseUp="onMouseUp($event)"
+      @onDragging="onDragging($event, item)"
+      @onResizing="onResizing($event, item)"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
       @datasetParamsInit="datasetParamsInit(item)"
       @linkJumpSetOpen="linkJumpSetOpen(item)"

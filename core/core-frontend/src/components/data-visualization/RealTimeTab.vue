@@ -22,6 +22,11 @@ const { areaData } = storeToRefs(composeStore)
 const { curTabName } = storeToRefs(dvMainStore)
 
 const props = defineProps({
+  tabPosition: {
+    type: String,
+    required: false,
+    default: 'main'
+  },
   componentData: [],
   tabElement: {}
 })
@@ -31,10 +36,6 @@ const { componentData, tabElement } = toRefs(props)
 const getComponent = index => {
   return componentData.value[index]
 }
-const transformIndex = index => {
-  return componentData.value.length - 1 - index
-}
-
 const onClick = item => {
   if (item) {
     dvMainStore.setCurTabName(item.name)
@@ -136,7 +137,8 @@ const expandClick = component => {
                 :title="getComponent(index)?.title"
                 class="component-item"
                 :class="{
-                  activated: curTabName === getComponent(index)?.name
+                  activated: curTabName === getComponent(index)?.name,
+                  'component-item-group': props.tabPosition === 'groupTab'
                 }"
                 @click="onClick(getComponent(index))"
               >
@@ -191,6 +193,9 @@ const expandClick = component => {
 </template>
 
 <style lang="less" scoped>
+.component-item-group {
+  padding: 0 2px 0 40px !important;
+}
 .real-time-component-list {
   white-space: nowrap;
   .list-wrap {

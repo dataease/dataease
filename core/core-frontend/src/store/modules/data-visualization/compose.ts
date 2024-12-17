@@ -9,7 +9,7 @@ import {
   commonAttr,
   COMMON_COMPONENT_BACKGROUND_MAP
 } from '@/custom-component/component-list'
-import { createGroupStyle, getComponentRotatedStyle, groupStyleRevert } from '@/utils/style'
+import { createGroupStyle, getComponentRotatedStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -46,7 +46,6 @@ export const composeStore = defineStore('compose', {
     },
     setSpaceDownStatus(value) {
       this.isSpaceDown = value
-      console.log('====isSpaceDown=' + this.isSpaceDown)
     },
     setIsCtrlOrCmdDownStatus(value) {
       this.isCtrlOrCmdDown = value
@@ -158,7 +157,7 @@ export const composeStore = defineStore('compose', {
           })
 
           components.push(...component.propValue)
-        } else if (['DeTabs', 'GroupArea'].includes(component.component)) {
+        } else if (['GroupArea'].includes(component.component)) {
           // do nothing GroupAreas组合视阔区 DeTabs 均不加入分组中
         } else {
           components.push(component)
@@ -209,7 +208,7 @@ export const composeStore = defineStore('compose', {
     // 将已经放到 Group 组件数据删除，也就是在 componentData 中删除，因为它们已经从 componentData 挪到 Group 组件中了
     batchDeleteComponent(deleteData) {
       deleteData.forEach(component => {
-        if (!['DeTabs', 'GroupArea'].includes(component.component)) {
+        if (!['GroupArea'].includes(component.component)) {
           for (let i = 0, len = componentData.value.length; i < len; i++) {
             if (component.id == componentData.value[i].id) {
               componentData.value.splice(i, 1)

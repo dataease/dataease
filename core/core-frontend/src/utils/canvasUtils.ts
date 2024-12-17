@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, forEach } from 'lodash-es'
 import componentList, {
   ACTION_SELECTION,
   BASE_CAROUSEL,
@@ -631,6 +631,53 @@ export function setIdValueTrans(from, to, content, colList) {
 
 export function isMainCanvas(canvasId) {
   return canvasId === 'canvas-main'
+}
+
+// 目前仅允许group中还有一层Tab 或者 Tab中含有一层group
+export function itemCanvasPathCheck(item, checkType) {
+  console.log('===test==' + item.component + '==' + checkType)
+  if (checkType === 'canvas-main') {
+    return isMainCanvas(item.canvasId)
+  }
+  const pathMap = {}
+  componentData.value.forEach(componentItem => {
+    canvasIdMapCheck(componentItem, null, pathMap)
+  })
+
+  // 父组件是Tab且否在group中
+  if (checkType === 'pTabGroup') {
+    return Boolean(
+      pathMap[item.id] &&
+        pathMap[item.id].component === 'DeTabs' &&
+        pathMap[pathMap[item.id].id] &&
+        pathMap[pathMap[item.id].id].component === 'Group'
+    )
+  }
+  // 父组件是group且否在Tab中
+  if (checkType === 'pGroupTab') {
+    return Boolean(
+      pathMap[item.id] &&
+        pathMap[item.id].component === 'Group' &&
+        pathMap[pathMap[item.id].id] &&
+        pathMap[pathMap[item.id].id].component === 'DeTabs'
+    )
+  }
+  return false
+}
+
+export function canvasIdMapCheck(item, pItem, pathMap) {
+  pathMap[item.id] = pItem
+  if (item.component === 'DeTabs') {
+    item.propValue.forEach(tabItem => {
+      tabItem.componentData.forEach(tabComponent => {
+        canvasIdMapCheck(tabComponent, item, pathMap)
+      })
+    })
+  } else if (item.component === 'Group') {
+    item.propValue.forEach(groupItem => {
+      canvasIdMapCheck(groupItem, item, pathMap)
+    })
+  }
 }
 
 export function isSameCanvas(item, canvasId) {

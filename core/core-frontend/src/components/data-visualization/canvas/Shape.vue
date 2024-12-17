@@ -131,13 +131,14 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
+import { groupSizeStyleAdaptor, groupStyleRevert, tabInnerStyleRevert } from '@/utils/style'
 import {
-  groupSizeStyleAdaptor,
-  groupStyleRevert,
-  groupStyleRevertBatch,
-  tabInnerStyleRevert
-} from '@/utils/style'
-import { isDashboard, isGroupCanvas, isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
+  isDashboard,
+  isGroupCanvas,
+  isMainCanvas,
+  isTabCanvas,
+  itemCanvasPathCheck
+} from '@/utils/canvasUtils'
 import Board from '@/components/de-board/Board.vue'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 const dvMainStore = dvMainStoreWithOut()
@@ -193,7 +194,6 @@ const state = reactive({
 })
 
 const contentDisplay = ref(true)
-
 const shapeLock = computed(() => {
   return element.value['isLock'] && isEditMode.value
 })
@@ -282,6 +282,8 @@ const {
   scale,
   canvasActive
 } = toRefs(props)
+
+let pTabGroupFlag = itemCanvasPathCheck(element.value, 'pTabGroup')
 const domId = ref('shape-id-' + element.value.id)
 const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
 const pointCorner = ['lt', 'rt', 'rb', 'lb']
@@ -459,7 +461,7 @@ const areaDataPush = component => {
     !component.isLock &&
     component.isShow &&
     component.canvasId === 'canvas-main' &&
-    !['GroupArea', 'DeTabs'].includes(component.component)
+    !['GroupArea'].includes(component.component)
   ) {
     areaData.value.components.push(component)
   }
@@ -550,7 +552,9 @@ const handleMouseDownOnShape = e => {
     // 非主画布非分组画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px 向左移除30px)
     // 因为仪表板中组件向下移动可能只是为了挤占空间 不一定是为了移出 这里无法判断明确意图 暂时支不支持向下移出
     // 大屏和仪表板暂时做位置算法区分 仪表板暂时使用curX 因为缩放的影响 大屏使用 tab位置 + 组件位置（相对内部画布）+初始触发点
+    // 如果组件再tab中且tab在Group中 不允许移入移出 pTabGroupFlag = true
     if (
+      !pTabGroupFlag &&
       !isMainCanvas(canvasId.value) &&
       !isGroupCanvas(canvasId.value) &&
       !isGroupArea.value &&
@@ -797,7 +801,6 @@ const handleMouseDownOnPoint = (point, e) => {
   const up = () => {
     // 如果内部组件保持尺寸时，这里在鼠标抬起时，重新计算一下内部组件占比
     if (['DeTabs'].includes(element.value.component) && element.value.resizeInnerKeep) {
-      console.log('===test3==')
       tabInnerStyleRevert(element.value)
     }
 
