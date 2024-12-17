@@ -68,6 +68,27 @@ export default {
     template_center: '模板中心',
     org_center: '组织管理中心'
   },
+  api_pagination: {
+    paging_ettings: '分页设置',
+    parameter_name: '参数名',
+    built_in_parameter_name: '内置参数名',
+    request_parameter_name: '请求参数名',
+    parameter_default_value: '参数默认值',
+    parsing_path: '解析路径',
+    total_number: '总数',
+    total_number_de: '总数量',
+    number_of_pages: '总页数',
+    number__size: '页码+大小',
+    cursor__size: '游标+大小',
+    page_number: '页码',
+    pagination_size: '分页大小',
+    cursor: '游标',
+    pagination_method: '分页方式',
+    response: '响应',
+    please_enter_jsonpath: '请输入 JsonPath',
+    enter_parameter_name: '请输入参数名称',
+    enter_default_value: '请输入默认值'
+  },
   operate_log: {
     name: '操作日志',
     search_by_operate_info: '通过操作详情搜索',

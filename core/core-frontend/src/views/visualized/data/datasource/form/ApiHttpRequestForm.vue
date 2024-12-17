@@ -3,6 +3,7 @@ import { ref, watch, onBeforeMount, PropType, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ApiKeyValue from './ApiKeyValue.vue'
 import ApiBody from './ApiBody.vue'
+import Pagination from './Pagination.vue'
 import ApiVariable from './ApiVariable.vue'
 import ApiAuthConfig from './ApiAuthConfig.vue'
 import { Body } from './ApiTestModel.js'
@@ -190,6 +191,9 @@ const emits = defineEmits(['changeId'])
           </template>
         </el-tooltip>
         <api-auth-config :request="apiRequest" />
+      </el-tab-pane>
+      <el-tab-pane key="pagination" :label="t('api_pagination.paging_ettings')" name="pagination">
+        <Pagination />
       </el-tab-pane>
     </el-tabs>
   </div>

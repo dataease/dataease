@@ -67,6 +67,27 @@ export default {
     template_center: 'Template center',
     org_center: 'Organization management center'
   },
+  api_pagination: {
+    paging_ettings: 'Paging Settings',
+    parameter_name: 'Parameter name',
+    built_in_parameter_name: 'Built-in parameter name',
+    request_parameter_name: 'Request parameter name',
+    parameter_default_value: 'Parameter default value',
+    parsing_path: 'Parsing path',
+    total_number: 'Total number',
+    total_number_de: 'Total number de',
+    number_of_pages: 'Total number of pages',
+    number__size: 'Page number + size',
+    cursor__size: 'Cursor + size',
+    page_number: 'Page number',
+    pagination_size: 'Pagination size',
+    cursor: 'Cursor',
+    pagination_method: 'Pagination method',
+    response: 'Response',
+    please_enter_jsonpath: 'Please enter JsonPath',
+    enter_parameter_name: 'Please enter parameter name',
+    enter_default_value: 'Please enter default value'
+  },
   operate_log: {
     name: 'Operation log',
     search_by_operate_info: 'Search by operation details',

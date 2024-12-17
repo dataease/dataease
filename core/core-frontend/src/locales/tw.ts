@@ -67,6 +67,27 @@ export default {
     template_center: '模板中心',
     org_center: '組織管理中心'
   },
+  api_pagination: {
+    paging_ettings: '分頁設定',
+    parameter_name: '參數名',
+    built_in_parameter_name: '內建參數名',
+    request_parameter_name: '請求參數名',
+    parameter_default_value: '參數預設值',
+    parsing_path: '解析路徑',
+    total_number: '總數',
+    total_number_de: '總數量',
+    number_of_pages: '總頁數',
+    number_plus_size: '頁碼+大小',
+    cursor_plus_size: '遊標+大小',
+    page_number: '頁碼',
+    pagination_size: '分頁大小',
+    cursor: '遊標',
+    pagination_method: '分頁方式',
+    response: '回應',
+    please_enter_jsonpath: '請輸入 JsonPath',
+    enter_parameter_name: '請輸入參數名稱',
+    enter_default_value: '請輸入預設值'
+  },
   operate_log: {
     name: '操作日誌',
     search_by_operate_info: '透過操作詳情搜尋',
