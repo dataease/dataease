@@ -152,7 +152,9 @@ const handleNumberSizeChange = () => {
   .table-title {
     width: 100%;
     height: 30px;
-    padding: 4px 12px;
+    padding-left: 12px;
+    display: flex;
+    align-items: center;
 
     &.request {
       background: #ebf1ff;
