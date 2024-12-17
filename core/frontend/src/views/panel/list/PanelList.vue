@@ -201,7 +201,7 @@
         <span class="header-title">
           {{ $t('panel.panel_list') }}
           <el-button
-            v-if="hasDataPermission('manage', rootAuth)"
+            v-if="hasDataPermission('manage', rootAuth) || isLicNone"
             style="float: right; padding-right: 7px; margin-top: -8px; height: 12px"
             icon="el-icon-plus"
             type="text"
@@ -656,6 +656,9 @@ export default {
     }
   },
   computed: {
+    isLicNone() {
+      return this.$store.state.lic.licStatus === 'no_record'
+    },
     panelDialogTitle() {
       return this.editPanel.titlePre + this.editPanel.titleSuf
     },
