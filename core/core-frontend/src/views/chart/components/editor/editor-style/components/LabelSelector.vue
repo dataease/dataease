@@ -1550,6 +1550,7 @@ const isProgressBar = computed(() => {
     <el-form-item class="form-item" :class="'form-item-' + themes" v-show="showProperty('showGap')">
       <el-checkbox
         :effect="themes"
+        size="small"
         @change="changeLabelAttr('showGap')"
         v-model="state.labelForm.showGap"
       >

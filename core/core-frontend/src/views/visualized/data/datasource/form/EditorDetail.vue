@@ -110,6 +110,11 @@ const defaultApiItem = {
       raw: '',
       kvs: []
     },
+    page: {
+      pageType: 'empty',
+      requestData: [],
+      responseData: []
+    },
     authManager: {
       verification: '',
       username: '',

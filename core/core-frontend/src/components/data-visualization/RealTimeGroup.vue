@@ -73,6 +73,7 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
+import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -233,7 +234,8 @@ const iconMap = {
   'waterfall-origin': waterfallOrigin,
   'word-cloud-origin': wordCloudOrigin,
   't-heatmap-origin': tHeatmapOrigin,
-  group: group
+  group: group,
+  'circle-packing-origin': circlePackingOrigin
 }
 const getIconName = item => {
   if (item.component === 'UserView') {

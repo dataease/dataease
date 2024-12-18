@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { ElMessage, UploadProps } from 'element-plus-secondary'
 import { svgStrToUrl } from '@/views/chart/components/js/util'
 import { useI18n } from '@/hooks/web/useI18n'
+import { cloneDeep, debounce, defaultsDeep } from 'lodash-es'
 
 const props = withDefaults(
   defineProps<{
@@ -119,6 +120,37 @@ const mapCustomRangeValidate = prop => {
   }
   changeBasicStyle(prop)
 }
+
+const init = () => {
+  const basicStyle = cloneDeep(props.chart.customAttr.basicStyle)
+  if (
+    basicStyle.mapSymbol === 'custom' &&
+    state.basicStyleForm.customIcon !== basicStyle.customIcon
+  ) {
+    let file
+    if (basicStyle.customIcon?.startsWith('data')) {
+      file = basicStyle.customIcon
+    } else {
+      file = svgStrToUrl(basicStyle.customIcon)
+    }
+    file && (state.fileList[0] = { url: file })
+  }
+  state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
+  if (!state.customColor) {
+    state.customColor = state.basicStyleForm.colors[0]
+    state.colorIndex = 0
+  }
+}
+
+const debouncedInit = debounce(init, 500)
+watch(
+  [() => props.chart.customAttr.basicStyle, () => props.chart.xAxis, () => props.chart.yAxis],
+  debouncedInit,
+  { deep: true }
+)
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
@@ -316,5 +348,92 @@ const mapCustomRangeValidate = prop => {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+.avatar-uploader-container {
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
+    .ed-icon {
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: var(--ed-color-primary);
+      }
+    }
+  }
+
+  &.img-area_dark {
+    :deep(.ed-upload-list__item).is-ready {
+      border-color: #434343;
+    }
+    :deep(.ed-upload--picture-card) {
+      background: #373737;
+      border-color: #434343;
+      .ed-icon {
+        color: #ebebeb;
+      }
+    }
+  }
+
+  &.img-area_light {
+    :deep(.ed-upload-list__item).is-ready {
+      border-color: #dee0e3;
+    }
+  }
+  :deep(.ed-upload-list__item-preview) {
+    display: none !important;
+  }
+  :deep(.ed-upload-list__item-delete) {
+    margin-left: 0 !important;
+  }
+  :deep(.ed-upload-list__item-status-label) {
+    display: none !important;
+  }
+  :deep(.ed-icon--close-tip) {
+    display: none !important;
+  }
+}
+.avatar-uploader {
+  width: 90px;
+  height: 80px;
+  overflow: hidden;
+}
+.avatar-uploader {
+  width: 90px;
+  :deep(.ed-upload) {
+    width: 80px;
+    height: 80px;
+    line-height: 90px;
+  }
+
+  :deep(.ed-upload-list li) {
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
+    .ed-icon {
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: var(--ed-color-primary);
+      }
+    }
+  }
+}
+.uploader {
+  :deep(.ed-form-item__content) {
+    justify-content: center;
+  }
 }
 </style>

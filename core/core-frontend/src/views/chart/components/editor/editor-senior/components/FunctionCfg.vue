@@ -93,6 +93,9 @@ const initFieldCtrl = () => {
     })
   }
 }
+const isCirclePacking = computed(() => {
+  return equalsAny(props.chart.type, 'circle-packing')
+})
 onMounted(() => {
   init()
 })
@@ -196,7 +199,9 @@ onMounted(() => {
           </el-radio>
           <el-radio v-if="isRichText" :effect="themes" :label="'custom'"> 自定义 </el-radio>
           <template v-if="!isRichText">
-            <el-radio :effect="themes" :label="'setZero'">{{ t('chart.set_zero') }}</el-radio>
+            <el-radio v-if="!isCirclePacking" :effect="themes" :label="'setZero'">{{
+              t('chart.set_zero')
+            }}</el-radio>
             <el-radio v-if="showIgnoreOption" :effect="themes" :label="'ignoreData'">
               {{ t('chart.ignore_data') }}
             </el-radio>

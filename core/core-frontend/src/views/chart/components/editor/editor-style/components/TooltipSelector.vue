@@ -839,6 +839,7 @@ onMounted(() => {
     <el-form-item class="form-item" :class="'form-item-' + themes" v-show="showProperty('showGap')">
       <el-checkbox
         :effect="themes"
+        size="small"
         @change="changeTooltipAttr('showGap')"
         v-model="state.tooltipForm.showGap"
       >
@@ -849,6 +850,7 @@ onMounted(() => {
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-checkbox
           :effect="themes"
+          size="small"
           @change="changeTooltipAttr('carousel')"
           v-model="state.tooltipForm.carousel.enable"
         >

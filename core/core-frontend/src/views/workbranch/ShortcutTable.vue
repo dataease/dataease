@@ -54,7 +54,7 @@ const state = reactive({
 })
 const busiDataMap = computed(() => interactiveStore.getData)
 const shareDisable = computed(() => {
-  return shareStore.getShareDisable
+  return shareStore.getShareDisable || desktop
 })
 const iconMap = {
   panel: icon_dashboard_outlined,

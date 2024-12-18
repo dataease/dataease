@@ -67,6 +67,27 @@ export default {
     template_center: '模板中心',
     org_center: '組織管理中心'
   },
+  api_pagination: {
+    paging_ettings: '分頁設定',
+    parameter_name: '參數名',
+    built_in_parameter_name: '內建參數名',
+    request_parameter_name: '請求參數名',
+    parameter_default_value: '參數預設值',
+    parsing_path: '解析路徑',
+    total_number: '總數',
+    total_number_de: '總數量',
+    number_of_pages: '總頁數',
+    number_plus_size: '頁碼+大小',
+    cursor_plus_size: '遊標+大小',
+    page_number: '頁碼',
+    pagination_size: '分頁大小',
+    cursor: '遊標',
+    pagination_method: '分頁方式',
+    response: '回應',
+    please_enter_jsonpath: '請輸入 JsonPath',
+    enter_parameter_name: '請輸入參數名稱',
+    enter_default_value: '請輸入預設值'
+  },
   operate_log: {
     name: '操作日誌',
     search_by_operate_info: '透過操作詳情搜尋',
@@ -1877,7 +1898,13 @@ export default {
     x_axis_constant_line: 'X 軸恆線',
     y_axis_constant_line: 'Y 軸恆線',
     sort_priority: '排序優先級設置',
-    sort_priority_tip: '自上而下，排序優先級從高到低'
+    sort_priority_tip: '自上而下，排序優先級從高到低',
+    chart_circle_packing: '圓形填充圖',
+    circle_packing_name: '圓形名稱',
+    circle_packing_value: '圓形大小',
+    circle_packing_border_color: '邊線顏色',
+    circle_packing_border_width: '邊線寬度',
+    circle_packing_padding: '圓形間距'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
@@ -3298,6 +3325,7 @@ export default {
     edit_template: '編輯模板',
     import_template: '導入模板',
     template_name: '模板名稱',
+    enter_template_name_hint: '請輸入模板名稱',
     keywords: '搜尋關鍵字',
     catalog_name: '分類名稱',
     search_result: '的搜尋結果',

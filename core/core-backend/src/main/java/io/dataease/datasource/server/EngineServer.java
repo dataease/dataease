@@ -87,6 +87,12 @@ public class EngineServer implements EngineApi {
 
     @Override
     public boolean supportSetKey() throws Exception {
-        return !getEngine().getType().equalsIgnoreCase("h2");
+        List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
+        if (CollectionUtils.isEmpty(deEngines)) {
+            return false;
+        } else {
+            return !deEngines.getFirst().getType().equalsIgnoreCase("h2");
+        }
+
     }
 }

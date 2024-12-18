@@ -246,8 +246,12 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     const extBubbleIds = chart.extBubble.map(i => i.id)
     conditions = filter(conditions, c => extBubbleIds.includes(c.fieldId))
 
+    const baseColor = colorsWithAlpha[0]
+    const baseColorList = []
+
     const data = chart.data?.tableRow
       ? chart.data.tableRow.map((item, index) => {
+          item['_index'] = '_index' + index
           // 颜色标识
           const identifier = item[xAxisExt[0]?.dataeaseName]
           // 检查该标识是否已有颜色分配，如果没有则分配
@@ -257,6 +261,9 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
             // 记录分配的颜色
             colorAssignments.set(identifier, color)
           }
+
+          baseColorList[index] = color
+
           if (conditions.length > 0) {
             for (let i = 0; i < conditions.length; i++) {
               const c = conditions[i]
@@ -271,38 +278,45 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
                   const start = parseFloat(t.min)
                   const end = parseFloat(t.max)
                   if (start <= value && value <= end) {
-                    color = t.color
-                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                    color = hexColorToRGBA(_color, alpha)
+                    colorsWithAlpha[index] = color
+                    baseColorList[index] = color
                   }
                 } else if ('lt' === t.term) {
                   if (value < v) {
-                    color = t.color
-                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                    color = hexColorToRGBA(_color, alpha)
+                    colorsWithAlpha[index] = color
+                    baseColorList[index] = color
                   }
                 } else if ('le' === t.term) {
                   if (value <= v) {
-                    color = t.color
-                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                    color = hexColorToRGBA(_color, alpha)
+                    colorsWithAlpha[index] = color
+                    baseColorList[index] = color
                   }
                 } else if ('gt' === t.term) {
                   if (value > v) {
-                    color = t.color
-                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                    color = hexColorToRGBA(_color, alpha)
+                    colorsWithAlpha[index] = color
+                    baseColorList[index] = color
                   }
                 } else if ('ge' === t.term) {
                   if (value >= v) {
-                    color = t.color
-                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                    color = hexColorToRGBA(_color, alpha)
+                    colorsWithAlpha[index] = color
+                    baseColorList[index] = color
                   }
                 } else if ('eq' === t.term) {
                   if (value === v) {
-                    color = t.color
-                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                    color = hexColorToRGBA(_color, alpha)
+                    colorsWithAlpha[index] = color
+                    baseColorList[index] = color
                   }
                 } else if ('not_eq' === t.term) {
                   if (value !== v) {
-                    color = t.color
-                    colorsWithAlpha[index] = hexColorToRGBA(_color, alpha)
+                    color = hexColorToRGBA(_color, alpha)
+                    colorsWithAlpha[index] = color
+                    baseColorList[index] = color
                   }
                 }
               }
@@ -349,7 +363,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           })
         }
       } else {
-        pointLayer.shape(mapSymbol).color(xAxisExt[0]?.dataeaseName, colorsWithAlpha)
+        pointLayer.shape(mapSymbol).color('_index', colorsWithAlpha)
         pointLayer.style({
           stroke: {
             field: 'color'
@@ -366,7 +380,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           pointLayer.shape('customIcon')
         } else {
           const parser = new DOMParser()
-          const color = colorsWithAlpha[0]
+          const color = baseColor
           const fillRegex = /(fill="[^"]*")/g
           const svgStr = basicStyle.customIcon.replace(fillRegex, '')
           const doc = parser.parseFromString(svgStr, 'image/svg+xml')
@@ -378,9 +392,11 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       } else {
         pointLayer
           .shape(mapSymbol)
-          .color(colorsWithAlpha[0])
+          .color('_index', baseColorList)
           .style({
-            stroke: colorsWithAlpha[0],
+            stroke: {
+              field: 'color'
+            },
             strokeWidth: mapSymbolStrokeWidth,
             opacity: mapSymbolOpacity / 10
           })

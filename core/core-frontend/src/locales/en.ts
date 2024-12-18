@@ -67,6 +67,27 @@ export default {
     template_center: 'Template center',
     org_center: 'Organization management center'
   },
+  api_pagination: {
+    paging_ettings: 'Paging Settings',
+    parameter_name: 'Parameter name',
+    built_in_parameter_name: 'Built-in parameter name',
+    request_parameter_name: 'Request parameter name',
+    parameter_default_value: 'Parameter default value',
+    parsing_path: 'Parsing path',
+    total_number: 'Total number',
+    total_number_de: 'Total number de',
+    number_of_pages: 'Total number of pages',
+    number__size: 'Page number + size',
+    cursor__size: 'Cursor + size',
+    page_number: 'Page number',
+    pagination_size: 'Pagination size',
+    cursor: 'Cursor',
+    pagination_method: 'Pagination method',
+    response: 'Response',
+    please_enter_jsonpath: 'Please enter JsonPath',
+    enter_parameter_name: 'Please enter parameter name',
+    enter_default_value: 'Please enter default value'
+  },
   operate_log: {
     name: 'Operation log',
     search_by_operate_info: 'Search by operation details',
@@ -1919,7 +1940,13 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     x_axis_constant_line: 'X-axis Constant Line',
     y_axis_constant_line: 'Y-axis Constant Line',
     sort_priority: 'Sort Priority Setting',
-    sort_priority_tip: 'Top-down, sorting priority from highest to lowest'
+    sort_priority_tip: 'Top-down, sorting priority from highest to lowest',
+    chart_circle_packing: 'Circle packing chart',
+    circle_packing_name: 'Circle name',
+    circle_packing_value: 'Circle size',
+    circle_packing_border_color: 'Border color',
+    circle_packing_border_width: 'Border width',
+    circle_packing_padding: 'Circle padding'
   },
   dataset: {
     scope_edit: 'Only effective when editing',
@@ -3378,6 +3405,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     edit_template: 'Edit template',
     import_template: 'Import template',
     template_name: 'Template name',
+    enter_template_name_hint: ' Please enter template name',
     keywords: 'Search keywords',
     catalog_name: 'Category name',
     search_result: 'Search results',
@@ -3940,7 +3968,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
       'After data filling is enabled, the form data can be stored in the Datasource. Once enabled, it is not allowed to be closed later. ',
     new_folder: 'New folder',
     form_manage: 'Form management',
-    my_job: 'My report',
+    my_job: 'My reports',
     disable_data_fill_hint:
       'After closing data filling, the form data will fail to submit. Are you sure you want to close it? ',
     enable_data_fill_hint:

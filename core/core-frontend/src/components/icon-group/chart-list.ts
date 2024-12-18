@@ -45,6 +45,7 @@ import tHeatmap from '@/assets/svg/t-heatmap.svg'
 import pictureGroup from '@/assets/svg/picture-group.svg'
 import filter from '@/assets/svg/filter.svg'
 import outerParams from '@/assets/svg/icon_params_setting.svg'
+import circlePacking from '@/assets/svg/circle-packing.svg'
 
 const iconChartMap = {
   'area-stack': areaStack,
@@ -93,7 +94,8 @@ const iconChartMap = {
   't-heatmap': tHeatmap,
   'picture-group': pictureGroup,
   filter: filter,
-  outerParams: outerParams
+  outerParams: outerParams,
+  'circle-packing': circlePacking
 }
 
 export { iconChartMap }

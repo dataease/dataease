@@ -6,6 +6,7 @@ import type { Placement } from 'element-plus-secondary'
 import { ref, PropType, computed } from 'vue'
 import ShareHandler from '@/views/share/share/ShareHandler.vue'
 import { useShareStoreWithOut } from '@/store/modules/share'
+import { isDesktop } from '@/utils/ModelUtil'
 const shareStore = useShareStoreWithOut()
 
 export interface Menu {
@@ -38,7 +39,7 @@ const props = defineProps({
 })
 
 const shareDisable = computed(() => {
-  return shareStore.getShareDisable
+  return shareStore.getShareDisable || isDesktop()
 })
 
 const shareComponent = ref(null)

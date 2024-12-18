@@ -106,7 +106,7 @@ public class VisualizationStoreManage {
             queryWrapper.eq("s.resource_type", busiResourceEnum.getFlag());
         }
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            queryWrapper.like("v.name", request.getKeyword());
+            queryWrapper.apply("LOWER(v.name) LIKE LOWER(CONCAT('%', {0}, '%'))", request.getKeyword());
         }
         String info = CommunityUtils.getInfo();
         if (StringUtils.isNotBlank(info)) {

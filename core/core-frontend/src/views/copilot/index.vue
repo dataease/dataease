@@ -409,6 +409,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         bottom: 25px;
         border-radius: 8px;
         left: 180px;
+        z-index: 100;
         box-sizing: border-box;
         background: #fff;
         box-shadow: 0px 6px 24px 0px #1f232914;

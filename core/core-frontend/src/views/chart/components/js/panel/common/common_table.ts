@@ -1647,7 +1647,7 @@ const drawTextShape = (cell, isHeader) => {
   // 宽度能放几个字符，就放几个，放不下就换行
   let wrapText = getWrapText(formattedValue ? formattedValue?.toString() : emptyPlaceholder, textStyle, cell.meta.width, cell.spreadsheet)
   const lines = wrapText.split(lineBreak)
-
+  let extraStyleFontSize = textStyle.fontSize
   // 不是表头，处理文本高度和换行
   if (!isHeader) {
     const textHeight = getWrapTextHeight(wrapText.replaceAll(lineBreak, ''), textStyle, cell.spreadsheet, maxLines)
@@ -1655,8 +1655,8 @@ const drawTextShape = (cell, isHeader) => {
     const wrapTextArr = lines.slice(0, lineCountInCell)
 
     // 根据行数调整换行后的文本内容
-    wrapText = lineCountInCell === 1
-      ? lines[0].slice(0, -1) + ellipsis
+    wrapText = lineCountInCell < 1
+      ? ellipsis
       : wrapTextArr.join(lineBreak) || ellipsis
     const resultWrapArr = wrapText.split(lineBreak)
     // 控制最大行数
@@ -1667,6 +1667,9 @@ const drawTextShape = (cell, isHeader) => {
       // 修改最后一行的字符,按照第一行字符个数-1，修改最后一行的字符为...
       temp[temp.length - 1] = temp[temp.length-1].slice(0,firstLineStrNumber - 1) + ellipsis
       wrapText = temp.join(lineBreak)
+    }
+    if (wrapText === ellipsis) {
+      extraStyleFontSize = 12
     }
   } else {
     const resultWrapArr = wrapText.split(lineBreak)
@@ -1687,7 +1690,7 @@ const drawTextShape = (cell, isHeader) => {
   // 获取文本位置并渲染文本
   const position = cell.getTextPosition()
   // 绘制文本
-  cell.textShape = renderText(cell, [cell.textShape], position.x, position.y, wrapText, textStyle)
+  cell.textShape = renderText(cell, [cell.textShape], position.x, position.y, wrapText, textStyle, {fontSize:extraStyleFontSize})
 
   // 将文本形状添加到形状数组
   cell.textShapes.push(cell.textShape)

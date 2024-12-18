@@ -20,6 +20,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useShareStoreWithOut } from '@/store/modules/share'
 import { exportPermission } from '@/utils/utils'
 import { useCache } from '@/hooks/web/useCache'
+import { isDesktop } from '@/utils/ModelUtil'
 
 const shareStore = useShareStoreWithOut()
 const { wsCache } = useCache('localStorage')
@@ -39,7 +40,7 @@ const preview = () => {
 }
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const isIframe = computed(() => appStore.getIsIframe)
-const shareDisable = computed(() => shareStore.getShareDisable)
+const shareDisable = computed(() => shareStore.getShareDisable || isDesktop())
 const exportPermissions = computed(() =>
   exportPermission(dvInfo.value['weight'], dvInfo.value['ext'])
 )
