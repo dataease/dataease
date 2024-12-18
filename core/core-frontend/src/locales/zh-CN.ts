@@ -69,6 +69,10 @@ export default {
     org_center: '组织管理中心'
   },
   api_pagination: {
+    help_documentation: '帮助文档',
+    product_forum: '产品论坛',
+    technical_blog: '技术博客',
+    enterprise_edition_trial: '企业版试用',
     paging_ettings: '分页设置',
     parameter_name: '参数名',
     built_in_parameter_name: '内置参数名',

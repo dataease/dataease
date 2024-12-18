@@ -68,6 +68,10 @@ export default {
     org_center: '組織管理中心'
   },
   api_pagination: {
+    help_documentation: '幫助文檔',
+    product_forum: '產品論壇',
+    technical_blog: '技術部落格',
+    enterprise_edition_trial: '企業版試用',
     paging_ettings: '分頁設定',
     parameter_name: '參數名',
     built_in_parameter_name: '內建參數名',

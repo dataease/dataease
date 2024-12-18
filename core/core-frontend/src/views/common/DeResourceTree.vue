@@ -699,18 +699,14 @@ defineExpose({
               /></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-
-            <div
-              class="icon-more flex-align-center"
-              v-if="data.weight >= 7 && showPosition === 'preview'"
-            >
+            <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
               <el-icon
                 v-on:click.stop
                 v-if="data.leaf"
                 class="hover-icon"
                 @click="resourceEdit(data.id)"
               >
-                <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+                <Icon><icon_edit_outlined class="svg-icon" /></Icon>
               </el-icon>
               <handle-more
                 @handle-command="
@@ -854,7 +850,7 @@ defineExpose({
   padding-right: 4px;
 
   .label-tooltip {
-    width: calc(100% - 66px);
+    width: 100%;
     margin-left: 8.75px;
     overflow: hidden;
     white-space: nowrap;
@@ -862,12 +858,17 @@ defineExpose({
   }
   .icon-more {
     margin-left: auto;
-    visibility: hidden;
+    display: none;
   }
 
-  &:hover .icon-more {
-    margin-left: auto;
-    visibility: visible;
+  &:hover {
+    .label-tooltip {
+      width: calc(100% - 78px);
+    }
+
+    .icon-more {
+      display: inline-flex;
+    }
   }
 
   .icon-screen-new {

@@ -3,13 +3,15 @@ import activeBtn_copilot from '@/assets/svg/active-btn_copilot.svg'
 import btn_copilot from '@/assets/svg/btn_copilot.svg'
 import copilot from '@/assets/svg/copilot.svg'
 import icon_loading_outlined from '@/assets/svg/icon_loading_outlined.svg'
+import treeSort from '@/utils/treeSortUtils'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_expandRight_filled from '@/assets/svg/icon_expand-right_filled.svg'
-import { ref, shallowRef, computed, watch, nextTick } from 'vue'
+import { ref, shallowRef, computed, watch, nextTick, unref } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
 import {
   getDatasetTree,
@@ -27,6 +29,7 @@ import { iconFieldMap } from '@/components/icon-group/field-list'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const embeddedStore = useEmbedded()
+const { wsCache } = useCache()
 const { t } = useI18n()
 const quota = shallowRef([])
 const dimensions = shallowRef([])
@@ -57,7 +60,7 @@ const dfs = arr => {
     return ele.leaf
   })
 }
-
+const originResourceTree = ref([])
 const computedTree = computed(() => {
   if (datasetTree.value[0]?.id === '0') {
     return dfs(datasetTree.value[0].children)
@@ -68,9 +71,14 @@ const computedTree = computed(() => {
 const isActive = computed(() => {
   return questionInput.value.trim().length && !!datasetId.value
 })
+const sortList = ['time_asc', 'time_desc', 'name_asc', 'name_desc']
 const initDataset = async () => {
   await getDatasetTree({}).then(res => {
     datasetTree.value = (res as unknown as Tree[]) || []
+    let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
+    curSortType = wsCache.get('TreeSort-dataset') ?? curSortType
+    originResourceTree.value = cloneDeep(unref(datasetTree))
+    datasetTree.value = treeSort(originResourceTree.value, curSortType)
   })
   getListCopilot().then(res => {
     const allList = (res as unknown as { history: object }[]) || []
