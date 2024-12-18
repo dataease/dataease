@@ -4077,6 +4077,7 @@ export default {
       create_time: '建立時間',
       rate_type: '任務下發模式',
       task_status: '任務狀態',
+      task_progress: '已填報數/總數',
       task_name: '任務名稱',
       add_task: '新增任務',
       task_remain_time: '任務有效期限',

@@ -4081,6 +4081,7 @@ export default {
       create_time: '创建时间',
       rate_type: '任务下发模式',
       task_status: '任务状态',
+      task_progress: '已填报数/总数',
       task_name: '任务名称',
       add_task: '添加任务',
       task_remain_time: '任务有效期',

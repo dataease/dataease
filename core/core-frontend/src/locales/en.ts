@@ -4185,6 +4185,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
       create_time: 'Creation time',
       rate_type: 'Task delivery mode',
       task_status: 'Task status',
+      task_progress: 'Finished / Total',
       task_name: 'Task name',
       add_task: 'Add task',
       task_remain_time: 'Task validity period',

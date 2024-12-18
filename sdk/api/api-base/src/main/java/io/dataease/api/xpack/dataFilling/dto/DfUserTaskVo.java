@@ -39,4 +39,10 @@ public class DfUserTaskVo implements Serializable {
 
     private String assigner;
 
+    private long totalCount;
+
+    private long finishCount;
+
+    private boolean expired;
+
 }
