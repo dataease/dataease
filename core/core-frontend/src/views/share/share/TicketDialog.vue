@@ -36,7 +36,6 @@ defineExpose({
 </script>
 <style lang="less" scoped>
 .ticket-dialog-container {
-  width: 100%;
   :deep(.is-ticket-dialog) {
     .ed-dialog__header {
       display: none;

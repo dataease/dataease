@@ -177,7 +177,7 @@
       <div v-if="shareEnable" class="share-foot share-padding">
         <el-button secondary @click="openTicket">{{ t('work_branch.ticket_setting') }}</el-button>
         <el-button :disabled="!shareEnable || expError" type="primary" @click="copyInfo">
-          {{ t('visualization.copy_link') }}
+          {{ passwdEnable ? t('visualization.copy_link_passwd') : t('visualization.copy_link') }}
         </el-button>
       </div>
     </div>
@@ -326,7 +326,11 @@ const copyInfo = async () => {
         }
       }
       formatLinkAddr()
-      await toClipboard(linkAddr.value)
+      let info = linkAddr.value
+      if (passwdEnable.value) {
+        info += `,${state.detailInfo.pwd}`
+      }
+      await toClipboard(info)
       ElMessage.success(t('common.copy_success'))
     } catch (e) {
       ElMessage.warning(t('common.copy_unsupported'))
