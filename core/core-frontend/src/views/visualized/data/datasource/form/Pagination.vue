@@ -1,17 +1,45 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onBeforeMount, PropType, ref, toRefs } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 
+export interface PageSetting {
+  pageType: string
+  requestData: requestItem[]
+  responseData: responseItem[]
+}
+
+export interface requestItem {
+  parameterName: string
+  builtInParameterName: string
+  requestParameterName: string
+  parameterDefaultValue: string
+}
+
+export interface responseItem {
+  parameterName: string
+  resolutionPath: string
+  resolutionPathType: string
+}
+const props = defineProps({
+  page: {
+    type: Object as PropType<PageSetting>,
+    default: () => ({
+      pageType: '',
+      requestData: [],
+      responseData: []
+    })
+  }
+})
+const { page } = toRefs(props)
 const { t } = useI18n()
-const numberToken = ref('empty')
 const options = [
   {
-    value: 'number',
+    value: 'pageNumber',
     label: t('api_pagination.number__size')
   },
   {
-    value: 'token',
+    value: 'cursor',
     label: t('api_pagination.cursor__size')
   },
   {
@@ -37,12 +65,19 @@ const requestData = ref([
 
 const defaultPathArr = [
   {
-    value: 'number',
+    value: 'totalNumber',
     label: t('api_pagination.total_number_de')
   },
   {
-    value: 'page',
+    value: 'totalPage',
     label: t('api_pagination.number_of_pages')
+  }
+]
+
+const cursorPathArr = [
+  {
+    value: 'cursor',
+    label: t('api_pagination.cursor')
   }
 ]
 
@@ -56,21 +91,40 @@ const responseData = ref([
   }
 ])
 
+onBeforeMount(() => {
+  if (page.value.requestData.length === 0) {
+    page.value.requestData = requestData.value
+  }
+  if (page.value.responseData.length === 0) {
+    page.value.responseData = responseData.value
+  }
+  if (page.value.pageType === '') {
+    // page.value.pageType = 'empty'
+  }
+})
+
 const handleNumberSizeChange = () => {
-  resolutionPathOptions.value =
-    numberToken.value === 'number' ? cloneDeep(defaultPathArr) : [cloneDeep(defaultPathArr)[0]]
-  responseData.value[0].resolutionPathType = 'number'
-  requestData.value[0].parameterName =
-    numberToken.value === 'number' ? t('api_pagination.page_number') : t('api_pagination.cursor')
-  responseData.value[0].parameterName =
-    numberToken.value === 'number' ? t('api_pagination.total_number') : t('api_pagination.cursor')
+  if (page.value.pageType === 'pageNumber') {
+    page.value.responseData[0].resolutionPathType = 'totalNumber'
+    page.value.responseData[0].parameterName = t('api_pagination.total_number')
+    resolutionPathOptions.value = cloneDeep(defaultPathArr)
+    page.value.requestData[0].parameterName = t('api_pagination.page_number')
+    page.value.requestData[0].builtInParameterName = '${pageNumber}'
+  }
+  if (page.value.pageType === 'cursor') {
+    page.value.responseData[0].resolutionPathType = 'cursor'
+    page.value.responseData[0].parameterName = t('api_pagination.cursor')
+    resolutionPathOptions.value = cloneDeep(cursorPathArr)
+    page.value.requestData[0].parameterName = t('api_pagination.cursor')
+    page.value.requestData[0].builtInParameterName = '${pageToken}'
+  }
 }
 </script>
 
 <template>
   <div class="api-pagination">
     <span class="type">{{ t('api_pagination.pagination_method') }}</span>
-    <el-select v-model="numberToken" @change="handleNumberSizeChange" style="width: 100%">
+    <el-select v-model="page.pageType" @change="handleNumberSizeChange" style="width: 100%">
       <el-option
         v-for="item in options"
         :key="item.value"
@@ -78,9 +132,9 @@ const handleNumberSizeChange = () => {
         :value="item.value"
       />
     </el-select>
-    <template v-if="numberToken !== 'empty'">
+    <template v-if="page.pageType !== 'empty'">
       <div class="table-title request">{{ t('datasource.request') }}</div>
-      <el-table header-cell-class-name="header-cell" :data="requestData" style="width: 100%">
+      <el-table header-cell-class-name="header-cell" :data="page.requestData" style="width: 100%">
         <el-table-column prop="parameterName" :label="t('api_pagination.parameter_name')" />
         <el-table-column
           prop="builtInParameterName"
@@ -105,8 +159,9 @@ const handleNumberSizeChange = () => {
           </template>
         </el-table-column>
       </el-table>
+
       <div class="table-title response">{{ t('api_pagination.response') }}</div>
-      <el-table header-cell-class-name="header-cell" :data="responseData" style="width: 100%">
+      <el-table header-cell-class-name="header-cell" :data="page.responseData" style="width: 100%">
         <el-table-column
           prop="parameterName"
           :label="t('api_pagination.parameter_name')"

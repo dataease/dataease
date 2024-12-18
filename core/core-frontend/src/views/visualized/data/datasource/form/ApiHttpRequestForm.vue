@@ -10,6 +10,7 @@ import { Body } from './ApiTestModel.js'
 import type { Item } from './ApiKeyValue.vue'
 import type { AuthConfig } from './ApiAuthConfig.vue'
 import type { ApiBodyItem } from './ApiBody.vue'
+import { PageSetting } from '@/views/visualized/data/datasource/form/Pagination.vue'
 export interface ApiRequest {
   changeId: string
   headers: Item[]
@@ -17,6 +18,7 @@ export interface ApiRequest {
   arguments: Item[]
   authManager: AuthConfig
   body: ApiBodyItem
+  page: PageSetting
 }
 const props = defineProps({
   showScript: {
@@ -38,6 +40,11 @@ const props = defineProps({
       body: {
         typeChange: '',
         kvs: []
+      },
+      page: {
+        pageType: 'empty',
+        requestData: [],
+        responseData: []
       }
     })
   },
@@ -193,7 +200,7 @@ const emits = defineEmits(['changeId'])
         <api-auth-config :request="apiRequest" />
       </el-tab-pane>
       <el-tab-pane key="pagination" :label="t('api_pagination.paging_ettings')" name="pagination">
-        <Pagination />
+        <Pagination :page="apiRequest.page" />
       </el-tab-pane>
     </el-tabs>
   </div>
