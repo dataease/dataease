@@ -11,6 +11,7 @@ import {
 } from '@/custom-component/component-list'
 import { createGroupStyle, getComponentRotatedStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
+import { checkJoinGroup } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, componentData, curOriginThemes } = storeToRefs(dvMainStore)
@@ -159,7 +160,7 @@ export const composeStore = defineStore('compose', {
           components.push(...component.propValue)
         } else if (['GroupArea'].includes(component.component)) {
           // do nothing GroupAreas组合视阔区 DeTabs 均不加入分组中
-        } else {
+        } else if (checkJoinGroup(component)) {
           components.push(component)
         }
       })

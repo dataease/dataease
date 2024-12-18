@@ -632,10 +632,39 @@ export function setIdValueTrans(from, to, content, colList) {
 export function isMainCanvas(canvasId) {
   return canvasId === 'canvas-main'
 }
+// 检查是否可以加入到分组
+export function checkJoinGroup(item) {
+  if (item.component === 'DeTabs') {
+    let result = true
+    item.propValue.forEach(tabItem => {
+      tabItem.componentData.forEach(tabComponent => {
+        if (tabComponent.component === 'Group') {
+          result = false
+        }
+      })
+    })
+    return result
+  } else {
+    return true
+  }
+}
+// 检查是否可以移入tab
+export function checkJoinTab(item) {
+  if (item.component === 'Group') {
+    let result = true
+    item.propValue.forEach(groupItem => {
+      if (groupItem.component === 'DeTabs') {
+        result = false
+      }
+    })
+    return result
+  } else {
+    return true
+  }
+}
 
 // 目前仅允许group中还有一层Tab 或者 Tab中含有一层group
 export function itemCanvasPathCheck(item, checkType) {
-  console.log('===test==' + item.component + '==' + checkType)
   if (checkType === 'canvas-main') {
     return isMainCanvas(item.canvasId)
   }
@@ -644,7 +673,7 @@ export function itemCanvasPathCheck(item, checkType) {
     canvasIdMapCheck(componentItem, null, pathMap)
   })
 
-  // 父组件是Tab且否在group中
+  // 父组件是Tab且在group中
   if (checkType === 'pTabGroup') {
     return Boolean(
       pathMap[item.id] &&
@@ -653,13 +682,19 @@ export function itemCanvasPathCheck(item, checkType) {
         pathMap[pathMap[item.id].id].component === 'Group'
     )
   }
-  // 父组件是group且否在Tab中
-  if (checkType === 'pGroupTab') {
+  // 当前组件是group且在Tab中
+  if (checkType === 'groupInTab') {
     return Boolean(
-      pathMap[item.id] &&
-        pathMap[item.id].component === 'Group' &&
+      item.component === 'Group' &&
         pathMap[pathMap[item.id].id] &&
         pathMap[pathMap[item.id].id].component === 'DeTabs'
+    )
+  }
+
+  // 当前组件是Tab且在Group中
+  if (checkType === 'tabInGroup') {
+    return Boolean(
+      item.component === 'DeTabs' && pathMap[item.id] && pathMap[item.id].component === 'Group'
     )
   }
   return false
