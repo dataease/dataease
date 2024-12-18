@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
-import { ref, reactive, computed, watch, nextTick } from 'vue'
+import { ref, reactive, computed, watch, nextTick, unref } from 'vue'
+import treeSort from '@/utils/treeSortUtils'
+import { useCache } from '@/hooks/web/useCache'
 import { ElMessage } from 'element-plus-secondary'
+import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   getDatasetTree,
@@ -28,7 +31,7 @@ export interface Tree {
   children?: Tree[]
 }
 const { t } = useI18n()
-
+const { wsCache } = useCache()
 const state = reactive({
   tData: [],
   nameList: []
@@ -137,6 +140,8 @@ const formatRootMiss = (id: string | number, treeData: Tree[]) => {
   }
   return id
 }
+const originResourceTree = ref([])
+const sortList = ['time_asc', 'time_desc', 'name_asc', 'name_desc']
 const createInit = (type, data: Tree, exec, name: string) => {
   pid.value = ''
   id.value = ''
@@ -156,6 +161,10 @@ const createInit = (type, data: Tree, exec, name: string) => {
     getDatasetTree(request).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
+      let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
+      curSortType = wsCache.get('TreeSort-dataset') ?? curSortType
+      originResourceTree.value = cloneDeep(unref(state.tData))
+      state.tData = treeSort(originResourceTree.value, curSortType)
       if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
         state.tData[0].name = t('data_set.data_set')
       }
