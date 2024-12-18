@@ -90,6 +90,11 @@ const { areaData } = storeToRefs(composeStore)
 const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 
 const props = defineProps({
+  tabPosition: {
+    type: String,
+    required: false,
+    default: 'main'
+  },
   componentData: []
 })
 
@@ -306,6 +311,7 @@ const expandClick = component => {
                 class="component-item"
                 :class="{
                   'container-item-not-show': !getComponent(index)?.isShow,
+                  'component-item-group-tab': tabPosition === 'groupTab',
                   activated:
                     (curComponent && curComponent?.id === getComponent(index)?.id) ||
                     areaData.components.includes(getComponent(index))
@@ -314,7 +320,7 @@ const expandClick = component => {
               >
                 <div
                   v-show="['DeTabs'].includes(getComponent(index)?.component)"
-                  style="width: 22px; padding-left: 3px"
+                  style="width: 22px"
                 >
                   <el-icon class="component-expand" @click="expandClick(getComponent(index))">
                     <Icon
@@ -479,7 +485,7 @@ const expandClick = component => {
           font-size: 12px;
           margin-left: 10px;
           position: relative;
-          min-width: 43px;
+          min-width: 10px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -587,6 +593,29 @@ const expandClick = component => {
 }
 .custom-teleport {
   background: #1a1a1a !important;
+}
+.component-item-group-tab {
+  padding-left: 60px !important;
+}
+
+.component-expand {
+  cursor: pointer;
+  height: 16px !important;
+  width: 16px !important;
+  border-radius: 2px;
+  padding: 0 2px;
+
+  .expand-icon {
+    font-size: 10px;
+  }
+
+  &:hover {
+    background: rgba(235, 235, 235, 0.1);
+  }
+
+  &:active {
+    background: rgba(235, 235, 235, 0.1);
+  }
 }
 </style>
 

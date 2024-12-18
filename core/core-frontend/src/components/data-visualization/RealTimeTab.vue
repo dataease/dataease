@@ -171,6 +171,7 @@ const expandClick = component => {
               </div>
               <div v-if="getComponent(index)?.expand">
                 <real-time-group
+                  tab-position="groupTab"
                   :component-data="getComponent(index).componentData"
                 ></real-time-group>
               </div>

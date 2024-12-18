@@ -84,6 +84,7 @@ const userViewEnlargeOpen = (opt, item) => {
         :config="item"
         :index="index"
         :dv-info="dvInfo"
+        :canvas-view-info="canvasViewInfo"
         :style="customGroupStyle(item)"
         :show-position="showPosition"
         :search-count="searchCount"
