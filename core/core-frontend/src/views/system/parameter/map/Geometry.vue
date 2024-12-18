@@ -92,14 +92,17 @@
                   </span>
                   <template #dropdown>
                     <el-dropdown-menu>
-                      <el-dropdown-item @click="editCustomArea(data)">重命名</el-dropdown-item>
-                      <el-dropdown-item @click.stop="deleteCustomArea(data)">删除</el-dropdown-item>
+                      <el-dropdown-item @click="editCustomArea(data)">
+                        {{ t('chart.rename') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item @click.stop="deleteCustomArea(data)">
+                        {{ t('common.delete') }}
+                      </el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
               </span>
             </template>
-            <template #empty> 空的列表 </template>
           </el-tree>
         </el-scrollbar>
       </div>
@@ -154,18 +157,18 @@
             <el-divider />
             <span class="header">
               <span class="label">
-                <span>自定义区域</span>
-                <span>(仅对中国的省份、直辖市，支持自定义地理区域)</span>
+                <span>{{ t('system.custom_area') }} </span>
+                <span>({{ t('system.custom_area_tip') }})</span>
               </span>
               <span class="add-btn" @click="editCustomSubArea()">
                 <el-icon>
                   <Icon name="icon_add_outlined"><icon_add_outlined /></Icon>
                 </el-icon>
-                <span>添加区域</span>
+                <span>{{ t('system.add_area') }}</span>
               </span>
             </span>
             <el-table :data="subAreaList" stripe style="width: 100%" :height="300">
-              <el-table-column prop="name" label="区域名称">
+              <el-table-column prop="name" :label="t('system.area_name')">
                 <template #default="{ row, $index }">
                   <span
                     class="area-color-symbol"
@@ -174,8 +177,8 @@
                   <span>{{ row.name }}</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="scopeName" label="区域范围" />
-              <el-table-column fixed="right" label="操作" min-width="120">
+              <el-table-column prop="scopeName" :label="t('system.area_scope')" />
+              <el-table-column fixed="right" :label="t('system.operation')" min-width="120">
                 <template #default="{ row }">
                   <div class="area-edit-btn">
                     <span @click="editCustomSubArea(row)">
@@ -200,7 +203,7 @@
   <geometry-edit ref="editor" @saved="loadTreeData(false)" />
   <el-dialog
     v-model="customAreaDialog"
-    :title="`${editedCustomArea.id ? '编辑' : '新建'}自定义地理区域`"
+    :title="`${editedCustomArea.id ? t('common.edit') : t('common.add') + t('system.custom_area')}`"
     width="500"
     destroy-on-close
   >
@@ -217,14 +220,14 @@
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="customAreaDialog = false">取消</el-button>
-        <el-button type="primary" @click="saveGeoArea()"> 确定 </el-button>
+        <el-button @click="customAreaDialog = false">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="saveGeoArea()"> {{ t('common.sure') }} </el-button>
       </div>
     </template>
   </el-dialog>
   <el-dialog
     v-model="customSubAreaDialog"
-    :title="`${customSubArea.id ? '编辑' : '新建'}自定义区域`"
+    :title="`${(customSubArea.id ? t('common.edit') : t('common.add')) + t('system.custom_area')}`"
     width="500"
     destroy-on-close
   >
@@ -235,10 +238,10 @@
       label-width="auto"
       :rules="areaRules"
     >
-      <el-form-item label="区域名称" label-position="top" prop="name">
+      <el-form-item :label="t('system.area_name')" label-position="top" prop="name">
         <el-input v-model="customSubArea.name" :minlenegth="1" :maxlength="50" />
       </el-form-item>
-      <el-form-item label="请选择省份或直辖市" label-position="top" prop="scopeArr">
+      <el-form-item :label="t('system.sub_area_tip')" label-position="top" prop="scopeArr">
         <el-select v-model="customSubArea.scopeArr" multiple style="width: 100%" filterable>
           <el-option
             v-for="item in subAreaOptions"
@@ -251,8 +254,8 @@
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="customSubAreaDialog = false">取消</el-button>
-        <el-button type="primary" @click="saveGeoSubArea()"> 确定 </el-button>
+        <el-button @click="customSubAreaDialog = false">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="saveGeoSubArea()"> {{ t('common.sure') }} </el-button>
       </div>
     </template>
   </el-dialog>
@@ -380,7 +383,7 @@ loadTreeData(true)
 const customTreeData = ref([
   {
     id: '000',
-    name: '自定义地理区域'
+    name: t('system.custom_area')
   }
 ])
 const customAreaDialog = ref(false)
@@ -428,11 +431,12 @@ const editCustomArea = (data?) => {
   customAreaDialog.value = true
 }
 const deleteCustomArea = data => {
-  ElMessageBox.confirm('该操作会导致使用了自定义区域的地图无法正常展示，确定删除？', '', {
+  ElMessageBox.confirm(t('system.delete_custom_area_tip'), '', {
     type: 'warning',
     confirmButtonType: 'danger',
     customClass: 'area-delete-dialog',
-    autofocus: false
+    autofocus: false,
+    confirmButtonText: t('common.delete')
   })
     .then(async () => {
       await deleteCustomGeoArea(data.id)
@@ -506,14 +510,14 @@ const subAreaList = ref([])
 const subAreaFormRef = ref()
 const areaRules = reactive<FormRules>({
   name: [
-    { type: 'string', required: true, message: '请输入名称', trigger: 'change' },
-    { min: 1, max: 50, message: '名称长度为 1~50 格字符', trigger: 'blur' }
+    { type: 'string', required: true, message: t('common.input_name'), trigger: 'change' },
+    { min: 1, max: 50, message: t('common.input_limit', [1, 50]), trigger: 'blur' }
   ],
   scopeArr: [
     {
       type: 'array',
       required: true,
-      message: '请选择区域',
+      message: t('system.please_select_area'),
       trigger: 'change'
     }
   ]
@@ -545,11 +549,12 @@ const saveGeoSubArea = async () => {
   })
 }
 const deleteCustomSubArea = async data => {
-  ElMessageBox.confirm('确定删除该自定义区域？', '', {
+  ElMessageBox.confirm(t('system.delete_custom_sub_area_tip'), '', {
     type: 'warning',
     confirmButtonType: 'danger',
     customClass: 'area-delete-dialog',
-    autofocus: false
+    autofocus: false,
+    confirmButtonText: t('common.delete')
   })
     .then(async () => {
       await deleteCustomGeoSubArea(data.id)

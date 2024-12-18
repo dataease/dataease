@@ -640,7 +640,19 @@ export default {
     the_maximum_date: 'Please select the maximum date',
     on_the_left_p: 'Please select the left variable',
     edit_variable_value: 'Edit variable value',
-    secret_length: 'Secret length'
+    secret_length: 'Secret length',
+    custom_area: 'Custom area',
+    custom_area_tip:
+      'Only supports custom geographic areas for provinces and municipalities in China',
+    add_area: 'Add area',
+    area_name: 'Area name',
+    area_scope: 'Area scope',
+    operation: 'Operation',
+    sub_area_tip: 'Please select a province or municipality',
+    delete_custom_area_tip:
+      'This operation will cause the map using the custom area to fail to display normally, are you sure to delete?',
+    please_select_area: 'Please select an area',
+    delete_custom_sub_area_tip: 'Are you sure you want to delete this custom area?'
   },
   components: {
     dashboard_style: 'Dashboard style',

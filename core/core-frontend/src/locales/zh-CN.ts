@@ -627,7 +627,17 @@ export default {
     the_maximum_date: '请选择最大日期',
     on_the_left_p: '请选择左侧变量',
     edit_variable_value: '编辑变量值',
-    secret_length: '密钥长度'
+    secret_length: '密钥长度',
+    custom_area: '自定义区域',
+    custom_area_tip: '仅对中国的省份、直辖市，支持自定义地理区域',
+    add_area: '添加区域',
+    area_name: '区域名称',
+    area_scope: '区域范围',
+    operation: '操作',
+    sub_area_tip: '请选择省份或直辖市',
+    delete_custom_area_tip: '该操作会导致使用了自定义区域的地图无法正常展示，确定删除？',
+    please_select_area: '请选择区域',
+    delete_custom_sub_area_tip: '确定删除该自定义区域？'
   },
   components: {
     dashboard_style: '仪表板风格',

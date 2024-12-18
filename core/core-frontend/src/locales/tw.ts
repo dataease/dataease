@@ -624,7 +624,17 @@ export default {
     the_maximum_date: '請選擇最大日期',
     on_the_left_p: '請選擇左側變數',
     edit_variable_value: '編輯變數值',
-    secret_length: '密鑰長度'
+    secret_length: '密鑰長度',
+    custom_area: '自定義區域',
+    custom_area_tip: '僅對中國的省份、直轄市，支持自定義地理區域',
+    add_area: '添加區域',
+    area_name: '區域名稱',
+    area_scope: '區域範圍',
+    operation: '操作',
+    sub_area_tip: '請選擇省份或直轄市',
+    delete_custom_area_tip: '該操作會導致使用了自定義區域的地圖無法正常展示，確定刪除？',
+    please_select_area: '請選擇區域',
+    delete_custom_sub_area_tip: '確定刪除該自定義區域？'
   },
   components: {
     effective_during_link: '公共連結生效',
