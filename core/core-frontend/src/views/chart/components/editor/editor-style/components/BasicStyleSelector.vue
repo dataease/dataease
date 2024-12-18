@@ -567,6 +567,7 @@ onMounted(() => {
               :effect="themes"
               :min="1"
               :max="18"
+              :step="0.1"
               v-model="state.basicStyleForm.zoomLevel"
               @change="changeBasicStyle('zoomLevel')"
             />
