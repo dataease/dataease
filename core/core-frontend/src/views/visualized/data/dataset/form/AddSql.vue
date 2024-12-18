@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 import referencePlay from '@/assets/svg/reference-play.svg'
 import referenceSetting1 from '@/assets/svg/reference-setting.svg'
+import icon_preferences_outlined from '@/assets/svg/icon_preferences_outlined.svg'
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
@@ -12,6 +13,7 @@ import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
 import icon_playRound_outlined from '@/assets/svg/icon_play-round_outlined.svg'
+import { searchVariableApi } from '@/api/variable'
 import {
   ref,
   reactive,
@@ -21,6 +23,7 @@ import {
   watch,
   onBeforeUnmount,
   shallowRef,
+  computed,
   h
 } from 'vue'
 import { debounce } from 'lodash-es'
@@ -133,9 +136,67 @@ const referenceSetting = () => {
   showVariableMgm.value = true
   parseVariable()
 }
+const fieldFormList = ref([])
 
-onMounted(() => {
+const builtInList = ref([
+  {
+    id: 8,
+    name: t('system.account')
+  },
+  {
+    id: 17,
+    name: t('datasource.user_name')
+  },
+  {
+    id: 9,
+    name: t('commons.email')
+  }
+])
+
+const fieldFormListComputed = computed(() => {
+  return fieldFormList.value.filter(ele =>
+    ele.name.toLowerCase().includes(searchField.value.toLowerCase())
+  )
+})
+const showSysParams = ref(false)
+const searchField = ref('')
+const sysParams = () => {
+  showSysParams.value = true
+}
+
+const insertFieldToCodeMirror = (value: string) => {
+  codeCom.value.dispatch({
+    changes: { from: codeCom.value.viewState.state.selection.ranges[0].from, insert: value },
+    selection: { anchor: codeCom.value.viewState.state.selection.ranges[0].from }
+  })
+}
+
+const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
+  let name2Id = originName
+  const nameIdMap = [...builtInList.value, ...fieldFormList.value].reduce((pre, next) => {
+    pre[next[from]] = next[to]
+    return pre
+  }, {})
+  const on = originName.match(/\[(.+?)\]/g)
+  if (on) {
+    on.forEach(itm => {
+      const ele = itm.slice(1, -1)
+      if (name2Auto) {
+        name2Auto.push(nameIdMap[ele])
+      }
+      name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
+    })
+  }
+  return name2Id
+}
+const handleSearchVariableApi = async () => {
+  return searchVariableApi({}).then(res => {
+    fieldFormList.value = res?.data || []
+  })
+}
+onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
+  await handleSearchVariableApi()
   codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql), true)
 })
 
@@ -256,6 +317,7 @@ const save = (cb?: () => void) => {
 
   parseVariable()
   sql = codeCom.value.state.doc.toString()
+  sql = setNameIdTrans('name', 'id', sql)
   sqlNode.value.changeFlag = true
   if (!sql.trim()) {
     ElMessage.error(t('data_set.cannot_be_empty_de'))
@@ -454,6 +516,14 @@ const mousedownDrag = () => {
           </el-icon>
         </template>
         {{ t('data_set.parameter_settings') }}
+      </el-button>
+      <el-button @click="sysParams" class="system-text_bg" text>
+        <template #icon>
+          <el-icon>
+            <Icon><icon_preferences_outlined class="svg-icon" /></Icon>
+          </el-icon>
+        </template>
+        {{ t('auth.sysParams') }}
       </el-button>
       <el-button :disabled="!changeFlagCode" @click="save(() => {})" type="primary">
         {{ t('data_set.save') }}</el-button
@@ -660,12 +730,22 @@ const mousedownDrag = () => {
         </FixedSizeList>
       </div>
     </div>
-    <div class="sql-code-right" :style="{ width: `calc(100% - ${showLeft ? LeftWidth : 0}px)` }">
+    <div
+      class="sql-code-right"
+      :class="showSysParams && 'p280'"
+      :style="{ width: `calc(100% - ${showLeft ? LeftWidth : 0}px)` }"
+    >
       <code-mirror
         @change="changeFlagCode = true"
         :height="`${dragHeight}px`"
         dom-id="sql-editor"
         ref="myCm"
+        :quotaMap="fieldFormList.filter(ele => [2, 3].includes(ele.deType)).map(ele => ele.name)"
+        :dimensionMap="
+          builtInList
+            .concat(fieldFormList.filter(ele => ![2, 3].includes(ele.deType)))
+            .map(ele => ele.name)
+        "
       ></code-mirror>
       <div class="sql-result" :style="{ height: `calc(100% - ${dragHeight}px)` }">
         <div class="sql-title">
@@ -758,6 +838,62 @@ const mousedownDrag = () => {
               </template>
             </el-table-column>
           </grid-table>
+        </div>
+      </div>
+      <div v-if="showSysParams" class="handle-system">
+        <div class="handle-system_title">
+          {{ t('auth.sysParams') }}
+          <el-icon class="hover-icon" @click="showSysParams = false">
+            <Icon name="icon_close_outlined"><icon_close_outlined class="svg-icon" /></Icon>
+          </el-icon>
+        </div>
+        <div class="handle-system_list">
+          <el-input
+            style="width: 100%; margin-bottom: 16px"
+            v-model="searchField"
+            :placeholder="t('dataset.edit_search')"
+            clearable
+          >
+            <template #prefix>
+              <el-icon>
+                <Icon><icon_searchOutline_outlined class="svg-icon" /></Icon>
+              </el-icon>
+            </template>
+          </el-input>
+          <div class="system-list">
+            <div class="built-in">
+              {{ t('system.system_built_in_variable') }}
+            </div>
+            <div
+              class="variable-item"
+              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
+              v-for="fieldForm in builtInList"
+              :key="fieldForm.id"
+            >
+              {{ fieldForm.name }}
+            </div>
+            <div class="built-in" style="margin-top: 16px">
+              {{ t('system.custom_variable') }}
+            </div>
+            <div
+              class="variable-item flex-align-center"
+              v-for="fieldForm in fieldFormListComputed"
+              :key="fieldForm.id"
+              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
+              :class="[2, 3].includes(fieldForm.deType) && 'with-type'"
+            >
+              <el-icon>
+                <Icon
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[fieldForm.deType]}`"
+                    :is="iconFieldMap[fieldType[fieldForm.deType]]"
+                  ></component
+                ></Icon>
+              </el-icon>
+              <span :title="fieldForm.name">{{ fieldForm.name }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1078,6 +1214,7 @@ const mousedownDrag = () => {
   .sql-code-right {
     float: right;
     height: calc(100vh - 156px);
+    position: relative;
     .sql-result {
       font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
@@ -1185,6 +1322,82 @@ const mousedownDrag = () => {
       }
     }
 
+    &.p280 {
+      padding-right: 280px;
+    }
+
+    .handle-system {
+      height: 100%;
+      width: 280px;
+      border-left: 1px solid #1f232926;
+      position: absolute;
+      right: 0;
+      top: 0;
+      overflow-y: auto;
+      .handle-system_title {
+        padding: 16px;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 54px;
+      }
+
+      .handle-system_list {
+        padding: 16px;
+        border-top: 1px solid #1f232926;
+
+        .system-list {
+          height: calc(100vh - 300px);
+          overflow-y: auto;
+
+          .built-in {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 22px;
+          }
+
+          .variable-item {
+            cursor: pointer;
+            padding: 1px 8px;
+            border: solid 1px #dee0e3;
+            margin-bottom: 8px;
+            background-color: white;
+            color: #1f2329;
+
+            .ed-icon {
+              font-size: 16px;
+              margin-right: 4px;
+            }
+            height: 28px;
+            margin-top: 4px;
+            word-break: break-all;
+            border-radius: 4px;
+
+            .icon-right {
+              display: none;
+              margin-left: auto;
+              align-items: center;
+              .ed-icon {
+                margin: 0 0 0 6px;
+              }
+            }
+            &:hover {
+              border-color: var(--ed-color-primary, #3370ff);
+              background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+            }
+          }
+
+          .with-type:hover {
+            background: rgba(4, 180, 156, 0.1);
+            border-color: #04b49c;
+          }
+        }
+      }
+    }
+
     .table-container {
       height: calc(100% - 46px);
       padding: 16px 24px;
@@ -1228,8 +1441,15 @@ const mousedownDrag = () => {
       margin: 0 10px 0 16px;
     }
 
-    .is-text:hover {
+    .is-text:not(.system-text_bg):hover {
       background: rgba(31, 35, 41, 0.1);
+    }
+
+    .system-text_bg {
+      color: #1f2329;
+      &:hover {
+        color: #3370ff;
+      }
     }
   }
 }
