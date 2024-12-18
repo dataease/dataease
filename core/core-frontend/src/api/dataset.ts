@@ -141,8 +141,12 @@ export const perDelete = async (id): Promise<boolean> => {
   })
 }
 
-export const getDatasourceList = async (): Promise<IResponse> => {
-  return request.post({ url: '/datasource/tree', data: { busiFlag: 'datasource' } }).then(res => {
+export const getDatasourceList = async (weight?: number): Promise<IResponse> => {
+  const data = { busiFlag: 'datasource' }
+  if (weight) {
+    data['weight'] = weight
+  }
+  return request.post({ url: '/datasource/tree', data }).then(res => {
     return res?.data
   })
 }

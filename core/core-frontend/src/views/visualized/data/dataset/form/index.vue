@@ -662,7 +662,8 @@ const getTableName = async (datasourceId, tableName) => {
     searchTable.value = tableName
   }
 }
-
+const isEdit = ref(false)
+const datasetCheckRef = ref()
 const initEdite = async () => {
   let { id, datasourceId, tableName } = route.query
   let { id: copyId } = route.params
@@ -672,11 +673,13 @@ const initEdite = async () => {
     tableName = embeddedStore.tableName
     copyId = embeddedStore.datasetCopyId || copyId
   }
+  isEdit.value = false
   if (copyId || id) {
     const barRes = await barInfoApi(copyId || id)
     if (!barRes || !barRes['id']) {
       return
     }
+    isEdit.value = true
   }
   if (datasourceId) {
     dataSource.value = datasourceId as string
@@ -685,29 +688,30 @@ const initEdite = async () => {
   if (!id && !copyId) return
 
   loading.value = true
-  getDatasetDetails(copyId || id)
-    .then(res => {
-      let arr = []
-      const { id, pid, name } = res || {}
-      nodeInfo = {
-        id,
-        pid,
-        name: copyId ? t('data_set.copy_a_dataset') : name
-      }
-      if (copyId) {
-        nodeInfo.id = ''
-      }
-      datasetName.value = nodeInfo.name
-      allfields.value = res.allFields || []
-      dfsUnion(arr, res.union || [])
-      const [fir] = res.union as { currentDs: { datasourceId: string } }[]
-      dataSource.value = fir?.currentDs?.datasourceId
-      dsChange(dataSource.value)
-      datasetDrag.value.initState(arr)
-    })
-    .finally(() => {
-      loading.value = false
-    })
+  try {
+    const res = await getDatasetDetails(copyId || id)
+    loading.value = false
+    let arr = []
+    const { pid, name } = res || {}
+    nodeInfo = {
+      id: res?.id || null,
+      pid,
+      name: copyId ? t('data_set.copy_a_dataset') : name
+    }
+    if (copyId) {
+      nodeInfo.id = ''
+    }
+    datasetName.value = nodeInfo.name
+    allfields.value = res.allFields || []
+    dfsUnion(arr, res.union || [])
+    const [fir] = res.union as { currentDs: { datasourceId: string } }[]
+    dataSource.value = fir?.currentDs?.datasourceId
+    dsChange(dataSource.value)
+    datasetDrag.value.initState(arr)
+  } catch (error) {
+    console.error(error)
+    loading.value = false
+  }
 }
 
 const joinEditor = (arr: []) => {
@@ -1045,9 +1049,10 @@ const saveAndBack = () => {
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
+  isEdit.value = false
   await new Promise(r => (p = r))
   await initEdite()
-  getDatasource()
+  getDatasource(isEdit.value ? 0 : 2)
   window.addEventListener('resize', handleResize)
   getSqlResultHeight()
   quotaTableHeight.value = sqlResultHeight.value - 242
@@ -1059,14 +1064,21 @@ onBeforeUnmount(() => {
 const getSqlResultHeight = () => {
   sqlResultHeight.value = (document.querySelector('.sql-result') as HTMLElement).offsetHeight
 }
-const getDatasource = () => {
-  getDatasourceList().then(res => {
+const getDatasource = (weight?: number) => {
+  getDatasourceList(weight).then(res => {
     const _list = (res as unknown as DataSource[]) || []
     if (_list && _list.length > 0 && _list[0].id === '0') {
       state.dataSourceList = dfsChild(_list[0].children)
     } else {
       state.dataSourceList = dfsChild(_list)
     }
+    nextTick(() => {
+      const param = {
+        methodName: 'execute',
+        args: null
+      }
+      datasetCheckRef.value?.invokeMethod(param)
+    })
   })
 }
 
@@ -2256,6 +2268,15 @@ const getDsIconName = data => {
   <XpackComponent
     jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
     @load-ds-plugin="loadDsPlugin"
+  />
+  <XpackComponent
+    v-if="state.dataSourceList"
+    ref="datasetCheckRef"
+    :is-edit="isEdit"
+    :ds-list="state.dataSourceList"
+    :ds-id="dataSource"
+    @back="pushDataset"
+    jsname="L2NvbXBvbmVudC9kYXRhc2V0L2luZGV4"
   />
 </template>
 
