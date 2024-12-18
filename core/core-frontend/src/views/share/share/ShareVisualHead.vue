@@ -45,7 +45,11 @@
           <template #suffix>
             <div class="share-input-suffix">
               <span class="suffix-split" />
-              <div class="input-suffix-btn edit-uuid-icon" v-if="!linkCustom" @click="editUuid">
+              <div
+                class="input-suffix-btn edit-uuid-icon"
+                v-if="!linkCustom"
+                @click.stop="editUuid"
+              >
                 <el-tooltip
                   class="item"
                   effect="dark"
@@ -57,7 +61,7 @@
                   </Icon>
                 </el-tooltip>
               </div>
-              <div class="input-suffix-btn" v-if="linkCustom" @click="resetUuid">
+              <div class="input-suffix-btn" v-if="linkCustom" @click.stop="resetUuid">
                 <el-tooltip
                   class="item"
                   effect="dark"
@@ -67,7 +71,7 @@
                   <Icon name="icon_close_outlined"><icon_close_outlined class="svg-icon" /></Icon>
                 </el-tooltip>
               </div>
-              <div class="input-suffix-btn done" v-if="linkCustom" @click="finishEditUuid">
+              <div class="input-suffix-btn done" v-if="linkCustom" @click.stop="finishEditUuid">
                 <el-tooltip class="item" effect="dark" :content="t('commons.save')" placement="top">
                   <Icon name="icon_done_outlined"><icon_done_outlined class="svg-icon" /></Icon>
                 </el-tooltip>
@@ -185,7 +189,7 @@
     </div>
   </el-popover>
   <custom-link-pwd ref="customPwdRef" @pwd-change="customPwdChange" />
-  <ticket-dialog ref="ticketDialogRef">
+  <ticket-dialog v-if="showTicket" ref="ticketDialogRef">
     <div v-if="!shareDisable && shareEnable && showTicket">
       <share-ticket
         :uuid="state.detailInfo.uuid"
@@ -271,6 +275,7 @@ const hideShare = async () => {
   }
   const uuidValid = await validateUuid()
   if (uuidValid) {
+    linkCustom.value = false
     popoverVisible.value = false
     return
   }
@@ -635,11 +640,15 @@ const resetUuid = event => {
 }
 const openTicket = () => {
   showTicket.value = true
-  ticketDialogRef.value.open()
+  nextTick(() => {
+    ticketDialogRef.value.open()
+  })
 }
 const closeTicket = () => {
   ticketDialogRef.value.close()
-  showTicket.value = false
+  nextTick(() => {
+    showTicket.value = false
+  })
 }
 const updateRequireTicket = val => {
   state.detailInfo.ticketRequire = val

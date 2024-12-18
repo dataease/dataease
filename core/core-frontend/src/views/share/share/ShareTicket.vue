@@ -153,7 +153,7 @@ const props = defineProps({
 })
 const ticketEditor = ref()
 const { ticketRequire } = toRefs(props)
-
+const ticketLimit = ref(0)
 const state = reactive({
   tableData: [],
   paginationConfig: {
@@ -178,9 +178,9 @@ const requireTicketChange = val => {
     emits('requireChange', val)
   })
 }
-const createLimit = (count?: number) => {
-  const realCount = count ? count : state.tableData.length || 0
-  if (realCount > 4) {
+const createLimit = () => {
+  const realCount = state.paginationConfig.total
+  if (ticketLimit.value && realCount >= ticketLimit.value) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
       type: 'warning',
@@ -191,9 +191,9 @@ const createLimit = (count?: number) => {
       showCancelButton: false,
       tip: t('work_branch.max_ticket_count')
     })
-    return false
+    return true
   }
-  return true
+  return false
 }
 const getArgCount = row => {
   const args = row.args
@@ -209,6 +209,9 @@ const getArgCount = row => {
   }
 }
 const addRow = () => {
+  if (createLimit()) {
+    return
+  }
   ticketEditor.value.edit(null, formatLinkAddr())
 }
 const formatLinkAddr = () => {
@@ -280,7 +283,16 @@ const sizeChange = size => {
   state.paginationConfig.pageSize = size
   loadTicketData()
 }
+
+const getLimit = () => {
+  const url = '/ticket/limit'
+  request.get({ url }).then(res => {
+    const limit = res.data
+    ticketLimit.value = limit
+  })
+}
 onMounted(() => {
+  getLimit()
   loadTicketData()
 })
 </script>

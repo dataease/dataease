@@ -462,6 +462,7 @@ const beforeClose = async done => {
   }
   const uuidValid = await validateUuid()
   if (uuidValid) {
+    linkCustom.value = false
     showTicket.value = false
     done()
   }
