@@ -360,9 +360,14 @@ const setTreeDefault = () => {
       if (!!curComponent.value.treeFieldList.length) {
         const [fir] = curComponent.value.treeFieldList
         if (fir && fir.field !== checkId) {
+          const [top] = curComponent.value.treeFieldList || []
+          if (top?.id === fieldObj.id) return
+
           curComponent.value.treeFieldList = [fieldObj]
         }
       } else if (fieldObj) {
+        const [top] = curComponent.value.treeFieldList || []
+        if (top?.id === fieldObj.id) return
         curComponent.value.treeFieldList = [fieldObj]
       }
     }
