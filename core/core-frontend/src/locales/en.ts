@@ -65,7 +65,7 @@ export default {
   toolbox: {
     name: 'Toolbox',
     template_center: 'Template center',
-    org_center: 'Organization management center'
+    org_center: 'Organization Management Center'
   },
   api_pagination: {
     help_documentation: 'Help Documentation',
@@ -424,7 +424,7 @@ export default {
   system: {
     user: 'User',
     role: 'Role',
-    addUser: '@:common.add@:system.user',
+    addUser: '@:common.add @:system.user',
     click_to_show: 'Click to show',
     click_to_hide: 'Click to hide',
     basic_settings: 'Basic settings',
@@ -701,7 +701,7 @@ export default {
     edit_title: 'Edit User',
     user_id: 'User',
     user_id_empty: 'Please enter an accurate user ID/account',
-    search_placeholder: 'Search for name, account, email',
+    search_placeholder: 'Search by name, account, email',
     batch_del: 'Batch delete',
     selection_info: '{0} items selected',
     clear_button: 'Clear',
@@ -803,7 +803,7 @@ export default {
     system_role: 'System built-in role',
     custom_role: 'Custom role',
     system: 'System',
-    user_search_placeholder: 'Search name, account',
+    user_search_placeholder: 'Search by name, account',
     manager: 'Administrator',
     staff: 'User',
     system_role_edit_tips: 'System role cannot be edited',

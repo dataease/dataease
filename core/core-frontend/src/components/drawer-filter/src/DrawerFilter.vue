@@ -53,7 +53,7 @@ defineExpose({
         v-model="state.activeStatus"
         value-key="id"
         filterable
-        :placeholder="t('common.please_select') + props.property.placeholder"
+        :placeholder="t('common.please_select') + ' ' + props.property.placeholder"
         multiple
         @change="selectStatus"
       >
