@@ -250,7 +250,7 @@ const handleFocus = () => {
 
 defineExpose({ getNode })
 const appStore = useAppStoreWithOut()
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 onMounted(() => {
   initDataset()
   useEmitt({

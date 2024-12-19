@@ -198,7 +198,7 @@ onMounted(() => {
 })
 
 const appStore = useAppStoreWithOut()
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 const itemFormRules = reactive<FormRules>({
   chartShowName: [
     { required: true, message: t('commons.input_content'), trigger: 'change' },
