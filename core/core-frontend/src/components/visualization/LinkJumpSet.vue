@@ -94,7 +94,7 @@
                     v-model="state.linkJumpInfo.linkType"
                   >
                     <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
-                    <el-radio label="inner">{{ resourceType }}</el-radio>
+                    <el-radio label="inner">{{ t('visualization.dashboard_dataV') }}</el-radio>
                   </el-radio-group>
                   <el-radio-group class="larger-radio" v-if="!state.linkJumpInfo" disabled>
                     <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>

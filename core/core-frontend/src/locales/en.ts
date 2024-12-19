@@ -2765,6 +2765,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     text_decoration: 'underline',
     select_target_resource: 'Please select the target resource',
     target_dashboard_dataV: 'Target Dashboard\\Screen',
+    dashboard_dataV: 'Dashboard\\Data Screen',
     effective_during_link: 'Public link active',
     condition_style_set: 'Condition Style Settings',
     cell_merge_tips:

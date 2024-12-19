@@ -115,6 +115,7 @@ export const snapshotStore = defineStore('snapshot', {
       }
     },
     snapshotPublish(snapshotInfo) {
+      dvMainStore.updateCurDvInfo(snapshotInfo.dvInfo)
       dvMainStore.setComponentData(snapshotInfo.componentData)
       dvMainStore.setCanvasStyle(snapshotInfo.canvasStyleData)
       dvMainStore.setCanvasViewInfo(snapshotInfo.canvasViewInfo)
