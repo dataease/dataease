@@ -65,7 +65,7 @@ export default {
   toolbox: {
     name: 'Toolbox',
     template_center: 'Template center',
-    org_center: 'Organization management center'
+    org_center: 'Organization Management Center'
   },
   api_pagination: {
     help_documentation: 'Help Documentation',
@@ -424,7 +424,7 @@ export default {
   system: {
     user: 'User',
     role: 'Role',
-    addUser: '@:common.add@:system.user',
+    addUser: '@:common.add @:system.user',
     click_to_show: 'Click to show',
     click_to_hide: 'Click to hide',
     basic_settings: 'Basic settings',
@@ -701,7 +701,7 @@ export default {
     edit_title: 'Edit User',
     user_id: 'User',
     user_id_empty: 'Please enter an accurate user ID/account',
-    search_placeholder: 'Search for name, account, email',
+    search_placeholder: 'Search by name, account, email',
     batch_del: 'Batch delete',
     selection_info: '{0} items selected',
     clear_button: 'Clear',
@@ -803,7 +803,7 @@ export default {
     system_role: 'System built-in role',
     custom_role: 'Custom role',
     system: 'System',
-    user_search_placeholder: 'Search name, account',
+    user_search_placeholder: 'Search by name, account',
     manager: 'Administrator',
     staff: 'User',
     system_role_edit_tips: 'System role cannot be edited',
@@ -4180,6 +4180,10 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
       distribute_frequency: 'Sending frequency',
       one_time: 'Only send once',
       interval: 'Regularly send',
+      execute_now: 'Execute now',
+      end_time: 'Task end time',
+      please_select_end_time: 'Please select task end time',
+      end_time_error: 'End time must greater than current',
       distribute_setting: 'Sending settings',
       task_distribute_setting: 'Task sending settings',
       receive_object: 'Receiving object',
