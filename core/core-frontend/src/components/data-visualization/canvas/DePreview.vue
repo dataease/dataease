@@ -321,7 +321,7 @@ const winMsgHandle = event => {
   console.info('Received Message: ' + JSON.stringify(msgInfo))
   if (msgInfo?.targetSourceId === dvInfo.value.id + '' && isMainCanvas(canvasId.value))
     if (msgInfo.type === 'attachParams') {
-      winMsgOuterParamsHandle(event)
+      winMsgOuterParamsHandle(msgInfo)
     } else if (msgInfo.type === 'webParams') {
       // 网络消息处理
       winMsgWebParamsHandle(msgInfo)
