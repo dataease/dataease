@@ -16,6 +16,7 @@ import { rsaEncryp } from '@/utils/encryption'
 import VanForm from 'vant/es/form'
 import VanField from 'vant/es/field'
 import VanButton from 'vant/es/button'
+import { XpackComponent } from '@/components/plugin'
 import 'vant/es/button/style'
 import 'vant/es/toast/style'
 import 'vant/es/field/style'
@@ -31,6 +32,9 @@ const appearanceStore = useAppearanceStoreWithOut()
 const username = ref('')
 const password = ref('')
 const duringLogin = ref(false)
+
+const xpackLoadFail = ref(false)
+const xpackInvalidPwd = ref()
 
 const checkUsername = value => {
   if (!value) {
@@ -75,6 +79,13 @@ loadAppearance()
 const handleBlur = () => {
   inputFocus.value = ''
 }
+
+const invalidPwdCb = val => {
+  duringLogin.value = !!val
+  if (val) {
+    router.push({ path: '/index' })
+  }
+}
 const onSubmit = async () => {
   if (!checkUsername(username.value) || !validatePwd(password.value)) {
     showToast({
@@ -97,6 +108,13 @@ const onSubmit = async () => {
       userStore.setToken(token)
       userStore.setExp(exp)
       userStore.setTime(Date.now())
+      if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
+        const param = {
+          methodName: 'init'
+        }
+        xpackInvalidPwd?.value.invokeMethod(param)
+        return
+      }
       router.push({ path: '/index' })
     })
     .catch(() => {
@@ -170,6 +188,12 @@ const usernameEndValidate = ({ status, message }) => {
       </van-form>
     </div>
   </div>
+  <XpackComponent
+    ref="xpackInvalidPwd"
+    jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
+    @load-fail="() => (xpackLoadFail = true)"
+    @call-back="invalidPwdCb"
+  />
 </template>
 
 <style lang="less">
