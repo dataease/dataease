@@ -108,7 +108,7 @@
                         v-model="baseFilter.filterSelected"
                         filterable
                         style="width: 100%"
-                        :placeholder="t('visualization.select_query_condition')"
+                        :placeholder="t('v_query.select_query_condition')"
                         clearable
                       >
                         <el-option
