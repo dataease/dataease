@@ -616,7 +616,7 @@ import { reactive, ref, nextTick, computed, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { fieldType } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
-import { queryTreeApi } from '@/api/visualization/dataVisualization'
+import { findDvType, queryTreeApi } from '@/api/visualization/dataVisualization'
 import { ElMessage, ElScrollbar } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
@@ -1021,12 +1021,16 @@ const filterNodeMethod = (value, data) => {
 const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 const openType = '_blank'
 
-const resourceEdit = resourceId => {
+const resourceEdit = async resourceId => {
   if (state.curDataVWeight && state.curDataVWeight < 7) {
     ElMessage.error(t('visualization.no_edit_auth'))
     return
   }
-  const baseUrl = dvInfo.value.type === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
+  let busiFlagResult
+  await findDvType(resourceId).then(res => {
+    busiFlagResult = res.data
+  })
+  const baseUrl = busiFlagResult === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
   if (isEmbedded.value) {
     embeddedStore.clearState()
     if (dvInfo.value.type === 'dataV') {
