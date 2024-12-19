@@ -234,7 +234,7 @@ public class ChartDataManage {
         }
 
         // web参数条件
-        if (ObjectUtils.isNotEmpty(chartExtRequest.getOuterParamsFilters())) {
+        if (ObjectUtils.isNotEmpty(chartExtRequest.getWebParamsFilters())) {
             filters.addAll(chartExtRequest.getWebParamsFilters());
         }
 

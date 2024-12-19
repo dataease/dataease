@@ -318,6 +318,7 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
 // 目标校验： 需要校验targetSourceId 是否是当前可视化资源ID
 const winMsgHandle = event => {
   const msgInfo = event.data
+  console.info('Received Message: ' + JSON.stringify(msgInfo))
   if (msgInfo?.targetSourceId === dvInfo.value.id + '' && isMainCanvas(canvasId.value))
     if (msgInfo.type === 'attachParams') {
       winMsgOuterParamsHandle(event)
