@@ -8,9 +8,7 @@ import io.dataease.extensions.view.dto.*;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class IndicatorHandler extends YoyChartHandler {
@@ -31,6 +29,16 @@ public class IndicatorHandler extends YoyChartHandler {
     public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         this.setIndicatorHandlerXAxis(formatResult, filterResult);
         return (T) super.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
+    }
+
+    @Override
+    public AxisFormatResult formatAxis(ChartViewDTO view) {
+        var axisMap = new HashMap<ChartAxis, List<ChartViewFieldDTO>>();
+        var yAxis = new ArrayList<>(view.getYAxis());
+        axisMap.put(ChartAxis.xAxis, new ArrayList<>());
+        axisMap.put(ChartAxis.yAxis, yAxis);
+        var context = new HashMap<String, Object>();
+        return new AxisFormatResult(axisMap, context);
     }
 
     private void setIndicatorHandlerXAxis(AxisFormatResult formatResult, CustomFilterResult filterResult) {
