@@ -79,6 +79,10 @@ public interface DataFillingApi {
     @PostMapping("/task/save")
     Long saveTask(@RequestBody TaskInfoVO task);
 
+    @DePermit({"#p0.formId+':manage'"})
+    @PostMapping("/task/executeNow")
+    void executeNow(@RequestBody TaskInfoVO task);
+
     @PostMapping("/task/logMsg")
     String logMsg(@RequestBody ReportInstanceMsgRequest request);
 

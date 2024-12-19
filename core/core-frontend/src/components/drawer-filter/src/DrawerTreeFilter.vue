@@ -88,7 +88,7 @@ defineExpose({
         :highlight-current="true"
         multiple
         :render-after-expand="false"
-        :placeholder="$t('common.please_select') + treeConfig.placeholder"
+        :placeholder="$t('common.please_select') + ' ' + treeConfig.placeholder"
         :show-checkbox="treeConfig.showCheckbox"
         :check-strictly="treeConfig.checkStrictly"
         :check-on-click-node="treeConfig.checkOnClickNode"
