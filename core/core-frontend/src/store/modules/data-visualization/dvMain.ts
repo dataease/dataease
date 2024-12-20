@@ -1475,7 +1475,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         selfWatermarkStatus: true,
         watermarkInfo: watermarkInfo,
         mobileLayout: false,
-        contentId: '0'
+        contentId: '0',
+        weight: 9
       }
       const canvasStyleDataNew =
         dvType === 'dashboard'
