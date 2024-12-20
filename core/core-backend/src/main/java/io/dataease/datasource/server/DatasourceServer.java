@@ -189,9 +189,8 @@ public class DatasourceServer implements DatasourceApi {
             DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
         }
         if (dataSourceDTO.getPid() != 0) {
-            List<Long> ids = new ArrayList<>();
-            getParents(dataSourceDTO.getPid(), ids);
-            if (ids.contains(dataSourceDTO.getId())) {
+            List<Long> pidList = dataSourceManage.getPidList(dataSourceDTO.getPid());
+            if (pidList.contains(dataSourceDTO.getId())) {
                 DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
             }
         }
@@ -571,7 +570,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void recursionDel(Long datasourceId) throws DEException {
-        CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasourceId);
+        CoreDatasource coreDatasource = dataSourceManage.getDatasource(datasourceId);
         if (ObjectUtils.isEmpty(coreDatasource)) {
             return;
         }
@@ -1065,13 +1064,6 @@ public class DatasourceServer implements DatasourceApi {
         return datasourceDTO;
     }
 
-    private void getParents(Long pid, List<Long> ids) {
-        CoreDatasource parent = dataSourceManage.getCoreDatasource(pid);// 查找父级folder
-        ids.add(parent.getId());
-        if (parent.getPid() != null && parent.getPid() != 0) {
-            getParents(parent.getPid(), ids);
-        }
-    }
 
     private void filterDs(List<BusiNodeVO> busiNodeVOS, List<Long> ids, String type, Long id) {
         for (BusiNodeVO busiNodeVO : busiNodeVOS) {

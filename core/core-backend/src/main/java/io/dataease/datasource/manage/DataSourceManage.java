@@ -7,8 +7,10 @@ import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.DataSourceType;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.ext.mapper.CoreDatasourceExtMapper;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
+import io.dataease.datasource.dao.ext.po.DsItem;
 import io.dataease.datasource.dto.DatasourceNodeBO;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 @Component
 public class DataSourceManage {
@@ -42,6 +45,9 @@ public class DataSourceManage {
 
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
+
+    @Resource
+    private CoreDatasourceExtMapper coreDatasourceExtMapper;
 
     private DatasourceNodeBO rootNode() {
         return new DatasourceNodeBO(0L, "root", false, 7, -1L, 0, "mysql");
@@ -166,6 +172,31 @@ public class DataSourceManage {
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public CoreDatasource getCoreDatasource(Long id) {
         return coreDatasourceMapper.selectById(id);
+    }
+
+    public List<Long> getPidList(Long pid) {
+        if (ObjectUtils.isEmpty(pid) || pid.equals(0L)) {
+            return null;
+        }
+        List<Long> result = new ArrayList<>();
+        Stack<Long> stack = new Stack<>();
+        stack.push(pid);
+        while (!stack.isEmpty()) {
+            Long cid = stack.pop();
+            DsItem item = coreDatasourceExtMapper.queryItem(cid);
+            if (ObjectUtils.isNotEmpty(item)) {
+                result.add(cid);
+                Long cpid = null;
+                if (ObjectUtils.isNotEmpty(cpid = item.getPid()) && !cpid.equals(0L)) {
+                    stack.add(cpid);
+                }
+            }
+        }
+        return result;
+    }
+
+    public CoreDatasource getDatasource(Long id) {
+        return getCoreDatasource(id);
     }
 
     public DatasourceDTO getDs(Long id) {
