@@ -196,7 +196,6 @@ const handleSearchVariableApi = async () => {
 }
 onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
-  await handleSearchVariableApi()
   codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql), true)
 })
 
@@ -317,7 +316,6 @@ const save = (cb?: () => void) => {
 
   parseVariable()
   sql = codeCom.value.state.doc.toString()
-  sql = setNameIdTrans('name', 'id', sql)
   sqlNode.value.changeFlag = true
   if (!sql.trim()) {
     ElMessage.error(t('data_set.cannot_be_empty_de'))
@@ -517,7 +515,7 @@ const mousedownDrag = () => {
         </template>
         {{ t('data_set.parameter_settings') }}
       </el-button>
-      <el-button @click="sysParams" class="system-text_bg" text>
+      <el-button v-if="false" @click="sysParams" class="system-text_bg" text>
         <template #icon>
           <el-icon>
             <Icon><icon_preferences_outlined class="svg-icon" /></Icon>
