@@ -1,12 +1,12 @@
 <template>
   <div class="mobile-link-container" v-loading="loading">
+    <ErrorTemplate v-if="!loading && disableError" msg="已禁用分享功能，请联系管理员！" />
+    <IframeError v-else-if="!loading && iframeError" />
     <ErrorTemplate
-      v-if="!loading && (disableError || peRequireError)"
-      :msg="
-        disableError ? '已禁用分享功能，请联系管理员！' : '已设置有效期密码必填，当前链接无效！'
-      "
+      v-else-if="!loading && peRequireError"
+      msg="已设置有效期密码必填，当前链接无效！"
     />
-    <LinkError v-if="!loading && !linkExist" />
+    <LinkError v-else-if="!loading && !linkExist" />
     <Exp v-else-if="!loading && linkExp" />
     <PwdTips v-else-if="!loading && !pwdValid" />
     <TicketError
@@ -29,6 +29,7 @@ import TicketError from './TicketError.vue'
 import { ProxyInfo, shareProxy } from './ShareProxy'
 import Exp from './exp.vue'
 import LinkError from './error.vue'
+import IframeError from './IframeError.vue'
 import PwdTips from './pwd.vue'
 import ErrorTemplate from './ErrorTemplate.vue'
 const disableError = ref(true)
@@ -36,6 +37,7 @@ const peRequireError = ref(true)
 const linkExist = ref(false)
 const loading = ref(true)
 const linkExp = ref(false)
+const iframeError = ref(true)
 const pwdValid = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const pcanvas = ref(null)
@@ -58,6 +60,12 @@ onMounted(async () => {
     return
   }
   disableError.value = false
+  if (proxyInfo?.inIframeError) {
+    loading.value = false
+    iframeError.value = true
+    return
+  }
+  iframeError.value = false
   if (proxyInfo && !proxyInfo.peRequireValid) {
     loading.value = false
     peRequireError.value = true

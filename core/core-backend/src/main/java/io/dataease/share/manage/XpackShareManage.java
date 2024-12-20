@@ -239,6 +239,7 @@ public class XpackShareManage {
         if (!peRequireValid(sharedBase, xpackShare)) {
             XpackShareProxyVO vo = new XpackShareProxyVO();
             vo.setPeRequireValid(false);
+            vo.setInIframeError(false);
             return vo;
         }
         String linkToken = LinkTokenUtil.generate(xpackShare.getCreator(), xpackShare.getResourceId(), xpackShare.getExp(), xpackShare.getPwd(), xpackShare.getOid());

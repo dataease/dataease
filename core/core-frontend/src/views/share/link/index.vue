@@ -3,13 +3,12 @@
     class="link-container"
     v-loading="loading || requestStore.loadingMap[permissionStore.currentPath]"
   >
-    <ErrorTemplate
-      v-if="!loading && (disableError || peRequireError)"
-      :msg="
-        disableError ? '已禁用分享功能，请联系管理员！' : '已设置有效期密码必填，当前链接无效！'
-      "
-    />
+    <ErrorTemplate v-if="!loading && disableError" msg="已禁用分享功能，请联系管理员！" />
     <IframeError v-else-if="!loading && iframeError" />
+    <ErrorTemplate
+      v-else-if="!loading && peRequireError"
+      msg="已设置有效期密码必填，当前链接无效！"
+    />
     <LinkError v-else-if="!loading && !linkExist" />
     <Exp v-else-if="!loading && linkExp" />
     <PwdTips v-else-if="!loading && !pwdValid" />
