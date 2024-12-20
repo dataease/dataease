@@ -32,6 +32,7 @@
         :table-data="state.tableData"
         :pagination="state.paginationConfig"
         class="popper-max-width"
+        :class="{ 'popper-max-height': state.tableData?.length >= 10 }"
         @current-change="pageChange"
         @size-change="sizeChange"
       >
@@ -107,7 +108,7 @@
               </el-tooltip>
 
               <el-tooltip class="item" effect="dark" :content="t('commons.delete')" placement="top">
-                <el-button text @click.stop="deleteTicket(scope.row, scope.$index)">
+                <el-button text @click.stop="deleteTicket(scope.row)">
                   <template #icon>
                     <Icon name="icon_delete-trash_outlined"
                       ><icon_deleteTrash_outlined class="svg-icon"
@@ -249,11 +250,11 @@ const refreshTicket = row => {
   })
 }
 
-const deleteTicket = (row, index) => {
+const deleteTicket = row => {
   const param = { ticket: row.ticket }
   const url = '/ticket/delTicket'
   request.post({ url, data: param }).then(() => {
-    state.tableData.splice(index, 1)
+    loadTicketData()
   })
 }
 
@@ -448,6 +449,17 @@ onMounted(() => {
         }
       }
     }
+    .popper-max-height {
+      :deep(.ed-table--fit) {
+        height: 438px !important;
+      }
+    }
+  }
+  :deep(.pagination-cont) {
+    margin-top: 16px !important;
+  }
+  :deep(.is-last) {
+    display: none;
   }
 }
 </style>
