@@ -35,6 +35,9 @@ const duringLogin = ref(false)
 
 const xpackLoadFail = ref(false)
 const xpackInvalidPwd = ref()
+const mfaRef = ref()
+const showMfa = ref(false)
+const mfaData = ref({ enabled: false, ready: false, uid: '', origin: 0 })
 
 const checkUsername = value => {
   if (!value) {
@@ -86,6 +89,12 @@ const invalidPwdCb = val => {
     router.push({ path: '/index' })
   }
 }
+const closeMfa = () => {
+  showMfa.value = false
+}
+const mfaSuccess = () => {
+  router.push({ path: '/index' })
+}
 const onSubmit = async () => {
   if (!checkUsername(username.value) || !validatePwd(password.value)) {
     showToast({
@@ -104,7 +113,16 @@ const onSubmit = async () => {
   duringLogin.value = true
   loginApi(param)
     .then(res => {
-      const { token, exp } = res.data
+      const { token, exp, mfa } = res.data
+      showMfa.value = false
+      if (mfa?.enabled) {
+        for (const key in mfa) {
+          mfaData.value[key] = mfa[key]
+        }
+        showMfa.value = true
+        duringLogin.value = false
+        return
+      }
       userStore.setToken(token)
       userStore.setExp(exp)
       userStore.setTime(Date.now())
@@ -193,6 +211,14 @@ const usernameEndValidate = ({ status, message }) => {
     jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
     @load-fail="() => (xpackLoadFail = true)"
     @call-back="invalidPwdCb"
+  />
+  <XpackComponent
+    ref="mfaRef"
+    v-if="showMfa"
+    :mfa-data="mfaData"
+    jsname="L2NvbXBvbmVudC9sb2dpbi9NZmFTdGVw"
+    @close="closeMfa"
+    @success="mfaSuccess"
   />
 </template>
 
