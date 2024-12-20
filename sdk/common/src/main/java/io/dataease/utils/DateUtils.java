@@ -12,7 +12,8 @@ public class DateUtils {
     public static String time2String(Long time, String pattern) {
         if (StringUtils.isBlank(pattern)) pattern = "yyyy-MM-dd HH:mm:ss";
         DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern);
-        LocalDateTime timeByMilli = Instant.ofEpochMilli(time).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+        ZoneId zoneId = ZoneId.systemDefault();
+        LocalDateTime timeByMilli = Instant.ofEpochMilli(time).atZone(zoneId).toLocalDateTime();
         return format.format(timeByMilli);
     }
     public static String time2String(Long time) {
