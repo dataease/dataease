@@ -4318,5 +4318,14 @@ export default {
     step_2: '绑定 MFA 验证器',
     unbind_confirm: '确定解除 MFA 多因子认证绑定吗？',
     mfa_code: 'MFA 验证码'
+  },
+  threshold_warn: {
+    all: '全部',
+    normal: '正常',
+    abnormal: '异常',
+    batch_del_confirm: '确定删除 {0} 个告警任务吗？',
+    search_placeholder: '通过告警名称搜索',
+    chart_name: '图表名称',
+    warn_status: '告警状态'
   }
 }

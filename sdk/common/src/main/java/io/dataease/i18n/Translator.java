@@ -1,5 +1,6 @@
 package io.dataease.i18n;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
@@ -111,6 +112,10 @@ public class Translator {
                 for (Object item : collection) {
                     translateObject(item);
                 }
+            }
+            if (javaObject instanceof IPage) {
+                IPage iPage = (IPage) javaObject;
+                translateObject(iPage.getRecords());
             }
 
             if (javaObject.getClass().isArray()) {
