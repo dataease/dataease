@@ -118,7 +118,7 @@ onMounted(() => {
             }"
           ></TopDesktopCard>
         </div>
-        <div class="border-top">
+        <div class="border-top" v-if="false">
           <el-popover
             :teleported="false"
             popper-class="popper-class_ai-copilot"
