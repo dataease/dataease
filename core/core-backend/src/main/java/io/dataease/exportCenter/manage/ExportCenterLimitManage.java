@@ -10,7 +10,7 @@ public class ExportCenterLimitManage {
     @Value("${dataease.export.dataset.limit:100000}")
     private Long datasetLimit;
 
-    @Value("${dataease.export.view.limit:100000}")
+    @Value("${dataease.export.views.limit:100000}")
     private Long viewLimit;
 
     public Long getExportLimit(String type) {
