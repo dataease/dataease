@@ -1177,7 +1177,7 @@ const onThresholdChange = val => {
     }
     return false
   })
-  if (type) {
+  if (type || view.value.type === 'rich-text') {
     calcData(view.value)
   } else {
     renderChart(view.value)

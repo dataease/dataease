@@ -461,7 +461,11 @@ init()
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="2" v-if="isNotEmptyAndNull(item)" style="padding-left: 0 !important">
+            <el-col
+              :span="2"
+              v-if="isNotEmptyAndNull(item) && chart.type !== 'rich-text'"
+              style="padding-left: 0 !important"
+            >
               <el-form-item class="form-item">
                 <el-select
                   v-model="item.type"
