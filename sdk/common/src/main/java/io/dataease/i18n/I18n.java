@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface I18n {
-    String value() default I18nConstants.LANG_COOKIE_NAME;
+    String value() default "";
 }

@@ -1,19 +1,17 @@
 package io.dataease.i18n;
 
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+@Getter
 public enum Lang {
 
     zh_CN("zh-CN"), zh_TW("zh-TW"), en_US("en-US");
 
-    private String desc;
+    private final String desc;
 
     Lang(String desc) {
         this.desc = desc;
-    }
-
-    public String getDesc() {
-        return this.desc;
     }
 
     public static Lang getLang(String lang) {
