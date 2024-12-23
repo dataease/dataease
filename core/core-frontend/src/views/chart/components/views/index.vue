@@ -136,6 +136,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  optType: {
+    type: String,
+    required: false
   }
 })
 const dynamicAreaId = ref('')
@@ -714,6 +718,7 @@ const changeDataset = () => {
 }
 onMounted(() => {
   if (!view.value.isPlugin) {
+    state.drillClickDimensionList = view.value?.chartExtRequest?.drill ?? []
     queryData(!showPosition.value.includes('viewDialog'))
   }
   if (!listenerEnable.value) {
@@ -1223,7 +1228,11 @@ const titleTooltipWidth = computed(() => {
       :themes="canvasStyleData.dashboard.themeColor"
       :view-icon="view.type"
     ></chart-empty-info>
-    <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
+    <drill-path
+      :disabled="optType === 'enlarge'"
+      :drill-filters="state.drillFilters"
+      @onDrillJump="drillJump"
+    />
     <XpackComponent
       ref="openHandler"
       jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="

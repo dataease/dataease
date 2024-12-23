@@ -98,6 +98,7 @@
         <component-wrapper
           v-if="optType === 'enlarge'"
           class="enlarge-wrapper"
+          :opt-type="optType"
           :view-info="viewInfo"
           :config="config"
           :dv-info="dvInfo"

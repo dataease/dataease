@@ -17,6 +17,11 @@ const props = defineProps({
     type: Object,
     required: false,
     default: null
+  },
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
@@ -75,6 +80,7 @@ const drillPathVar = computed(() => [{ '--drill-color': textColor.value }])
     v-if="props.drillFilters && props.drillFilters.length > 0"
     class="drill"
     :style="drillPathVar"
+    :class="{ noClick: disabled }"
   >
     <el-breadcrumb :separator-icon="ArrowRight" class="drill-style">
       <el-breadcrumb-item class="drill-item" @click="drillJump(0)">
@@ -118,5 +124,8 @@ const drillPathVar = computed(() => [{ '--drill-color': textColor.value }])
   ::v-deep(.ed-icon) {
     color: var(--drill-color) !important;
   }
+}
+.noClick {
+  pointer-events: none; /* 禁止鼠标点击 */
 }
 </style>

@@ -115,6 +115,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  optType: {
+    type: String,
+    required: false
   }
 })
 const {
@@ -418,6 +422,7 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
           ref="component"
           class="component"
           :canvas-style-data="canvasStyleData"
+          :opt-type="optType"
           :dv-info="dvInfo"
           :dv-type="dvInfo.type"
           :canvas-view-info="canvasViewInfo"
