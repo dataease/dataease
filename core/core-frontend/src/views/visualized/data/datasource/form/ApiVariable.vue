@@ -110,6 +110,10 @@ const options = [
     value: 'params'
   },
   {
+    label: t('data_source.page_parameter'),
+    value: 'pageParams'
+  },
+  {
     label: t('data_source.fixed_value'),
     value: 'fixed'
   },
@@ -120,6 +124,16 @@ const options = [
   {
     label: t('data_source.customize'),
     value: 'custom'
+  }
+]
+const pageParams = [
+  {
+    label: '${pageNumber}',
+    value: '${pageNumber}'
+  },
+  {
+    label: '${pageSize}',
+    value: '${pageSize}'
   }
 ]
 const timeFunLists = [
@@ -221,11 +235,23 @@ const timeFunLists = [
                   :value="item.value"
                 />
               </el-select>
+              <el-select
+                v-model="element.value"
+                v-if="!needMock && activeName === 'table' && element.nameType === 'pageParams'"
+              >
+                <el-option
+                  v-for="item in pageParams"
+                  :key="item.originName"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
               <el-input
                 v-if="
                   activeName === 'table' &&
                   element.nameType !== 'params' &&
-                  element.nameType !== 'timeFun'
+                  element.nameType !== 'timeFun' &&
+                  element.nameType !== 'pageParams'
                 "
                 v-model="element.value"
                 :disabled="isReadOnly"

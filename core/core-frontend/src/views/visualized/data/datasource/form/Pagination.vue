@@ -140,21 +140,16 @@ const handleNumberSizeChange = () => {
           prop="builtInParameterName"
           :label="t('api_pagination.built_in_parameter_name')"
         />
-        <el-table-column :label="t('api_pagination.request_parameter_name')" width="220">
-          <template #default="scope">
-            <el-input
-              v-model="scope.row.requestParameterName"
-              style="width: 100%"
-              :placeholder="t('api_pagination.enter_parameter_name')"
-            />
-          </template>
-        </el-table-column>
         <el-table-column :label="t('api_pagination.parameter_default_value')" width="220">
           <template #default="scope">
             <el-input
               v-model="scope.row.parameterDefaultValue"
               style="width: 100%"
-              :placeholder="t('api_pagination.enter_default_value')"
+              :placeholder="
+                scope.row.builtInParameterName === '${pageNumber}'
+                  ? t('api_pagination.enter_first_page')
+                  : t('api_pagination.enter_default_value')
+              "
             />
           </template>
         </el-table-column>

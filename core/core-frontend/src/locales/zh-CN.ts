@@ -91,7 +91,8 @@ export default {
     response: '响应',
     please_enter_jsonpath: '请输入 JsonPath',
     enter_parameter_name: '请输入参数名称',
-    enter_default_value: '请输入默认值'
+    enter_default_value: '请输入默认值',
+    enter_first_page: '请输入第一页的页码'
   },
   operate_log: {
     name: '操作日志',
@@ -266,6 +267,7 @@ export default {
     view_data_structure: '查看数据结构',
     the_data_structure: '暂无数据，请在数据结构勾选字段',
     parameter: '参数',
+    page_parameter: '分页参数',
     fixed_value: '固定值',
     time_function: '时间函数',
     customize: '自定义',

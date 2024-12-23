@@ -10,6 +10,8 @@
 - [社区分享｜百果园选择DataEase搭档蜜蜂微搭实现企业数据应用一体化](https://blog.fit2cloud.com/?p=364cd03d-9e73-4bed-8add-5d8ec4d9bf6d)
 - [案例研究｜DataEase助力众陶联应对产业链数据可视化挑战](https://blog.fit2cloud.com/?p=1a4f85dd-c73c-4286-a667-3596514cf617)
 - [案例研究｜北京交通大学基于DataEase开展多场景校园数据分析与展示](https://blog.fit2cloud.com/?p=9cdd8a00-5094-49c9-879e-a419546a0592)
+- [案例研究丨国控星鲨利用DataEase释放数据潜能，重塑业务视野](https://blog.fit2cloud.com/?p=c4612cdf-e983-42d2-9bbb-818929d2eba7)
+- [案例研究｜辛格林电梯借助DataEase实现数据整合与智能展示](https://blog.fit2cloud.com/?p=a3cf8301-f10e-4597-87bb-76bb59c7ebc2)
 - TBD
 - TBD
 - TBD

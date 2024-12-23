@@ -90,7 +90,8 @@ export default {
     response: 'Response',
     please_enter_jsonpath: 'Please enter JsonPath',
     enter_parameter_name: 'Please enter parameter name',
-    enter_default_value: 'Please enter default value'
+    enter_default_value: 'Please enter default value',
+    enter_first_page: 'Please enter the page number of the first page'
   },
   operate_log: {
     name: 'Operation log',
@@ -273,6 +274,7 @@ export default {
     view_data_structure: 'View data structure',
     the_data_structure: 'No data yet, please check the fields in the data structure',
     parameter: 'Parameter',
+    page_parameter: 'Page Parameter',
     fixed_value: 'Fixed value',
     time_function: 'Time function',
     customize: 'Customize',

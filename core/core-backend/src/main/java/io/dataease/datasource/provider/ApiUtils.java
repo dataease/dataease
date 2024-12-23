@@ -85,10 +85,11 @@ public class ApiUtils {
             result.put("fieldList", fieldList);
             if (apiDefinition.getRequest().getPage().getPageType().equalsIgnoreCase("pageNumber")) {
                 int pageCount = JsonPath.read(response, apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPath());
+                int beginPage = Integer.valueOf(apiDefinition.getRequest().getPage().getRequestData().get(0).getParameterDefaultValue());
                 if (apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPathType().equalsIgnoreCase("totalNumber")) {
-                    pageCount = pageCount / Integer.valueOf(apiDefinition.getRequest().getPage().getRequestData().get(1).getParameterDefaultValue());
+                    pageCount = pageCount / Integer.valueOf(apiDefinition.getRequest().getPage().getRequestData().get(1).getParameterDefaultValue()) + 1;
                 }
-                for (int i = 1; i < pageCount + 1; i++) {
+                for (int i = beginPage; i <= pageCount; i++) {
                     apiDefinition.getRequest().getPage().getRequestData().get(0).setParameterDefaultValue(String.valueOf(i));
                     response = execHttpRequest(false, apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
                     dataList.addAll(fetchResult(response, apiDefinition));
