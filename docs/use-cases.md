@@ -1,4 +1,4 @@
-<h3 align="center">## DataEase 公开案例研究</h3>
+<h3 align="center">DataEase 公开案例研究</h3>
 
 ------------------------------
 
