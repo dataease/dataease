@@ -1,7 +1,6 @@
 package io.dataease.home;
 
 import io.dataease.home.manage.DeIndexManage;
-import io.dataease.i18n.Translator;
 import io.dataease.utils.ModelUtils;
 import io.dataease.utils.RsaUtils;
 import jakarta.annotation.Resource;
@@ -42,11 +41,6 @@ public class RestIndexController {
     @ResponseBody
     public Boolean xpackModel() {
         return deIndexManage.xpackModel();
-    }
-
-    @GetMapping("/testi18n")
-    public String testi18n() {
-        return Translator.get("i18n_default_org");
     }
 
 }
