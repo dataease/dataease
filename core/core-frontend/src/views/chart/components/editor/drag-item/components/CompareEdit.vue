@@ -37,9 +37,9 @@ const state = reactive({
 })
 
 const dateFormatterList = [
-  { name: '年', value: 'y' },
-  { name: '年月', value: 'y_M' },
-  { name: '年月日', value: 'y_M_d' }
+  { name: t('chart.y'), value: 'y' },
+  { name: t('chart.y_M'), value: 'y_M' },
+  { name: t('chart.y_M_d'), value: 'y_M_d' }
 ]
 
 const changeDateFormatter = () => {
@@ -208,18 +208,54 @@ initDateFormatter()
       </el-form-item>
 
       <el-form-item :label="t('chart.compare_calc_expression')">
-        <span v-if="compareItem.compareCalc.resultData === 'pre'" class="exp-style">上期数据</span>
-        <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style"
-          >本期数据 - 上期数据</span
+        <template v-if="compareItem.compareCalc.type === 'day_mom'">
+          <span v-if="compareItem.compareCalc.resultData === 'pre'" class="exp-style">
+            {{ t('chart.compare_calc_day_pre') }}
+          </span>
+          <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style">
+            {{ t('chart.compare_calc_day_sub') }}
+          </span>
+          <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style">
+            {{ t('chart.compare_calc_day_percent') }}
+          </span>
+        </template>
+        <template
+          v-if="
+            compareItem.compareCalc.type === 'month_yoy' ||
+            compareItem.compareCalc.type === 'month_mom'
+          "
         >
-        <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style"
-          >(本期数据 / |上期数据| - 1) * 100%</span
+          <span v-if="compareItem.compareCalc.resultData === 'pre'" class="exp-style">
+            {{ t('chart.compare_calc_month_pre') }}
+          </span>
+          <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style">
+            {{ t('chart.compare_calc_month_sub') }}
+          </span>
+          <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style">
+            {{ t('chart.compare_calc_month_percent') }}
+          </span>
+        </template>
+        <template
+          v-if="
+            compareItem.compareCalc.type === 'year_yoy' ||
+            compareItem.compareCalc.type === 'year_mom'
+          "
         >
+          <span v-if="compareItem.compareCalc.resultData === 'pre'" class="exp-style">
+            {{ t('chart.compare_calc_year_pre') }}
+          </span>
+          <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style">
+            {{ t('chart.compare_calc_year_sub') }}
+          </span>
+          <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style">
+            {{ t('chart.compare_calc_year_percent') }}
+          </span>
+        </template>
       </el-form-item>
 
       <el-form-item :label="t('chart.tip')">
         <span class="exp-style" style="padding-top: 2px">
-          当对比日期需要过滤时，请使用过滤组件实现过滤；使用图表过滤器，仪表板下钻和联动等功能，会导致结果不一致
+          {{ t('chart.compare_calc_tip') }}
         </span>
       </el-form-item>
     </el-form>
