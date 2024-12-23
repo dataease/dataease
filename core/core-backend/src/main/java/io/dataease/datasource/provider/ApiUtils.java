@@ -335,6 +335,28 @@ public class ApiUtils {
                     String raw = null;
                     if (apiDefinitionRequest.getBody().get("raw") != null) {
                         raw = apiDefinitionRequest.getBody().get("raw").toString();
+
+                        List<String> bodYparams = new ArrayList<>();
+                        String regex = "\\$\\{(.*?)\\}";
+                        Pattern pattern = Pattern.compile(regex);
+                        Matcher matcher = pattern.matcher(raw);
+                        while (matcher.find()) {
+                            bodYparams.add(matcher.group(1));
+                        }
+                        for (String param : bodYparams) {
+                            for (ApiDefinition definition : paramsList) {
+                                for (int i = 0; i < definition.getFields().size(); i++) {
+                                    TableField field = definition.getFields().get(i);
+                                    if (field.getOriginName().equalsIgnoreCase(param)) {
+                                        String resultStr = execHttpRequest(false, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
+                                        List<String[]> dataList = fetchResult(resultStr, definition);
+                                        if (dataList.size() > 0) {
+                                            raw = raw.replace("${" + param + "}", dataList.get(0)[i]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         response = HttpClientUtil.post(apiDefinition.getUrl(), raw, httpClientConfig);
                     }
                 }

@@ -14,6 +14,6 @@
 - [案例研究｜辛格林电梯借助DataEase实现数据整合与智能展示](https://blog.fit2cloud.com/?p=a3cf8301-f10e-4597-87bb-76bb59c7ebc2)
 - [案例研究｜作为一家BI厂商，飞致云是如何人人使用DataEase的？](https://blog.fit2cloud.com/?p=69eecf17-13c0-4994-8bba-a2a76352d2b4)
 - [案例研究｜DataEase实现物业数据可视化管理与决策支持](https://blog.fit2cloud.com/?p=168d86c4-7483-456d-987c-91982393e50c)
-- TBD
+- [社区分享｜企业BI选型：从Quick BI、Superset到DataEase](https://blog.fit2cloud.com/?p=b86347ff-628f-4d97-b63c-308aea74adf9)
 - TBD
 - TBD

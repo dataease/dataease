@@ -188,6 +188,7 @@ const uploadSuccess = response => {
     ElMessage.warning(response.msg)
     return
   }
+  columns.value = []
   uploading.value = false
   if (!param.value.name) {
     param.value.name = response.data.excelLabel
