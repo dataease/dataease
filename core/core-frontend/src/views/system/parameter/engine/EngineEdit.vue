@@ -358,17 +358,20 @@ defineExpose({
           autocomplete="off"
         />
       </el-form-item>
-      <span class="de-expand" @click="showPriority = !showPriority"
-        >{{ t('datasource.priority') }}
-        <el-icon>
-          <Icon
-            ><component
-              class="svg-icon"
-              :is="showPriority ? icon_down_outlined : icon_down_outlined1"
-            ></component
-          ></Icon>
-        </el-icon>
-      </span>
+      <el-form-item>
+        <span class="de-expand" @click="showPriority = !showPriority"
+          >{{ t('datasource.priority') }}
+          <el-icon>
+            <Icon
+              ><component
+                class="svg-icon"
+                :is="showPriority ? icon_down_outlined : icon_down_outlined1"
+              ></component
+            ></Icon>
+          </el-icon>
+        </span>
+      </el-form-item>
+
       <template v-if="showPriority">
         <el-row :gutter="24" class="mb16">
           <el-col :span="12">
@@ -443,6 +446,20 @@ defineExpose({
 </template>
 <style lang="less">
 .basic-param-drawer {
+  .de-expand {
+    font-family: var(--de-custom_font, 'PingFang');
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    color: var(--ed-color-primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+
+    .ed-icon {
+      margin-left: 4px;
+    }
+  }
   .ed-drawer__footer {
     height: 64px !important;
     padding: 16px 24px !important;
