@@ -205,6 +205,11 @@ const calcData = async (view, callback) => {
             dynamicAreaId.value = extra?.adcode + ''
             scope = extra?.scope
             // 地图
+            const map = parseJson(view.customAttr)?.map
+            if (map) {
+              let areaId = map.id
+              country.value = areaId.slice(0, 3)
+            }
             if (!dynamicAreaId.value?.startsWith(country.value)) {
               if (country.value === 'cus') {
                 dynamicAreaId.value = '156' + dynamicAreaId.value
@@ -486,7 +491,6 @@ const trackClick = trackAction => {
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: quotaList
   }
-
   switch (trackAction) {
     case 'pointClick':
       emit('onPointClick', clickParams)
