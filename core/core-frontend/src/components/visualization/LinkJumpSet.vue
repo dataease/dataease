@@ -364,7 +364,7 @@
                               text
                               @click="addLinkJumpField('view')"
                             >
-                              {{ t('visualization.add_jump_field') }} 1
+                              {{ t('visualization.add_jump_field') }}
                             </el-button>
                           </div>
                         </template>
@@ -892,6 +892,9 @@ const save = () => {
 }
 const nodeClick = data => {
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
+  if (!state.linkJumpInfo.windowSize) {
+    state.linkJumpInfo.windowSize = 'middle'
+  }
   if (!state.linkJumpInfo.linkType) {
     state.linkJumpInfo.linkType = 'outer'
   }
