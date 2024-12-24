@@ -50,8 +50,8 @@ const createI18nOptions = async (): Promise<I18nOptions> => {
 
 const loadRemoteI18n = async (option: any) => {
   const name = option.lang.replace('-', '_')
-  // const basePath = import.meta.env.VITE_API_BASEPATH
-  const url = `${PATH_URL}/i18n/custom_${name}_front_${option.name}.js`
+  const path = PATH_URL.startsWith('./') && PATH_URL.length > 2 ? PATH_URL.substring(1) : PATH_URL
+  const url = `${path}/i18n/custom_${name}_front_${option.name}.js`
   return await import(url)
 }
 
