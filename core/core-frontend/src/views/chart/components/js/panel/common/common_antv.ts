@@ -1608,7 +1608,7 @@ export function configYaxisTitleLengthLimit(chart, plot) {
  * @param chart
  * @param options
  */
-export function handelConditionsStyle(chart: Chart, options: O) {
+export function handleConditionsStyle(chart: Chart, options: O) {
   const { threshold } = parseJson(chart.senior)
   if (!threshold.enable) return options
   const conditions = threshold.lineThreshold ?? []

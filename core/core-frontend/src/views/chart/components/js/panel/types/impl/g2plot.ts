@@ -12,7 +12,7 @@ import {
   getXAxis,
   getYAxis,
   getConditions,
-  handelConditionsStyle
+  handleConditionsStyle
 } from '@/views/chart/components/js/panel/common/common_antv'
 import {
   AntVAbstractChartView,
@@ -182,7 +182,7 @@ export abstract class G2PlotChartView<
   }
 
   protected configBarConditions(chart: Chart, options: O) {
-    return handelConditionsStyle(chart, options)
+    return handleConditionsStyle(chart, options)
   }
 
   /**
