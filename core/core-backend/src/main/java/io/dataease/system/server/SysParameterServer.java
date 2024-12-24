@@ -4,14 +4,17 @@ import io.dataease.api.system.SysParameterApi;
 import io.dataease.api.system.request.OnlineMapEditor;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
+import io.dataease.constant.StaticResourceConstants;
 import io.dataease.constant.XpackSettingConstants;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.SysParameterManage;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,10 +55,9 @@ public class SysParameterServer implements SysParameterApi {
 
     @Override
     public Integer RequestTimeOut() {
-        Integer frontTimeOut = 60;
+        int frontTimeOut = 60;
         List<SettingItemVO> settingItemVOS = queryBasicSetting();
-        for (int i = 0; i < settingItemVOS.size(); i++) {
-            SettingItemVO settingItemVO = settingItemVOS.get(i);
+        for (SettingItemVO settingItemVO : settingItemVOS) {
             if (StringUtils.isNotBlank(settingItemVO.getPkey()) && settingItemVO.getPkey().equalsIgnoreCase(XpackSettingConstants.Front_Time_Out) && StringUtils.isNotBlank(settingItemVO.getPval())) {
                 frontTimeOut = Integer.parseInt(settingItemVO.getPval());
             }
@@ -69,8 +71,7 @@ public class SysParameterServer implements SysParameterApi {
         map.put(XpackSettingConstants.DEFAULT_SORT, "1");
 
         List<SettingItemVO> settingItemVOS = queryBasicSetting();
-        for (int i = 0; i < settingItemVOS.size(); i++) {
-            SettingItemVO settingItemVO = settingItemVOS.get(i);
+        for (SettingItemVO settingItemVO : settingItemVOS) {
             if (StringUtils.isNotBlank(settingItemVO.getPkey()) && settingItemVO.getPkey().equalsIgnoreCase(XpackSettingConstants.DEFAULT_SORT) && StringUtils.isNotBlank(settingItemVO.getPval())) {
                 map.put(XpackSettingConstants.DEFAULT_SORT, settingItemVO.getPval());
             }
@@ -95,4 +96,24 @@ public class SysParameterServer implements SysParameterApi {
     public ShareBaseVO shareBase() {
         return sysParameterManage.shareBase();
     }
+
+    @Override
+    public Map<String, String> i18nOptions() {
+        File dir = new File(StaticResourceConstants.I18N_DIR);
+        File[] files = null;
+        if (!dir.exists() || ObjectUtils.isEmpty(files = dir.listFiles())) {
+            return null;
+        }
+        Map<String, String> result = new HashMap<>();
+        for (File file : files) {
+            String name = file.getName();
+            int start = name.indexOf("custom_") + 7;
+            int end = name.indexOf("front");
+            String i18nName = name.substring(start, end - 1).replace("_", "-");
+            String languageName = name.substring(end + 6, name.lastIndexOf("."));
+            result.put(i18nName, languageName);
+        }
+        return result;
+    }
+
 }

@@ -37,6 +37,10 @@ public class DeMvcConfig implements WebMvcConfigurer {
         String geoUrlPattern = ensureBoth(GEO_URL, AuthConstant.DE_API_PREFIX, URL_SEPARATOR) + "**";
         registry.addResourceHandler(geoUrlPattern).addResourceLocations(geoDir);
 
+        String i18nDir = FILE_PROTOCOL + ensureSuffix(I18N_DIR, FILE_SEPARATOR);
+        String i18nUrlPattern = ensureBoth(I18N_URL, AuthConstant.DE_API_PREFIX, URL_SEPARATOR) + "**";
+        registry.addResourceHandler(i18nUrlPattern).addResourceLocations(i18nDir);
+
     }
 
     @Override
