@@ -18,4 +18,4 @@
 - [案例研究｜柯尼卡美能达软件开发（大连）有限公司基于DataEase构筑内部数据可视化体系](https://blog.fit2cloud.com/?p=2e46436d-a023-4255-9ac5-253f8c26ee04)
 - [案例研究｜DataEase助力无锡布勒业务数据可视化建设](https://blog.fit2cloud.com/?p=075bcf97-132f-4e79-b993-a1ec744859b5)
 - [案例研究｜DataEase助力丹霞生物实现数据驱动的企业管理](https://blog.fit2cloud.com/?p=cdf2a37f-c11b-46cb-b287-8bc32dabd879)
-- TBD
+- [案例研究｜DataEase助力亚加达智能医学实验室场景BI展示](https://blog.fit2cloud.com/?p=e1d298cf-c239-438f-807c-19ab1e8bac20)

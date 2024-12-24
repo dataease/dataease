@@ -3301,6 +3301,7 @@ const deleteChartFieldItem = id => {
                           :themes="themes"
                           :properties="chartViewInstance.properties"
                           :property-inner-all="chartViewInstance.propertyInner"
+                          :event-info="curComponent?.events"
                           @onFunctionCfgChange="onFunctionCfgChange"
                           @onAssistLineChange="onAssistLineChange"
                           @onScrollCfgChange="onScrollCfgChange"
