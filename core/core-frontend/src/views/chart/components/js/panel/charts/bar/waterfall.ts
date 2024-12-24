@@ -29,7 +29,8 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     'title-selector',
     'legend-selector',
     'x-axis-selector',
-    'y-axis-selector'
+    'y-axis-selector',
+    'threshold'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
@@ -71,7 +72,8 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       'axisLabel',
       'axisLabelFormatter',
       'showLengthLimit'
-    ]
+    ],
+    threshold: ['lineThreshold']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
   axisConfig = {
@@ -155,7 +157,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     return {
       ...options,
       total: {
-        label: '合计',
+        label: t('chart.total'),
         style: {
           fill: setGradientColor(hexColorToRGBA(totalColorRgba, alpha), gradient, 270)
         }
@@ -275,7 +277,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
         ...tmp.legend,
         items: [
           {
-            name: '增加',
+            name: t('chart.increase'),
             value: '',
             marker: {
               style: {
@@ -284,7 +286,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
             }
           },
           {
-            name: '减少',
+            name: t('chart.decrease'),
             value: '',
             marker: {
               style: {
@@ -293,7 +295,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
             }
           },
           {
-            name: '合计',
+            name: t('chart.total'),
             value: '',
             marker: {
               style: {
@@ -315,7 +317,8 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       this.configTooltip,
       this.configXAxis,
       this.configYAxis,
-      this.configMeta
+      this.configMeta,
+      this.configBarConditions
     )(chart, options)
   }
 

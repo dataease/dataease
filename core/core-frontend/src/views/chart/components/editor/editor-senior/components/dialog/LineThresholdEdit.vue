@@ -34,83 +34,77 @@ const thresholdCondition = {
   max: '1',
   type: 'fixed'
 }
-const valueOptions = computed(() => {
-  if (props.chart.type === 'symbolic-map') {
-    return [
+const expressionList = [
+  {
+    label: '',
+    options: [
       {
-        label: '',
-        options: [
-          {
-            value: 'eq',
-            label: t('chart.filter_eq')
-          },
-          {
-            value: 'not_eq',
-            label: t('chart.filter_not_eq')
-          }
-        ]
+        value: 'eq',
+        label: t('chart.filter_eq')
       },
       {
-        label: '',
-        options: [
-          {
-            value: 'lt',
-            label: t('chart.filter_lt')
-          },
-          {
-            value: 'gt',
-            label: t('chart.filter_gt')
-          }
-        ]
+        value: 'not_eq',
+        label: t('chart.filter_not_eq')
+      }
+    ]
+  },
+  {
+    label: '',
+    options: [
+      {
+        value: 'lt',
+        label: t('chart.filter_lt')
       },
       {
-        label: '',
-        options: [
-          {
-            value: 'le',
-            label: t('chart.filter_le')
-          },
-          {
-            value: 'ge',
-            label: t('chart.filter_ge')
-          }
-        ]
+        value: 'gt',
+        label: t('chart.filter_gt')
+      }
+    ]
+  },
+  {
+    label: '',
+    options: [
+      {
+        value: 'le',
+        label: t('chart.filter_le')
       },
       {
-        label: '',
-        options: [
-          {
-            value: 'between',
-            label: t('chart.filter_between')
-          }
-        ]
+        value: 'ge',
+        label: t('chart.filter_ge')
+      }
+    ]
+  },
+  {
+    label: '',
+    options: [
+      {
+        value: 'between',
+        label: t('chart.filter_between')
       }
     ]
   }
-  return [
-    {
-      label: '',
-      options: [
-        {
-          value: 'lt',
-          label: t('chart.filter_lt')
-        },
-        {
-          value: 'gt',
-          label: t('chart.filter_gt')
-        }
-      ]
-    },
-    {
-      label: '',
-      options: [
-        {
-          value: 'between',
-          label: t('chart.filter_between')
-        }
-      ]
-    }
-  ]
+]
+const filterExpressionListByValue = (list, values) => {
+  return list
+    .map(group => ({
+      ...group,
+      options: group.options.filter(option => values.includes(option.value))
+    }))
+    .filter(group => group.options.length > 0)
+}
+const valueOptions = computed(() => {
+  if (props.chart.type === 'symbolic-map') {
+    return filterExpressionListByValue(expressionList, [
+      'eq',
+      'not_eq',
+      'lt',
+      'gt',
+      'le',
+      'ge',
+      'between'
+    ])
+  }
+  return filterExpressionListByValue(expressionList, ['lt', 'gt', 'le', 'ge', 'between'])
 })
 const predefineColors = COLOR_PANEL
 
@@ -142,11 +136,30 @@ const isSymbolicMap = computed(() => {
   return props.chart.type === 'symbolic-map'
 })
 
+const isProgressBar = computed(() => {
+  return props.chart.type === 'progress-bar'
+})
+
+const isBidirectionalBar = computed(() => {
+  return props.chart.type === 'bidirectional-bar'
+})
+
+const isRangeBar = computed(() => {
+  return props.chart.type === 'bar-range'
+})
+
 const initFields = () => {
   let fields = []
   if (isSymbolicMap.value) {
     const extBubble = JSON.parse(JSON.stringify(props.chart.extBubble))
     fields = [...extBubble]
+  } else if (isProgressBar.value) {
+    const yAxisExt = JSON.parse(JSON.stringify(props.chart.yAxisExt))
+    fields = [...yAxisExt]
+  } else if (isBidirectionalBar.value || isRangeBar.value) {
+    const yAxis = JSON.parse(JSON.stringify(props.chart.yAxis))
+    const yAxisExt = JSON.parse(JSON.stringify(props.chart.yAxisExt))
+    fields = [...yAxis, ...yAxisExt]
   } else {
     const yAxis = JSON.parse(JSON.stringify(props.chart.yAxis))
     fields = [...yAxis]

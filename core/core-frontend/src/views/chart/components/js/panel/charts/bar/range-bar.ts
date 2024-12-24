@@ -46,7 +46,7 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
       type: 'q'
     }
   }
-  properties = BAR_RANGE_EDITOR_PROPERTY
+  properties = BAR_RANGE_EDITOR_PROPERTY.filter(p => p !== 'threshold')
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
     'label-selector': ['hPosition', 'color', 'fontSize', 'labelFormatter', 'showGap'],

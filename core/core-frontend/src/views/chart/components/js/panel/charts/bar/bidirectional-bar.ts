@@ -63,7 +63,8 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     'tooltip-selector',
     'function-cfg',
     'jump-set',
-    'linkage'
+    'linkage',
+    'threshold'
   ]
   propertyInner = {
     'background-overall-component': ['all'],
@@ -96,7 +97,8 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'function-cfg': ['emptyDataStrategy'],
     'label-selector': ['hPosition', 'vPosition', 'seriesLabelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show']
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
+    threshold: ['lineThreshold']
   }
 
   selectorSpec: EditorSelectorSpec = {
@@ -565,7 +567,8 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       this.configYAxis,
       this.configAnalyse,
       this.configSlider,
-      this.configEmptyDataStrategy
+      this.configEmptyDataStrategy,
+      this.configBarConditions
     )(chart, options)
   }
 

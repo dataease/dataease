@@ -277,7 +277,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyseHorizontal
+      this.configAnalyseHorizontal,
+      this.configBarConditions
     )(chart, options, {}, this)
   }
 
@@ -394,7 +395,8 @@ export class HorizontalStackBar extends HorizontalBar {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyseHorizontal
+      this.configAnalyseHorizontal,
+      this.configBarConditions
     )(chart, options, {}, this)
   }
 
@@ -484,7 +486,8 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyseHorizontal
+      this.configAnalyseHorizontal,
+      this.configBarConditions
     )(chart, options, {}, this)
   }
 

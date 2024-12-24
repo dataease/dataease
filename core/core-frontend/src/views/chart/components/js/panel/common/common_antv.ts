@@ -1,4 +1,4 @@
-import { hexColorToRGBA, isAlphaColor, isTransparent, measureText, parseJson } from '../../util'
+import { hexColorToRGBA, hexToRgba, measureText, parseJson } from '../../util'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_LEGEND_STYLE,
@@ -34,6 +34,8 @@ import { centroid } from '@turf/centroid'
 import type { Plot } from '@antv/g2plot'
 import type { PickOptions } from '@antv/g2plot/lib/core/plot'
 import { defaults } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t: tI18n } = useI18n()
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -1599,4 +1601,256 @@ export function configYaxisTitleLengthLimit(chart, plot) {
     ev.view.options.axes.yAxisExt.title.originalText = yAxis.name
     ev.view.options.axes.yAxisExt.title.text = wrappedTitle
   })
+}
+
+/**
+ * 处理柱条图的条件样式
+ * @param chart
+ * @param options
+ */
+export function handelConditionsStyle(chart: Chart, options: O) {
+  const { threshold } = parseJson(chart.senior)
+  if (!threshold.enable) return options
+  const conditions = threshold.lineThreshold ?? []
+  const { basicStyle } = parseJson(chart.customAttr)
+  // 获取图表类型
+  const chartType = {
+    ...getChartTypeFlags(chart)
+  }
+  // 图表字段，用于rawFields
+  const { xField, yField, groupField, seriesField, color } = options
+  // 获取基础颜色
+  const colors =
+    color && Array.isArray(color)
+      ? color
+      : basicStyle.gradient
+      ? getGradientColors(basicStyle, chartType)
+      : basicStyle.colors
+  const seriesFields = getSeriesFields(chart, options, chartType)
+  // 系列字段个数，瀑布图时默认3个，增加、减少、合计，当其他图表系列字段为空时，默认为1
+  const seriesLength = chartType.isWaterfall ? 3 : seriesFields.length ? seriesFields.length : 1
+  const seriesFieldLengthRef = { current: 0 }
+  const seriesFieldColorMap = getSeriesFieldColorMap(colors, chartType)
+  let rawFields = [xField, groupField, seriesField]
+  // 对称柱条图时，需要添加两个y轴字段
+  rawFields = chartType.isBidirectionalBar
+    ? rawFields.concat(yField[0], yField[1])
+    : rawFields.concat(yField)
+  const tmpOption = {
+    ...options,
+    rawFields,
+    color: ref =>
+      getColor(
+        ref,
+        seriesFieldColorMap,
+        colors,
+        seriesFieldLengthRef,
+        seriesLength,
+        basicStyle,
+        conditions,
+        xField,
+        yField,
+        seriesField,
+        chart,
+        chartType
+      )
+  }
+  return tmpOption
+}
+
+/**
+ * 获取图表类型
+ * @param chart
+ */
+function getChartTypeFlags(chart: Chart) {
+  // 在没有配置堆叠字段时，判定不是堆叠图
+  const isStack = chart.type.includes('-stack') && chart.extStack?.length
+  // 分组柱状图
+  const isGroupBar = chart.type === 'bar-group'
+  const isWaterfall = chart.type === 'waterfall'
+  // 条形图
+  const isHorizontal = chart.type.includes('-horizontal')
+  const isProgressBar = chart.type === 'progress-bar'
+  const isBidirectionalBar = chart.type === 'bidirectional-bar'
+  return {
+    isStack,
+    isGroupBar,
+    isWaterfall,
+    isHorizontal,
+    isProgressBar,
+    isBidirectionalBar
+  }
+}
+
+/**
+ * 获取渐变色
+ * @param basicStyle
+ * @param chartType
+ */
+function getGradientColors(basicStyle, chartType) {
+  let vhAngle = chartType.isProgressBar ? 0 : 270
+  return basicStyle.colors.map((ele, index) => {
+    const tmp = hexColorToRGBA(ele, basicStyle.alpha)
+    if (chartType.isBidirectionalBar) {
+      vhAngle = 180 - index * 180
+      if (basicStyle.layout === 'vertical') {
+        vhAngle = index === 0 ? 280 : 90
+      }
+    }
+    return setGradientColor(tmp, true, vhAngle)
+  })
+}
+
+/**
+ * 获取系列字段
+ * @param chart
+ * @param options
+ * @param chartType
+ */
+function getSeriesFields(chart, options, chartType) {
+  let seriesFields =
+    chartType.isStack || chartType.isGroupBar
+      ? options.data?.reduce((acc, item) => {
+          const value = item[options.seriesField]
+          if (!acc.includes(value)) acc.push(value)
+          return acc
+        }, [])
+      : chart.yAxis.map(i => i.id)
+  if (chartType.isBidirectionalBar) {
+    seriesFields = [...seriesFields, ...chart.yAxisExt.map(i => i.id)]
+  }
+  return seriesFields.filter(item => item)
+}
+
+/**
+ * 特殊图表颜色处理
+ * 瀑布图固定系列字段：增加、减少、合计
+ * @param colors
+ * @param chartType
+ */
+function getSeriesFieldColorMap(colors, chartType) {
+  const seriesFieldColorMap = new Map()
+  if (chartType.isWaterfall) {
+    seriesFieldColorMap.set(tI18n('chart.increase'), colors[0])
+    seriesFieldColorMap.set(tI18n('chart.decrease'), colors[1])
+    seriesFieldColorMap.set(tI18n('chart.total'), colors[2])
+  }
+  return seriesFieldColorMap
+}
+
+/**
+ * 获取颜色
+ * @param ref 图库返回当前的数据项
+ * @param seriesFieldColorMap 存储系列字段颜色的 Map
+ * @param colors 颜色数组
+ * @param seriesFieldLengthRef 系列字段个数引用，图库color函数会多次调用，优先返回的是系列字段的包括颜色，之后才是系列字段数据项颜色
+ * @param seriesLength 系列字段个数,用于排除掉序列字段的颜色 图表类型为堆叠或分组时，为系列字段的长度，否则为1
+ * @param basicStyle
+ * @param conditions 条件样式
+ * @param xField x轴字段
+ * @param yField y轴字段
+ * @param seriesField 系列字段
+ * @param chart
+ * @param chartType 图表类型
+ */
+function getColor(
+  ref,
+  seriesFieldColorMap,
+  colors,
+  seriesFieldLengthRef,
+  seriesLength,
+  basicStyle,
+  conditions,
+  xField,
+  yField,
+  seriesField,
+  chart,
+  chartType
+) {
+  let vhAngle = chartType.isHorizontal || chartType.isProgressBar ? 0 : 270
+  // 辅助函数：用于获取系列颜色
+  const getColorFromMap = key => {
+    if (seriesFieldColorMap.has(key)) {
+      return seriesFieldColorMap.get(key)
+    }
+    seriesFieldColorMap.set(key, colors[seriesFieldLengthRef.current % colors.length])
+    seriesFieldLengthRef.current++
+    return seriesFieldColorMap.get(key)
+  }
+  // 进度条时，目标值不显示颜色
+  if (chartType.isProgressBar && ref['type'] === 'target') return 'rgba(0, 0, 0, 0)'
+  if (
+    !chartType.isWaterfall &&
+    !chartType.isProgressBar &&
+    !chartType.isBidirectionalBar &&
+    seriesFieldLengthRef.current < seriesLength
+  ) {
+    return getColorFromMap(ref[seriesField])
+  }
+  // 瀑布图时，合计字段颜色固定
+  if (chartType.isWaterfall && ref['$$isTotal$$']) return seriesFieldColorMap.get(ref['field'])
+  // 对称条形图时，系列字段特殊处理
+  if (chartType.isBidirectionalBar && seriesFieldLengthRef.current < seriesLength) {
+    return getColorFromMap(ref['series-field-key'])
+  }
+  // 获取当前系列字段的值
+  // 条形图时，值是x轴字段的值
+  let currentValue = chartType.isHorizontal ? ref[xField] : ref[yField]
+  // 进度条时，值是进度值，不计算目标值
+  if (chartType.isProgressBar) currentValue = ref[xField]?.[1] * 100
+  // 对称条形图时，取值字段通过series-field-key获取
+  if (chartType.isBidirectionalBar) currentValue = ref[ref['series-field-key']]
+  // 当前值是数组时，取差值作为当前值，分组堆叠的值是数组
+  if (Array.isArray(currentValue)) currentValue = currentValue[1] - currentValue[0]
+  if (currentValue) {
+    // 获获字段样式数据
+    const fields = conditions.filter(i => {
+      if (chartType.isStack || chartType.isGroupBar || chartType.isWaterfall) {
+        return i.fieldId === chart.yAxis[0].id
+      } else if (chartType.isProgressBar) {
+        return i.fieldId === chart.yAxisExt[0].id
+      } else if (chartType.isBidirectionalBar) {
+        return (
+          i.fieldId ===
+          (ref['series-field-key'] === 'value' ? chart.yAxis[0].id : chart.yAxisExt[0].id)
+        )
+      } else {
+        return i.fieldId === chart.yAxis[0].id && i.field?.name === ref[seriesField]
+      }
+    })
+    if (fields?.length) {
+      // 样式条件判断
+      for (const tc of fields[fields.length - 1].conditions) {
+        if (
+          (tc.term === 'between' && currentValue >= tc.min && currentValue <= tc.max) ||
+          (tc.term === 'lt' && currentValue < tc.value) ||
+          (tc.term === 'le' && currentValue <= tc.value) ||
+          (tc.term === 'gt' && currentValue > tc.value) ||
+          (tc.term === 'ge' && currentValue >= tc.value)
+        ) {
+          if (basicStyle.gradient) {
+            const tmp = hexToRgba(tc.color, basicStyle.alpha)
+            // 对称条形图需要根据系列字段的值来设置渐变角度
+            if (chartType.isBidirectionalBar) {
+              const mastAxisSeries = ref['series-field-key'] === 'value' ? 0 : 1
+              vhAngle = 180 - mastAxisSeries * 180
+              if (basicStyle.layout === 'vertical') {
+                vhAngle = mastAxisSeries === 0 ? 280 : 90
+              }
+            }
+            return setGradientColor(tmp, true, vhAngle)
+          }
+          return tc.color
+        }
+      }
+    }
+  }
+
+  if (chartType.isWaterfall)
+    return ref[yField] > 0
+      ? seriesFieldColorMap.get(tI18n('chart.increase'))
+      : seriesFieldColorMap.get(tI18n('chart.decrease'))
+  if (chartType.isProgressBar) return colors[0]
+  if (chartType.isBidirectionalBar) return seriesFieldColorMap.get(ref['series-field-key'])
+  return ref[seriesField] ? seriesFieldColorMap.get(ref[seriesField]) : ''
 }

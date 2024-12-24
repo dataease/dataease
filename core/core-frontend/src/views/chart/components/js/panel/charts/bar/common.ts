@@ -11,7 +11,8 @@ export const BAR_EDITOR_PROPERTY: EditorProperty[] = [
   'function-cfg',
   'assist-line',
   'jump-set',
-  'linkage'
+  'linkage',
+  'threshold'
 ]
 export const BAR_RANGE_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
@@ -25,7 +26,8 @@ export const BAR_RANGE_EDITOR_PROPERTY: EditorProperty[] = [
   'legend-selector',
   'function-cfg',
   'jump-set',
-  'linkage'
+  'linkage',
+  'threshold'
 ]
 
 export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
@@ -68,7 +70,8 @@ export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'fontShadow'
   ],
   'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
-  'function-cfg': ['slider', 'emptyDataStrategy']
+  'function-cfg': ['slider', 'emptyDataStrategy'],
+  threshold: ['lineThreshold']
 }
 
 export const BAR_AXIS_TYPE: AxisType[] = [

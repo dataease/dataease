@@ -1936,7 +1936,10 @@ export default {
     circle_packing_value: 'Circle Size',
     circle_packing_border_color: 'Border color',
     circle_packing_border_width: 'Border width',
-    circle_packing_padding: 'Circle padding'
+    circle_packing_padding: 'Circle padding',
+    increase: 'Increase',
+    decrease: 'Decrease',
+    total: 'Total'
   },
   dataset: {
     scope_edit: 'Only effective when editing',
