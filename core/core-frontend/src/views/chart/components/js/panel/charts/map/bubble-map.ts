@@ -430,7 +430,9 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       return obj
     }, {})
     //处理label
-    options.label = false
+    options.label = {
+      visible: false
+    }
     if (label.show) {
       const geoJsonMap = geoJson.features.reduce((p, n) => {
         if (n.properties['adcode']) {

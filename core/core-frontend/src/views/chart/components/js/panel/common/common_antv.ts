@@ -1185,31 +1185,47 @@ export class CustomZoom extends Zoom {
     } as IZoomControlOption
   }
 }
-export function configL7Zoom(chart: Chart, plot: L7Plot<PlotOptions> | Scene) {
+export function configL7Zoom(chart: Chart, scene: Scene) {
   const { basicStyle } = parseJson(chart.customAttr)
-  const plotScene = plot instanceof Scene ? plot : plot.scene
-  const zoomOption = plotScene?.getControlByName('zoom')
+  const zoomOption = scene?.getControlByName('zoom')
   if (zoomOption) {
-    plotScene.removeControl(zoomOption)
+    scene.removeControl(zoomOption)
   }
   if (shouldHideZoom(basicStyle)) {
     return
   }
-  if (!plotScene?.getControlByName('zoom')) {
-    let initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5
-    let center = getCenter(basicStyle)
-    if (['map', 'bubble-map'].includes(chart.type)) {
-      initZoom = plotScene.getZoom()
-      center = plotScene.getCenter()
-    }
-    const newZoomOptions = {
-      initZoom: initZoom,
-      center: center,
+  if (!scene?.getControlByName('zoom')) {
+    scene.map.on('complete', () => {
+      const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+      const center =
+        basicStyle.autoFit === false
+          ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+          : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+      const newZoomOptions = {
+        initZoom: initZoom,
+        center: center,
+        buttonColor: basicStyle.zoomButtonColor,
+        buttonBackground: basicStyle.zoomBackground
+      } as any
+      scene.addControl(new CustomZoom(newZoomOptions))
+    })
+  }
+}
+
+export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {
+  const { basicStyle } = parseJson(chart.customAttr)
+  if (shouldHideZoom(basicStyle)) {
+    return
+  }
+  plot.once('loaded', () => {
+    const zoomOptions = {
+      initZoom: plot.scene.getZoom(),
+      center: plot.scene.getCenter(),
       buttonColor: basicStyle.zoomButtonColor,
       buttonBackground: basicStyle.zoomBackground
     } as any
-    addCustomZoom(plotScene, newZoomOptions)
-  }
+    plot.scene.addControl(new CustomZoom(zoomOptions))
+  })
 }
 
 function setStyle(elements: HTMLElement[], styleProp: string, value) {
@@ -1241,30 +1257,6 @@ function shouldHideZoom(basicStyle: any): boolean {
     (basicStyle.suspension === false && basicStyle.showZoom === undefined) ||
     basicStyle.showZoom === false
   )
-}
-
-/**
- * 获取地图中心点
- * @param basicStyle
- */
-function getCenter(basicStyle: any): [number, number] {
-  let center: [number, number] = [
-    DEFAULT_BASIC_STYLE.mapCenter.longitude,
-    DEFAULT_BASIC_STYLE.mapCenter.latitude
-  ]
-  if (basicStyle.autoFit === false) {
-    center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-  }
-  return center
-}
-
-/**
- * 添加自定义缩放控件
- * @param plotScene
- * @param newZoomOptions
- */
-function addCustomZoom(plotScene: Scene, newZoomOptions: any): void {
-  plotScene.addControl(new CustomZoom(newZoomOptions))
 }
 
 const G2_TOOLTIP_WRAPPER = 'g2-tooltip-wrapper'

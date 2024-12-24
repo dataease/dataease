@@ -154,6 +154,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     mapRendering(container)
     scene.once('loaded', () => {
       mapRendered(container)
+      this.configZoomButton(chart, scene)
     })
     if (xAxis?.length < 2) {
       return new L7Wrapper(scene, undefined)
@@ -166,7 +167,6 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       scene.addPopup(tooltipLayer)
     }
     this.buildLabel(chart, configList)
-    this.configZoomButton(chart, scene)
     symbolicLayer.on('inited', ev => {
       chart.container = container
       configCarouselTooltip(chart, symbolicLayer, symbolicLayer.sourceOption.data, scene)

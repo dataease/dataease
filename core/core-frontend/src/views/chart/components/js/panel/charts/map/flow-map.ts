@@ -129,6 +129,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     mapRendering(container)
     scene.once('loaded', () => {
       mapRendered(container)
+      this.configZoomButton(chart, scene)
     })
     if (xAxis?.length < 2 || xAxisExt?.length < 2) {
       return new L7Wrapper(scene, undefined)
@@ -140,7 +141,6 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     configList[0].once('inited', () => {
       mapRendered(container)
     })
-    this.configZoomButton(chart, scene)
     return new L7Wrapper(scene, configList)
   }
 

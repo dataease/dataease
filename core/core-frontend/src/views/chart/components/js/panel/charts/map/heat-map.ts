@@ -110,6 +110,7 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
     mapRendering(container)
     scene.once('loaded', () => {
       mapRendered(container)
+      this.configZoomButton(chart, scene)
     })
     if (xAxis?.length < 2 || yAxis?.length < 1) {
       return new L7Wrapper(scene, undefined)
@@ -138,7 +139,6 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
       }
     })
 
-    this.configZoomButton(chart, scene)
     return new L7Wrapper(scene, config)
   }
 
