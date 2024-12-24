@@ -140,7 +140,10 @@ const previewOuter = () => {
     return
   }
   canvasSave(() => {
-    const url = '#/preview?dvId=' + dvInfo.value.id + '&ignoreParams=true'
+    let url = '#/preview?dvId=' + dvInfo.value.id + '&ignoreParams=true'
+    if (embeddedStore.baseUrl) {
+      url = `${embedded.baseUrl}${url}`.replaceAll('\/\/#', '\/#')
+    }
     const newWindow = window.open(url, '_blank')
     initOpenHandler(newWindow)
   })
@@ -650,7 +653,7 @@ const initOpenHandler = newWindow => {
               </el-dropdown-item>
               <el-dropdown-item @click="previewOuter()">
                 <el-icon style="margin-right: 8px; font-size: 16px">
-                  <Icon name="dv-preview-outer"><dvPreviewOuter class="svg-icon" /></Icon>
+                  <Icon><dvPreviewOuter class="svg-icon" /></Icon>
                 </el-icon>
                 {{ t('work_branch.new_page_preview') }}
               </el-dropdown-item>
