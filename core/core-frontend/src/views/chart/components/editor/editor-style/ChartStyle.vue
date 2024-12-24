@@ -51,10 +51,6 @@ const props = defineProps({
     type: Object,
     required: false
   },
-  eventInfo: {
-    type: Object,
-    required: false
-  },
   chart: {
     type: Object as PropType<ChartObj>,
     required: true
@@ -137,14 +133,6 @@ const indicatorNameRef = ref()
 
 const positionComponentShow = computed(() => {
   return !batchOptStatus.value && dvInfo.value.type !== 'dashboard'
-})
-
-const eventsShow = computed(() => {
-  return (
-    !batchOptStatus.value &&
-    ['indicator', 'rich-text'].includes(chart.value.type) &&
-    props.eventInfo
-  )
 })
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
@@ -378,15 +366,6 @@ watch(
               @onBasicStyleChange="onBasicStyleChange"
               @onMiscChange="onMiscChange"
             />
-          </el-collapse-item>
-
-          <el-collapse-item
-            :effect="themes"
-            name="events"
-            :title="t('visualization.event')"
-            v-if="eventsShow"
-          >
-            <common-event :themes="themes" :events-info="eventInfo"></common-event>
           </el-collapse-item>
           <el-collapse-item
             :effect="themes"

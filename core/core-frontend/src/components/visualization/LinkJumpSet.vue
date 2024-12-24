@@ -225,7 +225,13 @@
                             </el-col>
                             <el-col :span="8"></el-col>
                           </el-row>
-                          <div class="main-scrollbar-container">
+                          <div
+                            class="main-scrollbar-container"
+                            :class="{
+                              'main-scrollbar-container-min':
+                                state.linkJumpInfo?.jumpType === 'newPop'
+                            }"
+                          >
                             <el-scrollbar height="fit-content" max-height="178px">
                               <div
                                 style="display: flex; margin-bottom: 6px"
@@ -358,7 +364,7 @@
                               text
                               @click="addLinkJumpField('view')"
                             >
-                              {{ t('visualization.add_jump_field') }}
+                              {{ t('visualization.add_jump_field') }} 1
                             </el-button>
                           </div>
                         </template>
@@ -384,7 +390,13 @@
                                 {{ t('visualization.link_outer_params') }}
                               </el-col>
                             </el-row>
-                            <div class="main-scrollbar-container">
+                            <div
+                              class="main-scrollbar-container"
+                              :class="{
+                                'main-scrollbar-container-min':
+                                  state.linkJumpInfo?.jumpType === 'newPop'
+                              }"
+                            >
                               <el-scrollbar height="fit-content" max-height="178px">
                                 <div
                                   style="display: flex; margin-bottom: 6px"
@@ -1374,6 +1386,13 @@ span {
         }
       }
     }
+  }
+}
+
+.main-scrollbar-container-min {
+  :deep(.ed-scrollbar) {
+    height: fit-content;
+    max-height: 138px !important;
   }
 }
 
