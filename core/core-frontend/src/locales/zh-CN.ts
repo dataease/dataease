@@ -4340,5 +4340,13 @@ export default {
     search_placeholder: '通过告警名称搜索',
     chart_name: '图表名称',
     warn_status: '告警状态'
+  },
+  webhook: {
+    title: 'Webhook 管理',
+    add: '添加 Webhook',
+    search_placeholder: '通过名称搜索',
+    content_type: '内容类型',
+    del_confirm: '确定删除该 Webhook吗？',
+    batch_del_confirm: '确定删除 {0} 个 Webhook吗'
   }
 }

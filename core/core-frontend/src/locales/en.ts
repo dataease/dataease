@@ -4461,5 +4461,13 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     search_placeholder: 'Search by alert name',
     chart_name: 'Chart Name',
     warn_status: 'Alert Status'
+  },
+  webhook: {
+    title: 'Webhook Management',
+    add: 'Add Webhook',
+    search_placeholder: 'Search by name',
+    content_type: 'Content Type',
+    del_confirm: 'Are you sure you want to delete this Webhook?',
+    batch_del_confirm: 'Are you sure you want to delete {0} Webhooks?'
   }
 }
