@@ -142,7 +142,7 @@ const previewOuter = () => {
   canvasSave(() => {
     let url = '#/preview?dvId=' + dvInfo.value.id + '&ignoreParams=true'
     if (embeddedStore.baseUrl) {
-      url = `${embedded.baseUrl}${url}`.replaceAll('\/\/#', '\/#')
+      url = `${embeddedStore.baseUrl}${url}`.replaceAll('\/\/#', '\/#')
     }
     const newWindow = window.open(url, '_blank')
     initOpenHandler(newWindow)

@@ -10,7 +10,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, watch, computed } from 'vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import request from '@/config/axios'
-import { useEmbedded } from '@/store/modules/embedded'
 import dayjs from 'dayjs'
 import { propTypes } from '@/utils/propTypes'
 import ShareHandler from './ShareHandler.vue'
@@ -24,7 +23,6 @@ const props = defineProps({
 const { wsCache } = useCache('localStorage')
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
-const embeddedStore = useEmbedded()
 
 const busiDataMap = computed(() => interactiveStore.getData)
 const panelKeyword = ref()
@@ -49,9 +47,6 @@ const triggerFilterPanel = () => {
 }
 const preview = id => {
   const routeUrl = `/#/preview?dvId=${id}`
-  if (embeddedStore.baseUrl) {
-    routeUrl = `${embedded.baseUrl}${routeUrl}`.replaceAll('\/\/#', '\/#')
-  }
   window.open(routeUrl, '_blank')
 }
 const formatterTime = (_, _column, cellValue) => {

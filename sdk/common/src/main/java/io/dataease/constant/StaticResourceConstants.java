@@ -20,9 +20,11 @@ public class StaticResourceConstants {
     public static String APPEARANCE_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "appearance";
     public static String REPORT_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "report";
     public static String PLUGIN_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "plugin";
+    public static String I18N_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "i18n/front";
 
     public static String MAP_URL = "/map";
     public static String GEO_URL = "/geo";
+    public static String I18N_URL = "/i18n";
 
     /**
      * Upload prefix.

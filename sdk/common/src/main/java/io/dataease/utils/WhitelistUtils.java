@@ -46,6 +46,7 @@ public class WhitelistUtils {
             "/sysParameter/ui",
             "/sysParameter/defaultLogin",
             "/embedded/initIframe",
+            "/sysParameter/i18nOptions",
             "/");
 
     public static boolean match(String requestURI) {
@@ -84,6 +85,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/typeface/defaultFont")
                 || StringUtils.startsWithAny(requestURI, "/typeface/listFont")
                 || StringUtils.startsWithAny(requestURI, "/exportCenter/download")
+                || StringUtils.startsWithAny(requestURI, "/i18n/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/image/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/down/");
     }

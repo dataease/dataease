@@ -62,4 +62,7 @@ public interface SysParameterApi {
     @Operation(summary = "查询分享设置")
     ShareBaseVO shareBase();
 
+    @GetMapping("/i18nOptions")
+    @Operation(summary = "查询自定义国际化选项")
+    Map<String, String> i18nOptions();
 }

@@ -436,7 +436,8 @@ const deleteCustomArea = data => {
     confirmButtonType: 'danger',
     customClass: 'area-delete-dialog',
     autofocus: false,
-    confirmButtonText: t('common.delete')
+    confirmButtonText: t('common.delete'),
+    showClose: false
   })
     .then(async () => {
       await deleteCustomGeoArea(data.id)
@@ -554,7 +555,8 @@ const deleteCustomSubArea = async data => {
     confirmButtonType: 'danger',
     customClass: 'area-delete-dialog',
     autofocus: false,
-    confirmButtonText: t('common.delete')
+    confirmButtonText: t('common.delete'),
+    showClose: false
   })
     .then(async () => {
       await deleteCustomGeoSubArea(data.id)
@@ -920,7 +922,7 @@ onBeforeMount(() => {
 }
 
 .area-delete-dialog {
-  padding: 10px;
+  padding: 24px;
   .ed-message-box__header {
     display: flex;
     justify-content: space-between;

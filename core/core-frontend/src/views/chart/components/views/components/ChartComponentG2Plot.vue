@@ -367,6 +367,11 @@ const action = param => {
     actionDefault(param)
     return
   }
+  if (view.value.type === 'map') {
+    if (!(param?.data?.data?.quotaList && param?.data?.data?.quotaList.length > 0)) {
+      return
+    }
+  }
   state.pointParam = param.data
   // 点击
   pointClickTrans()

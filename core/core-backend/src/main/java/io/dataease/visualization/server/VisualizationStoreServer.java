@@ -6,6 +6,7 @@ import io.dataease.api.visualization.request.VisualizationStoreRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.api.visualization.vo.VisualizationStoreVO;
+import io.dataease.i18n.Translator;
 import io.dataease.visualization.manage.VisualizationStoreManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -32,9 +33,9 @@ public class VisualizationStoreServer implements VisualizationStoreApi {
         IPage<VisualizationStoreVO> iPage = visualizationStoreManage.query(1, 20, request);
         List<VisualizationStoreVO> resourceVOS = iPage.getRecords();
         if (!CollectionUtils.isEmpty(resourceVOS)) {
-            resourceVOS.stream().forEach(item -> {
-                item.setCreator(StringUtils.equals(item.getCreator(), "1") ? "管理员" : item.getCreator());
-                item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? "管理员" : item.getCreator());
+            resourceVOS.forEach(item -> {
+                item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
+                item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
             });
         }
         return iPage.getRecords();
