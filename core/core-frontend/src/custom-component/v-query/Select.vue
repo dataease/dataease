@@ -592,8 +592,8 @@ const getOptionFromCascade = () => {
   selectValue.value = config.value.multiple ? [] : undefined
   debounceOptions(1)
 }
-const selectHideClick = id => {
-  useEmitt().emitter.emit('select-hide_lick', id)
+const selectHideClick = () => {
+  useEmitt().emitter.emit('select-hide_lick', config.value.id)
 }
 
 const hideClick = id => {
