@@ -237,7 +237,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     const colorAssignments = new Map()
     const sizeKey = extBubble.length > 0 ? extBubble[0].dataeaseName : ''
 
-    //todo 条件颜色
+    //条件颜色
     const { threshold } = parseJson(chart.senior)
     let conditions = []
     if (threshold.enable) {
@@ -279,49 +279,43 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
                   const end = parseFloat(t.max)
                   if (start <= value && value <= end) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('lt' === t.term) {
                   if (value < v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('le' === t.term) {
                   if (value <= v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('gt' === t.term) {
                   if (value > v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('ge' === t.term) {
                   if (value >= v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('eq' === t.term) {
                   if (value === v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('not_eq' === t.term) {
                   if (value !== v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 }
               }
             }
           }
+
           return {
             ...item,
             color,
@@ -348,8 +342,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           pointLayer.shape('customIcon')
         } else {
           const parser = new DOMParser()
-          for (let index = 0; index < Math.min(colorsWithAlpha.length, colorIndex + 1); index++) {
-            const color = colorsWithAlpha[index]
+          for (let index = 0; index < Math.min(baseColorList.length, colorIndex + 1); index++) {
+            const color = baseColorList[index]
             const fillRegex = /(fill="[^"]*")/g
             const svgStr = basicStyle.customIcon.replace(fillRegex, '')
             const doc = parser.parseFromString(svgStr, 'image/svg+xml')
@@ -363,7 +357,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           })
         }
       } else {
-        pointLayer.shape(mapSymbol).color('_index', colorsWithAlpha)
+        pointLayer.shape(mapSymbol).color('_index', baseColorList)
         pointLayer.style({
           stroke: {
             field: 'color'
