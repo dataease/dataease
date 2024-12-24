@@ -2737,7 +2737,7 @@ export default {
   },
   visualization: {
     select_target_resource: 'Please select the target resource',
-    target_dashboard_dataV: 'Target Dashboard\\Screen',
+    target_dashboard_dataV: 'Target Dashboard/Screen',
     effective_during_link: 'Public link active',
     condition_style_set: 'Condition Style Settings',
     cell_merge_tips:
