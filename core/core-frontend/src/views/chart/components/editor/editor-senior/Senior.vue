@@ -25,7 +25,7 @@ import {
   updateLinkageActive
 } from '@/api/visualization/linkage'
 import { includesAny } from '../util/StringUtils'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
+import { ElCollapseItem, ElIcon, ElMessage } from 'element-plus-secondary'
 import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '../util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
@@ -33,9 +33,10 @@ import BubbleAnimateCfg from '@/views/chart/components/editor/editor-senior/comp
 import { XpackComponent } from '@/components/plugin'
 import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
 import { Icon } from 'vant'
+import CommonEvent from '@/custom-component/common/CommonEvent.vue'
 const dvMainStore = dvMainStoreWithOut()
 
-const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData, curComponent } =
+const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData, curComponent, batchOptStatus } =
   storeToRefs(dvMainStore)
 
 const { t } = useI18n()
@@ -90,6 +91,10 @@ const props = defineProps({
     default: () => {
       return {}
     }
+  },
+  eventInfo: {
+    type: Object,
+    required: false
   }
 })
 
@@ -117,6 +122,14 @@ const seniorCounts = computed(() => {
     linkageCount,
     jumpCount
   }
+})
+
+const eventsShow = computed(() => {
+  return (
+    !batchOptStatus.value &&
+    ['indicator', 'rich-text'].includes(chart.value.type) &&
+    props.eventInfo
+  )
 })
 
 const onFunctionCfgChange = val => {
@@ -447,6 +460,14 @@ const removeJumpSenior = () => {
             :element="curComponent"
             :themes="themes"
           ></carousel-setting>
+          <el-collapse-item
+            :effect="themes"
+            name="events"
+            :title="t('visualization.event')"
+            v-if="eventsShow"
+          >
+            <common-event :themes="themes" :events-info="eventInfo"></common-event>
+          </el-collapse-item>
         </el-collapse>
       </el-row>
     </div>
