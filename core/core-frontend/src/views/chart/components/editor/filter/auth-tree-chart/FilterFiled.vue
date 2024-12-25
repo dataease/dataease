@@ -539,7 +539,7 @@ const emits = defineEmits(['update:item', 'del'])
             </div>
             <div class="mod-left right-de">
               <div class="right-top clearfix">
-                {{ t('auth.added') }}{{ checklist.length }}
+                {{ t('auth.added') + ' ' + checklist.length }}
                 <div class="right-btn">
                   <span @click="cancelKeyDow">
                     <i class="el-icon-edit"></i>
