@@ -102,7 +102,6 @@ const setupAll = async (
   embeddedStore.setResourceId(resourceId)
   embeddedStore.setDfId(dfId)
   const i18 = await import('@/plugins/vue-i18n')
-  console.log('i18', i18)
   await i18.setupI18n(app)
   setupRouter(app)
   setupElementPlus(app)
