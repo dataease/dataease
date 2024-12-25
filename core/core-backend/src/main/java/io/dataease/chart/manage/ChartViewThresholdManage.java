@@ -9,6 +9,7 @@ import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.extensions.view.filter.FilterTreeItem;
 import io.dataease.extensions.view.filter.FilterTreeObj;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.DateUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
@@ -127,7 +128,7 @@ public class ChartViewThresholdManage {
         if (StringUtils.equals(filterType, "enum")) {
             List<String> enumValue = item.getEnumValue();
             String enumValueText = String.join(",", enumValue);
-            return fieldName + " 属于 " + "( " + enumValueText + " )";
+            return fieldName + " " + Translator.get("i18n_threshold_logic_in") + " " + "( " + enumValueText + " )";
         } else {
             Integer deType = map.getDeType();
             String valueType = item.getValueType();
@@ -143,11 +144,11 @@ public class ChartViewThresholdManage {
             return value;
         }
         if (StringUtils.equals("max", value)) {
-            return "最大值";
+            return Translator.get("i18n_threshold_max");
         } else if (StringUtils.equals("min", value)) {
-            return "最小值";
+            return Translator.get("i18n_threshold_min");
         } else if (StringUtils.equals("average", value)) {
-            return "平均值";
+            return Translator.get("i18n_threshold_average");
         } else if (deType == 1) {
             return formatDynamicTimeLabel(value);
         } else {
@@ -172,20 +173,20 @@ public class ChartViewThresholdManage {
 
                 List<String> unitLabels = null;
                 if (StringUtils.equalsIgnoreCase("YYYY", format)) {
-                    unitLabels = List.of("年");
+                    unitLabels = List.of(Translator.get("i18n_time_year"));
                 } else if (StringUtils.equalsIgnoreCase("YYYY-MM", format)) {
-                    unitLabels = List.of("年", "月");
+                    unitLabels = List.of(Translator.get("i18n_time_year"), Translator.get("i18n_time_month"));
                 } else if (StringUtils.equalsIgnoreCase("YYYY-MM-DD", format)) {
-                    unitLabels = List.of("年", "月", "日");
+                    unitLabels = List.of(Translator.get("i18n_time_year"), Translator.get("i18n_time_month"), Translator.get("i18n_time_date"));
                 } else if (StringUtils.equalsIgnoreCase("HH:mm:ss", format)) {
                     DEException.throwException("纯时间格式不支持动态格式");
                 } else {
-                    unitLabels = List.of("年", "月", "日");
+                    unitLabels = List.of(Translator.get("i18n_time_year"), Translator.get("i18n_time_month"), Translator.get("i18n_time_date"));
                 }
                 String unitText = unitLabels.get(unit - 1);
-                String suffixText = "前";
+                String suffixText = Translator.get("i18n_time_ago");
                 if (suffix == 2) {
-                    suffixText = "后";
+                    suffixText = Translator.get("i18n_time_later");
                 }
                 String timeText = "";
                 if (StringUtils.containsIgnoreCase(format, "HH")) {
@@ -195,15 +196,18 @@ public class ChartViewThresholdManage {
             } else {
                 List<String> shortLabels = null;
                 if (StringUtils.equalsIgnoreCase("YYYY", format)) {
-                    shortLabels = List.of("当年", "去年", "明年");
+                    shortLabels = List.of(Translator.get("i18n_time_year_current"), Translator.get("i18n_time_year_last"), Translator.get("i18n_time_year_next"));
                 } else if (StringUtils.equalsIgnoreCase("YYYY-MM", format)) {
-                    shortLabels = List.of("当月", "上个月", "下个月", "年初", "年末");
+                    shortLabels = List.of(Translator.get("i18n_time_month_current"), Translator.get("i18n_time_month_last"), Translator.get("i18n_time_month_next"),
+                            Translator.get("i18n_time_month_start"), Translator.get("i18n_time_month_end"));
                 } else if (StringUtils.equalsIgnoreCase("YYYY-MM-DD", format)) {
-                    shortLabels = List.of("今天", "昨天", "明天", "月初", "月末");
+                    shortLabels = List.of(Translator.get("i18n_time_date_current"), Translator.get("i18n_time_date_last"), Translator.get("i18n_time_date_next"),
+                            Translator.get("i18n_time_date_start"), Translator.get("i18n_time_date_end"));
                 } else if (StringUtils.equalsIgnoreCase("HH:mm:ss", format)) {
                     shortLabels = List.of("当前", "1小时前", "1小时后");
                 } else {
-                    shortLabels = List.of("今天", "昨天", "明天", "月初", "月末");
+                    shortLabels = List.of(Translator.get("i18n_time_date_current"), Translator.get("i18n_time_date_last"), Translator.get("i18n_time_date_next"),
+                            Translator.get("i18n_time_date_start"), Translator.get("i18n_time_date_end"));
                 }
                 return shortLabels.get(timeFlag - 1);
             }
@@ -215,29 +219,18 @@ public class ChartViewThresholdManage {
     }
 
     private String translateTerm(String term) {
-        return switch (term) {
-            case "eq" -> "等于";
-            case "not_eq" -> "不等于";
-            case "lt" -> "小于";
-            case "le" -> "小于等于";
-            case "gt" -> "大于";
-            case "ge" -> "大于等于";
-            case "in" -> "属于";
-            case "not in" -> "不属于";
-            case "like" -> "包含";
-            case "not_like" -> "不包含";
-            case "null" -> "为空";
-            case "not_null" -> "不为空";
-            case "empty" -> "空字符串";
-            case "not_empty" -> "非字符串";
-            case "between" -> "范围是";
-            default -> " 等于 ";
-        };
+        if (StringUtils.equals(term, "not in")) {
+            return Translator.get("i18n_threshold_logic_not_in");
+        } else if (StringUtils.equals(term, "not like")) {
+            return Translator.get("i18n_threshold_logic_not_like");
+        } else {
+            return Translator.get("i18n_threshold_logic_" + term);
+        }
     }
 
     private String translateLogic(String logic) {
-        if (StringUtils.equals(logic, "and")) return " 且 ";
-        return " 或 ";
+        if (StringUtils.equals(logic, "and")) return String.format(" %s ", Translator.get("i18n_threshold_logic_and"));
+        return String.format(" %s ", Translator.get("i18n_threshold_logic_or"));
     }
 
     private String convertStyle(String htmlString) {
