@@ -4856,7 +4856,11 @@ span {
   width: 35px;
   text-align: center;
   padding: 5px;
-  margin-top: 30px;
+  margin-top: 35px;
+  span {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
 }
 
 .custom-icon {
