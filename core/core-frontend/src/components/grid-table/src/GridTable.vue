@@ -138,7 +138,7 @@ defineExpose({
       <template #empty>
         <empty-background
           v-if="props.showEmptyImg"
-          :description="props.emptyDesc ? props.emptyDesc : '暂无数据'"
+          :description="props.emptyDesc ? props.emptyDesc : $t('data_set.no_data')"
           :img-type="imgType || 'noneWhite'"
         />
       </template>

@@ -142,7 +142,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="font-content_overflow">
-      <div class="font-content_list">
+      <div class="font-content_list" v-if="fontListComputed.length">
         <div class="font-content_item" v-for="ele in fontListComputed" :key="ele">
           <span v-if="ele.isDefault" class="font-default">{{ t('system.default_font') }}</span>
           <div class="font-name">
@@ -174,6 +174,9 @@ onMounted(() => {
             }}</el-button>
           </div>
         </div>
+      </div>
+      <div style="height: 178px; margin-top: 142px" v-else>
+        <empty-background :description="$t('work_branch.relevant_content_found')" img-type="tree" />
       </div>
     </div>
   </div>
