@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.webhook.request.WebhookSwitchRequest;
 import io.dataease.api.webhook.vo.WebhookGridVO;
+import io.dataease.api.webhook.vo.WebhookOption;
 import io.dataease.model.KeywordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,4 +42,8 @@ public interface WebhookApi {
     @Operation(summary = "删除")
     @PostMapping("/delete")
     void delete(@RequestBody List<Long> ids);
+
+    @Operation(summary = "查询选项")
+    @GetMapping("/options")
+    List<WebhookOption> options();
 }

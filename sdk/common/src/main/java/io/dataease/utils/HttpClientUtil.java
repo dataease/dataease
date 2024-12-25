@@ -2,6 +2,7 @@ package io.dataease.utils;
 
 import io.dataease.exception.DEException;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -38,6 +39,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static io.dataease.result.ResultCode.SYSTEM_INNER_ERROR;
 
@@ -59,6 +61,18 @@ public class HttpClientUtil {
         }
         try {
             if (url.startsWith(HTTPS)) {
+                return buildHttpClient(true);
+            } else {
+                // http
+                return HttpClientBuilder.create().build();
+            }
+        } catch (Exception e) {
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        }
+    }
+    private static CloseableHttpClient buildHttpClient(boolean ssl) {
+        try {
+            if (ssl) {
                 SSLContextBuilder builder = new SSLContextBuilder();
                 builder.loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true);
                 SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(builder.build(), new String[]{"TLSv1.1", "TLSv1.2", "SSLv3"}, null, NoopHostnameVerifier.INSTANCE);
@@ -536,5 +550,54 @@ public class HttpClientUtil {
             return false;
         }
         return false; // 如果发生异常或状态码不是200，则URL不可达
+    }
+
+    public static String postWebhook(String url, String contentType, Map<String, Object> param, boolean ssl, HttpClientConfig config) {
+
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = buildHttpClient(ssl);
+            HttpPost httpPost = new HttpPost(url);
+            if (ObjectUtils.isEmpty(config)) {
+                config = new HttpClientConfig();
+            }
+            httpPost.setConfig(config.buildRequestConfig());
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpPost.addHeader(key, header.get(key));
+            }
+            if (StringUtils.equalsIgnoreCase(contentType, ContentType.APPLICATION_JSON.getMimeType())) {
+                EntityBuilder entityBuilder = EntityBuilder.create();
+                if (MapUtils.isNotEmpty(param)) {
+                    String json = JsonUtil.toJSONString(param).toString();
+                    entityBuilder.setText(json);
+                }
+                entityBuilder.setContentType(ContentType.APPLICATION_JSON);
+                HttpEntity requestEntity = entityBuilder.build();
+                httpPost.setEntity(requestEntity);
+            } else {
+                List<NameValuePair> nvps = param.entrySet().stream().map(entry -> new BasicNameValuePair(entry.getKey(), ObjectUtils.isEmpty(entry.getValue()) ? null : entry.getValue().toString())).collect(Collectors.toList());
+                try {
+                    UrlEncodedFormEntity entity = new UrlEncodedFormEntity(nvps, config.getCharset());
+                    httpPost.setEntity(entity);
+                } catch (Exception e) {
+                    logger.error("HttpClient转换编码错误", e);
+                    throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient转换编码错误: " + e.getMessage());
+                }
+            }
+            HttpResponse response = httpClient.execute(httpPost);
+            return getResponseStr(response, config);
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        } finally {
+            try {
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
+        }
     }
 }
