@@ -55,12 +55,6 @@ ALTER TABLE `demo_tea_material`
 ALTER TABLE `demo_tea_order`
     COMMENT = '连锁茶饮销售看板demo数据';
 
-ALTER TABLE `license`
-    MODIFY COLUMN `id` bigint(0) NOT NULL COMMENT 'ID',
-    MODIFY COLUMN `update_time` bigint(0) NULL DEFAULT NULL COMMENT '更新时间',
-    MODIFY COLUMN `license` longtext NULL COMMENT 'license',
-    MODIFY COLUMN `f2c_license` longtext NULL COMMENT 'license描述信息',
-    COMMENT = '企业版许可证信息表';
 
 ALTER TABLE `visualization_report_filter`
     COMMENT = '定时报告过自定义过滤组件信息';
