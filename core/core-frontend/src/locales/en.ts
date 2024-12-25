@@ -4307,7 +4307,12 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     recipient_setting: 'Recipient setting',
     attention_quota_tip: 'The indicators you are following',
     pay_attention_in_time: '. Please pay attention in time.',
-    msg_preview: 'Message preview'
+    msg_preview: 'Message preview',
+    average: 'Average value',
+    next_time: 'Next ',
+    end_of_year: 'End of year',
+    ago: 'Ago',
+    later: 'Later'
   },
   relation: {
     no_permission: 'No view permission',

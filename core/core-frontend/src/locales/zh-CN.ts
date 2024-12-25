@@ -4198,7 +4198,12 @@ export default {
     recipient_setting: '设置接收人',
     attention_quota_tip: '您关注的指标',
     pay_attention_in_time: '。请及时关注。',
-    msg_preview: '消息预览'
+    msg_preview: '消息预览',
+    average: '平均值',
+    next_time: '下一',
+    end_of_year: '年末',
+    ago: '前',
+    later: '后'
   },
   relation: {
     no_permission: '没有查看权限',

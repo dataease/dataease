@@ -4193,7 +4193,12 @@ export default {
     recipient_setting: '設置接收人',
     attention_quota_tip: '您關注的指標',
     pay_attention_in_time: '。請及時關注。',
-    msg_preview: '消息預覽'
+    msg_preview: '消息預覽',
+    average: '平均值',
+    next_time: '下一',
+    end_of_year: '年末',
+    ago: '前',
+    later: '後'
   },
   relation: {
     no_permission: '沒有查看權限',
