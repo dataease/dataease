@@ -629,7 +629,7 @@ defineExpose({
             <span>{{ t('datasource.req_param') }}</span>
           </div>
           <!-- HTTP 请求参数 -->
-          <el-form-item>
+          <el-form-item class="line-height_18">
             <api-http-request-form
               v-if="edit_api_item"
               :request="apiItem.request"
@@ -977,6 +977,12 @@ defineExpose({
 
   .base-info {
     margin: 24px 0 16px 0;
+  }
+
+  .line-height_18 {
+    .ed-form-item__content {
+      line-height: 18px;
+    }
   }
 
   .request-info {

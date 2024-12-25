@@ -79,6 +79,8 @@ const { t } = useI18n()
   flex-direction: column;
   background: #fff;
   color: #1f2329;
+  min-width: 1000px;
+  overflow-x: auto;
 
   .layout-container {
     .layout-sidebar {

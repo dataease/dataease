@@ -359,7 +359,7 @@ defineExpose({
         />
       </el-form-item>
       <el-form-item>
-        <span class="de-expand" @click="showPriority = !showPriority"
+        <span class="de-expand_engine" @click="showPriority = !showPriority"
           >{{ t('datasource.priority') }}
           <el-icon>
             <Icon
@@ -446,7 +446,7 @@ defineExpose({
 </template>
 <style lang="less">
 .basic-param-drawer {
-  .de-expand {
+  .de-expand_engine {
     font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 400;
@@ -455,6 +455,7 @@ defineExpose({
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    margin-bottom: 8px;
 
     .ed-icon {
       margin-left: 4px;
