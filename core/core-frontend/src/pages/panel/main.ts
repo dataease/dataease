@@ -58,7 +58,6 @@ import '@/style/index.less'
 import 'normalize.css/normalize.css'
 import '@antv/s2/dist/style.min.css'
 import AppElement from './App.vue'
-import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
@@ -102,7 +101,12 @@ const setupAll = async (
   embeddedStore.setPid(pid)
   embeddedStore.setResourceId(resourceId)
   embeddedStore.setDfId(dfId)
-  await setupI18n(app)
+  const i18 = await import('@/plugins/vue-i18n')
+  console.log('i18', i18)
+  await i18.setupI18n(app)
+  setupRouter(app)
+  setupElementPlus(app)
+  setupElementPlusIcons(app)
   setupRouter(app)
   setupElementPlus(app)
   setupElementPlusIcons(app)
