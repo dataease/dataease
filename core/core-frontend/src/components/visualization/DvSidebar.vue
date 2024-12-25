@@ -234,6 +234,7 @@ const onComponentNameChange = () => {
     font-weight: 500;
     text-align: center;
     padding: 5px;
+    margin-top: 5px;
     span {
       writing-mode: vertical-rl;
       text-orientation: mixed;
