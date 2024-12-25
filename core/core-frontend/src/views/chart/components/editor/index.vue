@@ -1681,7 +1681,7 @@ const setFieldDefaultValue = field => {
 const el = ref<HTMLElement | null>(null)
 const elDrag = ref<HTMLElement | null>(null)
 const { y, isDragging } = useDraggable(el, {
-  initialValue: { x: 0, y: 0 },
+  initialValue: { x: 0, y: 400 },
   draggingElement: elDrag
 })
 const previewHeight = ref(0)
