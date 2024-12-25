@@ -4450,7 +4450,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     bind_unready: 'Unbound',
     bind_title: 'Bind MFA Multi-factor Authentication',
     enable_switch_tips: 'The administrator has set all users to enable MFA authentication',
-    reset_key_tips: 'Reset FMA',
+    reset_key_tips: 'Reset MFA',
     step_1: 'Install Application',
     step_2: 'Bind MFA Authenticator',
     unbind_confirm: 'Are you sure to unbind MFA multi-factor authentication?',

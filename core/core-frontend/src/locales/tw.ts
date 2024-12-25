@@ -4324,7 +4324,7 @@ export default {
     bind_unready: '未綁定',
     bind_title: '綁定 MFA 多因子認證',
     enable_switch_tips: '管理員已設置所有用戶開啟 MFA 認證',
-    reset_key_tips: '重置 FMA',
+    reset_key_tips: '重置 MFA',
     step_1: '安裝應用',
     step_2: '綁定 MFA 驗證器',
     unbind_confirm: '確定解除 MFA 多因子認證綁定嗎？',
