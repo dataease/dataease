@@ -3566,10 +3566,10 @@ export default {
   },
   sync_datasource: {
     title: 'Data Connection Management',
-    source_ds: 'Source Datasource',
-    target_ds: 'Target Datasource',
-    add_source_ds: '@:common.add@:sync_datasource.source_ds',
-    add_target_ds: '@:common.add@:sync_datasource.target_ds',
+    source_ds: 'Source Data Source',
+    target_ds: 'Target Data Source',
+    add_source_ds: '@:common.add @:sync_datasource.source_ds',
+    add_target_ds: '@:common.add @:sync_datasource.target_ds',
     name: 'Name',
     desc: 'Description',
     type: 'Type',
@@ -3719,7 +3719,7 @@ export default {
     status_running: 'Synchronizing',
     status_failed: 'Failed',
     status_stopped: 'Task stopped',
-    status_waiting: 'Waiting for synchronization',
+    status_waiting: 'Waiting for sync',
     status_done: 'Task ended',
     status_terminated: 'Terminated',
     status_connection_lost: 'Connection lost',
@@ -3877,7 +3877,9 @@ export default {
     execute_log: 'Execution log',
     done: 'Done',
     connection_lost: 'Disconnected',
-    task_name: 'Task name'
+    task_name: 'Task name',
+    es_params_label: 'Query Parameters',
+    es_params_tip: 'Please follow the Elasticsearch query syntax'
   },
   watermark: {
     support_params: 'Currently supported parameters:',

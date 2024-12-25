@@ -20,4 +20,5 @@ public class Source {
     private String tableExtract;
     private List<TableField> fieldList;
     private String incrementField;
+    private String esQuery;
 }
