@@ -667,6 +667,25 @@ const disableUpdate = computed(() => {
   return flag
 })
 
+const dragCheckMapType = list => {
+  if (list && list.length > 0) {
+    let valid = true
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].deType !== 5) {
+        list.splice(i, 1)
+        valid = false
+      }
+    }
+    if (!valid) {
+      ElMessage({
+        message: t('chart.error_d_not_coordinates'),
+        type: 'warning'
+      })
+    }
+    return valid
+  }
+}
+
 const addAxis = (e, axis: AxisType) => {
   recordSnapshotInfo('calcData')
   const axisSpec = chartViewInstance.value?.axisConfig[axis]
@@ -698,6 +717,11 @@ const addAxis = (e, axis: AxisType) => {
       }
       typeValid = valid
     }
+  } else if (
+    ((view.value.type === 'symbolic-map' || view.value.type === 'heat-map') && axis === 'xAxis') ||
+    (view.value.type === 'flow-map' && (axis === 'xAxis' || axis === 'xAxisExt'))
+  ) {
+    typeValid = dragCheckMapType(view.value[axis])
   } else if (type) {
     typeValid = dragCheckType(view.value[axis], type)
   }

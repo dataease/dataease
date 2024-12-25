@@ -1852,6 +1852,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     error_not_number: 'Drag of non-numeric indicators is not supported',
     error_q_2_d: 'Drag of indicators to dimensions is not supported',
     error_d_2_q: 'Drag of dimensions to indicators is not supported',
+    error_d_not_coordinates:
+      'Drag of dimensions that are not of coordinates types is not supported',
     error_d_not_time_2_q: 'Drag of non-time dimensions is not supported',
     error_bar_range_axis_type_not_equal:
       'The start value and end value must be set to the same type',

@@ -1817,6 +1817,7 @@ export default {
     error_not_number: '不支持拖拽非数值类型指标',
     error_q_2_d: '不支持拖拽指标至维度',
     error_d_2_q: '不支持拖拽维度至指标',
+    error_d_not_coordinates: '不支持拖拽非地理位置类型的维度',
     error_d_not_time_2_q: '不支持拖拽非时间类型的维度',
     error_bar_range_axis_type_not_equal: '开始值与结束值需要设置相同类型',
     only_input_number: '请输入正确数值',
