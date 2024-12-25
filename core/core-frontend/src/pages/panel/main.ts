@@ -90,11 +90,7 @@ const setupAll = async (
     outerParams,
     suffixId
   })
-  await setupI18n(app)
   setupStore(app)
-  setupRouter(app)
-  setupElementPlus(app)
-  setupElementPlusIcons(app)
   const embeddedStore = useEmbedded()
   embeddedStore.setType(type)
   embeddedStore.setBusiFlag(busiFlag)
@@ -106,6 +102,10 @@ const setupAll = async (
   embeddedStore.setPid(pid)
   embeddedStore.setResourceId(resourceId)
   embeddedStore.setDfId(dfId)
+  await setupI18n(app)
+  setupRouter(app)
+  setupElementPlus(app)
+  setupElementPlusIcons(app)
   const directive = await import('@/directive')
   directive.installDirective(app)
   const res = await import('@/store/modules/user')
