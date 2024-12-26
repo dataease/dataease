@@ -65,7 +65,7 @@ const styleInfo = computed(() => {
   display: flex;
   align-items: center;
   position: absolute;
-  color: #33ef08;
+  color: rgba(2, 52, 96, 1);
   font-weight: bold;
   background-color: rgba(179, 212, 252);
 }
