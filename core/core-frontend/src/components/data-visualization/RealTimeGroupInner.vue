@@ -77,7 +77,6 @@ import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
-import RealTimeGroupInner from '@/components/data-visualization/RealTimeGroupInner.vue'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -319,25 +318,6 @@ const expandClick = component => {
                 }"
                 @click="onClick(transformIndex(index))"
               >
-                <div
-                  v-if="['DeTabs', 'Group'].includes(getComponent(index)?.component)"
-                  style="width: 12px; margin-right: 10px"
-                >
-                  <el-icon class="component-expand" @click="expandClick(getComponent(index))">
-                    <Icon
-                      v-if="getComponent(index)?.expand"
-                      name="dv-expand-down"
-                      class="expand-icon"
-                      ><dvExpandDown class="svg-icon expand-icon"
-                    /></Icon>
-                    <Icon
-                      v-if="!getComponent(index)?.expand"
-                      name="dv-expand-right"
-                      class="expand-icon"
-                      ><dvExpandRight class="svg-icon expand-icon"
-                    /></Icon>
-                  </el-icon>
-                </div>
                 <el-icon class="component-icon">
                   <Icon><component :is="getIconName(getComponent(index))"></component></Icon>
                 </el-icon>
@@ -424,21 +404,6 @@ const expandClick = component => {
                     ></context-menu-aside-details>
                   </template>
                 </el-dropdown>
-              </div>
-              <div
-                v-if="getComponent(index)?.component === 'DeTabs' && getComponent(index)?.expand"
-              >
-                <real-time-tab
-                  :tab-element="getComponent(index)"
-                  tab-position="groupTab"
-                  :component-data="getComponent(index).propValue"
-                ></real-time-tab>
-              </div>
-              <div v-if="getComponent(index)?.component === 'Group' && getComponent(index)?.expand">
-                <real-time-group-inner
-                  tab-position="groupTab"
-                  :component-data="getComponent(index).componentData"
-                ></real-time-group-inner>
               </div>
             </div>
           </template>

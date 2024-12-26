@@ -81,6 +81,7 @@ import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/cont
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
+import { checkJoinGroup } from '@/utils/canvasUtils'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -136,16 +137,15 @@ const shiftDataPush = curClickIndex => {
     indexBegin = curClickIndex
     indexEnd = laterIndexTrans
   }
-  const shiftAreaComponents = componentData.value
-    .slice(indexBegin, indexEnd + 1)
-    .filter(
-      component =>
-        !areaDataIdArray.includes(component.id) &&
-        !component.isLock &&
-        component.isShow &&
-        component.category !== 'hidden' &&
-        !['GroupArea', 'DeTabs'].includes(component.component)
-    )
+  const shiftAreaComponents = componentData.value.slice(indexBegin, indexEnd + 1).filter(
+    component =>
+      !areaDataIdArray.includes(component.id) &&
+      !component.isLock &&
+      component.isShow &&
+      component.category !== 'hidden' &&
+      !['GroupArea'].includes(component.component) &&
+      checkJoinGroup(component) // 当前如果是Tab 则tab中不能包含Group
+  )
   areaData.value.components.push(...shiftAreaComponents)
   dvMainStore.setCurComponent({ component: null, index: null })
 }
@@ -509,7 +509,7 @@ const canvasChange = () => {
               >
                 <div
                   v-show="['Group', 'DeTabs'].includes(getComponent(index)?.component)"
-                  style="width: 22px; padding-left: 3px"
+                  style="width: 22px"
                 >
                   <el-icon class="component-expand" @click="expandClick(getComponent(index))">
                     <Icon
@@ -662,7 +662,7 @@ const canvasChange = () => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 2px 0 0px;
+        padding: 0 2px 0 8px;
         user-select: none;
 
         .component-icon {
@@ -705,7 +705,7 @@ const canvasChange = () => {
             .component-base {
               opacity: 1;
             }
-            width: 66px !important;
+            max-width: 66px !important;
           }
         }
 
