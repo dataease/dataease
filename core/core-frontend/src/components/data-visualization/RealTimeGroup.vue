@@ -77,7 +77,6 @@ import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
-import RealTimeGroupInner from '@/components/data-visualization/RealTimeGroupInner.vue'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -313,6 +312,7 @@ const expandClick = component => {
                 :class="{
                   'container-item-not-show': !getComponent(index)?.isShow,
                   'component-item-group-tab': tabPosition === 'groupTab',
+                  'component-item-tab-group': tabPosition === 'tabGroup',
                   activated:
                     (curComponent && curComponent?.id === getComponent(index)?.id) ||
                     areaData.components.includes(getComponent(index))
@@ -435,10 +435,10 @@ const expandClick = component => {
                 ></real-time-tab>
               </div>
               <div v-if="getComponent(index)?.component === 'Group' && getComponent(index)?.expand">
-                <real-time-group-inner
-                  tab-position="groupTab"
-                  :component-data="getComponent(index).componentData"
-                ></real-time-group-inner>
+                <real-time-group
+                  tab-position="tabGroup"
+                  :component-data="getComponent(index).propValue"
+                ></real-time-group>
               </div>
             </div>
           </template>
@@ -602,7 +602,11 @@ const expandClick = component => {
   background: #1a1a1a !important;
 }
 .component-item-group-tab {
-  padding-left: 60px !important;
+  padding-left: 70px !important;
+}
+
+.component-item-tab-group {
+  padding-left: 38px !important;
 }
 
 .component-expand {

@@ -171,7 +171,7 @@ const expandClick = component => {
               </div>
               <div v-if="getComponent(index)?.expand">
                 <real-time-group
-                  tab-position="groupTab"
+                  :tab-position="tabPosition"
                   :component-data="getComponent(index).componentData"
                 ></real-time-group>
               </div>
@@ -215,7 +215,7 @@ const expandClick = component => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 2px 0 20px;
+        padding: 0 2px 0 15px;
         user-select: none;
 
         .component-icon {
