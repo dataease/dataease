@@ -227,7 +227,10 @@ const handleSearchVariableApi = async () => {
 onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
   await handleSearchVariableApi()
-  codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql), true)
+  codeCom.value = myCm.value.codeComInit(
+    setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)),
+    true
+  )
 })
 
 onBeforeUnmount(() => {
@@ -770,10 +773,10 @@ const mousedownDrag = () => {
         :height="`${dragHeight}px`"
         dom-id="sql-editor"
         ref="myCm"
-        :quotaMap="fieldFormList.filter(ele => [2, 3].includes(ele.deType)).map(ele => ele.name)"
+        :quotaMap="fieldFormList.filter(ele => ['num'].includes(ele.type)).map(ele => ele.name)"
         :dimensionMap="
           builtInList
-            .concat(fieldFormList.filter(ele => ![2, 3].includes(ele.deType)))
+            .concat(fieldFormList.filter(ele => !['num'].includes(ele.type)))
             .map(ele => ele.name)
         "
       ></code-mirror>
@@ -910,7 +913,7 @@ const mousedownDrag = () => {
               v-for="fieldForm in fieldFormListComputed"
               :key="fieldForm.id"
               @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
-              :class="[2, 3].includes(fieldForm.deType) && 'with-type'"
+              :class="['num'].includes(fieldForm.type) && 'with-type'"
             >
               <el-icon>
                 <Icon
