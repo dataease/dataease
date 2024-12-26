@@ -17,11 +17,14 @@ public class ConfigUtils {
             String filePath = System.getProperty("user.dir");
             filePath = filePath.replace("file:", "").substring(0, filePath.lastIndexOf("resources"));
             Resource resource = new FileSystemResource(filePath + "resources" + File.separator + "config" + File.separator + "application.yml");
-//            Resource resource = new FileSystemResource("D:\\dataease\\electron\\dataease-desktop\\resources\\config\\application.yml");
             YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
             factory.setResources(resource);
+
+            String basePath = Objects.requireNonNull(factory.getObject()).getProperty("base-path", "");
+            basePath = basePath.replaceAll("\\$\\{user.home}", System.getProperty("user.home").replaceAll("\\\\", "/"));
+
             String property = Objects.requireNonNull(factory.getObject()).getProperty(key, defaultValue);
-            return property.replaceAll("\\$\\{user.home}", System.getProperty("user.home").replaceAll("\\\\", "/"));
+            return property.replaceAll("\\$\\{base-path}", basePath);
         } catch (Exception e) {
         }
         return defaultValue;

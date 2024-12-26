@@ -14,4 +14,8 @@ public class UserUtils {
         bo.setDefaultOid(1L);
         AuthUtils.setUser(bo);
     }
+
+    public static void removeUser() {
+        AuthUtils.remove();
+    }
 }

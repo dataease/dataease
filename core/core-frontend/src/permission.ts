@@ -74,6 +74,9 @@ router.beforeEach(async (to, from, next) => {
         let str = ''
         if (((from.query.redirect as string) || '?').split('?')[0] === to.path) {
           str = ((window.location.hash as string) || '?').split('?').reverse()[0]
+          if (str.includes('redirect=')) {
+            str = ''
+          }
         }
         if (str) {
           to.fullPath += '?' + str

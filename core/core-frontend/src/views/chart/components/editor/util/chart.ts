@@ -389,6 +389,7 @@ export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
     label: t('chart.total_show'),
     subLabel: t('chart.sub_total_show'),
     subTotalsDimensions: [],
+    subTotalsDimensionsNew: true,
     calcTotals: {
       aggregation: 'SUM',
       cfg: []

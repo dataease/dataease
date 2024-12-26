@@ -2339,6 +2339,8 @@ export default {
     day_limit: '天不能小於1，大於31'
   },
   commons: {
+    result_count: '個結果',
+    clear_filter: '清空條件',
     language: '語言',
     help_center: '幫助中心',
     assistant: '小助手',
