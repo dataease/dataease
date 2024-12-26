@@ -226,6 +226,7 @@ const handleSearchVariableApi = async () => {
 }
 onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
+  await handleSearchVariableApi()
   codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql), true)
 })
 
@@ -346,6 +347,7 @@ const save = (cb?: () => void) => {
 
   parseVariable()
   sql = codeCom.value.state.doc.toString()
+  sql = setNameIdTrans('name', 'id', sql)
   sqlNode.value.changeFlag = true
   if (!sql.trim()) {
     ElMessage.error(t('data_set.cannot_be_empty_de'))
@@ -894,7 +896,7 @@ const mousedownDrag = () => {
             </div>
             <div
               class="variable-item"
-              @click="insertFieldToCodeMirror(`$[${fieldForm.id}]`)"
+              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
               v-for="fieldForm in builtInList"
               :key="fieldForm.id"
             >
@@ -907,7 +909,7 @@ const mousedownDrag = () => {
               class="variable-item flex-align-center"
               v-for="fieldForm in fieldFormListComputed"
               :key="fieldForm.id"
-              @click="insertFieldToCodeMirror(`$[${fieldForm.id}]`)"
+              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
               :class="[2, 3].includes(fieldForm.deType) && 'with-type'"
             >
               <el-icon>

@@ -40,7 +40,7 @@ import static org.apache.calcite.sql.SqlKind.*;
 
 public class SqlparserUtils {
     public static final String regex = "\\$\\{(.*?)\\}";
-    public static final String regex2 = "\\$\\[(.*?)\\]";
+    public static final String regex2 = "\\[(.*?)\\]";
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
     private static final String SubstitutedSqlVirtualData = " 1 > 2 ";
