@@ -2341,6 +2341,8 @@ export default {
     day_limit: '天不能小于1，大于31'
   },
   commons: {
+    result_count: '个结果',
+    clear_filter: '清空条件',
     language: '语言',
     help_center: '帮助中心',
     assistant: '小助手',

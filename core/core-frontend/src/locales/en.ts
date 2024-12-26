@@ -2395,6 +2395,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     day_limit: 'Days cannot be less than 1 and greater than 31'
   },
   commons: {
+    result_count: 'result',
+    clear_filter: 'Clear conditions',
     language: 'Language',
     help_center: 'Help Center',
     assistant: 'Assistant',

@@ -7,6 +7,8 @@ import { nextTick, ref, watch } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { ElButton, ElDivider, ElIcon } from 'element-plus-secondary'
 import { propTypes } from '@/utils/propTypes'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const props = defineProps({
   filterTexts: propTypes.arrayOf(propTypes.string),
   total: propTypes.number.def(0)
@@ -51,7 +53,7 @@ watch(
 <template>
   <div v-if="filterTexts.length" class="filter-texts">
     <span class="sum">{{ total }}</span>
-    <span class="title">个结果</span>
+    <span class="title">{{ t('commons.result_count') }}</span>
     <el-divider direction="vertical" />
     <el-icon @click="scrollPre" class="arrow-left arrow-filter" v-if="showScroll">
       <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
@@ -76,7 +78,7 @@ watch(
             ><icon_deleteTrash_outlined class="svg-icon"
           /></Icon>
         </template>
-        清空条件</el-button
+        {{ t('commons.clear_filter') }}</el-button
       >
     </div>
     <el-icon @click="scrollNext" class="arrow-right arrow-filter" v-if="showScroll">
@@ -94,7 +96,7 @@ watch(
           ><icon_deleteTrash_outlined class="svg-icon"
         /></Icon>
       </template>
-      清空条件</el-button
+      {{ t('commons.clear_filter') }}</el-button
     >
   </div>
 </template>
