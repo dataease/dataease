@@ -559,6 +559,10 @@ declare interface TotalConfig {
    */
   subTotalsDimensions: string[]
   /**
+   * 兼容旧版的判断
+   */
+  subTotalsDimensionsNew: boolean
+  /**
    * 总计汇总设置
    */
   calcTotals: CalcTotals

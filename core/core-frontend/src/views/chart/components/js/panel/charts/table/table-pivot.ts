@@ -175,7 +175,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 
     // total config
     const { basicStyle, tooltip, tableTotal } = parseJson(chart.customAttr)
-    tableTotal.row.subTotalsDimensions = r
+    if (!tableTotal.row.subTotalsDimensionsNew || tableTotal.row.subTotalsDimensions == undefined) {
+      tableTotal.row.subTotalsDimensions = r
+    }
     tableTotal.col.subTotalsDimensions = c
 
     // 解析合计、小计排序
