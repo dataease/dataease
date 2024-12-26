@@ -1111,9 +1111,8 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     trackWebFilterCursor(element, params) {
       if (params[element.id]) {
-        const currentFilters = []
-        currentFilters.push(params[element.id])
-        element['webParamsFilters'] = currentFilters
+        element['webParamsFilters'] = params[element.id]
+        useEmitt().emitter.emit('query-data-' + element.id)
       }
     },
     trackOuterFilterCursor(element, params, preActiveComponentIds, trackInfo, source) {
