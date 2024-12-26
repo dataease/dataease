@@ -2,7 +2,7 @@
 import { onMounted, PropType, reactive, watch, ref, inject, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_TABLE_TOTAL } from '@/views/chart/components/editor/util/chart'
-import { cloneDeep, defaultsDeep, find } from 'lodash-es'
+import { cloneDeep, defaultsDeep, find, includes } from 'lodash-es'
 import CustomAggrEdit from './CustomAggrEdit.vue'
 
 const { t } = useI18n()
@@ -21,7 +21,7 @@ const props = defineProps({
   }
 })
 watch(
-  [() => props.chart.customAttr.tableTotal, () => props.chart.yAxis],
+  [() => props.chart.customAttr.tableTotal, () => props.chart.xAxis, () => props.chart.yAxis],
   () => {
     init()
   },
@@ -66,17 +66,17 @@ function changeRowSubTableTotal() {
 
 const initSubTotalDimensionList = () => {
   const list = []
-  if (props.chart.xAxis.length > 2) {
+  if (props.chart.xAxis.length >= 2) {
     for (let i = 0; i < props.chart.xAxis.length - 1; i++) {
       //排除最后一个
-      const old = find(
+      const old = includes(
         state.tableTotalForm.row.subTotalsDimensions,
-        s => s === props.chart.xAxis[i].dataeaseName
+        props.chart.xAxis[i].dataeaseName
       )
       list.push({
         displayName: props.chart.xAxis[i].name,
         name: props.chart.xAxis[i].dataeaseName,
-        checked: state.tableTotalForm.row.subTotalsDimensionsNew ? old != undefined : true
+        checked: !!state.tableTotalForm.row.subTotalsDimensionsNew ? old : true
       })
     }
   }
