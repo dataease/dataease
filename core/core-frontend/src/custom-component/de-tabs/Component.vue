@@ -488,20 +488,6 @@ watch(
   { deep: true }
 )
 
-watch(
-  () => editableTabsValue.value,
-  () => {
-    nextTick(() => {
-      useEmitt().emitter.emit('tabCanvasChange-' + activeCanvasId.value)
-    })
-  },
-  { deep: true }
-)
-
-const activeCanvasId = computed(() => {
-  return element.value.id + '--' + editableTabsValue.value
-})
-
 const reShow = () => {
   state.tabShow = false
   nextTick(() => {
