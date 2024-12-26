@@ -180,6 +180,12 @@ const handleDefaultVal = (chart: Chart) => {
   if (customAttr.tableCell.mergeCells === undefined) {
     customAttr.tableCell.mergeCells = false
   }
+  if (chart.type === 'table-pivot') {
+    if (!customAttr.tableTotal?.row?.subTotalsDimensionsNew) {
+      customAttr.tableTotal.row.subTotalsDimensionsNew =
+        !!customAttr.tableTotal.row.subTotalsDimensionsNew
+    }
+  }
 }
 const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   if (!viewInfo) {
