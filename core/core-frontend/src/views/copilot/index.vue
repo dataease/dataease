@@ -402,7 +402,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         padding-top: 24px;
         position: relative;
         overflow-y: auto;
-        padding-bottom: 25px;
+        padding-bottom: 60px;
         max-height: 100%;
       }
       .question-input {
