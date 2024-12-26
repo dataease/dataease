@@ -1,8 +1,10 @@
 package io.dataease.visualization.utils;
 
 import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.utils.ConfigUtils;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.LogUtil;
+import io.dataease.utils.ModelUtils;
 import io.dataease.visualization.bo.ExcelSheetModel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +22,15 @@ import java.util.regex.Pattern;
 public class VisualizationExcelUtils {
 
     private static final String suffix = ".xlsx";
-    private static final String BASE_ROOT = "/opt/dataease2.0/data/report/";
+    private static final String BASE_ROOT = getBaseRoot();
+
+    public static String getBaseRoot() {
+        if (ModelUtils.isDesktop()) {
+            return ConfigUtils.getConfig("dataease.path.report", "/opt/dataease2.0/data/report/");
+        } else {
+            return "/opt/dataease2.0/data/report/";
+        }
+    }
 
     public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);

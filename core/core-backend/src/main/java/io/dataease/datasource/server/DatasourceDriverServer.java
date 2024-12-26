@@ -2,7 +2,6 @@ package io.dataease.datasource.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.ds.DatasourceDriverApi;
-
 import io.dataease.api.ds.vo.DriveDTO;
 import io.dataease.api.ds.vo.DriveJarDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
@@ -14,6 +13,7 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.Md5Utils;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,17 +21,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Transactional(rollbackFor = Exception.class)
 @RestController
 @RequestMapping("/datasourceDriver")
 public class DatasourceDriverServer implements DatasourceDriverApi {
 
-    private final static String DRIVER_PATH = "/opt/dataease2.0/custom-drivers/";
+    @Value("${dataease.path.custom-drivers:/opt/dataease2.0/custom-drivers/}")
+    private String DRIVER_PATH;
 
     @Resource
     private CoreDriverMapper coreDriverMapper;
@@ -70,7 +73,7 @@ public class DatasourceDriverServer implements DatasourceDriverApi {
     }
 
     @Override
-    public DriveDTO save(DriveDTO datasourceDrive){
+    public DriveDTO save(DriveDTO datasourceDrive) {
         CoreDriver coreDriver = new CoreDriver();
         BeanUtils.copyBean(coreDriver, datasourceDrive);
         coreDriverMapper.insert(coreDriver);
@@ -78,7 +81,7 @@ public class DatasourceDriverServer implements DatasourceDriverApi {
     }
 
     @Override
-    public DriveDTO update(DriveDTO datasourceDrive){
+    public DriveDTO update(DriveDTO datasourceDrive) {
         CoreDriver coreDriver = new CoreDriver();
         BeanUtils.copyBean(coreDriver, datasourceDrive);
         coreDriverMapper.updateById(coreDriver);
@@ -86,7 +89,7 @@ public class DatasourceDriverServer implements DatasourceDriverApi {
     }
 
     @Override
-    public void delete(String driverId){
+    public void delete(String driverId) {
         coreDriverMapper.deleteById(driverId);
         Map<String, Object> map = new HashMap<>();
         map.put("deDriverId", driverId);
@@ -95,7 +98,7 @@ public class DatasourceDriverServer implements DatasourceDriverApi {
 
 
     @Override
-    public List<DriveJarDTO> listDriverJar(String driverId){
+    public List<DriveJarDTO> listDriverJar(String driverId) {
         List<DriveJarDTO> driveJarDTOS = new ArrayList<>();
         QueryWrapper<CoreDriverJar> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("deDriverId", driverId);
@@ -108,28 +111,28 @@ public class DatasourceDriverServer implements DatasourceDriverApi {
     }
 
     @Override
-    public void deleteDriverJar(String jarId){
+    public void deleteDriverJar(String jarId) {
         CoreDriverJar driverJar = coreDriverJarMapper.selectById(jarId);
         coreDriverJarMapper.deleteById(jarId);
         CoreDriver driver = coreDriverMapper.selectById(driverJar.getDeDriverId());
         FileUtils.deleteFile(DRIVER_PATH + driverJar.getDeDriverId() + "/" + driverJar.getTransName());
         //TODO 更新classloader
-    };
+    }
 
     @Override
-    public DriveJarDTO uploadJar(@RequestParam("deDriverId") String deDriverId, @RequestParam("jarFile") MultipartFile jarFile) throws Exception{
+    public DriveJarDTO uploadJar(@RequestParam("deDriverId") String deDriverId, @RequestParam("jarFile") MultipartFile jarFile) throws Exception {
         CoreDriver coreDriver = coreDriverMapper.selectById(deDriverId);
-        if(coreDriver == null){
+        if (coreDriver == null) {
             throw new RuntimeException("DRIVER_NOT_FOUND");
         }
         String filename = jarFile.getOriginalFilename();
-        if(!filename.endsWith(".jar")){
+        if (!filename.endsWith(".jar")) {
             throw new RuntimeException("NOT_JAR");
         }
 
         QueryWrapper<CoreDriverJar> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("fileName", filename);
-        if(!CollectionUtils.isEmpty(coreDriverJarMapper.selectList(queryWrapper))){
+        if (!CollectionUtils.isEmpty(coreDriverJarMapper.selectList(queryWrapper))) {
             throw new Exception("A file with the same name already exists：" + filename);
         }
 

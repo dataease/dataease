@@ -3,13 +3,13 @@ package io.dataease.visualization.server;
 import io.dataease.api.visualization.StaticResourceApi;
 import io.dataease.api.visualization.request.StaticResourceRequest;
 import io.dataease.exception.DEException;
-import io.dataease.log.DeLog;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import io.dataease.utils.StaticResourceUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,13 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -38,7 +34,8 @@ import java.util.Map;
 @RequestMapping("/staticResource")
 public class StaticResourceServer implements StaticResourceApi {
 
-    private final Path staticDir = Paths.get("/opt/dataease2.0/data/static-resource/");
+    @Value("${dataease.path.static-resource:/opt/dataease2.0/data/static-resource/}")
+    private String staticDir;
 
     @Override
     public void upload(String fileId, MultipartFile file) {

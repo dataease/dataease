@@ -1,5 +1,8 @@
 package io.dataease.constant;
 
+import io.dataease.utils.ConfigUtils;
+import io.dataease.utils.ModelUtils;
+
 import java.io.File;
 
 import static io.dataease.utils.StaticResourceUtils.ensureSuffix;
@@ -11,7 +14,7 @@ public class StaticResourceConstants {
 
     public static final String FILE_SEPARATOR = File.separator;
 
-    public static final String USER_HOME = "/opt/dataease2.0/data";
+    public static final String USER_HOME = getHomeData();
 
     public static String WORK_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "static-resource" + FILE_SEPARATOR;
 
@@ -36,4 +39,11 @@ public class StaticResourceConstants {
      */
     public static final String URL_SEPARATOR = "/";
 
+    public static String getHomeData() {
+        if (ModelUtils.isDesktop()) {
+            return ConfigUtils.getConfig("dataease.path.data", "/opt/dataease2.0/data");
+        } else {
+            return "/opt/dataease2.0/data";
+        }
+    }
 }

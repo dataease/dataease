@@ -19,7 +19,9 @@ import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.utils.AuthUtils;
+import io.dataease.utils.ConfigUtils;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.ModelUtils;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -35,8 +37,16 @@ import java.util.stream.Collectors;
 
 public class ExcelUtils {
     public static final String UFEFF = "\uFEFF";
-    private static String path = "/opt/dataease2.0/data/excel/";
+    private static String path = getExcelPath();
     private static ObjectMapper objectMapper = new ObjectMapper();
+
+    public static String getExcelPath() {
+        if (ModelUtils.isDesktop()) {
+            return ConfigUtils.getConfig("dataease.path.excel", "/opt/dataease2.0/data/excel/");
+        } else {
+            return "/opt/dataease2.0/data/excel/";
+        }
+    }
 
     private static TypeReference<List<TableField>> TableFieldListTypeReference = new TypeReference<List<TableField>>() {
     };
@@ -333,7 +343,7 @@ public class ExcelUtils {
             Double d = Double.valueOf(value);
             double eps = 1e-10;
             if (d - Math.floor(d) < eps) {
-                if(value.contains(".")){
+                if (value.contains(".")) {
                     return "DOUBLE";
                 }
                 return "LONG";

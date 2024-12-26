@@ -103,7 +103,8 @@ public class ExportCenterManage implements BaseExportApi {
 
 
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
-    private static final String exportData_path = "/opt/dataease2.0/data/exportData/";
+    @Value("${dataease.path.exportData:/opt/dataease2.0/data/exportData/}")
+    private String exportData_path;
 
     public Integer getExtractPageSize() {
         return extractPageSize;

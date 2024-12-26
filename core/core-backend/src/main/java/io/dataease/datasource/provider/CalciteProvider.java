@@ -31,6 +31,7 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -53,8 +54,10 @@ public class CalciteProvider extends Provider {
     private EngineManage engineManage;
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
     private Map<Long, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
-    private final String FILE_PATH = "/opt/dataease2.0/drivers";
-    private final String CUSTOM_PATH = "/opt/dataease2.0/custom-drivers/";
+    @Value("${dataease.path.driver:/opt/dataease2.0/drivers}")
+    private String FILE_PATH;
+    @Value("${dataease.path.custom-drivers:/opt/dataease2.0/custom-drivers/}")
+    private String CUSTOM_PATH;
     private static String split = "DE";
 
     @Resource

@@ -1,6 +1,7 @@
 package io.dataease.listener;
 
 
+import io.dataease.utils.ConfigUtils;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -17,5 +18,8 @@ public class EhCacheStartListener implements ApplicationContextInitializer<Confi
         factory.setResources(resource);
         String property = Objects.requireNonNull(factory.getObject()).getProperty("dataease.login_timeout", "480");
         System.setProperty("dataease.login_timeout", property);
+
+        String ehcache = ConfigUtils.getConfig("dataease.path.ehcache", "/opt/dataease2.0/cache");
+        System.setProperty("dataease.path.ehcache", ehcache);
     }
 }

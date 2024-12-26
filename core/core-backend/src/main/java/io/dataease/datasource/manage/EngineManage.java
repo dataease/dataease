@@ -17,6 +17,7 @@ import io.dataease.utils.JsonUtil;
 import io.dataease.utils.ModelUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,9 @@ public class EngineManage {
 
     @Resource
     private CoreDatasourceMapper datasourceMapper;
+
+    @Value("${dataease.path.engine:jdbc:h2:/opt/dataease2.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE}")
+    private String engineUrl;
 
 
     public CoreDeEngine info() throws DEException {
@@ -111,7 +115,7 @@ public class EngineManage {
         if (ModelUtils.isDesktop()) {
             engine.setType(engineType.h2.name());
             H2 h2 = new H2();
-            h2.setJdbc("jdbc:h2:/opt/dataease2.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE");
+            h2.setJdbc(engineUrl);
             h2.setDataBase("PUBLIC");
             h2.setUsername(env.getProperty("spring.datasource.username"));
             h2.setPassword(env.getProperty("spring.datasource.password"));

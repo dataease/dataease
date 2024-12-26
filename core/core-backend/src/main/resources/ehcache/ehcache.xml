@@ -8,7 +8,7 @@
         <jsr107:defaults enable-management="true" enable-statistics="true"/>
     </service>
 
-    <persistence directory="/opt/dataease2.0/cache" />
+    <persistence directory="${dataease.path.ehcache}" />
 
     <cache-template name="common-cache">
         <expiry>
