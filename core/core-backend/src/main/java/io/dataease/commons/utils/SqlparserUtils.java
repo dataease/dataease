@@ -1,6 +1,9 @@
 package io.dataease.commons.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
+import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
@@ -37,6 +40,7 @@ import static org.apache.calcite.sql.SqlKind.*;
 
 public class SqlparserUtils {
     public static final String regex = "\\$\\{(.*?)\\}";
+    public static final String regex2 = "\\$\\[(.*?)\\]";
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
     private static final String SubstitutedSqlVirtualData = " 1 > 2 ";
@@ -50,6 +54,14 @@ public class SqlparserUtils {
             hasVariables = true;
             tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
         }
+
+        pattern = Pattern.compile(regex2);
+        matcher = pattern.matcher(tmpSql);
+        while (matcher.find()) {
+            hasVariables = true;
+            tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
+        }
+
         if (!hasVariables && !tmpSql.contains(SubstitutedParams)) {
             return tmpSql;
         }
@@ -157,22 +169,22 @@ public class SqlparserUtils {
             for (Join join : joins) {
                 FromItem rightItem = join.getRightItem();
                 if (rightItem instanceof ParenthesedSelect) {
-                   try {
-                       PlainSelect selectBody = ((ParenthesedSelect) rightItem).getPlainSelect();
-                       Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
-                       PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
-                       ((ParenthesedSelect) rightItem).setSelect(subPlainSelect);
-                   }catch ( Exception e ){
-                       SetOperationList  select = ((ParenthesedSelect) rightItem).getSetOperationList();
-                       SetOperationList setOperationList = new SetOperationList();
-                       setOperationList.setSelects(new ArrayList<>());
-                       setOperationList.setOperations(select.getOperations());
-                       for (Select selectSelect : select.getSelects()) {
-                           Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectSelect.toString(), dsType));
-                           setOperationList.getSelects().add(subSelectTmp);
-                       }
-                       ((ParenthesedSelect) rightItem).setSelect(setOperationList);
-                   }
+                    try {
+                        PlainSelect selectBody = ((ParenthesedSelect) rightItem).getPlainSelect();
+                        Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+                        PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
+                        ((ParenthesedSelect) rightItem).setSelect(subPlainSelect);
+                    } catch (Exception e) {
+                        SetOperationList select = ((ParenthesedSelect) rightItem).getSetOperationList();
+                        SetOperationList setOperationList = new SetOperationList();
+                        setOperationList.setSelects(new ArrayList<>());
+                        setOperationList.setOperations(select.getOperations());
+                        for (Select selectSelect : select.getSelects()) {
+                            Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectSelect.toString(), dsType));
+                            setOperationList.getSelects().add(subSelectTmp);
+                        }
+                        ((ParenthesedSelect) rightItem).setSelect(setOperationList);
+                    }
                     if (dsType.equals(DatasourceConfiguration.DatasourceType.oracle.getType())) {
                         rightItem.setAlias(new Alias(rightItem.getAlias().toString(), false));
                     } else {
@@ -494,7 +506,7 @@ public class SqlparserUtils {
         }
     }
 
-    public static SqlShuttle getSqlShuttle() {
+    private static SqlShuttle getSqlShuttle() {
         return new SqlShuttle() {
 
             @Override
@@ -515,7 +527,7 @@ public class SqlparserUtils {
         };
     }
 
-    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage) {
+    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage, UserFormVO userEntity) {
         if (StringUtils.isEmpty(sql)) {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -567,6 +579,28 @@ public class SqlparserUtils {
                 }
             }
         }
+        sql = sql.replace("$[sysParams.userId]", userEntity.getAccount());
+        sql = sql.replace("$[sysParams.userEmail]", userEntity.getEmail());
+        sql = sql.replace("$[sysParams.userName]", userEntity.getName());
+        for (SysVariableValueItem variable : userEntity.getVariables()) {
+            String value = null;
+            if (!variable.isValid()) {
+                continue;
+            }
+            if (variable.getSysVariableDto().getType().equalsIgnoreCase("text")) {
+                for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {
+                    if (sysVariableValueDto.getId().equals(variable.getVariableValueId())) {
+                        value = sysVariableValueDto.getValue();
+                        break;
+                    }
+                }
+            } else {
+                value = variable.getVariableValue();
+            }
+            if (StringUtils.isNotEmpty(value)) {
+                sql = sql.replace("$[" + variable.getVariableId() + "]", value);
+            }
+        }
 
         try {
             DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
@@ -610,7 +644,6 @@ public class SqlparserUtils {
         }
         return sql;
     }
-
 
     private static String transFilter(SqlVariableDetails sqlVariableDetails, Map<Long, DatasourceSchemaDTO> dsMap) {
         if (sqlVariableDetails.getOperator().equals("in")) {

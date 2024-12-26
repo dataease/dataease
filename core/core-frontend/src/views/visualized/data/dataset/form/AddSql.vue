@@ -43,6 +43,10 @@ import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { isDesktop } from '@/utils/ModelUtil'
+import field_text from '@/assets/svg/field_text.svg'
+import field_value from '@/assets/svg/field_value.svg'
+import field_time from '@/assets/svg/field_time.svg'
 export interface SqlNode {
   sql: string
   tableName: string
@@ -140,28 +144,54 @@ const fieldFormList = ref([])
 
 const builtInList = ref([
   {
-    id: 8,
+    id: 'sysParams.userId',
     name: t('system.account')
   },
   {
-    id: 17,
+    id: 'sysParams.userName',
     name: t('datasource.user_name')
   },
   {
-    id: 9,
+    id: 'sysParams.userEmail',
     name: t('commons.email')
   }
 ])
+
+const iconName = type => {
+  if (type === 'text') {
+    return field_text
+  }
+  if (type === 'num') {
+    return field_value
+  }
+  if (type === 'time') {
+    return field_time
+  }
+}
+
+const iconClassName = type => {
+  if (type === 'text') {
+    return 'field-icon-text'
+  }
+  if (type === 'num') {
+    return 'field-icon-value'
+  }
+  if (type === 'time') {
+    return 'field-icon-time'
+  }
+}
 
 const fieldFormListComputed = computed(() => {
   return fieldFormList.value.filter(ele =>
     ele.name.toLowerCase().includes(searchField.value.toLowerCase())
   )
 })
+const desktop = isDesktop()
 const showSysParams = ref(false)
 const searchField = ref('')
 const sysParams = () => {
   showSysParams.value = true
+  handleSearchVariableApi()
 }
 
 const insertFieldToCodeMirror = (value: string) => {
@@ -515,7 +545,7 @@ const mousedownDrag = () => {
         </template>
         {{ t('data_set.parameter_settings') }}
       </el-button>
-      <el-button v-if="false" @click="sysParams" class="system-text_bg" text>
+      <el-button v-if="!desktop" @click="sysParams" class="system-text_bg" text>
         <template #icon>
           <el-icon>
             <Icon><icon_preferences_outlined class="svg-icon" /></Icon>
@@ -864,7 +894,7 @@ const mousedownDrag = () => {
             </div>
             <div
               class="variable-item"
-              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
+              @click="insertFieldToCodeMirror(`$[${fieldForm.id}]`)"
               v-for="fieldForm in builtInList"
               :key="fieldForm.id"
             >
@@ -877,15 +907,15 @@ const mousedownDrag = () => {
               class="variable-item flex-align-center"
               v-for="fieldForm in fieldFormListComputed"
               :key="fieldForm.id"
-              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
+              @click="insertFieldToCodeMirror(`$[${fieldForm.id}]`)"
               :class="[2, 3].includes(fieldForm.deType) && 'with-type'"
             >
               <el-icon>
                 <Icon
                   ><component
                     class="svg-icon"
-                    :class="`field-icon-${fieldType[fieldForm.deType]}`"
-                    :is="iconFieldMap[fieldType[fieldForm.deType]]"
+                    :class="iconClassName(fieldForm.type)"
+                    :is="iconName(fieldForm.type)"
                   ></component
                 ></Icon>
               </el-icon>

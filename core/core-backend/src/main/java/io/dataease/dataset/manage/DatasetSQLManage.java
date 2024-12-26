@@ -2,6 +2,8 @@ package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
 import io.dataease.dataset.constant.DatasetTableType;
@@ -31,6 +33,7 @@ import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.system.manage.CorePermissionManage;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -62,10 +65,13 @@ public class DatasetSQLManage {
 
     @Autowired(required = false)
     private PluginManageApi pluginManage;
-
+    @Autowired(required = false)
+    private RowPermissionsApi rowPermissionsApi;
     @Resource
     private DataSourceManage dataSourceManage;
-
+    private RowPermissionsApi getRowPermissionsApi() {
+        return rowPermissionsApi;
+    }
     private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
     private List<SqlVariableDetails> filterParameters(ChartExtRequest chartExtRequest, Long datasetTableId) {
@@ -464,7 +470,8 @@ public class DatasetSQLManage {
             Provider provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
             // parser sql params and replace default value
             String s = new String(Base64.getDecoder().decode(infoDTO.getSql()));
-            String sql = SqlparserUtils.handleVariableDefaultValue(s, currentDs.getSqlVariableDetails(), false, isFromDataSet, parameters, isCross, dsMap, pluginManage);
+            UserFormVO userEntity = getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
+            String sql = SqlparserUtils.handleVariableDefaultValue(s, currentDs.getSqlVariableDetails(), false, isFromDataSet, parameters, isCross, dsMap, pluginManage, userEntity);
             sql = provider.replaceComment(sql);
             // add table schema
             if (isCross) {
