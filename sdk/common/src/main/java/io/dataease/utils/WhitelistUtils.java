@@ -8,6 +8,8 @@ import org.springframework.core.env.Environment;
 import java.util.List;
 import java.util.Objects;
 
+import static io.dataease.result.ResultCode.INTERFACE_ADDRESS_INVALID;
+
 public class WhitelistUtils {
 
     private static String contextPath;
@@ -50,9 +52,7 @@ public class WhitelistUtils {
             "/");
 
     public static boolean match(String requestURI) {
-        if (requestURI.contains(";") && !requestURI.contains("?")) {
-            DEException.throwException("Invalid uri: " + requestURI);
-        }
+        invalidUrl(requestURI);
         if (StringUtils.startsWith(requestURI, getContextPath())) {
             requestURI = requestURI.replaceFirst(getContextPath(), "");
         }
@@ -99,5 +99,11 @@ public class WhitelistUtils {
             redirect_uri += contextPath;
         }
         return redirect_uri + AuthConstant.DE_API_PREFIX + "/";
+    }
+
+    private static void invalidUrl(String requestURI) {
+        if (requestURI.contains("./") || (requestURI.contains(";") && !requestURI.contains("?"))) {
+            DEException.throwException(INTERFACE_ADDRESS_INVALID.code(), String.format("%s [%s]", INTERFACE_ADDRESS_INVALID.message(), requestURI));
+        }
     }
 }
