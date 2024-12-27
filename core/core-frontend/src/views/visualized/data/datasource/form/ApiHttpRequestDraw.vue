@@ -720,7 +720,6 @@ defineExpose({
               class-name="checkbox-table"
               prop="originName"
               :label="t('datasource.parse_filed')"
-              :show-overflow-tooltip="true"
               width="200"
             >
               <template #default="scope">
@@ -730,7 +729,12 @@ defineExpose({
                   :disabled="apiItem.useJsonPath"
                   @change="handleCheckAllChange(scope.row)"
                 >
-                  {{ scope.row.originName }}
+                  <span
+                    :title="scope.row.originName"
+                    class="ellipsis"
+                    style="display: inline-block; max-width: 80px"
+                    >{{ scope.row.originName }}</span
+                  >
                 </el-checkbox>
               </template>
             </el-table-column>
