@@ -469,10 +469,6 @@ export function initCanvasDataMobile(dvId, busiFlag, callBack) {
         if (ele.component === 'DeTabs') {
           ele.propValue.forEach(tabItem => {
             tabItem.componentData.forEach(tabComponent => {
-              tabComponent.x = tabComponent.mx
-              tabComponent.y = tabComponent.my
-              tabComponent.sizeX = tabComponent.mSizeX
-              tabComponent.sizeY = tabComponent.mSizeY
               tabComponent.style = tabComponent.mStyle || tabComponent.style
               tabComponent.propValue = tabComponent.mPropValue || tabComponent.propValue
               tabComponent.events = tabComponent.mEvents || tabComponent.events
