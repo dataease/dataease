@@ -3891,7 +3891,32 @@ export default {
     date: '日',
     last_status_running: '運行中',
     last_status_fail: '失敗',
-    last_status_success: '成功'
+    last_status_success: '成功',
+    batch_confirm: '確定批量刪除任務？',
+    fire_now_tips: '手動執行任務後5s可以再次手動執行！',
+    task_running_tips: '任務正在執行！',
+    start_success: '發起成功，正在執行',
+    form: {
+      title: '報告主題',
+      content: '報告正文',
+      send_content: '發送內容',
+      filter: '設置查詢組件參數',
+      water_mask: '水印設置',
+      show_water_mask: '顯示水印',
+      format: '格式',
+      view_data: '圖表數據',
+      pixel: '儀表板分辨率',
+      reci_setting: '接收設置',
+      retrying: '失敗重試',
+      retrying_rate: '重試間隔（分鐘）',
+      please_input_positive_int: '請輸入 {0} 正整數'
+    },
+    filter: {
+      title: '設置查詢組件默認值',
+      reset: '還原默認值',
+      reset_all: '還原所有查詢條件默認值',
+      empty_tips: '過濾組件 {0} 條件必填，請先填寫條件!'
+    }
   },
   variable: {
     give_up: 's',

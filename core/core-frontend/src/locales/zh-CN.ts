@@ -3895,7 +3895,32 @@ export default {
     date: '日',
     last_status_running: '运行中',
     last_status_fail: '失败',
-    last_status_success: '成功'
+    last_status_success: '成功',
+    batch_confirm: '确定批量删除任务？',
+    fire_now_tips: '手动执行任务后5s可以再次手动执行！',
+    task_running_tips: '任务正在执行！',
+    start_success: '发起成功，正在执行',
+    form: {
+      title: '报告主题',
+      content: '报告正文',
+      send_content: '发送内容',
+      filter: '设置查询组件参数',
+      water_mask: '水印设置',
+      show_water_mask: '显示水印',
+      format: '格式',
+      view_data: '图表数据',
+      pixel: '仪表板分辨率',
+      reci_setting: '接收设置',
+      retrying: '失败重试',
+      retrying_rate: '重试间隔（分钟）',
+      please_input_positive_int: '请输入 {0} 正整数'
+    },
+    filter: {
+      title: '设置查询组件默认值',
+      reset: '还原默认值',
+      reset_all: '还原所有查询条件默认值',
+      empty_tips: '过滤组件 {0} 条件必填，请先填写条件!'
+    }
   },
   variable: {
     give_up: 's',

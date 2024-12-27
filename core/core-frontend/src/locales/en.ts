@@ -3989,10 +3989,36 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     week_sat: 'Saturday',
     week_sun: 'Sunday',
     every_exec: 'Execute once',
-    date: 'Sunday',
+    date: 'Date',
     last_status_running: 'Running',
     last_status_fail: 'Failed',
-    last_status_success: 'Success'
+    last_status_success: 'Success',
+    batch_confirm: 'Confirm to batch delete tasks?',
+    fire_now_tips: 'You can manually execute again after 5s of manual execution!',
+    task_running_tips: 'Task is running!',
+    start_success: 'Initiated successfully, executing',
+    form: {
+      title: 'Report Title',
+      content: 'Report Content',
+      send_content: 'Send Content',
+      filter: 'Set Query Component Parameters',
+      water_mask: 'Watermark Settings',
+      show_water_mask: 'Show Watermark',
+      format: 'Format',
+      view_data: 'Chart Data',
+      pixel: 'Dashboard Resolution',
+      reci_setting: 'Receiving Settings',
+      retrying: 'Retry on Failure',
+      retrying_rate: 'Retry Interval (minutes)',
+      please_input_positive_int: 'Please input a positive integer for {0}'
+    },
+    filter: {
+      title: 'Set Query Component Default Values',
+      reset: 'Restore Default Values',
+      reset_all: 'Restore All Query Condition Default Values',
+      empty_tips:
+        'Filter component {0} conditions are required, please fill in the conditions first!'
+    }
   },
   variable: {
     give_up: 's',
