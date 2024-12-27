@@ -220,7 +220,18 @@ export const formatExt = (num: number): number[] | null => {
 }
 
 export const getBrowserLocale = () => {
-  return navigator.language
+  const language = navigator.language
+  if (!language) {
+    return 'zh-CN'
+  }
+  if (language.startsWith('en')) {
+    return 'en'
+  }
+  if (language.toLowerCase().startsWith('zh')) {
+    const temp = language.toLowerCase().replace('_', '-')
+    return temp === 'zh' ? 'zh-CN' : temp === 'zh-cn' ? 'zh-CN' : 'tw'
+  }
+  return language
 }
 export const getLocale = () => {
   return wsCache.get('user.language') || getBrowserLocale() || 'zh-CN'
