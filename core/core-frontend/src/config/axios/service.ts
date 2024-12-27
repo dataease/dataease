@@ -218,6 +218,14 @@ service.interceptors.response.use(
     if (!error?.response) {
       return Promise.reject(error)
     }
+    if (error?.response.status === 413) {
+      ElMessage({
+        type: 'error',
+        message: '文件大小超出限制, 请修改相关配置文件',
+        showClose: true
+      })
+      return
+    }
     const header = error.response?.headers as AxiosHeaders
     if (
       !error.config.url.startsWith('/xpackComponent/content') &&

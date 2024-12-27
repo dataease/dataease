@@ -180,6 +180,9 @@ const handleExcelDel = () => {
 }
 
 const uploadSuccess = response => {
+  if (!response) {
+    return
+  }
   if (response?.code !== 0) {
     state.excelData = []
     activeTab.value = ''
