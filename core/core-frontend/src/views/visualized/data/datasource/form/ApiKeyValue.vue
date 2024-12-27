@@ -175,6 +175,7 @@ const timeFunLists = [
               <el-select
                 v-model="element.value"
                 v-if="!needMock && activeName === 'table' && element.nameType === 'params'"
+                style="width: 100%"
               >
                 <el-option
                   v-for="item in valueList"
@@ -186,6 +187,7 @@ const timeFunLists = [
               <el-select
                 v-model="element.value"
                 v-if="!needMock && activeName === 'table' && element.nameType === 'timeFun'"
+                style="width: 100%"
               >
                 <el-option
                   v-for="item in timeFunLists"
