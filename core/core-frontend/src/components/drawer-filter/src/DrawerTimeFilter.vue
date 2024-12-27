@@ -85,7 +85,7 @@ defineExpose({
 .draw-filter_time {
   display: flex;
   align-items: center;
-  min-height: 32px;
+  min-height: 46px;
 
   > :nth-child(1) {
     color: var(--deTextSecondary, #1f2329);
