@@ -579,9 +579,9 @@ public class SqlparserUtils {
                 }
             }
         }
-        sql = sql.replace("$[sysParams.userId]", userEntity.getAccount());
-        sql = sql.replace("$[sysParams.userEmail]", userEntity.getEmail());
-        sql = sql.replace("$[sysParams.userName]", userEntity.getName());
+        sql = sql.replace("[sysParams.userId]", userEntity.getAccount());
+        sql = sql.replace("[sysParams.userEmail]", userEntity.getEmail());
+        sql = sql.replace("[sysParams.userName]", userEntity.getName());
         for (SysVariableValueItem variable : userEntity.getVariables()) {
             String value = null;
             if (!variable.isValid()) {
@@ -598,7 +598,7 @@ public class SqlparserUtils {
                 value = variable.getVariableValue();
             }
             if (StringUtils.isNotEmpty(value)) {
-                sql = sql.replace("$[" + variable.getVariableId() + "]", value);
+                sql = sql.replace("[" + variable.getVariableId() + "]", value);
             }
         }
 
