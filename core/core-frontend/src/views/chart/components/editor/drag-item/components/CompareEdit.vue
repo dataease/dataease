@@ -62,6 +62,94 @@ const initDateFormatter = () => {
   }
 }
 
+const hintStr = computed<string>(() => {
+  let dataFormatter = state.dateFormatter
+  const checkedField = state.fieldList.filter(ele => ele.id === compareItem.value.compareCalc.field)
+  if (checkedField && checkedField.length > 0) {
+    dataFormatter = checkedField[0].dateStyle
+  }
+  switch (dataFormatter) {
+    case 'y_M_d':
+      switch (compareItem.value.compareCalc.type) {
+        case 'day_mom':
+          switch (compareItem.value.compareCalc.resultData) {
+            case 'pre':
+              return t('chart.compare_calc_day_pre')
+            case 'sub':
+              return t('chart.compare_calc_day_sub')
+            case 'percent':
+              return t('chart.compare_calc_day_percent')
+          }
+          break
+        case 'month_yoy':
+        case 'month_mom':
+          switch (compareItem.value.compareCalc.resultData) {
+            case 'pre':
+              return t('chart.compare_calc_month_pre')
+            case 'sub':
+              return t('chart.compare_calc_month_sub')
+            case 'percent':
+              return t('chart.compare_calc_month_percent')
+          }
+          break
+        case 'year_yoy':
+        case 'year_mom':
+          switch (compareItem.value.compareCalc.resultData) {
+            case 'pre':
+              return t('chart.compare_calc_year_pre')
+            case 'sub':
+              return t('chart.compare_calc_year_sub')
+            case 'percent':
+              return t('chart.compare_calc_year_percent')
+          }
+          break
+      }
+      break
+    case 'y_M':
+      switch (compareItem.value.compareCalc.type) {
+        case 'month_yoy':
+        case 'month_mom':
+          switch (compareItem.value.compareCalc.resultData) {
+            case 'pre':
+              return t('chart.compare_calc_month_pre_m')
+            case 'sub':
+              return t('chart.compare_calc_month_sub_m')
+            case 'percent':
+              return t('chart.compare_calc_month_percent_m')
+          }
+          break
+        case 'year_yoy':
+        case 'year_mom':
+          switch (compareItem.value.compareCalc.resultData) {
+            case 'pre':
+              return t('chart.compare_calc_year_pre_m')
+            case 'sub':
+              return t('chart.compare_calc_year_sub_m')
+            case 'percent':
+              return t('chart.compare_calc_year_percent_m')
+          }
+          break
+      }
+      break
+    case 'y':
+      switch (compareItem.value.compareCalc.type) {
+        case 'year_yoy':
+        case 'year_mom':
+          switch (compareItem.value.compareCalc.resultData) {
+            case 'pre':
+              return t('chart.compare_calc_year_pre_y')
+            case 'sub':
+              return t('chart.compare_calc_year_sub_y')
+            case 'percent':
+              return t('chart.compare_calc_year_percent_y')
+          }
+          break
+      }
+      break
+  }
+  return ''
+})
+
 watch(
   () => props.chart,
   () => {
@@ -208,49 +296,9 @@ initDateFormatter()
       </el-form-item>
 
       <el-form-item :label="t('chart.compare_calc_expression')">
-        <template v-if="compareItem.compareCalc.type === 'day_mom'">
-          <span v-if="compareItem.compareCalc.resultData === 'pre'" class="exp-style">
-            {{ t('chart.compare_calc_day_pre') }}
-          </span>
-          <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style">
-            {{ t('chart.compare_calc_day_sub') }}
-          </span>
-          <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style">
-            {{ t('chart.compare_calc_day_percent') }}
-          </span>
-        </template>
-        <template
-          v-if="
-            compareItem.compareCalc.type === 'month_yoy' ||
-            compareItem.compareCalc.type === 'month_mom'
-          "
-        >
-          <span v-if="compareItem.compareCalc.resultData === 'pre'" class="exp-style">
-            {{ t('chart.compare_calc_month_pre') }}
-          </span>
-          <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style">
-            {{ t('chart.compare_calc_month_sub') }}
-          </span>
-          <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style">
-            {{ t('chart.compare_calc_month_percent') }}
-          </span>
-        </template>
-        <template
-          v-if="
-            compareItem.compareCalc.type === 'year_yoy' ||
-            compareItem.compareCalc.type === 'year_mom'
-          "
-        >
-          <span v-if="compareItem.compareCalc.resultData === 'pre'" class="exp-style">
-            {{ t('chart.compare_calc_year_pre') }}
-          </span>
-          <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style">
-            {{ t('chart.compare_calc_year_sub') }}
-          </span>
-          <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style">
-            {{ t('chart.compare_calc_year_percent') }}
-          </span>
-        </template>
+        <span class="exp-style">
+          {{ hintStr }}
+        </span>
       </el-form-item>
 
       <el-form-item :label="t('chart.tip')">
