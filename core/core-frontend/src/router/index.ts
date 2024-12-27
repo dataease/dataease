@@ -156,13 +156,6 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/chart/ChartView.vue')
-  },
-  {
-    path: '/case',
-    name: 'case',
-    hidden: true,
-    meta: {},
-    component: () => import('@/views/case/index.vue')
   }
 ]
 
