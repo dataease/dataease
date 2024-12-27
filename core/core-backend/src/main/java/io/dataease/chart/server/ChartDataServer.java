@@ -51,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -184,9 +186,10 @@ public class ChartDataServer implements ChartDataApi {
         StringBuilder sb = new StringBuilder(value);
 
         if (formatter.getThousandSeparator()) {
-            String[] parts = value.split("\\.");
-            parts[0] = addThousandSeparators(parts[0]);
-            sb = new StringBuilder(String.join(".", parts));
+            Pattern thousandsPattern = Pattern.compile("(\\d)(?=(\\d{3})+$)");
+            String[] numArr = value.split("\\.");
+            numArr[0] = addThousandSeparator(numArr[0], thousandsPattern);
+            sb = new StringBuilder(String.join(".", numArr));
         }
         if (formatter.getType().equals("percent")) {
             sb.append('%');
@@ -215,20 +218,15 @@ public class ChartDataServer implements ChartDataApi {
         return sb.toString();
     }
 
-    private static String addThousandSeparators(String number) {
-        StringBuilder sb = new StringBuilder();
-        int len = number.length();
-        int count = 0;
-        for (int i = len - 1; i >= 0; i--) {
-            sb.append(number.charAt(i));
-            count++;
-            if (count == 3 && i != 0) {
-                sb.append(',');
-                count = 0;
-            }
-        }
 
-        return sb.reverse().toString();
+    private static String addThousandSeparator(String numStr, Pattern pattern) {
+        Matcher matcher = pattern.matcher(numStr);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, matcher.group(1) + ",");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
 
@@ -408,11 +406,7 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
-                                    cell.setCellValue(Double.valueOf(cellValObj.toString()));
-                                } else if (cellValObj != null) {
-                                    cell.setCellValue(cellValObj.toString());
-                                }
+                                cell.setCellValue(cellValObj.toString());
                             } catch (Exception e) {
                                 LogUtil.warn("export excel data transform error");
                             }
