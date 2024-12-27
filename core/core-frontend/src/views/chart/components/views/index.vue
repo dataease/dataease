@@ -801,6 +801,13 @@ onMounted(() => {
       initTitle()
       const viewInfo = val ? val : view.value
       nextTick(() => {
+        if (view.value?.plugin?.isPlugin) {
+          chartComponent?.value?.invokeMethod({
+            methodName: 'renderChart',
+            args: [viewInfo]
+          })
+          return
+        }
         chartComponent?.value?.renderChart?.(viewInfo)
       })
     }
