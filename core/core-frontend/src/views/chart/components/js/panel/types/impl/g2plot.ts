@@ -12,7 +12,8 @@ import {
   getXAxis,
   getYAxis,
   getConditions,
-  handleConditionsStyle
+  handleConditionsStyle,
+  addConditionsStyleColorToData
 } from '@/views/chart/components/js/panel/common/common_antv'
 import {
   AntVAbstractChartView,
@@ -183,6 +184,10 @@ export abstract class G2PlotChartView<
 
   protected configBarConditions(chart: Chart, options: O) {
     return handleConditionsStyle(chart, options)
+  }
+
+  protected addConditionsStyleColorToData(chart: Chart, data: any[]) {
+    return addConditionsStyleColorToData(chart, data)
   }
 
   /**

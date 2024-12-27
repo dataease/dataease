@@ -234,6 +234,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
 
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configColor,
@@ -263,6 +264,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
  * 堆叠柱状图
  */
 export class StackBar extends Bar {
+  properties = BAR_EDITOR_PROPERTY.filter(ele => ele !== 'threshold')
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': [
@@ -398,8 +400,7 @@ export class StackBar extends Bar {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse,
-      this.configBarConditions
+      this.configAnalyse
     )(chart, options, {}, this)
   }
 
@@ -423,6 +424,7 @@ export class StackBar extends Bar {
  * 分组柱状图
  */
 export class GroupBar extends StackBar {
+  properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition', 'showExtremum']
@@ -470,6 +472,7 @@ export class GroupBar extends StackBar {
 
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configColor,
@@ -569,54 +572,6 @@ export class GroupStackBar extends StackBar {
     }
   }
 
-  protected customConfigBarConditions(chart: Chart, options: ColumnOptions): ColumnOptions {
-    const { threshold } = parseJson(chart.senior)
-    if (!threshold.enable) return options
-    const conditions = threshold.lineThreshold ?? []
-    const { basicStyle } = parseJson(chart.customAttr)
-    // 辅助函数：获取颜色，根据条件以及值计算
-    const getColorByConditions = (currentValue: number) => {
-      for (let i = 0; i < conditions.length; i++) {
-        for (let j = 0; j < conditions[i].conditions?.length; j++) {
-          const tc = conditions[i].conditions[j]
-          if (
-            (tc.term === 'between' && currentValue >= tc.min && currentValue <= tc.max) ||
-            (tc.term === 'lt' && currentValue < tc.value) ||
-            (tc.term === 'le' && currentValue <= tc.value) ||
-            (tc.term === 'gt' && currentValue > tc.value) ||
-            (tc.term === 'ge' && currentValue >= tc.value)
-          ) {
-            let tmpColor = tc.color
-            if (basicStyle.gradient) {
-              const tmp = hexToRgba(tmpColor, basicStyle.alpha)
-              tmpColor = setGradientColor(tmp, true, 270)
-            }
-            return { fill: tmpColor }
-          }
-        }
-      }
-    }
-    const tmpOptions = {
-      ...options,
-      columnStyle: data => {
-        return getColorByConditions(data.value)
-      },
-      tooltip: {
-        ...options.tooltip,
-        customItems: originalItems => {
-          originalItems.forEach(item => {
-            const color = getColorByConditions(item.data?.value)
-            if (color) {
-              item.color = color.fill
-            }
-          })
-          return originalItems
-        }
-      }
-    }
-    return tmpOptions
-  }
-
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
       this.configTheme,
@@ -629,8 +584,7 @@ export class GroupStackBar extends StackBar {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse,
-      this.customConfigBarConditions
+      this.configAnalyse
     )(chart, options, {}, this)
   }
 
@@ -715,8 +669,7 @@ export class PercentageStackBar extends GroupStackBar {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse,
-      this.configBarConditions
+      this.configAnalyse
     )(chart, options, {}, this)
   }
   constructor() {

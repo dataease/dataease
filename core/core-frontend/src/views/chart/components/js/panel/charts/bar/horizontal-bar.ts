@@ -267,6 +267,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configColor,
@@ -291,6 +292,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
  * 堆叠条形图
  */
 export class HorizontalStackBar extends HorizontalBar {
+  properties = BAR_EDITOR_PROPERTY.filter(ele => ele !== 'threshold')
   axisConfig = {
     ...this['axisConfig'],
     extStack: {
@@ -395,8 +397,7 @@ export class HorizontalStackBar extends HorizontalBar {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyseHorizontal,
-      this.configBarConditions
+      this.configAnalyseHorizontal
     )(chart, options, {}, this)
   }
 
@@ -486,8 +487,7 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyseHorizontal,
-      this.configBarConditions
+      this.configAnalyseHorizontal
     )(chart, options, {}, this)
   }
 

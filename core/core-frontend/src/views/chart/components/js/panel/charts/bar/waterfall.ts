@@ -7,6 +7,7 @@ import {
   configPlotTooltipEvent,
   getPadding,
   getTooltipContainer,
+  getTooltipItemConditionColor,
   getTooltipSeriesTotalMap,
   setGradientColor,
   TOOLTIP_TPL
@@ -239,17 +240,24 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
           .filter(item => formatterMap[item.data.quotaList[0].id])
           .forEach(item => {
             const formatter = formatterMap[item.data.quotaList[0].id]
-            const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+            const itemValue = (item.value + '').replace(/,/g, '')
+            formatter.formatterCfg.type = 'value'
+            const value = valueFormatter(parseFloat(itemValue), formatter.formatterCfg)
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ ...item, name, value })
           })
         head.data.dynamicTooltipValue?.forEach(item => {
           const formatter = formatterMap[item.fieldId]
           if (formatter) {
-            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const itemValue = (item.value + '').replace(/,/g, '')
+            const value = valueFormatter(parseFloat(itemValue), formatter.formatterCfg)
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ color: 'grey', name, value })
           }
+        })
+        result.forEach(item => {
+          const color = getTooltipItemConditionColor(item)
+          item.color = color
         })
         return result
       },
@@ -310,6 +318,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
 
   protected setupOptions(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configLegend,
       this.configBasicStyle,

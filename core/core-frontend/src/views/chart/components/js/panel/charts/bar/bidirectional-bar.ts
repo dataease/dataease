@@ -8,10 +8,12 @@ import {
   configPlotTooltipEvent,
   getPadding,
   getTooltipContainer,
+  getTooltipItemConditionColor,
   getYAxis,
   getYAxisExt,
   setGradientColor,
-  TOOLTIP_TPL
+  TOOLTIP_TPL,
+  addConditionsStyleColorToData
 } from '@/views/chart/components/js/panel/common/common_antv'
 import type {
   BidirectionalBar as G2BidirectionalBar,
@@ -290,7 +292,8 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
             const formatter = formatterMap[obj.id + '-' + obj.axisType]
             const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
-            result.push({ ...item, name, value })
+            const color = getTooltipItemConditionColor(item)
+            result.push({ ...item, name, value, color })
           })
         const dynamicTooltipValue = optionsData.find(
           d => d.field === originalItems[0]['title']
@@ -558,6 +561,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
 
   protected setupOptions(chart: Chart, options: BidirectionalBarOptions) {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configBasicStyle,
       this.configLabel,

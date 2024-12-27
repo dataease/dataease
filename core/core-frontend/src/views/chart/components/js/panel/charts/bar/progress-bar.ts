@@ -4,6 +4,7 @@ import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
   getTooltipContainer,
+  getTooltipItemConditionColor,
   setGradientColor,
   TOOLTIP_TPL
 } from '../../common/common_antv'
@@ -370,6 +371,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configBasicStyle,
       this.configLabel,
