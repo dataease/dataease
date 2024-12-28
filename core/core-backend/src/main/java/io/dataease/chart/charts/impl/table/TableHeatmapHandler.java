@@ -14,7 +14,6 @@ import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -33,8 +32,10 @@ public class TableHeatmapHandler extends DefaultChartHandler {
         var result =  super.formatAxis(view);
         var xAxis = new ArrayList<ChartViewFieldDTO>(view.getXAxis());
         xAxis.addAll(view.getXAxisExt());
-        xAxis.addAll(view.getExtColor());
+        var yAxis = new ArrayList<ChartViewFieldDTO>(view.getYAxis());
+        yAxis.addAll(view.getExtColor());
         result.getAxisMap().put(ChartAxis.xAxis, xAxis);
+        result.getAxisMap().put(ChartAxis.yAxis, yAxis);
         return result;
     }
 
@@ -57,17 +58,9 @@ public class TableHeatmapHandler extends DefaultChartHandler {
         datasourceRequest.setDsList(dsMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        var extColorAxis = view.getExtColor();
-        List<ChartViewFieldDTO> yFields = new ArrayList<>();
-        if(!extColorAxis.isEmpty() && extColorAxis.getFirst().getId()==-1){
-            yFields.addAll(chartViewManege.transFieldDTO(Collections.singletonList(chartViewManege.createCountField(view.getTableId()))));
-            yAxis.addAll(yFields);
-            xAxis = xAxis.stream().filter(i-> !StringUtils.equalsIgnoreCase(i.getDataeaseName(),yAxis.get(0).getDataeaseName())).toList();
-        }
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)),  view.getCalParams(), pluginManage);
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)),  view.getCalParams(), pluginManage);
-        yAxis.clear();
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
