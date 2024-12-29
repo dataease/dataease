@@ -12,5 +12,5 @@ public class WebhookSwitchRequest implements Serializable {
 
     private Long id;
 
-    private boolean ssh;
+    private boolean ssl;
 }
