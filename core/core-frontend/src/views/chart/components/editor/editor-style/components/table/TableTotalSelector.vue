@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, PropType, reactive, watch, ref, inject, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { DEFAULT_TABLE_TOTAL } from '@/views/chart/components/editor/util/chart'
+import {
+  DEFAULT_BASIC_STYLE,
+  DEFAULT_TABLE_TOTAL
+} from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep, find, includes } from 'lodash-es'
 import CustomAggrEdit from './CustomAggrEdit.vue'
 
@@ -46,7 +49,8 @@ const state = reactive({
   totalItem: {} as DeepPartial<CalcTotalCfg>,
   selectedSubTotalDimensionName: '',
   selectedSubTotalDimension: undefined as { name: string; checked: boolean },
-  subTotalDimensionList: []
+  subTotalDimensionList: [],
+  basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
 })
 
 function onSelectedSubTotalDimensionNameChange(name) {
@@ -157,6 +161,10 @@ const init = () => {
       total.originName = totalCfg[0].originName
     }
   })
+
+  const basicStyle = cloneDeep(props.chart.customAttr.basicStyle)
+  state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
+
   initSubTotalDimensionList()
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
@@ -425,7 +433,7 @@ onMounted(() => {
             <el-select
               :effect="themes"
               v-model="state.selectedSubTotalDimensionName"
-              :disabled="chart.xAxis.length < 2"
+              :disabled="chart.xAxis.length < 2 || state.basicStyleForm.tableLayoutMode === 'tree'"
               @change="onSelectedSubTotalDimensionNameChange"
             >
               <el-option
@@ -444,7 +452,7 @@ onMounted(() => {
             <el-checkbox
               :effect="themes"
               v-model="state.selectedSubTotalDimension.checked"
-              :disabled="chart.xAxis.length < 2"
+              :disabled="chart.xAxis.length < 2 || state.basicStyleForm.tableLayoutMode === 'tree'"
               @change="changeRowSubTableTotal"
             >
               {{ t('chart.show') }}
