@@ -638,6 +638,7 @@ defineExpose({
     "
     multiple
     show-checked
+    scrollbar-always-on
     clearable
     :style="selectStyle"
     collapse-tags
@@ -650,6 +651,7 @@ defineExpose({
     key="single"
     @click="selectHideClick"
     :placeholder="placeholderText"
+    scrollbar-always-on
     v-loading="loading"
     @change="handleValueChange"
     clearable
