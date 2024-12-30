@@ -71,6 +71,8 @@ function transSeparatorAndSuffix(value, formatter) {
   }
   if (formatter.type === 'percent') {
     str += '%'
+    //百分比没有后缀，直接返回
+    return str
   } else {
     if (formatter.unit === 1000) {
       str += '千'
