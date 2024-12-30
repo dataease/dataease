@@ -17,6 +17,7 @@ import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataRequest;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.server.ChartDataServer;
+import io.dataease.commons.utils.ExcelWatermarkUtils;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.manage.*;
@@ -49,6 +50,9 @@ import io.dataease.model.ExportTaskDTO;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
+import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
+import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
+import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.server.DataVisualizationServer;
 import io.dataease.websocket.WsMessage;
 import io.dataease.websocket.WsService;
@@ -60,11 +64,14 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import io.dataease.visualization.dto.WatermarkContentDTO;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -105,6 +112,10 @@ public class ExportCenterManage implements BaseExportApi {
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     @Value("${dataease.path.exportData:/opt/dataease2.0/data/exportData/}")
     private String exportData_path;
+    @Resource
+    private VisualizationWatermarkMapper watermarkMapper;
+    @Resource
+    private ExtDataVisualizationMapper visualizationMapper;
 
     public Integer getExtractPageSize() {
         return extractPageSize;
@@ -614,6 +625,7 @@ public class ExportCenterManage implements BaseExportApi {
                         exportTaskMapper.updateById(exportTask);
                     }
                 }
+                this.addWatermarkTools(wb);
                 FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx");
                 wb.write(fileOutputStream);
                 fileOutputStream.flush();
@@ -633,6 +645,7 @@ public class ExportCenterManage implements BaseExportApi {
         });
         Running_Task.put(exportTask.getId(), future);
     }
+
 
     private void startViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
         String dataPath = exportData_path + exportTask.getId();
@@ -684,6 +697,7 @@ public class ExportCenterManage implements BaseExportApi {
                 } else {
                     downloadNotTableInfoData(request, wb);
                 }
+                this.addWatermarkTools(wb);
 
                 try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx")) {
                     wb.write(outputStream);
@@ -787,5 +801,17 @@ public class ExportCenterManage implements BaseExportApi {
 
     }
 
+    public void addWatermarkTools(Workbook wb){
+        VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
+        WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
+        if (watermarkContent.getExcelEnable()) {
+            UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(AuthUtils.getUser().getUserId());
+            // 在主逻辑中添加水印
+            int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent,userInfo); // 生成水印图片并获取 ID
+            for (Sheet sheet : wb) {
+                ExcelWatermarkUtils.addWatermarkToSheet(sheet,watermarkPictureIdx); // 为每个 Sheet 添加水印
+            }
+        }
+    }
 }
 

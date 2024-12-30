@@ -298,6 +298,7 @@ public class ChartDataServer implements ChartDataApi {
                         }
                     }
                 }
+                exportCenterManage.addWatermarkTools(wb);
                 response.setContentType("application/vnd.ms-excel");
                 //文件名称
                 response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(request.getViewName(), StandardCharsets.UTF_8) + ".xlsx");
@@ -318,9 +319,12 @@ public class ChartDataServer implements ChartDataApi {
     public void innerExportDataSetDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
         this.innerExportDetails(request, response);
     }
-
-
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes) {
+        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes,null);
+    }
+
+
+    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes,Comment comment) {
         boolean mergeHead = false;
         if (ArrayUtils.isNotEmpty(detailFields)) {
             cellStyle.setBorderTop(BorderStyle.THIN);
