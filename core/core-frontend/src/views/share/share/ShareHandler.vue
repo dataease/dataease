@@ -391,7 +391,9 @@ const loadShareInfo = cb => {
     .get({ url })
     .then(res => {
       state.detailInfo = { ...res.data }
-      originUuid.value = res.data.uuid
+      if (res.data?.uuid) {
+        originUuid.value = res.data.uuid
+      }
       setPageInfo()
     })
     .finally(() => {
