@@ -227,10 +227,8 @@ const handleSearchVariableApi = async () => {
 onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
   await handleSearchVariableApi()
-  codeCom.value = myCm.value.codeComInit(
-    setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)),
-    true
-  )
+  sql = Base64.decode(sqlNode.value.sql)
+  codeCom.value = myCm.value.codeComInit(setNameIdTrans('id', 'name', sql), true)
 })
 
 onBeforeUnmount(() => {
@@ -382,6 +380,7 @@ const close = () => {
 
 const handleClose = () => {
   let sqlNew = codeCom.value.state.doc.toString()
+  sqlNew = setNameIdTrans('name', 'id', sqlNew)
   if (changeFlag || sql !== sqlNew || !sqlNew.trim()) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
@@ -405,7 +404,7 @@ const getSQLPreview = () => {
   parseVariable()
   dataPreviewLoading.value = true
   getPreviewSql({
-    sql: Base64.encode(codeCom.value.state.doc.toString()),
+    sql: Base64.encode((sql = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString()))),
     datasourceId: sqlNode.value.datasourceId,
     sqlVariableDetails: JSON.stringify(state.variables)
   })

@@ -126,7 +126,7 @@ public class DatasetDataManage {
                 // parser sql params and replace default value
                 String s = new String(Base64.getDecoder().decode(tableInfoDTO.getSql()));
                 UserFormVO userEntity = getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
-                String originSql = SqlparserUtils.handleVariableDefaultValue(s, datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList(), pluginManage, userEntity);
+                String originSql = new SqlparserUtils().handleVariableDefaultValue(s, datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList(), pluginManage, userEntity);
                 originSql = provider.replaceComment(originSql);
                 // add sql table schema
 
@@ -418,7 +418,7 @@ public class DatasetDataManage {
 
         String s = new String(Base64.getDecoder().decode(dto.getSql()));
         UserFormVO userEntity = getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
-        String originSql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(s), dto.getSqlVariableDetails(), true, true, null, false, dsMap, pluginManage, userEntity);
+        String originSql = new SqlparserUtils().handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(s), dto.getSqlVariableDetails(), true, true, null, false, dsMap, pluginManage, userEntity);
         originSql = provider.replaceComment(originSql);
 
         // sql 作为临时表，外层加上limit
