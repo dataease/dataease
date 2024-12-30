@@ -52,9 +52,7 @@ defineExpose({
 </template>
 <style lang="less" scope>
 .draw-filter_enum {
-  display: flex;
-  align-items: center;
-  min-height: 46px;
+  margin-bottom: 4px;
 
   > :nth-child(1) {
     color: var(--deTextSecondary, #1f2329);
@@ -62,14 +60,12 @@ defineExpose({
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
-    line-height: 24px;
+    line-height: 22px;
     white-space: nowrap;
-    width: 116px;
   }
 
   .filter-item {
-    flex: 1;
-
+    margin-top: 8px;
     .item,
     .more {
       font-family: var(--de-custom_font, 'PingFang');
@@ -85,7 +81,7 @@ defineExpose({
       border-radius: 2px;
       cursor: pointer;
       display: inline-block;
-      // margin-bottom: 12px;
+      margin-bottom: 12px;
     }
 
     .active,

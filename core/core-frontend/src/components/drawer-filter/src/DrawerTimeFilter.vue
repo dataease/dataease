@@ -83,22 +83,19 @@ defineExpose({
 </template>
 <style lang="less" scope>
 .draw-filter_time {
-  display: flex;
-  align-items: center;
-  min-height: 46px;
+  margin-bottom: 16px;
 
   > :nth-child(1) {
     color: var(--deTextSecondary, #1f2329);
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
-    line-height: 24px;
+    line-height: 22px;
     white-space: nowrap;
-    width: 116px;
   }
 
   .filter-item {
-    flex: 1;
+    margin-top: 8px;
     .ed-date-editor {
       width: 100%;
     }
