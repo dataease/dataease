@@ -80,12 +80,16 @@ const handleLogin = () => {
         wsCache.set(appStore.getDekey, res.data)
       }
       const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
+      const isLdap = activeName.value === 'ldap'
+      if (isLdap) {
+        param['origin'] = 1
+      }
       duringLogin.value = true
       cleanPlatformFlag()
       loginApi(param)
         .then(res => {
           const { token, exp, mfa } = res.data
-          if (mfa?.enabled) {
+          if (!isLdap && mfa?.enabled) {
             xpackLoginHandler.value?.invokeMethod({ methodName: 'toMfa', args: mfa })
             duringLogin.value = false
             return
@@ -93,7 +97,7 @@ const handleLogin = () => {
           userStore.setToken(token)
           userStore.setExp(exp)
           userStore.setTime(Date.now())
-          if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
+          if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
             const param = {
               methodName: 'init'
             }
@@ -108,18 +112,6 @@ const handleLogin = () => {
         })
     }
   })
-}
-const ldapValidate = callback => {
-  if (!formRef.value) return
-  formRef.value.validate((valid: boolean) => {
-    if (valid && callback) {
-      duringLogin.value = true
-      callback()
-    }
-  })
-}
-const ldapFeedback = () => {
-  duringLogin.value = false
 }
 const invalidPwdCb = val => {
   duringLogin.value = !!val
@@ -303,14 +295,21 @@ onMounted(async () => {
               {{ slogan || '人人可用的开源 BI 工具' }}
             </div>
             <div class="login-form">
-              <div class="default-login-tabs" v-if="activeName === 'simple'">
+              <div
+                class="default-login-tabs"
+                v-if="activeName === 'simple' || activeName === 'ldap'"
+              >
                 <div class="login-form-title">
-                  <span>账号登录</span>
+                  <span>{{
+                    activeName === 'ldap' ? t('login.ldap_login') : t('login.account_login')
+                  }}</span>
                 </div>
                 <el-form-item class="login-form-item" prop="username">
                   <el-input
                     v-model="state.loginForm.username"
-                    :placeholder="t('common.account') + '/' + t('commons.email')"
+                    :placeholder="`${t('common.account')}${
+                      activeName === 'simple' ? '/' + t('commons.email') : ''
+                    }`"
                     autofocus
                   />
                 </el-form-item>
@@ -340,15 +339,6 @@ onMounted(async () => {
                   </div>
                 </div>
               </div>
-
-              <XpackComponent
-                class="default-login-tabs"
-                :active-name="activeName"
-                :login-form="state.loginForm"
-                @validate="ldapValidate"
-                @feedback="ldapFeedback"
-                jsname="L2NvbXBvbmVudC9sb2dpbi9MZGFw"
-              />
 
               <XpackComponent
                 ref="xpackLoginHandler"

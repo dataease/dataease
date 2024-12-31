@@ -416,7 +416,9 @@ export default {
     btn: 'Login',
     username_format: "1-25 alphanumeric characters or ._-:{'@'} and start with a letter or number",
     pwd_format: 'Password length is 5-15',
-    default_login: 'Default'
+    default_login: 'Default',
+    ldap_login: 'LDAP Login',
+    account_login: 'Account Login'
   },
   component: {
     columnList: 'List item',

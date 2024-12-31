@@ -407,7 +407,9 @@ export default {
     btn: '登入',
     username_format: "1-25位元字母數字或._-:{'@'}且以字母或數字開頭",
     pwd_format: '密碼長度在5-15',
-    default_login: '預設'
+    default_login: '預設',
+    ldap_login: 'LDAP 登錄',
+    account_login: '賬號登錄'
   },
   component: {
     columnList: '列表項目',
