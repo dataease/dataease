@@ -315,7 +315,7 @@ watch(
   () => {
     state.variables = sqlNode.value.variables
     if (codeCom.value) {
-      insertParamToCodeMirror(Base64.decode(sqlNode.value.sql))
+      insertParamToCodeMirror(setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)))
     }
   },
   {
@@ -347,8 +347,7 @@ const save = (cb?: () => void) => {
   }
 
   parseVariable()
-  sql = codeCom.value.state.doc.toString()
-  sql = setNameIdTrans('name', 'id', sql)
+  sql = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString())
   sqlNode.value.changeFlag = true
   if (!sql.trim()) {
     ElMessage.error(t('data_set.cannot_be_empty_de'))
@@ -373,14 +372,13 @@ const close = () => {
   state.plxTableData = []
   state.fields = []
   if (codeCom.value) {
-    insertParamToCodeMirror(Base64.decode(sqlNode.value.sql))
+    insertParamToCodeMirror(setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)))
   }
   emits('close')
 }
 
 const handleClose = () => {
-  let sqlNew = codeCom.value.state.doc.toString()
-  sqlNew = setNameIdTrans('name', 'id', sqlNew)
+  let sqlNew = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString())
   if (changeFlag || sql !== sqlNew || !sqlNew.trim()) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',

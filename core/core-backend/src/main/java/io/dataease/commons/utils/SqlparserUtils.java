@@ -45,9 +45,9 @@ public class SqlparserUtils {
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SysParamsSubstitutedParams = "DeSysParams_";
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
-    private ExpressionDeParser expressionDeParser;
     private boolean removeSysParams;
     private UserFormVO userEntity;
+    private final List<Map<String, String>> sysParams = new ArrayList<>();
 
     public String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage, UserFormVO userEntity) {
         if (StringUtils.isEmpty(sql)) {
@@ -105,7 +105,7 @@ public class SqlparserUtils {
         try {
             DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
             this.removeSysParams = false;
-            sql = removeVariables(sql, "mysql");
+            sql = removeVariables(sql, ds.getType());
             // replace keyword '`'
             if (!isCross) {
                 Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
@@ -140,7 +140,7 @@ public class SqlparserUtils {
                 }
             }
             this.removeSysParams = true;
-            sql = removeVariables(sql, "mysql");
+            sql = removeVariables(sql, ds.getType());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -158,6 +158,9 @@ public class SqlparserUtils {
             tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
         }
         if (removeSysParams) {
+            for (Map<String, String> sysParam : sysParams) {
+                tmpSql = tmpSql.replaceAll(sysParam.get("replace"), sysParam.get("origin"));
+            }
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
             while (matcher.find()) {
@@ -167,9 +170,14 @@ public class SqlparserUtils {
         } else {
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
+            sysParams.clear();
             while (matcher.find()) {
                 hasVariables = true;
                 tmpSql = tmpSql.replace(matcher.group(), SysParamsSubstitutedParams + matcher.group().substring(1, matcher.group().length() - 1));
+                Map<String, String> sysParam = new HashMap<>();
+                sysParam.put("origin", matcher.group());
+                sysParam.put("replace", SysParamsSubstitutedParams + matcher.group().substring(1, matcher.group().length() - 1));
+                sysParams.add(sysParam);
             }
         }
         Statement statement = CCJSqlParserUtil.parse(tmpSql);
@@ -560,7 +568,6 @@ public class SqlparserUtils {
                 }
             }
         };
-        this.expressionDeParser = expressionDeParser;
         return expressionDeParser;
     }
 
