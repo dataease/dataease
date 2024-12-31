@@ -3924,7 +3924,8 @@ export default {
       reci_setting: '接收设置',
       retrying: '失败重试',
       retrying_rate: '重试间隔（分钟）',
-      please_input_positive_int: '请输入 {0} 正整数'
+      please_input_positive_int: '请输入 {0} 正整数',
+      rate: '发送频率'
     },
     filter: {
       title: '设置查询组件默认值',

@@ -4022,7 +4022,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
       reci_setting: 'Receiving Settings',
       retrying: 'Retry on Failure',
       retrying_rate: 'Retry Interval (minutes)',
-      please_input_positive_int: 'Please input a positive integer for {0}'
+      please_input_positive_int: 'Please input a positive integer for {0}',
+      rate: 'Sending frequency'
     },
     filter: {
       title: 'Set Query Component Default Values',

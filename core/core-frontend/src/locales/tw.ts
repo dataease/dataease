@@ -3920,7 +3920,8 @@ export default {
       reci_setting: '接收設置',
       retrying: '失敗重試',
       retrying_rate: '重試間隔（分鐘）',
-      please_input_positive_int: '請輸入 {0} 正整數'
+      please_input_positive_int: '請輸入 {0} 正整數',
+      rate: '發送頻率'
     },
     filter: {
       title: '設置查詢組件默認值',
