@@ -391,6 +391,7 @@ const setSameId = () => {
           curComponent.value.checkedFields?.includes(itx.componentId)
         ) {
           comIdMap[itx.id] = curComponent.value.checkedFieldsMap[itx.componentId]
+          comIdMap[`active-${itx.id}`] = itx.activelist
         }
       })
     }
@@ -405,6 +406,7 @@ const setSameId = () => {
           comIdMap[itx.id]
         ) {
           curComponent.value.checkedFieldsMap[itx.componentId] = comIdMap[itx.id]
+          itx.activelist = comIdMap[`active-${itx.id}`]
         }
       })
     }
@@ -426,7 +428,7 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
 
 const isParametersDisable = item => {
   let isDisabled = false
-  if (!isNumParameter.value) {
+  if (!isNumParameter.value && isTimeParameter.value) {
     for (let index = 0; index < notTimeRangeType.value.length; index++) {
       if (notTimeRangeType.value[index] !== item.type?.[index]) {
         isDisabled = true

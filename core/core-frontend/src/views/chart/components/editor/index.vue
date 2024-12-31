@@ -3103,7 +3103,7 @@ const deleteChartFieldItem = id => {
                             :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
                             @click="openTreeFilter"
                           >
-                            <el-icon style="margin-right: 6px; font-size: 14px">
+                            <el-icon style="margin-right: 2px; font-size: 12px">
                               <Icon class="svg-background" name="icon-filter"
                                 ><iconFilter class="svg-icon svg-background"
                               /></Icon>
@@ -3113,7 +3113,7 @@ const deleteChartFieldItem = id => {
                           </div>
                           <el-button
                             v-else
-                            style="width: 100%; margin-top: 8px"
+                            class="tree-btn_secondary"
                             secondary
                             @click="openTreeFilter"
                           >
@@ -4651,7 +4651,7 @@ span {
       width: 100%;
       margin-top: 8px;
       background: #fff;
-      height: 32px;
+      height: 28px;
       border-radius: 4px;
       border: 1px solid #dcdfe6;
       display: flex;
@@ -4668,6 +4668,18 @@ span {
       &.active {
         color: #3370ff;
         border-color: #3370ff;
+      }
+    }
+
+    :deep(.tree-btn_secondary) {
+      width: 100%;
+      margin-top: 8px;
+      line-height: 28px;
+      height: 28px;
+      font-size: 12px;
+
+      & > [class*='ed-icon'] + span {
+        margin-left: 2px !important;
       }
     }
 
