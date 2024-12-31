@@ -1646,11 +1646,15 @@ export const addConditionsStyleColorToData = (chart: Chart, options) => {
  */
 const getColorByConditions = (quotaList: [], values: number | number[], chart) => {
   const { threshold } = parseJson(chart.senior)
-  const conditions = threshold.lineThreshold ?? []
   const { basicStyle } = parseJson(chart.customAttr)
   const currentValue = Array.isArray(values) ? values[1] - values[0] : values
   if (!currentValue) return undefined
-  for (const condition of conditions) {
+  // 同样的指标只取最后一个
+  const conditionMap = new Map()
+  for (const condition of threshold.lineThreshold ?? []) {
+    conditionMap.set(condition.fieldId, condition)
+  }
+  for (const condition of conditionMap.values()) {
     if (chart.type === 'progress-bar' && chart.yAxisExt?.[0]?.id !== quotaList[0]) continue
     if (!quotaList.includes(condition.fieldId) && chart.type !== 'waterfall') continue
     for (const tc of condition.conditions) {
