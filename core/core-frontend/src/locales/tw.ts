@@ -3504,7 +3504,8 @@ export default {
     defaultOpen: '頁面開啟方式',
     loginLimit: '限制登入',
     loginLimitRate: '限制登入失敗次數 (次)',
-    loginLimitTime: '限制登入失敗時間 (分)'
+    loginLimitTime: '限制登入失敗時間 (分)',
+    share_disable_tips: '開啟後儀表板以及大屏分享無效'
   },
   resource_sort: {
     time_asc: '按建立時間升序',

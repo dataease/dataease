@@ -3598,7 +3598,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     defaultOpen: 'Page opening method',
     loginLimit: 'Limit login',
     loginLimitRate: 'Limit login failure times (times)',
-    loginLimitTime: 'Limit login failure time (minutes)'
+    loginLimitTime: 'Limit login failure time (minutes)',
+    share_disable_tips: 'Dashboard and large screen sharing are invalid after turning on'
   },
   resource_sort: {
     time_asc: 'In ascending order by creation time',
