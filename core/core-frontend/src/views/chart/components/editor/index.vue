@@ -3096,12 +3096,14 @@ const deleteChartFieldItem = id => {
                               </el-icon>
                             </el-tooltip>
                           </div>
+
                           <div
                             class="tree-btn"
+                            v-if="isFilterActive"
                             :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
                             @click="openTreeFilter"
                           >
-                            <el-icon>
+                            <el-icon style="margin-right: 6px; font-size: 14px">
                               <Icon class="svg-background" name="icon-filter"
                                 ><iconFilter class="svg-icon svg-background"
                               /></Icon>
@@ -3109,6 +3111,17 @@ const deleteChartFieldItem = id => {
 
                             <span>{{ $t('chart.filter') }}</span>
                           </div>
+                          <el-button
+                            v-else
+                            style="width: 100%; margin-top: 8px"
+                            secondary
+                            @click="openTreeFilter"
+                          >
+                            <template #icon>
+                              <Icon><iconFilter class="svg-icon svg-background" /></Icon>
+                            </template>
+                            <span>{{ $t('chart.filter') }}</span>
+                          </el-button>
                         </el-row>
 
                         <el-row v-if="showAggregate" class="refresh-area">
