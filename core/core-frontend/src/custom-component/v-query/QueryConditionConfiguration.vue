@@ -769,7 +769,6 @@ const setParameters = field => {
     setTypeChange()
   })
   setType()
-
   if (curComponent.value.displayType === '9') {
     setTreeDefault()
   }
@@ -786,7 +785,10 @@ const setType = () => {
 
     if (field?.deType !== undefined) {
       let displayType = curComponent.value.displayType
-      if (['9', '22'].includes(curComponent.value.displayType)) {
+      if (['22'].includes(curComponent.value.displayType) && [2, 3].includes(field?.deType)) {
+        return
+      }
+      if (['9'].includes(curComponent.value.displayType)) {
         return
       }
       if (!(field?.deType === 1 && curComponent.value.displayType === '7')) {
