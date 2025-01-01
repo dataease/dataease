@@ -12,7 +12,7 @@ const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
 const { t } = useI18n()
 const desktop = isDesktop()
-const props = withDefaults(
+withDefaults(
   defineProps<{
     title: string
   }>(),
