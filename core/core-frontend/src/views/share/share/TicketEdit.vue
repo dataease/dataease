@@ -273,7 +273,7 @@ defineExpose({
         />
       </el-form-item>
 
-      <el-form-item prop="args" :label="t('dataset.param')">
+      <el-form-item prop="args" :label="t('dataset.param')" class="last-form-item">
         <template v-slot:label>
           <div class="ticket-form-info-tips">
             <span class="custom-form-item__label">{{ t('dataset.param') }}</span>
@@ -360,7 +360,10 @@ defineExpose({
 </style>
 <style scoped lang="less">
 .ticket-param-drawer {
-  .ed-form-item {
+  .last-form-item {
+    margin-bottom: 8px;
+  }
+  .ed-form-item:not(.last-form-item) {
     margin-bottom: 16px;
   }
   .is-error {
@@ -376,6 +379,7 @@ defineExpose({
     line-height: 32px;
     column-gap: 8px;
     .arg-del-btn {
+      color: #646a73;
       padding: 4px;
       width: 24px;
       height: 24px;

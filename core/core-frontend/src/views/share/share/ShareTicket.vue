@@ -423,6 +423,7 @@ onMounted(() => {
 
     :deep(.ed-table__header) {
       background-color: #f5f6f7;
+      border-bottom: 1px solid #d5d7d8;
       thead {
         tr {
           th {
