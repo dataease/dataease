@@ -4365,7 +4365,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     dataset: 'Dataset',
     dashboard: 'Dashboard',
     dataV: 'Data screen',
-    analysis: 'Lineage analysis',
+    analysis: 'Bloodline analysis',
     resource_type: 'Resource type',
     pls_choose: 'Please choose',
     choose_resource: 'Select resource',
