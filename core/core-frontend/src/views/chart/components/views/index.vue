@@ -36,7 +36,6 @@ import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
-import { parseUrl } from '@/utils/ParseUrl'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { cloneDeep } from 'lodash-es'
@@ -533,18 +532,11 @@ const jumpClick = param => {
           }
           const currentUrl = window.location.href
           localStorage.setItem('beforeJumpUrl', currentUrl)
-          if (isIframe.value || isDataEaseBi.value) {
-            embeddedStore.clearState()
-          }
-          if (divSelf) {
+          console.log('embeddedStore', embeddedStore)
+          if (divSelf || iframeSelf) {
             embeddedStore.setDvId(jumpInfo.targetDvId)
             embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
             divEmbedded('Preview')
-            return
-          }
-
-          if (iframeSelf) {
-            router.push(parseUrl(url))
             return
           }
           windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
