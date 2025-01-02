@@ -222,7 +222,7 @@ formatLabel()
   }
 }
 .info-template-container {
-  padding: 24px 24px 0;
+  padding: 24px 24px 8px 24px;
   background: var(--ContentBG, #ffffff);
   border-radius: 4px;
   .info-template-header {
@@ -240,12 +240,12 @@ formatLabel()
   }
   .info-template-content {
     width: 100%;
-    margin: 8px 0;
+    margin-top: 12px;
     .info-content-item {
       width: 50%;
-      height: 48px;
       float: left;
       margin-bottom: 16px;
+      min-height: 46px;
       .info-item-label {
         height: 22px;
         line-height: 22px;
@@ -262,7 +262,6 @@ formatLabel()
       }
       .info-item-content {
         line-height: 22px;
-        height: 22px;
         span {
           font-size: 14px;
           color: #1f2329;
