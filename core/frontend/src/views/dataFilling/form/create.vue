@@ -29,6 +29,7 @@ export default {
     }
     return {
       baseLoading: false,
+      selectLoading: false,
       loading: false,
       allDatasourceList: [],
       tableList: [],
@@ -385,6 +386,24 @@ export default {
         if (callback) {
           callback()
         }
+      })
+    },
+    remoteMethod(query, item) {
+      if (item.settings.optionSourceType === 1) {
+        return
+      }
+      this.selectLoading = true
+      let p
+      if (query && query.trim() !== '') {
+        p = getTableColumnData(item.settings.optionDatasource, item.settings.optionTable, item.settings.optionColumn, item.settings.optionOrder, query)
+      } else {
+        p = getTableColumnData(item.settings.optionDatasource, item.settings.optionTable, item.settings.optionColumn, item.settings.optionOrder)
+      }
+      const id = item.settings.optionDatasource + '_' + item.settings.optionTable + '_' + item.settings.optionColumn + '_' + item.settings.optionOrder
+      p.then(res => {
+        this.asyncOptions[id] = res.data
+      }).finally(() => {
+        this.selectLoading = false
       })
     },
     initFormOptionsData(forms, callback) {
@@ -983,6 +1002,10 @@ export default {
                       filterable
                       :multiple="item.settings.multiple"
                       clearable
+                      :remote="item.settings.optionSourceType !== 1"
+                      :remote-method="(val)=>remoteMethod(val, item)"
+                      :loading="selectLoading"
+                      @focus="remoteMethod('', item)"
                     >
                       <el-option
                         v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
@@ -1003,7 +1026,7 @@ export default {
                         v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
                         :key="$index"
                         :label="x.value"
-                      >{{ x.name }}
+                      ><span :title="x.name">{{ x.name }}</span>
                       </el-radio>
                     </el-radio-group>
                     <el-checkbox-group
@@ -1017,7 +1040,7 @@ export default {
                         v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
                         :key="$index"
                         :label="x.value"
-                      >{{ x.name }}
+                      ><span :title="x.name">{{ x.name }}</span>
                       </el-checkbox>
                     </el-checkbox-group>
                     <el-date-picker
@@ -1335,7 +1358,14 @@ export default {
                     style="display: flex; flex-direction: row; align-items: center; font-size: 14px;"
                   >
                     <div style="width: 28px;" />
-                    <div style="flex:2">{{ selectedComponentItem.settings.optionTable }}
+                    <div
+                      style="flex:2;
+                              overflow: hidden;
+                              text-overflow: ellipsis;"
+                      :title="selectedComponentItem.settings.optionTable + ' (' +
+                        selectedComponentItem.settings.optionColumn + ')'"
+                    >
+                      {{ selectedComponentItem.settings.optionTable }}
                       ({{ selectedComponentItem.settings.optionColumn }})
                     </div>
                     <div style="flex:1; color: #8F959E;">{{ $t('data_fill.form.bind_complete') }}</div>
@@ -2027,7 +2057,35 @@ export default {
     }
 
   }
+
+  ::v-deep .ed-radio {
+    max-width: 100%;
+  }
+
+  ::v-deep .ed-checkbox-group {
+    max-width: 100%;
+  }
+
+  ::v-deep .ed-checkbox {
+    max-width: 100%;
+  }
+
+  ::v-deep .ed-radio__label {
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  ::v-deep .ed-checkbox__label {
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
 }
+
 .de-footer {
   display: flex;
   flex-direction: row;

@@ -21,7 +21,7 @@ public abstract class ExtDDLProvider {
 
     public abstract String searchSql(String table, List<TableField> formFields, String whereSql, long limit, long offset);
 
-    public abstract String searchColumnData(String table, String column, String order);
+    public abstract String searchColumnData(String table, String column, String order, String query, boolean limit);
 
     public abstract String countSql(String table, List<TableField> formFields, String whereSql);
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 @Service("extMysqlDDLProvider")
@@ -93,13 +94,25 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     }
 
     @Override
-    public String searchColumnData(String table, String column, String order) {
-        String baseSql = "SELECT DISTINCT `$Column_Field$` FROM `$TABLE_NAME$` ORDER BY `$Column_Field$` $Column_Order$;";
+    public String searchColumnData(String table, String column, String order, String query, boolean limit) {
+        String baseSql = "SELECT DISTINCT `$Column_Field$` FROM `$TABLE_NAME$` ORDER BY `$Column_Field$` $Column_Order$";
+        if (StringUtils.isNotBlank(query)) {
+            baseSql = "SELECT `_tmp_value`\n" +
+                    "FROM (SELECT DISTINCT CAST(`$Column_Field$` as CHAR) AS `_tmp_value` FROM `$TABLE_NAME$` ORDER BY `$Column_Field$` $Column_Order$) `_temp_table`\n" +
+                    "WHERE `_tmp_value` LIKE '%" +
+                    query.replaceAll(Pattern.quote("'"), "\\\\'")
+                    + "%'";
+        }
         baseSql = baseSql.replace("$TABLE_NAME$", table).replace("$Column_Field$", column).replace("$Column_Field$", column);
         if (StringUtils.equalsIgnoreCase(order, "desc")) {
             baseSql = baseSql.replace("$Column_Order$", "DESC");
         } else {
             baseSql = baseSql.replace("$Column_Order$", "ASC");
+        }
+        if (limit) {
+            baseSql = baseSql + " LIMIT 1000;";
+        } else {
+            baseSql = baseSql + ";";
         }
         return baseSql;
     }

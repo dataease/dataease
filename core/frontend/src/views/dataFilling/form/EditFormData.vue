@@ -75,6 +75,7 @@ export default {
     return {
       currentPage: 1,
       loading: false,
+      selectLoading: false,
       asyncOptions: {},
       formData: [],
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
@@ -157,9 +158,10 @@ export default {
                 if (this.readonly) {
                   f.value = JSON.parse(_value)
                 } else {
-                  const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
-                  const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
-                  f.value = filter(JSON.parse(_value), v => includes(options, v))
+                  // const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
+                  // const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
+                  // f.value = filter(JSON.parse(_value), v => includes(options, v))
+                  f.value = JSON.parse(_value)
                 }
               } else {
                 f.value = []
@@ -167,13 +169,14 @@ export default {
             } else if (f.type === 'select' && !f.settings.multiple || f.type === 'radio') {
               if (_value) {
                 if (!this.readonly) {
-                  const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
-                  const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
-                  if (!includes(options, _value)) {
-                    f.value = undefined
-                  } else {
-                    f.value = _value
-                  }
+                  // const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
+                  // const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
+                  // if (!includes(options, _value)) {
+                  //   f.value = undefined
+                  // } else {
+                  //   f.value = _value
+                  // }
+                  f.value = _value
                 } else {
                   f.value = _value
                 }
@@ -189,6 +192,24 @@ export default {
     })
   },
   methods: {
+    remoteMethod(query, item) {
+      if (item.settings.optionSourceType === 1) {
+        return
+      }
+      this.selectLoading = true
+      let p
+      if (query && query.trim() !== '') {
+        p = getTableColumnData(item.settings.optionDatasource, item.settings.optionTable, item.settings.optionColumn, item.settings.optionOrder, query)
+      } else {
+        p = getTableColumnData(item.settings.optionDatasource, item.settings.optionTable, item.settings.optionColumn, item.settings.optionOrder)
+      }
+      const id = item.settings.optionDatasource + '_' + item.settings.optionTable + '_' + item.settings.optionColumn + '_' + item.settings.optionOrder
+      p.then(res => {
+        this.asyncOptions[id] = res.data
+      }).finally(() => {
+        this.selectLoading = false
+      })
+    },
     initFormOptionsData(forms, callback) {
       const queries = []
       const queryIds = []
@@ -441,6 +462,10 @@ export default {
                 filterable
                 :multiple="item.settings.multiple"
                 clearable
+                :remote="item.settings.optionSourceType !== 1"
+                :remote-method="(val)=>remoteMethod(val, item)"
+                :loading="selectLoading"
+                @focus="remoteMethod('', item)"
               >
                 <el-option
                   v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[item.tempId] ? asyncOptions[item.tempId] : [])"
@@ -461,7 +486,7 @@ export default {
                   v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[item.tempId] ? asyncOptions[item.tempId] : [])"
                   :key="$index"
                   :label="x.value"
-                >{{ x.name }}
+                ><span :title="x.name">{{ x.name }}</span>
                 </el-radio>
               </el-radio-group>
               <el-checkbox-group
@@ -475,7 +500,7 @@ export default {
                   v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[item.tempId] ? asyncOptions[item.tempId] : [])"
                   :key="$index"
                   :label="x.value"
-                >{{ x.name }}
+                ><span :title="x.name">{{ x.name }}</span>
                 </el-checkbox>
               </el-checkbox-group>
               <el-date-picker
@@ -621,6 +646,32 @@ export default {
 
     margin-bottom: 8px;
 
+  }
+
+  ::v-deep .ed-radio {
+    max-width: 100%;
+  }
+
+  ::v-deep .ed-checkbox-group {
+    max-width: 100%;
+  }
+
+  ::v-deep .ed-checkbox {
+    max-width: 100%;
+  }
+
+  ::v-deep .ed-radio__label {
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  ::v-deep .ed-checkbox__label {
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 </style>
