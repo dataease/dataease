@@ -2794,6 +2794,12 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     column_name: 'Field name'
   },
   visualization: {
+    jump_null_tips:
+      'The field [{0}] has empty configuration. Please complete the configuration first!',
+    jump_no_banding_tips: 'The current chart has no bound query conditions.',
+    set_as_tips: 'Set as',
+    rich_text_tips: 'Double click to enter text',
+    save_conflict_tips: 'has been updated by others, overwrite and save?',
     text_decoration: 'underline',
     select_target_resource: 'Please select the target resource',
     target_dashboard_dataV: 'Target Dashboard/Screen',

@@ -2728,6 +2728,11 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    jump_null_tips: '字段【{0}】存在空配置，请先完善配置！',
+    jump_no_banding_tips: '当前图表无绑定的查询条件',
+    set_as_tips: '置为',
+    rich_text_tips: '双击输入文字',
+    save_conflict_tips: '已被他人更新，是否覆盖保存？',
     text_decoration: '下滑线',
     select_target_resource: '请选择目标资源',
     target_dashboard_dataV: '目标仪表板/数据大屏',

@@ -2726,6 +2726,11 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    jump_null_tips: '欄位【{0}】存在空配置，請先完善配置！',
+    jump_no_banding_tips: '當前圖表無綁定的查詢條件',
+    set_as_tips: '置為',
+    rich_text_tips: '雙擊輸入文字',
+    save_conflict_tips: '已被他人更新，是否要覆蓋並儲存？',
     text_decoration: '下劃線',
     select_target_resource: '請選擇目標資源',
     target_dashboard_dataV: '目標儀表板/數據大屏',

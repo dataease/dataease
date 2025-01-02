@@ -3361,7 +3361,7 @@ const deleteChartFieldItem = id => {
           }"
         >
           <el-icon
-            :title="'数据集'"
+            :title="$t('visualization.dataset')"
             class="custom-icon"
             size="20px"
             @click="collapseChange('datasetAreaCollapse')"
@@ -3414,7 +3414,11 @@ const deleteChartFieldItem = id => {
                 <div class="dataset-search-label" :class="{ dark: themes === 'dark' }">
                   <span>{{ t('chart.field') }}</span>
                   <span>
-                    <el-tooltip :effect="toolTip" content="刷新" placement="top">
+                    <el-tooltip
+                      :effect="toolTip"
+                      :content="$t('visualization.refresh')"
+                      placement="top"
+                    >
                       <el-icon
                         class="field-search-icon-btn"
                         :class="{ dark: themes === 'dark' }"
@@ -3444,7 +3448,7 @@ const deleteChartFieldItem = id => {
                   :effect="themes"
                   class="dataset-search-input"
                   :class="{ dark: themes === 'dark' }"
-                  :placeholder="t('chart.search') + t('chart.field')"
+                  :placeholder="t('chart.search') + ' ' + t('chart.field')"
                   clearable
                 >
                   <template #prefix>

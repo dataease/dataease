@@ -11,7 +11,9 @@ import {
 } from '@/custom-component/component-list'
 import { createGroupStyle, getComponentRotatedStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
-import { canvasIdMapCheck, checkJoinGroup, isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
+import { canvasIdMapCheck, checkJoinGroup, isTabCanvas } from '@/utils/canvasUtils'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, componentData, curOriginThemes } = storeToRefs(dvMainStore)
@@ -173,8 +175,8 @@ export const composeStore = defineStore('compose', {
         id: newId,
         component: 'Group',
         canvasActive: false,
-        name: '组合',
-        label: '组合',
+        name: t('visualization.view_group'),
+        label: t('visualization.view_group'),
         icon: 'group',
         expand: true,
         commonBackground: {

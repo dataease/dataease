@@ -70,7 +70,8 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo, mobileInPc } = storeToRefs(dvMainStore)
 const isError = ref(false)
 const appearanceStore = useAppearanceStoreWithOut()
-
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const props = defineProps({
   scale: {
     type: Number,
@@ -147,7 +148,7 @@ const curFontFamily = () => {
   })
   return result
 }
-
+const outerPlaceholder = t('visualization.component_input_tips')
 const init = ref({
   selector: '#' + tinymceId,
   toolbar_items_size: 'small',
@@ -168,7 +169,7 @@ const init = ref({
     '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 42px 48px 56px 72px 80px 90px 100px 110px 120px 140px 150px 170px 190px 210px', // 字体大小
   menubar: false,
   placeholder: '',
-  outer_placeholder: '双击输入文字',
+  outer_placeholder: outerPlaceholder,
   inline: true, // 开启内联模式
   branding: false,
   icons: 'vertical-content',
