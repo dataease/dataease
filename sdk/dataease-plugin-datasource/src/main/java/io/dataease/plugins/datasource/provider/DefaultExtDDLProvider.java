@@ -53,7 +53,7 @@ public class DefaultExtDDLProvider extends ExtDDLProvider {
     }
 
     @Override
-    public String searchColumnData(String table, String column, String order) {
+    public String searchColumnData(String table, String column, String order, String query, boolean limit) {
         return null;
     }
 

@@ -713,6 +713,14 @@ public class DataFillDataService {
     }
 
     public List<ExtTableField.Option> listColumnData(String optionDatasource, String optionTable, String optionColumn, String optionOrder) throws Exception {
+        return listColumnData(optionDatasource, optionTable, optionColumn, optionOrder, false);
+    }
+
+    public List<ExtTableField.Option> listColumnData(String optionDatasource, String optionTable, String optionColumn, String optionOrder, boolean limit) throws Exception {
+        return listColumnData(optionDatasource, optionTable, optionColumn, optionOrder, null, limit);
+    }
+
+    public List<ExtTableField.Option> listColumnData(String optionDatasource, String optionTable, String optionColumn, String optionOrder, String query, boolean limit) throws Exception {
         Datasource ds = datasource.get(optionDatasource);
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
 
@@ -721,7 +729,8 @@ public class DataFillDataService {
 
         ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
-        String sql = extDDLProvider.searchColumnData(optionTable, optionColumn, optionOrder);
+        String sql = extDDLProvider.searchColumnData(optionTable, optionColumn, optionOrder, query, limit);
+        System.out.println(sql);
 
         datasourceRequest.setQuery(sql);
 

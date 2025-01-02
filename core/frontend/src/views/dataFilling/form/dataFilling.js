@@ -169,7 +169,7 @@ export function userFillFormData(userTaskId, data) {
   })
 }
 
-export function getTableColumnData(optionDatasource, optionTable, optionColumn, optionOrder) {
+export function getTableColumnData(optionDatasource, optionTable, optionColumn, optionOrder, query) {
   return request({
     url: `dataFilling/form/${optionDatasource}/options`,
     method: 'post',
@@ -177,7 +177,8 @@ export function getTableColumnData(optionDatasource, optionTable, optionColumn, 
     data: {
       optionTable: optionTable,
       optionColumn: optionColumn,
-      optionOrder: optionOrder
+      optionOrder: optionOrder,
+      query: query
     }
   })
 }

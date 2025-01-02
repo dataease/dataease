@@ -230,7 +230,7 @@ public class DataFillController {
     @ApiIgnore
     @PostMapping("/form/{optionDatasource}/options")
     public List<ExtTableField.Option> listColumnData(@PathVariable String optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception {
-        return dataFillDataService.listColumnData(optionDatasource, request.getOptionTable(), request.getOptionColumn(), request.getOptionOrder());
+        return dataFillDataService.listColumnData(optionDatasource, request.getOptionTable(), request.getOptionColumn(), request.getOptionOrder(), request.getQuery(), true);
     }
 
 }
