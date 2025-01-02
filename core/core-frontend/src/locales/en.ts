@@ -68,10 +68,10 @@ export default {
     org_center: 'Organization Management Center'
   },
   api_pagination: {
-    help_documentation: 'Help Documentation',
-    product_forum: 'Product Forum',
-    technical_blog: 'Technical Blog',
-    enterprise_edition_trial: 'Enterprise Edition Trial',
+    help_documentation: 'Doc',
+    product_forum: 'Forum',
+    technical_blog: 'Blog',
+    enterprise_edition_trial: 'Trial',
     paging_ettings: 'Paging Settings',
     parameter_name: 'Parameter name',
     built_in_parameter_name: 'Built-in parameter name',
