@@ -11,7 +11,7 @@ import {
 } from '@/custom-component/component-list'
 import { createGroupStyle, getComponentRotatedStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
-import { checkJoinGroup } from '@/utils/canvasUtils'
+import { canvasIdMapCheck, checkJoinGroup, isMainCanvas, isTabCanvas } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, componentData, curOriginThemes } = storeToRefs(dvMainStore)
@@ -220,15 +220,36 @@ export const composeStore = defineStore('compose', {
       })
     },
 
-    decompose(canvasId = 'canvas-main') {
+    decompose() {
+      const canvasId = curComponent.value.canvasId
       const editor = this.editorMap[canvasId]
       const parentStyle = { ...curComponent.value.style }
       const components = curComponent.value.propValue
       const editorRect = editor.getBoundingClientRect()
-      dvMainStore.deleteComponentById(curComponent.value.id)
+      const isInTab = isTabCanvas(canvasId)
+      let decomposeComponentData = componentData.value
+      if (isInTab) {
+        const pathMap = {}
+        componentData.value.forEach(componentItem => {
+          canvasIdMapCheck(componentItem, null, pathMap)
+        })
+        const pComponent = pathMap[curComponent.value.id]
+        const pComponentTarget = pComponent.propValue.filter(
+          item => canvasId.indexOf(item.name) > -1
+        )
+        if (pComponentTarget && pComponentTarget.length > 0) {
+          decomposeComponentData = pComponentTarget[0].componentData
+        }
+      }
+      dvMainStore.deleteComponentById(curComponent.value.id, decomposeComponentData)
       components.forEach(component => {
-        decomposeComponent(component, editorRect, parentStyle)
-        dvMainStore.addComponent({ component: component, index: undefined, isFromGroup: true })
+        decomposeComponent(component, editorRect, parentStyle, canvasId)
+        dvMainStore.addComponent({
+          component: component,
+          index: undefined,
+          isFromGroup: true,
+          componentData: decomposeComponentData
+        })
       })
     },
     calcComposeArea(areaDataValue = this.areaData) {
