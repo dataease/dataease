@@ -121,7 +121,9 @@ const defaultApiItem = {
       password: ''
     }
   },
-  fields: []
+  fields: [],
+  useJsonPath: false,
+  jsonPath: ''
 }
 
 const initForm = type => {
