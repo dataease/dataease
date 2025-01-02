@@ -9,7 +9,7 @@
     @edit="edit"
     @check="validateById"
   />
-  <div>
+  <div :style="{ paddingBottom: showPriority ? 0 : '16px' }">
     <span class="de-expand-engine" @click="showPriority = !showPriority">
       {{ t('datasource.priority') }}
       <el-icon>
@@ -161,7 +161,7 @@ const validateById = async () => {
   line-height: 22px;
   color: var(--ed-color-primary);
   cursor: pointer;
-  margin: 0 24px 10px 24px;
+  margin: 0 24px 8px 24px;
   display: inline-flex;
   align-items: center;
 
