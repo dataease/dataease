@@ -84,28 +84,28 @@ const configRules = {
   'configuration.initialPoolSize': [
     {
       required: true,
-      message: t('common.inputText') + t('datasource.initial_pool_size'),
+      message: t('common.inputText') + ' ' + t('datasource.initial_pool_size'),
       trigger: 'blur'
     }
   ],
   'configuration.minPoolSize': [
     {
       required: true,
-      message: t('common.inputText') + t('datasource.min_pool_size'),
+      message: t('common.inputText') + ' ' + t('datasource.min_pool_size'),
       trigger: 'blur'
     }
   ],
   'configuration.maxPoolSize': [
     {
       required: true,
-      message: t('common.inputText') + t('datasource.max_pool_size'),
+      message: t('common.inputText') + ' ' + t('datasource.max_pool_size'),
       trigger: 'blur'
     }
   ],
   'configuration.queryTimeout': [
     {
       required: true,
-      message: t('common.inputText') + t('datasource.query_timeout'),
+      message: t('common.inputText') + ' ' + t('datasource.query_timeout'),
       trigger: 'blur'
     }
   ]
