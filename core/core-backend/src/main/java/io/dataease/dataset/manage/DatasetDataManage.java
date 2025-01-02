@@ -120,7 +120,12 @@ public class DatasetDataManage {
                 // add table schema
                 sql = TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0";
                 // replace schema alias, trans dialect
-                sql = Utils.replaceSchemaAlias(sql, datasourceRequest.getDsList());
+                Map map = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Map.class);
+                if (ObjectUtils.isNotEmpty(map.get("schema"))) {
+                    sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, map.get("schema").toString());
+                }else {
+                    sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
+                }
                 sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             } else {
                 // parser sql params and replace default value
