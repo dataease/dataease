@@ -186,7 +186,6 @@ onBeforeMount(() => {
 })
 
 onBeforeUnmount(() => {
-  view.value.tableId = ''
   cacheId = ''
 })
 
