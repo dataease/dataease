@@ -2062,8 +2062,11 @@ const timeGranularityChange = (val: string) => {
 }
 
 const handleTimeTypeChange = () => {
-  timeGranularityChange(curComponent.value.timeGranularity)
-  timeGranularityMultipleChange(curComponent.value.timeGranularityMultiple)
+  if (curComponent.value.displayType === '1') {
+    timeGranularityChange(curComponent.value.timeGranularity)
+  } else {
+    timeGranularityMultipleChange(curComponent.value.timeGranularityMultiple)
+  }
 }
 
 const timeGranularityMultipleChange = (val: string) => {
