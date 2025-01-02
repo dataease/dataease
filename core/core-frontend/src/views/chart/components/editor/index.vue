@@ -3098,7 +3098,7 @@ const deleteChartFieldItem = id => {
 
                           <div
                             class="tree-btn"
-                            v-if="isFilterActive"
+                            v-if="isFilterActive || themes === 'dark'"
                             :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
                             @click="openTreeFilter"
                           >
