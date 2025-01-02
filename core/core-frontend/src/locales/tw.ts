@@ -3843,6 +3843,7 @@ export default {
   watermark: {
     support_params: '目前支援的參數：',
     enable: '啟用水印',
+    excel_enable: '啟用數據文件導出水印',
     enable_panel_custom: '允許儀表板單獨開啟或關閉水印',
     content: '浮水印內容',
     custom_content: '自訂公式',

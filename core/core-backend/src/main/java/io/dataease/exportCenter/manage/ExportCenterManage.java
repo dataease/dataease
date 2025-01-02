@@ -804,7 +804,7 @@ public class ExportCenterManage implements BaseExportApi {
     public void addWatermarkTools(Workbook wb){
         VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
         WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
-        if (watermarkContent.getExcelEnable()) {
+        if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
             UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(AuthUtils.getUser().getUserId());
             // 在主逻辑中添加水印
             int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent,userInfo); // 生成水印图片并获取 ID

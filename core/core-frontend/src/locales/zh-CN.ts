@@ -3847,6 +3847,7 @@ export default {
   watermark: {
     support_params: '当前支持的参数：',
     enable: '启用水印',
+    excel_enable: '导出数据文件开启水印',
     enable_panel_custom: '允许仪表板单独打开或者关闭水印',
     content: '水印内容',
     custom_content: '自定义公式',

@@ -3945,6 +3945,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
   watermark: {
     support_params: 'Currently supported parameters:',
     enable: 'Enable watermark',
+    excel_enable: 'Enable watermark for exporting data files',
     enable_panel_custom: 'Allow dashboards to turn on or off watermarks individually',
     content: 'Watermark content',
     custom_content: 'Custom formula',
