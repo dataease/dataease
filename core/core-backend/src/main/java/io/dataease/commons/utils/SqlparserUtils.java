@@ -680,7 +680,7 @@ public class SqlparserUtils {
                 }
                 if (variable.getSysVariableDto().getType().equalsIgnoreCase("text")) {
                     for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {
-                        if (sysVariableValueDto.getId().equals(variable.getVariableValueId())) {
+                        if (variable.getVariableValueIds().contains(sysVariableValueDto.getId().toString())) {
                             value = sysVariableValueDto.getValue();
                             break;
                         }
@@ -707,8 +707,9 @@ public class SqlparserUtils {
                     continue;
                 }
                 if (variable.getSysVariableDto().getType().equalsIgnoreCase("text")) {
+
                     for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {
-                        if (sysVariableValueDto.getSysVariableId().equals(variable.getVariableId())) {
+                        if (variable.getVariableValueIds().contains(sysVariableValueDto.getId().toString())) {
                             values.add(sysVariableValueDto.getValue());
                         }
                     }
