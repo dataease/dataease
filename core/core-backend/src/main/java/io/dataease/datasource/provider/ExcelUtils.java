@@ -12,16 +12,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.ds.vo.ExcelFileData;
 import io.dataease.api.ds.vo.ExcelSheetData;
+import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.TableField;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.ConfigUtils;
-import io.dataease.utils.JsonUtil;
-import io.dataease.utils.ModelUtils;
+import io.dataease.utils.*;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -87,27 +85,43 @@ public class ExcelUtils {
 
     public static Map<String, String> getTableNamesMap(String configration) throws DEException {
         Map<String, String> result = new HashMap<>();
+        JsonNode rootNode = null;
+        // 兼容历史未加密信息
         try {
-            JsonNode rootNode = objectMapper.readTree(configration);
+            rootNode = objectMapper.readTree((String) EncryptUtils.aesDecrypt(configration));
+        } catch (Exception e) {
+            try {
+                rootNode = objectMapper.readTree(configration);
+            } catch (Exception ex) {
+                DEException.throwException(ex);
+            }
+        }
+        if(rootNode != null) {
             for (int i = 0; i < rootNode.size(); i++) {
                 result.put(rootNode.get(i).get("tableName").asText(), rootNode.get(i).get("deTableName").asText());
             }
-        } catch (Exception e) {
-            DEException.throwException(e);
         }
-
         return result;
     }
 
     public static String getFileName(CoreDatasource datasource) throws DEException {
+        JsonNode rootNode = null;
         try {
-            JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
+            rootNode = objectMapper.readTree((String) EncryptUtils.aesDecrypt(datasource.getConfiguration()));
+        } catch (Exception e) {
+            try {
+                rootNode = objectMapper.readTree(datasource.getConfiguration());
+            } catch (Exception ex) {
+                DEException.throwException(ex);
+            }
+        }
+        if (rootNode != null) {
             for (int i = 0; i < rootNode.size(); i++) {
                 return rootNode.get(i).get("fileName").asText();
             }
-        } catch (Exception e) {
-            DEException.throwException(e);
         }
+
+
         return "";
     }
 
