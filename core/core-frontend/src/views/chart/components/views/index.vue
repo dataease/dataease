@@ -532,7 +532,6 @@ const jumpClick = param => {
           }
           const currentUrl = window.location.href
           localStorage.setItem('beforeJumpUrl', currentUrl)
-          console.log('embeddedStore', embeddedStore)
           if (divSelf || iframeSelf) {
             embeddedStore.setDvId(jumpInfo.targetDvId)
             embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
