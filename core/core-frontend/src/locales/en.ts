@@ -587,6 +587,8 @@ export default {
     edit_embedded_application: 'Edit an embedded application',
     application_name: 'Application name',
     cross_domain_settings: 'Cross-domain settings',
+    embedded_del_confirm: 'Are you sure you want to delete {0} applications?',
+    embedded_search_placeholder: 'Search by application name, APP ID, or cross-domain settings',
     embedded_secret_len_change:
       'The key length has changed. The key will be reset soon. Are you sure?',
     embedded_management: 'Embedded management',
