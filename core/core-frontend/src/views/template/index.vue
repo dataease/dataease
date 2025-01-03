@@ -1,29 +1,35 @@
 <template>
   <div class="template-head">
     <p class="router-title">{{ t('template_manage.name') }}</p>
-    <el-button style="float: right" type="primary" @click="templateImport(state.currentTemplateId)">
-      {{ t('visualization.import') }}
-    </el-button>
-    <el-button
-      style="float: right; margin-right: 12px"
-      @click="showTemplateEditDialog('new', null)"
-    >
-      {{ t('template_manage.add_catalog') }}
-    </el-button>
-    <el-input
-      v-model="state.templateFilterText"
-      :placeholder="t('template_manage.keywords')"
-      class="template-search-class"
-      clearable
-    >
-      <template #prefix>
-        <el-icon>
-          <Icon name="de-search">
-            <deSearch class="svg-icon" />
-          </Icon>
-        </el-icon>
-      </template>
-    </el-input>
+    <div style="display: flex">
+      <el-input
+        v-model="state.templateFilterText"
+        :placeholder="t('template_manage.keywords')"
+        class="template-search-class"
+        clearable
+      >
+        <template #prefix>
+          <el-icon>
+            <Icon name="de-search">
+              <deSearch class="svg-icon" />
+            </Icon>
+          </el-icon>
+        </template>
+      </el-input>
+      <el-button
+        style="float: right; margin-left: 12px"
+        @click="showTemplateEditDialog('new', null)"
+      >
+        {{ t('template_manage.add_catalog') }}
+      </el-button>
+      <el-button
+        style="float: right"
+        type="primary"
+        @click="templateImport(state.currentTemplateId)"
+      >
+        {{ t('visualization.import') }}
+      </el-button>
+    </div>
   </div>
   <div class="sys-setting-p">
     <div class="container-sys-param" v-show="state.templateCategories.length">
@@ -94,13 +100,17 @@
                 />
               </div>
               <div v-show="batchState" class="batch-opt-area">
-                <el-button @click="batchUpdate" type="danger" plain style="margin-left: 24px"
+                <el-button @click="batchUpdate" plain style="margin-left: 24px"
                   >{{ t('template_manage.edit_catalog') }}
                 </el-button>
-                <el-button @click="batchPreDelete" type="danger" plain>{{
-                  t('user.batch_del')
-                }}</el-button>
-                <span style="margin-left: 24px; font-size: 14px">
+                <el-button
+                  @click="batchPreDelete"
+                  type="danger"
+                  plain
+                  class="template-custom-danger"
+                  >{{ t('user.batch_del') }}</el-button
+                >
+                <span class="delete-tips">
                   {{ t('template_manage.selected_count', [batchState]) }}
                 </span>
                 <el-button @click="batchFullSelect" style="margin-left: 16px" text>
@@ -655,7 +665,10 @@ onMounted(() => {
   font-style: normal;
   font-weight: 500;
   line-height: 28px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   float: left;
+  flex: 1;
 }
 
 .sys-setting-p {
@@ -677,11 +690,12 @@ onMounted(() => {
 
 .template-head {
   height: 32px;
+  display: flex;
 }
 
 .template-search-class {
   float: right;
-  width: 320px;
+  width: 220px;
 }
 
 .custom-position {
@@ -702,5 +716,20 @@ onMounted(() => {
 
 .ed-empty__image img {
   width: 126px;
+}
+.delete-tips {
+  margin-left: 24px;
+  font-size: 14px;
+  color: rgb(100, 106, 115);
+}
+.template-custom-danger {
+  color: rgba(245, 74, 69, 1);
+  border-color: rgba(245, 74, 69, 1);
+  &:hover {
+    background-color: rgba(245, 74, 69, 0.3);
+  }
+  &:focus {
+    background-color: rgba(245, 74, 69, 0.3);
+  }
 }
 </style>
