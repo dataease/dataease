@@ -16,11 +16,11 @@ document.addEventListener('touchend', function (event) {
   const diffX = endX - startX
 
   // 判断左滑还是右滑
-  if (diffX > 50) {
+  if (diffX > 150) {
     // 设定一个阈值来判断滑动是否有效
     window.history.back()
     // 在这里处理右滑事件
-  } else if (diffX < -50) {
+  } else if (diffX < -150) {
     // 在这里处理左滑事件
     window.history.forward()
   }
