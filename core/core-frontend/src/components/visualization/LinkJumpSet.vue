@@ -187,8 +187,12 @@
                                     v-if="data.leaf"
                                   >
                                     <Icon name="dv-dashboard-spine"
-                                      ><dvDashboardSpine class="svg-icon"
-                                    /></Icon>
+                                      ><dvDashboardSpine
+                                        v-if="data.type === 'dashboard'"
+                                        class="svg-icon"
+                                      />
+                                      <dvScreenSpine v-else class="svg-icon"> </dvScreenSpine>
+                                    </Icon>
                                   </el-icon>
                                   <el-icon size="18px" style="display: inline-block" v-else>
                                     <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
@@ -618,6 +622,7 @@ import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
 import {
   queryVisualizationJumpInfo,
   queryWithViewId,
