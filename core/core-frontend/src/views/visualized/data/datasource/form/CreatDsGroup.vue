@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
-import { ref, reactive, computed, watch, nextTick } from 'vue'
+import { ref, reactive, computed, watch, nextTick, shallowRef, unref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { checkRepeat, listDatasources, save, update } from '@/api/datasource'
 import { ElMessage, ElMessageBox, ElMessageBoxOptions } from 'element-plus-secondary'
+import treeSort from '@/utils/treeSortUtils'
 import type { DatasetOrFolder } from '@/api/dataset'
+import { cloneDeep } from 'lodash-es'
 import nothingTree from '@/assets/img/nothing-tree.png'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -118,7 +120,11 @@ const filterMethod = (value, data) => {
 const resetForm = () => {
   createDataset.value = false
 }
+const originResourceTree = shallowRef([])
 
+const sortTypeChange = sortType => {
+  state.tData = treeSort(originResourceTree.value, sortType)
+}
 const dfs = (arr: Tree[]) => {
   arr.forEach(ele => {
     ele.value = ele.id
@@ -129,6 +135,7 @@ const dfs = (arr: Tree[]) => {
 }
 let request = null
 let dsType = ''
+const sortList = ['time_asc', 'time_desc', 'name_asc', 'name_desc']
 const createInit = (type, data: Tree, exec, name: string) => {
   pid.value = ''
   id.value = ''
@@ -151,6 +158,10 @@ const createInit = (type, data: Tree, exec, name: string) => {
         if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
           state.tData[0].name = t('data_source.data_source')
         }
+        originResourceTree.value = cloneDeep(unref(state.tData))
+        let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
+        curSortType = wsCache.get('TreeSort-datasource') ?? curSortType
+        sortTypeChange(curSortType)
       })
     }
     if (exec) {
