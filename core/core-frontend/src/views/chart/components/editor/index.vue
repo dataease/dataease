@@ -3516,6 +3516,7 @@ const deleteChartFieldItem = id => {
                           class="field-setting child"
                           :class="{ 'remove-icon--dark': themes === 'dark' }"
                           size="14px"
+                          style="color: #646a73"
                           @click.stop="copyChartFieldItem(element.id)"
                         >
                           <Icon class-name="inner-class" name="icon_copy_outlined"
@@ -3527,6 +3528,7 @@ const deleteChartFieldItem = id => {
                           class="field-setting child"
                           :class="{ 'remove-icon--dark': themes === 'dark' }"
                           size="14px"
+                          style="color: #646a73"
                           @click.stop="deleteChartFieldItem(element.id)"
                         >
                           <Icon class-name="inner-class" name="icon_delete-trash_outlined"
@@ -3684,6 +3686,7 @@ const deleteChartFieldItem = id => {
                           class="field-setting child"
                           :class="{ 'remove-icon--dark': themes === 'dark' }"
                           size="14px"
+                          style="color: #646a73"
                           @click.stop="copyChartFieldItem(element.id)"
                         >
                           <Icon class-name="inner-class" name="icon_copy_outlined"
@@ -3695,6 +3698,7 @@ const deleteChartFieldItem = id => {
                           class="field-setting child"
                           :class="{ 'remove-icon--dark': themes === 'dark' }"
                           size="14px"
+                          style="color: #646a73"
                           @click.stop="deleteChartFieldItem(element.id)"
                         >
                           <Icon class-name="inner-class" name="icon_delete-trash_outlined"
