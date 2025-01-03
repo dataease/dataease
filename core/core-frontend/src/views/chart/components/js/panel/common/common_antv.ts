@@ -1343,7 +1343,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     plot.chart.getTheme().components.tooltip.y = event.clientY
   })
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#hideTooltip
-  plot.on('plot:mouseleave', () => {
+  plot.on('plot:leave', () => {
     const tooltipCtl = plot.chart.getController('tooltip')
     if (!tooltipCtl) {
       return
@@ -1354,6 +1354,22 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
       container.style.display = 'none'
     }
     tooltipCtl.hideTooltip()
+  })
+  // 移动端处理，关闭其他图表的提示
+  plot.on('plot:touchstart', () => {
+    const wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
+    if (wrapperDom) {
+      const tooltipCtl = plot.chart.getController('tooltip')
+      if (!tooltipCtl) {
+        return
+      }
+      const container = tooltipCtl.tooltip.cfg.container
+      for (const ele of wrapperDom.children) {
+        if (container.id !== ele.id) {
+          ele.style.display = 'none'
+        }
+      }
+    }
   })
 }
 
