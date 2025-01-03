@@ -3530,7 +3530,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     no_favorites_yet: 'No favorites yet',
     permission_denied: 'Permission denied',
     search_keyword: 'Search Keyword',
-    new_page_preview: 'New Page Preview',
+    new_page_preview: 'New Page',
     cancel_favorites: 'Cancel Favorite',
     open_dataset: 'Open Dataset',
     administrator_for_authorization:

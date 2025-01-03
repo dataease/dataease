@@ -8,7 +8,6 @@ import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import router from '@/router'
 import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
 import { PluginComponent } from '@/components/plugin'
@@ -76,7 +75,8 @@ const {
   curComponent,
   canvasStyleData,
   mobileInPc,
-  inMobile
+  inMobile,
+  editMode
 } = storeToRefs(dvMainStore)
 
 const props = defineProps({
@@ -1180,6 +1180,7 @@ const titleTooltipWidth = computed(() => {
         :disabled="!['canvas', 'canvasDataV'].includes(showPosition) || disabled"
         :active="active"
         :show-position="showPosition"
+        :edit-mode="editMode"
         :suffixId="suffixId"
       />
       <de-indicator
