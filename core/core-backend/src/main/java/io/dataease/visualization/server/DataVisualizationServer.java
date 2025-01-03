@@ -516,6 +516,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
         coreVisualizationManage.delete(dvId);
     }
 
+    private void resourceTreeTypeAdaptor(List<BusiNodeVO> tree,String type){
+        if(!CollectionUtils.isEmpty(tree)){
+            tree.forEach(busiNodeVO -> {
+                busiNodeVO.setType(type);
+                resourceTreeTypeAdaptor(busiNodeVO.getChildren(),type);
+            });
+        }
+    }
 
     @Override
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -529,6 +537,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             List<BusiNodeVO> dataVResult = coreVisualizationManage.tree(requestDv);
             List<BusiNodeVO> result = new ArrayList<>();
             if (!CollectionUtils.isEmpty(dashboardResult)) {
+                resourceTreeTypeAdaptor(dashboardResult,"dashboard");
                 BusiNodeVO dashboardResultParent = new BusiNodeVO();
                 dashboardResultParent.setName(Translator.get("i18n_menu.panel"));
                 dashboardResultParent.setId(-101L);
@@ -540,6 +549,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 result.add(dashboardResultParent);
             }
             if (!CollectionUtils.isEmpty(dataVResult)) {
+                resourceTreeTypeAdaptor(dataVResult,"dataV");
                 BusiNodeVO dataVResultParent = new BusiNodeVO();
                 dataVResultParent.setName(Translator.get("i18n_menu.screen"));
                 dataVResultParent.setId(-102L);

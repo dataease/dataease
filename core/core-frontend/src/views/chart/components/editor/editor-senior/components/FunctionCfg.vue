@@ -195,9 +195,11 @@ onMounted(() => {
           @change="changeFunctionCfg"
         >
           <el-radio :effect="themes" :label="'breakLine'">
-            {{ isRichText ? '置为"-"' : t('chart.break_line') }}
+            {{ isRichText ? t('visualization.set_as_tips') + '"-"' : t('chart.break_line') }}
           </el-radio>
-          <el-radio v-if="isRichText" :effect="themes" :label="'custom'"> 自定义 </el-radio>
+          <el-radio v-if="isRichText" :effect="themes" :label="'custom'">
+            {{ t('visualization.custom') }}
+          </el-radio>
           <template v-if="!isRichText">
             <el-radio v-if="!isCirclePacking" :effect="themes" :label="'setZero'">{{
               t('chart.set_zero')

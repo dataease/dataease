@@ -59,13 +59,12 @@ const confirmClick = () => {
   emits('saveTree', arr)
   handleBeforeClose()
 }
-const indexCascade = [
-  ' ',
-  t('report.week_mon'),
-  t('report.week_tue'),
-  t('report.week_wed'),
-  t('report.week_thu'),
-  t('report.week_fri')
+const indexNumCascade = [
+  t('visualization.number1'),
+  t('visualization.number2'),
+  t('visualization.number3'),
+  t('visualization.number4'),
+  t('visualization.number5')
 ]
 
 const deleteCascade = idx => {
@@ -101,7 +100,7 @@ defineExpose({
         <div class="item-name">{{ t('v_query.tree_query_field') }}</div>
       </div>
       <div class="cascade-item" v-for="(ele, idx) in treeList" :key="ele.id">
-        <div class="label">{{ t('visualization.level') }}{{ indexCascade[idx + 1] }}</div>
+        <div class="label">{{ t('visualization.level') }}{{ indexNumCascade[idx] }}</div>
         <div class="item-name">
           <el-select
             :disabled="idx === 0 && ele.field"

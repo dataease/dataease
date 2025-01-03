@@ -191,7 +191,6 @@ const handleNumberSizeChange = () => {
 
 <style lang="less" scoped>
 .api-pagination {
-  margin-top: -8px;
   .type {
     font-size: 14px;
     font-weight: 400;

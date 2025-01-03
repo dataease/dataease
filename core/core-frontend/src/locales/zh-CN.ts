@@ -1163,6 +1163,8 @@ export default {
     data_preview: '数据预览',
     dimension: '维度',
     quota: '指标',
+    dimension_abb: '维度',
+    quota_abb: '指标',
     column_quota: '柱指标',
     line_quota: '线指标',
     time_dimension_or_quota: '时间维度或指标',
@@ -2728,6 +2730,19 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    multi_selected: '已选{0}项',
+    number1: '一',
+    number2: '二',
+    number3: '三',
+    number4: '四',
+    number5: '五',
+    number6: '六',
+    number7: '七',
+    jump_null_tips: '字段【{0}】存在空配置，请先完善配置！',
+    jump_no_banding_tips: '当前图表无绑定的查询条件',
+    set_as_tips: '置为',
+    rich_text_tips: '双击输入文字',
+    save_conflict_tips: '已被他人更新，是否覆盖保存？',
     text_decoration: '下滑线',
     select_target_resource: '请选择目标资源',
     target_dashboard_dataV: '目标仪表板/数据大屏',
@@ -3507,7 +3522,8 @@ export default {
     defaultOpen: '页面打开方式',
     loginLimit: '限制登录',
     loginLimitRate: '限制登录失败次数 (次)',
-    loginLimitTime: '限制登录失败时间 (分)'
+    loginLimitTime: '限制登录失败时间 (分)',
+    share_disable_tips: '开启后仪表板以及大屏分享无效'
   },
   resource_sort: {
     time_asc: '按创建时间升序',
@@ -3846,7 +3862,8 @@ export default {
   watermark: {
     support_params: '当前支持的参数：',
     enable: '启用水印',
-    enable_panel_custom: '允许仪表板单独打开或者关闭水印',
+    excel_enable: '导出数据文件开启水印',
+    enable_panel_custom: '允许仪表板或数据大屏单独打开或者关闭水印',
     content: '水印内容',
     custom_content: '自定义公式',
     account: '账号',

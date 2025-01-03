@@ -148,6 +148,17 @@ const isRangeBar = computed(() => {
   return props.chart.type === 'bar-range'
 })
 
+const isBarOrHorizontal = computed(() => {
+  return [
+    'bar',
+    'bar-group',
+    'waterfall',
+    'bar-horizontal',
+    'bidirectional-bar',
+    'progress-bar'
+  ].includes(props.chart.type)
+})
+
 const initFields = () => {
   let fields = []
   if (isSymbolicMap.value) {
@@ -407,7 +418,9 @@ init()
             <el-col :span="3">
               <el-form-item
                 class="form-item"
-                :label="isSymbolicMap ? t('chart.color') : t('chart.textColor')"
+                :label="
+                  isSymbolicMap || isBarOrHorizontal ? t('chart.color') : t('chart.textColor')
+                "
               >
                 <el-color-picker
                   is-custom

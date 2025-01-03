@@ -1167,13 +1167,12 @@ const clearCascadeArrDataset = id => {
   cascadeArr = cascadeArr.filter(ele => !!ele.length)
 }
 
-const indexCascade = [
-  ' ',
-  t('report.week_mon'),
-  t('report.week_tue'),
-  t('report.week_wed'),
-  t('report.week_thu'),
-  t('report.week_fri')
+const indexNumCascade = [
+  t('visualization.number1'),
+  t('visualization.number2'),
+  t('visualization.number3'),
+  t('visualization.number4'),
+  t('visualization.number5')
 ]
 
 const validateConditionType = ({
@@ -2062,8 +2061,11 @@ const timeGranularityChange = (val: string) => {
 }
 
 const handleTimeTypeChange = () => {
-  timeGranularityChange(curComponent.value.timeGranularity)
-  timeGranularityMultipleChange(curComponent.value.timeGranularityMultiple)
+  if (curComponent.value.displayType === '1') {
+    timeGranularityChange(curComponent.value.timeGranularity)
+  } else {
+    timeGranularityMultipleChange(curComponent.value.timeGranularityMultiple)
+  }
 }
 
 const timeGranularityMultipleChange = (val: string) => {
@@ -2726,7 +2728,7 @@ defineExpose({
                     class="tree-field"
                   >
                     <span class="level-index"
-                      >{{ t('visualization.level') }}{{ indexCascade[index + 1] }}</span
+                      >{{ t('visualization.level') }}{{ indexNumCascade[index] }}</span
                     >
                     <span class="field-type"
                       ><el-icon>
@@ -3556,7 +3558,7 @@ defineExpose({
             }
           }
           .label {
-            width: 80px;
+            width: 85px;
             color: #1f2329;
           }
 

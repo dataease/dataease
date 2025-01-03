@@ -25,7 +25,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, nextTick, ref, reactive } from 'vue'
+import { onMounted, nextTick, ref, reactive, onBeforeUnmount } from 'vue'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import PreviewCanvas from '@/views/data-visualization/PreviewCanvas.vue'
@@ -36,6 +36,8 @@ import PwdTips from './pwd.vue'
 import IframeError from './IframeError.vue'
 import TicketError from './TicketError.vue'
 import ErrorTemplate from './ErrorTemplate.vue'
+import { useLinkStoreWithOut } from '@/store/modules/link'
+const linkStore = useLinkStoreWithOut()
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const pcanvas = ref(null)
@@ -96,6 +98,9 @@ onMounted(async () => {
     }
     loading.value = false
   })
+})
+onBeforeUnmount(() => {
+  linkStore.$reset()
 })
 </script>
 <style lang="less" scoped>

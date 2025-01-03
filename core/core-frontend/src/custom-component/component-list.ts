@@ -26,13 +26,13 @@ export const BASE_EVENTS = {
   showTips: false,
   type: 'jump', // openHidden  jump
   typeList: [
-    { key: 'jump', label: t('visualization.jump') },
-    { key: 'download', label: t('visualization.download') },
-    { key: 'share', label: t('visualization.share') },
-    { key: 'fullScreen', label: t('visualization.fullscreen') },
-    { key: 'showHidden', label: t('visualization.pop_area') },
-    { key: 'refreshDataV', label: t('visualization.refresh') },
-    { key: 'refreshView', label: t('visualization.refresh_view') }
+    { key: 'jump', label: 'jump' },
+    { key: 'download', label: 'download' },
+    { key: 'share', label: 'share' },
+    { key: 'fullScreen', label: 'fullScreen' },
+    { key: 'showHidden', label: 'showHidden' },
+    { key: 'refreshDataV', label: 'refreshDataV' },
+    { key: 'refreshView', label: 'refreshView' }
   ],
   jump: {
     value: 'https://',

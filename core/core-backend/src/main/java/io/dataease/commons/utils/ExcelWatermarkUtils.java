@@ -78,8 +78,9 @@ public class ExcelWatermarkUtils {
     }
 
     public static byte[] createTextImage(String text, WatermarkContentDTO watermarkContent) {
-        int width = watermarkContent.getWatermark_fontsize() * text.length() + 100;
-        int height = watermarkContent.getWatermark_fontsize() + 50;
+        double radians = Math.toRadians(15);// 15度偏转
+        int width = watermarkContent.getWatermark_fontsize() * text.length();
+        int height = (int) Math.round(watermarkContent.getWatermark_fontsize() + width * Math.sin(radians));
         int fontSize = watermarkContent.getWatermark_fontsize();
         Color baseColor = Color.decode(watermarkContent.getWatermark_color());
 
@@ -95,10 +96,9 @@ public class ExcelWatermarkUtils {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // 设置字体
-        g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
+        g2d.setFont(new Font("Arial", Font.PLAIN, fontSize));
         g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 50)); // 半透明颜色
-        g2d.rotate(Math.toRadians(25), width / 2.0, height / 2.0); // 旋转文字
-
+        g2d.rotate(radians, width / 2.0, height / 2.0); // 旋转文字
         // 绘制文字
         FontMetrics fontMetrics = g2d.getFontMetrics();
         int textWidth = fontMetrics.stringWidth(text);

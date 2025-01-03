@@ -190,6 +190,21 @@ const relativeToCurrentTypeMap = {
   date: '日',
   datetime: '日'
 }
+function formatDate(str) {
+  // 根据 - 符号拆分
+  return str
+    .split('\/')
+    .map(item => {
+      // +item 将item字符串转换为数字
+      // 小于10的时候就补全一个前缀0
+      if (+item < 10) {
+        return '0' + +item
+      }
+      // 大于10的时候不用补0
+      return item
+    })
+    .join('/') // 最后重组回来
+}
 
 const confirmTimeSelect = () => {
   item.value.dynamicTimeSetting = { ...timeDialog.value.curComponent }
@@ -201,6 +216,12 @@ const confirmTimeSelect = () => {
     arbitraryTime,
     relativeToCurrent
   } = item.value.dynamicTimeSetting
+  if (arbitraryTime) {
+    item.value.dynamicTimeSetting.arbitraryTime =
+      formatDate(new Date(arbitraryTime).toLocaleDateString()) +
+      ' ' +
+      new Date(arbitraryTime).toLocaleTimeString()
+  }
   if (relativeToCurrent !== 'custom') {
     item.value.timeValue = [
       {

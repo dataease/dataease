@@ -75,7 +75,11 @@
                   </el-icon>
                 </el-tooltip>
               </div>
-              <div class="input-suffix-btn done" v-if="linkCustom" @click.stop="finishEditUuid">
+              <div
+                class="input-suffix-btn done-finish"
+                v-if="linkCustom"
+                @click.stop="finishEditUuid"
+              >
                 <el-tooltip class="item" effect="dark" :content="t('commons.save')" placement="top">
                   <el-icon style="cursor: pointer">
                     <Icon><icon_done_outlined class="svg-icon" /></Icon>
@@ -133,6 +137,7 @@
         </el-checkbox>
         <div class="auto-pwd-container" v-if="passwdEnable">
           <el-checkbox
+            v-show="false"
             :disabled="!shareEnable"
             v-model="state.detailInfo.autoPwd"
             @change="autoEnableSwitcher"
@@ -815,7 +820,7 @@ defineExpose({
     background-color: #bbbfc4;
     margin-right: 4px;
   }
-  .done {
+  .done-finish {
     color: #3370ff;
     &:hover {
       background-color: #3370ff1a !important;

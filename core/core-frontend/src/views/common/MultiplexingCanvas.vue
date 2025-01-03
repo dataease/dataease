@@ -24,7 +24,7 @@
     <template #footer>
       <el-row class="multiplexing-footer">
         <el-col class="adapt-count">
-          <span>{{ (t('visualization.component_style'), [selectComponentCount]) }}</span>
+          <span>{{ t('visualization.multi_selected', [selectComponentCount]) }} </span>
         </el-col>
         <el-col class="adapt-select">
           <span class="adapt-text">{{ t('visualization.component_style') }} ： </span>

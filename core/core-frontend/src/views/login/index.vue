@@ -66,7 +66,11 @@ const getCurLocation = () => {
   }
   return queryRedirectPath
 }
-
+const enterHandler = e => {
+  e.target.blur()
+  e.stopPropagation()
+  handleLogin()
+}
 const formRef = ref<FormInstance | undefined>()
 const duringLogin = ref(true)
 const handleLogin = () => {
@@ -88,7 +92,16 @@ const handleLogin = () => {
       cleanPlatformFlag()
       loginApi(param)
         .then(res => {
+          debugger
           const { token, exp, mfa } = res.data
+          if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
+            const param = {
+              methodName: 'init',
+              args: res.data
+            }
+            xpackInvalidPwd?.value.invokeMethod(param)
+            return
+          }
           if (!isLdap && mfa?.enabled) {
             xpackLoginHandler.value?.invokeMethod({ methodName: 'toMfa', args: mfa })
             duringLogin.value = false
@@ -97,13 +110,6 @@ const handleLogin = () => {
           userStore.setToken(token)
           userStore.setExp(exp)
           userStore.setTime(Date.now())
-          if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
-            const param = {
-              methodName: 'init'
-            }
-            xpackInvalidPwd?.value.invokeMethod(param)
-            return
-          }
           const queryRedirectPath = getCurLocation()
           router.push({ path: queryRedirectPath })
         })
@@ -113,9 +119,16 @@ const handleLogin = () => {
     }
   })
 }
-const invalidPwdCb = val => {
+const invalidPwdCb = cbParam => {
+  const val = cbParam['status']
   duringLogin.value = !!val
   if (val) {
+    const mfa = cbParam['mfa']
+    if (mfa?.enabled) {
+      xpackLoginHandler.value?.invokeMethod({ methodName: 'toMfa', args: mfa })
+      duringLogin.value = false
+      return
+    }
     const queryRedirectPath = getCurLocation()
     router.push({ path: queryRedirectPath })
   }
@@ -321,7 +334,7 @@ onMounted(async () => {
                     maxlength="30"
                     show-word-limit
                     autocomplete="new-password"
-                    @keypress.enter="handleLogin"
+                    @keypress.enter.stop="enterHandler"
                   />
                 </el-form-item>
                 <div class="login-btn">

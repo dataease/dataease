@@ -182,13 +182,12 @@ const addCascadeBlock = () => {
   cascadeList.value.push(arr)
 }
 
-const indexCascade = [
-  ' ',
-  t('report.week_mon'),
-  t('report.week_tue'),
-  t('report.week_wed'),
-  t('report.week_thu'),
-  t('report.week_fri')
+const indexNumCascade = [
+  t('visualization.number1'),
+  t('visualization.number2'),
+  t('visualization.number3'),
+  t('visualization.number4'),
+  t('visualization.number5')
 ]
 
 defineExpose({
@@ -248,7 +247,7 @@ defineExpose({
         <div class="item-field">{{ t('v_query.select_cascaded_field') }}</div>
       </div>
       <div class="cascade-item" v-for="(ele, idx) in item" :key="ele.id">
-        <div class="label">{{ t('v_query.level_1', { msg: indexCascade[idx + 1] }) }}</div>
+        <div class="label">{{ t('v_query.level_1', { msg: indexNumCascade[idx] }) }}</div>
         <div class="item-name">
           <el-select
             @visible-change="val => visibleChange(val, index, idx)"

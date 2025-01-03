@@ -89,7 +89,7 @@ const tooltips = [
   },
   {
     key: 'setting_basic.shareDisable',
-    val: '开启后仪表板以及大屏分享无效'
+    val: t('setting_basic.share_disable_tips')
   }
 ]
 const loginSettings = [

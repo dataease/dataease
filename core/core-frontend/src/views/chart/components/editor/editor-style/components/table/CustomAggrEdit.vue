@@ -403,33 +403,6 @@ initFunction()
     }
   }
 
-  .btn-select {
-    width: 100px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    border: 1px solid #bbbfc4;
-    border-radius: 4px;
-
-    .is-active {
-      background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-    }
-
-    .ed-button:not(.is-active) {
-      color: #1f2329;
-    }
-    .ed-button.is-text {
-      height: 24px;
-      width: 44px;
-      line-height: 24px;
-    }
-    .ed-button + .ed-button {
-      margin-left: 4px;
-    }
-  }
-
   .mb8 {
     margin-bottom: 8px;
     display: inline-flex;

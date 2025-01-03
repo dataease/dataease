@@ -12,7 +12,7 @@ import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const currentComponent = shallowRef()
-
+const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const VisualizationEditor = defineAsyncComponent(
   () => import('@/views/data-visualization/index.vue')
 )
@@ -36,6 +36,7 @@ const componentMap = {
   DashboardEditor,
   VisualizationEditor,
   ViewWrapper,
+  Preview,
   Dashboard,
   Dataset,
   Datasource,
@@ -77,8 +78,10 @@ const initIframe = (name: string) => {
       showComponent.value = true
     })
   } else {
-    currentComponent.value = componentMap[name || 'ViewWrapper']
-    showComponent.value = true
+    nextTick(() => {
+      currentComponent.value = componentMap[name || 'ViewWrapper']
+      showComponent.value = true
+    })
   }
 }
 

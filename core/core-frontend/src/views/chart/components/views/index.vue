@@ -36,7 +36,6 @@ import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
-import { parseUrl } from '@/utils/ParseUrl'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { cloneDeep } from 'lodash-es'
@@ -496,13 +495,17 @@ const jumpClick = param => {
           curFilter.filter.forEach(filterItem => {
             targetViewInfoList.forEach(targetViewInfo => {
               if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
-                filterOuterParams[targetViewInfo.outerParamsName] = filterItem.value
+                filterOuterParams[targetViewInfo.outerParamsName] = {
+                  operator: filterItem.operator,
+                  value: filterItem.value
+                }
               }
             })
           })
         }
         let attachParamsInfo
         if (Object.keys(filterOuterParams).length > 0) {
+          filterOuterParams['outerParamsVersion'] = 'v2'
           attachParamsInfo =
             '&attachParams=' + encodeURIComponent(Base64.encode(JSON.stringify(filterOuterParams)))
         }
@@ -533,18 +536,10 @@ const jumpClick = param => {
           }
           const currentUrl = window.location.href
           localStorage.setItem('beforeJumpUrl', currentUrl)
-          if (isIframe.value || isDataEaseBi.value) {
-            embeddedStore.clearState()
-          }
-          if (divSelf) {
+          if (divSelf || iframeSelf) {
             embeddedStore.setDvId(jumpInfo.targetDvId)
             embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
             divEmbedded('Preview')
-            return
-          }
-
-          if (iframeSelf) {
-            router.push(parseUrl(url))
             return
           }
           windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)

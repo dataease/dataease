@@ -555,7 +555,6 @@ const handleMouseDownOnShape = e => {
     // 因为仪表板中组件向下移动可能只是为了挤占空间 不一定是为了移出 这里无法判断明确意图 暂时支不支持向下移出
     // 大屏和仪表板暂时做位置算法区分 仪表板暂时使用curX 因为缩放的影响 大屏使用 tab位置 + 组件位置（相对内部画布）+初始触发点
     // 如果组件在tab中且tab在Group中 不允许移入移出 pTabGroupFlag = true
-    // 如当前是分组且分组中含有Tab 不允许移入 pJoinTab = false
     if (
       !pTabGroupFlag &&
       pJoinTab &&
@@ -996,7 +995,12 @@ const tabMoveInCheck = async () => {
   const left = curNode.offsetLeft
   const top = curNode.offsetTop
   // tab 移入检测开启 tab组件不能相互移入另一个tab组件
-  if (isTabMoveCheck.value && !state.ignoreTabMoveComponent.includes(element.value.component)) {
+  // 如当前是分组且分组中含有Tab 不允许移入 pJoinTab = false
+  if (
+    pJoinTab &&
+    isTabMoveCheck.value &&
+    !state.ignoreTabMoveComponent.includes(element.value.component)
+  ) {
     const nodes = Array.from(parentNode.value.childNodes) // 获取当前父节点下所有子节点
     for (const item of nodes) {
       if (

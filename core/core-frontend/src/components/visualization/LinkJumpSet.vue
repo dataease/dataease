@@ -63,7 +63,7 @@
                       </span>
                     </div>
                   </span>
-                  <span>
+                  <span :title="data.sourceFieldName">
                     <span class="tree-select-field">
                       <el-icon style="margin-right: 4px">
                         <Icon
@@ -187,8 +187,12 @@
                                     v-if="data.leaf"
                                   >
                                     <Icon name="dv-dashboard-spine"
-                                      ><dvDashboardSpine class="svg-icon"
-                                    /></Icon>
+                                      ><dvDashboardSpine
+                                        v-if="data.type === 'dashboard'"
+                                        class="svg-icon"
+                                      />
+                                      <dvScreenSpine v-else class="svg-icon"> </dvScreenSpine>
+                                    </Icon>
                                   </el-icon>
                                   <el-icon size="18px" style="display: inline-block" v-else>
                                     <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
@@ -380,7 +384,7 @@
                             >
                           </template>
                           <template v-else-if="state.linkJumpCurFilterFieldArray.length === 0">
-                            <span>当前图表无绑定的查询条件</span>
+                            <span>{{ t('visualization.jump_no_banding_tips') }}</span>
                           </template>
                           <template v-else-if="state.currentOutParams.length > 0">
                             <el-row style="margin-bottom: 8px" :gutter="8">
@@ -618,6 +622,7 @@ import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
 import {
   queryVisualizationJumpInfo,
   queryWithViewId,
@@ -867,7 +872,7 @@ const save = () => {
         }
       }
       if (subCheckCount > 0) {
-        ElMessage.error('字段【' + linkJumpInfo.sourceFieldName + '】存在空配置，请先完善配置！')
+        ElMessage.error(t('visualization.jump_null_tips', [linkJumpInfo.sourceFieldName]))
       }
     }
   })
@@ -878,7 +883,7 @@ const save = () => {
   updateJumpSet(state.linkJump)
     .then(() => {
       snapshotStore.recordSnapshotCache('updateJumpSet')
-      ElMessage.success('保存成功')
+      ElMessage.success(t('common.save_success'))
       // 刷新跳转信息
       queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
         dvMainStore.setNowPanelJumpInfo(rsp.data)
@@ -1503,6 +1508,7 @@ span {
   font-size: 14px;
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
 .label-content-details {

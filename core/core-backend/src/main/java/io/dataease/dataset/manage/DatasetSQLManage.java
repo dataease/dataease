@@ -425,7 +425,7 @@ public class DatasetSQLManage {
                     dto.setSuffix(first.getSuffix());
                     return dto;
                 } else {
-                    DEException.throwException("当前数据源插件不存在");
+                    DEException.throwException(Translator.get("i18n_dataset_plugin_error"));
                 }
             }
             return null;

@@ -1161,6 +1161,8 @@ export default {
     data_preview: '資料預覽',
     dimension: '維度',
     quota: '指標',
+    dimension_abb: '維度',
+    quota_abb: '指標',
     column_quota: '柱指標',
     line_quota: '線指標',
     time_dimension_or_quota: '時間維度或指標',
@@ -2726,6 +2728,19 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    multi_selected: '已選{0}項',
+    number1: '一',
+    number2: '二',
+    number3: '三',
+    number4: '四',
+    number5: '五',
+    number6: '六',
+    number7: '七',
+    jump_null_tips: '欄位【{0}】存在空配置，請先完善配置！',
+    jump_no_banding_tips: '當前圖表無綁定的查詢條件',
+    set_as_tips: '置為',
+    rich_text_tips: '雙擊輸入文字',
+    save_conflict_tips: '已被他人更新，是否要覆蓋並儲存？',
     text_decoration: '下劃線',
     select_target_resource: '請選擇目標資源',
     target_dashboard_dataV: '目標儀表板/數據大屏',
@@ -3504,7 +3519,8 @@ export default {
     defaultOpen: '頁面開啟方式',
     loginLimit: '限制登入',
     loginLimitRate: '限制登入失敗次數 (次)',
-    loginLimitTime: '限制登入失敗時間 (分)'
+    loginLimitTime: '限制登入失敗時間 (分)',
+    share_disable_tips: '開啟後儀表板以及大屏分享無效'
   },
   resource_sort: {
     time_asc: '按建立時間升序',
@@ -3842,7 +3858,8 @@ export default {
   watermark: {
     support_params: '目前支援的參數：',
     enable: '啟用水印',
-    enable_panel_custom: '允許儀表板單獨開啟或關閉水印',
+    excel_enable: '啟用數據文件導出水印',
+    enable_panel_custom: '允許儀表板或數據大屏單獨開啟或關閉水印',
     content: '浮水印內容',
     custom_content: '自訂公式',
     account: '帳號',

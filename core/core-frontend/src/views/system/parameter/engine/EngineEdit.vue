@@ -84,28 +84,28 @@ const configRules = {
   'configuration.initialPoolSize': [
     {
       required: true,
-      message: t('common.inputText') + t('datasource.initial_pool_size'),
+      message: t('common.inputText') + ' ' + t('datasource.initial_pool_size'),
       trigger: 'blur'
     }
   ],
   'configuration.minPoolSize': [
     {
       required: true,
-      message: t('common.inputText') + t('datasource.min_pool_size'),
+      message: t('common.inputText') + ' ' + t('datasource.min_pool_size'),
       trigger: 'blur'
     }
   ],
   'configuration.maxPoolSize': [
     {
       required: true,
-      message: t('common.inputText') + t('datasource.max_pool_size'),
+      message: t('common.inputText') + ' ' + t('datasource.max_pool_size'),
       trigger: 'blur'
     }
   ],
   'configuration.queryTimeout': [
     {
       required: true,
-      message: t('common.inputText') + t('datasource.query_timeout'),
+      message: t('common.inputText') + ' ' + t('datasource.query_timeout'),
       trigger: 'blur'
     }
   ]
@@ -383,6 +383,7 @@ defineExpose({
                 v-model="nodeInfo.configuration.initialPoolSize"
                 controls-position="right"
                 autocomplete="off"
+                class="w100-input"
                 :placeholder="t('common.inputText') + t('datasource.initial_pool_size')"
                 type="number"
                 :min="0"
@@ -395,6 +396,7 @@ defineExpose({
                 v-model="nodeInfo.configuration.minPoolSize"
                 controls-position="right"
                 autocomplete="off"
+                class="w100-input"
                 :placeholder="t('common.inputText') + t('datasource.min_pool_size')"
                 type="number"
                 :min="0"
@@ -407,6 +409,7 @@ defineExpose({
             <el-form-item :label="t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
               <el-input-number
                 v-model="nodeInfo.configuration.maxPoolSize"
+                class="w100-input"
                 controls-position="right"
                 autocomplete="off"
                 :placeholder="t('common.inputText') + t('datasource.max_pool_size')"
@@ -421,6 +424,7 @@ defineExpose({
               prop="configuration.queryTimeout"
             >
               <el-input-number
+                class="w100-input"
                 v-model="nodeInfo.configuration.queryTimeout"
                 controls-position="right"
                 autocomplete="off"
@@ -455,11 +459,14 @@ defineExpose({
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    margin-bottom: 8px;
 
     .ed-icon {
       margin-left: 4px;
     }
+  }
+
+  .w100-input {
+    width: 100%;
   }
   .ed-drawer__footer {
     height: 64px !important;

@@ -71,7 +71,6 @@ import {
   syncApiDs,
   syncApiTable
 } from '@/api/datasource'
-import { Base64 } from 'js-base64'
 import type { SyncSetting, Node } from './form/option'
 import EditorDatasource from './form/index.vue'
 import ExcelInfo from './ExcelInfo.vue'
@@ -1453,7 +1452,7 @@ const getMenuList = (val: boolean) => {
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <BaseInfoItem :label="t('auth.datasource') + t('common.name')">{{
+                  <BaseInfoItem :label="t('auth.datasource') + ' ' + t('common.name')">{{
                     nodeInfo.name
                   }}</BaseInfoItem>
                 </el-col>
