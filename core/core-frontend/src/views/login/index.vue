@@ -92,7 +92,6 @@ const handleLogin = () => {
       cleanPlatformFlag()
       loginApi(param)
         .then(res => {
-          debugger
           const { token, exp, mfa } = res.data
           if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
             const param = {

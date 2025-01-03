@@ -282,6 +282,7 @@ const pageChange = index => {
 }
 const sizeChange = size => {
   state.paginationConfig.pageSize = size
+  state.paginationConfig.currentPage = 1
   loadTicketData()
 }
 
