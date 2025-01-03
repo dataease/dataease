@@ -495,13 +495,17 @@ const jumpClick = param => {
           curFilter.filter.forEach(filterItem => {
             targetViewInfoList.forEach(targetViewInfo => {
               if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
-                filterOuterParams[targetViewInfo.outerParamsName] = filterItem.value
+                filterOuterParams[targetViewInfo.outerParamsName] = {
+                  operator: filterItem.operator,
+                  value: filterItem.value
+                }
               }
             })
           })
         }
         let attachParamsInfo
         if (Object.keys(filterOuterParams).length > 0) {
+          filterOuterParams['outerParamsVersion'] = 'v2'
           attachParamsInfo =
             '&attachParams=' + encodeURIComponent(Base64.encode(JSON.stringify(filterOuterParams)))
         }
