@@ -66,7 +66,10 @@ const getCurLocation = () => {
   }
   return queryRedirectPath
 }
-
+const enterHandler = e => {
+  e.target.blur()
+  handleLogin()
+}
 const formRef = ref<FormInstance | undefined>()
 const duringLogin = ref(true)
 const handleLogin = () => {
@@ -321,7 +324,7 @@ onMounted(async () => {
                     maxlength="30"
                     show-word-limit
                     autocomplete="new-password"
-                    @keypress.enter="handleLogin"
+                    @keypress.enter.stop="enterHandler"
                   />
                 </el-form-item>
                 <div class="login-btn">
