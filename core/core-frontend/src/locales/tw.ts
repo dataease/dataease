@@ -2726,6 +2726,13 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    number1: '一',
+    number2: '二',
+    number3: '三',
+    number4: '四',
+    number5: '五',
+    number6: '六',
+    number7: '七',
     jump_null_tips: '欄位【{0}】存在空配置，請先完善配置！',
     jump_no_banding_tips: '當前圖表無綁定的查詢條件',
     set_as_tips: '置為',

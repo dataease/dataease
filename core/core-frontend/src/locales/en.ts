@@ -341,7 +341,7 @@ export default {
     api_data: 'API data'
   },
   dynamic_time: {
-    set_default: 'Set default value',
+    set_default: 'Default value',
     fix: 'Fixed time',
     dynamic: 'Dynamic time',
     relative: 'Relative to current',
@@ -2702,8 +2702,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     last_3_days: 'Last 3 days',
     month_to_date: 'Month to date',
     year_to_date: 'Year to date',
-    exact_match: 'Exact match',
-    fuzzy_match: 'Fuzzy match',
+    exact_match: 'Exact',
+    fuzzy_match: 'Fuzzy',
     option_type: 'Option type',
     time_filter_range: 'Set time filter range',
     configured: 'Configured',
@@ -2717,12 +2717,12 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     condition_cascade_configuration: 'Query condition cascade configuration',
     not_reverse_cascade: '(Only the upper level can cascade the lower level, not reverse cascade)',
     must_be_met:
-      'Based on the condition of the current component, if cascade configuration is required, the following conditions must be met:',
+      "Based on  the current component's condition, if cascade configuration is required, the following conditions must be met:",
     select_data_set:
-      '1. Display type: text drop-down component and number drop-down component; 2. Option value source: select Dataset',
+      '1. Display type: text and number drop-down component; 2. Option value source: select Dataset',
     add_cascade_configuration: 'Add cascade configuration',
     add_cascade_condition: 'Add cascade condition',
-    query_condition_level: 'Query condition level',
+    query_condition_level: 'Level',
     select_query_condition: 'Please select the query condition',
     select_cascaded_field: 'Please select the cascaded field',
     level_1: 'Level {msg}',
@@ -2760,7 +2760,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     number_drop_down: 'Number drop-down',
     number_range: 'Number range',
     of_option_values: 'Number of option values',
-    tree_structure_design: 'Drop-down tree structure design',
+    tree_structure_design: 'Structure design',
     the_tree_structure: 'Click to design the tree structure',
     time_granularity: 'Time granularity',
     the_time_granularity: 'Please select the time granularity',
@@ -2769,10 +2769,10 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     query_field: 'Query field',
     display_field: 'Display field',
     the_sorting_field: 'Please select the sorting field',
-    condition_type: 'Condition type',
-    single_condition: 'Single condition',
-    with_condition: 'With condition',
-    or_condition: 'Or condition',
+    condition_type: 'Condition',
+    single_condition: 'Single',
+    with_condition: 'And',
+    or_condition: 'Or',
     hide_condition_switch: 'Hide condition switch',
     cannot_be_displayed:
       'The chart uses a different Dataset, Unable to display configuration items',
@@ -2796,6 +2796,13 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     column_name: 'Field name'
   },
   visualization: {
+    number1: '1',
+    number2: '2',
+    number3: '3',
+    number4: '4',
+    number5: '5',
+    number6: '6',
+    number7: '7',
     jump_null_tips:
       'The field [{0}] has empty configuration. Please complete the configuration first!',
     jump_no_banding_tips: 'The current chart has no bound query conditions.',
