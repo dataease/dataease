@@ -471,6 +471,7 @@ defineExpose({
     position: relative;
     width: 100%;
     height: 100%;
+    background-size: 100% 100% !important;
   }
   .enlarge-inner-with-header {
     display: flex;

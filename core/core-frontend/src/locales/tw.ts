@@ -2142,7 +2142,7 @@ export default {
     edit_calc_field: '編輯計算欄位',
     calc_field: '計算欄位',
     show_sql: '顯示SQL',
-    ple_select_excel: '請選擇要匯入的Excel',
+    ple_select_excel: '工作表名稱不匹配，請重新上傳文件',
     merge: '合併',
     no_merge: '不合併',
     merge_msg: '資料表中存在欄位一致的情況，是否合併到一個資料集中?',

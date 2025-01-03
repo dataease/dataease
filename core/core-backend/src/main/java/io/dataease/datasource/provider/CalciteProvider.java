@@ -271,13 +271,17 @@ public class CalciteProvider extends Provider {
             ResultSet resultSet = null;
             try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
                 datasourceRequest.setDsVersion(con.getMetaData().getDatabaseMajorVersion());
-                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo") || isDorisCatalog(datasourceRequest)) {
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
                     resultSet = statement.executeQuery("select * from " + String.format(" `%s`", table) + " limit 0 offset 0 ");
                     return fetchResultField(resultSet);
                 }
-                resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
+                if (isDorisCatalog(datasourceRequest)) {
+                    resultSet = statement.executeQuery("desc " + String.format(" `%s`", table));
+                } else {
+                    resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
+                }
                 while (resultSet.next()) {
-                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet);
+                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet, 3);
                     boolean repeat = false;
                     for (TableField ele : datasetTableFields) {
                         if (StringUtils.equalsIgnoreCase(ele.getOriginName(), tableFieldDesc.getOriginName())) {
@@ -700,7 +704,7 @@ public class CalciteProvider extends Provider {
         }
     }
 
-    private TableField getTableFieldDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
+    private TableField getTableFieldDesc(DatasourceRequest datasourceRequest, ResultSet resultSet, int commentIndex) throws SQLException {
         TableField tableField = new TableField();
         tableField.setOriginName(resultSet.getString(1));
         tableField.setType(resultSet.getString(2).toUpperCase());
@@ -708,7 +712,7 @@ public class CalciteProvider extends Provider {
         int deType = FieldUtils.transType2DeType(tableField.getType());
         tableField.setDeExtractType(deType);
         tableField.setDeType(deType);
-        tableField.setName(resultSet.getString(3));
+        tableField.setName(resultSet.getString(commentIndex));
         try {
             tableField.setPrimary(resultSet.getInt(4) > 0);
         } catch (Exception e) {
