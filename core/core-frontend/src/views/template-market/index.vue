@@ -109,7 +109,11 @@
             highlight-current
             :current-node-key="state.marketActiveTab"
             @node-click="nodeClick"
-          />
+          >
+            <template #default="{ data }">
+              <span :title="data.label" class="ed-tree-node__label">{{ data.label }}</span>
+            </template>
+          </el-tree>
         </div>
         <div
           v-show="state.networkStatus && state.hasResult"

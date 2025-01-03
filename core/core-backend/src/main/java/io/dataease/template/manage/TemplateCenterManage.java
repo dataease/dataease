@@ -206,7 +206,7 @@ public class TemplateCenterManage {
                 MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
                 MarketApplicationMetaDataVO metadata = marketTemplateV2ItemResult.getApplication().getMetadata();
                 if ("Y".equalsIgnoreCase(spec.getSuggest())) {
-                    contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), "Y"));
+                    contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), "Y", spec.getTemplateClassification()));
                 }
             });
         }
@@ -246,7 +246,7 @@ public class TemplateCenterManage {
             v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
                 MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
                 MarketApplicationMetaDataVO metadata = marketTemplateV2ItemResult.getApplication().getMetadata();
-                contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest()));
+                contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest(), spec.getTemplateClassification()));
                 if (categoriesMap.get(spec.getLabel()) != null) {
                     activeCategoriesName.add(categoriesMap.get(spec.getLabel()));
                 }

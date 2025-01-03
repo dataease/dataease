@@ -22,6 +22,8 @@ public class MarketApplicationSpecVO {
 
     private String label;
 
+    private String templateClassification;
+
     private String readmeName;
 
     // 是否推荐
