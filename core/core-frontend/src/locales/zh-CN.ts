@@ -1163,6 +1163,8 @@ export default {
     data_preview: '数据预览',
     dimension: '维度',
     quota: '指标',
+    dimension_abb: '维度',
+    quota_abb: '指标',
     column_quota: '柱指标',
     line_quota: '线指标',
     time_dimension_or_quota: '时间维度或指标',

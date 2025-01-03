@@ -1191,6 +1191,8 @@ export default {
     data_preview: 'Data preview',
     dimension: 'Dimension',
     quota: 'Indicator',
+    dimension_abb: 'Dim',
+    quota_abb: 'Ind',
     column_quota: 'Column indicator',
     line_quota: 'Line indicator',
     time_dimension_or_quota: 'Time dimension or indicator',

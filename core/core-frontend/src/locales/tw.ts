@@ -1161,6 +1161,8 @@ export default {
     data_preview: '資料預覽',
     dimension: '維度',
     quota: '指標',
+    dimension_abb: '維度',
+    quota_abb: '指標',
     column_quota: '柱指標',
     line_quota: '線指標',
     time_dimension_or_quota: '時間維度或指標',
