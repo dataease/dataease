@@ -246,7 +246,7 @@ export default {
     data_source_list: 'Return to Datasource list',
     prompts_next_time: "Don't prompt next time",
     also_want_to: 'You may also want',
-    or_large_screen: 'Prepare for the next dashboard or large screen',
+    or_large_screen: 'Prepare for the next dashboard or data screen',
     go_to_create: 'Go to create',
     verification_successful: 'Verification successful',
     verification_failed: 'Verification failed',
@@ -3529,7 +3529,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     last_edited_by: 'Last Edited By',
     last_edit_time: 'Last Edit Time',
     big_data_screen: 'Data Screen',
-    big_screen: 'Large Screen',
+    big_screen: 'Data Screen',
     dashboard: 'Dashboard',
     data_set: 'Dataset',
     data_source: 'Datasource',
@@ -3617,7 +3617,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     loginLimit: 'Limit login',
     loginLimitRate: 'Limit login failure times (times)',
     loginLimitTime: 'Limit login failure time (minutes)',
-    share_disable_tips: 'Dashboard and large screen sharing are invalid after turning on'
+    share_disable_tips: 'Dashboard and data screen sharing are invalid after turning on'
   },
   resource_sort: {
     time_asc: 'In ascending order by creation time',
