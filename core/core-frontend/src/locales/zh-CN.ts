@@ -2728,6 +2728,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    multi_selected: '已选{0}项',
     jump_null_tips: '字段【{0}】存在空配置，请先完善配置！',
     jump_no_banding_tips: '当前图表无绑定的查询条件',
     set_as_tips: '置为',

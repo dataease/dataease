@@ -37,6 +37,18 @@ const onEventChange = () => {
 const onJumpValueChange = () => {
   snapshotStore.recordSnapshotCacheToMobile('events')
 }
+const getTypeLabel = type => {
+  return typeMap[type] || type
+}
+const typeMap = {
+  jump: t('visualization.jump'),
+  download: t('visualization.download'),
+  share: t('visualization.share'),
+  fullScreen: t('visualization.fullscreen'),
+  showHidden: t('visualization.pop_area'),
+  refreshDataV: t('visualization.refresh'),
+  refreshView: t('visualization.refresh_view')
+}
 </script>
 
 <template>
@@ -74,7 +86,7 @@ const onJumpValueChange = () => {
             size="small"
             :effect="themes"
             :key="typeInfo.key"
-            :label="typeInfo.label"
+            :label="getTypeLabel(typeInfo.label)"
             :value="typeInfo.key"
           />
         </el-select>

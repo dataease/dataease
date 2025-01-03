@@ -3,6 +3,7 @@ package io.dataease.api.visualization;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.visualization.request.VisualizationBackgroundRequest;
 import io.dataease.api.visualization.vo.VisualizationBackgroundVO;
+import io.dataease.i18n.I18n;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,5 +21,6 @@ import java.util.Map;
 public interface VisualizationBackgroundApi {
     @GetMapping("/findAll")
     @Operation(summary = "背景信息查询")
+    @I18n
     Map<String, List<VisualizationBackgroundVO>> findAll();
 }

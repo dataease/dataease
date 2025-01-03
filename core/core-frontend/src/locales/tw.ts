@@ -2726,6 +2726,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    multi_selected: '已選{0}項',
     jump_null_tips: '欄位【{0}】存在空配置，請先完善配置！',
     jump_no_banding_tips: '當前圖表無綁定的查詢條件',
     set_as_tips: '置為',
