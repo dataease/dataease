@@ -2729,6 +2729,13 @@ export default {
   },
   visualization: {
     multi_selected: '已选{0}项',
+    number1: '一',
+    number2: '二',
+    number3: '三',
+    number4: '四',
+    number5: '五',
+    number6: '六',
+    number7: '七',
     jump_null_tips: '字段【{0}】存在空配置，请先完善配置！',
     jump_no_banding_tips: '当前图表无绑定的查询条件',
     set_as_tips: '置为',

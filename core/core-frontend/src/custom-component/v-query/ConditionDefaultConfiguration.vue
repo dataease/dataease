@@ -671,7 +671,7 @@ defineExpose({
     }
   }
   .label {
-    width: 100px;
+    width: 105px;
     color: #1f2329;
   }
 
@@ -746,6 +746,7 @@ defineExpose({
         color: #646a73;
         line-height: 26px;
         margin-right: 8px;
+        width: 35px;
       }
 
       .bottom-line {
