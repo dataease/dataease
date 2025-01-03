@@ -406,55 +406,61 @@ const getEmptyDesc = (): string => {
 
           <el-table-column width="100" fixed="right" key="_operation" :label="$t('common.operate')">
             <template #default="scope">
-              <template v-if="['dashboard', 'dataV', 'panel', 'screen'].includes(scope.row.type)">
-                <el-tooltip
-                  effect="dark"
-                  :content="t('work_branch.new_page_preview')"
-                  placement="top"
-                >
-                  <el-icon
-                    class="hover-icon hover-icon-in-table"
-                    @click.stop="
-                      preview(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
-                    "
+              <div style="display: flex; flex-direction: row; align-items: center">
+                <template v-if="['dashboard', 'dataV', 'panel', 'screen'].includes(scope.row.type)">
+                  <el-tooltip
+                    effect="dark"
+                    :content="t('work_branch.new_page_preview')"
+                    placement="top"
                   >
-                    <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
-                  </el-icon>
-                </el-tooltip>
-                <ShareHandler
-                  v-if="!shareDisable"
-                  :in-grid="true"
-                  :weight="scope.row.weight"
-                  :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
-                  :resource-type="scope.row.type"
-                />
-                <el-tooltip
-                  v-if="activeName === 'store'"
-                  effect="dark"
-                  :content="t('work_branch.cancel_favorites')"
-                  placement="top"
-                >
-                  <el-icon
-                    class="hover-icon hover-icon-in-table"
-                    @click.stop="executeCancelStore(scope.row)"
+                    <el-icon
+                      class="hover-icon hover-icon-in-table"
+                      @click.stop="
+                        preview(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
+                      "
+                    >
+                      <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
+                    </el-icon>
+                  </el-tooltip>
+                  <ShareHandler
+                    v-if="!shareDisable"
+                    :in-grid="true"
+                    :weight="scope.row.weight"
+                    :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
+                    :resource-type="scope.row.type"
+                  />
+                  <el-tooltip
+                    v-if="activeName === 'store'"
+                    effect="dark"
+                    :content="t('work_branch.cancel_favorites')"
+                    placement="top"
                   >
-                    <Icon name="icon_cancel_store"><icon_cancel_store class="svg-icon" /></Icon>
-                  </el-icon>
-                </el-tooltip>
-              </template>
+                    <el-icon
+                      class="hover-icon hover-icon-in-table"
+                      @click.stop="executeCancelStore(scope.row)"
+                    >
+                      <Icon name="icon_cancel_store"><icon_cancel_store class="svg-icon" /></Icon>
+                    </el-icon>
+                  </el-tooltip>
+                </template>
 
-              <template v-if="['dataset'].includes(scope.row.type)">
-                <el-tooltip effect="dark" :content="t('work_branch.open_dataset')" placement="top">
-                  <el-icon
-                    class="hover-icon hover-icon-in-table"
-                    @click.stop="
-                      openDataset(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
-                    "
+                <template v-if="['dataset'].includes(scope.row.type)">
+                  <el-tooltip
+                    effect="dark"
+                    :content="t('work_branch.open_dataset')"
+                    placement="top"
                   >
-                    <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
-                  </el-icon>
-                </el-tooltip>
-              </template>
+                    <el-icon
+                      class="hover-icon hover-icon-in-table"
+                      @click.stop="
+                        openDataset(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
+                      "
+                    >
+                      <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
+                    </el-icon>
+                  </el-tooltip>
+                </template>
+              </div>
             </template>
           </el-table-column>
         </GridTable>
