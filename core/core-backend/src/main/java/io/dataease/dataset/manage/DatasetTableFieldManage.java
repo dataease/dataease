@@ -217,7 +217,7 @@ public class DatasetTableFieldManage {
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         boolean crossDs = Utils.isCrossDs(dsMap);
         if (crossDs) {
-            DEException.throwException("跨源数据集不支持该功能");
+            DEException.throwException(Translator.get("i18n_dataset_cross_error"));
         }
 
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
@@ -279,7 +279,7 @@ public class DatasetTableFieldManage {
     }
 
     public List<DatasetTableFieldDTO> transDTO(List<CoreDatasetTableField> list) {
-        if(!CollectionUtils.isEmpty(list)){
+        if (!CollectionUtils.isEmpty(list)) {
             return list.stream().map(ele -> {
                 DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
                 if (ele == null) return null;
@@ -292,7 +292,7 @@ public class DatasetTableFieldManage {
                 }
                 return dto;
             }).collect(Collectors.toList());
-        }else{
+        } else {
             return new ArrayList<>();
         }
 

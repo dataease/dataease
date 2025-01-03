@@ -266,7 +266,7 @@ public class DatasetGroupManage {
         Set<Long> ids = new LinkedHashSet();
         coreDatasetTables.forEach(ele -> ids.add(ele.getDatasourceId()));
         if (CollectionUtils.isEmpty(ids)) {
-            DEException.throwException("数据集因异常导致无法使用，请重新创建");
+            DEException.throwException(Translator.get("i18n_dataset_create_error"));
         }
 
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper<>();
@@ -278,7 +278,7 @@ public class DatasetGroupManage {
             return dto;
         }).collect(Collectors.toList());
         if (ids.size() != datasourceDTOList.size()) {
-            DEException.throwException("由于数据集所用的数据源已被删除,无法显示数据集");
+            DEException.throwException(Translator.get("i18n_dataset_ds_delete"));
         }
         return datasourceDTOList;
     }
