@@ -146,14 +146,6 @@ public class StaticResourceServer implements StaticResourceApi {
             return false;
         }
     }
-
-    /**
-     * @param is
-     * @return
-     * @throws IOException
-     * @author jiangzeyin
-     * @date 2016-8-17
-     */
     public static FileType getFileType(InputStream is) throws IOException {
         byte[] src = new byte[28];
         is.read(src, 0, 28);
@@ -180,7 +172,7 @@ public class StaticResourceServer implements StaticResourceApi {
 
     private static Boolean isImageCheckType(MultipartFile file) {
         try {
-            return getImageType(file.getInputStream()) != null;
+            return getFileType(file.getInputStream()) != null;
         } catch (Exception e) {
             LogUtil.error(e.getMessage());
             return false;
