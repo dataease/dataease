@@ -38,6 +38,7 @@ const snapshotStore = snapshotStoreWithOut()
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useCache } from '@/hooks/web/useCache'
+import { isDesktop } from '@/utils/ModelUtil'
 const { t } = useI18n()
 const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
@@ -511,7 +512,8 @@ export function initCanvasDataMobile(dvId, busiFlag, callBack) {
 export function checkCanvasChangePre(callBack) {
   // do pre
   const isUpdate = dvInfo.value.id && dvInfo.value.optType !== 'copy'
-  if (isUpdate) {
+  // 桌面版为单人模式不需要检查
+  if (isUpdate && !isDesktop()) {
     const params = { ...dvInfo.value, watermarkInfo: null }
     const tips =
       (dvInfo.value.type === 'dashboard'
