@@ -119,6 +119,17 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     const { Radar: G2Radar } = await import('@antv/g2plot/esm/plots/radar')
     const newChart = new G2Radar(container, options)
     newChart.on('point:click', action)
+    if (options.label) {
+      newChart.on('label:click', e => {
+        action({
+          x: e.x,
+          y: e.y,
+          data: {
+            data: e.target.attrs.data
+          }
+        })
+      })
+    }
     configPlotTooltipEvent(chart, newChart)
     return newChart
   }
@@ -175,6 +186,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
         group.addShape({
           type: 'text',
           attrs: {
+            data,
             x: 0,
             y: 0,
             text: value,
