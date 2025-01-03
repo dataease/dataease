@@ -872,7 +872,7 @@ const save = () => {
         }
       }
       if (subCheckCount > 0) {
-        ElMessage.error(t('visualization.delete_warn', [linkJumpInfo.sourceFieldName]))
+        ElMessage.error(t('visualization.jump_null_tips', [linkJumpInfo.sourceFieldName]))
       }
     }
   })

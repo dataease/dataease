@@ -516,7 +516,7 @@ export function checkCanvasChangePre(callBack) {
     const tips =
       (dvInfo.value.type === 'dashboard'
         ? t('work_branch.dashboard')
-        : t('work_branch.big_data_screen')) + t('work_branch.save_conflict_tips')
+        : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips')
     checkCanvasChange(params).then(rsp => {
       if (rsp && rsp.data === 'Repeat') {
         ElMessageBox.confirm(tips, {
