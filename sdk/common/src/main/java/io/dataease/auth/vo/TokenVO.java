@@ -24,6 +24,8 @@ public class TokenVO implements Serializable {
 
     private MfaItem mfa;
 
+    private InvalidPwdVO invalidPwd;
+
     public TokenVO(String token, Long exp) {
         this.token = token;
         this.exp = exp;

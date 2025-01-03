@@ -83,12 +83,23 @@ const handleBlur = () => {
   inputFocus.value = ''
 }
 
-const invalidPwdCb = val => {
+const invalidPwdCb = cbParam => {
+  const val = cbParam['status']
   duringLogin.value = !!val
   if (val) {
+    const mfa = cbParam['mfa']
+    if (mfa?.enabled) {
+      for (const key in mfa) {
+        mfaData.value[key] = mfa[key]
+      }
+      showMfa.value = true
+      duringLogin.value = false
+      return
+    }
     router.push({ path: '/index' })
   }
 }
+
 const closeMfa = () => {
   showMfa.value = false
 }
@@ -114,6 +125,14 @@ const onSubmit = async () => {
   loginApi(param)
     .then(res => {
       const { token, exp, mfa } = res.data
+      if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
+        const param = {
+          methodName: 'init',
+          args: res.data
+        }
+        xpackInvalidPwd?.value.invokeMethod(param)
+        return
+      }
       showMfa.value = false
       if (mfa?.enabled) {
         for (const key in mfa) {
@@ -126,13 +145,6 @@ const onSubmit = async () => {
       userStore.setToken(token)
       userStore.setExp(exp)
       userStore.setTime(Date.now())
-      if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
-        const param = {
-          methodName: 'init'
-        }
-        xpackInvalidPwd?.value.invokeMethod(param)
-        return
-      }
       router.push({ path: '/index' })
     })
     .catch(() => {

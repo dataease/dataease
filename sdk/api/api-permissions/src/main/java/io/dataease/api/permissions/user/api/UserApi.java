@@ -9,6 +9,7 @@ import io.dataease.api.permissions.user.dto.*;
 import io.dataease.api.permissions.user.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
+import io.dataease.auth.vo.InvalidPwdVO;
 import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.KeywordRequest;
 import io.dataease.request.BaseGridRequest;
@@ -195,10 +196,6 @@ public interface UserApi {
     @Hidden
     @GetMapping("/defaultOrgAdmin")
     boolean defaultOrgAdmin();
-
-    @Hidden
-    @GetMapping("/invalidPwd")
-    InvalidPwdVO invalidPwd();
 
     @Hidden
     @PostMapping("/subOrgUser")
