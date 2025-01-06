@@ -210,7 +210,7 @@ export function historyItemAdaptor(
   if (componentItem.component === 'DeTabs') {
     componentItem.style.fontStyle = componentItem.style.fontStyle || 'normal'
     componentItem.style.fontWeight = componentItem.style.fontWeight || 'normal'
-    componentItem.style.textDecoration = componentItem.style.textDecoration || 'normal'
+    componentItem.style.textDecoration = componentItem.style.textDecoration || 'none'
     componentItem.propValue.forEach(tabItem => {
       tabItem.componentData.forEach(tabComponent => {
         historyItemAdaptor(tabComponent, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)

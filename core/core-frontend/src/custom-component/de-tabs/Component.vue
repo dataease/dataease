@@ -422,16 +422,16 @@ const headClass = computed(() => {
 const titleStyle = itemName => {
   if (editableTabsValue.value === itemName) {
     return {
+      textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
-      textDecoration: element.value.style.textDecoration,
       fontSize: (element.value.style.activeFontSize || 18) * scale.value + 'px'
     }
   } else {
     return {
+      textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
-      textDecoration: element.value.style.textDecoration,
       fontSize: (element.value.style.fontSize || 16) * scale.value + 'px'
     }
   }

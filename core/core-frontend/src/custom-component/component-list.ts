@@ -563,7 +563,7 @@ const list = [
       // #13540
       fontWeight: 'normal',
       fontStyle: 'normal',
-      textDecoration: 'normal'
+      textDecoration: 'none'
     }
   },
   {

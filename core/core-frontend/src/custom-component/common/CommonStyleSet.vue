@@ -584,10 +584,10 @@ const checkItalic = () => {
 }
 
 const checkTextDecoration = () => {
-  if (styleForm.value.textDecoration === 'normal') {
+  if (styleForm.value.textDecoration === 'none') {
     styleForm.value.textDecoration = 'underline'
   } else {
-    styleForm.value.textDecoration = 'normal'
+    styleForm.value.textDecoration = 'none'
   }
   changeStyle({ key: 'textDecoration', value: styleForm.value.textDecoration })
 }
