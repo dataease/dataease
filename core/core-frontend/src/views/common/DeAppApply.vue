@@ -124,7 +124,8 @@
     </div>
     <template #footer>
       <div class="apply" style="width: 100%">
-        <el-button type="primary" @click="saveApp">保存</el-button>
+        <el-button v-if="isDesktop()" @click="goBack">{{ t('visualization.back') }}</el-button>
+        <el-button type="primary" @click="saveApp">{{ t('visualization.save') }}</el-button>
       </div>
     </template>
   </el-drawer>
@@ -153,6 +154,8 @@ import { storeToRefs } from 'pinia'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useCache } from '@/hooks/web/useCache'
+import { isDesktop } from '@/utils/ModelUtil'
+const desktop = isDesktop()
 
 const { wsCache } = useCache('localStorage')
 const { t } = useI18n()
@@ -247,6 +250,10 @@ const state = reactive({
     ]
   }
 })
+
+const goBack = () => {
+  window.history.back()
+}
 
 const initData = () => {
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 7 }
