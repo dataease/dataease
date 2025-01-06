@@ -669,7 +669,7 @@ public class SqlparserUtils {
     }
 
     private String handleSubstitutedSql(String sql) {
-        if (sql.contains(SysParamsSubstitutedParams)) {
+        if (sql.contains(SysParamsSubstitutedParams) && userEntity != null) {
             sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userId", userEntity.getAccount());
             sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userEmail", userEntity.getEmail());
             sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userName", userEntity.getName());
@@ -700,7 +700,7 @@ public class SqlparserUtils {
 
 
     private String handleSubstitutedSqlForIn(String sql) {
-        if (sql.contains(SysParamsSubstitutedParams)) {
+        if (sql.contains(SysParamsSubstitutedParams) && userEntity != null) {
             for (SysVariableValueItem variable : userEntity.getVariables()) {
                 List<String> values = new ArrayList<>();
                 if (!variable.isValid()) {

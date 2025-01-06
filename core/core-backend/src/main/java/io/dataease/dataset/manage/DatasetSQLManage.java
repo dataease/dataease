@@ -69,9 +69,11 @@ public class DatasetSQLManage {
     private RowPermissionsApi rowPermissionsApi;
     @Resource
     private DataSourceManage dataSourceManage;
+
     private RowPermissionsApi getRowPermissionsApi() {
         return rowPermissionsApi;
     }
+
     private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
     private List<SqlVariableDetails> filterParameters(ChartExtRequest chartExtRequest, Long datasetTableId) {
@@ -461,6 +463,13 @@ public class DatasetSQLManage {
         }
     }
 
+    private UserFormVO getUserEntity() {
+        if (getRowPermissionsApi() == null) {
+            return null;
+        }
+        return getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
+    }
+
     private SQLObj getUnionTable(DatasetTableDTO currentDs, DatasetTableInfoDTO infoDTO, String tableSchema, int index, List<SqlVariableDetails> parameters, boolean isFromDataSet, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj;
         String tableAlias = String.format(SQLConstants.TABLE_ALIAS_PREFIX, index);
@@ -470,8 +479,7 @@ public class DatasetSQLManage {
             Provider provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
             // parser sql params and replace default value
             String s = new String(Base64.getDecoder().decode(infoDTO.getSql()));
-            UserFormVO userEntity = getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
-            String sql = new SqlparserUtils().handleVariableDefaultValue(s, currentDs.getSqlVariableDetails(), false, isFromDataSet, parameters, isCross, dsMap, pluginManage, userEntity);
+            String sql = new SqlparserUtils().handleVariableDefaultValue(s, currentDs.getSqlVariableDetails(), false, isFromDataSet, parameters, isCross, dsMap, pluginManage, getUserEntity());
             sql = provider.replaceComment(sql);
             // add table schema
             if (isCross) {

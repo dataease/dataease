@@ -130,8 +130,7 @@ public class DatasetDataManage {
             } else {
                 // parser sql params and replace default value
                 String s = new String(Base64.getDecoder().decode(tableInfoDTO.getSql()));
-                UserFormVO userEntity = getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
-                String originSql = new SqlparserUtils().handleVariableDefaultValue(s, datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList(), pluginManage, userEntity);
+                String originSql = new SqlparserUtils().handleVariableDefaultValue(s, datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList(), pluginManage, getUserEntity());
                 originSql = provider.replaceComment(originSql);
                 // add sql table schema
 
@@ -397,6 +396,13 @@ public class DatasetDataManage {
         return map;
     }
 
+    private UserFormVO getUserEntity() {
+        if (getRowPermissionsApi() == null) {
+            return null;
+        }
+        return getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
+    }
+
     public Map<String, Object> previewSql(PreviewSqlDTO dto) throws DEException {
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
@@ -422,8 +428,7 @@ public class DatasetDataManage {
         // parser sql params and replace default value
 
         String s = new String(Base64.getDecoder().decode(dto.getSql()));
-        UserFormVO userEntity = getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
-        String originSql = new SqlparserUtils().handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(s), dto.getSqlVariableDetails(), true, true, null, false, dsMap, pluginManage, userEntity);
+        String originSql = new SqlparserUtils().handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(s), dto.getSqlVariableDetails(), true, true, null, false, dsMap, pluginManage, getUserEntity());
         originSql = provider.replaceComment(originSql);
 
         // sql 作为临时表，外层加上limit
