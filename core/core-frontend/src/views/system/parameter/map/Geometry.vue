@@ -229,7 +229,7 @@
   </el-dialog>
   <el-dialog
     v-model="customSubAreaDialog"
-    :title="`${(customSubArea.id ? t('common.edit') : t('common.add')) + t('system.custom_area')}`"
+    :title="`${customSubArea.id ? t('common.edit') : t('common.add')} ${t('system.custom_area')}`"
     width="500"
     destroy-on-close
   >
