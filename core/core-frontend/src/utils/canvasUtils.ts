@@ -231,7 +231,9 @@ export function historyAdaptor(
   canvasVersion
 ) {
   const curVersion = wsCache.get('x-de-execute-version')
-  if (canvasInfo?.checkVersion === curVersion) {
+  // 含有定时报告过滤项每次都需要匹配
+  const reportFilterInfo = canvasInfo?.reportFilterInfo
+  if (canvasInfo?.checkVersion === curVersion && !reportFilterInfo) {
     return
   }
   //历史字段适配
@@ -262,7 +264,6 @@ export function historyAdaptor(
     canvasStyleResult['popupButtonAvailable'] === undefined
       ? true
       : canvasStyleResult['popupButtonAvailable'] //兼容弹框区域按钮开关
-  const reportFilterInfo = canvasInfo?.reportFilterInfo
   canvasDataResult.forEach(componentItem => {
     historyItemAdaptor(componentItem, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)
   })
