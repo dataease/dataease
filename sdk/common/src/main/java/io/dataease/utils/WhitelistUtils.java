@@ -49,7 +49,7 @@ public class WhitelistUtils {
             "/sysParameter/defaultLogin",
             "/embedded/initIframe",
             "/sysParameter/i18nOptions",
-            "/user/modifyPwd",
+            "/login/modifyInvalidPwd",
             "/");
 
     public static boolean match(String requestURI) {
