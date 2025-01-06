@@ -465,8 +465,8 @@ const list = [
   },
   {
     component: 'CanvasBoard',
-    name: t('visualization.border'),
-    label: t('visualization.border'),
+    name: t('visualization.board'),
+    label: t('visualization.board'),
     propValue: '',
     icon: 'other_material_board',
     innerType: '',
