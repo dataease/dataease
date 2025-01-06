@@ -20,12 +20,14 @@ import DatasetParamsComponent from '@/components/visualization/DatasetParamsComp
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import EmptyBackground from '../../empty-background/src/EmptyBackground.vue'
 import LinkOptBar from '@/components/data-visualization/canvas/LinkOptBar.vue'
+import { isDesktop } from '@/utils/ModelUtil'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState, inMobile } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
 const customDatasetParamsRef = ref(null)
 const emits = defineEmits(['onResetLayout'])
 const fullScreeRef = ref(null)
+const isDesktopFlag = isDesktop()
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -426,7 +428,8 @@ const linkOptBarShow = computed(() => {
     canvasStyleData.value.suspensionButtonAvailable &&
       !inMobile.value &&
       !mobileInPc.value &&
-      showPopBar.value
+      showPopBar.value &&
+      !isDesktopFlag
   )
 })
 

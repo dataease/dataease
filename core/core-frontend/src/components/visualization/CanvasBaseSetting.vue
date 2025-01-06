@@ -41,7 +41,11 @@
         </el-checkbox>
       </el-form-item>
 
-      <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+      <el-form-item
+        v-if="!isDesktopFlag"
+        class="form-item no-margin-bottom"
+        :class="'form-item-' + themes"
+      >
         <el-checkbox
           size="small"
           :effect="themes"
@@ -86,11 +90,15 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { CHART_FONT_FAMILY_ORIGIN } from '@/views/chart/components/editor/util/chart'
 import { adaptTitleFontFamilyAll } from '@/utils/canvasStyle'
 import { useI18n } from '@/hooks/web/useI18n'
+import { isDesktop } from '@/utils/ModelUtil'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const appearanceStore = useAppearanceStoreWithOut()
+
+const isDesktopFlag = isDesktop()
+
 const fontFamily = CHART_FONT_FAMILY_ORIGIN.concat(
   appearanceStore.fontList.map(ele => ({
     name: ele.name,

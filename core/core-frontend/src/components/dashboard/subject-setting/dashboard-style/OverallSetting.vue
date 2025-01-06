@@ -196,7 +196,7 @@
       />
     </el-form-item>
     <el-form-item
-      v-show="dvInfo.type === 'dashboard'"
+      v-show="dvInfo.type === 'dashboard' && !isDesktopFlag"
       style="margin-top: 16px; margin-bottom: 8px"
       :class="'form-item-' + themes"
     >
@@ -273,8 +273,9 @@ import {
 import { ElFormItem, ElIcon, ElSpace } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+import { isDesktop } from '@/utils/ModelUtil'
 const appearanceStore = useAppearanceStoreWithOut()
-
+const isDesktopFlag = isDesktop()
 const snapshotStore = snapshotStoreWithOut()
 const props = defineProps({
   themes: {
