@@ -411,6 +411,7 @@ const filterBtnShow = computed(
     popAreaAvailable.value &&
     popComponentData.value &&
     popComponentData.value.length > 0 &&
+    !inMobile.value &&
     canvasStyleData.value.popupButtonAvailable
 )
 const datasetParamsInit = item => {
