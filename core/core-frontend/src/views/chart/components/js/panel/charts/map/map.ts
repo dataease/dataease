@@ -208,7 +208,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options = this.setupOptions(chart, options, context)
     const { Choropleth } = await import('@antv/l7plot/dist/esm/plots/choropleth')
     const view = new Choropleth(container, options)
-    // 完成地图渲染后配置缩放按钮，为了能够获取到默认的缩放比例
     this.configZoomButton(chart, view)
     mapRendering(container)
     view.once('loaded', () => {

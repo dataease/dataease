@@ -93,25 +93,26 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
           style: mapStyle,
           pitch: miscStyle.mapPitch,
           center,
-          zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5,
+          zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
           showLabel: !(basicStyle.showLabel === false)
         })
       })
     } else {
       if (scene.getLayers()?.length) {
         await scene.removeAllLayer()
-        scene.setCenter(center)
         scene.setPitch(miscStyle.mapPitch)
-        scene.setZoom(basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5)
         scene.setMapStyle(mapStyle)
         scene.map.showLabel = !(basicStyle.showLabel === false)
+        if (basicStyle.autoFit === false) {
+          scene.setZoomAndCenter(basicStyle.zoomLevel, center)
+        }
       }
     }
     mapRendering(container)
     scene.once('loaded', () => {
       mapRendered(container)
-      this.configZoomButton(chart, scene)
     })
+    this.configZoomButton(chart, scene)
     if (xAxis?.length < 2 || yAxis?.length < 1) {
       return new L7Wrapper(scene, undefined)
     }

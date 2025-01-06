@@ -1134,10 +1134,14 @@ export class CustomZoom extends Zoom {
       'l7-button-control',
       container,
       () => {
-        this.mapsService.setZoomAndCenter(
-          this.controlOption['initZoom'],
-          this.controlOption['center']
-        )
+        if (this.controlOption['bounds']) {
+          this.mapsService.fitBounds(this.controlOption['bounds'], { animate: true })
+        } else {
+          this.mapsService.setZoomAndCenter(
+            this.controlOption['initZoom'],
+            this.controlOption['center']
+          )
+        }
       }
     )
     if (this.controlOption.showZoom) {
@@ -1196,21 +1200,92 @@ export function configL7Zoom(chart: Chart, scene: Scene) {
     return
   }
   if (!scene?.getControlByName('zoom')) {
-    scene.map.on('complete', () => {
-      const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
-      const center =
-        basicStyle.autoFit === false
-          ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-          : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+    if (!scene.map) {
+      scene.once('loaded', () => {
+        scene.map.on('complete', () => {
+          const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+          const center =
+            basicStyle.autoFit === false
+              ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+              : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+          const newZoomOptions = {
+            initZoom: initZoom,
+            center: center,
+            buttonColor: basicStyle.zoomButtonColor,
+            buttonBackground: basicStyle.zoomBackground
+          } as any
+          scene.addControl(new CustomZoom(newZoomOptions))
+        })
+      })
+    } else {
       const newZoomOptions = {
-        initZoom: initZoom,
-        center: center,
         buttonColor: basicStyle.zoomButtonColor,
         buttonBackground: basicStyle.zoomBackground
       } as any
+      if (basicStyle.autoFit === false) {
+        newZoomOptions.initZoom = basicStyle.zoomLevel
+        newZoomOptions.center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+      } else {
+        const coordinates: [][] = []
+        if (chart.type === 'flow-map') {
+          const startAxis = chart.xAxis
+          const endAxis = chart.xAxisExt
+          if (startAxis?.length === 2) {
+            chart.data?.tableRow?.forEach(row => {
+              coordinates.push([row[startAxis[0].dataeaseName], row[startAxis[1].dataeaseName]])
+            })
+          }
+          if (endAxis?.length === 2) {
+            chart.data?.tableRow?.forEach(row => {
+              coordinates.push([row[endAxis[0].dataeaseName], row[endAxis[1].dataeaseName]])
+            })
+          }
+        } else {
+          const axis = chart.xAxis
+          if (axis?.length === 2) {
+            chart.data?.tableRow?.forEach(row => {
+              coordinates.push([row[axis[0].dataeaseName], row[axis[1].dataeaseName]])
+            })
+          }
+        }
+        newZoomOptions.bounds = calculateBounds(coordinates)
+      }
       scene.addControl(new CustomZoom(newZoomOptions))
-    })
+    }
   }
+}
+/**
+ * 计算经纬度数据的边界点
+ * @param coordinates 经纬度数组 [[lng, lat], [lng, lat], ...]
+ * @returns {[[number, number], [number, number]]} 返回东北角和西南角的坐标
+ */
+export function calculateBounds(coordinates: number[][]): {
+  northEast: [number, number]
+  southWest: [number, number]
+} {
+  if (!coordinates || coordinates.length === 0) {
+    return {
+      northEast: [180, 90],
+      southWest: [-180, -90]
+    }
+  }
+
+  let maxLng = -180
+  let minLng = 180
+  let maxLat = -90
+  let minLat = 90
+
+  coordinates.forEach(([lng, lat]) => {
+    maxLng = Math.max(maxLng, lng)
+    minLng = Math.min(minLng, lng)
+    maxLat = Math.max(maxLat, lat)
+    minLat = Math.min(minLat, lat)
+  })
+
+  return [
+    [maxLng, maxLat], // 东北角坐标
+    [minLng, minLat] // 西南角坐标
+  ]
 }
 
 export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {

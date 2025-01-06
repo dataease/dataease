@@ -158,10 +158,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     if (!areaId.startsWith('custom_')) {
       dotLayer.options = { ...dotLayer.options, tooltip }
     }
-    // 完成地图渲染后配置缩放按钮，为了能够获取到默认的缩放比例
-    view.on('loaded', () => {
-      this.configZoomButton(chart, view)
-    })
+    this.configZoomButton(chart, view)
     mapRendering(container)
     view.once('loaded', () => {
       // 修改地图鼠标样式为默认
