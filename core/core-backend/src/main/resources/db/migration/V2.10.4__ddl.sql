@@ -118,3 +118,13 @@ CREATE TABLE `xpack_webhook`
     PRIMARY KEY (`id`)
 );
 
+delete  from visualization_background;
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_1', '1', 'default', '', NULL, NULL, NULL, 'img/board', 'board/board_1.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_2', '2', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_2.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_3', '3', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_3.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_4', '4', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_4.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_5', '5', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_5.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_6', '6', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_6.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_7', '7', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_7.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_8', '8', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_8.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_9', '9', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_9.svg');
