@@ -102,6 +102,7 @@
           :view-info="viewInfo"
           :config="config"
           :dv-info="dvInfo"
+          :font-family="canvasStyleData?.fontFamily"
           show-position="viewDialog"
         />
         <chart-component-s2

@@ -1,8 +1,8 @@
 <template>
-  <Icon v-if="element.innerType.includes('board')" class-name="de-svg-main"
+  <Icon v-once v-if="element.innerType.includes('board')" class-name="de-svg-main"
     ><component class="svg-icon de-svg-main" :is="iconBoardMap[element.innerType]"></component
   ></Icon>
-  <component v-else :is="element.innerType"></component>
+  <component v-else v-once :is="element.innerType"></component>
 </template>
 
 <script setup lang="ts">
