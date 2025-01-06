@@ -91,7 +91,7 @@ public class Dimension2SQLObj {
         if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_TIME)) {
             if (Objects.equals(x.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(x.getDeType(), DeTypeConstants.DE_FLOAT)) {
                 fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField);
-            } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_TIME)) {
+            } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_TIME) && !StringUtils.equalsIgnoreCase(x.getType(), "year")) {
                 // 如果都是时间类型，把date和time类型进行字符串拼接
                 if (isCross) {
                     if (StringUtils.equalsIgnoreCase(x.getType(), "date")) {
