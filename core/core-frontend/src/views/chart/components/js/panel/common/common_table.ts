@@ -29,7 +29,8 @@ import {
   type PivotSheet,
   renderPolygon,
   renderText,
-  S2DataConfig, S2Event,
+  S2DataConfig,
+  S2Event,
   S2Options,
   S2Theme,
   SERIES_NUMBER_FIELD,
@@ -49,7 +50,7 @@ import Exceljs from 'exceljs'
 import { saveAs } from 'file-saver'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-const { t:i18nt } = useI18n()
+const { t: i18nt } = useI18n()
 
 export function getCustomTheme(chart: Chart): S2Theme {
   const headerColor = hexColorToRGBA(
@@ -65,7 +66,8 @@ export function getCustomTheme(chart: Chart): S2Theme {
   )
   const scrollBarColor = DEFAULT_BASIC_STYLE.tableScrollBarColor
   const scrollBarHoverColor = resetRgbOpacity(scrollBarColor, 3)
-  const textFontFamily = chart.fontFamily && chart.fontFamily !== 'inherit' ? chart.fontFamily : FONT_FAMILY
+  const textFontFamily =
+    chart.fontFamily && chart.fontFamily !== 'inherit' ? chart.fontFamily : FONT_FAMILY
   const theme: S2Theme = {
     background: {
       color: '#00000000'
@@ -77,7 +79,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
       verticalBorderColor: borderColor,
       verticalBorderColorOpacity: 1,
       verticalBorderWidth: 1,
-      showShadow: false,
+      showShadow: false
     },
     cornerCell: {
       cell: {
@@ -599,7 +601,9 @@ export function getConditions(chart: Chart) {
   if (conditions?.length > 0) {
     const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
     const enableTableCrossBG = tableCell.enableTableCrossBG
-    const valueColor = isAlphaColor(tableCell.tableFontColor) ? tableCell.tableFontColor : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
+    const valueColor = isAlphaColor(tableCell.tableFontColor)
+      ? tableCell.tableFontColor
+      : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
     const valueBgColor = enableTableCrossBG
       ? null
       : isAlphaColor(tableCell.tableItemBgColor)
@@ -1471,10 +1475,11 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
     options.frozenColCount = 0
     options.frozenRowCount = 0
     const fields = chart.data.fields || []
-    const fieldsMap = fields.reduce((p, n) => {
-      p[n.dataeaseName] = n
-      return p
-    }, {}) || {}
+    const fieldsMap =
+      fields.reduce((p, n) => {
+        p[n.dataeaseName] = n
+        return p
+      }, {}) || {}
     const quotaIndex = dataConfig.meta.findIndex(m => fieldsMap[m.field].groupType === 'q')
     const data = chart.data?.tableRow
     if (quotaIndex === 0 || !data?.length) {
@@ -1495,8 +1500,7 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
           const curVal = data[index][a.field]
           if (curVal !== lastVal || index === end) {
             const curRange = index - lastIndex
-            if (curRange > 1 ||
-               (index === end && curRange === 1 && lastVal === curVal)) {
+            if (curRange > 1 || (index === end && curRange === 1 && lastVal === curVal)) {
               const tmpMergeCells = []
               const textIndex = curRange % 2 === 1 ? (curRange - 1) / 2 : curRange / 2 - 1
               for (let j = 0; j < curRange; j++) {
@@ -1514,7 +1518,10 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
                 })
               }
               mergedCellsInfo.push(tmpMergeCells)
-              curMergedColInfo.push([lastIndex, index === end && lastVal === curVal ? index : index - 1])
+              curMergedColInfo.push([
+                lastIndex,
+                index === end && lastVal === curVal ? index : index - 1
+              ])
             }
             lastVal = curVal
             lastIndex = index
@@ -1569,14 +1576,13 @@ class CustomMergedCell extends MergedCell {
     const allPoints = getPolygonPoints(this.cells)
     // 处理条件样式，这里没有用透明度
     // 因为合并的单元格是单独的图层，透明度降低的话会显示底下未合并的单元格，需要单独处理被覆盖的单元格
-    const { backgroundColor: fill, backgroundColorOpacity: fillOpacity } =
-      this.getBackgroundColor();
+    const { backgroundColor: fill, backgroundColorOpacity: fillOpacity } = this.getBackgroundColor()
     const cellTheme = this.theme.dataCell.cell
     this.backgroundShape = renderPolygon(this, {
       points: allPoints,
       stroke: cellTheme.horizontalBorderColor,
       fill,
-      lineHeight: cellTheme.horizontalBorderWidth,
+      lineHeight: cellTheme.horizontalBorderWidth
     })
   }
 }
@@ -1610,7 +1616,6 @@ export class CustomDataCell extends TableDataCell {
 }
 
 export class CustomTableColCell extends TableColCell {
-
   /**
    * 重写是为了表头文本内容的换行
    * @protected
@@ -1637,35 +1642,46 @@ const drawTextShape = (cell, isHeader) => {
   // 用户配置的最大行数
   const maxLines = cell.meta.maxLines ?? 1
   const {
-    options: { placeholder },
-  } = cell.spreadsheet;
-  const emptyPlaceholder = getEmptyPlaceholder(this, placeholder);
+    options: { placeholder }
+  } = cell.spreadsheet
+  const emptyPlaceholder = getEmptyPlaceholder(this, placeholder)
   // 单元格文本
   const { formattedValue } = cell.getFormattedFieldValue()
   // 获取文本样式
   const textStyle = cell.getTextStyle()
   // 宽度能放几个字符，就放几个，放不下就换行
-  let wrapText = getWrapText(formattedValue ? formattedValue?.toString() : emptyPlaceholder, textStyle, cell.meta.width, cell.spreadsheet)
+  let wrapText = getWrapText(
+    formattedValue ? formattedValue?.toString() : emptyPlaceholder,
+    textStyle,
+    cell.meta.width,
+    cell.spreadsheet
+  )
   const lines = wrapText.split(lineBreak)
   let extraStyleFontSize = textStyle.fontSize
   // 不是表头，处理文本高度和换行
   if (!isHeader) {
-    const textHeight = getWrapTextHeight(wrapText.replaceAll(lineBreak, ''), textStyle, cell.spreadsheet, maxLines)
+    const textHeight = getWrapTextHeight(
+      wrapText.replaceAll(lineBreak, ''),
+      textStyle,
+      cell.spreadsheet,
+      maxLines
+    )
     const lineCountInCell = Math.floor(cell.meta.height / textHeight)
     const wrapTextArr = lines.slice(0, lineCountInCell)
 
     // 根据行数调整换行后的文本内容
-    wrapText = lineCountInCell < 1
-      ? ellipsis
-      : wrapTextArr.join(lineBreak) || ellipsis
+    wrapText = lineCountInCell < 1 ? ellipsis : wrapTextArr.join(lineBreak) || ellipsis
     const resultWrapArr = wrapText.split(lineBreak)
     // 控制最大行数
-    if ( !wrapText.endsWith(ellipsis) && (lines.length > maxLines || lines.length > lineCountInCell)) {
+    if (
+      !wrapText.endsWith(ellipsis) &&
+      (lines.length > maxLines || lines.length > lineCountInCell)
+    ) {
       // 第一行的字符个数
       const firstLineStrNumber = resultWrapArr[0].length
       const temp = resultWrapArr.slice(0, Math.min(maxLines, lineCountInCell))
       // 修改最后一行的字符,按照第一行字符个数-1，修改最后一行的字符为...
-      temp[temp.length - 1] = temp[temp.length-1].slice(0,firstLineStrNumber - 1) + ellipsis
+      temp[temp.length - 1] = temp[temp.length - 1].slice(0, firstLineStrNumber - 1) + ellipsis
       wrapText = temp.join(lineBreak)
     }
     if (wrapText === ellipsis) {
@@ -1679,7 +1695,7 @@ const drawTextShape = (cell, isHeader) => {
       // 第一行的字符个数
       const firstLineStrNumber = resultWrapArr[0].length
       // 修改最后一行的字符
-      temp[temp.length - 1] = temp[temp.length-1].slice(0,firstLineStrNumber - 1) + ellipsis
+      temp[temp.length - 1] = temp[temp.length - 1].slice(0, firstLineStrNumber - 1) + ellipsis
       wrapText = temp.join(lineBreak)
     }
   }
@@ -1690,7 +1706,9 @@ const drawTextShape = (cell, isHeader) => {
   // 获取文本位置并渲染文本
   const position = cell.getTextPosition()
   // 绘制文本
-  cell.textShape = renderText(cell, [cell.textShape], position.x, position.y, wrapText, textStyle, {fontSize:extraStyleFontSize})
+  cell.textShape = renderText(cell, [cell.textShape], position.x, position.y, wrapText, textStyle, {
+    fontSize: extraStyleFontSize
+  })
 
   // 将文本形状添加到形状数组
   cell.textShapes.push(cell.textShape)
@@ -1705,28 +1723,42 @@ const drawTextShape = (cell, isHeader) => {
  * @param layoutResult
  */
 export const calculateHeaderHeight = (info, newChart, tableHeader, basicStyle, layoutResult) => {
-  if (tableHeader.showTableHeader === false ) return
+  if (tableHeader.showTableHeader === false) return
   const ev = layoutResult || newChart.facet.layoutResult
   const maxLines = basicStyle.maxLines ?? 1
   const textStyle = { ...newChart.theme.cornerCell.text }
   const sourceText = info.info.meta.value
-  let maxHeight = getWrapTextHeight(getWrapText(sourceText, textStyle, info.info.resizedWidth, ev.spreadsheet), textStyle, ev.spreadsheet, maxLines)
+  let maxHeight = getWrapTextHeight(
+    getWrapText(sourceText, textStyle, info.info.resizedWidth, ev.spreadsheet),
+    textStyle,
+    ev.spreadsheet,
+    maxLines
+  )
 
   // 获取最大高度的列，排除当前列
-  const maxHeightCol = ev.colLeafNodes.filter(n => n.colIndex !== info.info.meta.colIndex)
-    .reduce((maxHeightNode, currentNode) => {
-      const wrapTextHeight = getWrapTextHeight(getWrapText(currentNode.value, textStyle, currentNode.width, currentNode.spreadsheet), textStyle, currentNode.spreadsheet, maxLines)
-      return wrapTextHeight > maxHeightNode.height
-        ? { height: wrapTextHeight, colIndex: currentNode.colIndex }
-        : maxHeightNode
-    }, { height: 0 })
+  const maxHeightCol = ev.colLeafNodes
+    .filter(n => n.colIndex !== info.info.meta.colIndex)
+    .reduce(
+      (maxHeightNode, currentNode) => {
+        const wrapTextHeight = getWrapTextHeight(
+          getWrapText(currentNode.value, textStyle, currentNode.width, currentNode.spreadsheet),
+          textStyle,
+          currentNode.spreadsheet,
+          maxLines
+        )
+        return wrapTextHeight > maxHeightNode.height
+          ? { height: wrapTextHeight, colIndex: currentNode.colIndex }
+          : maxHeightNode
+      },
+      { height: 0 }
+    )
 
   // 使用最大高度
   maxHeight = Math.max(maxHeight, maxHeightCol.height) + textStyle.fontSize + 10.5
 
   if (layoutResult) {
     if (basicStyle.tableColumnMode === 'adapt') maxHeight -= textStyle.fontSize - 2
-    ev.colLeafNodes.forEach(n => n.height = maxHeight)
+    ev.colLeafNodes.forEach(n => (n.height = maxHeight))
     ev.colsHierarchy.height = maxHeight
   }
 
@@ -1741,7 +1773,7 @@ export const calculateHeaderHeight = (info, newChart, tableHeader, basicStyle, l
  * @param cellWidth
  * @param spreadsheet
  */
-const   getWrapText = (sourceText, textStyle, cellWidth, spreadsheet) => {
+const getWrapText = (sourceText, textStyle, cellWidth, spreadsheet) => {
   if (!sourceText && sourceText !== 0) return ''
   sourceText = sourceText.toString().trim()
   const getTextWidth = text => spreadsheet.measureTextWidthRoughly(text, textStyle)
@@ -1797,7 +1829,14 @@ const getWrapTextHeight = (wrapText, textStyle, spreadsheet, maxLines) => {
  * @param basicStyle
  * @param showSummary
  */
-export const configSummaryRow = (chart, s2Options, newData, tableHeader, basicStyle, showSummary) =>{
+export const configSummaryRow = (
+  chart,
+  s2Options,
+  newData,
+  tableHeader,
+  basicStyle,
+  showSummary
+) => {
   if (!showSummary || !newData.length) return
   // 设置汇总行高度和表头一致
   const heightByField = {}
@@ -1862,7 +1901,8 @@ export const summaryRowStyle = (newChart, newData, tableCell, tableHeader, showS
     // 不显示表头时，减少一个表头的高度
     const headerAndSummaryHeight = showHeader ? 2 : 1
     const totalHeight =
-      tableHeader.tableTitleHeight * headerAndSummaryHeight + tableCell.tableItemHeight * (newData.length - 1)
+      tableHeader.tableTitleHeight * headerAndSummaryHeight +
+      tableCell.tableItemHeight * (newData.length - 1)
     if (totalHeight < newChart.options.height) {
       // 6 是阴影高度
       newChart.options.height =
@@ -1902,13 +1942,13 @@ export const configEmptyDataStyle = (newChart, basicStyle, newData, container) =
   }
   removeEmptyDom()
   if (newData.length) return
-  newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (ev) => {
+  newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, ev => {
     removeEmptyDom()
     if (!newData.length) {
       const emptyDom = document.createElement('div')
       const left = Math.min(newChart.options.width, ev.colsHierarchy.width) / 2 - 32
       emptyDom.id = container + '_empty'
-      emptyDom.textContent = t('data_set.no_data')
+      emptyDom.textContent = i18nt('data_set.no_data')
       emptyDom.setAttribute(
         'style',
         `position: absolute;

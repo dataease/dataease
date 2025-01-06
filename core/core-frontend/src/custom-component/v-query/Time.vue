@@ -406,6 +406,13 @@ const setArrValue = () => {
   }
 }
 
+const onClear = () => {
+  showDate.value = false
+  selectValue.value = []
+  currentTime.value = []
+  handleValueChange()
+}
+
 const onConfirm = () => {
   setArrValue()
   handleValueChange()
@@ -496,6 +503,15 @@ const formatDate = computed(() => {
       v-model="currentDate"
     />
   </van-popup>
+  <Teleport v-if="showDate" to=".van-picker__toolbar">
+    <button
+      style="position: absolute; top: 0; right: 60px"
+      @click="onClear"
+      class="van-picker__confirm van-haptics-feedback oooo"
+    >
+      {{ t('commons.clear') }}
+    </button></Teleport
+  >
 </template>
 
 <style lang="less">
