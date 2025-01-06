@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia'
 import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
 import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
 const dvMainStore = dvMainStoreWithOut()
-const { componentData } = storeToRefs(dvMainStore)
+const { componentData, canvasStyleData } = storeToRefs(dvMainStore)
 
 const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMultiple: string) => {
   const timeType = (timeGranularityMultiple || '').split('range')[0]
@@ -130,18 +130,32 @@ const getValueByDefaultValueCheckOrFirstLoad = (
 }
 
 export const useFilter = (curComponentId: string, firstLoad = false) => {
+  // 弹窗区域过滤组件是否生效
+  const popupAvailable = canvasStyleData.value.popupAvailable
   const filter = []
-  const queryComponentList = componentData.value.filter(ele => ele.component === 'VQuery')
+  const queryComponentList = componentData.value.filter(
+    ele =>
+      ele.component === 'VQuery' &&
+      (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
+  )
   searchQuery(queryComponentList, filter, curComponentId, firstLoad)
   componentData.value.forEach(ele => {
     if (ele.component === 'Group') {
-      const list = ele.propValue.filter(item => item.innerType === 'VQuery')
+      const list = ele.propValue.filter(
+        item =>
+          item.innerType === 'VQuery' &&
+          (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
+      )
       searchQuery(list, filter, curComponentId, firstLoad)
 
       list.forEach(element => {
         if (element.innerType === 'DeTabs') {
           element.propValue.forEach(itx => {
-            const elementArr = itx.componentData.filter(item => item.innerType === 'VQuery')
+            const elementArr = itx.componentData.filter(
+              item =>
+                item.innerType === 'VQuery' &&
+                (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
+            )
             searchQuery(elementArr, filter, curComponentId, firstLoad)
           })
         }

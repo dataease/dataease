@@ -82,6 +82,7 @@ import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 import { checkJoinGroup } from '@/utils/canvasUtils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -392,6 +393,10 @@ const areaClick = area => {
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: area })
 }
 
+const popupAvailableChange = () => {
+  useEmitt().emitter.emit('calcData-all')
+  canvasChange()
+}
 const canvasChange = () => {
   snapshotStore.recordSnapshotCache('canvasChange')
 }
@@ -403,7 +408,11 @@ const canvasChange = () => {
     <button hidden="true" id="close-button"></button>
     <div class="layer-area" @click="areaClick('hidden')" :class="{ activated: hiddenAreaActive }">
       <span>{{ t('visualization.pop_area') }}({{ popComponentData.length }})</span>
-      <el-switch v-model="canvasStyleData.popupAvailable" @change="canvasChange" size="small" />
+      <el-switch
+        v-model="canvasStyleData.popupAvailable"
+        @change="popupAvailableChange"
+        size="small"
+      />
     </div>
     <el-row class="list-wrap">
       <div class="list-container" @contextmenu="handleContextMenu">
