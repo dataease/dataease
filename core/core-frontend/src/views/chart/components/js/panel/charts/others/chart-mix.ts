@@ -320,6 +320,10 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       tempOption.geometryOptions[0].columnWidthRatio = columnWidthRatio
     }
 
+    if (super.name !== 'chart-mix-dual-line') {
+      tempOption.geometryOptions[0].appendPadding = getPadding(chart)
+    }
+
     return tempOption
   }
 
