@@ -723,7 +723,7 @@ defineExpose({
             <el-table-column
               prop="length"
               :label="t('datasource.length')"
-              v-if="param.editType === 0"
+              v-if="param.editType === 0 && isSupportSetKey"
             >
               <template #default="scope">
                 <el-input-number
