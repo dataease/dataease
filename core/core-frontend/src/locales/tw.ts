@@ -409,7 +409,11 @@ export default {
     pwd_format: '密碼長度在5-15',
     default_login: '預設',
     ldap_login: 'LDAP 登錄',
-    account_login: '賬號登錄'
+    account_login: '賬號登錄',
+    other_login: '其他登錄方式',
+    pwd_invalid_error: '密碼已過期請聯系管理員修改或重置',
+    pwd_exp_tips: '密碼在 {0} 天後過期，請盡快修改密碼',
+    qr_code: '二維碼'
   },
   component: {
     columnList: '列表項目',
@@ -4392,7 +4396,13 @@ export default {
     step_1: '安裝應用',
     step_2: '綁定 MFA 驗證器',
     unbind_confirm: '確定解除 MFA 多因子認證綁定嗎？',
-    mfa_code: 'MFA 驗證碼'
+    mfa_code: 'MFA 驗證碼',
+    install_app: '安裝應用',
+    install_1: '1、請在手機端或微信小程序下載並安裝 MFA 驗證器應用',
+    install_2: '2、安裝完成後點擊下一步進入綁定頁面(如已安裝，直接進入下一步)',
+    phone_download: '手機下載',
+    scan_qr_tips: '使用 MFA 驗證器應用掃描以下二維碼，獲取6位驗證碼',
+    code_miss_tips: '如果不能提供 MFA 驗證碼，請聯系管理員!'
   },
   threshold_warn: {
     all: '全部',

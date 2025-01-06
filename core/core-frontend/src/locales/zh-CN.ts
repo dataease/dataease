@@ -410,7 +410,11 @@ export default {
     pwd_format: '密码长度在5-15',
     default_login: '默认',
     ldap_login: 'LDAP 登录',
-    account_login: '账号登录'
+    account_login: '账号登录',
+    other_login: '其他登录方式',
+    pwd_invalid_error: '密码已过期请联系管理员修改或重置',
+    pwd_exp_tips: '密码在 {0} 天后过期，请尽快修改密码',
+    qr_code: '二维码'
   },
   component: {
     columnList: '列表项',
@@ -4397,7 +4401,13 @@ export default {
     step_1: '安装应用',
     step_2: '绑定 MFA 验证器',
     unbind_confirm: '确定解除 MFA 多因子认证绑定吗？',
-    mfa_code: 'MFA 验证码'
+    mfa_code: 'MFA 验证码',
+    install_app: '安装应用',
+    install_1: '1、请在手机端或微信小程序下载并安装 MFA 验证器应用',
+    install_2: '2、安装完成后点击下一步进入绑定页面(如已安装，直接进入下一步)',
+    phone_download: '手机下载',
+    scan_qr_tips: '使用 MFA 验证器应用扫描以下二维码，获取6位验证码',
+    code_miss_tips: '如果不能提供 MFA 验证码，请联系管理员!'
   },
   threshold_warn: {
     all: '全部',

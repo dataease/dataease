@@ -304,7 +304,7 @@ onMounted(async () => {
               <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="" />
             </div>
             <div class="login-welcome">
-              {{ slogan || '人人可用的开源 BI 工具' }}
+              {{ slogan || t('system.available_to_everyone') }}
             </div>
             <div class="login-form">
               <div

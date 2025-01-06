@@ -418,7 +418,13 @@ export default {
     pwd_format: 'Password length is 5-15',
     default_login: 'Default',
     ldap_login: 'LDAP Login',
-    account_login: 'Account Login'
+    account_login: 'Account Login',
+    other_login: 'Other login methods',
+    pwd_invalid_error:
+      'The password has expired. Please contact the administrator to modify or reset it',
+    pwd_exp_tips:
+      'Password will expire in {0} days, please change your password as soon as possible',
+    qr_code: 'QR Code'
   },
   component: {
     columnList: 'List item',
@@ -4525,7 +4531,17 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     step_1: 'Install Application',
     step_2: 'Bind MFA Authenticator',
     unbind_confirm: 'Are you sure to unbind MFA multi-factor authentication?',
-    mfa_code: 'MFA Verification Code'
+    mfa_code: 'MFA Verification Code',
+    install_app: 'Install the app',
+    install_1:
+      '1. Download and install the MFA Authenticator app on your mobile device or WeChat mini program',
+    install_2:
+      '2. After installation, click next to enter the binding page (if already installed, go directly to the next step)',
+    phone_download: 'Download on mobile',
+    scan_qr_tips:
+      'Use the MFA Authenticator app to scan the QR code below to obtain a 6-digit verification code',
+    code_miss_tips:
+      'If you cannot provide an MFA verification code, please contact the administrator!'
   },
   threshold_warn: {
     all: 'All',
