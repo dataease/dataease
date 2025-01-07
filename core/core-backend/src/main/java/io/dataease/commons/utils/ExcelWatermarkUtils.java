@@ -4,6 +4,7 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.utils.IPUtils;
 import io.dataease.visualization.dto.WatermarkContentDTO;
 import org.apache.poi.ss.usermodel.*;
+
 import java.awt.Color;
 import java.awt.Font;
 
@@ -19,7 +20,15 @@ public class ExcelWatermarkUtils {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-    public static String transContent(String content, UserFormVO userInfo) {
+    public static String transContent(WatermarkContentDTO watermarkContent, UserFormVO userInfo) {
+        String content = "";
+        switch (watermarkContent.getType()) {
+            case "custom" -> content = watermarkContent.getContent();
+            case "nickName" -> content = "${nickName}";
+            case "ip" -> content = "${ip}";
+            case "time" -> content = "${time}";
+            default -> content = "${userName}";
+        }
         content = content.replaceAll("\\$\\{ip}", IPUtils.get() == null ? "127.0.0.1" : IPUtils.get());
         content = content.replaceAll("\\$\\{username}", userInfo.getAccount());
         content = content.replaceAll("\\$\\{nickName}", userInfo.getName());
@@ -32,7 +41,7 @@ public class ExcelWatermarkUtils {
      * 添加水印图片到工作簿并返回图片 ID
      */
     public static int addWatermarkImage(Workbook wb, WatermarkContentDTO watermarkContent, UserFormVO userInfo) {
-        byte[] imageBytes = createTextImage(transContent(watermarkContent.getContent(), userInfo), watermarkContent); // 生成文字水印图片
+        byte[] imageBytes = createTextImage(transContent(watermarkContent, userInfo), watermarkContent); // 生成文字水印图片
         return wb.addPicture(imageBytes, Workbook.PICTURE_TYPE_PNG); // 添加到工作簿并返回 ID
     }
 
