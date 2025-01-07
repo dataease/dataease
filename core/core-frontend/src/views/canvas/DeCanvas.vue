@@ -45,10 +45,23 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  // 画布位置
+  canvasPosition: {
+    type: String,
+    required: false,
+    default: 'main'
   }
 })
-const { canvasStyleData, componentData, canvasViewInfo, canvasId, canvasActive, outerScale } =
-  toRefs(props)
+const {
+  canvasStyleData,
+  componentData,
+  canvasViewInfo,
+  canvasId,
+  canvasActive,
+  outerScale,
+  canvasPosition
+} = toRefs(props)
 const domId = ref('de-canvas-' + canvasId.value)
 // change-end
 
@@ -147,7 +160,7 @@ const canvasInitImmediately = () => {
 }
 
 const canvasInit = (isFistLoad = true) => {
-  if (canvasActive.value) {
+  if (canvasActive.value || canvasPosition.value === 'tab') {
     renderState.value = true
     setTimeout(function () {
       if (canvasOut.value) {

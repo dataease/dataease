@@ -737,7 +737,7 @@ function addItemToPositionBox(item) {
           pb[j][i].el = item
         }
       } catch (e) {
-        console.warn(e)
+        console.warn('addItemToPositionBox-warn:', e)
       }
     }
   }

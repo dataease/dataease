@@ -76,6 +76,7 @@
           :canvas-view-info="canvasViewInfo"
           :canvas-id="element.id + '--' + tabItem.name"
           :class="moveActive ? 'canvas-move-in' : ''"
+          :canvas-position="'tab'"
           :canvas-active="editableTabsValue === tabItem.name"
           :font-family="fontFamily"
         ></de-canvas>
