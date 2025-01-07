@@ -3,6 +3,8 @@ services:
 
   dataease:
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease:DE_TAG
+    stop_signal: SIGTERM
+    stop_grace_period: 15s
     container_name: dataease
     ports:
       - ${DE_PORT}:8100
