@@ -356,6 +356,7 @@ const newWindowFromDiv = ref(false)
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
+  dvMainStore.setCurComponent({ component: null, index: null })
   snapshotStore.initSnapShot()
   if (window.location.hash.includes('#/dvCanvas')) {
     newWindowFromDiv.value = true

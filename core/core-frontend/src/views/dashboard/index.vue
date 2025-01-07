@@ -169,6 +169,7 @@ const initLocalCanvasData = () => {
   })
 }
 onMounted(async () => {
+  dvMainStore.setCurComponent({ component: null, index: null })
   snapshotStore.initSnapShot()
   if (window.location.hash.includes('#/dashboard')) {
     newWindowFromDiv.value = true
