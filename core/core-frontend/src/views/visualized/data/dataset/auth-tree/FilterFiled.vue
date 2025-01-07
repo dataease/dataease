@@ -849,7 +849,6 @@ const emits = defineEmits(['update:item', 'del'])
           line-height: 28px;
           height: 28px;
           display: inline-block;
-          opacity: 0;
         }
 
         label {
