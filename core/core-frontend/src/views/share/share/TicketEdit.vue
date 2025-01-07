@@ -287,8 +287,12 @@ defineExpose({
         <div class="args-line" v-for="(row, index) in state.argList" :key="index">
           <el-input v-model="row['name']" :placeholder="t('visualization.input_param_name')" />
           <el-input v-model="row['val']" :placeholder="t('link_ticket.arg_val_tips')" />
-          <div class="arg-del-btn" @click.stop="delArgRow(index)">
-            <Icon name="icon_delete-trash_outlined">
+          <div
+            :style="{ opacity: state.argList.length !== 1 ? 1 : 0 }"
+            class="arg-del-btn"
+            @click.stop="delArgRow(index)"
+          >
+            <Icon>
               <icon_deleteTrash_outlined class="svg-icon" />
             </Icon>
           </div>

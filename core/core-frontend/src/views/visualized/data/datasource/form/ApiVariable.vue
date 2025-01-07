@@ -337,25 +337,8 @@ const timeFunLists = [
       background: rgba(31, 35, 41, 0.2) !important;
     }
   }
-}
-.kv-description {
-  font-size: 13px;
-}
-
-.kv-row {
-  margin-top: 10px;
-}
-
-.kv-checkbox {
-  width: 20px;
-  margin-right: 10px;
-}
-
-.kv-delete {
-  width: 60px;
-}
-
-.ed-autocomplete {
-  width: 100%;
+  .kv-description {
+    font-size: 13px;
+  }
 }
 </style>

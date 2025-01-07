@@ -117,7 +117,7 @@ const timeFunLists = [
 
 <template>
   <div class="api-key-value">
-    <draggable tag="div" :list="items" handle=".handle">
+    <draggable tag="div" :list="items" handle=".handle" class="draggable-content_api">
       <template #item="{ element, index }">
         <div style="margin-bottom: 16px">
           <el-row :gutter="8">
@@ -243,7 +243,7 @@ const timeFunLists = [
       </template>
     </draggable>
 
-    <el-button @click="change" text>
+    <el-button style="margin-top: 14px" @click="change" text>
       <template #icon>
         <icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></icon>
       </template>
@@ -252,31 +252,35 @@ const timeFunLists = [
   </div>
 </template>
 
-<style lang="less">
-.api-variable_del {
-  .ed-icon {
-    color: #646a73;
-    font-size: 16px;
-  }
-
-  &:hover {
-    background: rgba(31, 35, 41, 0.1) !important;
-  }
-  &:focus {
-    background: rgba(31, 35, 41, 0.1) !important;
-  }
-  &:active {
-    background: rgba(31, 35, 41, 0.2) !important;
-  }
-}
+<style lang="less" scoped>
 .api-key-value {
   & > .ed-input,
   .ed-autocomplete {
     width: 100%;
   }
+  .api-variable_del {
+    color: #646a73;
+    :deep(.ed-icon) {
+      font-size: 16px;
+    }
+
+    &:hover {
+      background: rgba(31, 35, 41, 0.1) !important;
+    }
+    &:focus {
+      background: rgba(31, 35, 41, 0.1) !important;
+    }
+    &:active {
+      background: rgba(31, 35, 41, 0.2) !important;
+    }
+  }
   .drag {
     margin-top: 10px;
     cursor: pointer;
+  }
+
+  :deep(.draggable-content_api) > :last-child {
+    margin-bottom: 0 !important;
   }
 }
 </style>
