@@ -1476,7 +1476,7 @@ const getDsIconName = data => {
                     ><component class="svg-icon" :is="getDsIconName({ leaf, type })"></component
                   ></icon>
                 </el-icon>
-                <span v-if="!leaf || extraFlag > -1">{{ name }}</span>
+                <span v-if="!leaf || extraFlag > -1 || type === 'API'">{{ name }}</span>
                 <el-tooltip
                   effect="dark"
                   v-else
