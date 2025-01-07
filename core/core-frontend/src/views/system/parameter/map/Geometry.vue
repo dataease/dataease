@@ -203,6 +203,7 @@
   <geometry-edit ref="editor" @saved="loadTreeData(false)" />
   <el-dialog
     v-model="customAreaDialog"
+    class="create-dialog"
     :title="`${editedCustomArea.id ? t('common.edit') : t('common.add')} ${t(
       'system.custom_area'
     )}`"
