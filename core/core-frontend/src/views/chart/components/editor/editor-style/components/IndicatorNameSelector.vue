@@ -85,12 +85,6 @@ const init = () => {
     cloneDeep(DEFAULT_INDICATOR_NAME_STYLE)
   )
 
-  if (state.basicStyleForm.alpha !== undefined) {
-    const color = hexColorToRGBA(state.basicStyleForm.colors[2], state.basicStyleForm.alpha)
-
-    customText.color = color
-  }
-
   state.indicatorNameForm = cloneDeep(customText)
 
   //第一次颜色可能赋值失败，单独赋值一次
@@ -106,9 +100,7 @@ onMounted(() => {
 watch(
   () => props.chart?.customAttr?.indicatorName,
   () => {
-    if (!batchOptStatus.value) {
-      init()
-    }
+    init()
   },
   { deep: true }
 )

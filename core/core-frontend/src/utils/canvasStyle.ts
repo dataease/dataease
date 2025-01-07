@@ -286,8 +286,7 @@ export const THEME_ATTR_TRANS_MAIN = {
     color: 'color',
     proportionSeriesFormatter: ['color']
   },
-  tooltip: ['color'],
-  indicatorName: ['color']
+  tooltip: ['color']
 }
 
 export const THEME_ATTR_TRANS_MAIN_SYMBOL = {

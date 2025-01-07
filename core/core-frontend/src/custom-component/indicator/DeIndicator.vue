@@ -12,7 +12,6 @@ import {
   DEFAULT_INDICATOR_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps({
@@ -292,11 +291,6 @@ const renderChart = async view => {
       indicatorColor.value = indicator.color
       let suffixColor = indicator.suffixColor
 
-      if (basicStyle?.alpha !== undefined && !batchOptStatus.value) {
-        indicatorColor.value = hexColorToRGBA(basicStyle.colors[0], basicStyle.alpha)
-        suffixColor = hexColorToRGBA(basicStyle.colors[1], basicStyle.alpha)
-      }
-
       indicatorClass.value = {
         color: thresholdColor.value.color,
         'font-size': indicator.fontSize + 'px',
@@ -331,10 +325,6 @@ const renderChart = async view => {
     }
     if (indicatorName?.show) {
       let nameColor = indicatorName.color
-
-      if (basicStyle?.alpha !== undefined && !batchOptStatus.value) {
-        nameColor = hexColorToRGBA(basicStyle.colors[2], basicStyle.alpha)
-      }
 
       indicatorNameShow.value = true
       indicatorNameClass.value = {
