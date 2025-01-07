@@ -560,7 +560,7 @@ export default {
     authentication_settings: 'Authentication settings',
     be_turned_on: 'After the test connection is valid, it can be turned on',
     platform_information_first: 'Please save the platform information first',
-    for_example: "Such as: {'{'}'account':'uid','name':'cn','email':'mail'{'}'}",
+    for_example: 'Such as: {\'{\'}"account":"uid","name":"cn","email":"mail"{\'}\'}',
     in_json_format: 'Please enter json format',
     ldap_settings: 'LDAP settings',
     ldap_address: 'LDAP address',
@@ -583,7 +583,7 @@ export default {
     callback_address: 'Callback address',
     field_mapping: 'Field Mapping',
     oauth2name:
-      "For example: {'{'}'account': 'oauth2Account', 'name': 'oauth2Name', 'email': 'email'{'}'}",
+      'For example: {\'{\'}"account": "oauth2Account", "name": "oauth2Name", "email": "email"{\'}\'}',
     oidc_settings: 'OIDC Settings',
     test_mail_recipient: 'Only used as a test email recipient',
     to_enable_ssl: 'If the SMTP port is 465, you usually need to enable SSL',

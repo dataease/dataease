@@ -547,7 +547,7 @@ export default {
     authentication_settings: '认证设置',
     be_turned_on: '测试连接有效后，可开启',
     platform_information_first: '请先保存平台信息',
-    for_example: "如：{'{'}'account':'uid','name':'cn','email':'mail'{'}'}",
+    for_example: '如：{\'{\'}"account":"uid","name":"cn","email":"mail"{\'}\'}',
     in_json_format: '请输入json格式',
     ldap_settings: 'LDAP设置',
     ldap_address: 'LDAP地址',
@@ -569,7 +569,7 @@ export default {
     callback_address: '回调地址',
     field_mapping: '字段映射',
     oauth2name:
-      "例如：{'{'}'account': 'oauth2Account', 'name': 'oauth2Name', 'email': 'email'{'}'}",
+      '例如：{\'{\'}"account": "oauth2Account", "name": "oauth2Name", "email": "email"{\'}\'}',
     oidc_settings: 'OIDC设置',
     test_mail_recipient: '仅用来作为测试邮件收件人',
     to_enable_ssl: '如果SMTP端口是 465 ，通常需要启用SSL',
