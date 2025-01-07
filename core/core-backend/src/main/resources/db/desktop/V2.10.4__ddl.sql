@@ -15,3 +15,7 @@ INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content
 INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_7', '7', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_7.svg');
 INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_8', '8', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_8.svg');
 INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_9', '9', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_9.svg');
+
+DELETE FROM area WHERE id='156500200';
+UPDATE area SET pid='156500100' WHERE pid='156500200';
+UPDATE area SET name='万州区' WHERE id='156500101';
