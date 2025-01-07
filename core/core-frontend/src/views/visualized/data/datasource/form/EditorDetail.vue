@@ -779,7 +779,7 @@ defineExpose({
         v-loading="loading"
       >
         <el-form-item
-          :label="t('auth.datasource') + t('chart.name')"
+          :label="t('auth.datasource') + ' ' + t('chart.name')"
           prop="name"
           v-show="activeStep !== 2"
         >
