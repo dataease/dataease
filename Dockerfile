@@ -1,5 +1,5 @@
 FROM registry.cn-qingdao.aliyuncs.com/dataease/alpine-openjdk21-jre
-
+STOPSIGNAL SIGQUIT
 RUN mkdir -p /opt/apps/config \
     /opt/dataease2.0/drivers/ \
     /opt/dataease2.0/cache/ \
