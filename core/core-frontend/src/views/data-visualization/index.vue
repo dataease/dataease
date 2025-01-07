@@ -100,6 +100,8 @@ let createType = null
 let isDragging = false // 标记是否在拖动
 let startX, startY, scrollLeft, scrollTop
 const state = reactive({
+  sideShow: true,
+  countTime: 0,
   datasetTree: [],
   scaleHistory: null,
   canvasId: 'canvas-main',
@@ -168,6 +170,7 @@ const contentStyle = computed(() => {
 
 // 通过实时监听的方式直接添加组件
 const handleNew = newComponentInfo => {
+  state.countTime++
   const { componentName, innerType, staticMap } = newComponentInfo
   if (componentName) {
     const { width, height, scale } = canvasStyleData.value
@@ -191,6 +194,13 @@ const handleNew = newComponentInfo => {
     dvMainStore.addComponent({ component: component, index: undefined })
     adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshotCache('renderChart', component.id)
+    if (state.countTime > 10) {
+      state.sideShow = false
+      nextTick(() => {
+        state.countTime = 0
+        state.sideShow = true
+      })
+    }
   }
 }
 
@@ -579,7 +589,7 @@ eventBus.on('tabSort', tabSort)
       </main>
       <!-- 右侧侧组件列表 -->
       <div style="width: auto; height: 100%" ref="leftSidebarRef">
-        <template v-if="!batchOptStatus">
+        <template v-if="!batchOptStatus && state.sideShow">
           <dv-sidebar
             v-if="otherEditorShow"
             :title="curComponent['name']"
