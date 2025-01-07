@@ -287,18 +287,18 @@ public abstract class Provider {
                 connectionObj.setSession(session);
             } else {
                 Integer lport = Provider.getLPorts().get(datasourceId);
-                configuration.setLPort(lport);
                 if (lport != null) {
+                    configuration.setLPort(lport);
                     if (Provider.getSessions().get(datasourceId) == null || !Provider.getSessions().get(datasourceId).isConnected()) {
                         Session session = initSession(configuration);
                         Provider.getSessions().put(datasourceId, session);
                     }
                 } else {
-                    configuration.setLPort(getLport(datasourceId));
+                    lport = getLport(datasourceId);
+                    configuration.setLPort(lport);
                     Session session = initSession(configuration);
                     Provider.getSessions().put(datasourceId, session);
                 }
-                configuration.setLPort(lport);
             }
         }
     }
