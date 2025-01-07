@@ -897,7 +897,7 @@ const mousedownDrag = () => {
               {{ t('system.system_built_in_variable') }}
             </div>
             <div
-              class="variable-item"
+              class="variable-item flex-align-center"
               @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
               v-for="fieldForm in builtInList"
               :key="fieldForm.id"
