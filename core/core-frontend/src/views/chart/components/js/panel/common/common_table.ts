@@ -532,6 +532,7 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
               }, 0)
               const restWidth = width - curTotalWidth
               if (restWidth < resultWidth) {
+                widthArr.splice(0)
                 return restWidth
               }
             }
