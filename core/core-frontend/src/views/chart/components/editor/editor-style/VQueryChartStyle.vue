@@ -525,6 +525,7 @@ initParams()
                   @change="handleCurrentPlaceholderCustomChange"
                   :min="10"
                   :max="20"
+                  :disabled="!chart.customStyle.component.placeholderShow"
                   style="margin-left: 8px"
                   step-strictly
                   :effect="themes"
@@ -534,6 +535,7 @@ initParams()
               <div style="display: flex; align-items: center; width: 100%; margin-top: 8px">
                 <el-select
                   v-model="currentPlaceholder"
+                  :disabled="!chart.customStyle.component.placeholderShow"
                   @change="handleCurrentPlaceholder"
                   :effect="themes"
                   style="width: 100%"
