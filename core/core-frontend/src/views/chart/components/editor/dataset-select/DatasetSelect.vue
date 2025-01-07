@@ -288,10 +288,19 @@ onMounted(() => {
               :placeholder="selectSource"
             >
               <template #suffix>
-                <el-icon class="input-arrow-icon" :class="{ reverse: _popoverShow }">
+                <el-icon
+                  v-show="!disabled"
+                  class="input-arrow-icon"
+                  :class="{ reverse: _popoverShow }"
+                >
                   <ArrowDown />
                 </el-icon>
-                <el-icon v-if="clearShow" class="input-custom-clear-icon" @click="handleClear">
+                <el-icon
+                  v-show="!disabled"
+                  v-if="clearShow"
+                  class="input-custom-clear-icon"
+                  @click="handleClear"
+                >
                   <CircleClose />
                 </el-icon>
               </template>
