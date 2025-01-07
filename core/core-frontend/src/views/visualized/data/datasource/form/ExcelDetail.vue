@@ -192,6 +192,8 @@ const uploadSuccess = response => {
     return
   }
   columns.value = []
+  Object.assign(sheetObj, cloneDeep(defaultSheetObj))
+  multipleSelection.value = []
   uploading.value = false
   if (!param.value.name) {
     param.value.name = response.data.excelLabel

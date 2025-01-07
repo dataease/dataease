@@ -2199,7 +2199,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     edit_calc_field: 'Edit calculated field',
     calc_field: 'Calculate fields',
     show_sql: 'Show SQL',
-    ple_select_excel: "The sheet names don't match. Please upload the file again.",
+    ple_select_excel: 'Please re-upload the Excel to be imported.',
     merge: 'Merge',
     no_merge: 'Do not merge',
     merge_msg:
