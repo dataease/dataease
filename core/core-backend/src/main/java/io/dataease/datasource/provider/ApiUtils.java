@@ -375,8 +375,8 @@ public class ApiUtils {
                         for (JsonNode jsonNode : rootNode) {
                             if (jsonNode.has("name") && jsonNode.has("value")) {
                                 if (jsonNode.get("value") != null && StringUtils.isNotEmpty(jsonNode.get("value").asText())) {
-                                    if (jsonNode.get("nameType") != null && jsonNode.get("nameType").toString().equalsIgnoreCase("params")) {
-                                        String param = jsonNode.get("value").toString();
+                                    if (jsonNode.get("nameType") != null && jsonNode.get("nameType").asText().equalsIgnoreCase("params")) {
+                                        String param = jsonNode.get("value").asText();
                                         for (ApiDefinition definition : paramsList) {
                                             for (int i = 0; i < definition.getFields().size(); i++) {
                                                 TableField field = definition.getFields().get(i);
@@ -384,20 +384,20 @@ public class ApiUtils {
                                                     String resultStr = execHttpRequest(false, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
                                                     List<String[]> dataList = fetchResult(resultStr, definition);
                                                     if (dataList.size() > 0) {
-                                                        body.put(jsonNode.get("name").toString(), dataList.get(0)[i]);
+                                                        body.put(jsonNode.get("name").asText(), dataList.get(0)[i]);
                                                     }
                                                 }
                                             }
                                         }
-                                    } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").toString().equalsIgnoreCase("custom")) {
+                                    } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").asText().equalsIgnoreCase("custom")) {
                                         List<String> bodYparams = new ArrayList<>();
                                         String regex = "\\$\\{(.*?)\\}";
                                         Pattern pattern = Pattern.compile(regex);
-                                        Matcher matcher = pattern.matcher(jsonNode.get("value").toString());
+                                        Matcher matcher = pattern.matcher(jsonNode.get("value").asText());
                                         while (matcher.find()) {
                                             bodYparams.add(matcher.group(1));
                                         }
-                                        String result = jsonNode.get("value").toString();
+                                        String result = jsonNode.get("value").asText();
                                         for (String param : bodYparams) {
                                             for (ApiDefinition definition : paramsList) {
                                                 for (int i = 0; i < definition.getFields().size(); i++) {
@@ -412,9 +412,9 @@ public class ApiUtils {
                                                 }
                                             }
                                         }
-                                        body.put(jsonNode.get("name").toString(), result);
-                                    } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").toString().equalsIgnoreCase("timeFun")) {
-                                        String timeFormat = jsonNode.get("value").toString();
+                                        body.put(jsonNode.get("name").asText(), result);
+                                    } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").asText().equalsIgnoreCase("timeFun")) {
+                                        String timeFormat = jsonNode.get("value").asText();
                                         Calendar calendar = Calendar.getInstance();
                                         Date date = calendar.getTime();
                                         if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentDay")) {
