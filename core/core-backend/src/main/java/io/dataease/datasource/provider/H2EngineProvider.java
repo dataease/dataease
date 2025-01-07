@@ -93,7 +93,7 @@ public class H2EngineProvider extends EngineProvider {
             }
             columnFields.append(tableField.getName()).append("\" ");
             int size = tableField.getPrecision() * 4;
-            switch (tableField.getDeType()) {
+            switch (tableField.getDeExtractType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
                         columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",\"");
