@@ -531,11 +531,13 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
                 return p + n
               }, 0)
               const restWidth = width - curTotalWidth
+              widthArr.splice(0)
               if (restWidth < resultWidth) {
                 return restWidth
               }
+            } else {
+              widthArr.push(resultWidth)
             }
-            widthArr.push(resultWidth)
           }
           return resultWidth
         }
