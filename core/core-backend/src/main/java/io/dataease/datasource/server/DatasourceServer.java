@@ -484,7 +484,7 @@ public class DatasourceServer implements DatasourceApi {
     public DatasourceDTO getSimpleDs(Long datasourceId) throws DEException {
         CoreDatasource datasource = dataSourceManage.getCoreDatasource(datasourceId);
         if (datasource == null) {
-            DEException.throwException("不存在的数据源！");
+            DEException.throwException(Translator.get("i18n_datasource_not_exists"));
         }
         if (datasource.getType().equalsIgnoreCase("api")) {
             datasource.setConfiguration("[]");
@@ -511,7 +511,7 @@ public class DatasourceServer implements DatasourceApi {
     public String getName(Long datasourceId) throws DEException {
         CoreDatasource datasource = dataSourceManage.getCoreDatasource(datasourceId);
         if (datasource == null) {
-            DEException.throwException("不存在的数据源！");
+            DEException.throwException(Translator.get("i18n_datasource_not_exists"));
         }
         return datasource.getName();
     }
@@ -1115,7 +1115,7 @@ public class DatasourceServer implements DatasourceApi {
     private DatasourceDTO getDatasourceDTOById(Long datasourceId, boolean hidePw) throws DEException {
         CoreDatasource datasource = dataSourceManage.getCoreDatasource(datasourceId);
         if (datasource == null) {
-            DEException.throwException("不存在的数据源！");
+            DEException.throwException(Translator.get("i18n_datasource_not_exists"));
         }
         return convertCoreDatasource(datasourceId, hidePw, datasource);
     }
