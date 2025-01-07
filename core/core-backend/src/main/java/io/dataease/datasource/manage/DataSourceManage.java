@@ -19,10 +19,7 @@ import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.CommunityUtils;
-import io.dataease.utils.TreeUtils;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -98,7 +95,7 @@ public class DataSourceManage {
     public void checkName(DatasourceDTO dto) {
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(dto.getPid())) {
-            wrapper.eq("pid", dto.getPid().equals(0L) ? AuthUtils.getUser().getDefaultOid() : dto.getPid());
+            wrapper.eq("pid", dto.getPid());
         }
         if (StringUtils.isNotEmpty(dto.getName())) {
             wrapper.eq("name", dto.getName());
