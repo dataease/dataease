@@ -7,7 +7,8 @@ import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
-import icon_sort_priority from '@/assets/svg/icon_sort_priority.svg'
+import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
+import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, ref, toRefs, watch } from 'vue'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
@@ -282,7 +283,9 @@ onMounted(() => {
           </span>
         </el-tooltip>
         <el-icon style="margin-left: 8px">
-          <Icon><Hide v-show="showHideIcon" class="svg-icon inner-class" /></Icon>
+          <Icon
+            ><icon_invisible_outlined v-show="showHideIcon" class="svg-icon inner-class"
+          /></Icon>
         </el-icon>
         <el-tooltip :effect="toolTip" placement="top">
           <template #content>
@@ -392,10 +395,10 @@ onMounted(() => {
           </el-dropdown-item>
           <el-dropdown-item
             v-if="showSort()"
-            :icon="icon_sort_priority"
             :command="beforeClickItem('sortPriority')"
             class="menu-item-padding"
           >
+            <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
           </el-dropdown-item>
           <el-dropdown-item
@@ -642,8 +645,10 @@ onMounted(() => {
             :command="beforeClickItem('toggleHide')"
           >
             <el-icon>
-              <icon v-if="item.hide === true" name="view"><View class="svg-icon" /></icon>
-              <icon v-else name="hide"><Hide class="svg-icon" /></icon>
+              <icon
+                ><icon_visible_outlined v-if="item.hide === true" class="svg-icon" />
+                <icon_invisible_outlined v-else class="svg-icon"
+              /></icon>
             </el-icon>
             <span>{{ item.hide === true ? t('chart.show') : t('chart.hide') }}</span>
           </el-dropdown-item>

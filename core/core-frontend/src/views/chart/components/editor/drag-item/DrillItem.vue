@@ -288,10 +288,10 @@ onMounted(() => {
           </el-dropdown-item>
           <el-dropdown-item
             v-if="index !== 0"
-            :icon="icon_sort_priority"
             :command="beforeClickItem('sortPriority')"
             class="menu-item-padding"
           >
+            <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
           </el-dropdown-item>
           <el-dropdown-item class="menu-item-padding" :command="beforeClickItem('rename')">

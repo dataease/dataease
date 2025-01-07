@@ -1398,6 +1398,7 @@ const mousedownDrag = () => {
             margin-bottom: 8px;
             background-color: white;
             color: #1f2329;
+            font-size: 14px;
 
             .ed-icon {
               font-size: 16px;
@@ -1480,7 +1481,21 @@ const mousedownDrag = () => {
     .system-text_bg {
       color: #1f2329;
       &:hover {
+        background: #1f23291a;
+      }
+
+      &:active {
+        background: #1f232933;
+      }
+
+      &:focus {
+        background: #3370ff1a;
         color: #3370ff;
+      }
+
+      &:focus:hover {
+        color: #3370ff;
+        background: #3370ff33;
       }
     }
   }

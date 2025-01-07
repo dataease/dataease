@@ -4,18 +4,17 @@ import icon_sortZToA_outlined from '@/assets/svg/icon_sort-z-to-a_outlined.svg'
 import icon_sort_outlined from '@/assets/svg/icon_sort_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
-import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import icon_functions_outlined from '@/assets/svg/icon_functions_outlined.svg'
-import icon_describe_outlined from '@/assets/svg/icon_describe_outlined.svg'
-import icon_sort_priority from '@/assets/svg/icon_sort_priority.svg'
+import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
+import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import iconFilter from '@/assets/svg/icon-filter.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType, resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
-import { Filter } from '@element-plus/icons-vue'
 import { quotaViews } from '@/views/chart/components/js/util'
 import { SUPPORT_Y_M } from '@/views/chart/components/editor/util/chart'
 import { fieldType } from '@/utils/attr'
@@ -393,7 +392,7 @@ onMounted(() => {
         </span>
         <el-icon style="margin-left: 8px">
           <Icon>
-            <Hide
+            <icon_invisible_outlined
               v-show="showHideIcon"
               :class="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
               class="svg-icon inner-class"
@@ -748,9 +747,9 @@ onMounted(() => {
           <el-dropdown-item
             v-if="showSort"
             class="menu-item-padding"
-            :icon="icon_sort_priority"
             :command="beforeClickItem('sortPriority')"
           >
+            <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
           </el-dropdown-item>
 
@@ -759,7 +758,7 @@ onMounted(() => {
             v-if="
               props.type !== 'extLabel' && props.type !== 'extTooltip' && props.type !== 'extBubble'
             "
-            :icon="Filter"
+            :icon="iconFilter"
             :command="beforeClickItem('filter')"
             :divided="chart.type.includes('chart-mix')"
           >
@@ -788,8 +787,10 @@ onMounted(() => {
             :command="beforeClickItem('toggleHide')"
           >
             <el-icon>
-              <icon v-if="item.hide === true" name="view"><View class="svg-icon" /></icon>
-              <icon v-else name="hide"><Hide class="svg-icon" /></icon>
+              <icon
+                ><icon_visible_outlined v-if="item.hide === true" class="svg-icon" />
+                <icon_invisible_outlined v-else class="svg-icon"
+              /></icon>
             </el-icon>
             <span>{{ item.hide === true ? t('chart.show') : t('chart.hide') }}</span>
           </el-dropdown-item>

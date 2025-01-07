@@ -1195,25 +1195,25 @@ const emits = defineEmits([
     direction="rtl"
   >
     <template #header v-if="currentNode">
-      <div class="info-content">
+      <div style="width: 100%">
         <div class="info">
-          <span class="label">{{ t('data_set.table_name_de') }}</span>
-          <span :title="currentNode.tableName" class="name ellipsis">{{
+          <span :title="currentNode.tableName" class="label ellipsis">{{
             currentNode.tableName
           }}</span>
         </div>
-        <div class="info">
-          <span class="label">{{ t('data_set.table_remarks') }}</span>
-          <span :title="currentNode.noteName" style="max-width: 240px" class="name ellipsis">{{
-            currentNode.noteName || '-'
-          }}</span>
+        <div class="info" style="margin-top: 4px">
+          <span
+            :title="getDsName(currentNode.datasourceId)"
+            style="max-width: 550px"
+            class="name ellipsis"
+            >{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span
+          >
         </div>
-        <span
-          :title="getDsName(currentNode.datasourceId)"
-          style="max-width: 550px"
-          class="ds ellipsis"
-          >{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span
-        >
+        <div class="info" style="margin-top: 4px">
+          <span :title="currentNode.noteName" style="max-width: 500px" class="name ellipsis"
+            >{{ t('data_set.table_remarks') }}:{{ currentNode.noteName || '-' }}</span
+          >
+        </div>
       </div>
     </template>
     <union-field-list
@@ -1253,22 +1253,16 @@ const emits = defineEmits([
 
 .union-item-drawer {
   .ed-drawer__header {
-    height: 82px;
+    height: auto;
     font-family: var(--de-custom_font, 'PingFang');
 
     .ed-drawer__close-btn {
-      top: 26px;
-    }
-
-    .info-content {
-      display: flex;
-      flex-wrap: wrap;
+      top: 40.5px;
     }
 
     .info {
+      width: 100%;
       display: flex;
-      flex-direction: column;
-      width: 50%;
       .label {
         font-weight: 500;
         font-size: 16px;
@@ -1278,12 +1272,8 @@ const emits = defineEmits([
       .name {
         font-weight: 400;
         font-size: 14px;
-      }
-      .ds {
-        font-weight: 400;
-        font-size: 14px;
-        max-width: 500px;
         color: #646a73;
+        line-height: 22px;
       }
     }
   }
