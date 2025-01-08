@@ -19,7 +19,7 @@ import java.util.List;
 @Component
 public class LinkInterceptor implements HandlerInterceptor {
 
-    private final static String whiteListText = "/user/ipInfo, /apisix/check, /datasetData/enumValue, /datasetData/enumValueObj, /datasetData/getFieldTree, /dekey, /symmetricKey, /share/validate, /sysParameter/queryOnlineMap";
+    private final static String whiteListText = "/user/ipInfo, /apisix/check, /datasetData/enumValue, /datasetData/enumValueObj, /datasetData/getFieldTree, /dekey, /symmetricKey, /share/validate, /sysParameter/queryOnlineMap, /xpackComponent/viewPlugins";
 
 
     @Override
