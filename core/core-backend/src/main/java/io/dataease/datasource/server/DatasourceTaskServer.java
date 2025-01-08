@@ -126,7 +126,7 @@ public class DatasourceTaskServer {
 
     public List<CoreDatasourceTaskDTO> taskWithTriggers(Long taskId) {
         QueryWrapper<CoreDatasourceTaskDTO> wrapper = new QueryWrapper<>();
-        wrapper.eq("core_datasource_task.id", taskId);
+        wrapper.eq("core_datasource_task.id", String.valueOf(taskId));
         return extDatasourceTaskMapper.taskWithTriggers(wrapper);
     }
 
