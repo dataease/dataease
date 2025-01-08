@@ -97,6 +97,8 @@ export const snapshotStore = defineStore('snapshot', {
           deepCopy(this.snapshotData[this.snapshotIndex]) || getDefaultCanvasInfo()
         componentSnapshot.dvInfo.id = dvInfo.value.id
         componentSnapshot.dvInfo.pid = dvInfo.value.pid
+        componentSnapshot.dvInfo.dataState = dvInfo.value.dataState
+        componentSnapshot.dvInfo.contentId = dvInfo.value.contentId
         // undo 是当前没有记录
         this.snapshotPublish(componentSnapshot)
         this.styleChangeTimes++
@@ -110,6 +112,8 @@ export const snapshotStore = defineStore('snapshot', {
         const snapshotInfo = deepCopy(this.snapshotData[this.snapshotIndex])
         snapshotInfo.dvInfo.id = dvInfo.value.id
         snapshotInfo.dvInfo.pid = dvInfo.value.pid
+        snapshotInfo.dvInfo.dataState = dvInfo.value.dataState
+        snapshotInfo.dvInfo.contentId = dvInfo.value.contentId
         this.snapshotPublish(snapshotInfo)
         this.snapshotDisableTime = Date.now() + 3000
       }
