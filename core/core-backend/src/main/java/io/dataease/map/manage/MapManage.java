@@ -7,6 +7,7 @@ import io.dataease.api.map.vo.CustomGeoArea;
 import io.dataease.api.map.vo.CustomGeoSubArea;
 import io.dataease.constant.StaticResourceConstants;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.map.bo.AreaBO;
 import io.dataease.map.dao.auto.entity.Area;
 import io.dataease.map.dao.auto.entity.CoreCustomGeoArea;
@@ -210,6 +211,16 @@ public class MapManage {
     public void saveCustomGeoArea(CustomGeoArea geoArea) {
         var coreCustomGeoArea = new CoreCustomGeoArea();
         BeanUtils.copyBean(coreCustomGeoArea, geoArea);
+        var q = new QueryWrapper<CoreCustomGeoArea>();
+        q.eq("name", geoArea.getName());
+        if (StringUtils.isNotBlank(coreCustomGeoArea.getId())) {
+            q.ne("id", coreCustomGeoArea.getId());
+        }
+        var list = coreCustomGeoAreaMapper.selectList(q);
+        if (CollectionUtils.isNotEmpty(list)) {
+            DEException.throwException(Translator.get("i18n_geo_exists"));
+            return;
+        }
         if (ObjectUtils.isEmpty(coreCustomGeoArea.getId())) {
             coreCustomGeoArea.setId("custom_" + IDUtils.snowID());
             coreCustomGeoAreaMapper.insert(coreCustomGeoArea);
@@ -227,6 +238,17 @@ public class MapManage {
     public void saveCustomGeoSubArea(CustomGeoSubArea customGeoSubArea) {
         var geoSubArea = new CoreCustomGeoSubArea();
         BeanUtils.copyBean(geoSubArea, customGeoSubArea);
+        var q = new QueryWrapper<CoreCustomGeoSubArea>();
+        q.eq("name", customGeoSubArea.getName());
+        q.eq("geo_area_id", customGeoSubArea.getGeoAreaId());
+        if (ObjectUtils.isNotEmpty(customGeoSubArea.getId())) {
+            q.ne("id", customGeoSubArea.getId());
+        }
+        var list = coreCustomGeoSubAreaMapper.selectList(q);
+        if (CollectionUtils.isNotEmpty(list)) {
+            DEException.throwException(Translator.get("i18n_geo_sub_exists"));
+            return;
+        }
         if (ObjectUtils.isEmpty(geoSubArea.getId())) {
             geoSubArea.setId(IDUtils.snowID());
             coreCustomGeoSubAreaMapper.insert(geoSubArea);

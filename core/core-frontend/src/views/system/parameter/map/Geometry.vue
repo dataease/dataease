@@ -399,7 +399,11 @@ const areaFormRef = ref()
 const saveGeoArea = async () => {
   areaFormRef.value?.validate(async valid => {
     if (valid) {
-      await saveCustomGeoArea(editedCustomArea)
+      const res = await saveCustomGeoArea(editedCustomArea)
+      if (res.code) {
+        ElMessage.error(res.msg)
+        return
+      }
       await loadCustomGeoArea()
       customAreaDialog.value = false
     }
@@ -547,7 +551,11 @@ const saveGeoSubArea = async () => {
       return
     }
     customSubArea.scope = customSubArea.scopeArr.join(',')
-    await saveCustomGeoSubArea(customSubArea)
+    const res = await saveCustomGeoSubArea(customSubArea)
+    if (res.code) {
+      ElMessage.error(res.msg)
+      return
+    }
     await loadCustomSubArea({ id: curCustomGeoArea.id }, true)
     customSubAreaDialog.value = false
   })
