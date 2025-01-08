@@ -1717,7 +1717,7 @@ export const addConditionsStyleColorToData = (chart: Chart, options) => {
         // 定义后，在 handleConditionsStyle 函数中使用
         let currentValue = item[valueField]
         if (chart.type === 'progress-bar') {
-          currentValue = item['progress']
+          currentValue = item['originalValue']
         }
         const cColor = getColorByConditions([q], currentValue, chart)
         if (cColor) {
