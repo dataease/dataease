@@ -272,7 +272,7 @@ public class ApiUtils {
                     for (ApiDefinition definition : paramsList) {
                         for (int i = 0; i < definition.getFields().size(); i++) {
                             TableField field = definition.getFields().get(i);
-                            if (field.getName().equalsIgnoreCase(param)) {
+                            if (field.getOriginName().equalsIgnoreCase(param)) {
                                 String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
                                 List<String[]> dataList = fetchResult(resultStr, definition);
                                 if (dataList.size() > 0) {
