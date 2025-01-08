@@ -22,6 +22,10 @@ const needToChangeDirectionAttrs = {
   height: ['top', 'height']
 }
 
+export function changeSizeWithScaleAdaptor(scale) {
+  return changeComponentsSizeWithScale(scale)
+}
+
 export function changeSizeWithScale(scale) {
   return changeComponentsSizeWithScale(scale)
 }
