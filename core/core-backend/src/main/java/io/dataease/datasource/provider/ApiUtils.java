@@ -208,7 +208,7 @@ public class ApiUtils {
                     for (ApiDefinition definition : paramsList) {
                         for (int i = 0; i < definition.getFields().size(); i++) {
                             TableField field = definition.getFields().get(i);
-                            if (field.getOriginName().equalsIgnoreCase(param)) {
+                            if (field.getName().equalsIgnoreCase(param)) {
                                 String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
                                 List<String[]> dataList = fetchResult(resultStr, definition);
                                 if (dataList.size() > 0) {
@@ -230,7 +230,7 @@ public class ApiUtils {
                         for (ApiDefinition definition : paramsList) {
                             for (int i = 0; i < definition.getFields().size(); i++) {
                                 TableField field = definition.getFields().get(i);
-                                if (field.getOriginName().equalsIgnoreCase(param)) {
+                                if (field.getName().equalsIgnoreCase(param)) {
                                     String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
                                     List<String[]> dataList = fetchResult(resultStr, definition);
                                     if (dataList.size() > 0) {
@@ -272,7 +272,7 @@ public class ApiUtils {
                     for (ApiDefinition definition : paramsList) {
                         for (int i = 0; i < definition.getFields().size(); i++) {
                             TableField field = definition.getFields().get(i);
-                            if (field.getOriginName().equalsIgnoreCase(param)) {
+                            if (field.getName().equalsIgnoreCase(param)) {
                                 String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
                                 List<String[]> dataList = fetchResult(resultStr, definition);
                                 if (dataList.size() > 0) {
@@ -294,7 +294,7 @@ public class ApiUtils {
                         for (ApiDefinition definition : paramsList) {
                             for (int i = 0; i < definition.getFields().size(); i++) {
                                 TableField field = definition.getFields().get(i);
-                                if (field.getOriginName().equalsIgnoreCase(param)) {
+                                if (field.getName().equalsIgnoreCase(param)) {
                                     String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
                                     List<String[]> dataList = fetchResult(resultStr, definition);
                                     if (dataList.size() > 0) {
@@ -749,7 +749,7 @@ public class ApiUtils {
                 String[] row = new String[apiDefinition.getFields().size()];
                 int i = 0;
                 for (TableField field : apiDefinition.getFields()) {
-                    row[i] = Optional.ofNullable(data.get(field.getName())).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
+                    row[i] = Optional.ofNullable(data.get(field.getOriginName())).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
                     i++;
                 }
                 dataList.add(row);
