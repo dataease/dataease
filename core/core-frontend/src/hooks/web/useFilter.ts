@@ -164,6 +164,17 @@ export const useFilter = (curComponentId: string, firstLoad = false) => {
 
     if (ele.innerType === 'DeTabs') {
       ele.propValue.forEach(itx => {
+        itx.componentData.forEach(v => {
+          if (v.component === 'Group') {
+            const listGroup = v.propValue.filter(
+              item =>
+                item.innerType === 'VQuery' &&
+                (popupAvailable || (!popupAvailable && v.category !== 'hidden'))
+            )
+            searchQuery(listGroup, filter, curComponentId, firstLoad)
+          }
+        })
+
         const arr = itx.componentData.filter(item => item.innerType === 'VQuery')
         searchQuery(arr, filter, curComponentId, firstLoad)
       })
