@@ -15,6 +15,7 @@ import { cloneDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 const { t } = useI18n()
 const styleActiveNames = ref(['basicStyle'])
 const dvMainStore = dvMainStoreWithOut()
@@ -38,7 +39,7 @@ const props = defineProps({
     default: 'dark'
   }
 })
-const { chart, commonBackgroundPop } = toRefs(props)
+const { chart, commonBackgroundPop, element } = toRefs(props)
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
@@ -160,6 +161,11 @@ const upload = file => {
 }
 const goFile = () => {
   files.value.click()
+}
+
+const onBackgroundChangeV2 = val => {
+  snapshotStore.recordSnapshotCache('onBackgroundChange')
+  element.value.commonBackground = val
 }
 
 const onBackgroundChange = () => {
@@ -297,176 +303,12 @@ initParams()
                 :predefine="COLOR_PANEL"
               />
             </el-form-item>
-
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                size="small"
-                :effect="themes"
-                v-model="commonBackgroundPop.backdropFilterEnable"
-              >
-                {{ $t('chart.backdrop_blur') }}
-              </el-checkbox>
-            </el-form-item>
-            <el-form-item
-              style="padding-left: 20px"
-              class="form-item margin-bottom-8"
-              :class="'form-item-' + themes"
-            >
-              <el-input-number
-                style="width: 100%"
-                :effect="themes"
-                controls-position="right"
-                size="middle"
-                :min="0"
-                :max="30"
-                :disabled="!commonBackgroundPop.backdropFilterEnable"
-                v-model="commonBackgroundPop.backdropFilter"
-              />
-            </el-form-item>
-
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                :effect="themes"
-                size="small"
-                v-model="commonBackgroundPop.backgroundColorSelect"
-              >
-                {{ t('visualization.custom_bg_color') }}
-              </el-checkbox>
-            </el-form-item>
-            <el-row style="padding-left: 20px" :gutter="8">
-              <el-col :span="12">
-                <el-form-item
-                  :label="t('visualization.inner_padding')"
-                  class="form-item w100"
-                  :class="'form-item-' + themes"
-                >
-                  <el-input-number
-                    style="width: 100%"
-                    :disabled="!commonBackgroundPop.backgroundColorSelect"
-                    :effect="themes"
-                    controls-position="right"
-                    size="middle"
-                    :min="0"
-                    :max="100"
-                    v-model="commonBackgroundPop.innerPadding"
-                    @change="onBackgroundChange"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item
-                  :label="t('visualization.board_radio')"
-                  class="form-item w100"
-                  :class="'form-item-' + themes"
-                >
-                  <el-input-number
-                    style="width: 100%"
-                    :effect="themes"
-                    :disabled="!commonBackgroundPop.backgroundColorSelect"
-                    controls-position="right"
-                    size="middle"
-                    :min="0"
-                    :max="100"
-                    v-model="commonBackgroundPop.borderRadius"
-                    @change="onBackgroundChange"
-                  />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-form-item
-              style="padding-left: 20px"
-              class="form-item margin-bottom-8"
-              :class="'form-item-' + themes"
-            >
-              <el-radio-group
-                :disabled="!commonBackgroundPop.backgroundColorSelect"
-                :effect="themes"
-                v-model="commonBackgroundPop.backgroundType"
-              >
-                <el-radio
-                  key="innerImage"
-                  v-if="commonBackgroundPop.backgroundType === 'innerImage'"
-                  label="innerImage"
-                  :effect="themes"
-                >
-                  {{ t('visualization.background_color') }}
-                </el-radio>
-                <el-radio key="color" v-else label="color" :effect="themes">
-                  {{ t('visualization.background_color') }}
-                </el-radio>
-                <el-radio label="outerImage" :effect="themes">
-                  {{ t('visualization.background_img') }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item
-              v-if="commonBackgroundPop.backgroundType === 'outerImage'"
-              style="padding-left: 20px"
-              class="form-item margin-bottom-8"
-              :class="'form-item-' + themes"
-            >
-              <div
-                class="indented-item"
-                :class="{
-                  disabled: !commonBackgroundPop.backgroundColorSelect
-                }"
-              >
-                <div class="avatar-uploader-container" :class="`img-area_${themes}`">
-                  <el-upload
-                    action=""
-                    :effect="themes"
-                    accept=".jpeg,.jpg,.png,.gif,.svg"
-                    class="avatar-uploader"
-                    list-type="picture-card"
-                    :on-preview="handlePictureCardPreview"
-                    :on-remove="handleRemove"
-                    :before-upload="beforeUploadCheck"
-                    :http-request="upload"
-                    :file-list="state.fileList"
-                    :disabled="!commonBackgroundPop.backgroundColorSelect"
-                  >
-                    <el-icon><Plus /></el-icon>
-                  </el-upload>
-                  <el-row>
-                    <span
-                      style="margin-top: 2px"
-                      v-if="!state.commonBackground['outerImage']"
-                      class="image-hint"
-                      :class="`image-hint_${themes}`"
-                    >
-                      {{ t('visualization.pic_import_tips') }}
-                    </span>
-
-                    <el-button
-                      size="small"
-                      style="margin: 8px 0 0 -4px"
-                      v-if="state.commonBackground['outerImage']"
-                      text
-                      :disabled="!commonBackgroundPop.backgroundColorSelect"
-                      @click="goFile"
-                    >
-                      重新上传
-                    </el-button>
-                  </el-row>
-                </div>
-                <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
-              </div>
-            </el-form-item>
-            <el-form-item
-              v-else
-              class="form-item"
-              style="padding-left: 20px"
-              :class="'form-item-' + themes"
-            >
-              <el-color-picker
-                :effect="themes"
-                :trigger-width="108"
-                is-custom
-                v-model="commonBackgroundPop.backgroundColor"
-                :disabled="!commonBackgroundPop.backgroundColorSelect"
-                :predefine="predefineColors"
-              />
-            </el-form-item>
+            <background-overall-common
+              :common-background-pop="commonBackgroundPop"
+              :themes="themes"
+              @onBackgroundChange="onBackgroundChangeV2"
+              component-position="component"
+            />
           </el-form>
         </el-collapse-item>
         <el-collapse-item :effect="themes" name="addition" :title="t('v_query.query_condition')">

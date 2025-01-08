@@ -918,28 +918,7 @@ const componentBackgroundStyle = computed(() => {
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor
     }
-
-    if (element.value.innerType === 'VQuery') {
-      if (backgroundColorSelect) {
-        style = {
-          padding: innerPadding * scale.value + 'px',
-          borderRadius: borderRadius + 'px'
-        }
-      } else {
-        style = {
-          padding: 12 * scale.value + 'px',
-          borderRadius: '0'
-        }
-      }
-    }
-
-    if (element.value.innerType === 'VQuery' && backgroundColorSelect) {
-      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
-        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat`
-      } else {
-        style['background-color'] = colorRGBA
-      }
-    } else if (backgroundImageEnable) {
+    if (backgroundImageEnable) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
         style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
       } else {
