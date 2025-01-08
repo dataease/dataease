@@ -412,6 +412,9 @@ const defaultPlaceholder = computed(() => {
 watch(
   () => allFields.value,
   () => {
+    if (!showProperty('showFields')) {
+      return
+    }
     let result = []
     state.tooltipForm.showFields?.forEach(field => {
       if (allFields.value?.map(i => i.value).includes(field)) {
