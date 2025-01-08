@@ -1,6 +1,7 @@
 package io.dataease.commons.utils;
 
 import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.IPUtils;
 import io.dataease.visualization.dto.WatermarkContentDTO;
 import org.apache.poi.ss.usermodel.*;
@@ -27,11 +28,12 @@ public class ExcelWatermarkUtils {
             case "nickName" -> content = "${nickName}";
             case "ip" -> content = "${ip}";
             case "time" -> content = "${time}";
-            default -> content = "${userName}";
+            default -> content = "${username}";
         }
+        String nickName = userInfo.getName().contains("i18n_") ?Translator.get(userInfo.getName()):userInfo.getName();
         content = content.replaceAll("\\$\\{ip}", IPUtils.get() == null ? "127.0.0.1" : IPUtils.get());
         content = content.replaceAll("\\$\\{username}", userInfo.getAccount());
-        content = content.replaceAll("\\$\\{nickName}", userInfo.getName());
+        content = content.replaceAll("\\$\\{nickName}", nickName);
         content = content.replaceAll("\\$\\{time}", sdf.format(new Date()));
         return content;
     }
