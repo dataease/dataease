@@ -77,9 +77,15 @@ public class TemplateCenterManage {
             String sufUrl = sysParameterManage.groupVal("template.").get("template.url");
             String templateBaseInfo = HttpClientUtil.get(sufUrl + TEMPLATE_BASE_INFO_URL + templateName, null);
             MarketTemplateV2ItemResult baseItemInfo = JsonUtil.parseObject(templateBaseInfo, MarketTemplateV2ItemResult.class);
-            String templateUrl = sufUrl + "/store/apps/" + templateName +
-                    "/releases/download/" + baseItemInfo.getLatestRelease().getRelease().getMetadata().getName()
-                    + "/assets/" + baseItemInfo.getLatestRelease().getAssets().getFirst().getMetadata().getName();
+            String templateUrl = "";
+            if (baseItemInfo.getLatestRelease() != null) {
+                templateUrl = sufUrl + "/store/apps/" + templateName +
+                        "/releases/download/" + baseItemInfo.getLatestRelease().getRelease().getMetadata().getName()
+                        + "/assets/" + baseItemInfo.getLatestRelease().getAssets().getFirst().getMetadata().getName();
+            } else {
+                templateUrl = sufUrl + baseItemInfo.getApplication().getSpec().getLinks().get(0).getUrl();
+            }
+
             String templateInfo = HttpClientUtil.get(templateUrl, null);
             return JsonUtil.parseObject(templateInfo, TemplateManageFileDTO.class);
         } else {
