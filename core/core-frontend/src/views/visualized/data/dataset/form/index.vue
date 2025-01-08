@@ -1372,7 +1372,7 @@ const treeProps = {
   children: 'children',
   label: 'name',
   disabled: data => {
-    return (!data.children?.length && !data.leaf) || data.extraFlag < 0
+    return (!data.children?.length && !data.leaf) || (data.extraFlag < 0 && data.type !== 'API')
   }
 }
 
@@ -1476,7 +1476,7 @@ const getDsIconName = data => {
                     ><component class="svg-icon" :is="getDsIconName({ leaf, type })"></component
                   ></icon>
                 </el-icon>
-                <span v-if="!leaf || extraFlag > -1 || type === 'API'">{{ name }}</span>
+                <span v-if="!leaf || extraFlag > -1">{{ name }}</span>
                 <el-tooltip
                   effect="dark"
                   v-else
