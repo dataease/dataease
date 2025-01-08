@@ -124,7 +124,11 @@ const handleNumberSizeChange = () => {
 <template>
   <div class="api-pagination">
     <span class="type">{{ t('api_pagination.pagination_method') }}</span>
-    <el-select v-model="page.pageType" @change="handleNumberSizeChange" style="width: 100%">
+    <el-select
+      v-model="page.pageType"
+      @change="handleNumberSizeChange"
+      style="width: 100%; margin-top: 8px"
+    >
       <el-option
         v-for="item in options"
         :key="item.value"
@@ -195,7 +199,6 @@ const handleNumberSizeChange = () => {
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
-    margin-bottom: 8px;
   }
 
   .table-title {

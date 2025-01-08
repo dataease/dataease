@@ -227,8 +227,7 @@ const emits = defineEmits(['changeId'])
   }
 
   .request-tabs {
-    margin: 0 24px;
-    min-height: 200px;
+    margin: 0 16px;
 
     :deep(.ed-tabs__item) {
       font-family: var(--de-custom_font, 'PingFang');

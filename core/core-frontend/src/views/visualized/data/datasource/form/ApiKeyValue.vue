@@ -254,6 +254,8 @@ const timeFunLists = [
 
 <style lang="less" scoped>
 .api-key-value {
+  padding-bottom: 14px;
+
   & > .ed-input,
   .ed-autocomplete {
     width: 100%;

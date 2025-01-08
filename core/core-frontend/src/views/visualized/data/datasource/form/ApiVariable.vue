@@ -309,6 +309,7 @@ const timeFunLists = [
 
 <style lang="less" scoped>
 .api-variable {
+  padding-bottom: 14px;
   & > .ed-input,
   :deep(.ed-autocomplete) {
     width: 100%;
