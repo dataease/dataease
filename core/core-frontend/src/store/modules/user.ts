@@ -64,6 +64,10 @@ export const userStore = defineStore('user', {
         this[key] = data[dkey]
         wsCache.set('user.' + key, this[key])
       })
+      const locale = useLocaleStoreWithOut()
+      if (locale.getCurrentLocale?.lang !== this.language) {
+        window.location.reload()
+      }
       this.setLanguage(this.language)
     },
     setToken(token: string) {
