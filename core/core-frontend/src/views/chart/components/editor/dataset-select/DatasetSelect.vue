@@ -272,6 +272,7 @@ onMounted(() => {
       :show-arrow="false"
       @show="onPopoverShow"
       @hide="onPopoverHide"
+      :disabled="disabled"
       :effect="themes"
       :offset="4"
     >
