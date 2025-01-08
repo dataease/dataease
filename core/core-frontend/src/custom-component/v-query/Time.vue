@@ -408,8 +408,10 @@ const setArrValue = () => {
 
 const onClear = () => {
   showDate.value = false
-  selectValue.value = []
-  currentTime.value = []
+  const { displayType } = config.value
+  const plus = displayType === '7'
+  config.value.selectValue = plus ? [] : undefined
+  selectValue.value = plus ? [] : undefined
   handleValueChange()
 }
 
