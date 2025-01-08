@@ -107,7 +107,7 @@ public class ExcelWatermarkUtils {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // 设置字体
-        g2d.setFont(new Font("Microsoft YaHei", Font.PLAIN, fontSize));
+        g2d.setFont(new Font(null, Font.PLAIN, fontSize));
         g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 50)); // 半透明颜色
         g2d.rotate(radians, width / 2.0, height / 2.0); // 旋转文字
         // 绘制文字
