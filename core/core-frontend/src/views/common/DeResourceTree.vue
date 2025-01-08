@@ -47,6 +47,7 @@ import { findParentIdByChildIdRecursive } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
 import treeSort, { treeParentWeight } from '@/utils/treeSortUtils'
 import router from '@/router'
+import { cancelRequestBatch } from '@/config/axios/service'
 const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -232,8 +233,16 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
 }
+//取消之前请求
+const cancelPreRequest = () => {
+  cancelRequestBatch('/dataVisualization/findById')
+  cancelRequestBatch('/chartData/getData')
+  cancelRequestBatch('/linkage/getVisualizationAllLinkageInfo/**')
+  cancelRequestBatch('/linkJump/queryVisualizationJumpInfo/**')
+}
 
 const nodeClick = (data: BusiTreeNode) => {
+  cancelPreRequest()
   selectedNodeKey.value = data.id
   if (data.leaf) {
     emit('nodeClick', data)

@@ -296,4 +296,23 @@ const executeVersionHandler = (response: AxiosResponse) => {
     showMsg('系统有升级，请点击刷新页面', '-sys-upgrade-')
   }
 }
-export { service, cancelMap }
+
+const cancelRequestBatch = cancelKey => {
+  if (cancelKey) {
+    if (cancelKey.indexOf('/**') > -1) {
+      const cancelKeyPre = cancelKey.split('/**')[0]
+      Object.keys(cancelMap).forEach(key => {
+        if (key.indexOf(cancelKeyPre) > -1) {
+          cancelMap[key]?.(() => {
+            console.warn('Operation canceled by the user,url:' + key)
+          })
+        }
+      })
+    } else {
+      cancelMap[cancelKey]?.(() => {
+        console.warn('Operation canceled by the user,url:' + cancelKey)
+      })
+    }
+  }
+}
+export { service, cancelMap, cancelRequestBatch }
