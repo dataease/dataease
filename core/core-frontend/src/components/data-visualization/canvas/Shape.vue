@@ -1112,8 +1112,10 @@ onMounted(() => {
     // do stopAnimation
   })
   settingAttribute()
+  const methodName = 'componentImageDownload-' + element.value.id
+  useEmitt().emitter.off(methodName)
   useEmitt({
-    name: 'componentImageDownload-' + element.value.id,
+    name: methodName,
     callback: () => {
       htmlToImage()
     }
