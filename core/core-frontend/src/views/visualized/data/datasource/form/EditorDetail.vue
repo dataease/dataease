@@ -770,6 +770,7 @@ defineExpose({
         {{ t('datasource.basic_info') }}
       </div>
       <el-form
+        @submit.prevent
         ref="dsForm"
         :model="form"
         :rules="rule"
