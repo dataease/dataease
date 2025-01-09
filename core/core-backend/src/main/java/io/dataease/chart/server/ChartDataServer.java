@@ -317,7 +317,7 @@ public class ChartDataServer implements ChartDataApi {
             for (ChartViewFieldDTO xAxi : xAxis) {
                 if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
                     FormatterCfgDTO formatterCfgDTO = xAxi.getFormatterCfg() == null ? new FormatterCfgDTO() : xAxi.getFormatterCfg();
-                    CellStyle formatterCellStyle = createCellStyle(wb, formatterCfgDTO);
+                    CellStyle formatterCellStyle = createCellStyle(wb, formatterCfgDTO, null);
                     styles.add(formatterCellStyle);
                 } else {
                     styles.add(null);
@@ -408,12 +408,13 @@ public class ChartDataServer implements ChartDataApi {
                             //设置列的宽度
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
+                            System.out.println(cellValObj.toString());
                             try {
                                 if (xAxis != null && xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT)) {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO() : xAxis.get(j).getFormatterCfg();
                                         if (formatterCfgDTO.getType().equalsIgnoreCase("auto")) {
-
+                                            row.getCell(j).setCellStyle(createCellStyle(wb, formatterCfgDTO, cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()))));
                                         }
                                         if (styles.get(j) != null) {
                                             row.getCell(j).setCellStyle(styles.get(j));
@@ -439,16 +440,46 @@ public class ChartDataServer implements ChartDataApi {
 
     private static String cellValue(FormatterCfgDTO formatterCfgDTO, BigDecimal value) {
         if (formatterCfgDTO.getType().equalsIgnoreCase("percent")) {
-            return value.multiply(BigDecimal.valueOf(100)).toString();
+            return value.toString();
         } else {
             return value.divide(BigDecimal.valueOf(formatterCfgDTO.getUnit())).toString();
         }
     }
 
-    private static CellStyle createCellStyle(Workbook workbook, FormatterCfgDTO formatter) {
+    private static CellStyle createCellStyle(Workbook workbook, FormatterCfgDTO formatter, String value) {
         CellStyle cellStyle = workbook.createCellStyle();
         DataFormat format = workbook.createDataFormat();
         String formatStr = "";
+        if (formatter.getType().equals("auto")) {
+            String[] valueSplit = String.valueOf(value).split(".");
+            if (StringUtils.isEmpty(value) || !value.contains(".")) {
+                formatStr = "0";
+            } else {
+                formatStr = "0." + new String(new char[valueSplit.length]).replace('\0', '0');
+            }
+            switch (formatter.getUnit()) {
+                case 1000:
+                    formatStr = formatStr + "千";
+                    break;
+                case 10000:
+                    formatStr = formatStr + "万";
+                    break;
+                case 1000000:
+                    formatStr = formatStr + "百万";
+                    break;
+                case 100000000:
+                    formatStr = formatStr + "'亿'";
+                    break;
+                default:
+                    break;
+            }
+            if (formatter.getThousandSeparator()) {
+                formatStr = "#,##" + formatStr;
+            }
+            if (StringUtils.isNotEmpty(formatter.getSuffix())) {
+                formatStr = formatStr + formatter.getSuffix();
+            }
+        }
         if (formatter.getType().equals("value")) {
             if (formatter.getDecimalCount() > 0) {
                 formatStr = "0." + new String(new char[formatter.getDecimalCount()]).replace('\0', '0');
