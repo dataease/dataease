@@ -46,6 +46,8 @@ public class H2EngineProvider extends EngineProvider {
                 if (tableFields.get(i).isChecked()) {
                     if (StringUtils.isEmpty(strings[i])) {
                         strings1[length] = null;
+                    }else {
+                        strings1[length] = strings[i].replace("\\", "\\\\").replace("'", "\\'");
                     }
                     length++;
                 }
