@@ -15,7 +15,7 @@ import java.util.List;
 public class H2EngineProvider extends EngineProvider {
 
     private static final String creatTableSql =
-            "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
+            "CREATE TABLE IF NOT EXISTS \"TABLE_NAME\"" +
                     "Column_Fields;";
 
 
@@ -25,7 +25,7 @@ public class H2EngineProvider extends EngineProvider {
     }
 
     @Override
-    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber,List<TableField> tableFields) {
+    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields) {
         String engineTableName;
         switch (extractType) {
             case all_scope:
@@ -35,7 +35,7 @@ public class H2EngineProvider extends EngineProvider {
                 engineTableName = TableUtils.tableName(tableName);
                 break;
         }
-        String insertSql = "INSERT INTO `TABLE_NAME` VALUES ".replace("TABLE_NAME", engineTableName);
+        String insertSql = "INSERT INTO  \"TABLE_NAME\" VALUES ".replace("TABLE_NAME", engineTableName);
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
