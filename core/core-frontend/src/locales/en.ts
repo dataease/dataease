@@ -446,7 +446,7 @@ export default {
     sure_to_delete:
       'After the current font is deleted, the components using this font will use the default font. Are you sure to delete it?',
     setting_successful: 'Setting successful',
-    font_management: 'Font management',
+    font_management: 'Font Management',
     search_font_name: 'Search font name',
     a_new_font: 'Create a new font',
     add_font: 'Add font',
@@ -497,7 +497,7 @@ export default {
     geographic_information: 'Geographic information',
     superior_region_first: 'Please select the superior region first',
     region_name: 'Region name',
-    appearance_configuration: 'Appearance configuration',
+    appearance_configuration: 'Appearance Configuration',
     platform_display_theme: 'Platform display theme',
     navigation_background_color: 'Top navigation background color',
     dark_color: 'Dark color',
@@ -557,7 +557,7 @@ export default {
     incorrect_please_re_enter: 'The callback domain name format is incorrect, please re-enter',
     cas_settings: 'CAS settings',
     callback_domain_name: 'Callback domain name',
-    authentication_settings: 'Authentication settings',
+    authentication_settings: 'Authentication Settings',
     be_turned_on: 'After the test connection is valid, it can be turned on',
     platform_information_first: 'Please save the platform information first',
     for_example: 'Such as: {\'{\'}"account":"uid","name":"cn","email":"mail"{\'}\'}',
@@ -597,14 +597,14 @@ export default {
     embedded_search_placeholder: 'Search by application name, APP ID, or cross-domain settings',
     embedded_secret_len_change:
       'The key length has changed. The key will be reset soon. Are you sure?',
-    embedded_management: 'Embedded management',
+    embedded_management: 'Embedded Management',
     to_5_applications: 'You can create up to 5 applications',
     update_app_secret: 'Are you sure you want to update the APP Secret?',
     operate_with_caution:
       'After the reset, the existing APP Secret will become invalid. Please operate with caution. ',
     no_application: 'No application yet',
     delete_this_application: 'Are you sure you want to delete this application',
-    platform_connection: 'Platform connection',
+    platform_connection: 'Platform Integration',
     dingtalk_settings: 'DingTalk settings',
     enabled: 'Enabled',
     close: 'Closed',
@@ -615,7 +615,7 @@ export default {
     international_feishu: 'International Lark',
     enterprise_wechat_settings: 'Enterprise WeChat settings',
     enterprise_wechat: 'Enterprise WeChat',
-    plugin_management: 'Plugin management',
+    plugin_management: 'Plugin Management',
     search_plugin_name: 'Search plugin name',
     local_installation: 'Local installation',
     relevant_content_found: 'No relevant content found',
@@ -736,7 +736,7 @@ export default {
     dingtalk: 'DingTalk',
     wechat_for_business: 'Enterprise WeChat',
     international_feishu: 'International Lark',
-    user_management: 'User management',
+    user_management: 'User Management',
     cannot_be_modified: 'Administrator status cannot be modified',
     cannot_be_modified_de: 'Current user status cannot be modified',
     has_been_disabled: 'User has been disabled',
@@ -855,7 +855,7 @@ export default {
     please_login_per_changed: 'Current user permissions have changed, please log in again'
   },
   auth: {
-    permission_configuration: 'Permission configuration',
+    permission_configuration: 'Permission Configuration',
     was_not_obtained: 'Resource node not obtained',
     search_name: 'Search name',
     loading: 'Loading...',
@@ -919,7 +919,7 @@ export default {
       'Organization administrator has all resource permissions, no need to authorize again',
     user_role_empty:
       'This user is an organization administrator and has all resource permissions, no need to authorize again',
-    sysParams: 'System variables',
+    sysParams: 'System Variables',
     set_rules: 'Set rules',
     inner_role_tips: 'System built-in role, permissions cannot be edited'
   },
@@ -2570,7 +2570,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     weeks_4: 'Thursday',
     weeks_5: 'Friday',
     weeks_6: 'Saturday',
-    system_parameter_setting: 'System parameters',
+    system_parameter_setting: 'System Parameters',
     connection_successful: 'Connection successful',
     connection_failed: 'Connection failed',
     save_failed: 'Save failed',
@@ -3782,7 +3782,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     sync_status_distribution: 'Sync status distribution'
   },
   sync_task: {
-    title: 'Task management',
+    title: 'Task Management',
     task_list: 'Task list',
     log_list: 'Task log',
     add_task: 'Add task',
@@ -3994,7 +3994,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     save_apply: 'Save and apply'
   },
   report: {
-    title: 'Scheduled report',
+    title: 'Scheduled Report',
     task_name: 'Task name',
     last_exec_time: 'Last execution time',
     last_exec_result: 'Last execution result',
@@ -4339,7 +4339,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     base_setting: 'Basic settings',
     threshold_setting: 'Alarm settings',
     name: 'Alarm name',
-    grid_title: 'Alarm management',
+    grid_title: 'Alarm Management',
     grid: 'Alarm list',
     record: 'Detection record',
     module_name: 'Threshold alarm',
@@ -4392,7 +4392,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     dataset: 'Dataset',
     dashboard: 'Dashboard',
     dataV: 'Data screen',
-    analysis: 'Bloodline analysis',
+    analysis: 'Bloodline Analysis',
     resource_type: 'Resource type',
     pls_choose: 'Please choose',
     choose_resource: 'Select resource',
@@ -4468,7 +4468,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
       'API Key is your key to access DataEase API, which has full permissions for your account. Please keep it safe! Do not disclose API Key to external channels in any way to avoid security threats caused by others. '
   },
   free: {
-    title: 'Orphaned Resource Management',
+    title: 'Free Resource Management',
     no_data: 'No Orphaned Resources',
     sync: 'Migrate',
     quick: 'One-click',
