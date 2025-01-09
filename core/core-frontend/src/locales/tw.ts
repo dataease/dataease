@@ -3903,6 +3903,7 @@ export default {
     instance_title: '任務日誌',
     add_task: '新增任務',
     lark_groups: '飛書群',
+    larksuite_groups: '國際飛書群',
     send_setting: '發送設定',
     retrying_settings: '發送失敗重試設定',
     start_time: '開始時間',

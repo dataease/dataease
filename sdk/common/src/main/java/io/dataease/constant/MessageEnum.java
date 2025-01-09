@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum MessageEnum {
 
-    INNER(0), EMAIL(1), WECOM(2), DINGTALK(3), LARK(4), LARKSUITE(5), LARKGROUP(6), WEBHOOK(7);
+    INNER(0), EMAIL(1), WECOM(2), DINGTALK(3), LARK(4), LARKSUITE(5), LARKGROUP(6), WEBHOOK(7), LARKSUITEGROUP(8);
     private Integer flag;
 
     public Integer getFlag() {

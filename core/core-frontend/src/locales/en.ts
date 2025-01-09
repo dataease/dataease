@@ -4011,6 +4011,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     instance_title: 'Task log',
     add_task: 'Add task',
     lark_groups: 'Lark group',
+    larksuite_groups: 'Larksuite group',
     send_setting: 'Send settings',
     retrying_settings: 'Send failed retry settings',
     start_time: 'Start time',
