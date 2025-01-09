@@ -35,7 +35,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -132,20 +131,6 @@ public class ChartDataServer implements ChartDataApi {
             if ("dataset".equals(request.getDownloadType())) {
                 request.setHeader(dsHeader);
                 request.setExcelTypes(dsTypes);
-            }
-            if (CollectionUtils.isNotEmpty(tableRow)) {
-                FormatterCfgDTO formatterCfgDTO = new FormatterCfgDTO();
-                for (Object[] objects : tableRow) {
-                    for (int i = 0; i < viewDTO.getXAxis().size(); i++) {
-                        if (viewDTO.getXAxis().get(i).getDeType().equals(DeTypeConstants.DE_INT) || viewDTO.getXAxis().get(i).getDeType().equals(DeTypeConstants.DE_FLOAT)) {
-                            try {
-                                objects[i] = valueFormatter(new BigDecimal(String.valueOf(objects[i])), viewDTO.getXAxis().get(i).getFormatterCfg() == null ? formatterCfgDTO : viewDTO.getXAxis().get(i).getFormatterCfg());
-                            } catch (Exception ignore) {
-                                ignore.printStackTrace();
-                            }
-                        }
-                    }
-                }
             }
             request.setDetails(tableRow);
             request.setData(chartViewInfo.getData());
@@ -271,7 +256,7 @@ public class ChartDataServer implements ChartDataApi {
                             details.add(0, request.getHeader());
                             ViewDetailField[] detailFields = request.getDetailFields();
                             Object[] header = request.getHeader();
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo().getXAxis(), wb);
                             sheetIndex++;
                             details.clear();
                         }
@@ -285,7 +270,7 @@ public class ChartDataServer implements ChartDataApi {
                         ViewDetailField[] detailFields = request.getDetailFields();
                         Object[] header = request.getHeader();
                         Sheet detailsSheet = wb.createSheet("数据");
-                        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
                     } else {
                         for (int i = 0; i < request.getMultiInfo().size(); i++) {
                             ChartExcelRequestInner requestInner = request.getMultiInfo().get(i);
@@ -295,7 +280,7 @@ public class ChartDataServer implements ChartDataApi {
                             ViewDetailField[] detailFields = requestInner.getDetailFields();
                             Object[] header = requestInner.getHeader();
                             Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
-                            setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                            setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
                         }
                     }
                 }
@@ -320,12 +305,25 @@ public class ChartDataServer implements ChartDataApi {
     public void innerExportDataSetDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
         this.innerExportDetails(request, response);
     }
-    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes) {
-        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes,null);
+
+    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, List<ChartViewFieldDTO> xAxis, Workbook wb) {
+        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, xAxis, wb);
     }
 
 
-    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes,Comment comment) {
+    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, List<ChartViewFieldDTO> xAxis, Workbook wb) {
+        List<CellStyle> styles = new ArrayList<>();
+        if (xAxis != null) {
+            for (ChartViewFieldDTO xAxi : xAxis) {
+                if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                    FormatterCfgDTO formatterCfgDTO = xAxi.getFormatterCfg() == null ? new FormatterCfgDTO() : xAxi.getFormatterCfg();
+                    CellStyle formatterCellStyle = createCellStyle(wb, formatterCfgDTO);
+                    styles.add(formatterCellStyle);
+                } else {
+                    styles.add(null);
+                }
+            }
+        }
         boolean mergeHead = false;
         if (ArrayUtils.isNotEmpty(detailFields)) {
             cellStyle.setBorderTop(BorderStyle.THIN);
@@ -411,18 +409,90 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                cell.setCellValue(cellValObj.toString());
+                                if (xAxis != null && xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                                    try {
+                                        FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO() : xAxis.get(j).getFormatterCfg();
+                                        if (formatterCfgDTO.getType().equalsIgnoreCase("auto")) {
+
+                                        }
+                                        if (styles.get(j) != null) {
+                                            row.getCell(j).setCellStyle(styles.get(j));
+                                        }
+
+                                        row.getCell(j).setCellValue(Double.valueOf(cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()))));
+                                    } catch (Exception e) {
+                                        cell.setCellValue(cellValObj.toString());
+                                    }
+                                } else {
+                                    cell.setCellValue(cellValObj.toString());
+                                }
+
                             } catch (Exception e) {
                                 LogUtil.warn("export excel data transform error");
                             }
                         }
-
-
                     }
                 }
             }
         }
     }
+
+    private static String cellValue(FormatterCfgDTO formatterCfgDTO, BigDecimal value) {
+        if (formatterCfgDTO.getType().equalsIgnoreCase("percent")) {
+            return value.multiply(BigDecimal.valueOf(100)).toString();
+        } else {
+            return value.divide(BigDecimal.valueOf(formatterCfgDTO.getUnit())).toString();
+        }
+    }
+
+    private static CellStyle createCellStyle(Workbook workbook, FormatterCfgDTO formatter) {
+        CellStyle cellStyle = workbook.createCellStyle();
+        DataFormat format = workbook.createDataFormat();
+        String formatStr = "";
+        if (formatter.getType().equals("value")) {
+            if (formatter.getDecimalCount() > 0) {
+                formatStr = "0." + new String(new char[formatter.getDecimalCount()]).replace('\0', '0');
+            } else {
+                formatStr = "0";
+            }
+            switch (formatter.getUnit()) {
+                case 1000:
+                    formatStr = formatStr + "千";
+                    break;
+                case 10000:
+                    formatStr = formatStr + "万";
+                    break;
+                case 1000000:
+                    formatStr = formatStr + "百万";
+                    break;
+                case 100000000:
+                    formatStr = formatStr + "'亿'";
+                    break;
+                default:
+                    break;
+            }
+            if (formatter.getThousandSeparator()) {
+                formatStr = "#,##" + formatStr;
+            }
+            if (StringUtils.isNotEmpty(formatter.getSuffix())) {
+                formatStr = formatStr + formatter.getSuffix();
+            }
+        } else if (formatter.getType().equals("percent")) {
+            if (formatter.getDecimalCount() > 0) {
+                formatStr = "0." + new String(new char[formatter.getDecimalCount()]).replace('\0', '0');
+            } else {
+                formatStr = "0";
+            }
+            formatStr = formatStr + "%";
+        }
+        if (StringUtils.isNotEmpty(formatStr)) {
+            cellStyle.setDataFormat(format.getFormat(formatStr));
+        } else {
+            return null;
+        }
+        return cellStyle;
+    }
+
 
     @Override
     public List<String> getFieldData(ChartViewDTO view, Long fieldId, String fieldType) throws Exception {

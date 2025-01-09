@@ -40,9 +40,7 @@ import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
-import io.dataease.extensions.view.dto.ChartViewDTO;
-import io.dataease.extensions.view.dto.ColumnPermissionItem;
-import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
+import io.dataease.extensions.view.dto.*;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
@@ -411,11 +409,7 @@ public class ExportCenterManage implements BaseExportApi {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateById(exportTask);
 
-                getDataFillingApi().writeExcel(dataPath + "/" + exportTask.getId() + ".xlsx",
-                        new DataFillFormTableDataRequest()
-                                .setId(Long.parseLong(exportTask.getExportFrom()))
-                                .setWithoutLogs(true)
-                        , exportTask.getUserId(), Long.parseLong(request.get("org").toString()));
+                getDataFillingApi().writeExcel(dataPath + "/" + exportTask.getId() + ".xlsx", new DataFillFormTableDataRequest().setId(Long.parseLong(exportTask.getExportFrom())).setWithoutLogs(true), exportTask.getUserId(), Long.parseLong(request.get("org").toString()));
 
 
                 exportTask.setExportProgress("100");
@@ -683,7 +677,7 @@ public class ExportCenterManage implements BaseExportApi {
                             details.add(0, request.getHeader());
                             ViewDetailField[] detailFields = request.getDetailFields();
                             Object[] header = request.getHeader();
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo().getXAxis(), wb);
                             sheetIndex++;
                             details.clear();
                             exportTask.setExportStatus("IN_PROGRESS");
@@ -742,7 +736,7 @@ public class ExportCenterManage implements BaseExportApi {
                 ViewDetailField[] detailFields = request.getDetailFields();
                 Object[] header = request.getHeader();
                 Sheet detailsSheet = wb.createSheet("数据");
-                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
             }
         } else {
             //多个sheet
@@ -756,7 +750,7 @@ public class ExportCenterManage implements BaseExportApi {
                 Object[] header = requestInner.getHeader();
                 //明细sheet
                 Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
-                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
             }
         }
     }
@@ -801,15 +795,15 @@ public class ExportCenterManage implements BaseExportApi {
 
     }
 
-    public void addWatermarkTools(Workbook wb){
+    public void addWatermarkTools(Workbook wb) {
         VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
         WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
         if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
             UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(AuthUtils.getUser().getUserId());
             // 在主逻辑中添加水印
-            int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent,userInfo); // 生成水印图片并获取 ID
+            int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
             for (Sheet sheet : wb) {
-                ExcelWatermarkUtils.addWatermarkToSheet(sheet,watermarkPictureIdx); // 为每个 Sheet 添加水印
+                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx); // 为每个 Sheet 添加水印
             }
         }
     }
