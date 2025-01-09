@@ -706,7 +706,7 @@ export default {
     account: 'Account',
     name: 'Name',
     role: 'Role',
-    state: 'User status',
+    state: 'Status',
     default_pwd: 'Default password',
     confirm_delete: 'Are you sure you want to delete this user? ',
     add_title: 'Add User',
@@ -863,7 +863,7 @@ export default {
     sysParams_type: {
       user_id: 'Account',
       user_name: 'Name',
-      user_source: 'User source',
+      user_source: 'Origin',
       user_label: 'User label',
       user_email: 'Email',
       dept: 'Organization',
