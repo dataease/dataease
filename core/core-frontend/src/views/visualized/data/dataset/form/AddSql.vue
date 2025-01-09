@@ -224,10 +224,17 @@ const handleSearchVariableApi = async () => {
     fieldFormList.value = res?.data || []
   })
 }
+const showSystemParams = ref(true)
 onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
   if (!desktop) {
-    await handleSearchVariableApi()
+    try {
+      await handleSearchVariableApi()
+    } catch (e) {
+      if (e) {
+        showSystemParams.value = false
+      }
+    }
   }
   sql = Base64.decode(sqlNode.value.sql)
   codeCom.value = myCm.value.codeComInit(setNameIdTrans('id', 'name', sql), true)
@@ -549,7 +556,7 @@ const mousedownDrag = () => {
         </template>
         {{ t('data_set.parameter_settings') }}
       </el-button>
-      <el-button v-if="!desktop" @click="sysParams" class="system-text_bg" text>
+      <el-button v-if="!desktop && showSystemParams" @click="sysParams" class="system-text_bg" text>
         <template #icon>
           <el-icon>
             <Icon><icon_preferences_outlined class="svg-icon" /></Icon>
