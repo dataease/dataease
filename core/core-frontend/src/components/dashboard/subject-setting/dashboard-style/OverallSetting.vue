@@ -49,6 +49,21 @@
         <el-radio :effect="themes" label="no">{{ t('visualization.no_gap') }}</el-radio>
       </el-radio-group>
     </el-form-item>
+    <el-form-item
+      v-if="dvInfo.type === 'dashboard'"
+      class="form-item"
+      :class="'form-item-' + themes"
+      :label="t('visualization.dashboard_adaptor')"
+    >
+      <el-radio-group v-model="canvasStyleData.dashboardAdaptor" @change="themeChange">
+        <el-radio :effect="themes" label="keepHeightAndWidth">{{
+          t('visualization.scale_keep_height_and_width')
+        }}</el-radio>
+        <el-radio :effect="themes" label="withWidth">{{
+          t('visualization.scale_with_width')
+        }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
     <el-form-item class="form-item" :class="'form-item-' + themes" style="margin-bottom: 8px">
       <el-checkbox
         :effect="themes"

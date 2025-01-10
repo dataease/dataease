@@ -93,6 +93,7 @@ export const DEFAULT_CANVAS_STYLE_DATA_BASE = {
   popupButtonAvailable: true, // 弹框区域显示按钮是否可用 默认为true
   suspensionButtonAvailable: false, // 悬浮按钮是否可用 默认false
   screenAdaptor: 'widthFirst', // 屏幕适配方式 widthFirst=宽度优先 heightFirst=高度优先 full=铺满全屏 keepSize=不缩放
+  dashboardAdaptor: 'keepHeightAndWidth', //仪表板预览展示适配方式 keepHeightAndWidth=高度宽度独立缩放(默认模式)，withWidth=跟随宽度
   scale: 60,
   scaleWidth: 60,
   scaleHeight: 60,

@@ -133,6 +133,11 @@ const curSearchCount = computed(() => {
 const dataVKeepRadio = computed(() => {
   return canvasStyleData.value?.screenAdaptor !== 'full'
 })
+
+// 仪表板是否跟随宽度缩放 非全屏 full 都需要保持宽高比例
+const dashboardScaleWithWidth = computed(() => {
+  return isDashboard() && canvasStyleData.value?.dashboardAdaptor === 'withWidth'
+})
 const isReport = computed(() => {
   return !!router.currentRoute.value.query?.report
 })
@@ -235,13 +240,21 @@ const resetLayout = () => {
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
       scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
-      scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
+      if (dashboardScaleWithWidth.value) {
+        scaleHeightPoint.value = scaleWidthPoint.value * 0.7
+      } else {
+        scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
+      }
       scaleMin.value = isDashboard()
         ? Math.floor(Math.min(scaleWidthPoint.value, scaleHeightPoint.value))
         : scaleWidthPoint.value
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
-        cellHeight.value = canvasHeight / pcMatrixCount.value.y
+        if (dashboardScaleWithWidth.value) {
+          cellHeight.value = (canvasHeight * 0.7) / cellWidth.value
+        } else {
+          cellHeight.value = canvasHeight / pcMatrixCount.value.y
+        }
         scaleMin.value = isMainCanvas(canvasId.value)
           ? scaleMin.value * 1.2
           : outerScale.value * 100

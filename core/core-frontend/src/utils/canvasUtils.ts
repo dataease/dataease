@@ -250,6 +250,8 @@ export function historyAdaptor(
       ? false
       : canvasStyleResult['suspensionButtonAvailable']
   canvasStyleResult['screenAdaptor'] = canvasStyleResult['screenAdaptor'] || 'widthFirst'
+  canvasStyleResult['dashboardAdaptor'] =
+    canvasStyleResult['dashboardAdaptor'] || 'keepHeightAndWidth'
   canvasStyleResult['refreshBrowserEnable'] =
     canvasStyleResult['refreshBrowserEnable'] === undefined
       ? false

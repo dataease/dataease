@@ -2736,6 +2736,9 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    dashboard_adaptor: '缩放模式',
+    scale_keep_height_and_width: '按默认宽高比例缩放',
+    scale_with_width: '按照实际宽高比例缩放',
     multi_selected: '已选{0}项',
     number1: '一',
     number2: '二',

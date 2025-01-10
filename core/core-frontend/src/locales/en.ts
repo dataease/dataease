@@ -2806,6 +2806,9 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     column_name: 'Field name'
   },
   visualization: {
+    dashboard_adaptor: 'Zoom Mode',
+    scale_keep_height_and_width: 'Default Aspect Ratio',
+    scale_with_width: 'Actual Aspect Ratio',
     multi_selected: '{0} components selected',
     number1: '1',
     number2: '2',
