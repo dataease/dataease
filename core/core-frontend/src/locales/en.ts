@@ -114,6 +114,7 @@ export default {
     client: 'Client'
   },
   data_set: {
+    validation_succeeded: 'Field expression validation succeeded',
     to_nth_digits: 'Retain the Mth to Nth digits',
     the_column_permissions: 'Are you sure you want to delete column permissions?',
     last_n_digits: 'Retain the first M digits and the last N digits',

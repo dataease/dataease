@@ -114,6 +114,7 @@ export default {
     client: '客戶端'
   },
   data_set: {
+    validation_succeeded: '欄位表達式校驗成功',
     to_nth_digits: '保留第M至N位元',
     the_column_permissions: '確定刪除列權限嗎?',
     last_n_digits: '保留前M位元,後N位元',

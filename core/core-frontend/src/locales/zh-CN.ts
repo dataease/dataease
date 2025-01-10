@@ -115,6 +115,7 @@ export default {
     client: '客户端'
   },
   data_set: {
+    validation_succeeded: '字段表达式校验成功',
     to_nth_digits: '保留第M至N位',
     the_column_permissions: '确定删除列权限吗?',
     last_n_digits: '保留前M位,后N位',

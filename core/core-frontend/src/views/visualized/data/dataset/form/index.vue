@@ -980,6 +980,41 @@ const setActiveName = (data: Table) => {
   activeName.value = data.tableName
 }
 
+const verify = () => {
+  if (datasetPreviewLoading.value) return
+  calcEdit.value.formField.validate(val => {
+    if (val) {
+      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.fieldForm.originName.trim()) {
+        ElMessage.error(t('data_set.cannot_be_empty_de_'))
+        return
+      }
+      const obj = cloneDeep(calcEdit.value.fieldForm)
+      const { deType, dateFormat, deExtractType } = obj
+      obj.dateFormat = deType === 1 ? dateFormat : ''
+      obj.dateFormatType = deType === 1 ? dateFormat : ''
+      obj.deTypeArr = deType === 1 && deExtractType === 0 ? [deType, dateFormat] : [deType]
+      const result = allfields.value.findIndex(ele => obj.id === ele.id)
+      const allfieldsCopy = cloneDeep(unref(allfields))
+      if (result !== -1) {
+        allfieldsCopy.splice(result, 1, obj)
+      } else {
+        allfieldsCopy.push(obj)
+      }
+      const arr = []
+      dfsNodeList(arr, datasetDrag.value.getNodeList())
+      datasetPreviewLoading.value = true
+      getPreviewData({ union: arr, allFields: allfieldsCopy })
+        .then(() => {
+          ElMessage.success(t('data_set.validation_succeeded'))
+        })
+        .finally(() => {
+          datasetPreviewLoading.value = false
+        })
+    }
+  })
+}
+
 const isDragging = ref(false)
 
 const mousedownDrag = () => {
@@ -2216,6 +2251,7 @@ const getDsIconName = data => {
     <calc-field-edit ref="calcEdit" :crossDs="crossDatasources" />
     <template #footer>
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
+      <el-button secondary @click="verify">{{ t('datasource.validate') }} </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
