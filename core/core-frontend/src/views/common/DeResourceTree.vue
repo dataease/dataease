@@ -48,6 +48,7 @@ import { XpackComponent } from '@/components/plugin'
 import treeSort, { treeParentWeight } from '@/utils/treeSortUtils'
 import router from '@/router'
 import { cancelRequestBatch } from '@/config/axios/service'
+import { isFreeFolder } from '@/utils/utils'
 const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -540,6 +541,16 @@ const sortTypeChange = sortType => {
   state.curSortType = sortType
 }
 
+const proxyHandleDrop = (arg1, arg2, arg3) => {
+  const flagArray = ['dashboard', 'datav', 'dataset', 'datasource']
+  const flag = flagArray.findIndex(item => item === curCanvasType.value)
+  if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
+    handleDrop(arg1, arg2, arg3)
+    return
+  }
+  ElMessage.warning(t('free.save_error'))
+}
+
 watch(filterText, val => {
   resourceListTree.value.filter(val)
 })
@@ -687,7 +698,7 @@ defineExpose({
         @node-click="nodeClick"
         @node-drag-start="handleDragStart"
         :allow-drop="allowDrop"
-        @node-drop="handleDrop"
+        @node-drop="proxyHandleDrop"
         draggable
       >
         <template #default="{ node, data }">

@@ -81,7 +81,7 @@ import { XpackComponent } from '@/components/plugin'
 import { useCache } from '@/hooks/web/useCache'
 import { RefreshLeft } from '@element-plus/icons-vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
-import { exportPermission } from '@/utils/utils'
+import { exportPermission, isFreeFolder } from '@/utils/utils'
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
@@ -783,6 +783,15 @@ const getMenuList = (val: boolean) => {
         }
       ].concat(menuList)
 }
+const proxyHandleDrop = (arg1, arg2, arg3) => {
+  const flagArray = ['dashboard', 'datav', 'dataset', 'datasource']
+  const flag = flagArray.findIndex(item => item === 'dataset')
+  if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
+    handleDrop(arg1, arg2, arg3)
+    return
+  }
+  ElMessage.warning(t('free.save_error'))
+}
 </script>
 
 <template>
@@ -893,7 +902,7 @@ const getMenuList = (val: boolean) => {
             highlight-current
             @node-drag-start="handleDragStart"
             :allow-drop="allowDrop"
-            @node-drop="handleDrop"
+            @node-drop="proxyHandleDrop"
             draggable
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"

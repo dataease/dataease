@@ -4507,7 +4507,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
       'After deletion, all resources under this folder will be deleted, please proceed with caution.',
     sync_to_org: 'Migrate to Target Organization',
     sync_org_placeholder: 'Please select the target organization',
-    relation_picture: 'Bloodline Relationship Diagram'
+    relation_picture: 'Bloodline Relationship Diagram',
+    save_error: "Prohibit operations on the 'Migration Resources' directory"
   },
   security: {
     title: 'Security Settings'

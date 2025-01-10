@@ -10,7 +10,7 @@ import type { DatasetOrFolder } from '@/api/dataset'
 import { cloneDeep } from 'lodash-es'
 import nothingTree from '@/assets/img/nothing-tree.png'
 import { useCache } from '@/hooks/web/useCache'
-
+import { filterFreeFolder } from '@/utils/utils'
 export interface Tree {
   name: string
   value?: string | number
@@ -153,6 +153,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   if (data.id) {
     if (exec !== 'rename') {
       listDatasources({ leaf: false, id: data.id, weight: 7 }).then(res => {
+        filterFreeFolder(res, 'datasource')
         dfs(res as unknown as Tree[])
         state.tData = (res as unknown as Tree[]) || []
         if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {

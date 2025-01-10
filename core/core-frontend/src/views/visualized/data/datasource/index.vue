@@ -89,6 +89,7 @@ import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { querySymmetricKey } from '@/api/login'
 import { symmetricDecrypt } from '@/utils/encryption'
+import { isFreeFolder } from '@/utils/utils'
 const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
@@ -1008,7 +1009,15 @@ const loadInit = () => {
     state.curSortType = historyTreeSort
   }
 }
-
+const proxyHandleDrop = (arg1, arg2, arg3) => {
+  const flagArray = ['dashboard', 'datav', 'dataset', 'datasource']
+  const flag = flagArray.findIndex(item => item === 'datasource')
+  if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
+    handleDrop(arg1, arg2, arg3)
+    return
+  }
+  ElMessage.warning(t('free.save_error'))
+}
 onMounted(() => {
   const dsId = wsCache.get('ds-info-id') || route.params.id
   nodeInfo.id = (dsId as string) || (route.query.id as string) || ''
@@ -1152,7 +1161,7 @@ const getMenuList = (val: boolean) => {
             :props="defaultProps"
             @node-drag-start="handleDragStart"
             :allow-drop="allowDrop"
-            @node-drop="handleDrop"
+            @node-drop="proxyHandleDrop"
             draggable
             @node-click="handleNodeClick"
           >

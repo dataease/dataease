@@ -16,7 +16,7 @@ import {
   saveCanvas
 } from '@/api/visualization/dataVisualization'
 import { ElMessage } from 'element-plus-secondary'
-import { cutTargetTree } from '@/utils/utils'
+import { cutTargetTree, filterFreeFolder } from '@/utils/utils'
 const props = defineProps({
   curCanvasType: {
     type: String,
@@ -157,6 +157,7 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
     resourceForm.name = data.name
   }
   queryTreeApi(request).then(res => {
+    filterFreeFolder(res, curCanvasType.value)
     const resultTree = res || []
     dfs(resultTree as unknown as BusiTreeNode[])
     state.tData = (resultTree as unknown as BusiTreeNode[]) || []

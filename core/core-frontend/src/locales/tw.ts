@@ -4373,7 +4373,8 @@ export default {
     del_folder_tips: '刪除後，此文件夾下的所有資源都會被刪除，請謹慎操作。',
     sync_to_org: '遷移至目標組織',
     sync_org_placeholder: '請選擇目標組織',
-    relation_picture: '血緣關系圖'
+    relation_picture: '血緣關系圖',
+    save_error: '禁止操作【遷移資源】目錄'
   },
   security: {
     title: '安全設置'

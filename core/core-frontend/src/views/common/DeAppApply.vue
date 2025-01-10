@@ -155,6 +155,7 @@ import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useCache } from '@/hooks/web/useCache'
 import { isDesktop } from '@/utils/ModelUtil'
+import { filterFreeFolder } from '@/utils/utils'
 const desktop = isDesktop()
 
 const { wsCache } = useCache('localStorage')
@@ -258,6 +259,7 @@ const goBack = () => {
 const initData = () => {
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 7 }
   queryTreeApi(request).then(res => {
+    filterFreeFolder(res, curCanvasType.value)
     const resultTree = res || []
     dfs(resultTree as unknown as BusiTreeNode[])
     state.dvTree = (resultTree as unknown as BusiTreeNode[]) || []
@@ -271,6 +273,7 @@ const initData = () => {
 
   const requestDs = { leaf: false, weight: 7 } as BusiTreeRequest
   getDatasetTree(requestDs).then(res => {
+    filterFreeFolder(res, 'dataset')
     dfs(res as unknown as BusiTreeNode[])
     state.dsTree = (res as unknown as BusiTreeNode[]) || []
     if (state.dsTree.length && state.dsTree[0].name === 'root' && state.dsTree[0].id === '0') {
