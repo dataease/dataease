@@ -17,9 +17,7 @@ import io.dataease.exception.DEException;
 import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.view.dto.ChartViewDTO;
-import io.dataease.extensions.view.dto.ChartViewFieldDTO;
-import io.dataease.extensions.view.dto.FormatterCfgDTO;
+import io.dataease.extensions.view.dto.*;
 import io.dataease.license.manage.F2CLicLimitedManage;
 import io.dataease.result.ResultCode;
 import io.dataease.utils.JsonUtil;
@@ -46,10 +44,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -256,7 +251,7 @@ public class ChartDataServer implements ChartDataApi {
                             details.add(0, request.getHeader());
                             ViewDetailField[] detailFields = request.getDetailFields();
                             Object[] header = request.getHeader();
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo().getXAxis(), wb);
+                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
                         }
@@ -306,22 +301,28 @@ public class ChartDataServer implements ChartDataApi {
         this.innerExportDetails(request, response);
     }
 
-    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, List<ChartViewFieldDTO> xAxis, Workbook wb) {
-        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, xAxis, wb);
+    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, ChartViewDTO viewInfo, Workbook wb) {
+        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, viewInfo, wb);
     }
 
 
-    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, List<ChartViewFieldDTO> xAxis, Workbook wb) {
+    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb) {
         List<CellStyle> styles = new ArrayList<>();
-        if (xAxis != null) {
-            for (ChartViewFieldDTO xAxi : xAxis) {
-                if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
-                    FormatterCfgDTO formatterCfgDTO = xAxi.getFormatterCfg() == null ? new FormatterCfgDTO() : xAxi.getFormatterCfg();
-                    CellStyle formatterCellStyle = createCellStyle(wb, formatterCfgDTO, null);
-                    styles.add(formatterCellStyle);
-                } else {
-                    styles.add(null);
-                }
+        List<ChartViewFieldDTO> xAxis = new ArrayList<>();
+        if (viewInfo.getType().equalsIgnoreCase("table-normal")) {
+            xAxis.addAll(viewInfo.getXAxis());
+            xAxis.addAll(viewInfo.getYAxis());
+        }
+        if (viewInfo.getType().equalsIgnoreCase("table-info")) {
+            xAxis.addAll(viewInfo.getXAxis());
+        }
+        for (ChartViewFieldDTO xAxi : xAxis) {
+            if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                FormatterCfgDTO formatterCfgDTO = xAxi.getFormatterCfg() == null ? new FormatterCfgDTO() : xAxi.getFormatterCfg();
+                CellStyle formatterCellStyle = createCellStyle(wb, formatterCfgDTO, null);
+                styles.add(formatterCellStyle);
+            } else {
+                styles.add(null);
             }
         }
         boolean mergeHead = false;
@@ -409,7 +410,7 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                if (xAxis != null && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
+                                if (viewInfo != null && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO() : xAxis.get(j).getFormatterCfg();
                                         if (formatterCfgDTO.getType().equalsIgnoreCase("auto")) {
@@ -433,6 +434,14 @@ public class ChartDataServer implements ChartDataApi {
 
                             } catch (Exception e) {
                                 LogUtil.warn("export excel data transform error");
+                            }
+                        } else {
+                            if (!viewInfo.getType().equalsIgnoreCase("circle-packing")) {
+                                Map<String, Object> senior = viewInfo.getSenior();
+                                ChartSeniorFunctionCfgDTO functionCfgDTO = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("assistLineCfg")), ChartSeniorFunctionCfgDTO.class);
+                                if (StringUtils.isNotEmpty(functionCfgDTO.getEmptyDataStrategy()) && functionCfgDTO.getEmptyDataStrategy().equalsIgnoreCase("setZero") && functionCfgDTO.getEmptyDataFieldCtrl().contains(xAxis.get(j).getDataeaseName())) {
+                                    cell.setCellValue(0);
+                                }
                             }
                         }
                     }

@@ -677,7 +677,7 @@ public class ExportCenterManage implements BaseExportApi {
                             details.add(0, request.getHeader());
                             ViewDetailField[] detailFields = request.getDetailFields();
                             Object[] header = request.getHeader();
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo().getXAxis(), wb);
+                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
                             exportTask.setExportStatus("IN_PROGRESS");
@@ -737,10 +737,7 @@ public class ExportCenterManage implements BaseExportApi {
                 Object[] header = request.getHeader();
                 Sheet detailsSheet = wb.createSheet("数据");
                 if (request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
-                    List<ChartViewFieldDTO> xAxis = new ArrayList<>();
-                    xAxis.addAll(request.getViewInfo().getXAxis());
-                    xAxis.addAll(request.getViewInfo().getYAxis());
-                    ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, xAxis, wb);
+                    ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                 } else {
                     ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
                 }
