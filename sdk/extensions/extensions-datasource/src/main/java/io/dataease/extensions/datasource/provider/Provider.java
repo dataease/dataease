@@ -283,7 +283,7 @@ public abstract class Provider {
                 Integer lport = Provider.getLPorts().get(datasourceId);
                 if (lport != null) {
                     configuration.setLPort(lport);
-                    if (Provider.getSessions().get(datasourceId) == null || !Provider.getSessions().get(datasourceId).isConnected()) {
+                        if (Provider.getSessions().get(datasourceId) == null || !Provider.getSessions().get(datasourceId).isConnected()) {
                         Session session = initSession(configuration);
                         Provider.getSessions().put(datasourceId, session);
                     }

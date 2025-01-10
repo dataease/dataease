@@ -1,6 +1,7 @@
 package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jcraft.jsch.Session;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
@@ -1379,6 +1380,13 @@ public class CalciteProvider extends Provider {
             SchemaPlus rootSchema = calciteConnection.getRootSchema();
             if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) == null) {
                 buildSchema(datasourceRequest, calciteConnection);
+            }
+            DatasourceConfiguration configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), DatasourceConfiguration.class);
+            if(configuration.isUseSSH()){
+                Session session =Provider.getSessions().get(datasourceDTO.getId());
+                session.disconnect();
+                Provider.getSessions().remove(datasourceDTO.getId());
+                startSshSession(configuration, null, datasourceDTO.getId());
             }
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
