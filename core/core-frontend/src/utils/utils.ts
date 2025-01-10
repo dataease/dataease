@@ -236,3 +236,9 @@ export const getBrowserLocale = () => {
 export const getLocale = () => {
   return wsCache.get('user.language') || getBrowserLocale() || 'zh-CN'
 }
+
+export const nameTrim = (target: {}) => {
+  if (target.name) {
+    target.name = target.name.tri()
+  }
+}

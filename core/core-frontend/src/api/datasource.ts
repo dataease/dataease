@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import { nameTrim } from '@/utils/utils'
 
 export interface DatasetOrFolder {
   name: string
@@ -86,6 +87,7 @@ export const latestUse = async (data = {}) => {
 export const validateById = (id: number) => request.get({ url: '/datasource/validate/' + id })
 
 export const save = async (data = {}): Promise<Dataset> => {
+  nameTrim(data)
   return request.post({ url: '/datasource/save', data }).then(res => {
     return res?.data
   })
@@ -98,6 +100,7 @@ export const perDeleteDatasource = async (id): Promise<boolean> => {
 }
 
 export const update = async (data = {}): Promise<Dataset> => {
+  nameTrim(data)
   return request.post({ url: '/datasource/update', data }).then(res => {
     return res?.data
   })
@@ -110,12 +113,14 @@ export const move = async (data = {}): Promise<Dataset> => {
 }
 
 export const reName = async (data = {}): Promise<Dataset> => {
+  nameTrim(data)
   return request.post({ url: '/datasource/reName', data }).then(res => {
     return res?.data
   })
 }
 
 export const createFolder = async (data = {}): Promise<Dataset> => {
+  nameTrim(data)
   return request.post({ url: '/datasource/createFolder', data }).then(res => {
     return res?.data
   })

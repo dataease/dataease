@@ -250,7 +250,7 @@ const saveDataset = () => {
     if (result) {
       const params: Omit<DatasetOrFolder, 'nodeType'> & { nodeType: 'folder' | 'datasource' } = {
         nodeType: nodeType.value as 'folder' | 'datasource',
-        name: datasetForm.name
+        name: datasetForm.name.trim()
       }
       switch (cmd.value) {
         case 'move':
