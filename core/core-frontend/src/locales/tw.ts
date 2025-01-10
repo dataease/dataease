@@ -2235,7 +2235,8 @@ export default {
     },
     batch_manage: '批次管理',
     origin_name: '物理欄位名稱',
-    origin_type: '物理字段類型'
+    origin_type: '物理字段類型',
+    field_diff: '所選字段類型不一致，不支持轉換'
   },
   deDataset: {
     search_by_name: '透過名稱搜尋',

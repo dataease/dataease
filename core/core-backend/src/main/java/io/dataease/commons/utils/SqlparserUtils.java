@@ -50,13 +50,14 @@ public class SqlparserUtils {
     private final List<Map<String, String>> sysParams = new ArrayList<>();
 
     public String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage, UserFormVO userEntity) {
+        DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
         if (StringUtils.isEmpty(sql)) {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
         this.userEntity = userEntity;
         try {
             this.removeSysParams = true;
-            removeVariables(sql, "");
+            removeVariables(sql, ds.getType());
         } catch (Exception e) {
             DEException.throwException(e);
         }
@@ -103,7 +104,6 @@ public class SqlparserUtils {
         }
 
         try {
-            DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
             this.removeSysParams = false;
             sql = removeVariables(sql, ds.getType());
             // replace keyword '`'

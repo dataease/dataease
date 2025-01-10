@@ -1009,13 +1009,19 @@ const handleValueSourceChange = () => {
   curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
   multipleChange(curComponent.value.multiple)
   if (curComponent.value.optionValueSource === 1 && !curComponent.value.dataset.id) {
-    const [comId] = curComponent.value.checkedFields
+    let id = ''
+    let comId = ''
+    Object.keys(curComponent.value.checkedFieldsMap).forEach(ele => {
+      if (curComponent.value.checkedFieldsMap[ele]) {
+        comId = ele
+        id = curComponent.value.checkedFieldsMap[ele]
+      }
+    })
     fields.value.forEach(ele => {
       if (ele.componentId === comId) {
         curComponent.value.dataset.id = ele.id
       }
     })
-    const [id] = Object.values(curComponent.value.checkedFieldsMap)
     curComponent.value.displayId = id
     curComponent.value.sortId = id
     curComponent.value.field.id = id

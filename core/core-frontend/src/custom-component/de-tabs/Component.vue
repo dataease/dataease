@@ -63,8 +63,10 @@
         </el-tab-pane>
       </template>
       <div
-        style="position: absolute; width: 100%; height: 100%"
+        class="tab-content-custom"
         :key="tabItem.name + '-content'"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave"
         v-for="(tabItem, index) in element.propValue"
         :class="{ 'switch-hidden': editableTabsValue !== tabItem.name }"
       >
@@ -214,12 +216,20 @@ const {
   searchCount
 } = toRefs(props)
 
+const handleMouseEnter = () => {
+  state.hoverFlag = true
+}
+
+const handleMouseLeave = () => {
+  state.hoverFlag = false
+}
 const state = reactive({
   activeTabName: '',
   curItem: {},
   textarea: '',
   dialogVisible: false,
-  tabShow: true
+  tabShow: true,
+  hoverFlag: false
 })
 const tabsAreaScroll = ref(false)
 const editableTabsValue = ref(null)
@@ -512,11 +522,14 @@ const initCarousel = () => {
       let switchCount = 1
       // 轮播定时器
       carouselTimer = setInterval(() => {
-        const nowIndex = switchCount % element.value.propValue.length
-        switchCount++
-        nextTick(() => {
-          editableTabsValue.value = element.value.propValue[nowIndex].name
-        })
+        // 鼠标移入时 停止轮播
+        if (!state.hoverFlag) {
+          const nowIndex = switchCount % element.value.propValue.length
+          switchCount++
+          nextTick(() => {
+            editableTabsValue.value = element.value.propValue[nowIndex].name
+          })
+        }
       }, switchTime)
     }
   }
@@ -610,5 +623,11 @@ onBeforeMount(() => {
 .switch-hidden {
   opacity: 0;
   z-index: -1;
+}
+
+.tab-content-custom {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 </style>

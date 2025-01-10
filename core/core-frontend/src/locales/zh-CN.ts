@@ -2237,7 +2237,8 @@ export default {
     },
     batch_manage: '批量管理',
     origin_name: '物理字段名',
-    origin_type: '物理字段类型'
+    origin_type: '物理字段类型',
+    field_diff: '所选字段类型不一致，不支持转换'
   },
   deDataset: {
     search_by_name: '通过名称搜索',

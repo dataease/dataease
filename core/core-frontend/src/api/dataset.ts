@@ -1,6 +1,7 @@
 import request from '@/config/axios'
 import { type Field } from '@/api/chart'
 import type { BusiTreeRequest } from '@/models/tree/TreeNode'
+import { nameTrim } from '@/utils/utils'
 export interface DatasetOrFolder {
   name: string
   action?: string
@@ -70,6 +71,7 @@ export interface Table {
 // 获取权限路
 // edit
 export const saveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
+  nameTrim(data)
   return request.post({ url: '/datasetTree/save', data }).then(res => {
     return res?.data
   })
@@ -77,6 +79,7 @@ export const saveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse>
 
 // create
 export const createDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
+  nameTrim(data)
   return request.post({ url: '/datasetTree/create', data }).then(res => {
     return res?.data
   })
@@ -84,6 +87,7 @@ export const createDatasetTree = async (data: DatasetOrFolder): Promise<IRespons
 
 // rename
 export const renameDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
+  nameTrim(data)
   return request.post({ url: '/datasetTree/rename', data }).then(res => {
     return res?.data
   })

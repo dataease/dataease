@@ -13,6 +13,7 @@ import icon_switch_outlined from '@/assets/svg/icon_switch_outlined.svg'
 import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import {
   ref,
   toRaw,
@@ -2201,6 +2202,16 @@ const getDsIconName = data => {
                     ></Icon>
                   </el-icon>
                 </span>
+                <el-tooltip class="item" effect="dark" placement="top">
+                  <template #content>
+                    <div>{{ t('dataset.field_diff') }}</div>
+                  </template>
+                  <el-icon size="16px" style="margin-left: 6px" v-show="!showCascaderBatch">
+                    <Icon name="icon_info_outlined"
+                      ><icon_info_outlined class="svg-icon tip-icon"
+                    /></Icon>
+                  </el-icon>
+                </el-tooltip>
               </div>
               <el-button
                 @click="dqTransArr('q')"
@@ -2821,6 +2832,12 @@ const getDsIconName = data => {
     position: relative;
     margin-left: 30%;
     width: 176px;
+    display: flex;
+    align-items: center;
+  }
+
+  .tip-icon {
+    color: #f54a45;
   }
 }
 

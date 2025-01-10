@@ -237,6 +237,7 @@ export const getLocale = () => {
   return wsCache.get('user.language') || getBrowserLocale() || 'zh-CN'
 }
 
+
 export const isFreeFolder = (node, flag) => {
   const oid = wsCache.get('user.oid')
   if (!oid) {
@@ -281,5 +282,10 @@ export const filterFreeFolder = (list, flagText) => {
         }
       }
     }
+  }
+}
+export const nameTrim = (target: {}) => {
+  if (target.name) {
+    target.name = target.name.tri()
   }
 }
