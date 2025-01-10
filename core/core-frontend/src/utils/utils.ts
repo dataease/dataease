@@ -237,7 +237,6 @@ export const getLocale = () => {
   return wsCache.get('user.language') || getBrowserLocale() || 'zh-CN'
 }
 
-
 export const isFreeFolder = (node, flag) => {
   const oid = wsCache.get('user.oid')
   if (!oid) {
