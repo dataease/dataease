@@ -408,9 +408,8 @@ public class ChartDataServer implements ChartDataApi {
                             //设置列的宽度
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
-                            System.out.println(cellValObj.toString());
                             try {
-                                if (xAxis != null && xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                                if (xAxis != null && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO() : xAxis.get(j).getFormatterCfg();
                                         if (formatterCfgDTO.getType().equalsIgnoreCase("auto")) {
@@ -425,7 +424,11 @@ public class ChartDataServer implements ChartDataApi {
                                         cell.setCellValue(cellValObj.toString());
                                     }
                                 } else {
-                                    cell.setCellValue(cellValObj.toString());
+                                    if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
+                                        cell.setCellValue(Double.valueOf(cellValObj.toString()));
+                                    } else if (cellValObj != null) {
+                                        cell.setCellValue(cellValObj.toString());
+                                    }
                                 }
 
                             } catch (Exception e) {
