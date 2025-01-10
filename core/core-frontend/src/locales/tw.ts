@@ -228,7 +228,7 @@ export default {
     convert_to_indicator: '轉換為指標',
     convert_to_dimension: '轉換為維度',
     selected: '已選擇',
-    bar: '條',
+    bar: '項',
     format_edit: '格式編輯',
     custom_time_format: '自訂時間格式',
     cannot_be_empty_: '過濾欄位不能為空',

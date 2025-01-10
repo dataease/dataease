@@ -229,7 +229,7 @@ export default {
     convert_to_indicator: '转换为指标',
     convert_to_dimension: '转换为维度',
     selected: '已选择',
-    bar: '条',
+    bar: '项',
     format_edit: '格式编辑',
     custom_time_format: '自定义时间格式',
     cannot_be_empty_: '过滤字段不能为空',

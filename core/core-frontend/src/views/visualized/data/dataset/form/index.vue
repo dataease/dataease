@@ -2131,8 +2131,9 @@ const getDsIconName = data => {
                   t('commons.clear')
                 }}</el-button>
               </div>
-              <div class="cascader-batch" v-if="showCascaderBatch">
+              <div class="cascader-batch">
                 <el-cascader
+                  :disabled="!showCascaderBatch"
                   :class="!!deTypeArr.length && 'select-type'"
                   v-model="deTypeArr"
                   @change="cascaderChangeArr"
