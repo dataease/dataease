@@ -2292,7 +2292,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     },
     batch_manage: 'Batch management',
     origin_name: 'Physical field name',
-    origin_type: 'Physical field type'
+    origin_type: 'Physical field type',
+    field_diff: 'The selected field types are inconsistent and do not support conversion'
   },
   deDataset: {
     search_by_name: 'Search by name',
