@@ -251,7 +251,7 @@ watch(
 
 <style lang="less" scoped>
 .select-type-list {
-  width: 104px;
+  width: 120px;
   :deep(.ed-input__wrapper) {
     padding-left: 11px;
     padding-right: 11px;

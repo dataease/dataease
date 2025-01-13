@@ -36,8 +36,8 @@ const openBlank = () => {
 
 <style lang="less" scoped>
 .doc-card {
-  padding: 8px 0;
-  width: 96px;
+  padding: 8px;
+  min-width: 96px;
   min-height: 66px;
   cursor: pointer;
   display: flex;
@@ -56,8 +56,7 @@ const openBlank = () => {
   line-height: 22px;
   font-weight: 400;
   margin-top: 4px;
-  width: 96px;
-  word-break: break-word;
+  white-space: nowrap;
   text-align: center;
 }
 

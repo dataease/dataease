@@ -1662,14 +1662,9 @@ const getMenuList = (val: boolean) => {
                     </el-button>
                   </el-col>
                 </el-row>
-                <el-row>
-                  <el-col :span="19">
-                    <span
-                      >{{ t('data_source.data_time') }}
-                      {{ timestampFormatDate(api['updateTime']) }}</span
-                    >
-                  </el-col>
-                </el-row>
+                <div>
+                  {{ t('data_source.data_time') }} {{ timestampFormatDate(api['updateTime']) }}
+                </div>
 
                 <div class="req-title">
                   <span>{{ t('datasource.method') }}</span>
@@ -1677,7 +1672,7 @@ const getMenuList = (val: boolean) => {
                 </div>
                 <div class="req-value">
                   <span>{{ api.method }}</span>
-                  <el-tooltip w effect="dark" :content="api.url" placement="top">
+                  <el-tooltip effect="dark" :content="api.url" placement="top">
                     <span>{{ api.url }}</span>
                   </el-tooltip>
                 </div>
@@ -2090,7 +2085,7 @@ const getMenuList = (val: boolean) => {
       font-size: 14px;
       font-weight: 400;
       :nth-child(1) {
-        width: 100px;
+        width: 110px;
       }
 
       :nth-child(2) {

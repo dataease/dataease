@@ -491,7 +491,7 @@ const getEmptyDesc = (): string => {
   margin-top: 16px;
 
   .select-type-list {
-    width: 104px;
+    width: 120px;
     :deep(.ed-input__wrapper) {
       padding-left: 11px;
       padding-right: 11px;

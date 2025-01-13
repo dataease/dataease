@@ -1,5 +1,4 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <p class="router-title">水印管理</p>
   <el-row class="watermark-table__content">
     <el-row class="watermark-main-outer">
       <el-col class="main-col-left" :span="12">

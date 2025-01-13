@@ -10,6 +10,7 @@ export default {
       dateRange: '時間範圍',
       add_component_hint: '點選或拖曳左側元件新增欄位'
     },
+    watermarkManagement: '水印管理',
     inputText: '請輸入',
     selectText: '請選擇',
     add: '新增',
