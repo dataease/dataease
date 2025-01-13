@@ -285,6 +285,6 @@ export const filterFreeFolder = (list, flagText) => {
 }
 export const nameTrim = (target: {}) => {
   if (target.name) {
-    target.name = target.name.tri()
+    target.name = target.name.trim()
   }
 }
