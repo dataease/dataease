@@ -201,6 +201,7 @@ const handleNew = newComponentInfo => {
         state.sideShow = true
       })
     }
+    useEmitt().emitter.emit('initScroll')
   }
 }
 
