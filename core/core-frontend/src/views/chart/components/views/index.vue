@@ -53,13 +53,14 @@ import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import request from '@/config/axios'
 import { store } from '@/store'
 import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
+import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { emitter } = useEmitt()
-
+const dePreviewPopDialogRef = ref(null)
 let innerRefreshTimer = null
 const appStore = useAppStoreWithOut()
 const appearanceStore = useAppearanceStoreWithOut()
@@ -411,26 +412,27 @@ const windowsJump = (url, jumpType, size = 'middle') => {
   try {
     let newWindow
     if ('newPop' === jumpType) {
-      let sizeX, sizeY
-      if (size === 'large') {
-        sizeX = 0.95
-        sizeY = 0.9
-      } else if (size === 'middle') {
-        sizeX = 0.8
-        sizeY = 0.75
-      } else {
-        sizeX = 0.6
-        sizeY = 0.5
-      }
-      const height = screen.height * sizeY
-      const width = screen.width * sizeX
-      const left = screen.width * ((1 - sizeX) / 2)
-      const top = screen.height * ((1 - sizeY) / 2)
-      newWindow = window.open(
-        url,
-        '_blank',
-        `width=${width},height=${height},left=${left},top=${top},toolbar=no,scrollbars=yes,resizable=yes,location=no`
-      )
+      dePreviewPopDialogRef.value.previewInit({ url, size })
+      // let sizeX, sizeY
+      // if (size === 'large') {
+      //   sizeX = 0.95
+      //   sizeY = 0.9
+      // } else if (size === 'middle') {
+      //   sizeX = 0.8
+      //   sizeY = 0.75
+      // } else {
+      //   sizeX = 0.6
+      //   sizeY = 0.5
+      // }
+      // const height = screen.height * sizeY
+      // const width = screen.width * sizeX
+      // const left = screen.width * ((1 - sizeX) / 2)
+      // const top = screen.height * ((1 - sizeY) / 2)
+      // newWindow = window.open(
+      //   url,
+      //   '_blank',
+      //   `width=${width},height=${height},left=${left},top=${top},toolbar=no,scrollbars=yes,resizable=yes,location=no`
+      // )
     } else if ('_self' === jumpType) {
       newWindow = window.open(url, jumpType)
       if (inMobile.value) {
@@ -1246,6 +1248,7 @@ const titleTooltipWidth = computed(() => {
       jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvVmlld0NhdGVnb3J5SGFuZGxlcg=="
       @load-plugin-category="loadPluginCategory"
     />
+    <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>
 
