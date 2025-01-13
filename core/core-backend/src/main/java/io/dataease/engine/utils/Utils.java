@@ -67,9 +67,6 @@ public class Utils {
                 DEException.throwException(Translator.get("i18n_field_circular_error"));
             }
             String originField = getCalcField(chartField, originFields);
-            if (originField == null) {
-                DEException.throwException(Translator.get("i18n_field_circular_error"));
-            }
             originField = originField.replaceAll("[\\t\\n\\r]]", "");
             // 正则提取[xxx]
             String regex = "\\[(.*?)]";
@@ -120,7 +117,7 @@ public class Utils {
                 return field.getOriginName();
             }
         }
-        return null;
+        return "";
     }
 
     public static String getLogic(String logic) {
