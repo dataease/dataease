@@ -208,7 +208,7 @@ defineExpose({
     <template #title>
       <div class="title">
         {{ t('v_query.condition_cascade_configuration')
-        }}<span class="tip">{{ t('v_query.not_reverse_cascade') }}</span>
+        }}<span style="margin-left: 8px" class="tip">{{ t('v_query.not_reverse_cascade') }}</span>
       </div>
     </template>
     <div class="content">

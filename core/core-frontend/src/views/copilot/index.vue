@@ -312,9 +312,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
             <div :class="['field-d', { open: expandedD }]">
               <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
                 <ElIcon class="expand">
-                  <Icon name="icon_expand-right_filled"
-                    ><icon_expandRight_filled class="svg-icon"
-                  /></Icon>
+                  <Icon><icon_expandRight_filled class="svg-icon" /></Icon>
                 </ElIcon>
                 &nbsp;{{ $t('chart.dimension') }}
               </div>
@@ -589,6 +587,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         .field-q {
           position: relative;
           height: 49px;
+          padding-left: 8px;
 
           &.open {
             max-height: 50%;
@@ -612,6 +611,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
 
             .expand {
               font-size: 10px;
+              color: #646a73;
             }
 
             &.expanded {

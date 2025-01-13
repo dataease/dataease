@@ -588,11 +588,12 @@ initParams()
                     </el-icon>
                   </el-tooltip>
                 </el-checkbox>
-
-                <el-checkbox :effect="themes" size="small" label="clear">
+                <br />
+                <el-checkbox style="margin-top: 8px" :effect="themes" size="small" label="clear">
                   {{ t('commons.clear') }}
                 </el-checkbox>
-                <el-checkbox :effect="themes" size="small" label="reset">
+                <br />
+                <el-checkbox style="margin-top: 8px" :effect="themes" size="small" label="reset">
                   {{ t('commons.adv_search.reset') }}
                 </el-checkbox>
               </el-checkbox-group>

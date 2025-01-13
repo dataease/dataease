@@ -764,7 +764,9 @@ const initOpenHandler = newWindow => {
   margin-left: 10px;
 }
 .drop-style {
-  width: 120px;
+  :deep(.ed-dropdown-menu__item) {
+    padding: 5px 12px !important;
+  }
   :deep(.ed-dropdown-menu__item:not(.is_disabled):focus) {
     color: inherit;
     background-color: rgba(31, 35, 41, 0.1);

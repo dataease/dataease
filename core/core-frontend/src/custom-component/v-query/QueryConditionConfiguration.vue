@@ -2718,7 +2718,9 @@ defineExpose({
               </div>
             </div>
             <div class="list-item" v-if="curComponent.displayType === '9'">
-              <div class="label">{{ t('v_query.of_option_values') }}</div>
+              <div :title="t('v_query.of_option_values')" class="label ellipsis">
+                {{ t('v_query.of_option_values') }}
+              </div>
               <div class="value">
                 <el-radio-group class="larger-radio" v-model="curComponent.resultMode">
                   <el-radio :label="0">{{ t('login.default_login') }}</el-radio>
@@ -2807,7 +2809,9 @@ defineExpose({
               class="list-item top-item"
               v-if="!['1', '7', '8', '9', '22'].includes(curComponent.displayType)"
             >
-              <div class="label">{{ t('v_query.option_value_source') }}</div>
+              <div :title="t('v_query.option_value_source')" class="label ellipsis">
+                {{ t('v_query.option_value_source') }}
+              </div>
               <div class="value">
                 <div class="value">
                   <el-radio-group
@@ -3125,7 +3129,11 @@ defineExpose({
                   </div>
                 </div>
               </div>
-              <div class="label" style="margin-top: 10.5px">
+              <div
+                class="label ellipsis"
+                :title="t('v_query.of_option_values')"
+                style="margin-top: 10.5px"
+              >
                 {{ t('v_query.of_option_values') }}
               </div>
               <div class="value" style="margin-top: 10.5px">
@@ -3136,7 +3144,9 @@ defineExpose({
               </div>
             </div>
             <div class="list-item top-item" v-if="curComponent.displayType === '8'">
-              <div class="label">{{ t('v_query.condition_type') }}</div>
+              <div :title="t('v_query.condition_type')" class="label ellipsis">
+                {{ t('v_query.condition_type') }}
+              </div>
               <div class="value">
                 <div class="value">
                   <el-radio-group class="larger-radio" v-model="curComponent.conditionType">
