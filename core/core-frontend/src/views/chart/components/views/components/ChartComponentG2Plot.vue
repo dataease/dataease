@@ -28,6 +28,7 @@ import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
+import { ExportImage } from '@antv/l7'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack, inMobile } =
@@ -573,6 +574,78 @@ const trackMenu = computed(() => {
 const quadrantDefaultBaseline = defaultQuadrant => {
   emitter.emit('quadrant-default-baseline', defaultQuadrant)
 }
+
+const canvas2Picture = (pictureData, online) => {
+  const mapDom = document.getElementById(containerId)
+  const childNodeList = mapDom.querySelectorAll('.l7-scene')
+  if (childNodeList?.length) {
+    childNodeList.forEach(child => {
+      child['style'].display = 'none'
+    })
+  }
+  if (online) {
+    const canvasContainerList = mapDom.querySelectorAll('.amap-maps')
+    canvasContainerList?.forEach(canvasContainer => {
+      canvasContainer['style'].display = 'none'
+    })
+  }
+  const imgDom = document.createElement('img')
+  imgDom.style.width = '100%'
+  imgDom.style.height = '100%'
+  imgDom.style.position = 'absolute'
+  imgDom.style.objectFit = 'cover'
+  imgDom.style['z-index'] = '2'
+  imgDom.classList.add('prepare-picture-img')
+  imgDom.src = pictureData
+  mapDom.appendChild(imgDom)
+}
+const preparePicture = id => {
+  if (id !== curView.id) {
+    return
+  }
+  const chartView = chartViewManager.getChartView(curView.render, curView.type)
+  if (chartView.library === ChartLibraryType.L7_PLOT) {
+    myChart
+      .getScene()
+      .exportMap('png')
+      .then(res => canvas2Picture(res, false))
+  } else if (chartView.library === ChartLibraryType.L7) {
+    const scene = myChart.getScene()
+    const zoom = new ExportImage({
+      onExport: (base64: string) => {
+        canvas2Picture(base64, true)
+      }
+    })
+    scene.addControl(zoom)
+    zoom.hide()
+    zoom.getImage().then(res => {
+      canvas2Picture(res, true)
+    })
+  }
+}
+const unPreparePicture = id => {
+  if (id !== curView.id) {
+    return
+  }
+  const chartView = chartViewManager.getChartView(curView.render, curView.type)
+  if (chartView.library === ChartLibraryType.L7_PLOT || chartView.library === ChartLibraryType.L7) {
+    const mapDom = document.getElementById(containerId)
+    const childNodeList = mapDom.querySelectorAll('.l7-scene')
+    if (childNodeList?.length) {
+      childNodeList.forEach(child => {
+        child['style'].display = 'block'
+      })
+    }
+    const imgDomList = mapDom.querySelectorAll('.prepare-picture-img')
+    imgDomList?.forEach(child => {
+      child.remove()
+    })
+    const canvasContainerList = mapDom.querySelectorAll('.amap-maps')
+    canvasContainerList?.forEach(canvasContainer => {
+      canvasContainer['style'].display = 'block'
+    })
+  }
+}
 defineExpose({
   calcData,
   renderChart,
@@ -603,6 +676,8 @@ onMounted(() => {
     preSize[1] = size.blockSize
   })
   resizeObserver.observe(containerDom)
+  useEmitt({ name: 'l7-prepare-picture', callback: preparePicture })
+  useEmitt({ name: 'l7-unprepare-picture', callback: unPreparePicture })
 })
 onBeforeUnmount(() => {
   try {

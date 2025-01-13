@@ -139,6 +139,7 @@ const wrapperId = 'wrapper-outer-id-' + config.value.id
 
 const viewDemoInnerId = computed(() => 'enlarge-inner-content-' + config.value.id)
 const htmlToImage = () => {
+  useEmitt().emitter.emit('l7-prepare-picture', config.value.id)
   downLoading.value = true
   setTimeout(() => {
     const vueDom = componentWrapperInnerRef.value
@@ -147,8 +148,9 @@ const htmlToImage = () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false
+      useEmitt().emitter.emit('l7-unprepare-picture', config.value.id)
     })
-  }, 200)
+  }, 1000)
 }
 
 const handleInnerMouseDown = e => {

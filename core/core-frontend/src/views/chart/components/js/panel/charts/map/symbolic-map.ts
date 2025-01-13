@@ -138,7 +138,10 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           pitch: miscStyle.mapPitch,
           center,
           zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
-          showLabel: !(basicStyle.showLabel === false)
+          showLabel: !(basicStyle.showLabel === false),
+          WebGLParams: {
+            preserveDrawingBuffer: true
+          }
         })
       })
     } else {
