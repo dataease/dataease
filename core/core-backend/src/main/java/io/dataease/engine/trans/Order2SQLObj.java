@@ -52,7 +52,7 @@ public class Order2SQLObj {
 
         if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_CALC)) {
             // 解析origin name中有关联的字段生成sql表达式
-            String calcFieldExp = Utils.calcFieldRegex(f.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
+            String calcFieldExp = Utils.calcFieldRegex(f, tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
             // 给计算字段处加一个占位符，后续SQL方言转换后再替换
             originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, f.getId());
             fieldsDialect.put(originField, calcFieldExp);

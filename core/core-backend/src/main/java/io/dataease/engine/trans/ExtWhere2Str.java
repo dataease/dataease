@@ -60,7 +60,7 @@ public class ExtWhere2Str {
                     String originName;
                     if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
                         // 解析origin name中有关联的字段生成sql表达式
-                        String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
+                        String calcFieldExp = Utils.calcFieldRegex(field, tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
                         // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                         originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
                         fieldsDialect.put(originName, calcFieldExp);

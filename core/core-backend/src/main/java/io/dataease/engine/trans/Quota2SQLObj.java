@@ -46,7 +46,7 @@ public class Quota2SQLObj {
                 String originField;
                 if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    String calcFieldExp = Utils.calcFieldRegex(y.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
+                    String calcFieldExp = Utils.calcFieldRegex(y, tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
                     // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                     originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, y.getId());
                     fieldsDialect.put(originField, calcFieldExp);

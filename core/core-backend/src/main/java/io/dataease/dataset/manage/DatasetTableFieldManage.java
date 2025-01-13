@@ -262,7 +262,7 @@ public class DatasetTableFieldManage {
                 .filter(ele -> {
                     boolean flag = true;
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                        String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, fields, true, null, Utils.mergeParam(Utils.getParams(fields), null), pluginManage);
+                        String originField = Utils.calcFieldRegex(ele, tableObj, fields, true, null, Utils.mergeParam(Utils.getParams(fields), null), pluginManage);
                         for (String func : FunctionConstant.AGG_FUNC) {
                             if (Utils.matchFunction(func, originField)) {
                                 flag = false;

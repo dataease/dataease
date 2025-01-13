@@ -241,7 +241,7 @@ public class ChartViewManege {
                     BeanUtils.copyBean(dto, e);
                     return dto;
                 }).collect(Collectors.toList());
-                String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, f, true, null, Utils.mergeParam(Utils.getParams(f), null), pluginManage);
+                String originField = Utils.calcFieldRegex(ele, tableObj, f, true, null, Utils.mergeParam(Utils.getParams(f), null), pluginManage);
                 for (String func : FunctionConstant.AGG_FUNC) {
                     if (Utils.matchFunction(func, originField)) {
                         ele.setSummary("");
