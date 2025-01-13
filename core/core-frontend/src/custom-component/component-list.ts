@@ -282,8 +282,8 @@ const list = [
   },
   {
     component: 'VQuery',
-    name: t('visualization.query'),
-    label: t('visualization.query'),
+    name: t('visualization.query_component'),
+    label: t('visualization.query_component'),
     propValue: '',
     icon: 'icon_search',
     innerType: 'VQuery',

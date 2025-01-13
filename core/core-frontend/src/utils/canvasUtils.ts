@@ -983,3 +983,13 @@ export function mobileViewStyleSwitch(component) {
     viewInfo.name = component.name
   }
 }
+
+export function syncViewTitle(element) {
+  if (
+    element &&
+    ['UserView', 'VQuery'].includes(element.component) &&
+    canvasViewInfo.value[element.id]
+  ) {
+    canvasViewInfo.value[element.id].title = element.name
+  }
+}

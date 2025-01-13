@@ -12,6 +12,7 @@ import draggable from 'vuedraggable'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import RealTimeGroup from '@/components/data-visualization/RealTimeGroup.vue'
 import eventBus from '@/utils/eventBus'
+import { syncViewTitle } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -69,6 +70,7 @@ const closeEditComponentName = () => {
     return
   }
   curEditComponent.title = inputName.value
+  syncViewTitle(curEditComponent)
   inputName.value = ''
   curEditComponent = null
 }

@@ -61,7 +61,7 @@ const props = defineProps({
   title: String
 })
 
-const { width, asidePosition, sideName, themeInfo, view, themes } = toRefs(props)
+const { width, asidePosition, sideName, themeInfo, view, themes, element } = toRefs(props)
 const collapseChange = () => {
   canvasCollapse.value[sideName.value] = !canvasCollapse.value[sideName.value]
 }
@@ -81,7 +81,10 @@ const closeEditComponentName = () => {
   if (!inputComponentName.value.name || !inputComponentName.value.name.trim()) {
     return
   }
-  if (inputComponentName.value.name.trim() === view.value.title) {
+  if (
+    inputComponentName.value.name.trim() === view.value?.title ||
+    inputComponentName.value.name.trim() === element.value.name
+  ) {
     return
   }
   if (
@@ -92,19 +95,26 @@ const closeEditComponentName = () => {
     editComponentName()
     return
   }
-  view.value.title = inputComponentName.value.name
+  element.value.label = inputComponentName.value.name
+  element.value.name = inputComponentName.value.name
+  if (isViewTitle.value) {
+    view.value.title = inputComponentName.value.name
+  }
   inputComponentName.value.name = ''
 }
 
 const editComponentName = () => {
+  componentNameEdit.value = true
   if (isViewTitle.value) {
-    componentNameEdit.value = true
     inputComponentName.value.name = view.value.title
     inputComponentName.value.id = view.value.id
-    nextTick(() => {
-      componentNameInputAttr.value.focus()
-    })
+  } else {
+    inputComponentName.value.name = element.value.name
+    inputComponentName.value.id = element.value.id
   }
+  nextTick(() => {
+    componentNameInputAttr.value.focus()
+  })
 }
 
 const onComponentNameChange = () => {

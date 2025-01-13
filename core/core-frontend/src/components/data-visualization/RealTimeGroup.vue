@@ -77,6 +77,7 @@ import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
+import { syncViewTitle } from '@/utils/canvasUtils'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -140,6 +141,7 @@ const closeEditComponentName = () => {
     return
   }
   curEditComponent.name = inputName.value
+  syncViewTitle(curEditComponent)
   inputName.value = ''
   curEditComponent = null
 }

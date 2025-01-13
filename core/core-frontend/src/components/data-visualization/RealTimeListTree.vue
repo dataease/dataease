@@ -81,7 +81,7 @@ import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/cont
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
-import { checkJoinGroup } from '@/utils/canvasUtils'
+import { checkJoinGroup, syncViewTitle } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
@@ -220,6 +220,7 @@ const closeEditComponentName = () => {
     return
   }
   curEditComponent.name = inputName.value
+  syncViewTitle(curEditComponent)
   inputName.value = ''
   curEditComponent = null
 }

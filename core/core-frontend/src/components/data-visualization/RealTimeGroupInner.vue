@@ -61,8 +61,6 @@ import dvShow from '@/assets/svg/dv-show.svg'
 import dvUnlock from '@/assets/svg/dv-unlock.svg'
 import dvLock from '@/assets/svg/dv-lock.svg'
 import dvMore from '@/assets/svg/dv-more.svg'
-import dvExpandDown from '@/assets/svg/dv-expand-down.svg'
-import dvExpandRight from '@/assets/svg/dv-expand-right.svg'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
@@ -76,7 +74,7 @@ import ContextMenuAsideDetails from '@/components/data-visualization/canvas/Cont
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
-import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
+import { syncViewTitle } from '@/utils/canvasUtils'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -140,6 +138,7 @@ const closeEditComponentName = () => {
     return
   }
   curEditComponent.name = inputName.value
+  syncViewTitle(curEditComponent)
   inputName.value = ''
   curEditComponent = null
 }

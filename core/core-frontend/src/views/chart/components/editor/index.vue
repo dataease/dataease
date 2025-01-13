@@ -151,6 +151,10 @@ const closeEditComponentName = () => {
     return
   }
   view.value.title = inputComponentName.value.name
+  if (curComponent.value) {
+    curComponent.value.label = inputComponentName.value.name
+    curComponent.value.name = inputComponentName.value.name
+  }
   inputComponentName.value.name = ''
   inputComponentName.value.id = ''
 }
@@ -1131,6 +1135,10 @@ const onChangeMiscStyleForm = val => {
 
 const onTextChange = val => {
   view.value.customStyle.text = val
+  if (curComponent.value) {
+    curComponent.value.name = val
+    curComponent.value.title = value
+  }
   if (mobileInPc.value) {
     //移动端设计
     useEmitt().emitter.emit('onMobileStatusChange', {
