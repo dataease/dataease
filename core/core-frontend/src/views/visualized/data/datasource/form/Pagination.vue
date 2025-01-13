@@ -92,15 +92,16 @@ const responseData = ref([
 ])
 
 onBeforeMount(() => {
-  if (page.value.requestData.length === 0) {
+  if (!page.value.requestData || page.value.requestData.length === 0) {
     page.value.requestData = requestData.value
   }
-  if (page.value.responseData.length === 0) {
+  if (!page.value.responseData || page.value.responseData.length === 0) {
     page.value.responseData = responseData.value
   }
-  if (page.value.pageType === '') {
-    // page.value.pageType = 'empty'
+  if (page.value.pageType === '' || !page.value.pageType) {
+    page.value.pageType = 'empty'
   }
+  handleNumberSizeChange()
 })
 
 const handleNumberSizeChange = () => {
