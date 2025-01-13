@@ -280,6 +280,28 @@ public class SqlparserUtils {
             List<Join> joinsList = new ArrayList<>();
             for (Join join : joins) {
                 FromItem rightItem = join.getRightItem();
+                Collection<Expression> exprs = join.getOnExpressions();
+                Collection<Expression> exprs2 = new ArrayList<>();
+                for (Expression expr : exprs) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    BinaryExpression binaryExpression = null;
+                    try {
+                        binaryExpression = (BinaryExpression) expr;
+                    } catch (Exception e) {
+                    }
+                    if (binaryExpression != null) {
+                        boolean hasSubBinaryExpression = binaryExpression instanceof AndExpression || binaryExpression instanceof OrExpression;
+                        if (!hasSubBinaryExpression && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && (hasVariable(binaryExpression.getLeftExpression().toString()) || hasVariable(binaryExpression.getRightExpression().toString()))) {
+                            stringBuilder.append(handleSubstitutedSql(binaryExpression.toString()));
+                        } else {
+                            expr.accept(getExpressionDeParser(stringBuilder));
+                        }
+                    } else {
+                        expr.accept(getExpressionDeParser(stringBuilder));
+                    }
+                    exprs2.add(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString())) ;
+                }
+                join.setOnExpressions(exprs2);
                 if (rightItem instanceof ParenthesedSelect) {
                     try {
                         PlainSelect selectBody = ((ParenthesedSelect) rightItem).getPlainSelect();
