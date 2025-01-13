@@ -118,7 +118,7 @@ const getFieldSummaryByDeType = (deType: number) => {
 const initDynamicDefaultField = () => {
   const yAxisField = props.chart.yAxis?.[0]
   const yAxisId = yAxisField?.id
-  if (quotaData.value?.length === 0 || yAxisField?.id === '-1') {
+  if (quotaData.value?.length === 0) {
     state.miscForm.liquidMaxType = 'fix'
     state.miscForm.liquidMaxField.id = ''
     state.miscForm.gaugeMaxType = 'fix'
@@ -382,7 +382,6 @@ const addAxis = (form: AxisEditForm) => {
   changeMisc(maxValueKey + 'Field', false)
 }
 const changeChartType = () => {
-  const maxTypeKey = props.chart.type === 'liquid' ? 'liquidMaxType' : 'gaugeMaxType'
   const yAxisField = props.chart.yAxis?.[0]
   if (quotaData.value?.length === 0 || yAxisField?.id === '-1') {
     state.miscForm.liquidMaxType = 'fix'
