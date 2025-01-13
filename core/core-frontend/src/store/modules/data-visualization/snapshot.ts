@@ -173,6 +173,7 @@ export const snapshotStore = defineStore('snapshot', {
 
     resetStyleChangeTimes() {
       this.styleChangeTimes = 0
+      this.snapshotCacheTimes = 0
     },
     resetSnapshot() {
       this.styleChangeTimes = -1
