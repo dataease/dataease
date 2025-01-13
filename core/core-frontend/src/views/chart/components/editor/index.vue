@@ -761,10 +761,13 @@ const addAxis = (e, axis: AxisType) => {
     }
   } else {
     if (!dup && typeValid) {
+      const isGaugeOrLiquid = view.value.type === 'gauge' || view.value.type === 'liquid'
+      const quotaData = cloneDeep(state.quotaData)
       emitter.emit('addAxis', {
         axisType: axis,
         axis: [view.value[axis][e.newDraggableIndex]],
-        editType: 'add'
+        editType: 'add',
+        ...(isGaugeOrLiquid ? { quotaData: quotaData } : {})
       })
     }
   }
