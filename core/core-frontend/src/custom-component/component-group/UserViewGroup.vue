@@ -156,7 +156,7 @@ const loadPluginCategory = data => {
                 ></component
               ></Icon>
             </div>
-            <div class="item-bottom">
+            <div :title="chartInfo.title" class="item-bottom">
               <span>{{ chartInfo.title }}</span>
             </div>
           </el-col>

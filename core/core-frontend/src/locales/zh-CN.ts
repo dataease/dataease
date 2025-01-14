@@ -12,6 +12,7 @@ export default {
       dateRange: '时间范围',
       add_component_hint: '点击或拖拽左侧组件添加字段'
     },
+    openMobileTerminal: '开启移动端',
     inputText: '请输入',
     selectText: '请选择',
     add: '添加',
