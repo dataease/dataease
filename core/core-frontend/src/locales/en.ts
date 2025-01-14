@@ -4126,6 +4126,10 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     exporting: 'Backend export in progress, can go to',
     progress_to_download: 'Check progress and download',
     form: {
+      add_detail_columns: 'Add column details',
+      detail_columns: 'Column details',
+      display_name: 'Display Name',
+      show_more_detail: 'Show more',
       confirm_to_mark_as_complete: 'Confirm to mark as complete?',
       mobile_number_format_is_incorrect: 'Mobile number format is incorrect',
       email_format_is_incorrect: 'Email format is incorrect',

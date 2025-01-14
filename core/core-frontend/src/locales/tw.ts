@@ -4012,6 +4012,10 @@ export default {
     exporting: '後台導出中,可前往',
     progress_to_download: '查看進度，進行下載',
     form: {
+      add_detail_columns: '添加字段描述',
+      detail_columns: '字段描述',
+      display_name: '顯示名稱',
+      show_more_detail: '查看更多',
       confirm_to_mark_as_complete: '確認標記為完成?',
       mobile_number_format_is_incorrect: '手機號碼格式不正確',
       email_format_is_incorrect: '郵件格式不正確',
