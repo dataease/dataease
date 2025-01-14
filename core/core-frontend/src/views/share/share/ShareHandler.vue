@@ -146,6 +146,7 @@
           <div class="inline-share-item" v-if="passwdEnable">
             <el-input
               ref="pwdRef"
+              style="flex: 1"
               class="link-input-readlonly"
               v-model="state.detailInfo.pwd"
               readonly
