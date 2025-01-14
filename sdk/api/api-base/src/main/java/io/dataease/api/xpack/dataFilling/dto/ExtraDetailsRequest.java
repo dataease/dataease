@@ -18,9 +18,4 @@ public class ExtraDetailsRequest {
     private List<ExtraColumnItem> extraColumns;
     private String value;
 
-    @Data
-    public static class ExtraColumnItem {
-        private String fieldName;
-        private String displayName;
-    }
 }
