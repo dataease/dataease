@@ -219,6 +219,9 @@ public class DatasetTableFieldManage {
         if (crossDs) {
             DEException.throwException(Translator.get("i18n_dataset_cross_error"));
         }
+        if (!isCopilotSupport(dsMap)) {
+            DEException.throwException(Translator.get("i18n_copilot_ds"));
+        }
 
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
@@ -311,5 +314,10 @@ public class DatasetTableFieldManage {
         if (name != null && name.length() > 100) {
             DEException.throwException(Translator.get("i18n_name_limit_100"));
         }
+    }
+
+    public boolean isCopilotSupport(Map<Long, DatasourceSchemaDTO> dsMap) {
+        DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
+        return StringUtils.equalsIgnoreCase(value.getType(), "mysql");
     }
 }
