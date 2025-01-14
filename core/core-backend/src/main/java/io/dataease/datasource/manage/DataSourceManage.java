@@ -16,6 +16,7 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
@@ -95,7 +96,11 @@ public class DataSourceManage {
     public void checkName(DatasourceDTO dto) {
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(dto.getPid())) {
-            wrapper.eq("pid", dto.getPid());
+            if (LicenseUtil.licenseValid() && dto.getPid().equals(0L)) {
+                wrapper.eq("pid", -100L);
+            } else {
+                wrapper.eq("pid", dto.getPid());
+            }
         }
         if (StringUtils.isNotEmpty(dto.getName())) {
             wrapper.eq("name", dto.getName());
