@@ -27,7 +27,7 @@ public class ApiDefinitionRequest {
 
     @Data
     public static class Page {
-        private String pageType;
+        private String pageType = "empty";
         private List<RequestItem> requestData;
         private List<ResponseItem> responseData;
     }

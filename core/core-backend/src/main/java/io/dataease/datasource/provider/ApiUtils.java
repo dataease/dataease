@@ -79,7 +79,7 @@ public class ApiUtils {
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
-        if (apiDefinition.getRequest().getPage() != null && !apiDefinition.getRequest().getPage().getPageType().equalsIgnoreCase("empty")) {
+        if (apiDefinition.getRequest().getPage() != null && apiDefinition.getRequest().getPage().getPageType() != null && !apiDefinition.getRequest().getPage().getPageType().equalsIgnoreCase("empty")) {
             String response = execHttpRequest(false, apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
             fieldList = getTableFields(apiDefinition);
             result.put("fieldList", fieldList);
