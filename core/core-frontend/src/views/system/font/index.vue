@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import UploadDetail from './UploadDetail.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deleteById, edit, defaultFont } from '@/api/font'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
+import { useElementSize } from '@vueuse/core'
 
 const appearanceStore = useAppearanceStoreWithOut()
 const { t } = useI18n()
@@ -20,6 +21,31 @@ const loading = ref(false)
 const uploadFont = (title, type, item) => {
   uploadDetail.value.init(title, type, item)
 }
+const el = ref(null)
+const { width, height } = useElementSize(el)
+const showMoreHeight = ref(false)
+const showMoreWidth = ref(false)
+watch(
+  () => height.value,
+  (newVal, oldVal) => {
+    if (oldVal === 0) return
+    showMoreHeight.value = newVal > oldVal
+  }
+)
+
+watch(
+  () => width.value,
+  newVal => {
+    showMoreWidth.value = newVal < 745
+  },
+  {
+    immediate: true
+  }
+)
+
+const showMore = computed(() => {
+  return showMoreWidth.value || showMoreHeight.value
+})
 
 const listFont = async () => {
   loading.value = true
@@ -142,7 +168,8 @@ onMounted(() => {
       </div>
     </div>
     <div class="font-content_overflow">
-      <div class="font-content_list" v-if="fontListComputed.length">
+      {{ showMore }} {{ width }} {{ height }}
+      <div ref="el" class="font-content_list" v-if="fontListComputed.length">
         <div class="font-content_item" v-for="ele in fontListComputed" :key="ele">
           <span v-if="ele.isDefault" class="font-default">{{ t('system.default_font') }}</span>
           <div class="font-name">
@@ -224,6 +251,8 @@ onMounted(() => {
       width: calc(50% - 8px);
       position: relative;
       padding: 24px;
+      padding-bottom: 16px;
+
       .font-default {
         min-width: 68px;
         height: 24px;
@@ -296,6 +325,7 @@ onMounted(() => {
       .font-upload_btn {
         .ed-button {
           min-width: 0;
+          margin: 0 12px 8px 0;
           padding: 4px 8px;
           font-size: 12px;
           font-weight: 400;

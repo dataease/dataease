@@ -275,42 +275,44 @@ initFunction()
             <span>{{ t('chart.quota') }}</span>
           </div>
           <div class="field-height">
-            <div v-if="state.quotaData.length" class="field-list">
-              <span
-                v-for="item in state.quotaData"
-                :key="item.id"
-                class="item-quota flex-align-center ellipsis"
-                :title="item.name"
-                @click="insertFieldToCodeMirror('[' + item.name + ']')"
-              >
-                <el-icon v-if="!item.groupType">
-                  <Icon name="icon_adjustment_outlined"
-                    ><icon_adjustment_outlined class="svg-icon"
-                  /></Icon>
-                </el-icon>
-                <el-icon v-else>
-                  <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                    ><component
-                      class="svg-icon"
-                      :class="`field-icon-${fieldType[item.deType]}`"
-                      :is="iconFieldMap[fieldType[item.deType]]"
-                    ></component
-                  ></Icon>
-                </el-icon>
-                {{ item.name }}
-                <div v-if="!item.groupType" class="icon-right">
-                  <el-icon @click.stop="updateParmasToQuota" class="hover-icon">
-                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
-                  </el-icon>
-                  <el-icon @click.stop="delParmasToQuota" class="hover-icon">
-                    <Icon name="icon_delete-trash_outlined"
-                      ><icon_deleteTrash_outlined class="svg-icon"
+            <el-scrollbar>
+              <div v-if="state.quotaData.length" class="field-list">
+                <span
+                  v-for="item in state.quotaData"
+                  :key="item.id"
+                  class="item-quota flex-align-center ellipsis"
+                  :title="item.name"
+                  @click="insertFieldToCodeMirror('[' + item.name + ']')"
+                >
+                  <el-icon v-if="!item.groupType">
+                    <Icon name="icon_adjustment_outlined"
+                      ><icon_adjustment_outlined class="svg-icon"
                     /></Icon>
                   </el-icon>
-                </div>
-              </span>
-            </div>
-            <div v-else class="class-na">{{ t('dataset.na') }}</div>
+                  <el-icon v-else>
+                    <Icon :className="`field-icon-${fieldType[item.deType]}`"
+                      ><component
+                        class="svg-icon"
+                        :class="`field-icon-${fieldType[item.deType]}`"
+                        :is="iconFieldMap[fieldType[item.deType]]"
+                      ></component
+                    ></Icon>
+                  </el-icon>
+                  {{ item.name }}
+                  <div v-if="!item.groupType" class="icon-right">
+                    <el-icon @click.stop="updateParmasToQuota" class="hover-icon">
+                      <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+                    </el-icon>
+                    <el-icon @click.stop="delParmasToQuota" class="hover-icon">
+                      <Icon name="icon_delete-trash_outlined"
+                        ><icon_deleteTrash_outlined class="svg-icon"
+                      /></Icon>
+                    </el-icon>
+                  </div>
+                </span>
+              </div>
+              <div v-else class="class-na">{{ t('dataset.na') }}</div>
+            </el-scrollbar>
           </div>
         </div>
       </div>
@@ -586,7 +588,7 @@ initFunction()
 }
 .pop-info {
   margin: 6px 0 0 0;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .class-na {

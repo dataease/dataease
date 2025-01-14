@@ -3211,7 +3211,7 @@ const deleteChartFieldItem = id => {
                           <span v-if="view.type !== 'richTextView'">
                             {{ t('chart.result_count') }}
                           </span>
-                          <span v-if="view.type !== 'richTextView'">
+                          <span style="padding-left: 8px" v-if="view.type !== 'richTextView'">
                             <el-radio-group
                               v-model="view.resultMode"
                               :effect="themes"
@@ -3219,7 +3219,7 @@ const deleteChartFieldItem = id => {
                               size="small"
                               @change="recordSnapshotInfo('render')"
                             >
-                              <el-radio label="all" :effect="themes">
+                              <el-radio class="margin20-radio" label="all" :effect="themes">
                                 <span
                                   class="result-count-label"
                                   :class="{ dark: themes === 'dark' }"
@@ -4771,6 +4771,10 @@ span {
     justify-content: space-between;
     height: 40px;
     padding: 0 6px;
+
+    .margin20-radio {
+      margin-right: 20px;
+    }
 
     .result-count-label {
       color: #1f2329;
