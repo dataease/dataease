@@ -235,7 +235,16 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
     return
   }
   const pageInfo = state.pageInfo
-  pageInfo.pageSize = customAttr.basicStyle.tablePageSize ?? 20
+  state.pageStyle = customAttr.basicStyle.tablePageStyle
+  if (state.pageStyle === 'general') {
+    if (state.currentPageSize === 0) {
+      state.currentPageSize = pageInfo.pageSize
+    } else {
+      pageInfo.pageSize = state.currentPageSize
+    }
+  } else {
+    pageInfo.pageSize = customAttr.basicStyle.tablePageSize ?? 20
+  }
   if (state.totalItems > state.pageInfo.pageSize || state.pageStyle === 'general') {
     pageInfo.total = state.totalItems
     state.showPage = true
@@ -244,12 +253,6 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
   if (resetPageInfo) {
     state.pageInfo.currentPage = 1
-  }
-  state.pageStyle = customAttr.basicStyle.tablePageStyle
-  if (state.pageStyle === 'general') {
-    if (state.currentPageSize == 0) {
-      state.currentPageSize = pageInfo.pageSize
-    }
   }
 }
 
