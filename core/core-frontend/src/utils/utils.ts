@@ -245,7 +245,7 @@ export const isFreeFolder = (node, flag) => {
   const freeRootId = (Number(oid) + flag).toString()
   let cNode = node
   while (cNode) {
-    const data = node.data
+    const data = cNode.data
     const id = data['id']
     if (id === freeRootId) {
       return true

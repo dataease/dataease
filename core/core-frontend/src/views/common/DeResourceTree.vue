@@ -541,14 +541,14 @@ const sortTypeChange = sortType => {
   state.curSortType = sortType
 }
 
-const proxyHandleDrop = (arg1, arg2, arg3) => {
-  const flagArray = ['dashboard', 'datav', 'dataset', 'datasource']
+const proxyAllowDrop = (arg1, arg2) => {
+  const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource']
   const flag = flagArray.findIndex(item => item === curCanvasType.value)
   if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
-    handleDrop(arg1, arg2, arg3)
-    return
+    return allowDrop(arg1, arg2)
   }
   ElMessage.warning(t('free.save_error'))
+  return false
 }
 
 watch(filterText, val => {
@@ -697,8 +697,8 @@ defineExpose({
         @node-collapse="nodeCollapse"
         @node-click="nodeClick"
         @node-drag-start="handleDragStart"
-        :allow-drop="allowDrop"
-        @node-drop="proxyHandleDrop"
+        :allow-drop="proxyAllowDrop"
+        @node-drop="handleDrop"
         draggable
       >
         <template #default="{ node, data }">
