@@ -2270,369 +2270,379 @@ defineExpose({
         </draggable>
       </div>
       <div v-if="!!curComponent" class="chart-field" :class="curComponent.auto && 'hidden'">
-        <div class="mask" v-if="curComponent.auto"></div>
-        <div class="title flex-align-center">
-          {{ t('v_query.chart_and_field') }}
-          <el-radio-group class="ml-4 larger-radio" v-model="curComponent.auto">
-            <el-radio :disabled="!curComponent.auto" :label="true">
-              <div class="flex-align-center">
-                {{ t('chart.margin_model_auto') }}
-                <el-tooltip effect="dark" placement="top">
-                  <template #content>
-                    <div>
-                      {{ t('v_query.be_switched_to') }}
-                      <br />
-                      {{ t('v_query.to_automatic_again') }}
-                    </div>
-                  </template>
-                  <el-icon style="margin-left: 4px; color: #646a73">
-                    <icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></icon>
-                  </el-icon>
-                </el-tooltip>
-              </div>
-            </el-radio>
-            <el-radio :label="false">{{ t('commons.custom') }}</el-radio>
-          </el-radio-group>
-        </div>
-        <div class="select-all">
-          <el-checkbox
-            v-model="checkAll"
-            :indeterminate="isIndeterminate"
-            @change="handleCheckAllChange"
-            >{{ t('dataset.check_all') }}</el-checkbox
-          >
-        </div>
-        <div class="field-list">
-          <el-checkbox-group
-            v-model="curComponent.checkedFields"
-            @change="handleCheckedFieldsChangeTree"
-          >
-            <div v-for="field in fields" :key="field.componentId" class="list-item_field_de">
-              <el-checkbox :label="field.componentId"
-                ><el-icon class="component-type">
-                  <Icon
-                    ><component
-                      :is="iconChartMap[canvasViewInfo[field.componentId].type]"
-                    ></component
-                  ></Icon> </el-icon
-                ><span
-                  :title="canvasViewInfo[field.componentId].title"
-                  class="checkbox-name ellipsis"
-                  >{{ canvasViewInfo[field.componentId].title }}</span
-                ></el-checkbox
-              >
-              <span :title="field.name" class="dataset ellipsis">{{ field.name }}</span>
-              <el-select
-                @change="val => setParametersArr(val, field.componentId)"
-                @focus="handleDialogClick"
-                multiple
-                filterable
-                collapse-tags
-                collapse-tags-tooltip
-                key="checkedFieldsMapArrTime"
-                :multiple-limit="2"
-                class="field-select--input"
-                style="margin-left: 12px"
-                popper-class="field-select--dqp"
-                v-if="
-                  curComponent.checkedFields.includes(field.componentId) &&
-                  curComponent.checkedFieldsMapArr &&
-                  curComponent.checkedFieldsMapArr[field.componentId] &&
-                  curComponent.checkedFieldsMapArr[field.componentId].length
-                "
-                v-model="curComponent.checkedFieldsMapArr[field.componentId]"
-                clearable
-              >
-                <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
-                  <el-icon>
-                    <Icon
-                      ><component
-                        :class="`field-icon-${
-                          fieldType[
-                            getDetype(
-                              curComponent.checkedFieldsMap[field.componentId],
-                              Object.values(field.fields)
-                            )
-                          ]
-                        }`"
-                        :is="
-                          iconFieldMap[
-                            fieldType[
-                              getDetype(
-                                curComponent.checkedFieldsMap[field.componentId],
-                                Object.values(field.fields)
-                              )
-                            ]
-                          ]
-                        "
-                      ></component
-                    ></Icon>
-                  </el-icon>
-                </template>
-                <template #header>
-                  <el-tabs stretch class="params-select--header" v-model="field.activelist">
-                    <el-tab-pane
-                      disabled
-                      :label="t('chart.dimension')"
-                      name="dimensionList"
-                    ></el-tab-pane>
-                    <el-tab-pane disabled :label="t('chart.quota')" name="quotaList"></el-tab-pane>
-                    <el-tab-pane :label="t('dataset.param')" name="parameterList"></el-tab-pane>
-                  </el-tabs>
-                </template>
-                <el-option
-                  v-for="ele in field.fields[field.activelist]"
-                  :key="ele.id"
-                  :label="ele.name || ele.variableName"
-                  :value="ele.id"
-                  :disabled="isParametersDisable(ele)"
-                >
-                  <div class="flex-align-center icon">
-                    <el-icon>
-                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
-                        ><component
-                          class="svg-icon"
-                          :class="`field-icon-${fieldType[ele.deType]}`"
-                          :is="iconFieldMap[fieldType[ele.deType]]"
-                        ></component
-                      ></Icon>
+        <el-scrollbar>
+          <div class="mask" v-if="curComponent.auto"></div>
+          <div class="title flex-align-center">
+            {{ t('v_query.chart_and_field') }}
+            <el-radio-group class="ml-4 larger-radio" v-model="curComponent.auto">
+              <el-radio :disabled="!curComponent.auto" :label="true">
+                <div class="flex-align-center">
+                  {{ t('chart.margin_model_auto') }}
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      <div>
+                        {{ t('v_query.be_switched_to') }}
+                        <br />
+                        {{ t('v_query.to_automatic_again') }}
+                      </div>
+                    </template>
+                    <el-icon style="margin-left: 4px; color: #646a73">
+                      <icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></icon>
                     </el-icon>
-                    <span :title="ele.name || ele.variableName" class="ellipsis">
-                      {{ ele.name || ele.variableName }}
-                    </span>
-                    <span
-                      v-if="
-                        curComponent.checkedFieldsMapArr[field.componentId].includes(ele.id) &&
-                        field.activelist === 'parameterList'
-                      "
-                      @click.stop="timeClick(field.componentId, ele)"
-                      class="range-time_setting"
-                    >
-                      {{
-                        curComponent.checkedFieldsMapStart[field.componentId] === ele.id
-                          ? t('dataset.start_time')
-                          : curComponent.checkedFieldsMapEnd[field.componentId] === ele.id
-                          ? t('dataset.end_time')
-                          : ''
-                      }}
-                      <el-icon>
-                        <Icon>
-                          <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
-                        </Icon>
-                      </el-icon>
-                    </span>
-                  </div>
-                </el-option>
-              </el-select>
-              <el-select
-                @change="val => setParametersArrNum(val, field.componentId)"
-                @focus="handleDialogClick"
-                multiple
-                filterable
-                collapse-tags
-                collapse-tags-tooltip
-                key="checkedFieldsMapArr"
-                :multiple-limit="2"
-                class="field-select--input"
-                style="margin-left: 12px"
-                popper-class="field-select--dqp"
-                v-else-if="
-                  curComponent.checkedFields.includes(field.componentId) &&
-                  curComponent.checkedFieldsMapArrNum &&
-                  curComponent.checkedFieldsMapArrNum[field.componentId] &&
-                  curComponent.checkedFieldsMapArrNum[field.componentId].length
-                "
-                v-model="curComponent.checkedFieldsMapArrNum[field.componentId]"
-                clearable
-              >
-                <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
-                  <el-icon>
+                  </el-tooltip>
+                </div>
+              </el-radio>
+              <el-radio :label="false">{{ t('commons.custom') }}</el-radio>
+            </el-radio-group>
+          </div>
+          <div class="select-all">
+            <el-checkbox
+              v-model="checkAll"
+              :indeterminate="isIndeterminate"
+              @change="handleCheckAllChange"
+              >{{ t('dataset.check_all') }}</el-checkbox
+            >
+          </div>
+          <div class="field-list">
+            <el-checkbox-group
+              v-model="curComponent.checkedFields"
+              @change="handleCheckedFieldsChangeTree"
+            >
+              <div v-for="field in fields" :key="field.componentId" class="list-item_field_de">
+                <el-checkbox :label="field.componentId"
+                  ><el-icon class="component-type">
                     <Icon
                       ><component
-                        :class="`field-icon-${
-                          fieldType[
-                            getDetype(
-                              curComponent.checkedFieldsMap[field.componentId],
-                              Object.values(field.fields)
-                            )
-                          ]
-                        }`"
-                        :is="
-                          iconFieldMap[
-                            fieldType[
-                              getDetype(
-                                curComponent.checkedFieldsMap[field.componentId],
-                                Object.values(field.fields)
-                              )
-                            ]
-                          ]
-                        "
+                        :is="iconChartMap[canvasViewInfo[field.componentId].type]"
                       ></component
-                    ></Icon>
-                  </el-icon>
-                </template>
-                <template #header>
-                  <el-tabs stretch class="params-select--header" v-model="field.activelist">
-                    <el-tab-pane
-                      disabled
-                      :label="t('chart.dimension')"
-                      name="dimensionList"
-                    ></el-tab-pane>
-                    <el-tab-pane disabled :label="t('chart.quota')" name="quotaList"></el-tab-pane>
-                    <el-tab-pane :label="t('dataset.param')" name="parameterList"></el-tab-pane>
-                  </el-tabs>
-                </template>
-                <el-option
-                  v-for="ele in field.fields[field.activelist]"
-                  :key="ele.id"
-                  :label="ele.name || ele.variableName"
-                  :value="ele.id"
-                  :disabled="![2, 3].includes(ele.deType)"
+                    ></Icon> </el-icon
+                  ><span
+                    :title="canvasViewInfo[field.componentId].title"
+                    class="checkbox-name ellipsis"
+                    >{{ canvasViewInfo[field.componentId].title }}</span
+                  ></el-checkbox
                 >
-                  <div class="flex-align-center icon">
-                    <el-icon>
-                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
-                        ><component
-                          class="svg-icon"
-                          :class="`field-icon-${fieldType[ele.deType]}`"
-                          :is="iconFieldMap[fieldType[ele.deType]]"
-                        ></component
-                      ></Icon>
-                    </el-icon>
-                    <span :title="ele.name || ele.variableName" class="ellipsis">
-                      {{ ele.name || ele.variableName }}
-                    </span>
-                    <span
-                      v-if="
-                        curComponent.checkedFieldsMapArrNum[field.componentId].includes(ele.id) &&
-                        field.activelist === 'parameterList'
-                      "
-                      @click.stop="numClick(field.componentId, ele)"
-                      class="range-time_setting"
-                    >
-                      {{
-                        curComponent.checkedFieldsMapStartNum[field.componentId] === ele.id
-                          ? t('chart.min')
-                          : curComponent.checkedFieldsMapEndNum[field.componentId] === ele.id
-                          ? t('chart.max')
-                          : ''
-                      }}
-                      <el-icon>
-                        <Icon>
-                          <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
-                        </Icon>
-                      </el-icon>
-                    </span>
-                  </div>
-                </el-option>
-              </el-select>
-              <el-select
-                @change="setParameters(field)"
-                @focus="handleDialogClick"
-                filterable
-                style="margin-left: 12px"
-                popper-class="field-select--dqp"
-                v-else-if="curComponent.checkedFields.includes(field.componentId)"
-                v-model="curComponent.checkedFieldsMap[field.componentId]"
-                clearable
-              >
-                <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
-                  <el-icon>
-                    <Icon
-                      ><component
-                        :class="`field-icon-${
-                          fieldType[
-                            getDetype(
-                              curComponent.checkedFieldsMap[field.componentId],
-                              Object.values(field.fields)
-                            )
-                          ]
-                        }`"
-                        :is="
-                          iconFieldMap[
-                            fieldType[
-                              getDetype(
-                                curComponent.checkedFieldsMap[field.componentId],
-                                Object.values(field.fields)
-                              )
-                            ]
-                          ]
-                        "
-                      ></component
-                    ></Icon>
-                  </el-icon>
-                </template>
-                <template #header>
-                  <el-tabs stretch class="params-select--header" v-model="field.activelist">
-                    <el-tab-pane :label="t('chart.dimension')" name="dimensionList"></el-tab-pane>
-                    <el-tab-pane
-                      :disabled="curComponent.displayType === '9'"
-                      :label="t('chart.quota')"
-                      name="quotaList"
-                    ></el-tab-pane>
-                    <el-tab-pane
-                      v-if="field.hasParameter"
-                      :label="t('dataset.param')"
-                      :disabled="curComponent.displayType === '9'"
-                      name="parameterList"
-                    ></el-tab-pane>
-                  </el-tabs>
-                </template>
-                <el-option
-                  v-for="ele in field.fields[field.activelist]"
-                  :key="ele.id"
-                  :label="ele.name || ele.variableName"
-                  :value="ele.id"
-                  :disabled="
-                    ele.desensitized ||
-                    (curComponent.displayType === '9' && ele.deType === 1) ||
-                    isParametersDisable(ele)
+                <span :title="field.name" class="dataset ellipsis">{{ field.name }}</span>
+                <el-select
+                  @change="val => setParametersArr(val, field.componentId)"
+                  @focus="handleDialogClick"
+                  multiple
+                  filterable
+                  collapse-tags
+                  collapse-tags-tooltip
+                  key="checkedFieldsMapArrTime"
+                  :multiple-limit="2"
+                  class="field-select--input"
+                  style="margin-left: 12px"
+                  popper-class="field-select--dqp"
+                  v-if="
+                    curComponent.checkedFields.includes(field.componentId) &&
+                    curComponent.checkedFieldsMapArr &&
+                    curComponent.checkedFieldsMapArr[field.componentId] &&
+                    curComponent.checkedFieldsMapArr[field.componentId].length
                   "
+                  v-model="curComponent.checkedFieldsMapArr[field.componentId]"
+                  clearable
                 >
-                  <div
-                    class="flex-align-center icon"
-                    :title="ele.desensitized ? t('v_query.as_query_conditions') : ''"
-                  >
+                  <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
                     <el-icon>
-                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                      <Icon
                         ><component
-                          class="svg-icon"
-                          :class="`field-icon-${fieldType[ele.deType]}`"
-                          :is="iconFieldMap[fieldType[ele.deType]]"
+                          :class="`field-icon-${
+                            fieldType[
+                              getDetype(
+                                curComponent.checkedFieldsMap[field.componentId],
+                                Object.values(field.fields)
+                              )
+                            ]
+                          }`"
+                          :is="
+                            iconFieldMap[
+                              fieldType[
+                                getDetype(
+                                  curComponent.checkedFieldsMap[field.componentId],
+                                  Object.values(field.fields)
+                                )
+                              ]
+                            ]
+                          "
                         ></component
                       ></Icon>
                     </el-icon>
-                    <span :title="ele.name || ele.variableName" class="ellipsis">
-                      {{ ele.name || ele.variableName }}
-                    </span>
-                    <span
-                      @click.stop="
-                        () =>
-                          isNumParameter
-                            ? numClick(field.componentId, ele)
-                            : timeClick(field.componentId, ele)
-                      "
-                      v-if="
-                        curComponent.checkedFieldsMap[field.componentId] === ele.id &&
-                        field.activelist === 'parameterList' &&
-                        (isTimeParameter || isNumParameter)
-                      "
-                      class="range-time_setting"
-                    >
-                      {{ isNumParameter ? t('chart.value_formatter_value') : t('dataset.time') }}
+                  </template>
+                  <template #header>
+                    <el-tabs stretch class="params-select--header" v-model="field.activelist">
+                      <el-tab-pane
+                        disabled
+                        :label="t('chart.dimension')"
+                        name="dimensionList"
+                      ></el-tab-pane>
+                      <el-tab-pane
+                        disabled
+                        :label="t('chart.quota')"
+                        name="quotaList"
+                      ></el-tab-pane>
+                      <el-tab-pane :label="t('dataset.param')" name="parameterList"></el-tab-pane>
+                    </el-tabs>
+                  </template>
+                  <el-option
+                    v-for="ele in field.fields[field.activelist]"
+                    :key="ele.id"
+                    :label="ele.name || ele.variableName"
+                    :value="ele.id"
+                    :disabled="isParametersDisable(ele)"
+                  >
+                    <div class="flex-align-center icon">
                       <el-icon>
-                        <Icon>
-                          <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
-                        </Icon>
+                        <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[ele.deType]}`"
+                            :is="iconFieldMap[fieldType[ele.deType]]"
+                          ></component
+                        ></Icon>
                       </el-icon>
-                    </span>
-                  </div>
-                </el-option>
-              </el-select>
-              <span style="width: 172px; margin-left: 12px" v-else></span>
-            </div>
-          </el-checkbox-group>
-        </div>
+                      <span :title="ele.name || ele.variableName" class="ellipsis">
+                        {{ ele.name || ele.variableName }}
+                      </span>
+                      <span
+                        v-if="
+                          curComponent.checkedFieldsMapArr[field.componentId].includes(ele.id) &&
+                          field.activelist === 'parameterList'
+                        "
+                        @click.stop="timeClick(field.componentId, ele)"
+                        class="range-time_setting"
+                      >
+                        {{
+                          curComponent.checkedFieldsMapStart[field.componentId] === ele.id
+                            ? t('dataset.start_time')
+                            : curComponent.checkedFieldsMapEnd[field.componentId] === ele.id
+                            ? t('dataset.end_time')
+                            : ''
+                        }}
+                        <el-icon>
+                          <Icon>
+                            <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
+                          </Icon>
+                        </el-icon>
+                      </span>
+                    </div>
+                  </el-option>
+                </el-select>
+                <el-select
+                  @change="val => setParametersArrNum(val, field.componentId)"
+                  @focus="handleDialogClick"
+                  multiple
+                  filterable
+                  collapse-tags
+                  collapse-tags-tooltip
+                  key="checkedFieldsMapArr"
+                  :multiple-limit="2"
+                  class="field-select--input"
+                  style="margin-left: 12px"
+                  popper-class="field-select--dqp"
+                  v-else-if="
+                    curComponent.checkedFields.includes(field.componentId) &&
+                    curComponent.checkedFieldsMapArrNum &&
+                    curComponent.checkedFieldsMapArrNum[field.componentId] &&
+                    curComponent.checkedFieldsMapArrNum[field.componentId].length
+                  "
+                  v-model="curComponent.checkedFieldsMapArrNum[field.componentId]"
+                  clearable
+                >
+                  <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
+                    <el-icon>
+                      <Icon
+                        ><component
+                          :class="`field-icon-${
+                            fieldType[
+                              getDetype(
+                                curComponent.checkedFieldsMap[field.componentId],
+                                Object.values(field.fields)
+                              )
+                            ]
+                          }`"
+                          :is="
+                            iconFieldMap[
+                              fieldType[
+                                getDetype(
+                                  curComponent.checkedFieldsMap[field.componentId],
+                                  Object.values(field.fields)
+                                )
+                              ]
+                            ]
+                          "
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                  </template>
+                  <template #header>
+                    <el-tabs stretch class="params-select--header" v-model="field.activelist">
+                      <el-tab-pane
+                        disabled
+                        :label="t('chart.dimension')"
+                        name="dimensionList"
+                      ></el-tab-pane>
+                      <el-tab-pane
+                        disabled
+                        :label="t('chart.quota')"
+                        name="quotaList"
+                      ></el-tab-pane>
+                      <el-tab-pane :label="t('dataset.param')" name="parameterList"></el-tab-pane>
+                    </el-tabs>
+                  </template>
+                  <el-option
+                    v-for="ele in field.fields[field.activelist]"
+                    :key="ele.id"
+                    :label="ele.name || ele.variableName"
+                    :value="ele.id"
+                    :disabled="![2, 3].includes(ele.deType)"
+                  >
+                    <div class="flex-align-center icon">
+                      <el-icon>
+                        <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[ele.deType]}`"
+                            :is="iconFieldMap[fieldType[ele.deType]]"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                      <span :title="ele.name || ele.variableName" class="ellipsis">
+                        {{ ele.name || ele.variableName }}
+                      </span>
+                      <span
+                        v-if="
+                          curComponent.checkedFieldsMapArrNum[field.componentId].includes(ele.id) &&
+                          field.activelist === 'parameterList'
+                        "
+                        @click.stop="numClick(field.componentId, ele)"
+                        class="range-time_setting"
+                      >
+                        {{
+                          curComponent.checkedFieldsMapStartNum[field.componentId] === ele.id
+                            ? t('chart.min')
+                            : curComponent.checkedFieldsMapEndNum[field.componentId] === ele.id
+                            ? t('chart.max')
+                            : ''
+                        }}
+                        <el-icon>
+                          <Icon>
+                            <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
+                          </Icon>
+                        </el-icon>
+                      </span>
+                    </div>
+                  </el-option>
+                </el-select>
+                <el-select
+                  @change="setParameters(field)"
+                  @focus="handleDialogClick"
+                  filterable
+                  style="margin-left: 12px"
+                  popper-class="field-select--dqp"
+                  v-else-if="curComponent.checkedFields.includes(field.componentId)"
+                  v-model="curComponent.checkedFieldsMap[field.componentId]"
+                  clearable
+                >
+                  <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
+                    <el-icon>
+                      <Icon
+                        ><component
+                          :class="`field-icon-${
+                            fieldType[
+                              getDetype(
+                                curComponent.checkedFieldsMap[field.componentId],
+                                Object.values(field.fields)
+                              )
+                            ]
+                          }`"
+                          :is="
+                            iconFieldMap[
+                              fieldType[
+                                getDetype(
+                                  curComponent.checkedFieldsMap[field.componentId],
+                                  Object.values(field.fields)
+                                )
+                              ]
+                            ]
+                          "
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                  </template>
+                  <template #header>
+                    <el-tabs stretch class="params-select--header" v-model="field.activelist">
+                      <el-tab-pane :label="t('chart.dimension')" name="dimensionList"></el-tab-pane>
+                      <el-tab-pane
+                        :disabled="curComponent.displayType === '9'"
+                        :label="t('chart.quota')"
+                        name="quotaList"
+                      ></el-tab-pane>
+                      <el-tab-pane
+                        v-if="field.hasParameter"
+                        :label="t('dataset.param')"
+                        :disabled="curComponent.displayType === '9'"
+                        name="parameterList"
+                      ></el-tab-pane>
+                    </el-tabs>
+                  </template>
+                  <el-option
+                    v-for="ele in field.fields[field.activelist]"
+                    :key="ele.id"
+                    :label="ele.name || ele.variableName"
+                    :value="ele.id"
+                    :disabled="
+                      ele.desensitized ||
+                      (curComponent.displayType === '9' && ele.deType === 1) ||
+                      isParametersDisable(ele)
+                    "
+                  >
+                    <div
+                      class="flex-align-center icon"
+                      :title="ele.desensitized ? t('v_query.as_query_conditions') : ''"
+                    >
+                      <el-icon>
+                        <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[ele.deType]}`"
+                            :is="iconFieldMap[fieldType[ele.deType]]"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                      <span :title="ele.name || ele.variableName" class="ellipsis">
+                        {{ ele.name || ele.variableName }}
+                      </span>
+                      <span
+                        @click.stop="
+                          () =>
+                            isNumParameter
+                              ? numClick(field.componentId, ele)
+                              : timeClick(field.componentId, ele)
+                        "
+                        v-if="
+                          curComponent.checkedFieldsMap[field.componentId] === ele.id &&
+                          field.activelist === 'parameterList' &&
+                          (isTimeParameter || isNumParameter)
+                        "
+                        class="range-time_setting"
+                      >
+                        {{ isNumParameter ? t('chart.value_formatter_value') : t('dataset.time') }}
+                        <el-icon>
+                          <Icon>
+                            <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
+                          </Icon>
+                        </el-icon>
+                      </span>
+                    </div>
+                  </el-option>
+                </el-select>
+                <span style="width: 172px; margin-left: 12px" v-else></span>
+              </div>
+            </el-checkbox-group>
+          </div>
+        </el-scrollbar>
       </div>
       <div
         v-if="!!curComponent"
@@ -2774,7 +2784,9 @@ defineExpose({
               <TreeFieldDialog ref="treeDialog" @save-tree="saveTree"></TreeFieldDialog>
             </div>
             <div class="list-item" v-if="['1', '7'].includes(curComponent.displayType)">
-              <div class="label">{{ t('v_query.time_granularity') }}</div>
+              <div :title="t('v_query.time_granularity')" class="label ellipsis">
+                {{ t('v_query.time_granularity') }}
+              </div>
               <div class="value">
                 <template v-if="curComponent.displayType === '7' && !isTimeParameter">
                   <el-select

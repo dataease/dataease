@@ -501,7 +501,9 @@ defineExpose({
       </div>
       <template v-if="dynamicTime && curComponent.displayType === '1'">
         <div class="setting">
-          <div class="setting-label">{{ t('dynamic_time.relative') }}</div>
+          <div :title="t('dynamic_time.relative')" class="setting-label ellipsis">
+            {{ t('dynamic_time.relative') }}
+          </div>
           <div class="setting-value select">
             <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrent">
               <el-option
