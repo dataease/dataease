@@ -5,6 +5,7 @@ import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
+import { debounce } from 'lodash-es'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
 import icon_warning_colorful_red from '@/assets/svg/icon_warning_colorful_red.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
@@ -1010,7 +1011,7 @@ const loadInit = () => {
   }
 }
 
-const proxyAllowDrop = (arg1, arg2) => {
+const proxyAllowDrop = debounce((arg1, arg2) => {
   const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource']
   const flag = flagArray.findIndex(item => item === 'datasource')
   if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
@@ -1018,7 +1019,7 @@ const proxyAllowDrop = (arg1, arg2) => {
   }
   ElMessage.warning(t('free.save_error'))
   return false
-}
+}, 300)
 onMounted(() => {
   const dsId = wsCache.get('ds-info-id') || route.params.id
   nodeInfo.id = (dsId as string) || (route.query.id as string) || ''
@@ -2077,7 +2078,7 @@ const getMenuList = (val: boolean) => {
       font-size: 16px;
       font-weight: 500;
       margin-right: 8px;
-      max-width: 80%;
+      max-width: 70%;
       display: inline-flex;
     }
     .req-title,

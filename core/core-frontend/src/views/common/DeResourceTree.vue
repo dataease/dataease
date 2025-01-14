@@ -5,6 +5,7 @@ import dvCopyDark from '@/assets/svg/dv-copy-dark.svg'
 import dvDelete from '@/assets/svg/dv-delete.svg'
 import dvMove from '@/assets/svg/dv-move.svg'
 import { treeDraggbleChart } from '@/utils/treeDraggbleChart'
+import { debounce } from 'lodash-es'
 import dvRename from '@/assets/svg/dv-rename.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
 import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
@@ -541,7 +542,7 @@ const sortTypeChange = sortType => {
   state.curSortType = sortType
 }
 
-const proxyAllowDrop = (arg1, arg2) => {
+const proxyAllowDrop = debounce((arg1, arg2) => {
   const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource']
   const flag = flagArray.findIndex(item => item === curCanvasType.value)
   if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
@@ -549,7 +550,7 @@ const proxyAllowDrop = (arg1, arg2) => {
   }
   ElMessage.warning(t('free.save_error'))
   return false
-}
+}, 300)
 
 watch(filterText, val => {
   resourceListTree.value.filter(val)

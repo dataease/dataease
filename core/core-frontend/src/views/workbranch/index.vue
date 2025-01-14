@@ -531,7 +531,7 @@ loadShareBase()
         .name {
           color: #646a73;
           font-weight: 400;
-          line-height: 20px;
+          line-height: 22px;
           font-size: 14px;
         }
         .num {

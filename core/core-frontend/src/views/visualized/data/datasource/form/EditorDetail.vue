@@ -1703,7 +1703,7 @@ defineExpose({
     font-size: 16px;
     font-weight: 500;
     margin-right: 8px;
-    max-width: 80%;
+    max-width: 70%;
   }
   .req-title,
   .req-value {
