@@ -16,7 +16,7 @@ import {
   saveCanvas
 } from '@/api/visualization/dataVisualization'
 import { ElMessage } from 'element-plus-secondary'
-import { cutTargetTree, filterFreeFolder } from '@/utils/utils'
+import { cutTargetTree, filterFreeFolder, nameTrim } from '@/utils/utils'
 const props = defineProps({
   curCanvasType: {
     type: String,
@@ -273,6 +273,7 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
+      nameTrim(params)
       if (cmd.value === 'move' && !checkParent(params)) {
         return
       }
