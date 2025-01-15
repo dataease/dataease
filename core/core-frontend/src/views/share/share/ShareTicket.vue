@@ -380,13 +380,13 @@ onMounted(() => {
     }
   }
   .ticket-table {
-    border-top: 1px solid #d5d7d8;
     min-height: 156px;
     padding: 0 0;
     height: 50px;
     overflow-y: overlay;
     position: relative;
     height: calc(100% - 124px);
+
     :deep(.ticket-exp-head) {
       display: flex;
       line-height: 22px;
@@ -426,7 +426,6 @@ onMounted(() => {
 
     :deep(.ed-table__header) {
       background-color: #f5f6f7;
-      border-bottom: 1px solid #d5d7d8;
       thead {
         tr {
           th {
