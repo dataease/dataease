@@ -299,7 +299,7 @@ public class SqlparserUtils {
                     } else {
                         expr.accept(getExpressionDeParser(stringBuilder));
                     }
-                    exprs2.add(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString())) ;
+                    exprs2.add(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
                 }
                 join.setOnExpressions(exprs2);
                 if (rightItem instanceof ParenthesedSelect) {
@@ -570,9 +570,12 @@ public class SqlparserUtils {
                 getBuffer().append(" " + operator + " ");
                 hasSubBinaryExpression = false;
                 if (expr.getRightExpression() instanceof Parenthesis) {
-                    Parenthesis parenthesis = (Parenthesis) expr.getRightExpression();
-                    BinaryExpression rightBinaryExpression = (BinaryExpression) parenthesis.getExpression();
-                    hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
+                    try {
+                        Parenthesis parenthesis = (Parenthesis) expr.getRightExpression();
+                        BinaryExpression rightBinaryExpression = (BinaryExpression) parenthesis.getExpression();
+                        hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
+                    } catch (Exception e) {
+                    }
                 }
                 if (expr.getRightExpression() instanceof BinaryExpression) {
                     try {
