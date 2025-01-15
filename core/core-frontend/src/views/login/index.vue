@@ -183,7 +183,7 @@ const loadArrearance = () => {
     showFoot.value = appearanceStore.getFoot === 'true'
     if (showFoot.value) {
       const content = appearanceStore.getFootContent
-      const myXss = new xss.FilterXSS({
+      const myXss = new xss['FilterXSS']({
         css: {
           whiteList: {
             'background-color': true,
@@ -194,11 +194,12 @@ const loadArrearance = () => {
             'line-height': true,
             'box-sizing': true,
             'padding-top': true,
-            'padding-bottom': true
+            'padding-bottom': true,
+            'font-size': true
           }
         },
         whiteList: {
-          ...xss.whiteList,
+          ...xss['whiteList'],
           p: ['style'],
           span: ['style']
         }
