@@ -52,7 +52,11 @@ public class MysqlEngineProvider extends EngineProvider {
             for (int i = 0; i < strings.length; i++) {
                 if (tableFields.get(i).isChecked()) {
                     if (StringUtils.isEmpty(strings[i])) {
-                        strings1[length] = null;
+                        if (tableFields.get(i).getFieldType().equals("LONG") || tableFields.get(i).getFieldType().equals("DOUBLE")) {
+                            strings1[length] = "0";
+                        } else {
+                            strings1[length] = null;
+                        }
                     } else {
                         strings1[length] = strings[i].replace("\\", "\\\\").replace("'", "\\'");
                     }
