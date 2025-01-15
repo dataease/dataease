@@ -739,7 +739,7 @@ public class ExportCenterManage implements BaseExportApi {
                 if (request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
                     ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                 } else {
-                    ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
+                    ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
                 }
             }
         } else {
@@ -754,7 +754,7 @@ public class ExportCenterManage implements BaseExportApi {
                 Object[] header = requestInner.getHeader();
                 //明细sheet
                 Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
-                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
+                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
             }
         }
     }

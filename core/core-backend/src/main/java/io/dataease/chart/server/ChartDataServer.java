@@ -265,7 +265,7 @@ public class ChartDataServer implements ChartDataApi {
                         ViewDetailField[] detailFields = request.getDetailFields();
                         Object[] header = request.getHeader();
                         Sheet detailsSheet = wb.createSheet("数据");
-                        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
+                        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
                     } else {
                         for (int i = 0; i < request.getMultiInfo().size(); i++) {
                             ChartExcelRequestInner requestInner = request.getMultiInfo().get(i);
@@ -275,7 +275,7 @@ public class ChartDataServer implements ChartDataApi {
                             ViewDetailField[] detailFields = requestInner.getDetailFields();
                             Object[] header = requestInner.getHeader();
                             Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
-                            setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, null);
+                            setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
                         }
                     }
                 }
@@ -410,7 +410,7 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                if (viewInfo != null && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
+                                if (wb != null && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO() : xAxis.get(j).getFormatterCfg();
                                         if (formatterCfgDTO.getType().equalsIgnoreCase("auto")) {
@@ -438,7 +438,7 @@ public class ChartDataServer implements ChartDataApi {
                         } else {
                             if (!viewInfo.getType().equalsIgnoreCase("circle-packing")) {
                                 Map<String, Object> senior = viewInfo.getSenior();
-                                ChartSeniorFunctionCfgDTO functionCfgDTO = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("assistLineCfg")), ChartSeniorFunctionCfgDTO.class);
+                                ChartSeniorFunctionCfgDTO functionCfgDTO = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("functionCfg")), ChartSeniorFunctionCfgDTO.class);
                                 if (StringUtils.isNotEmpty(functionCfgDTO.getEmptyDataStrategy()) && functionCfgDTO.getEmptyDataStrategy().equalsIgnoreCase("setZero") && functionCfgDTO.getEmptyDataFieldCtrl().contains(xAxis.get(j).getDataeaseName())) {
                                     cell.setCellValue(0);
                                 }
