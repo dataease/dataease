@@ -70,6 +70,22 @@ const changeTableHeader = prop => {
 const init = () => {
   const tableHeader = props.chart?.customAttr?.tableHeader
   if (tableHeader) {
+    // 存量透视表处理
+    if (!tableHeader.tableHeaderColBgColor) {
+      tableHeader.tableHeaderColBgColor = tableHeader.tableHeaderBgColor
+      tableHeader.tableHeaderColFontColor = tableHeader.tableHeaderFontColor
+      tableHeader.tableTitleColFontSize = tableHeader.tableTitleFontSize
+      tableHeader.tableHeaderColAlign = tableHeader.tableHeaderAlign
+      tableHeader.isColBolder = tableHeader.isBolder
+      tableHeader.isColItalic = tableHeader.isItalic
+
+      tableHeader.tableHeaderCornerBgColor = tableHeader.tableHeaderBgColor
+      tableHeader.tableHeaderCornerFontColor = tableHeader.tableHeaderFontColor
+      tableHeader.tableTitleCornerFontSize = tableHeader.tableTitleFontSize
+      tableHeader.tableHeaderCornerAlign = tableHeader.tableHeaderAlign
+      tableHeader.isCornerBolder = tableHeader.isBolder
+      tableHeader.isCornerItalic = tableHeader.isItalic
+    }
     state.tableHeaderForm = defaultsDeep(cloneDeep(tableHeader), cloneDeep(DEFAULT_TABLE_HEADER))
     if (!isAlphaColor(state.tableHeaderForm.tableHeaderBgColor)) {
       const alpha = props.chart.customAttr.basicStyle.alpha
