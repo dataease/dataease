@@ -193,14 +193,15 @@ const showCustomSort = item => {
   return !item.chartId && (item.deType === 0 || item.deType === 5)
 }
 const showSort = () => {
-  const isExtColor = props.type === 'extColor'
-  const isChartMix = props.chart.type.includes('chart-mix')
-  const isDimensionOrDimensionStack =
-    props.type === 'dimension' || props.type === 'dimensionStack' || props.type === 'dimensionExt'
-  if (isExtColor) {
+  const { type: chartType } = props.chart
+  const { type: propType } = props
+  const notShowSort = ['word-cloud', 'stock-line'].includes(chartType)
+  if (notShowSort || propType === 'extColor') {
     return false
   }
-  return !isChartMix || isDimensionOrDimensionStack
+  const isChartMix = chartType.includes('chart-mix')
+  const isDimensionType = ['dimension', 'dimensionStack', 'dimensionExt'].includes(propType)
+  return !isChartMix || isDimensionType
 }
 const toggleHide = () => {
   item.value.index = props.index
@@ -225,17 +226,17 @@ onMounted(() => {
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
         <span v-if="type !== 'extColor'" style="display: flex; color: #646a73">
-          <el-icon v-if="'asc' === item.sort">
+          <el-icon v-if="'asc' === item.sort && showSort()">
             <Icon name="icon_sort-a-to-z_outlined"
               ><icon_sortAToZ_outlined class="svg-icon"
             /></Icon>
           </el-icon>
-          <el-icon v-if="'desc' === item.sort">
+          <el-icon v-if="'desc' === item.sort && showSort()">
             <Icon name="icon_sort-z-to-a_outlined"
               ><icon_sortZToA_outlined class="svg-icon"
             /></Icon>
           </el-icon>
-          <el-icon v-if="'custom_sort' === item.sort">
+          <el-icon v-if="'custom_sort' === item.sort && showSort()">
             <Icon name="icon_sort_outlined"><icon_sort_outlined class="svg-icon" /></Icon>
           </el-icon>
           <el-icon>
