@@ -103,12 +103,7 @@ init()
 
 <template>
   <el-col>
-    <el-button class="circle-button" circle style="margin-bottom: 10px" @click="addThreshold">
-      <template #icon>
-        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
-      </template>
-    </el-button>
-    <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
+    <div @keydown.stop @keyup.stop class="threshold-editor">
       <el-row
         v-for="(item, index) in state.thresholdArr"
         :key="index"
@@ -190,33 +185,43 @@ init()
             @change="changeThreshold"
           />
         </div>
-        <div style="display: flex; align-items: center; justify-content: center; margin-left: 8px">
+        <div style="display: flex; align-items: center; justify-content: center; margin-left: 12px">
           <el-button
-            class="circle-button"
+            class="circle-button m-icon-btn"
             type="text"
-            circle
-            style="float: right"
+            text
             @click="removeThreshold(index)"
           >
-            <template #icon>
+            <el-icon size="20px" style="color: #646a73">
               <Icon name="icon_delete-trash_outlined"
                 ><icon_deleteTrash_outlined class="svg-icon"
               /></Icon>
-            </template>
+            </el-icon>
           </el-button>
         </div>
       </el-row>
     </div>
+    <el-button class="circle-button" text style="margin-top: 10px" @click="addThreshold">
+      <template #icon>
+        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
+      </template>
+      {{ t('chart.add_style') }}
+    </el-button>
   </el-col>
 </template>
 
 <style lang="less" scoped>
+.threshold-editor {
+  max-height: 50vh;
+  overflow-y: auto;
+  background: #f5f6f7;
+  border-radius: 4px;
+}
 .line-item {
   width: 100%;
   border-radius: 4px;
-  border: 1px solid #dcdfe6;
   padding: 4px 14px;
-  margin-bottom: 10px;
+  margin: 8px 0;
   display: flex;
   justify-content: left;
   align-items: center;
@@ -280,6 +285,17 @@ span {
   margin-bottom: 0 !important;
   :deep(.el-form-item__label) {
     font-size: 12px;
+  }
+}
+.m-icon-btn {
+  &:hover {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:focus {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:active {
+    background: rgba(31, 35, 41, 0.2) !important;
   }
 }
 </style>
