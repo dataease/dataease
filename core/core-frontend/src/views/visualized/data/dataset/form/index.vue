@@ -891,7 +891,6 @@ const dfsFieldsTips = (arr, list, idArr) => {
   })
 }
 const confirmEditUnion = () => {
-  num = +new Date()
   const { node, parent } = fieldUnion.value
   const to = node.id
   const from = parent.id

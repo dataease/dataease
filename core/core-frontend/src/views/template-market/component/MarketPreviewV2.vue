@@ -364,16 +364,16 @@ onMounted(() => {
 .market-collapse {
   width: 100%;
   border: 0;
-  ::v-deep(.ed-collapse-item__content) {
-    padding: 8px 0;
-    border: 0;
+  :deep(.ed-collapse-item__content) {
+    padding: 8px 0 !important;
+    border: unset !important;
   }
-  ::v-deep(.ed-collapse-item__header) {
-    border: 0;
+  :deep(.ed-collapse-item__header) {
+    border: unset !important;
   }
-  ::v-deep(.ed-collapse-item__wrap) {
-    border: 0;
-    background-color: rgba(245, 246, 247, 1);
+  :deep(.ed-collapse-item__wrap) {
+    border: unset !important;
+    background-color: rgba(245, 246, 247, 1) !important;
   }
 }
 .aside-list {
@@ -382,7 +382,7 @@ onMounted(() => {
   height: calc(100vh - 200px);
   //overflow-y: auto;
   :deep(.ed-collapse) {
-    --ed-collapse-header-font-size: 14px;
+    --ed-collapse-header-font-size: 14px !important;
   }
 }
 

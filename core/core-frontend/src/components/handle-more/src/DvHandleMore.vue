@@ -91,7 +91,7 @@ const emit = defineEmits(['handleCommand'])
           :disabled="ele.disabled"
           :class="{ 'de-hidden-drop-item': ele.hidden }"
         >
-          <el-icon class="handle-icon" v-if="ele.svgName">
+          <el-icon class="handle-icon" color="#646a73" size="16" v-if="ele.svgName">
             <Icon><component class="svg-icon" :is="ele.svgName"></component></Icon>
           </el-icon>
           {{ ele.label }}
