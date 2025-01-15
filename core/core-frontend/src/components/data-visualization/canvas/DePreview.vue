@@ -245,13 +245,15 @@ const resetLayout = () => {
       } else {
         scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
       }
-      scaleMin.value = isDashboard()
-        ? Math.floor(Math.min(scaleWidthPoint.value, scaleHeightPoint.value))
-        : scaleWidthPoint.value
+      scaleMin.value =
+        isDashboard() && !dashboardScaleWithWidth.value
+          ? Math.floor(Math.min(scaleWidthPoint.value, scaleHeightPoint.value))
+          : scaleWidthPoint.value
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
+        // 如果是保持比例 则宽高相同
         if (dashboardScaleWithWidth.value) {
-          cellHeight.value = (canvasHeight * 0.7) / cellWidth.value
+          cellHeight.value = cellWidth.value * 1.6
         } else {
           cellHeight.value = canvasHeight / pcMatrixCount.value.y
         }

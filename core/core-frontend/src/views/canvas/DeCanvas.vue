@@ -258,6 +258,7 @@ onMounted(() => {
   canvasInit()
   if (isMainCanvas(canvasId.value)) {
     eventBus.on('handleNew', handleNewFromCanvasMain)
+    eventBus.on('event-canvas-size-init', canvasSizeInit)
   }
   eventBus.on('moveOutFromTab-' + canvasId.value, moveOutFromTab)
   eventBus.on('matrix-canvasInit', canvasInit)
@@ -266,6 +267,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (isMainCanvas(canvasId.value)) {
     eventBus.off('handleNew', handleNewFromCanvasMain)
+    eventBus.off('event-canvas-size-init', canvasSizeInit)
   }
   eventBus.off('moveOutFromTab-' + canvasId.value, moveOutFromTab)
   eventBus.off('matrix-canvasInit', canvasInit)

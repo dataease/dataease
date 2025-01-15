@@ -342,7 +342,7 @@ const curGap = computed(() => {
 const baseCellInfo = computed(() => {
   return {
     baseWidth: baseWidth.value,
-    baseHeight: baseHeight.value,
+    baseHeight: dashboardScaleWithWidth.value ? baseWidth.value * 1.6 : baseHeight.value,
     curGap: curGap.value
   }
 })
@@ -1113,11 +1113,18 @@ const clearInfoBox = e => {
   infoBox.value = {}
 }
 
+const dashboardScaleWithWidth = computed(() => {
+  return isDashboard() && canvasStyleData.value?.dashboardAdaptor === 'withWidth'
+})
 const cellInit = () => {
   // 此处向下取整 保留1位小数,why: 矩阵模式计算 x,y时 会使用 style.left/cellWidth style.top/cellWidth
   // 当初始状态细微的差距(主要是减少)都会导致 x，y 减少一个矩阵大小造成偏移,
   cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 1000) / 1000
-  cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 1000) / 1000
+  if (dashboardScaleWithWidth.value) {
+    cellHeight.value = cellWidth.value * 1.6
+  } else {
+    cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 1000) / 1000
+  }
 }
 
 const canvasSizeInit = () => {
@@ -1583,7 +1590,7 @@ defineExpose({
     ></de-grid-screen>
     <drag-shadow
       v-if="infoBox && infoBox.moveItem && editMode !== 'preview'"
-      :base-height="baseHeight"
+      :base-height="dashboardScaleWithWidth ? baseWidth * 1.6 : baseHeight"
       :base-width="baseWidth"
       :cur-gap="curGap"
       :element="infoBox.moveItem"
