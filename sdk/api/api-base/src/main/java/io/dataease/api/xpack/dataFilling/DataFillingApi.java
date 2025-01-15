@@ -57,8 +57,8 @@ public interface DataFillingApi {
     @PostMapping("/form/{optionDatasource}/options")
     List<ColumnOption> listColumnData(@PathVariable("optionDatasource") Long optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception;
 
-    @PostMapping("/form/{id}/extraDetails")
-    List<ExtraDetails> extraDetails(@PathVariable("id") Long formId, @RequestBody ExtraDetailsRequest request) throws Exception;
+    @PostMapping("/form/extraDetails")
+    List<ExtraDetails> extraDetails(@RequestBody ExtraDetailsRequest request) throws Exception;
 
     @PostMapping("/form/{id}/tableData")
     DataFillFormTableDataResponse tableData(@PathVariable("id") Long id, @RequestBody DataFillFormTableDataRequest request) throws Exception;
