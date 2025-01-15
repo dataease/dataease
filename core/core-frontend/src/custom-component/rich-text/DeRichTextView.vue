@@ -535,13 +535,25 @@ const updateEmptyValue = view => {
       : '-'
 }
 
+const checkCompareCalc = view => {
+  let compareCount = 0
+  view.yAxis?.forEach(item => {
+    if (item?.compareCalc?.type !== 'none') {
+      compareCount++
+    }
+  })
+  return compareCount > 0
+}
+
 const calcData = (view: Chart, callback) => {
   isError.value = false
   updateEmptyValue(view)
   if (view.tableId || view['dataFrom'] === 'template') {
     const v = JSON.parse(JSON.stringify(view))
-    v.resultCount = 1
-    v.resultMode = 'custom'
+    if (!checkCompareCalc(view)) {
+      v.resultCount = 1
+      v.resultMode = 'custom'
+    }
     getData(v)
       .then(res => {
         if (res.code && res.code !== 0) {
