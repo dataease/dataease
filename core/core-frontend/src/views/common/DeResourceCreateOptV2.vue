@@ -2,7 +2,7 @@
   <el-dialog
     class="market-create-dialog"
     v-model="state.dialogShow"
-    width="90vw"
+    width="80vw"
     height="90vh"
     :before-close="close"
     @submit.prevent

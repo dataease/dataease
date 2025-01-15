@@ -140,7 +140,7 @@
             </el-row>
             <el-row v-show="state.marketActiveTab === t('work_branch.recommend')">
               <el-row
-                style="display: inline; width: 100%; margin-bottom: 16px"
+                style="display: inline; width: 100%; margin-bottom: 32px"
                 v-for="(categoryItem, index) in categoriesComputed"
                 :key="index"
               >
