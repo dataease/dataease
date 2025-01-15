@@ -2871,8 +2871,10 @@ defineExpose({
                       </template>
                     </el-tree-select>
                   </div>
-                  <div class="value">
-                    <span class="label">{{ t('v_query.query_field') }}</span>
+                  <div style="display: flex; align-items: center" class="value ellipsis">
+                    <span :title="t('v_query.query_field')" class="label">{{
+                      t('v_query.query_field')
+                    }}</span>
                     <el-select
                       @change="handleFieldChange"
                       :placeholder="t('v_query.query_field')"
@@ -2932,8 +2934,10 @@ defineExpose({
                       </el-option>
                     </el-select>
                   </div>
-                  <div class="value">
-                    <span class="label">{{ t('v_query.display_field') }}</span>
+                  <div class="value flex-align-center">
+                    <span :title="t('v_query.display_field')" class="label ellipsis">{{
+                      t('v_query.display_field')
+                    }}</span>
                     <el-select
                       :placeholder="t('v_query.display_field')"
                       class="search-field"
@@ -2995,75 +2999,78 @@ defineExpose({
                   </div>
                   <div class="value">
                     <span class="label">{{ t('chart.total_sort_field') }}</span>
-                    <el-select
-                      clearable
-                      :placeholder="t('v_query.the_sorting_field')"
-                      v-model="curComponent.sortId"
-                      class="sort-field"
-                      @change="handleSortChange"
-                    >
-                      <template v-if="curComponent.sortId" #prefix>
-                        <el-icon>
-                          <Icon
-                            ><component
-                              class="svg-icon"
-                              :class="`field-icon-${
-                                fieldType[
-                                  getDetype(curComponent.sortId, curComponent.dataset.fields)
-                                ]
-                              }`"
-                              :is="
-                                iconFieldMap[
-                                  fieldType[
-                                    getDetype(curComponent.sortId, curComponent.dataset.fields)
-                                  ]
-                                ]
-                              "
-                            ></component
-                          ></Icon>
-                        </el-icon>
-                      </template>
-                      <el-option
-                        v-for="ele in curComponent.dataset.fields"
-                        :key="ele.id"
-                        :label="ele.name"
-                        :value="ele.id"
-                        :disabled="ele.desensitized"
+                    <div>
+                      <el-select
+                        clearable
+                        :placeholder="t('v_query.the_sorting_field')"
+                        v-model="curComponent.sortId"
+                        class="sort-field"
+                        style="width: 240px"
+                        @change="handleSortChange"
                       >
-                        <div
-                          class="flex-align-center icon"
-                          :title="ele.desensitized ? t('v_query.as_query_conditions') : ''"
-                        >
+                        <template v-if="curComponent.sortId" #prefix>
                           <el-icon>
                             <Icon
                               ><component
-                                :class="`field-icon-${fieldType[ele.deType]}`"
                                 class="svg-icon"
-                                :is="iconFieldMap[fieldType[ele.deType]]"
+                                :class="`field-icon-${
+                                  fieldType[
+                                    getDetype(curComponent.sortId, curComponent.dataset.fields)
+                                  ]
+                                }`"
+                                :is="
+                                  iconFieldMap[
+                                    fieldType[
+                                      getDetype(curComponent.sortId, curComponent.dataset.fields)
+                                    ]
+                                  ]
+                                "
                               ></component
                             ></Icon>
                           </el-icon>
-                          <span>
-                            {{ ele.name }}
-                          </span>
-                        </div>
-                      </el-option>
-                    </el-select>
-                    <el-select
-                      class="sort-type"
-                      v-model="curComponent.sort"
-                      @change="handleFieldChange"
-                    >
-                      <el-option :label="t('chart.asc')" value="asc" />
-                      <el-option :label="t('chart.desc')" value="desc" />
-                      <el-option
-                        @click="handleCustomClick"
-                        :title="sortComputed ? $t('v_query.display_sort') : ''"
-                        :disabled="sortComputed"
-                        :label="t('v_query.custom_sort')"
-                        value="customSort"
-                      />
-                    </el-select>
+                        </template>
+                        <el-option
+                          v-for="ele in curComponent.dataset.fields"
+                          :key="ele.id"
+                          :label="ele.name"
+                          :value="ele.id"
+                          :disabled="ele.desensitized"
+                        >
+                          <div
+                            class="flex-align-center icon"
+                            :title="ele.desensitized ? t('v_query.as_query_conditions') : ''"
+                          >
+                            <el-icon>
+                              <Icon
+                                ><component
+                                  :class="`field-icon-${fieldType[ele.deType]}`"
+                                  class="svg-icon"
+                                  :is="iconFieldMap[fieldType[ele.deType]]"
+                                ></component
+                              ></Icon>
+                            </el-icon>
+                            <span>
+                              {{ ele.name }}
+                            </span>
+                          </div>
+                        </el-option>
+                      </el-select>
+                      <el-select
+                        class="sort-type"
+                        v-model="curComponent.sort"
+                        @change="handleFieldChange"
+                      >
+                        <el-option :label="t('chart.asc')" value="asc" />
+                        <el-option :label="t('chart.desc')" value="desc" />
+                        <el-option
+                          @click="handleCustomClick"
+                          :title="sortComputed ? $t('v_query.display_sort') : ''"
+                          :disabled="sortComputed"
+                          :label="t('v_query.custom_sort')"
+                          value="customSort"
+                        />
+                      </el-select>
+                    </div>
                   </div>
                 </template>
                 <div v-if="curComponent.optionValueSource === 2" class="value flex-align-center">

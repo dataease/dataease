@@ -3227,7 +3227,7 @@ const deleteChartFieldItem = id => {
                                   {{ t('chart.result_mode_all') }}
                                 </span>
                               </el-radio>
-                              <el-radio label="custom">
+                              <el-radio label="custom" :effect="themes">
                                 <el-input-number
                                   v-model="view.resultCount"
                                   :min="1"
