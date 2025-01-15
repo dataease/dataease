@@ -134,7 +134,7 @@
             </el-button>
           </div>
         </el-row>
-        <el-row class="img-main">
+        <el-row v-if="state.curTemplate" class="img-main">
           <img style="height: 100%" :src="imgUrlTrans(state.templatePreviewUrl)" alt="" />
         </el-row>
       </el-col>
@@ -577,6 +577,7 @@ onMounted(() => {
   cursor: pointer;
   color: #646a73;
   transition: 0.1s;
+  z-index: 9999;
   &:active {
     color: #000;
     border-color: #3a8ee6;
