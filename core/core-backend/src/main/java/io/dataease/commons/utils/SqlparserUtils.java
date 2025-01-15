@@ -13,6 +13,7 @@ import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.LogUtil;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
@@ -575,6 +576,7 @@ public class SqlparserUtils {
                         BinaryExpression rightBinaryExpression = (BinaryExpression) parenthesis.getExpression();
                         hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
                     } catch (Exception e) {
+                        LogUtil.error("Failed parse sql", e);
                     }
                 }
                 if (expr.getRightExpression() instanceof BinaryExpression) {
