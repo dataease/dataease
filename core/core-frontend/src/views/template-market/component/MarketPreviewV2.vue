@@ -13,11 +13,11 @@
           </el-icon>
         </el-tooltip>
         <el-row v-show="state.asideActive" style="padding: 24px 12px 0">
-          <el-row style="align-items: center">
+          <el-row style="display: flex; align-items: center">
             <span class="custom-breadcrumb-item" @click="closePreview()">{{
               t('template_manage.template_center')
             }}</span>
-            <el-icon><ArrowRight /></el-icon>
+            <el-icon style="color: #8f959e"><ArrowRight /></el-icon>
             <span class="custom-breadcrumb-item-to">{{ t('template_manage.preview') }}</span>
 
             <el-tooltip
@@ -46,7 +46,7 @@
               :class="state.extFilterActive ? 'filter-icon-active' : ''"
               @click="extFilterActiveChange()"
             >
-              <Filter />
+              <iconFilter />
             </el-icon>
           </el-row>
           <el-row v-show="state.extFilterActive">
@@ -77,10 +77,10 @@
               />
             </el-select>
           </el-row>
-          <el-divider />
+          <el-divider class="mp-divider" />
         </el-row>
 
-        <el-row
+        <el-main
           v-show="state.asideActive"
           class="aside-list"
           :class="state.extFilterActive ? 'aside-list-filter-active' : ''"
@@ -114,14 +114,14 @@
               <span>{{ t('work_branch.relevant_templates_found') }}</span>
             </div>
           </el-row>
-        </el-row>
+        </el-main>
       </el-col>
       <el-col
         style="float: left"
         class="main-area"
         :class="state.asideActive ? 'main-area-active' : ''"
       >
-        <el-row v-if="state.curTemplate">
+        <el-row v-if="state.curTemplate" style="padding: 24px 24px 0">
           <span class="template-title">{{ state.curTemplate.title }}</span>
           <div style="flex: 1; text-align: right">
             <el-button
@@ -145,6 +145,7 @@
 <script setup lang="ts">
 import marketExpand from '@/assets/svg/market-expand.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import iconFilter from '@/assets/svg/icon-filter.svg'
 import no_result from '@/assets/svg/no_result.svg'
 import { searchMarketPreview } from '@/api/templateMarket'
 import { onMounted, reactive, watch, ref } from 'vue'
@@ -379,7 +380,10 @@ onMounted(() => {
   padding: 0px 12px 12px 12px;
   width: 100%;
   height: calc(100vh - 200px);
-  overflow-y: auto;
+  //overflow-y: auto;
+  :deep(.ed-collapse) {
+    --ed-collapse-header-font-size: 14px;
+  }
 }
 
 .aside-list-filter-active {
@@ -453,7 +457,7 @@ onMounted(() => {
 }
 
 .aside-active {
-  width: 206px;
+  width: 224px;
   height: calc(100vh - 56px);
   background-color: rgba(245, 246, 247, 1);
 }
@@ -464,20 +468,20 @@ onMounted(() => {
 }
 
 .main-area-active {
-  width: calc(100% - 206px) !important;
+  width: calc(100% - 224px) !important;
   background: #ffffff;
 }
 
 .main-area {
   width: 100%;
-  padding: 24px;
+  //padding: 24px;
   text-align: center;
   height: calc(100vh - 56px);
   transition: 0.5s;
 }
 
 .title-name-search {
-  width: 140px;
+  flex: 1;
   float: left;
 }
 
@@ -541,7 +545,7 @@ onMounted(() => {
 
 .insert-retract {
   position: absolute;
-  left: 182px;
+  left: 199px;
   top: 2px;
   border: 1px solid #dee0e3;
   background: #fff;
@@ -599,11 +603,12 @@ onMounted(() => {
 }
 .img-main {
   display: inherit;
-  border-radius: 4px;
+  //border-radius: 4px;
   background: #0f1114;
   overflow-x: auto;
   overflow-y: hidden;
-  height: calc(100% - 50px) !important;
+  width: 100%;
+  height: calc(100% - 76px) !important;
 }
 .open-button {
   cursor: pointer;
@@ -623,7 +628,7 @@ onMounted(() => {
 }
 .filter-icon-span {
   float: left;
-  border: 1px solid #dcdfe6;
+  border: 1px solid #bbbfc4;
   width: 32px;
   height: 32px;
   border-radius: 4px;
@@ -644,16 +649,41 @@ onMounted(() => {
 .search-area {
   width: 100%;
   position: relative;
+  display: flex;
 }
 
 .custom-breadcrumb-item {
   font-size: 14px;
   cursor: pointer;
-  color: rgba(100, 106, 115, 1);
+  font-weight: 400;
+  color: #646a73;
+  width: 64px;
+  height: 22px;
+  padding: 0 4px 0 4px;
+  border-radius: 4px 0 0 0;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: #3370ff;
+    background: #3370ff1a;
+  }
+
+  &:active {
+    color: #245bdb;
+    background: #3370ff33;
+  }
 }
 
 .custom-breadcrumb-item-to {
   font-size: 14px;
-  color: rgba(31, 35, 41, 1);
+  font-weight: 400;
+  color: #1f2329;
+  cursor: default;
+}
+.mp-divider {
+  border-color: #1f232926;
+  margin-top: 16px;
+  margin-bottom: 8px;
 }
 </style>
