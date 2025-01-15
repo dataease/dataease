@@ -30,8 +30,8 @@
                 @node-click="nodeClick"
               >
                 <template #default="{ node, data }">
-                  <span class="custom-tree-node">
-                    <span>
+                  <span class="custom-tree-node" style="display: flex">
+                    <span v-if="!(curEditDataId === data.paramsInfoId)">
                       <div @click.stop>
                         <span class="auth-span">
                           <el-checkbox
@@ -41,14 +41,18 @@
                         </span>
                       </div>
                     </span>
-                    <span :id="'paramName-' + data.paramsInfoId">
-                      <el-input
+                    <span :id="'paramName-' + data.paramsInfoId" style="flex: 1">
+                      <div
                         v-if="curEditDataId === data.paramsInfoId"
-                        v-model="data.paramName"
-                        size="small"
-                        :placeholder="$t('visualization.input_param_name')"
-                        @blur="closeEdit"
-                      />
+                        style="width: 100%; padding: 0 15px"
+                      >
+                        <el-input
+                          style="width: 100%"
+                          v-model="data.paramName"
+                          :placeholder="$t('visualization.input_param_name')"
+                          @blur="closeEdit"
+                        />
+                      </div>
                       <span class="tree-select-field" v-else-if="data.paramName">
                         {{ data.paramName }}
                       </span>
@@ -56,14 +60,14 @@
                         >{{ t('visualization.no_setting_params_name_tip') }}
                       </span>
                     </span>
-                    <span class="icon-more">
+                    <span class="icon-more" v-if="!(curEditDataId === data.paramsInfoId)">
                       <handle-more
-                        style="margin-right: 16px"
+                        style="margin-right: 15px"
                         @handle-command="cmd => outerParamsOperation(cmd, node, data)"
                         :menu-list="state.optMenu"
-                        :icon-name="icon_more_outlined"
+                        :icon-name="icon_more_vertical_outlined"
                         placement="bottom-start"
-                      ></handle-more>
+                      />
                     </span>
                   </span>
                 </template>
@@ -317,9 +321,9 @@
 </template>
 
 <script setup lang="ts">
-import _delete from '@/assets/svg/delete.svg'
-import edit from '@/assets/svg/edit.svg'
-import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
+import _delete from '@/assets/svg/icon_delete-trash_outlined.svg'
+import edit from '@/assets/svg/icon_rename_outlined.svg'
+import icon_more_vertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'
 import filterParams from '@/assets/svg/filter-params.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import { ref, reactive, computed, nextTick } from 'vue'
@@ -897,12 +901,12 @@ defineExpose({
 
   .icon-more {
     margin-left: auto;
-    visibility: visible;
+    display: none;
   }
 
   &:hover .icon-more {
     margin-left: auto;
-    visibility: visible;
+    display: unset;
   }
 }
 

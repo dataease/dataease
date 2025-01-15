@@ -36,7 +36,8 @@
         'shape-lock': shapeLock,
         'shape-edit': isEditMode && !boardMoveActive,
         'linkage-setting': linkageActive,
-        'drag-on-tab-collision': dragCollision
+        'drag-on-tab-collision': dragCollision,
+        'shape-selected': curBatchOptComponents?.includes(element.id)
       }"
     >
       <component-edit-bar
@@ -158,6 +159,7 @@ const {
   dvInfo,
   editMode,
   batchOptStatus,
+  curBatchOptComponents,
   linkageSettingStatus,
   curLinkageView,
   tabCollisionActiveId,
@@ -1164,6 +1166,10 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+}
+
+.shape-selected {
+  outline: 1px solid #3370ff;
 }
 
 .shape-edit {
