@@ -309,22 +309,24 @@ public class ChartDataServer implements ChartDataApi {
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb) {
         List<CellStyle> styles = new ArrayList<>();
         List<ChartViewFieldDTO> xAxis = new ArrayList<>();
-        if (viewInfo.getType().equalsIgnoreCase("table-normal")) {
-            xAxis.addAll(viewInfo.getXAxis());
-            xAxis.addAll(viewInfo.getYAxis());
-        }
-        if (viewInfo.getType().equalsIgnoreCase("table-info")) {
-            xAxis.addAll(viewInfo.getXAxis());
-        }
-        for (ChartViewFieldDTO xAxi : xAxis) {
-            if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
-                FormatterCfgDTO formatterCfgDTO = xAxi.getFormatterCfg() == null ? new FormatterCfgDTO() : xAxi.getFormatterCfg();
-                CellStyle formatterCellStyle = createCellStyle(wb, formatterCfgDTO, null);
-                styles.add(formatterCellStyle);
-            } else {
-                styles.add(null);
+
+        xAxis.addAll(viewInfo.getXAxis());
+        xAxis.addAll(viewInfo.getYAxis());
+        xAxis.addAll(viewInfo.getXAxisExt());
+        xAxis.addAll(viewInfo.getYAxisExt());
+
+        if (viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) {
+            for (ChartViewFieldDTO xAxi : xAxis) {
+                if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                    FormatterCfgDTO formatterCfgDTO = xAxi.getFormatterCfg() == null ? new FormatterCfgDTO() : xAxi.getFormatterCfg();
+                    CellStyle formatterCellStyle = createCellStyle(wb, formatterCfgDTO, null);
+                    styles.add(formatterCellStyle);
+                } else {
+                    styles.add(null);
+                }
             }
         }
+
         boolean mergeHead = false;
         if (ArrayUtils.isNotEmpty(detailFields)) {
             cellStyle.setBorderTop(BorderStyle.THIN);
@@ -410,7 +412,7 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                if (wb != null && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
+                                if ((viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO() : xAxis.get(j).getFormatterCfg();
                                         if (formatterCfgDTO.getType().equalsIgnoreCase("auto")) {
