@@ -314,6 +314,7 @@ public class ChartDataServer implements ChartDataApi {
         xAxis.addAll(viewInfo.getYAxis());
         xAxis.addAll(viewInfo.getXAxisExt());
         xAxis.addAll(viewInfo.getYAxisExt());
+        xAxis.addAll(viewInfo.getExtStack());
 
         if (viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) {
             for (ChartViewFieldDTO xAxi : xAxis) {
@@ -433,7 +434,6 @@ public class ChartDataServer implements ChartDataApi {
                                         cell.setCellValue(cellValObj.toString());
                                     }
                                 }
-
                             } catch (Exception e) {
                                 LogUtil.warn("export excel data transform error");
                             }
@@ -441,8 +441,14 @@ public class ChartDataServer implements ChartDataApi {
                             if (!viewInfo.getType().equalsIgnoreCase("circle-packing")) {
                                 Map<String, Object> senior = viewInfo.getSenior();
                                 ChartSeniorFunctionCfgDTO functionCfgDTO = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("functionCfg")), ChartSeniorFunctionCfgDTO.class);
-                                if (StringUtils.isNotEmpty(functionCfgDTO.getEmptyDataStrategy()) && functionCfgDTO.getEmptyDataStrategy().equalsIgnoreCase("setZero") && functionCfgDTO.getEmptyDataFieldCtrl().contains(xAxis.get(j).getDataeaseName())) {
-                                    cell.setCellValue(0);
+                                if (functionCfgDTO != null && StringUtils.isNotEmpty(functionCfgDTO.getEmptyDataStrategy()) && functionCfgDTO.getEmptyDataStrategy().equalsIgnoreCase("setZero")) {
+                                    if ((viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info"))) {
+                                        if (functionCfgDTO.getEmptyDataFieldCtrl().contains(xAxis.get(j).getDataeaseName())) {
+                                            cell.setCellValue(0);
+                                        }
+                                    } else {
+                                        cell.setCellValue(0);
+                                    }
                                 }
                             }
                         }
