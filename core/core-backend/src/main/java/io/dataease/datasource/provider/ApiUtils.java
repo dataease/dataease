@@ -154,7 +154,7 @@ public class ApiUtils {
         List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
         List<ObjectNode> status = new ArrayList();
         for (ApiDefinition apiDefinition : apiDefinitionList) {
-            if (apiDefinition == null) {
+            if (apiDefinition == null || (apiDefinition.getType() != null && apiDefinition.getType().equalsIgnoreCase("params"))) {
                 continue;
             }
             datasourceRequest.setTable(apiDefinition.getName());
