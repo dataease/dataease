@@ -1202,6 +1202,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery') {
+            const defaultValueMap = {}
             element.propValue.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
@@ -1245,8 +1246,30 @@ export const dvMainStore = defineStore('dataVisualization', {
                   filterItem['conditionValueF'] = null
                   filterItem['defaultConditionValueF'] = null
                 }
+                if (filterItem['defaultValue']) {
+                  defaultValueMap[filterItem.id] = filterItem['defaultValue']
+                }
               }
             })
+            // 级联条件处理
+            if (element.cascade?.length && Object.keys(defaultValueMap).length) {
+              element.cascade.forEach(cascadeItem => {
+                Object.keys(defaultValueMap).forEach(key => {
+                  const curDefaultValue = defaultValueMap[key]
+                  if (cascadeItem.length) {
+                    cascadeItem.forEach(itemInner => {
+                      if (itemInner.datasetId.includes(key) && curDefaultValue) {
+                        itemInner['currentSelectValue'] = Array.isArray(curDefaultValue)
+                          ? curDefaultValue
+                          : [curDefaultValue]
+                      } else {
+                        itemInner['currentSelectValue'] = []
+                      }
+                    })
+                  }
+                })
+              })
+            }
           }
         })
       })
