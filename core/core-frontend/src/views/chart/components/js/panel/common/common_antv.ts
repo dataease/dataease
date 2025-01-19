@@ -131,7 +131,7 @@ export function getTheme(chart: Chart) {
             fontSize: tooltipFontsize + 'px',
             background: tooltipBackgroundColor,
             boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)',
-            'z-index': 3000,
+            'z-index': 2000,
             position: 'fixed'
           }
         }
