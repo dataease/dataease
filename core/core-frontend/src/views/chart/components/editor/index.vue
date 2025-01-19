@@ -1139,8 +1139,8 @@ const onChangeMiscStyleForm = val => {
 const onTextChange = val => {
   view.value.customStyle.text = val
   if (curComponent.value) {
-    curComponent.value.name = val
-    curComponent.value.title = value
+    curComponent.value.name = view.value.title
+    curComponent.value.title = view.value.title
   }
   if (mobileInPc.value) {
     //移动端设计
