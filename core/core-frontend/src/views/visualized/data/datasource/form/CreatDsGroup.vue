@@ -291,6 +291,9 @@ const saveDataset = () => {
         request.apiConfiguration = ''
         checkRepeat(request).then(res => {
           let method = request.id === '' ? save : update
+          if (request.type !== 'API') {
+            request.syncSetting = null
+          }
           if (res) {
             ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions)
               .then(() => {
