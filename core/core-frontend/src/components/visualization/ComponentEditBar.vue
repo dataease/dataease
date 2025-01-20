@@ -344,7 +344,8 @@ const {
   componentData,
   canvasViewInfo,
   mobileInPc,
-  dvInfo
+  dvInfo,
+  isIframe
 } = storeToRefs(dvMainStore)
 
 const state = reactive({
@@ -598,7 +599,9 @@ const initCurFields = () => {
   }
 }
 
-const showDownload = computed(() => canvasViewInfo.value[element.value.id]?.dataFrom !== 'template')
+const showDownload = computed(
+  () => canvasViewInfo.value[element.value.id]?.dataFrom !== 'template' && !isIframe.value
+)
 // 富文本-End
 
 const datasetParamsSetShow = computed(() => {

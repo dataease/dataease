@@ -30,7 +30,8 @@ const state = reactive({
   canvasViewInfoPreview: null,
   dvInfo: null,
   curPreviewGap: 0,
-  initState: true
+  initState: true,
+  showPosition: null
 })
 
 const props = defineProps({
@@ -176,6 +177,8 @@ onMounted(async () => {
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   // 检查外部参数
   const ignoreParams = router.currentRoute.value.query.ignoreParams === 'true'
+  const isFrameFlag = window.self !== window.top
+  dvMainStore.setIframeFlag(isFrameFlag)
   const { dvType, callBackFlag, taskId, showWatermark } = router.currentRoute.value.query
   if (!!taskId) {
     dvMainStore.setCanvasAttachInfo({ taskId, showWatermark })

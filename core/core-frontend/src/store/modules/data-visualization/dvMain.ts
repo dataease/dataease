@@ -192,10 +192,14 @@ export const dvMainStore = defineStore('dataVisualization', {
       baseCellInfo: {},
       dataPrepareState: false, //数据准备状态
       multiplexingStyleAdapt: true, //复用样式跟随主题
-      mainScrollTop: 0 //主画布运动量
+      mainScrollTop: 0, //主画布运动量
+      isIframe: false // 当前是否在iframe中
     }
   },
   actions: {
+    setIframeFlag(value) {
+      this.isIframe = value
+    },
     setCanvasAttachInfo(value) {
       this.canvasAttachInfo = value
     },
