@@ -888,8 +888,8 @@ const initOpenHandler = newWindow => {
 }
 .custom-normal-button {
   background-color: transparent;
-  border-color: #a6a6a6;
-  color: #ffffff;
+  border-color: #a6a6a6 !important;
+  color: #ffffff !important;
   &:hover {
     color: #ffffff;
     background-color: #ffffff1a !important;
@@ -897,6 +897,9 @@ const initOpenHandler = newWindow => {
   &:active {
     color: #ffffff;
     background-color: #ffffff33 !important;
+  }
+  &.is-disabled {
+    color: var(--ed-button-disabled-text-color) !important;
   }
 }
 
