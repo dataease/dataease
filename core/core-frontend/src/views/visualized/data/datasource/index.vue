@@ -507,6 +507,9 @@ const listDs = () => {
         Object.assign(nodeInfo, cloneDeep(defaultInfo))
         dfsDatasourceTree(state.datasourceTree, id)
         setTimeout(() => {
+          if (dsName.value) {
+            dsListTree.value.filter(dsName.value)
+          }
           dsListTree.value.setCurrentKey(nodeInfo.id, true)
         }, 100)
       }

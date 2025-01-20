@@ -335,6 +335,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
                 </template>
               </el-tree>
             </div>
+            <div class="line-bottom"></div>
             <div :class="['field-q', { open: expandedQ }]">
               <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
                 <ElIcon class="expand">
@@ -587,7 +588,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         .field-q {
           position: relative;
           height: 49px;
-          padding-left: 8px;
+          padding: 0 8px;
 
           &.open {
             max-height: 50%;
@@ -624,8 +625,14 @@ const queryAnswer = (event?: KeyboardEvent) => {
         }
 
         .field-d {
-          max-height: calc(100% - 50px);
-          border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+          max-height: calc(100% - 52px);
+        }
+
+        .line-bottom {
+          background: rgba(31, 35, 41, 0.15);
+          height: 1px;
+          width: calc(100% - 16px);
+          margin-left: 8px;
         }
       }
     }
