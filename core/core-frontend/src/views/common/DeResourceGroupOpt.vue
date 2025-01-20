@@ -273,7 +273,7 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
-      nameTrim(params)
+      nameTrim(params, t('components.length_1_64_characters'))
       if (cmd.value === 'move' && !checkParent(params)) {
         return
       }
@@ -291,7 +291,7 @@ const saveResource = () => {
             loading.value = false
             resourceDialogShow.value = false
             emits('finish')
-            ElMessage.success('保存成功')
+            ElMessage.success(t('visualization.save_success'))
             if (cmd.value === 'copy') {
               const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
               const baseUrl =

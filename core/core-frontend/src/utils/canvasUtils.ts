@@ -585,7 +585,7 @@ export async function canvasSave(callBack) {
     ElMessage.error('数据集分组名称已存在')
     return
   }
-  nameTrim(dvInfo.value)
+  nameTrim(dvInfo.value, t('components.length_1_64_characters'))
   const method = dvInfo.value.id && dvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
   if (method === updateCanvas) {
     await dvNameCheck({

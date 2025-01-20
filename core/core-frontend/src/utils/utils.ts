@@ -1,6 +1,9 @@
 import { BusiTreeNode } from '@/models/tree/TreeNode'
 import { useCache } from '@/hooks/web/useCache'
 import { loadScript } from '@/utils/RemoteJs'
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 
 const { wsCache } = useCache()
 export function deepCopy(target) {
@@ -283,8 +286,12 @@ export const filterFreeFolder = (list, flagText) => {
     }
   }
 }
-export const nameTrim = (target: {}) => {
+export const nameTrim = (target: {}, msg = '名称字段长度1-64个字符') => {
   if (target.name) {
     target.name = target.name.trim()
+    if (target.name.length < 1 || target.name.length > 64) {
+      ElMessage.warning(msg)
+      throw new Error(msg)
+    }
   }
 }
