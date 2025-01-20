@@ -118,7 +118,7 @@ public class StaticResourceServer implements StaticResourceApi {
         return null;
     }
 
-    private static boolean isValidSVG(MultipartFile file) {
+    private static boolean isValidSVG(MultipartFile file){
         if (file == null || file.isEmpty()) {
             return false;
         }
@@ -143,8 +143,13 @@ public class StaticResourceServer implements StaticResourceApi {
             }
         } catch (ParserConfigurationException | SAXException | IOException e) {
             // 如果出现任何解析错误，说明该文件不是合法的SVG
-            return false;
+            if(e.getMessage() != null && e.getMessage().indexOf("DOCTYPE")>-1){
+                DEException.throwException("svg 内容禁止使用 DOCTYPE");
+            }else {
+                DEException.throwException(e);
+            }
         }
+        return false;
     }
     public static FileType getFileType(InputStream is) throws IOException {
         byte[] src = new byte[28];
