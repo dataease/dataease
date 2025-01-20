@@ -109,7 +109,6 @@
 
               <el-tooltip class="item" effect="dark" :content="t('commons.delete')" placement="top">
                 <el-icon
-                  v-if="state.tableData.length !== 1"
                   style="margin-left: 8px; color: #646a73; cursor: pointer"
                   @click.stop="deleteTicket(scope.row)"
                 >
