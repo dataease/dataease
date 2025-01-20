@@ -810,7 +810,7 @@ public class ApiUtils {
         }
         if (!CollectionUtils.isEmpty(apiDefinitionListTemp)) {
             for (ApiDefinition apiDefinition : apiDefinitionListTemp) {
-                if (apiDefinition == null) {
+                if (apiDefinition == null || apiDefinition.getType() == null || apiDefinition.getType().equalsIgnoreCase("params")) {
                     continue;
                 }
                 if (apiDefinition.getDeTableName().equalsIgnoreCase(datasourceRequest.getTable()) || apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
