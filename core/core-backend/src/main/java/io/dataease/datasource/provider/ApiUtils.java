@@ -163,7 +163,8 @@ public class ApiUtils {
                 getData(datasourceRequest);
                 apiItemStatuses.put("name", apiDefinition.getName());
                 apiItemStatuses.put("status", "Success");
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+                LogUtil.error("API status Error: " + datasourceRequest.getDatasource().getName() + "-" + apiDefinition.getName(), e);
                 apiItemStatuses.put("name", apiDefinition.getName());
                 apiItemStatuses.put("status", "Error");
             }
