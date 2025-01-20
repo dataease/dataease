@@ -920,6 +920,8 @@ const vClickOutside = {
 }
 
 function onTitleChange() {
+  element.value.name = view.value.title
+  element.value.label = view.value.title
   snapshotStore.recordSnapshotCache('onTitleChange')
 }
 

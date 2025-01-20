@@ -2809,8 +2809,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
   },
   visualization: {
     dashboard_adaptor: 'Zoom Mode',
-    scale_keep_height_and_width: 'Default Aspect Ratio',
-    scale_with_width: 'Actual Aspect Ratio',
+    scale_keep_height_and_width: 'Canvas Ratio',
+    scale_with_width: 'Component Ratio',
     multi_selected: '{0} components selected',
     number1: '1',
     number2: '2',

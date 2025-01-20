@@ -2737,8 +2737,8 @@ export default {
   },
   visualization: {
     dashboard_adaptor: '縮放模式',
-    scale_keep_height_and_width: '按預設寬高比例縮放',
-    scale_with_width: '按照實際寬高比例縮放',
+    scale_keep_height_and_width: '按畫布比例縮放',
+    scale_with_width: '按元件比例縮放',
     multi_selected: '已選{0}項',
     number1: '一',
     number2: '二',
