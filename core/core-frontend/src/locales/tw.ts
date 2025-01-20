@@ -672,7 +672,7 @@ export default {
     label_color: '標籤顏色',
     input_box_style: '輸入框樣式',
     overall_refresh: '整體刷新',
-    previews_take_effect: '僅公共連結和新Tab預覽生效',
+    previews_take_effect: '僅公共連結生效',
     jump_icon_color: '連動、鑽取、跳轉的圖示顏色',
     level_display_color: '鑽取層級展示顏色',
     a_new_theme: '新建主題',

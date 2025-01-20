@@ -694,7 +694,7 @@ export default {
     label_color: 'Label color',
     input_box_style: 'Input box style',
     overall_refresh: 'Overall refresh',
-    previews_take_effect: 'Only public links and new Tab previews take effect',
+    previews_take_effect: 'Only public links take effect',
     jump_icon_color: 'Link, drill, jump icon color',
     level_display_color: 'Drill level display color',
     a_new_theme: 'Create a new theme',

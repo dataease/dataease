@@ -674,7 +674,7 @@ export default {
     label_color: '标签颜色',
     input_box_style: '输入框样式',
     overall_refresh: '整体刷新',
-    previews_take_effect: '仅公共链接和新Tab预览生效',
+    previews_take_effect: '仅公共链接生效',
     jump_icon_color: '联动、钻取、跳转的图标颜色',
     level_display_color: '钻取层级展示颜色',
     a_new_theme: '新建主题',
