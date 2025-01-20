@@ -369,7 +369,13 @@ onMounted(() => {
               </tbody>
             </table>
           </template>
-          <span class="item-span-style">
+          <span
+            class="item-span-style"
+            :class="{
+              'hidden-status': showHideIcon,
+              'sort-status': showSort && item.sort !== 'none'
+            }"
+          >
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
             <span v-if="item.summary !== ''" class="item-right-summary">
               ({{ t('chart.' + item.summary) }})
@@ -392,10 +398,9 @@ onMounted(() => {
             -{{ t('chart.' + item.compareCalc.type) }}
           </span>
         </span>
-        <el-icon style="margin-left: 8px">
+        <el-icon v-if="showHideIcon" style="margin-left: 4px">
           <Icon>
             <icon_invisible_outlined
-              v-show="showHideIcon"
               :class="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
               class="svg-icon inner-class"
             />
@@ -827,7 +832,7 @@ onMounted(() => {
   position: relative;
   width: 100%;
   display: block;
-
+  overflow: hidden;
   .ed-dropdown {
     display: flex;
   }
@@ -841,7 +846,7 @@ onMounted(() => {
 
 .item-axis {
   padding: 1px 8px;
-  margin: 0 3px 2px 3px;
+  margin-bottom: 3px;
   height: 28px;
   line-height: 28px;
   display: flex;
@@ -905,7 +910,7 @@ span {
 
 .item-span-style {
   display: flex;
-  max-width: 180px;
+  max-width: 170px;
   color: #1f2329;
   margin-left: 4px;
 
@@ -919,6 +924,13 @@ span {
   .item-right-summary {
     flex-shrink: 0;
     margin-left: 4px;
+  }
+  &.hidden-status,
+  &.sort-status {
+    max-width: 150px;
+  }
+  &.hidden-status[class*='sort-status'] {
+    max-width: 135px !important;
   }
 }
 
@@ -965,7 +977,7 @@ span {
 .remove-icon {
   position: absolute;
   top: 7px;
-  right: 26px;
+  right: 24px;
   cursor: pointer;
 
   .inner-class {
@@ -996,7 +1008,14 @@ span {
 }
 
 .father:hover .item-span-style {
-  max-width: 150px;
+  max-width: 130px;
+  &.hidden-status,
+  &.sort-status {
+    max-width: 120px;
+  }
+  &.hidden-status[class*='sort-status'] {
+    max-width: 100px !important;
+  }
 }
 </style>
 <style lang="less">

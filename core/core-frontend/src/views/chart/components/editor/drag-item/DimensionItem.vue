@@ -279,14 +279,18 @@ onMounted(() => {
               </tbody>
             </table>
           </template>
-          <span class="item-span-style">
+          <span
+            class="item-span-style"
+            :class="{
+              'hidden-status': showHideIcon,
+              'sort-status': showSort() && item.sort !== 'none'
+            }"
+          >
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
           </span>
         </el-tooltip>
-        <el-icon style="margin-left: 8px">
-          <Icon
-            ><icon_invisible_outlined v-show="showHideIcon" class="svg-icon inner-class"
-          /></Icon>
+        <el-icon v-if="showHideIcon" style="margin-left: 4px">
+          <Icon><icon_invisible_outlined class="svg-icon inner-class" /></Icon>
         </el-icon>
         <el-tooltip :effect="toolTip" placement="top">
           <template #content>
@@ -691,6 +695,7 @@ onMounted(() => {
   position: relative;
   width: 100%;
   display: block;
+  overflow: hidden;
   .ed-dropdown {
     display: flex;
   }
@@ -703,7 +708,7 @@ onMounted(() => {
 
 .item-axis {
   padding: 1px 8px;
-  margin: 0 3px 2px 3px;
+  margin-bottom: 3px;
   height: 28px;
   line-height: 28px;
   display: flex;
@@ -767,9 +772,17 @@ span {
 
 .item-span-style {
   display: flex;
-  max-width: 180px;
+  max-width: 170px;
   color: #1f2329;
   margin-left: 4px;
+
+  &.hidden-status,
+  &.sort-status {
+    max-width: 150px;
+  }
+  &.hidden-status[class*='sort-status'] {
+    max-width: 135px !important;
+  }
 
   .item-name {
     flex: 1;
@@ -821,7 +834,7 @@ span {
 .remove-icon {
   position: absolute;
   top: 7px;
-  right: 26px;
+  right: 24px;
   cursor: pointer;
   .inner-class {
     font-size: 14px;
@@ -851,7 +864,14 @@ span {
 }
 
 .father:hover .item-span-style {
-  max-width: 150px;
+  max-width: 130px;
+  &.hidden-status,
+  &.sort-status {
+    max-width: 120px;
+  }
+  &.hidden-status[class*='sort-status'] {
+    max-width: 100px !important;
+  }
 }
 </style>
 <style lang="less">
