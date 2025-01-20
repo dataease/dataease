@@ -30,7 +30,7 @@ const handleScaleChange = () => {
       changeSizeWithScale(scale.value)
       changeSizeWithScaleAdaptor(scale.value)
       scaleChangeReady.value = true
-    }, 50)
+    }, 150)
   }
 }
 
