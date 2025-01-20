@@ -94,6 +94,9 @@ public class DataSourceManage {
     }
 
     public void checkName(DatasourceDTO dto) {
+        if(StringUtils.isEmpty(dto.getName()) || StringUtils.isEmpty(dto.getName().trim())){
+            DEException.throwException(Translator.get("i18n_df_name_can_not_empty"));
+        }
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(dto.getPid())) {
             if (LicenseUtil.licenseValid() && dto.getPid().equals(0L)) {
