@@ -491,7 +491,7 @@ const colorItemBorderColor = (index, state) => {
             ></div>
           </div>
           <div :id="`series-color-picker-${sub ? 1 : 0}-${index}`"></div>
-          <span class="color-item-name" :class="themes === 'dark' ? 'dark' : ''">
+          <span class="color-item-name" :title="item.name" :class="themes === 'dark' ? 'dark' : ''">
             {{ item.name }}</span
           >
         </div>
@@ -648,7 +648,7 @@ const colorItemBorderColor = (index, state) => {
       justify-content: start;
       align-items: flex-start;
       .color-item-name {
-        max-width: 30px;
+        max-width: 160px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -688,7 +688,7 @@ const colorItemBorderColor = (index, state) => {
     width: 100%;
 
     font-size: var(--ed-font-size-base);
-    padding: 0 32px 0 20px;
+    padding: 0 20px 0 20px;
     position: relative;
     white-space: nowrap;
     overflow: hidden;
@@ -726,7 +726,7 @@ const colorItemBorderColor = (index, state) => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 30px;
+    width: 40px;
   }
 }
 .series-color-picker-wrapper {
