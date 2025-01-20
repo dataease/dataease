@@ -158,14 +158,14 @@ public class ExtWhere2Str {
                                     break;
                                 }
                             }
-                            if (hasN) {
+                            if (hasN && !isCross) {
                                 whereValue = "(" + value.stream().map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + ")";
                             } else {
                                 whereValue = "('" + StringUtils.join(value, "','") + "')";
                             }
                         } else {
-                            if (StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
-                                    || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) {
+                            if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
+                                    || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) && !isCross) {
                                 whereValue = "(" + value.stream().map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + ")";
                             } else {
                                 if (request.getDatasetTableField().getDeType() == 2 || request.getDatasetTableField().getDeType() == 3) {
@@ -188,14 +188,14 @@ public class ExtWhere2Str {
                                 break;
                             }
                         }
-                        if (hasN) {
+                        if (hasN && !isCross) {
                             whereValue = "'" + SQLConstants.MSSQL_N_PREFIX + "%" + value.get(0) + "%'";
                         } else {
                             whereValue = "'%" + value.get(0) + "%'";
                         }
                     } else {
-                        if (StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
-                                || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) {
+                        if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
+                                || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) && !isCross) {
                             whereValue = "'" + SQLConstants.MSSQL_N_PREFIX + "%" + value.get(0) + "%'";
                         } else {
                             whereValue = "'%" + value.get(0) + "%'";
@@ -246,14 +246,14 @@ public class ExtWhere2Str {
                                     break;
                                 }
                             }
-                            if (hasN) {
+                            if (hasN && !isCross) {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                             } else {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value.get(0));
                             }
                         } else {
-                            if (StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
-                                    || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) {
+                            if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
+                                    || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) && !isCross) {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                             } else {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value.get(0));
