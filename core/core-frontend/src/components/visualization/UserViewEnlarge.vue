@@ -6,78 +6,87 @@
     v-model="dialogShow"
     width="70vw"
     trigger="click"
+    class="userViewEnlarge-class"
   >
-    <div class="export-button">
-      <el-select
-        v-if="optType === 'enlarge' && exportPermissions[0]"
-        v-model="pixel"
-        class="pixel-select"
-      >
-        <el-option-group v-for="group in pixelOptions" :key="group.label" :label="group.label">
-          <el-option
-            v-for="item in group.options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-option-group>
-      </el-select>
+    <template #header>
+      <div class="header-title">
+        <div>{{ viewInfo?.title }}</div>
+        <div class="export-button">
+          <el-select
+            v-if="optType === 'enlarge' && exportPermissions[0]"
+            v-model="pixel"
+            class="pixel-select"
+            size="small"
+          >
+            <el-option-group v-for="group in pixelOptions" :key="group.label" :label="group.label">
+              <el-option
+                v-for="item in group.options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-option-group>
+          </el-select>
 
-      <el-button
-        class="m-button"
-        v-if="optType === 'enlarge' && exportPermissions[0]"
-        link
-        icon="Download"
-        size="middle"
-        @click="downloadViewImage"
-      >
-        {{ t('chart.export_img') }}
-      </el-button>
-      <el-button
-        class="m-button"
-        v-if="optType === 'details' && exportPermissions[1]"
-        link
-        icon="Download"
-        size="middle"
-        :loading="exportLoading"
-        :disabled="
-          requestStore.loadingMap[permissionStore.currentPath] > 0 || state.dataFrom === 'template'
-        "
-        @click="downloadViewDetails('view')"
-      >
-        {{ t('chart.export_excel') }}
-      </el-button>
-      <el-button
-        class="m-button"
-        v-if="optType === 'details' && exportPermissions[2]"
-        link
-        icon="Download"
-        size="middle"
-        :loading="exportLoading"
-        @click="downloadViewDetails('dataset')"
-        :disabled="
-          requestStore.loadingMap[permissionStore.currentPath] > 0 || state.dataFrom === 'template'
-        "
-      >
-        {{ t('chart.export_raw_details') }}
-      </el-button>
-      <el-button
-        class="m-button"
-        v-if="optType === 'details' && exportPermissions[2] && viewInfo.type === 'table-pivot'"
-        link
-        icon="Download"
-        size="middle"
-        :loading="exportLoading"
-        @click="exportAsFormattedExcel"
-      >
-        <span>{{ t('chart.export_excel_formatter') }}</span>
-      </el-button>
-      <el-divider
-        class="close-divider"
-        direction="vertical"
-        v-if="exportPermissions[0] || exportPermissions[1] || exportPermissions[2]"
-      />
-    </div>
+          <el-button
+            class="m-button"
+            v-if="optType === 'enlarge' && exportPermissions[0]"
+            link
+            icon="Download"
+            size="middle"
+            @click="downloadViewImage"
+          >
+            {{ t('chart.export_img') }}
+          </el-button>
+          <el-button
+            class="m-button"
+            v-if="optType === 'details' && exportPermissions[1]"
+            link
+            icon="Download"
+            size="middle"
+            :loading="exportLoading"
+            :disabled="
+              requestStore.loadingMap[permissionStore.currentPath] > 0 ||
+              state.dataFrom === 'template'
+            "
+            @click="downloadViewDetails('view')"
+          >
+            {{ t('chart.export_excel') }}
+          </el-button>
+          <el-button
+            class="m-button"
+            v-if="optType === 'details' && exportPermissions[2]"
+            link
+            icon="Download"
+            size="middle"
+            :loading="exportLoading"
+            @click="downloadViewDetails('dataset')"
+            :disabled="
+              requestStore.loadingMap[permissionStore.currentPath] > 0 ||
+              state.dataFrom === 'template'
+            "
+          >
+            {{ t('chart.export_raw_details') }}
+          </el-button>
+          <el-button
+            class="m-button"
+            v-if="optType === 'details' && exportPermissions[2] && viewInfo.type === 'table-pivot'"
+            link
+            icon="Download"
+            size="middle"
+            :loading="exportLoading"
+            @click="exportAsFormattedExcel"
+          >
+            <span>{{ t('chart.export_excel_formatter') }}</span>
+          </el-button>
+          <el-divider
+            class="close-divider"
+            direction="vertical"
+            v-if="exportPermissions[0] || exportPermissions[1] || exportPermissions[2]"
+          />
+        </div>
+      </div>
+    </template>
     <div
       v-loading="downLoading"
       :element-loading-text="t('visualization.export_loading')"
@@ -423,17 +432,36 @@ defineExpose({
 })
 </script>
 
+<style lang="less">
+.userViewEnlarge-class {
+  .ed-dialog__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-right: unset;
+  }
+  .ed-dialog__headerbtn {
+    position: unset;
+  }
+  .header-title {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+}
+</style>
 <style lang="less" scoped>
 .export-button {
-  position: absolute;
-  right: 48px;
-  top: 26px;
-  z-index: 2;
-
   .pixel-select {
     width: 125px;
     margin-right: 8px;
-    margin-top: -1px;
   }
 
   .m-button {
@@ -444,7 +472,7 @@ defineExpose({
   }
 
   .ed-button.is-link {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
     padding: 4px;
 
