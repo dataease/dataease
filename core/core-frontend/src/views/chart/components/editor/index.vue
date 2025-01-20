@@ -151,6 +151,9 @@ const closeEditComponentName = () => {
     return
   }
   view.value.title = inputComponentName.value.name
+  if (view.value.type === 'VQuery') {
+    view.value.customStyle.component.title = inputComponentName.value.name
+  }
   if (curComponent.value) {
     curComponent.value.label = inputComponentName.value.name
     curComponent.value.name = inputComponentName.value.name

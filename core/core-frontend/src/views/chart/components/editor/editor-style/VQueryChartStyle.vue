@@ -1,8 +1,7 @@
 <script lang="tsx" setup>
 import { ElMessage } from 'element-plus-secondary'
 import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
-import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+import { uploadFileResult } from '@/api/staticResource'
 import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
@@ -143,26 +142,6 @@ const init = () => {
     state.fileList = []
   }
 }
-const handleRemove = () => {
-  state.commonBackground['outerImage'] = null
-  state.fileList = []
-  onBackgroundChange()
-}
-const handlePictureCardPreview = file => {
-  state.dialogImageUrl = file.url
-  state.dialogVisible = true
-}
-const upload = file => {
-  return uploadFileResult(file.file, fileUrl => {
-    state.commonBackground['outerImage'] = fileUrl
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
-    onBackgroundChange()
-  })
-}
-const goFile = () => {
-  files.value.click()
-}
-
 const onBackgroundChangeV2 = val => {
   snapshotStore.recordSnapshotCache('onBackgroundChange')
   element.value.commonBackground = val
@@ -247,6 +226,11 @@ const initParams = () => {
   }
 }
 initParams()
+const onTitleChange = () => {
+  element.value.label = chart.value.customStyle.component.title
+  element.value.name = chart.value.customStyle.component.title
+  chart.value.title = chart.value.customStyle.component.title
+}
 </script>
 
 <template>
@@ -286,6 +270,7 @@ initParams()
                 :effect="themes"
                 :disabled="!chart.customStyle.component.titleShow"
                 v-model.lazy="chart.customStyle.component.title"
+                @change="onTitleChange"
               />
             </el-form-item>
             <el-form-item

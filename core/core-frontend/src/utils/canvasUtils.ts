@@ -985,11 +985,12 @@ export function mobileViewStyleSwitch(component) {
 }
 
 export function syncViewTitle(element) {
-  if (
-    element &&
-    ['UserView', 'VQuery'].includes(element.component) &&
-    canvasViewInfo.value[element.id]
-  ) {
-    canvasViewInfo.value[element.id].title = element.name
+  if (element && canvasViewInfo.value[element.id]) {
+    if (['UserView'].includes(element.component)) {
+      canvasViewInfo.value[element.id].title = element.name
+    } else if (['VQuery'].includes(element.component)) {
+      canvasViewInfo.value[element.id].title = element.name
+      canvasViewInfo.value[element.id].customStyle.component.title = element.name
+    }
   }
 }
