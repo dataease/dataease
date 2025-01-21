@@ -28,22 +28,13 @@ useEmitt({
 })
 useEmitt({
   name: 'gauge-default-data',
-  callback: args => gaugeDefaultDataRange(args)
+  callback: args => gaugeOrLiquidDefaultRangeData(args)
 })
 useEmitt({
   name: 'liquid-default-data',
-  callback: args => gaugeDefaultDataRange(args)
+  callback: args => gaugeOrLiquidDefaultRangeData(args)
 })
 const emit = defineEmits(['onMiscChange'])
-
-watch(
-  () => props.chart.customAttr.misc,
-  () => {
-    init()
-    initField()
-  },
-  { deep: true }
-)
 
 watch(
   () => props.quotaFields,
@@ -98,7 +89,13 @@ const init = () => {
 }
 
 const initField = () => {
-  state.quotaData = props.quotaFields.filter(ele => ele.id !== '-1')
+  // 数据集字段中，如果没有 y 轴字段，直接返回
+  const yAxisInDataset = props.quotaFields.find(ele => ele.id === props.chart.yAxis?.[0]?.id)
+  if (!yAxisInDataset) {
+    return
+  }
+  // 过滤掉记录数字段以及计算字段
+  state.quotaData = props.quotaFields.filter(ele => ele.id !== '-1' && ele.extField !== 2)
   if (!isEmpty(state.miscForm.gaugeMinField.id)) {
     state.minField = getQuotaField(state.miscForm.gaugeMinField.id)
   }
@@ -108,7 +105,9 @@ const initField = () => {
   if (!isEmpty(state.miscForm.liquidMaxField.id)) {
     state.liquidMaxField = getQuotaField(state.miscForm.liquidMaxField.id)
   }
-  initDynamicDefaultField()
+  if (props.quotaFields.length) {
+    initDynamicDefaultField()
+  }
 }
 const COUNT_DE_TYPE = [0, 1, 5]
 const NUMBER_DE_TYPE = [1, 2, 3]
@@ -118,198 +117,158 @@ const getFieldSummaryByDeType = (deType: number) => {
 const initDynamicDefaultField = () => {
   const yAxisField = props.chart.yAxis?.[0]
   const yAxisId = yAxisField?.id
+  // 没有字表字段时，清空动态字段
   if (quotaData.value?.length === 0) {
-    state.miscForm.liquidMaxType = 'fix'
-    state.miscForm.liquidMaxField.id = ''
-    state.miscForm.gaugeMaxType = 'fix'
-    state.miscForm.gaugeMaxField.id = ''
-    state.miscForm.gaugeMinType = 'fix'
-    state.miscForm.gaugeMinField.id = ''
+    if (isLiquid.value && state.miscForm.liquidMaxType === 'dynamic') {
+      state.miscForm.liquidMax = state.miscForm.liquidMax
+        ? state.miscForm.liquidMax
+        : cloneDeep(defaultMaxValue.gaugeMax)
+      state.miscForm.liquidMaxType = 'fix'
+      state.miscForm.liquidMaxField = {}
+      changeMisc('liquidMaxField', true)
+    }
+    if (isGauge.value && state.miscForm.gaugeMaxType === 'dynamic') {
+      state.miscForm.gaugeMax = state.miscForm.gaugeMax
+        ? state.miscForm.gaugeMax
+        : cloneDeep(defaultMaxValue.liquidMax)
+      state.miscForm.gaugeMaxType = 'fix'
+      state.miscForm.gaugeMaxField = {}
+      state.miscForm.gaugeMinType = 'fix'
+      state.miscForm.gaugeMinField = {}
+      changeMisc('gaugeMaxField', true)
+    }
   } else {
-    if (state.quotaData.length) {
-      // 查找 quotaData 中是否存在 chart.yAxis[0].id
-      const yAxisExists = state.quotaData.find(ele => ele.id === yAxisId)
-      // 如果不存在
-      if (!yAxisExists) {
-        if (props.chart.type === 'liquid' && !state.liquidProcessedNoYAxis) {
-          state.liquidProcessedNoYAxis = true
-          state.miscForm.liquidMaxField.id = ''
-          state.miscForm.liquidMaxField.summary = ''
-          state.liquidMaxField = {}
-          changeMisc('liquidMaxField', false)
-        } else {
+    // 查找 quotaData 中是否存在 chart.yAxis[0].id
+    const yAxisExists = props.quotaFields.find(ele => ele.id === yAxisId)
+    // 如果不存在
+    if (!yAxisExists) {
+      if (isLiquid.value) {
+        state.liquidProcessedNoYAxis = true
+        state.miscForm.liquidMaxField.id = ''
+        state.miscForm.liquidMaxField.summary = ''
+        state.liquidMaxField = {}
+        changeMisc('liquidMaxField', true)
+      }
+      if (isGauge.value) {
+        state.gaugeProcessedNoYAxis = true
+        state.miscForm.gaugeMaxField.id = ''
+        state.miscForm.gaugeMaxField.summary = ''
+        state.maxField = {}
+        changeMisc('gaugeMaxField', true)
+      }
+    }
+    if (isLiquid.value) {
+      // 如果 liquidMaxType 是动态类型，重置 liquidMax
+      if (state.miscForm.liquidMaxType === 'dynamic') {
+        state.miscForm.liquidMax = undefined
+        // 检查 yAxisId 和 yAxisField 的条件
+        const isValidYAxisField =
+          yAxisId && (yAxisField.extField === 2 || NUMBER_DE_TYPE.includes(yAxisField.deType))
+        const isMatchingFieldId =
+          state.miscForm.liquidMaxField.id === yAxisId || !state.miscForm.liquidMaxField.id
+        // 如果条件满足，设置 liquidMaxField.id 和相关属性
+        if (isValidYAxisField && isMatchingFieldId) {
+          state.miscForm.liquidMaxField.id = getDynamicFieldId()
+          state.liquidMaxField = getQuotaField(state.miscForm.liquidMaxField.id)
+          const summary = state.miscForm.liquidMaxField.summary
+          state.miscForm.liquidMaxField.summary = summary
+            ? summary
+            : getFieldSummaryByDeType(state.liquidMaxField?.deType)
+
+          // 更新处理状态并触发 changeMisc
+          if (!state.liquidProcessedNoYAxis) {
+            state.liquidProcessedNoYAxis = true
+            changeMisc('liquidMaxField', true)
+          }
+        }
+      }
+      if (!state.miscForm.liquidMax && state.miscForm.liquidMaxType === 'fix') {
+        state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
+      }
+    } else {
+      if (state.miscForm.gaugeMaxType === 'dynamic') {
+        state.miscForm.gaugeMax = undefined
+
+        // 拖入的字段是计算字段，并且当前选择的是该字段时，取其他字段
+        if (
+          yAxisId &&
+          (yAxisField.extField === 2 || NUMBER_DE_TYPE.includes(yAxisField.deType)) &&
+          (state.miscForm.gaugeMaxField.id === yAxisId || !state.miscForm.gaugeMaxField.id)
+        ) {
+          // 根据查找结果设置 gaugeMaxField.id
+          state.miscForm.gaugeMaxField.id = getDynamicFieldId()
+          state.maxField = getQuotaField(state.miscForm.gaugeMaxField.id)
+          // 设置 summary 和 maxField
+          const summary = state.miscForm.gaugeMaxField.summary
+          state.miscForm.gaugeMaxField.summary = summary
+            ? summary
+            : getFieldSummaryByDeType(state.maxField?.deType)
           if (!state.gaugeProcessedNoYAxis) {
             state.gaugeProcessedNoYAxis = true
-            state.miscForm.gaugeMaxField.id = ''
-            state.miscForm.gaugeMaxField.summary = ''
-            state.maxField = {}
-            changeMisc('gaugeMaxField', false)
+            changeMisc('gaugeMaxField', true)
           }
         }
-      } else {
-        if (props.chart.type === 'liquid') {
-          if (state.miscForm.liquidMaxType === 'dynamic') {
-            state.miscForm.liquidMax = undefined
-            // 拖入的字段是计算字段，并且当前选择的是该字段时，取其他字段
-            if (
-              yAxisId &&
-              (yAxisField.extField === 2 || !NUMBER_DE_TYPE.includes(yAxisField.deType)) &&
-              (state.miscForm.liquidMaxField.id === yAxisId || !state.miscForm.liquidMaxField.id)
-            ) {
-              state.liquidProcessedNoYAxis = false
-              // 根据查找结果设置 liquidMaxField.id
-              state.miscForm.liquidMaxField.id = getDynamicFieldId()
-              state.liquidMaxField = getQuotaField(state.miscForm.liquidMaxField.id)
-              // 设置 summary 和 maxField
-              state.miscForm.liquidMaxField.summary = getFieldSummaryByDeType(
-                state.liquidMaxField?.deType
-              )
-              changeMisc('liquidMaxField', true)
-            }
-          }
-          if (!state.miscForm.liquidMax && state.miscForm.liquidMaxType === 'fix') {
-            state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
-          }
-        } else {
-          if (state.miscForm.gaugeMaxType === 'dynamic') {
-            state.miscForm.gaugeMax = undefined
-
-            // 拖入的字段是计算字段，并且当前选择的是该字段时，取其他字段
-            if (
-              yAxisId &&
-              (yAxisField.extField === 2 || !NUMBER_DE_TYPE.includes(yAxisField.deType)) &&
-              (state.miscForm.gaugeMaxField.id === yAxisId || !state.miscForm.gaugeMaxField.id)
-            ) {
-              state.gaugeProcessedNoYAxis = false
-              // 根据查找结果设置 gaugeMaxField.id
-              state.miscForm.gaugeMaxField.id = getDynamicFieldId()
-              state.maxField = getQuotaField(state.miscForm.gaugeMaxField.id)
-              // 设置 summary 和 maxField
-              state.miscForm.gaugeMaxField.summary = getFieldSummaryByDeType(state.maxField?.deType)
-              changeMisc('gaugeMaxField', true)
-            }
-          }
-          if (!state.miscForm.gaugeMax && state.miscForm.gaugeMaxType === 'fix') {
-            state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
-          }
-        }
+      }
+      if (!state.miscForm.gaugeMax && state.miscForm.gaugeMaxType === 'fix') {
+        state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
       }
     }
   }
 }
 
 const getDynamicFieldId = () => {
-  return quotaData.value?.filter(
-    item => item.extField !== 2 && NUMBER_DE_TYPE.includes(item.deType)
-  )?.[0]?.id
+  // 返回yAxis字段ID
+  const curFieldObj = quotaData.value?.find(item => item.id === props.chart.yAxis?.[0]?.id)
+  if (curFieldObj) return curFieldObj.id
+  // 返回第一个数字类型字段ID
+  return quotaData.value?.filter(item => NUMBER_DE_TYPE.includes(item.deType))?.[0]?.id
 }
 
 const changeQuotaField = (type: string, resetSummary?: boolean) => {
-  let isCountField = props.chart.yAxis?.[0]?.id === '-1'
-  if (type === 'min') {
-    if (state.miscForm.gaugeMinType === 'dynamic') {
-      if (!state.miscForm.gaugeMinField.id && !isCountField) {
-        setDynamicFieldId(state.miscForm.gaugeMinField)
-      }
-      if (!state.miscForm.gaugeMinField.summary) {
-        state.miscForm.gaugeMinField.summary = 'count'
-      }
-      if (resetSummary) {
-        state.miscForm.gaugeMinField.summary = 'count'
-      }
-      if (state.miscForm.gaugeMinField.id && state.miscForm.gaugeMinField.summary) {
-        state.minField = getQuotaField(state.miscForm.gaugeMinField.id)
-        changeMisc('gaugeMinField', true)
-      }
-    } else {
-      if (state.miscForm.gaugeMaxType === 'dynamic') {
-        if (state.miscForm.gaugeMaxField.id && state.miscForm.gaugeMaxField.summary) {
-          changeMisc('gaugeMinField', true)
-        }
-      } else {
-        changeMisc('gaugeMinField', true)
-      }
+  const isCountField = props.chart.yAxis?.[0]?.id === '-1'
+  const isDynamic =
+    type === 'min'
+      ? state.miscForm.gaugeMinType === 'dynamic'
+      : state.miscForm.gaugeMaxType === 'dynamic'
+  const field = type === 'min' ? state.miscForm.gaugeMinField : state.miscForm.gaugeMaxField
+  const maxValueKey = props.chart.type === 'liquid' ? 'liquidMax' : 'gaugeMax'
+  if (isDynamic) {
+    if (!field.id && !isCountField) setDynamicFieldId(field)
+    if (!field.summary || resetSummary) field.summary = 'count'
+    if (field.id && field.summary) {
+      if (type === 'min') state.minField = getQuotaField(field.id)
+      else state.maxField = getQuotaField(field.id)
+      changeMisc(`${maxValueKey}Field`, true)
     }
-  } else if (type === 'max') {
-    if (props.chart.type === 'liquid') {
-      if (state.miscForm.liquidMaxType === 'dynamic') {
-        state.miscForm.liquidMax = undefined
-      } else if (!state.miscForm.liquidMax) {
-        state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
-      }
-      if (!state.miscForm.liquidMaxField.id) {
-        setDynamicFieldId(state.miscForm.liquidMaxField)
-      }
-      if (!state.miscForm.liquidMaxField.summary) {
-        state.miscForm.liquidMaxField.summary = 'count'
-      }
-      if (resetSummary) {
-        state.miscForm.liquidMaxField.summary = 'count'
-      }
-      if (state.miscForm.liquidMaxField.id && state.miscForm.liquidMaxField.summary) {
-        state.liquidMaxField = getQuotaField(state.miscForm.liquidMaxField.id)
-        changeMisc('liquidMaxField', true)
-      }
-    } else {
-      if (state.miscForm.gaugeMaxType === 'dynamic') {
-        state.miscForm.gaugeMax = undefined
-        if (!state.miscForm.gaugeMaxField.id && !isCountField) {
-          setDynamicFieldId(state.miscForm.gaugeMaxField)
-        }
-        if (!state.miscForm.gaugeMaxField.summary) {
-          state.miscForm.gaugeMaxField.summary = 'count'
-        }
-        if (resetSummary) {
-          state.miscForm.gaugeMaxField.summary = 'count'
-        }
-        if (state.miscForm.gaugeMaxField.id && state.miscForm.gaugeMaxField.summary) {
-          state.maxField = getQuotaField(state.miscForm.gaugeMaxField.id)
-          changeMisc('gaugeMaxField', true)
-        }
-      } else {
-        if (!state.miscForm.gaugeMax) {
-          state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
-        }
-        if (state.miscForm.gaugeMinType === 'dynamic') {
-          if (state.miscForm.gaugeMinField.id && state.miscForm.gaugeMinField.summary) {
-            changeMisc('gaugeMaxField', true)
-          }
-        } else {
-          changeMisc('gaugeMaxField', true)
-        }
-      }
+  } else {
+    if (type === 'max' && isLiquid) {
+      state.miscForm.liquidMax = state.miscForm.liquidMax || cloneDeep(defaultMaxValue.liquidMax)
+    } else if (type === 'max') {
+      state.miscForm.gaugeMax = state.miscForm.gaugeMax || cloneDeep(defaultMaxValue.gaugeMax)
     }
+    changeMisc(`${maxValueKey}Field`, true)
   }
 }
 
 const setDynamicFieldId = fieldObj => {
+  const yAxisField = props.chart.yAxis?.[0]
   if (
-    props.chart.yAxis?.[0]?.extField === 2 ||
-    props.chart.yAxis?.[0]?.id === '-1' ||
-    !NUMBER_DE_TYPE.includes(props.chart.yAxis?.[0]?.deType)
+    yAxisField?.extField === 2 ||
+    yAxisField?.id === '-1' ||
+    !NUMBER_DE_TYPE.includes(yAxisField?.deType)
   ) {
     fieldObj.id = getDynamicFieldId()
   } else {
-    fieldObj.id = props.chart.yAxis?.[0]?.id
+    fieldObj.id = yAxisField?.id
   }
 }
 
 const getQuotaField = id => {
-  if (!id) {
-    return {}
-  }
-  const fields = state.quotaData.filter(ele => {
-    return ele.id === id
-  })
-  if (fields.length === 0) {
-    return {}
-  } else {
-    return fields[0]
-  }
+  return quotaData.value.find(ele => ele.id === id) || {}
 }
 
 const isValidField = field => {
-  return field.id !== '-1' && state.quotaData.findIndex(ele => ele.id === field.id) !== -1
+  return field.id !== '-1' && quotaData.value.findIndex(ele => ele.id === field.id) !== -1
 }
 
 const showProperty = prop => props.propertyInner?.includes(prop)
@@ -322,17 +281,19 @@ const defaultMaxValue = {
   gaugeMax: undefined,
   liquidMax: undefined
 }
-const gaugeDefaultDataRange = args => {
+const gaugeOrLiquidDefaultRangeData = args => {
   if (args.data.type === 'gauge') {
     defaultMaxValue.gaugeMax = cloneDeep(args.data.max)
-    if (!state.miscForm.gaugeMax) {
+    if (!state.miscForm.gaugeMax || defaultMaxValue.gaugeMax !== state.miscForm.gaugeMax) {
       state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
+      changeMisc('gaugeMaxField', false)
     }
   }
   if (args.data.type === 'liquid') {
     defaultMaxValue.liquidMax = cloneDeep(args.data.max)
-    if (!state.miscForm.liquidMax) {
+    if (!state.miscForm.liquidMax || defaultMaxValue.liquidMax !== state.miscForm.liquidMax) {
       state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
+      changeMisc('liquidMaxField', false)
     }
   }
 }
@@ -340,27 +301,26 @@ const gaugeDefaultDataRange = args => {
  * 校验最大值的输入
  */
 const changeMaxValidate = prop => {
-  if (prop === 'gaugeMax') {
-    if (!state.miscForm.gaugeMax) {
-      state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
-    }
-  } else {
-    if (!state.miscForm.liquidMax) {
-      state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
-    }
+  if (prop === 'gaugeMax' && !state.miscForm.gaugeMax) {
+    state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
+  }
+  if (prop === 'liquidMax' && !state.miscForm.liquidMax) {
+    state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
   }
   changeMisc(prop, true)
 }
 const addAxis = (form: AxisEditForm) => {
-  if (form.axis[0]?.id && !form.quotaData?.length) {
+  state.quotaData = []
+  if (form.axis[0]?.id) {
     const uniqueIds = new Set(state.quotaData.map(item => item.id))
     state.quotaData = [
-      ...state.quotaData,
-      ...props.quotaFields.filter(ele => ele.id !== '-1' && !uniqueIds.has(ele.id))
+      ...props.quotaFields.filter(
+        ele => ele.id !== '-1' && ele.extField !== 2 && !uniqueIds.has(ele.id)
+      )
     ]
   }
-  const maxTypeKey = props.chart.type === 'liquid' ? 'liquidMaxType' : 'gaugeMaxType'
-  const maxValueKey = props.chart.type === 'liquid' ? 'liquidMax' : 'gaugeMax'
+  const maxTypeKey = isLiquid.value ? 'liquidMaxType' : 'gaugeMaxType'
+  const maxValueKey = isLiquid.value ? 'liquidMax' : 'gaugeMax'
   if (form.axis[0]?.id === '-1') {
     state.miscForm[maxTypeKey] = 'fix'
     state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey])
@@ -369,7 +329,7 @@ const addAxis = (form: AxisEditForm) => {
     state.miscForm[maxValueKey + 'Field']['id'] = getDynamicFieldId()
     state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
   }
-  if (props.chart.type === 'gauge') {
+  if (isGauge.value) {
     state.miscForm.gaugeMinType = 'fix'
     state.miscForm.gaugeMin = 0
     state.miscForm.gaugeMinField.id = ''
@@ -379,29 +339,24 @@ const addAxis = (form: AxisEditForm) => {
     state.miscForm[maxTypeKey] = 'fix'
     state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey])
   }
-  changeMisc(maxValueKey + 'Field', false)
 }
-const changeChartType = () => {
-  const yAxisField = props.chart.yAxis?.[0]
-  if (quotaData.value?.length === 0 || yAxisField?.id === '-1') {
-    state.miscForm.liquidMaxType = 'fix'
-    state.miscForm.liquidMaxField.id = ''
-    state.miscForm.gaugeMaxType = 'fix'
-    state.miscForm.gaugeMaxField.id = ''
-    state.miscForm.gaugeMinType = 'fix'
-    state.miscForm.gaugeMinField.id = ''
-    changeMisc(null, true)
-  }
-}
+
 onMounted(() => {
   init()
   initField()
   useEmitt({ name: 'addAxis', callback: addAxis })
-  useEmitt({ name: 'chart-type-change', callback: changeChartType })
+  useEmitt({ name: 'chart-data-change', callback: initField })
+  useEmitt({ name: 'chart-type-change', callback: initField })
 })
+
+/**
+ * 不包含记录数字段以及计算字段
+ */
 const quotaData = computed(() => {
-  return state.quotaData.filter(item => NUMBER_DE_TYPE.includes(item.deType) && item.extField !== 2)
+  return state.quotaData.filter(item => NUMBER_DE_TYPE.includes(item.deType))
 })
+const isLiquid = computed(() => props.chart.type === 'liquid')
+const isGauge = computed(() => props.chart.type === 'gauge')
 </script>
 
 <template>

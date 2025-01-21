@@ -105,7 +105,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
         from: 'gauge',
         data: {
           type: 'gauge',
-          max: chart.data?.series[chart.data?.series.length - 1]?.data[0]
+          max: chart.data?.series[0]?.data[0]
         }
       })
     })

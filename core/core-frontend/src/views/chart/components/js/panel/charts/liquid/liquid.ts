@@ -68,7 +68,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
         from: 'liquid',
         data: {
           type: 'liquid',
-          max: chart.data?.series[chart.data?.series.length - 1]?.data[0]
+          max: chart.data?.series[0]?.data[0]
         }
       })
     })
