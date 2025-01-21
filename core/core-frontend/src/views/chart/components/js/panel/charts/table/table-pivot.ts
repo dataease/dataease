@@ -12,7 +12,8 @@ import {
   QueryDataType,
   TotalStatus,
   Aggregation,
-  S2DataConfig
+  S2DataConfig,
+  MergedCell
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
@@ -303,6 +304,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       s2.on(S2Event.ROW_CELL_HOVER, event => this.showTooltip(s2, event, meta))
       s2.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(s2, event, meta))
     }
+    // empty data tip
+    configEmptyDataStyle(s2, newData)
     // click
     s2.on(S2Event.DATA_CELL_CLICK, ev => this.dataCellClickAction(chart, ev, s2, action))
     s2.on(S2Event.ROW_CELL_CLICK, ev => this.headerCellClickAction(chart, ev, s2, action))
@@ -926,4 +929,73 @@ const calcActionByType: {
   [Aggregation.MIN]: (data, field) => getDataExtremumByField('min', data, field),
   [Aggregation.MAX]: (data, field) => getDataExtremumByField('max', data, field),
   [Aggregation.AVG]: getDataAvgByField
+}
+
+class EmptyDataCell extends MergedCell {
+  drawTextShape(): void {
+    this.meta.fieldValue = ' '
+    super.drawTextShape()
+    const { rowHeader, columnHeader } = this.spreadsheet.facet
+    const offsetX = columnHeader.getConfig().viewportWidth / 2
+    const offsetY = rowHeader.getConfig().viewportHeight / 2
+    const style = this.getTextStyle()
+    const config = {
+      attrs: {
+        ...style,
+        x: offsetX,
+        y: offsetY,
+        text: t('data_set.no_data'),
+        opacity: 1,
+        textAlign: 'center',
+        textBaseline: 'middle'
+      }
+    }
+    this.addShape('text', config)
+  }
+
+  protected drawBackgroundShape(): void {
+    const cellTheme = this.theme.dataCell.cell
+    cellTheme.backgroundColor = setColorOpacity(cellTheme.backgroundColor, 1)
+    super.drawBackgroundShape()
+  }
+}
+
+export function setColorOpacity(color: string, opacity: number) {
+  if (color.indexOf('rgba') !== -1) {
+    const colorArr = color.split(',')
+    colorArr[3] = `${opacity})`
+    return colorArr.join(',')
+  }
+  if (color.indexOf('rgb') !== -1) {
+    return `${color.replace('rgb', 'rgba').replace(')', `,${opacity})`)}`
+  }
+  if (color.indexOf('#') !== -1) {
+    if (color.length === 7) {
+      return `${color}${Math.round(opacity * 255).toString(16)}`
+    }
+    if (color.length === 9) {
+      return color.slice(0, 7) + Math.round(opacity * 255).toString(16)
+    }
+  }
+  return color
+}
+
+function configEmptyDataStyle(instance: PivotSheet, data: any[]) {
+  if (data?.length) {
+    return
+  }
+  instance.on(S2Event.LAYOUT_AFTER_RENDER, () => {
+    const { colLeafNodes, rowLeafNodes } = instance.facet?.layoutResult || {}
+    if (!colLeafNodes?.length || !rowLeafNodes?.length) {
+      return
+    }
+    const mergedCells = []
+    colLeafNodes.forEach((_, colIndex) => {
+      rowLeafNodes.forEach((__, rowIndex) => {
+        mergedCells.push({ rowIndex, colIndex })
+      })
+    })
+    instance.options.mergedCell = (s, c, m) => new EmptyDataCell(s, c, m)
+    instance.interaction.mergeCells(mergedCells)
+  })
 }
