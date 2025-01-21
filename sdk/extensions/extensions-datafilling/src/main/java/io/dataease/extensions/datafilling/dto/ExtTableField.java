@@ -71,6 +71,8 @@ public class ExtTableField implements Serializable {
         private boolean updateRuleCheck;
 
         private List<Option> options;
+
+        private List<ExtraColumnItem> extraColumns;
     }
 
     @Data

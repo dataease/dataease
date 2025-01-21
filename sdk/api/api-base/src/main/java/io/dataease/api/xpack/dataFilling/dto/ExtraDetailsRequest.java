@@ -2,6 +2,7 @@ package io.dataease.api.xpack.dataFilling.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.extensions.datafilling.dto.ExtraColumnItem;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
