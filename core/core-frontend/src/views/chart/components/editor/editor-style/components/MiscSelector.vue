@@ -339,6 +339,7 @@ const addAxis = (form: AxisEditForm) => {
     state.miscForm[maxTypeKey] = 'fix'
     state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey])
   }
+  changeMisc(`${maxValueKey}Field`, false)
 }
 
 onMounted(() => {
