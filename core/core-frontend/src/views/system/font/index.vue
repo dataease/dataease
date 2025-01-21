@@ -1,14 +1,13 @@
 <script lang="ts" setup>
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
-import { onMounted, ref, computed, watch } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import UploadDetail from './UploadDetail.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deleteById, edit, defaultFont } from '@/api/font'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
-import { useElementSize } from '@vueuse/core'
 
 const appearanceStore = useAppearanceStoreWithOut()
 const { t } = useI18n()
@@ -21,31 +20,6 @@ const loading = ref(false)
 const uploadFont = (title, type, item) => {
   uploadDetail.value.init(title, type, item)
 }
-const el = ref(null)
-const { width, height } = useElementSize(el)
-const showMoreHeight = ref(false)
-const showMoreWidth = ref(false)
-watch(
-  () => height.value,
-  (newVal, oldVal) => {
-    if (oldVal === 0) return
-    showMoreHeight.value = newVal > oldVal
-  }
-)
-
-watch(
-  () => width.value,
-  newVal => {
-    showMoreWidth.value = newVal < 745
-  },
-  {
-    immediate: true
-  }
-)
-
-const showMore = computed(() => {
-  return showMoreWidth.value || showMoreHeight.value
-})
 
 const listFont = async () => {
   loading.value = true
@@ -168,8 +142,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="font-content_overflow">
-      {{ showMore }} {{ width }} {{ height }}
-      <div ref="el" class="font-content_list" v-if="fontListComputed.length">
+      <div class="font-content_list" v-if="fontListComputed.length">
         <div class="font-content_item" v-for="ele in fontListComputed" :key="ele">
           <span v-if="ele.isDefault" class="font-default">{{ t('system.default_font') }}</span>
           <div class="font-name">
