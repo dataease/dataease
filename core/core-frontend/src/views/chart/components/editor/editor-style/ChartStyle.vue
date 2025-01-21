@@ -27,7 +27,6 @@ import IndicatorNameSelector from '@/views/chart/components/editor/editor-style/
 import QuadrantSelector from '@/views/chart/components/editor/editor-style/components/QuadrantSelector.vue'
 import FlowMapLineSelector from '@/views/chart/components/editor/editor-style/components/FlowMapLineSelector.vue'
 import FlowMapPointSelector from '@/views/chart/components/editor/editor-style/components/FlowMapPointSelector.vue'
-import CommonEvent from '@/custom-component/common/CommonEvent.vue'
 import CommonBorderSetting from '@/custom-component/common/CommonBorderSetting.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const snapshotStore = snapshotStoreWithOut()
@@ -669,5 +668,9 @@ span {
 }
 .style-collapse:empty {
   border-bottom: none;
+}
+
+:deep(.ed-collapse-item__content) {
+  padding: 16px 8px 0 8px !important;
 }
 </style>

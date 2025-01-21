@@ -17,7 +17,7 @@ import { ElFormItem, ElInputNumber, ElMessage, UploadProps } from 'element-plus-
 import { svgStrToUrl } from '../../../js/util'
 
 const dvMainStore = dvMainStoreWithOut()
-const { batchOptStatus } = storeToRefs(dvMainStore)
+const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const props = defineProps({
   chart: {
@@ -671,7 +671,7 @@ onMounted(() => {
             v-model="state.basicStyleForm.tableBorderColor"
             :effect="themes"
             is-custom
-            :trigger-width="108"
+            :trigger-width="mobileInPc ? 197 : 108"
             color-format="rgb"
             :predefine="predefineColors"
             show-alpha
@@ -692,7 +692,7 @@ onMounted(() => {
             :predefine="predefineColors"
             :effect="themes"
             is-custom
-            :trigger-width="108"
+            :trigger-width="mobileInPc ? 197 : 108"
             color-format="rgb"
             show-alpha
             @change="changeBasicStyle('tableScrollBarColor')"
