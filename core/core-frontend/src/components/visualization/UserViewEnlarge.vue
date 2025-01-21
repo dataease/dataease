@@ -31,17 +31,16 @@
             class="m-button"
             v-if="optType === 'enlarge' && exportPermissions[0]"
             link
-            icon="Download"
             size="middle"
             @click="downloadViewImage"
           >
+            <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
             {{ t('chart.export_img') }}
           </el-button>
           <el-button
             class="m-button"
             v-if="optType === 'details' && exportPermissions[1]"
             link
-            icon="Download"
             size="middle"
             :loading="exportLoading"
             :disabled="
@@ -50,13 +49,14 @@
             "
             @click="downloadViewDetails('view')"
           >
+            <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
+
             {{ t('chart.export_excel') }}
           </el-button>
           <el-button
             class="m-button"
             v-if="optType === 'details' && exportPermissions[2]"
             link
-            icon="Download"
             size="middle"
             :loading="exportLoading"
             @click="downloadViewDetails('dataset')"
@@ -65,17 +65,20 @@
               state.dataFrom === 'template'
             "
           >
+            <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
+
             {{ t('chart.export_raw_details') }}
           </el-button>
           <el-button
             class="m-button"
             v-if="optType === 'details' && exportPermissions[2] && viewInfo.type === 'table-pivot'"
             link
-            icon="Download"
             size="middle"
             :loading="exportLoading"
             @click="exportAsFormattedExcel"
           >
+            <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
+
             <span>{{ t('chart.export_excel_formatter') }}</span>
           </el-button>
           <el-divider
@@ -150,6 +153,7 @@ import { computed, h, nextTick, reactive, ref } from 'vue'
 import { toPng } from 'html-to-image'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
+import icon_download_outlined from '@/assets/svg/icon_download_outlined.svg'
 import ChartComponentS2 from '@/views/chart/components/views/components/ChartComponentS2.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { exportExcelDownload } from '@/views/chart/components/js/util'

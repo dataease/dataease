@@ -5,6 +5,8 @@ import dvInfoSvg from '@/assets/svg/dv-info.svg'
 import dvHeadMore from '@/assets/svg/dv-head-more.svg'
 import icon_pc_fullscreen from '@/assets/svg/icon_pc_fullscreen.svg'
 import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
+import icon_download_outlined from '@/assets/svg/icon_download_outlined.svg'
+import icon_replace_outlined from '@/assets/svg/icon_replace_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -180,7 +182,8 @@ const initOpenHandler = newWindow => {
         </el-icon>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="Refresh" @click="reload()"
+            <el-dropdown-item @click="reload()"
+              ><el-icon color="#646A73" size="16"><icon_replace_outlined /></el-icon
               >{{ t('visualization.refresh_data') }}
             </el-dropdown-item>
             <el-dropdown
@@ -191,9 +194,9 @@ const initOpenHandler = newWindow => {
               v-if="exportPermissions[0]"
             >
               <div class="ed-dropdown-menu__item flex-align-center icon">
-                <el-icon><Download /></el-icon>
+                <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
                 {{ t('visualization.export_as') }}
-                <el-icon class="arrow-right_icon"><ArrowRight /></el-icon>
+                <el-icon color="#646A73" size="16" class="arrow-right_icon"><ArrowRight /></el-icon>
               </div>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -221,10 +224,15 @@ const initOpenHandler = newWindow => {
 <style lang="less">
 .pad12 {
   .ed-dropdown-menu__item {
-    padding: 5px 12px !important;
+    padding: 5px 36px 5px 12px !important;
+
+    .ed-icon {
+      margin-right: 8px;
+    }
     .arrow-right_icon {
       position: absolute;
-      right: 3px;
+      right: 12px;
+      margin-right: 0;
     }
 
     &:has(.arrow-right_icon) {

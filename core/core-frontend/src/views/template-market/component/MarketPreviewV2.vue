@@ -658,21 +658,40 @@ onMounted(() => {
   cursor: pointer;
   font-weight: 400;
   color: #646a73;
-  width: 64px;
+  min-width: 64px;
   height: 22px;
-  padding: 0 4px 0 4px;
-  border-radius: 4px 0 0 0;
   display: flex;
   align-items: center;
+  white-space: nowrap;
+  position: relative;
+  margin-right: 4px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100% + 8px);
+    height: 100%;
+    transform: translate(-50%, -50%);
+    display: none;
+    border-radius: 4px 0 0 0;
+  }
 
   &:hover {
     color: #3370ff;
-    background: #3370ff1a;
+    &::after {
+      background: #3370ff1a;
+      display: block;
+    }
   }
 
   &:active {
     color: #245bdb;
-    background: #3370ff33;
+    &::after {
+      background: #3370ff33;
+      display: block;
+    }
   }
 }
 
