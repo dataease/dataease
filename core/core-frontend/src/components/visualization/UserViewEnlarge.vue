@@ -34,7 +34,9 @@
             size="middle"
             @click="downloadViewImage"
           >
-            <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
+            <el-icon color="#1F2329" size="16" style="margin-right: 3px"
+              ><icon_download_outlined
+            /></el-icon>
             {{ t('chart.export_img') }}
           </el-button>
           <el-button
@@ -49,8 +51,9 @@
             "
             @click="downloadViewDetails('view')"
           >
-            <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
-
+            <el-icon color="#1F2329" size="16" style="margin-right: 3px"
+              ><icon_download_outlined
+            /></el-icon>
             {{ t('chart.export_excel') }}
           </el-button>
           <el-button
@@ -65,8 +68,9 @@
               state.dataFrom === 'template'
             "
           >
-            <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
-
+            <el-icon color="#1F2329" size="16" style="margin-right: 3px"
+              ><icon_download_outlined
+            /></el-icon>
             {{ t('chart.export_raw_details') }}
           </el-button>
           <el-button
@@ -77,9 +81,10 @@
             :loading="exportLoading"
             @click="exportAsFormattedExcel"
           >
-            <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
-
-            <span>{{ t('chart.export_excel_formatter') }}</span>
+            <el-icon color="#1F2329" size="16" style="margin-right: 3px"
+              ><icon_download_outlined
+            /></el-icon>
+            {{ t('chart.export_excel_formatter') }}
           </el-button>
           <el-divider
             class="close-divider"
