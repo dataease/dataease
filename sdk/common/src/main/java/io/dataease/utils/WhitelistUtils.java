@@ -103,7 +103,7 @@ public class WhitelistUtils {
     }
 
     private static void invalidUrl(String requestURI) {
-        if (requestURI.contains("./") || (requestURI.contains(";") && !requestURI.contains("?"))) {
+        if (requestURI.contains("./") || requestURI.contains(".%") || (requestURI.contains(";") && !requestURI.contains("?"))) {
             DEException.throwException(INTERFACE_ADDRESS_INVALID.code(), String.format("%s [%s]", INTERFACE_ADDRESS_INVALID.message(), requestURI));
         }
     }
