@@ -99,7 +99,7 @@ public class ApiUtils {
                 dataList.addAll(fetchResult(response, apiDefinition));
                 String cursor = null;
                 try {
-                    cursor = JsonPath.read(response, apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPath());
+                    cursor = JsonPath.read(response, apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPath()).toString();
                 } catch (Exception e) {
                 }
                 while (cursor != null) {
@@ -107,7 +107,11 @@ public class ApiUtils {
                     response = execHttpRequest(false, apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
                     dataList.addAll(fetchResult(response, apiDefinition));
                     try {
-                        cursor = JsonPath.read(response, apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPath());
+                        if (cursor.equalsIgnoreCase(JsonPath.read(response, apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPath()).toString())) {
+                            cursor = null;
+                        } else {
+                            cursor = JsonPath.read(response, apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPath()).toString();
+                        }
                     } catch (Exception e) {
                         cursor = null;
                     }

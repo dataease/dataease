@@ -45,7 +45,8 @@ public class H2EngineProvider extends EngineProvider {
             for (int i = 0; i < strings.length; i++) {
                 if (tableFields.get(i).isChecked()) {
                     if (StringUtils.isEmpty(strings[i])) {
-                        if (tableFields.get(i).getFieldType().equals("LONG") || tableFields.get(i).getFieldType().equals("DOUBLE")) {
+                        String type = tableFields.get(i).getType() == null ? tableFields.get(i).getFieldType() : tableFields.get(i).getType();
+                        if (type.equals("LONG") || type.equals("DOUBLE")) {
                             strings1[length] = "0";
                         } else {
                             strings1[length] = null;
