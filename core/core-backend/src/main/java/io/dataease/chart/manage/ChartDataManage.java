@@ -341,7 +341,9 @@ public class ChartDataManage {
         extFilterList = extFilterList.stream().peek(ele -> {
             if (ObjectUtils.isNotEmpty(ele.getValue())) {
                 List<String> collect = ele.getValue().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
-                ele.setOriginValue(ele.getValue());
+                if (CollectionUtils.isEmpty(ele.getOriginValue())) {
+                    ele.setOriginValue(ele.getValue());
+                }
                 ele.setValue(collect);
             }
         }).collect(Collectors.toList());
