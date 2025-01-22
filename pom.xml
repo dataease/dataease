@@ -19,7 +19,7 @@
     </parent>
 
     <properties>
-        <dataease.version>2.10.4</dataease.version>
+        <dataease.version>2.10.5</dataease.version>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
