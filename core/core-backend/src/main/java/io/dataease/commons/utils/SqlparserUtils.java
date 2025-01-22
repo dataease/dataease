@@ -181,6 +181,9 @@ public class SqlparserUtils {
                 sysParams.add(sysParam);
             }
         }
+        if(!hasVariables){
+            return sql;
+        }
         Statement statement = CCJSqlParserUtil.parse(tmpSql);
         Select select = (Select) statement;
         if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
