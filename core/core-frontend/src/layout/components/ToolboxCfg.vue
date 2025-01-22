@@ -103,6 +103,9 @@ onMounted(() => {
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   &:hover {
     background-color: #1e2738;
   }

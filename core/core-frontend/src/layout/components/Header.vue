@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import logo from '@/assets/svg/logo.svg'
 import copilot from '@/assets/svg/copilot.svg'
-import msgNotice from '@/assets/svg/msg-notice.svg'
+import msgNotice from '@/assets/svg/icon_notification_outlined.svg'
 import dvAi from '@/assets/svg/dv-ai.svg'
 import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import { computed, onMounted, ref } from 'vue'
@@ -203,8 +203,8 @@ onMounted(() => {
             class="preview-download_icon"
             :class="navigateBg === 'light' && 'is-light-setting'"
           >
-            <Icon name="dv-preview-download"
-              ><msgNotice @click="msgNoticePush" class="svg-icon"
+            <Icon
+              ><msgNotice style="padding-top: 2px" @click="msgNoticePush" class="svg-icon"
             /></Icon>
           </el-icon>
         </el-badge>
@@ -228,6 +228,7 @@ onMounted(() => {
 <style lang="less" scoped>
 :deep(.ed-badge_custom) {
   --ed-badge-size: 14px;
+  height: 28px;
   .ed-badge__content {
     right: 0;
     padding: 3px;
@@ -248,7 +249,7 @@ onMounted(() => {
   }
   &.is-light-setting {
     &:hover {
-      background-color: var(--ed-menu-hover-bg-color) !important;
+      background-color: #1f23291a !important;
     }
   }
 }
@@ -353,14 +354,14 @@ onMounted(() => {
     .ed-icon {
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
-      font-size: 18px;
+      font-size: 20px;
     }
   }
 }
 .header-light {
   .operate-setting {
     .ed-icon {
-      color: var(--ed-color-black) !important;
+      color: #646a73 !important;
     }
   }
 }

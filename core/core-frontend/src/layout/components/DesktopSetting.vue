@@ -159,6 +159,9 @@ onMounted(() => {
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   &:hover {
     background-color: #1e2738;
   }
@@ -183,7 +186,7 @@ onMounted(() => {
   }
   &.is-light-setting {
     &:hover {
-      background-color: var(--ed-menu-hover-bg-color) !important;
+      background-color: #1f23291a !important;
     }
   }
 }

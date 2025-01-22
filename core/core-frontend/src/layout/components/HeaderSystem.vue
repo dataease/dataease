@@ -133,14 +133,14 @@ const navigate = computed(() => appearanceStore.getNavigate)
     .ed-icon {
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
-      font-size: 18px;
+      font-size: 20px;
     }
   }
 }
 .header-light {
   .operate-setting {
     .ed-icon {
-      color: var(--ed-color-black) !important;
+      color: #646a73 !important;
     }
   }
 }
