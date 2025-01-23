@@ -4015,6 +4015,10 @@ export default {
     on_the_left: '请在左侧选择表单',
     exporting: '后台导出中,可前往',
     progress_to_download: '查看进度，进行下载',
+    clear_selection: '取消选择',
+    truncate_table: '清空数据',
+    truncate: '清空',
+    confirm_truncate_table: '确定要清空数据吗',
     form: {
       add_detail_columns: '添加字段描述',
       detail_columns: '字段描述',

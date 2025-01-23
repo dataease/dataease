@@ -51,4 +51,8 @@ public abstract class ExtDDLProvider {
 
     public abstract Integer getColumnType(String name);
 
+    public abstract String truncateTable(String table);
+
+    public abstract String listAllIds(String table, String keyColumn);
+
 }

@@ -4011,6 +4011,10 @@ export default {
     on_the_left: '請在左側選擇表單',
     exporting: '後台導出中,可前往',
     progress_to_download: '查看進度，進行下載',
+    clear_selection: '取消選擇',
+    truncate_table: '清空數據',
+    truncate: '清空',
+    confirm_truncate_table: '確定要清空數據嗎',
     form: {
       add_detail_columns: '添加字段描述',
       detail_columns: '字段描述',

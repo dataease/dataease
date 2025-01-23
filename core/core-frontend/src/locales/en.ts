@@ -4125,6 +4125,10 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     on_the_left: 'Please select a form on the left',
     exporting: 'Backend export in progress, can go to',
     progress_to_download: 'Check progress and download',
+    clear_selection: 'Clear selection',
+    truncate_table: 'Truncate table',
+    truncate: 'Truncate',
+    confirm_truncate_table: 'Confirm to truncate table',
     form: {
       add_detail_columns: 'Add column details',
       detail_columns: 'Column details',
