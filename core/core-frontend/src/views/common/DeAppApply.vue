@@ -124,7 +124,9 @@
     </div>
     <template #footer>
       <div class="apply" style="width: 100%">
-        <el-button v-if="isDesktop()" @click="goBack">{{ t('visualization.back') }}</el-button>
+        <el-button v-if="isDesktop() || openType === '_self'" @click="goBack">{{
+          t('visualization.back')
+        }}</el-button>
         <el-button type="primary" @click="saveApp">{{ t('visualization.save') }}</el-button>
       </div>
     </template>
@@ -185,6 +187,7 @@ const props = defineProps({
 })
 
 const { componentData, canvasViewInfo, curCanvasType, themes } = toRefs(props)
+const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
 
 const dvPreName = computed(() =>
   curCanvasType.value === 'dashboard'
@@ -193,7 +196,6 @@ const dvPreName = computed(() =>
 )
 const addDsWindow = () => {
   // do addDsWindow
-  const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
   const url = '#/data/datasource?opt=create'
   window.open(url, openType)
 }
