@@ -181,7 +181,7 @@ public class SqlparserUtils {
                 sysParams.add(sysParam);
             }
         }
-        if(!hasVariables){
+        if(!hasVariables && !sql.contains(SubstitutedParams)){
             return sql;
         }
         Statement statement = CCJSqlParserUtil.parse(tmpSql);
