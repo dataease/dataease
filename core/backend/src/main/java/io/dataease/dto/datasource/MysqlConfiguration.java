@@ -36,7 +36,7 @@ public class MysqlConfiguration extends JdbcConfiguration {
     public List<String> getIllegalParameters() {
         List<String> newIllegalParameters = new ArrayList<>();
         newIllegalParameters.addAll(illegalParameters);
-        newIllegalParameters.addAll(Arrays.asList("allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath"));
+        newIllegalParameters.addAll(Arrays.asList("maxAllowedPacket", "allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath"));
         return newIllegalParameters;
     }
 
