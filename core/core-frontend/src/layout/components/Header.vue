@@ -203,9 +203,7 @@ onMounted(() => {
             class="preview-download_icon"
             :class="navigateBg === 'light' && 'is-light-setting'"
           >
-            <Icon
-              ><msgNotice style="padding-top: 2px" @click="msgNoticePush" class="svg-icon"
-            /></Icon>
+            <Icon><msgNotice @click="msgNoticePush" class="svg-icon" /></Icon>
           </el-icon>
         </el-badge>
       </el-tooltip>
@@ -238,7 +236,6 @@ onMounted(() => {
   }
 }
 .preview-download_icon {
-  padding: 5px;
   height: 28px;
   width: 28px;
   border-radius: 4px;
