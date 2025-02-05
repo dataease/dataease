@@ -2736,6 +2736,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    hidden_components: '已隱藏的組件',
     dashboard_adaptor: '縮放模式',
     scale_keep_height_and_width: '按畫布比例縮放',
     scale_with_width: '按元件比例縮放',

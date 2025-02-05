@@ -185,6 +185,7 @@ export function historyItemAdaptor(
   }
 
   // public
+  componentItem['dashboardHidden'] = componentItem['dashboardHidden'] || false
   componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
   componentItem['multiDimensional'] =
     componentItem['multiDimensional'] || deepCopy(MULTI_DIMENSIONAL)

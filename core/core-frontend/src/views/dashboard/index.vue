@@ -32,6 +32,7 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
+import DashboardHiddenComponent from '@/components/dashboard/DashboardHiddenComponent.vue'
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
@@ -56,6 +57,7 @@ const {
   canvasViewInfo,
   editMode,
   batchOptStatus,
+  hiddenListStatus,
   dvInfo
 } = storeToRefs(dvMainStore)
 const dataInitState = ref(false)
@@ -83,7 +85,8 @@ const otherEditorShow = computed(() => {
       (!['UserView', 'VQuery'].includes(curComponent.value?.component) ||
         (curComponent.value?.component === 'UserView' &&
           curComponent.value?.innerType === 'picture-group')) &&
-      !batchOptStatus.value
+      !batchOptStatus.value &&
+      !hiddenListStatus.value
   )
 })
 
@@ -98,7 +101,8 @@ const viewEditorShow = computed(() => {
     curComponent.value &&
       ['UserView', 'VQuery'].includes(curComponent.value.component) &&
       curComponent.value.innerType !== 'picture-group' &&
-      !batchOptStatus.value
+      !batchOptStatus.value &&
+      !hiddenListStatus.value
   )
 })
 const checkPer = async resourceId => {
@@ -268,6 +272,10 @@ const winMsgWebParamsHandle = msgInfo => {
   dvMainStore.addWebParamsFilter(params)
 }
 
+const dashboardComponentData = computed(() =>
+  componentData.value.filter(item => !item.dashboardHidden)
+)
+
 onUnmounted(() => {
   window.removeEventListener('storage', eventCheck)
   window.removeEventListener('message', winMsgHandle)
@@ -293,7 +301,7 @@ onUnmounted(() => {
           style="overflow-x: hidden"
           v-if="dataInitState"
           :canvas-id="state.canvasId"
-          :component-data="componentData"
+          :component-data="dashboardComponentData"
           :canvas-style-data="canvasStyleData"
           :canvas-view-info="canvasViewInfo"
           :font-family="canvasStyleData.fontFamily"
@@ -314,7 +322,7 @@ onUnmounted(() => {
         <component :is="findComponentAttr(curComponent)" :themes="'light'" />
       </dv-sidebar>
       <dv-sidebar
-        v-show="!curComponent && !batchOptStatus"
+        v-show="!curComponent && !batchOptStatus && !hiddenListStatus"
         :theme-info="'light'"
         :title="t('visualization.dashboard_configuration')"
         :width="420"
@@ -340,6 +348,16 @@ onUnmounted(() => {
         :side-name="'batchOpt'"
       >
         <chart-style-batch-set></chart-style-batch-set>
+      </dv-sidebar>
+      <dv-sidebar
+        v-if="hiddenListStatus"
+        :theme-info="'light'"
+        :title="t('visualization.hidden_components')"
+        :width="280"
+        aside-position="right"
+        class="left-sidebar"
+      >
+        <DashboardHiddenComponent></DashboardHiddenComponent>
       </dv-sidebar>
     </el-container>
   </div>

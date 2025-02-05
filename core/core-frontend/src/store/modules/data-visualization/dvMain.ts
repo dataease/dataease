@@ -157,6 +157,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       batchOptComponentType: null,
       // panel edit batch operation status
       batchOptStatus: false,
+      // 隐藏组件打开状态
+      hiddenListStatus: false,
       // Currently selected components
       curBatchOptComponents: [],
       // Currently selected Multiplexing components
@@ -903,6 +905,10 @@ export const dvMainStore = defineStore('dataVisualization', {
         customStyle: {},
         customAttr: {}
       }
+    },
+    setHiddenListStatus() {
+      this.hiddenListStatus = !this.hiddenListStatus
+      this.setBatchOptStatus(false)
     },
     removeCurBatchComponentWithId(id) {
       for (let index = 0; index < this.curBatchOptComponents.length; index++) {

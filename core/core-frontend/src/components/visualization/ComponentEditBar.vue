@@ -163,6 +163,10 @@
               </el-dropdown>
             </el-dropdown-item>
           </template>
+          <el-dropdown-item @click="hiddenComponent" v-if="barShowCheck('hidden')">{{
+            t('visualization.hidden')
+          }}</el-dropdown-item>
+
           <xpack-component
             :chart="element"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
@@ -222,6 +226,7 @@
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvBarEnlarge from '@/assets/svg/dv-bar-enlarge.svg'
+import dvEyeClose from '@/assets/svg/dv-eye-close.svg'
 import dvDetails from '@/assets/svg/dv-details.svg'
 import icon_params_setting from '@/assets/svg/icon_params_setting.svg'
 import dvBarUnLinkage from '@/assets/svg/dv-bar-unLinkage.svg'
@@ -244,6 +249,8 @@ import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
 import { XpackComponent } from '@/components/plugin'
 import { exportPermission, isMobile } from '@/utils/utils'
+import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
+const layerStore = layerStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -267,6 +274,7 @@ const positionBarShow = {
   canvas: [
     'datasetParams',
     'enlarge',
+    'hidden',
     'details',
     'setting',
     'copy',
@@ -287,6 +295,7 @@ const componentTypeBarShow = {
   UserView: [
     'datasetParams',
     'enlarge',
+    'hidden',
     'details',
     'setting',
     'copy',
@@ -300,7 +309,7 @@ const componentTypeBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  default: ['setting', 'delete', 'copy', 'multiplexing', 'batchOpt']
+  default: ['setting', 'delete', 'copy', 'multiplexing', 'batchOpt', 'hidden']
 }
 
 const barShowCheck = barName => {
@@ -490,6 +499,14 @@ const userViewEnlargeOpen = (e, opt) => {
   e.preventDefault()
   e.stopPropagation()
   emits('userViewEnlargeOpen', opt)
+}
+
+const hiddenComponent = () => {
+  if (curComponent.value) {
+    curComponent.value.dashboardHidden = true
+    eventBus.emit('removeMatrixItemPosition-' + canvasId.value, curComponent.value)
+  }
+  snapshotStore.recordSnapshotCache('hide')
 }
 
 // 复用-Begin
