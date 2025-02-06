@@ -80,8 +80,7 @@ const emits = defineEmits(['customClick'])
 }
 
 .inner-active {
-  border: 1px solid var(--ed-color-primary);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .toolbar-icon {

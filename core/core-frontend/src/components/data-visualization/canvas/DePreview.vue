@@ -143,11 +143,15 @@ const isReport = computed(() => {
 })
 
 const popComponentData = computed(() =>
-  componentData.value.filter(ele => ele.category && ele.category === 'hidden')
+  componentData.value.filter(
+    ele => ele.category && ele.category === 'hidden' && !ele?.dashboardHidden
+  )
 )
 
 const baseComponentData = computed(() =>
-  componentData.value.filter(ele => ele?.category !== 'hidden' && ele.component !== 'GroupArea')
+  componentData.value.filter(
+    ele => ele?.category !== 'hidden' && ele.component !== 'GroupArea' && !ele?.dashboardHidden
+  )
 )
 const canvasStyle = computed(() => {
   let style = {}

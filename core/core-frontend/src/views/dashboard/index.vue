@@ -36,6 +36,7 @@ import DashboardHiddenComponent from '@/components/dashboard/DashboardHiddenComp
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
+const deCanvasRef = ref(null)
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
     const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
@@ -174,6 +175,7 @@ const initLocalCanvasData = () => {
 }
 onMounted(async () => {
   dvMainStore.setCurComponent({ component: null, index: null })
+  dvMainStore.setHiddenListStatus(false)
   snapshotStore.initSnapShot()
   if (window.location.hash.includes('#/dashboard')) {
     newWindowFromDiv.value = true
@@ -276,6 +278,16 @@ const dashboardComponentData = computed(() =>
   componentData.value.filter(item => !item.dashboardHidden)
 )
 
+const cancelHidden = item => {
+  if (deCanvasRef.value) {
+    deCanvasRef.value.addItemBox(item)
+    nextTick(() => {
+      deCanvasRef.value.canvasInit(false)
+    })
+    snapshotStore.recordSnapshotCache('cancelHidden')
+  }
+}
+
 onUnmounted(() => {
   window.removeEventListener('storage', eventCheck)
   window.removeEventListener('message', winMsgHandle)
@@ -300,6 +312,7 @@ onUnmounted(() => {
         <de-canvas
           style="overflow-x: hidden"
           v-if="dataInitState"
+          ref="deCanvasRef"
           :canvas-id="state.canvasId"
           :component-data="dashboardComponentData"
           :canvas-style-data="canvasStyleData"
@@ -357,7 +370,7 @@ onUnmounted(() => {
         aside-position="right"
         class="left-sidebar"
       >
-        <DashboardHiddenComponent></DashboardHiddenComponent>
+        <DashboardHiddenComponent @cancel-hidden="cancelHidden"></DashboardHiddenComponent>
       </dv-sidebar>
     </el-container>
   </div>

@@ -53,15 +53,8 @@ const props = defineProps({
     default: 'main'
   }
 })
-const {
-  canvasStyleData,
-  componentData,
-  canvasViewInfo,
-  canvasId,
-  canvasActive,
-  outerScale,
-  canvasPosition
-} = toRefs(props)
+const { canvasStyleData, componentData, canvasViewInfo, canvasId, canvasActive, canvasPosition } =
+  toRefs(props)
 const domId = ref('de-canvas-' + canvasId.value)
 // change-end
 
@@ -111,8 +104,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
     component.x = cyGridster.value.findPositionX(component)
     dvMainStore.addComponent({
       component: component,
-      index: undefined,
-      componentData: componentData.value
+      index: undefined
     })
     adaptCurThemeCommonStyle(component)
     nextTick(() => {
@@ -231,6 +223,7 @@ const dashboardCanvasSizeInit = () => {
   }
 }
 const addItemBox = component => {
+  console.log('==test2')
   cyGridster.value.addItemBox(component)
 }
 
@@ -240,8 +233,7 @@ const moveOutFromTab = component => {
     dvMainStore.addComponent({
       component,
       index: undefined,
-      isFromGroup: true,
-      componentData: componentData.value
+      isFromGroup: true
     })
     addItemBox(component)
     canvasInit()

@@ -65,7 +65,8 @@ const {
   batchOptStatus,
   targetLinkageInfo,
   curBatchOptComponents,
-  appData
+  appData,
+  hiddenListStatus
 } = storeToRefs(dvMainStore)
 const dvModel = 'dashboard'
 const multiplexingRef = ref(null)

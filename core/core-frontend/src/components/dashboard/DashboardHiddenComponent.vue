@@ -5,10 +5,9 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import dvHidden from '@/assets/svg/dv-hidden.svg'
 import { computed } from 'vue'
 import Icon from '../icon-custom/src/Icon.vue'
-import eventBus from '@/utils/eventBus'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
-
+const emit = defineEmits(['cancelHidden'])
 const componentsHidden = computed(() => {
   return componentData.value.filter(ele => ele.dashboardHidden)
 })
@@ -16,8 +15,7 @@ const componentsHidden = computed(() => {
 const addToDashboard = item => {
   item.dashboardHidden = false
   item.y = 200
-  eventBus.emit('addDashboardItem-canvas-main', item)
-  eventBus.emit('matrix-canvasInit', false)
+  emit('cancelHidden', item)
 }
 </script>
 

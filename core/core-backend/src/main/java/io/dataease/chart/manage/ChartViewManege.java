@@ -131,7 +131,9 @@ public class ChartViewManege {
         List<ChartViewDTO> chartViewDTOS = transChart(coreChartViewMapper.selectList(wrapper));
         if (!CollectionUtils.isEmpty(chartViewDTOS)) {
             List<Long> tableIds = chartViewDTOS.stream()
-                    .map(ChartViewDTO::getTableId).distinct()
+                    .map(ChartViewDTO::getTableId)
+                    .filter(tableId -> tableId != null) // 过滤掉空值
+                    .distinct()
                     .toList();
             if (!CollectionUtils.isEmpty(tableIds)) {
                 QueryWrapper<CoreDatasetTableField> wp = new QueryWrapper<>();

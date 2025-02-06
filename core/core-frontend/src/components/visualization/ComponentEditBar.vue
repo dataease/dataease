@@ -163,9 +163,11 @@
               </el-dropdown>
             </el-dropdown-item>
           </template>
-          <el-dropdown-item @click="hiddenComponent" v-if="barShowCheck('hidden')">{{
-            t('visualization.hidden')
-          }}</el-dropdown-item>
+          <el-dropdown-item
+            @click="hiddenComponent"
+            v-if="barShowCheck('hidden') && isMainCanvas(canvasId)"
+            >{{ t('visualization.hidden') }}</el-dropdown-item
+          >
 
           <xpack-component
             :chart="element"
@@ -226,7 +228,6 @@
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvBarEnlarge from '@/assets/svg/dv-bar-enlarge.svg'
-import dvEyeClose from '@/assets/svg/dv-eye-close.svg'
 import dvDetails from '@/assets/svg/dv-details.svg'
 import icon_params_setting from '@/assets/svg/icon_params_setting.svg'
 import dvBarUnLinkage from '@/assets/svg/dv-bar-unLinkage.svg'
@@ -250,6 +251,7 @@ import { exportPivotExcel } from '@/views/chart/components/js/panel/common/commo
 import { XpackComponent } from '@/components/plugin'
 import { exportPermission, isMobile } from '@/utils/utils'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
+import { isMainCanvas } from '@/utils/canvasUtils'
 const layerStore = layerStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()

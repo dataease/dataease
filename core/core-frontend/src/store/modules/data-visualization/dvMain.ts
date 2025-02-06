@@ -904,8 +904,12 @@ export const dvMainStore = defineStore('dataVisualization', {
         customAttr: {}
       }
     },
-    setHiddenListStatus() {
-      this.hiddenListStatus = !this.hiddenListStatus
+    setHiddenListStatus(status?) {
+      if (status != undefined) {
+        this.hiddenListStatus = !!status
+      } else {
+        this.hiddenListStatus = !this.hiddenListStatus
+      }
       this.setBatchOptStatus(false)
     },
     removeCurBatchComponentWithId(id) {
@@ -1519,6 +1523,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       const optName =
         dvType === 'dashboard' ? t('visualization.new_dashboard') : t('visualization.new_screen')
       const name = preName ? preName : optName
+      this.hiddenListStatus = false
       this.dvInfo = {
         dataState: 'prepare',
         optType: null,
