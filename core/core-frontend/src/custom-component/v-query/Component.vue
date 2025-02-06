@@ -76,8 +76,6 @@ const defaultStyle = {
   titleShow: false,
   titleColor: '',
   textColorShow: false,
-  bgColorShow: false,
-  borderShow: false,
   labelShow: true,
   title: '',
   labelColor: '#1f2329',
@@ -145,9 +143,7 @@ const { datasetFieldList } = comInfo()
 
 const setCustomStyle = val => {
   const {
-    borderShow,
     borderColor,
-    bgColorShow,
     btnList,
     titleLayout,
     labelColor,
@@ -172,8 +168,8 @@ const setCustomStyle = val => {
     placeholderShow,
     labelShow
   } = val
-  customStyle.background = bgColorShow ? bgColor || '' : ''
-  customStyle.border = borderShow ? borderColor || '' : ''
+  customStyle.background = bgColor || ''
+  customStyle.border = borderColor || ''
   customStyle.btnList = [...btnList]
   customStyle.layout = layout
   customStyle.placeholderShow = placeholderShow ?? true

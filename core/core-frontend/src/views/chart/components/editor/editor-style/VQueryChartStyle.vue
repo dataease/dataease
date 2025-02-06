@@ -298,27 +298,49 @@ const onTitleChange = () => {
         </el-collapse-item>
         <el-collapse-item :effect="themes" name="addition" :title="t('v_query.query_condition')">
           <el-form @keydown.stop.prevent.enter label-position="top">
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                :effect="themes"
-                size="small"
-                v-model="chart.customStyle.component.borderShow"
-              >
-                {{ t('visualization.board') }}
-              </el-checkbox>
-            </el-form-item>
+            <el-row :gutter="8">
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('visualization.board')"
+                  class="form-item w100"
+                  :class="'form-item-' + themes"
+                >
+                  <el-color-picker
+                    :effect="themes"
+                    :trigger-width="106"
+                    is-custom
+                    v-model="chart.customStyle.component.borderColor"
+                    :predefine="predefineColors"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('chart.background')"
+                  class="form-item w100"
+                  :class="'form-item-' + themes"
+                >
+                  <el-color-picker
+                    :effect="themes"
+                    :trigger-width="106"
+                    is-custom
+                    v-model="chart.customStyle.component.bgColor"
+                    :predefine="predefineColors"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
             <el-form-item
+              :effect="themes"
               class="form-item"
-              style="padding-left: 20px"
+              :label="t('visualization.query_condition_space')"
               :class="'form-item-' + themes"
             >
-              <el-color-picker
+              <el-input-number
+                v-model="chart.customStyle.component.queryConditionSpacing"
+                :min="0"
                 :effect="themes"
-                :trigger-width="108"
-                is-custom
-                v-model="chart.customStyle.component.borderColor"
-                :disabled="!chart.customStyle.component.borderShow"
-                :predefine="predefineColors"
+                controls-position="right"
               />
             </el-form-item>
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
@@ -401,42 +423,6 @@ const onTitleChange = () => {
                 @change="handleCurrentPlaceholderChange"
                 :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
                 v-model.lazy="currentSearch.queryConditionWidth"
-              />
-            </el-form-item>
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                :effect="themes"
-                size="small"
-                v-model="chart.customStyle.component.bgColorShow"
-              >
-                {{ t('visualization.custom_query_bg_color') }}
-              </el-checkbox>
-            </el-form-item>
-            <el-form-item
-              class="form-item"
-              style="padding-left: 20px"
-              :class="'form-item-' + themes"
-            >
-              <el-color-picker
-                :effect="themes"
-                :trigger-width="108"
-                is-custom
-                v-model="chart.customStyle.component.bgColor"
-                :disabled="!chart.customStyle.component.bgColorShow"
-                :predefine="predefineColors"
-              />
-            </el-form-item>
-            <el-form-item
-              :effect="themes"
-              class="form-item"
-              :label="t('visualization.query_condition_space')"
-              :class="'form-item-' + themes"
-            >
-              <el-input-number
-                v-model="chart.customStyle.component.queryConditionSpacing"
-                :min="0"
-                :effect="themes"
-                controls-position="right"
               />
             </el-form-item>
           </el-form>
