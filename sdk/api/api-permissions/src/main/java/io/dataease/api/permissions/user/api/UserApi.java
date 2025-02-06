@@ -11,7 +11,6 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.KeywordRequest;
-import io.dataease.request.BaseGridRequest;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +39,7 @@ public interface UserApi {
     })
     @DePermit("m:read")
     @PostMapping("/pager/{goPage}/{pageSize}")
-    IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
+    IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
 
     @Operation(summary = "查询用户详情")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
