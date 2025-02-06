@@ -2240,7 +2240,12 @@ export default {
     batch_manage: '批量管理',
     origin_name: '物理字段名',
     origin_type: '物理字段类型',
-    field_diff: '所选字段类型不一致，不支持转换'
+    field_diff: '所选字段类型不一致，不支持转换',
+    create_grouping_field: '新建分组字段',
+    grouping_field: '分组字段',
+    grouping_settings: '分组设置',
+    ungrouped_value: '未分组的值',
+    please_enter_number: '请输入数字'
   },
   deDataset: {
     search_by_name: '通过名称搜索',

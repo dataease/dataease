@@ -2295,7 +2295,12 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     batch_manage: 'Batch management',
     origin_name: 'Physical field name',
     origin_type: 'Physical field type',
-    field_diff: 'The selected field types are inconsistent and do not support conversion'
+    field_diff: 'The selected field types are inconsistent and do not support conversion',
+    create_grouping_field: 'Create a new grouping field',
+    grouping_field: 'Grouping field',
+    grouping_settings: 'Grouping settings',
+    ungrouped_value: 'Ungrouped value',
+    please_enter_number: 'Please enter a number'
   },
   deDataset: {
     search_by_name: 'Search by name',

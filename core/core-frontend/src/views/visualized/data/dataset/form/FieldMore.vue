@@ -112,8 +112,13 @@ const options = computed(() => {
       icon: icon_deleteTrash_outlined
     }
   ]
-  if (props.extField !== 2) {
+  if (![2, 3].includes(props.extField)) {
     optionArr.splice(2, 1)
+  }
+
+  if ([3].includes(props.extField)) {
+    optionArr.splice(0, 1)
+    optionArr.splice(0, 1)
   }
   return optionArr
 })

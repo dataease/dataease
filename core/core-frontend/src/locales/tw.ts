@@ -2238,7 +2238,12 @@ export default {
     batch_manage: '批次管理',
     origin_name: '物理欄位名稱',
     origin_type: '物理字段類型',
-    field_diff: '所選字段類型不一致，不支持轉換'
+    field_diff: '所選字段類型不一致，不支持轉換',
+    create_grouping_field: '新建分組字段',
+    grouping_field: '分組欄位',
+    grouping_settings: '分組設定',
+    ungrouped_value: '未分組的值',
+    please_enter_number: '請輸入數字'
   },
   deDataset: {
     search_by_name: '透過名稱搜尋',
