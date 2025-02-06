@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-08-07
+ * @since 2025-02-06
  */
 @TableName("core_dataset_table_field")
 public class CoreDatasetTableField implements Serializable {
@@ -65,6 +65,16 @@ public class CoreDatasetTableField implements Serializable {
      * de字段别名
      */
     private String fieldShortName;
+
+    /**
+     * 分组设置
+     */
+    private String groups;
+
+    /**
+     * 未分组的值
+     */
+    private String otherGroup;
 
     /**
      * 维度/指标标识 d:维度，q:指标
@@ -211,6 +221,22 @@ public class CoreDatasetTableField implements Serializable {
         this.fieldShortName = fieldShortName;
     }
 
+    public String getGroups() {
+        return groups;
+    }
+
+    public void setGroups(String groups) {
+        this.groups = groups;
+    }
+
+    public String getOtherGroup() {
+        return otherGroup;
+    }
+
+    public void setOtherGroup(String otherGroup) {
+        this.otherGroup = otherGroup;
+    }
+
     public String getGroupType() {
         return groupType;
     }
@@ -328,6 +354,8 @@ public class CoreDatasetTableField implements Serializable {
         ", description = " + description +
         ", dataeaseName = " + dataeaseName +
         ", fieldShortName = " + fieldShortName +
+        ", groups = " + groups +
+        ", otherGroup = " + otherGroup +
         ", groupType = " + groupType +
         ", type = " + type +
         ", size = " + size +
