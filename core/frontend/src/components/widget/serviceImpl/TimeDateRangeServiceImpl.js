@@ -264,7 +264,7 @@ class TimeDateRangeServiceImpl extends WidgetService {
       const sDynamicInfill = element.options.attrs.default.sDynamicInfill
       const sDynamicSuffix = element.options.attrs.default.sDynamicSuffix
 
-      const eDynamicPrefix = parseInt(element.options.attrs.default.eDynamicPrefix)
+      const eDynamicPrefix = parseInt(element.options.attrs.default.eDynamicPrefix || 0)
       const eDynamicInfill = element.options.attrs.default.eDynamicInfill
       const eDynamicSuffix = element.options.attrs.default.eDynamicSuffix
       const startTime = this.customTime(sDynamicPrefix, sDynamicInfill, sDynamicSuffix)
