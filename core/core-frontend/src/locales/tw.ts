@@ -416,7 +416,8 @@ export default {
     other_login: '其他登錄方式',
     pwd_invalid_error: '密碼已過期請聯系管理員修改或重置',
     pwd_exp_tips: '密碼在 {0} 天後過期，請盡快修改密碼',
-    qr_code: '二維碼'
+    qr_code: '二維碼',
+    platform_disable: '{0}設置未開啟！'
   },
   component: {
     columnList: '列表項目',

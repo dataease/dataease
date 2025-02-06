@@ -417,7 +417,8 @@ export default {
     other_login: '其他登录方式',
     pwd_invalid_error: '密码已过期请联系管理员修改或重置',
     pwd_exp_tips: '密码在 {0} 天后过期，请尽快修改密码',
-    qr_code: '二维码'
+    qr_code: '二维码',
+    platform_disable: '{0}设置未开启！'
   },
   component: {
     columnList: '列表项',

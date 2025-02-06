@@ -427,7 +427,8 @@ export default {
       'The password has expired. Please contact the administrator to modify or reset it',
     pwd_exp_tips:
       'Password will expire in {0} days, please change your password as soon as possible',
-    qr_code: 'QR Code'
+    qr_code: 'QR Code',
+    platform_disable: '{0} setting disabled!'
   },
   component: {
     columnList: 'List item',
