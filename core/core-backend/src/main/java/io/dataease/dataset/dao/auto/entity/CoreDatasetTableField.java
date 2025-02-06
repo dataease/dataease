@@ -69,7 +69,7 @@ public class CoreDatasetTableField implements Serializable {
     /**
      * 分组设置
      */
-    private String groups;
+    private String groupList;
 
     /**
      * 未分组的值
@@ -221,12 +221,12 @@ public class CoreDatasetTableField implements Serializable {
         this.fieldShortName = fieldShortName;
     }
 
-    public String getGroups() {
-        return groups;
+    public String getGroupList() {
+        return groupList;
     }
 
-    public void setGroups(String groups) {
-        this.groups = groups;
+    public void setGroupList(String groupList) {
+        this.groupList = groupList;
     }
 
     public String getOtherGroup() {
@@ -354,7 +354,7 @@ public class CoreDatasetTableField implements Serializable {
         ", description = " + description +
         ", dataeaseName = " + dataeaseName +
         ", fieldShortName = " + fieldShortName +
-        ", groups = " + groups +
+        ", groupList = " + groupList +
         ", otherGroup = " + otherGroup +
         ", groupType = " + groupType +
         ", type = " + type +
