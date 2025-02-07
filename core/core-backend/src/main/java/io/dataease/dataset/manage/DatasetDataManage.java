@@ -538,17 +538,13 @@ public class DatasetDataManage {
         }
     }
 
-    public List<String> getFieldEnumDs(DatasetTableFieldDTO field) throws Exception {
-        // 根据前端传的查询组件field ids，获取所有字段枚举值并去重合并
-//        List<List<String>> list = new ArrayList<>();
+    public List<String> getFieldEnumDs(EnumObj map) throws Exception {
+        DatasetTableFieldDTO field = map.getField();
+        DatasetGroupInfoDTO datasetGroupInfoDTO = map.getDataset();
         if (field == null) {
             DEException.throwException(Translator.get("i18n_no_field"));
         }
         List<DatasetTableFieldDTO> allFields = new ArrayList<>();
-        // 根据图表计算字段，获取数据集
-        Long datasetGroupId = field.getDatasetGroupId();
-
-        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
 
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
         String sql = (String) sqlMap.get("sql");
