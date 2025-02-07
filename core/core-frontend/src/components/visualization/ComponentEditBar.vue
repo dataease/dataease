@@ -508,8 +508,9 @@ const hiddenComponent = () => {
     curComponent.value.dashboardHidden = true
     eventBus.emit('removeMatrixItemPosition-' + canvasId.value, curComponent.value)
     dvMainStore.setHiddenListStatus(true)
+    snapshotStore.recordSnapshotCache('hide')
+    dvMainStore.setLastHiddenComponent(curComponent.value.id)
   }
-  snapshotStore.recordSnapshotCache('hide')
 }
 
 // 复用-Begin

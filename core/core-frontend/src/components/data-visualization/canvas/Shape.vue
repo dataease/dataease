@@ -629,7 +629,8 @@ const handleMouseDownOnShape = e => {
   const up = () => {
     dashboardActive.value && emit('onMouseUp')
     element.value['dragging'] = false
-    hasMove && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnShape-up')
+    hasMove &&
+      snapshotStore.recordSnapshotCacheWithPositionChange('shape-handleMouseDownOnShape-up')
     // 触发元素停止移动事件，用于隐藏标线
     eventBus.emit('unMove')
     document.removeEventListener('mousemove', move)
@@ -813,7 +814,8 @@ const handleMouseDownOnPoint = (point, e) => {
     element.value['resizing'] = false
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
-    needSave && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnPoint-up')
+    needSave &&
+      snapshotStore.recordSnapshotCacheWithPositionChange('shape-handleMouseDownOnPoint-up')
     handleGroupComponent()
   }
 

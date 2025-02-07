@@ -159,6 +159,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       batchOptStatus: false,
       // 隐藏组件打开状态
       hiddenListStatus: false,
+      // 最后隐藏组件
+      lastHiddenComponent: [],
       // Currently selected components
       curBatchOptComponents: [],
       // Currently selected Multiplexing components
@@ -199,6 +201,13 @@ export const dvMainStore = defineStore('dataVisualization', {
     }
   },
   actions: {
+    setLastHiddenComponent(value?) {
+      if (value) {
+        this.lastHiddenComponent = [value]
+      } else if (this.lastHiddenComponent.length > 0) {
+        this.lastHiddenComponent = []
+      }
+    },
     setIframeFlag(value) {
       this.isIframe = value
     },

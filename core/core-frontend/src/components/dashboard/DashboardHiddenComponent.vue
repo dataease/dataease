@@ -15,7 +15,6 @@ const componentsHidden = computed(() => {
 
 const addToDashboard = item => {
   item.dashboardHidden = false
-  item.y = 200
   emit('cancelHidden', item)
 }
 </script>

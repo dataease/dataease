@@ -113,7 +113,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
         scrollTo(component.y)
       })
     })
-    snapshotStore.recordSnapshotCache('renderChart', component.id)
+    snapshotStore.recordSnapshotCacheWithPositionChange('renderChart', component.id)
   }
 }
 
@@ -126,7 +126,7 @@ const handleDrop = e => {
     addComponent.isShow = true
     syncShapeItemStyle(addComponent, baseWidth.value, baseHeight.value)
     cyGridster.value.handleMouseUp(e, addComponent, componentData.value.length - 1)
-    snapshotStore.recordSnapshotCache('renderChart', addComponent.id)
+    snapshotStore.recordSnapshotCacheWithPositionChange('renderChart', addComponent.id)
   }
 }
 
@@ -223,7 +223,6 @@ const dashboardCanvasSizeInit = () => {
   }
 }
 const addItemBox = component => {
-  console.log('==test2')
   cyGridster.value.addItemBox(component)
 }
 

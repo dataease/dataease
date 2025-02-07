@@ -59,6 +59,7 @@ const {
   editMode,
   batchOptStatus,
   hiddenListStatus,
+  lastHiddenComponent,
   dvInfo
 } = storeToRefs(dvMainStore)
 const dataInitState = ref(false)
@@ -280,6 +281,9 @@ const dashboardComponentData = computed(() =>
 
 const cancelHidden = item => {
   if (deCanvasRef.value) {
+    if (!(lastHiddenComponent.value?.length && lastHiddenComponent.value.includes(item.id))) {
+      item.y = undefined
+    }
     deCanvasRef.value.addItemBox(item)
     nextTick(() => {
       deCanvasRef.value.canvasInit(false)

@@ -80,6 +80,10 @@ export const snapshotStore = defineStore('snapshot', {
       }
       this.recordSnapshotCache(type)
     },
+    recordSnapshotCacheWithPositionChange(type?, viewId = 'all') {
+      dvMainStore.setLastHiddenComponent()
+      this.recordSnapshotCache(type, viewId)
+    },
     recordSnapshotCache(type?, viewId = 'all') {
       if (dataPrepareState.value) {
         if (type === 'calcData') {
