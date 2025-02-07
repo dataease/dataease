@@ -123,7 +123,7 @@ public class DatasetDataManage {
                 Map map = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Map.class);
                 if (ObjectUtils.isNotEmpty(map.get("schema"))) {
                     sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, map.get("schema").toString());
-                }else {
+                } else {
                     sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
                 }
                 sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
@@ -522,6 +522,14 @@ public class DatasetDataManage {
                     datasetTableFieldDTO.setDataeaseName(dataeaseName);
                     datasetTableFieldDTO.setFieldShortName(dataeaseName);
                     datasetTableFieldDTO.setDeExtractType(datasetTableFieldDTO.getDeType());
+                }
+                if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_GROUP)) {
+                    String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
+                    datasetTableFieldDTO.setDataeaseName(dataeaseName);
+                    datasetTableFieldDTO.setFieldShortName(dataeaseName);
+                    datasetTableFieldDTO.setDeExtractType(0);
+                    datasetTableFieldDTO.setDeType(0);
+                    datasetTableFieldDTO.setGroupType("d");
                 }
             } else {
                 datasetTableFieldDTO.setDataeaseName(dto.getDataeaseName());
