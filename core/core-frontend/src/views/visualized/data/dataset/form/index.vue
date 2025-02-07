@@ -15,6 +15,7 @@ import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import dayjs from 'dayjs'
 import { enumValueDs } from '@/api/dataset'
 import {
   ref,
@@ -492,6 +493,8 @@ const delFieldById = arr => {
       return false
     })
   }
+
+  delGroupIds()
 }
 
 const delFieldByIdFake = (arr, fakeAllfields) => {
@@ -890,6 +893,18 @@ const setFieldAll = () => {
   fieldUnion.value?.clearState()
 }
 
+const delGroupIds = () => {
+  const delIds = []
+  const fields = allfields.value.map(ele => ele.id)
+  const groupIds = allfields.value.filter(ele => ele.extField === 3)
+  groupIds.forEach(ele => {
+    if (!fields.includes(ele.originName)) {
+      delIds.push(ele.id)
+    }
+  })
+  allfields.value = allfields.value.filter(ele => !delIds.includes(ele.id))
+}
+
 const dfsNode = (arr, id) => {
   return arr.reduce((pre, next) => {
     if (next.id === id) {
@@ -1009,12 +1024,12 @@ const validatePass = (_: any, value: any, callback: any) => {
           result = !name || !text.length
           break
         case 1:
-          result = !time.length
+          result = !name || !time.length
           break
         case 2:
         case 3:
         case 4:
-          result = min === null || max === null
+          result = !name || min === null || max === null
           break
         default:
           break
@@ -1090,7 +1105,10 @@ const handleFieldschange = val => {
   currentGroupField.deTypeOrigin = deType
   if (deType !== 0) return
   enumValueLoading.value = true
-  enumValueDs(field)
+  const arr = []
+  const allfieldsCopy = cloneDeep(unref(allfields))
+  dfsNodeList(arr, datasetDrag.value.getNodeList())
+  enumValueDs({ dataset: { union: arr, allFields: allfieldsCopy }, field })
     .then(res => {
       enumValue.value = res || []
     })
@@ -1144,8 +1162,8 @@ const confirmGroupField = () => {
         }
         if (currentGroupField.deTypeOrigin === 1) {
           const [startTime, endTime] = time
-          obj.startTime = new Date(startTime).toLocaleString()
-          obj.endTime = new Date(endTime).toLocaleString()
+          obj.startTime = dayjs(startTime).format('YYYY-MM-DD HH:mm:ss')
+          obj.endTime = dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
         }
         groupList.push(obj)
       })
