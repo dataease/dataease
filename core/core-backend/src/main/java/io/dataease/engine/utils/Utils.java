@@ -501,7 +501,7 @@ public class Utils {
         String originField = null;
         for (DatasetTableFieldDTO ele : fields) {
             if (Objects.equals(ele.getId(), Long.valueOf(dto.getOriginName()))) {
-                originField = ele.getOriginName();
+                originField = ele.getDataeaseName();
                 break;
             }
         }
