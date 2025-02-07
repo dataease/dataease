@@ -21,6 +21,7 @@ import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import EmptyBackground from '../../empty-background/src/EmptyBackground.vue'
 import LinkOptBar from '@/components/data-visualization/canvas/LinkOptBar.vue'
 import { isDesktop } from '@/utils/ModelUtil'
+import { isMobile } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState, inMobile } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
@@ -144,13 +145,19 @@ const isReport = computed(() => {
 
 const popComponentData = computed(() =>
   componentData.value.filter(
-    ele => ele.category && ele.category === 'hidden' && !ele?.dashboardHidden
+    ele =>
+      ele.category &&
+      ele.category === 'hidden' &&
+      (!ele?.dashboardHidden || (ele?.dashboardHidden && isMobile()))
   )
 )
 
 const baseComponentData = computed(() =>
   componentData.value.filter(
-    ele => ele?.category !== 'hidden' && ele.component !== 'GroupArea' && !ele?.dashboardHidden
+    ele =>
+      ele?.category !== 'hidden' &&
+      ele.component !== 'GroupArea' &&
+      (!ele?.dashboardHidden || (ele?.dashboardHidden && isMobile()))
   )
 )
 const canvasStyle = computed(() => {

@@ -2744,6 +2744,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    no_hidden_components: '当前无隐藏组件',
     hidden_components: '已隐藏的组件',
     dashboard_adaptor: '缩放模式',
     scale_keep_height_and_width: '按画布比例缩放',

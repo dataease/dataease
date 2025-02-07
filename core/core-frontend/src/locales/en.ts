@@ -2814,6 +2814,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     column_name: 'Field name'
   },
   visualization: {
+    no_hidden_components: 'No Hidden Components',
     hidden_components: 'Hidden Components',
     dashboard_adaptor: 'Zoom Mode',
     scale_keep_height_and_width: 'Canvas Ratio',
