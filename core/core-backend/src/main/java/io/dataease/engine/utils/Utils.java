@@ -498,10 +498,10 @@ public class Utils {
 
     public static String transGroupFieldToSql(DatasetTableFieldDTO dto, List<DatasetTableFieldDTO> fields) {
         // get origin field
-        String originField = null;
+        DatasetTableFieldDTO originField = null;
         for (DatasetTableFieldDTO ele : fields) {
             if (Objects.equals(ele.getId(), Long.valueOf(dto.getOriginName()))) {
-                originField = ele.getDataeaseName();
+                originField = ele;
                 break;
             }
         }
@@ -511,29 +511,29 @@ public class Utils {
 
         StringBuilder exp = new StringBuilder();
         exp.append(" (CASE WHEN ");
-        if (dto.getDeType() == 0) {
+        if (originField.getDeType() == 0) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
                 for (int i = 0; i < fieldGroupDTO.getText().size(); i++) {
                     String value = fieldGroupDTO.getText().get(i);
-                    exp.append(originField).append(" = ").append("'").append(value).append("'");
+                    exp.append(originField.getDataeaseName()).append(" = ").append("'").append(value).append("'");
                     if (i < fieldGroupDTO.getText().size() - 1) {
                         exp.append(" OR ");
                     }
                 }
                 exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
             }
-        } else if (dto.getDeType() == 1) {
+        } else if (originField.getDeType() == 1) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
-                exp.append(originField).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
+                exp.append(originField.getDataeaseName()).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
                 exp.append(" AND ");
-                exp.append(originField).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
+                exp.append(originField.getDataeaseName()).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
                 exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
             }
-        } else if (dto.getDeType() == 2 || dto.getDeType() == 3 || dto.getDeType() == 4) {
+        } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
-                exp.append(originField).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
+                exp.append(originField.getDataeaseName()).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
                 exp.append(" AND ");
-                exp.append(originField).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
+                exp.append(originField.getDataeaseName()).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
                 exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
             }
         }
