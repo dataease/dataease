@@ -394,7 +394,11 @@ const handleFieldMore = (ele, type) => {
   }
   switch (type) {
     case 'copy':
-      copyField(ele)
+      if (ele.extField === 3) {
+        copyGroupField(ele)
+      } else {
+        copyField(ele)
+      }
       break
     case 'delete':
       deleteField(ele)
@@ -448,6 +452,16 @@ const copyField = item => {
   param.name = getFieldName(dimensions.value.concat(quota.value), item.name)
   param.dataeaseName = null
   param.lastSyncTime = null
+  const index = allfields.value.findIndex(ele => ele.id === item.id)
+  allfields.value.splice(index + 1, 0, param)
+}
+
+const selectable = row => ![3].includes(row.extField)
+
+const copyGroupField = item => {
+  const param = cloneDeep(item)
+  param.id = guid()
+  param.name = getFieldName(dimensions.value.concat(quota.value), item.name)
   const index = allfields.value.findIndex(ele => ele.id === item.id)
   allfields.value.splice(index + 1, 0, param)
 }
@@ -1085,12 +1099,14 @@ const initGroupField = val => {
   Object.assign(currentGroupField, val)
   const groupList = []
   val.groupList.forEach(ele => {
-    const { name, text = [], startTime, endTime, min, max } = ele
+    const { name, text = [], startTime, endTime, min, max, minTerm, maxTerm } = ele
     const obj = {
       name,
       text,
       min,
       max,
+      minTerm,
+      maxTerm,
       time: []
     }
     if (currentGroupField.deTypeOrigin === 1) {
@@ -1108,12 +1124,14 @@ const confirmGroupField = () => {
     if (val) {
       const groupList = []
       currentGroupField.groupList.forEach(ele => {
-        const { name, text = [], time, min, max } = ele
+        const { name, text = [], time, min, max, minTerm, maxTerm } = ele
         const obj = {
           name,
           text,
           min,
           max,
+          minTerm,
+          maxTerm,
           startTime: '',
           endTime: ''
         }
@@ -1978,7 +1996,7 @@ const getDsIconName = data => {
                     :height="quotaTableHeight"
                     style="width: 100%"
                   >
-                    <el-table-column type="selection" width="40" />
+                    <el-table-column :selectable="selectable" type="selection" width="40" />
                     <el-table-column prop="name" :label="t('dataset.field_name')" width="264">
                       <template #default="scope">
                         <div class="column-style">
@@ -2138,7 +2156,7 @@ const getDsIconName = data => {
                         <el-tooltip effect="dark" :content="t('dataset.edit')" placement="top">
                           <template #default>
                             <el-button
-                              v-if="scope.row.extField === 2"
+                              v-if="[2, 3].includes(scope.row.extField)"
                               text
                               @click="handleFieldMore(scope.row, 'editor')"
                             >
