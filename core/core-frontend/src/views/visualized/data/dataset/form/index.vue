@@ -15,7 +15,7 @@ import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
-import { getEnumValue } from '@/api/dataset'
+import { enumValueDs } from '@/api/dataset'
 import {
   ref,
   toRaw,
@@ -1071,7 +1071,8 @@ const addGroupField = () => {
   editGroupField.value = true
 }
 const handleFieldschange = val => {
-  const { deType, name } = groupFields.value.find(ele => ele.id === val)
+  const field = groupFields.value.find(ele => ele.id === val)
+  const { deType, name } = field
   currentGroupField.title = name
   if (deType !== currentGroupField.deExtractType || deType === 0) {
     currentGroupField.groupList = [
@@ -1089,7 +1090,7 @@ const handleFieldschange = val => {
   currentGroupField.deTypeOrigin = deType
   if (deType !== 0) return
   enumValueLoading.value = true
-  getEnumValue({ fieldIds: [val], resultMode: 0 })
+  enumValueDs(field)
     .then(res => {
       enumValue.value = res || []
     })

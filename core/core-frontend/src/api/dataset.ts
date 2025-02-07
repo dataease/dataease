@@ -99,6 +99,12 @@ export const enumValueObj = async (data: EnumValue): Promise<Record<string, stri
   })
 }
 
+export const enumValueDs = async (data: EnumValue): Promise<Record<string, string>[]> => {
+  return request.post({ url: '/datasetData/enumValueDs', data }).then(res => {
+    return res?.data
+  })
+}
+
 export const moveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
   return request.post({ url: '/datasetTree/move', data }).then(res => {
     return res?.data
