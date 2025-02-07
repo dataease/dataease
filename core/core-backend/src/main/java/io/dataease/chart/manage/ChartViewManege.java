@@ -22,6 +22,7 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.FieldGroupDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.filter.FilterTreeObj;
@@ -42,7 +43,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -141,13 +145,13 @@ public class ChartViewManege {
                 List<CoreDatasetTableField> coreDatasetTableFields = coreDatasetTableFieldMapper.selectList(wp);
                 Map<Long, List<CoreDatasetTableField>> groupedByTableId = coreDatasetTableFields.stream()
                         .collect(Collectors.groupingBy(CoreDatasetTableField::getDatasetGroupId));
-                if(chartViewDTOS.size()<10){
+                if (chartViewDTOS.size() < 10) {
                     chartViewDTOS.forEach(dto -> {
                         if (dto.getTableId() != null) {
                             dto.setCalParams(Utils.getParams(datasetTableFieldManage.transDTO(groupedByTableId.get(dto.getTableId()))));
                         }
                     });
-                }else{
+                } else {
                     ExecutorService executor = Executors.newFixedThreadPool(10);
                     try {
                         // 超过10个图表要处理启用多线程处理
@@ -208,11 +212,14 @@ public class ChartViewManege {
 
         TypeReference<List<CalParam>> typeToken = new TypeReference<>() {
         };
+        TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
+        };
         List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
         List<DatasetTableFieldDTO> collect = fields.stream().map(ele -> {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
             BeanUtils.copyBean(dto, ele);
             dto.setParams(JsonUtil.parseList(ele.getParams(), typeToken));
+            dto.setGroupList(JsonUtil.parseList(ele.getGroupList(), groupTokenType));
             return dto;
         }).collect(Collectors.toList());
         // filter column disable field
@@ -228,6 +235,7 @@ public class ChartViewManege {
         List<DatasetTableFieldDTO> chartFields = coreDatasetTableFieldMapper.selectList(wrapper).stream().map(ele -> {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
             BeanUtils.copyBean(dto, ele);
+            dto.setGroupList(JsonUtil.parseList(ele.getGroupList(), groupTokenType));
             return dto;
         }).collect(Collectors.toList());
         list.addAll(transFieldDTO(chartFields));
@@ -381,11 +389,11 @@ public class ChartViewManege {
         record.setExtLabel(objectMapper.writeValueAsString(dto.getExtLabel()));
         record.setExtTooltip(objectMapper.writeValueAsString(dto.getExtTooltip()));
         record.setCustomAttr(objectMapper.writeValueAsString(dto.getCustomAttr()));
-        if(dto.getCustomAttrMobile() != null){
+        if (dto.getCustomAttrMobile() != null) {
             record.setCustomAttrMobile(objectMapper.writeValueAsString(dto.getCustomAttrMobile()));
         }
         record.setCustomStyle(objectMapper.writeValueAsString(dto.getCustomStyle()));
-        if(dto.getCustomAttrMobile() != null) {
+        if (dto.getCustomAttrMobile() != null) {
             record.setCustomStyleMobile(objectMapper.writeValueAsString(dto.getCustomStyleMobile()));
         }
         record.setSenior(objectMapper.writeValueAsString(dto.getSenior()));
@@ -415,11 +423,11 @@ public class ChartViewManege {
         dto.setExtLabel(JsonUtil.parseList(record.getExtLabel(), tokenType));
         dto.setExtTooltip(JsonUtil.parseList(record.getExtTooltip(), tokenType));
         dto.setCustomAttr(JsonUtil.parse(record.getCustomAttr(), Map.class));
-        if(record.getCustomAttrMobile() != null){
+        if (record.getCustomAttrMobile() != null) {
             dto.setCustomAttrMobile(JsonUtil.parse(record.getCustomAttrMobile(), Map.class));
         }
         dto.setCustomStyle(JsonUtil.parse(record.getCustomStyle(), Map.class));
-        if(record.getCustomStyleMobile() != null) {
+        if (record.getCustomStyleMobile() != null) {
             dto.setCustomStyleMobile(JsonUtil.parse(record.getCustomStyleMobile(), Map.class));
         }
         dto.setSenior(JsonUtil.parse(record.getSenior(), Map.class));

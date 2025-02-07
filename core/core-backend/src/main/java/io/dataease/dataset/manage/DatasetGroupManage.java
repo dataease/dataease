@@ -366,6 +366,14 @@ public class DatasetGroupManage {
                         datasetTableFieldDTO.setFieldShortName(dataeaseName);
                         datasetTableFieldDTO.setDeExtractType(datasetTableFieldDTO.getDeType());
                     }
+                    if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_GROUP)) {
+                        String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
+                        datasetTableFieldDTO.setDataeaseName(dataeaseName);
+                        datasetTableFieldDTO.setFieldShortName(dataeaseName);
+                        datasetTableFieldDTO.setDeExtractType(0);
+                        datasetTableFieldDTO.setDeType(0);
+                        datasetTableFieldDTO.setGroupType("d");
+                    }
                     datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
                 } else {
                     datasetTableFieldDTO.setDataeaseName(dto.getDataeaseName());

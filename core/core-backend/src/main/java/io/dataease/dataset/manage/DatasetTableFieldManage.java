@@ -14,6 +14,7 @@ import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.FieldGroupDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.i18n.Translator;
@@ -290,8 +291,12 @@ public class DatasetTableFieldManage {
                 if (StringUtils.isNotEmpty(ele.getParams())) {
                     TypeReference<List<CalParam>> tokenType = new TypeReference<>() {
                     };
+                    TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
+                    };
                     List<CalParam> calParams = JsonUtil.parseList(ele.getParams(), tokenType);
+                    List<FieldGroupDTO> fieldGroups = JsonUtil.parseList(ele.getGroupList(), groupTokenType);
                     dto.setParams(calParams);
+                    dto.setGroupList(fieldGroups);
                 }
                 return dto;
             }).collect(Collectors.toList());
@@ -306,6 +311,9 @@ public class DatasetTableFieldManage {
         BeanUtils.copyBean(record, dto);
         if (ObjectUtils.isNotEmpty(dto.getParams())) {
             record.setParams(JsonUtil.toJSONString(dto.getParams()).toString());
+        }
+        if (ObjectUtils.isNotEmpty(dto.getGroupList())) {
+            record.setGroupList(JsonUtil.toJSONString(dto.getGroupList()).toString());
         }
         return record;
     }

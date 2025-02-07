@@ -9,4 +9,6 @@ public class ExtFieldConstant {
     public final static Integer EXT_COPY = 1;
 
     public final static Integer EXT_CALC = 2;
+
+    public final static Integer EXT_GROUP = 3;
 }

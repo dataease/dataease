@@ -5,10 +5,7 @@ import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
-import io.dataease.extensions.datasource.dto.CalParam;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.datasource.dto.DsTypeDTO;
+import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
@@ -497,5 +494,50 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    public static String transGroupFieldToSql(DatasetTableFieldDTO dto, List<DatasetTableFieldDTO> fields) {
+        // get origin field
+        String originField = null;
+        for (DatasetTableFieldDTO ele : fields) {
+            if (Objects.equals(ele.getId(), Long.valueOf(dto.getOriginName()))) {
+                originField = ele.getOriginName();
+                break;
+            }
+        }
+        if (originField == null) {
+            DEException.throwException("Field not exists");
+        }
+
+        StringBuilder exp = new StringBuilder();
+        exp.append(" (CASE WHEN ");
+        if (dto.getDeType() == 0) {
+            for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
+                for (int i = 0; i < fieldGroupDTO.getText().size(); i++) {
+                    String value = fieldGroupDTO.getText().get(i);
+                    exp.append(originField).append(" = ").append("'").append(value).append("'");
+                    if (i < fieldGroupDTO.getText().size() - 1) {
+                        exp.append(" OR ");
+                    }
+                }
+                exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
+            }
+        } else if (dto.getDeType() == 1) {
+            for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
+                exp.append(originField).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
+                exp.append(" AND ");
+                exp.append(originField).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
+                exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
+            }
+        } else if (dto.getDeType() == 2 || dto.getDeType() == 3 || dto.getDeType() == 4) {
+            for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
+                exp.append(originField).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
+                exp.append(" AND ");
+                exp.append(originField).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
+                exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
+            }
+        }
+        exp.append(" ELSE ").append("'").append(dto.getOtherGroup()).append("'").append(" END) ");
+        return exp.toString();
     }
 }
