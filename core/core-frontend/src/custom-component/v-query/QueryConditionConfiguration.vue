@@ -2934,7 +2934,7 @@ defineExpose({
                       </el-option>
                     </el-select>
                   </div>
-                  <div class="value flex-align-center">
+                  <div style="display: flex; align-items: center" class="value">
                     <span :title="t('v_query.display_field')" class="label ellipsis">{{
                       t('v_query.display_field')
                     }}</span>

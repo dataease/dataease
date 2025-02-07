@@ -480,7 +480,7 @@ const delFieldById = arr => {
     }, [])
     const allfieldsId = allfields.value.map(ele => ele.id).concat(paramsId)
     allfields.value = allfields.value.filter(ele => {
-      if (ele.extField !== 2) return true
+      if (![2, 3].includes(ele.extField)) return true
       const idMap = ele.originName.match(/\[(.+?)\]/g)
       if (!idMap) return true
       const result = idMap.every(itm => {
@@ -503,7 +503,7 @@ const delFieldByIdFake = (arr, fakeAllfields) => {
     fakeAllfields = fakeAllfields.filter(ele => ele.id !== targetId)
     const allfieldsId = fakeAllfields.map(ele => ele.id)
     fakeAllfields = fakeAllfields.filter(ele => {
-      if (ele.extField !== 2) return true
+      if (![2, 3].includes(ele.extField)) return true
       const idMap = ele.originName.match(/\[(.+?)\]/g)
       if (
         !idMap ||
@@ -527,7 +527,7 @@ const delFieldByIdFake = (arr, fakeAllfields) => {
 const deleteField = item => {
   let tip = ''
   const idArr = allfields.value.reduce((pre, next) => {
-    if (next.extField !== 2) return pre
+    if (![2, 3].includes(next.extField)) return pre
     let idMap = next.originName.match(/\[(.+?)\]/g) || []
     idMap = idMap.filter(itx => !next.params?.map(element => element.id).includes(itx.slice(1, -1)))
     const result = idMap.map(itm => {
@@ -855,8 +855,10 @@ const dfsFields = (arr, list) => {
 const getDelIdArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
   return [
-    ...oldArr.filter(ele => ele.extField !== 2).filter(ele => !idMapNew.includes(ele.id)),
-    ...oldArr.filter(ele => ele.extField === 2)
+    ...oldArr
+      .filter(ele => ![2, 3].includes(ele.extField))
+      .filter(ele => !idMapNew.includes(ele.id)),
+    ...oldArr.filter(ele => [2, 3].includes(ele.extField))
   ]
 }
 
@@ -865,7 +867,7 @@ const diffArr = (newArr, oldArr) => {
   const idMapOld = oldArr.map(ele => ele.id)
   const arr = newArr.filter(ele => !idMapOld.includes(ele.id))
   return cloneDeep([
-    ...oldArr.filter(ele => ele.extField === 2),
+    ...oldArr.filter(ele => [2, 3].includes(ele.extField)),
     ...arr,
     ...oldArr.filter(ele => idMapNew.includes(ele.id))
   ])
@@ -955,7 +957,7 @@ const confirmEditUnion = () => {
       cancelButtonText: t('common.cancel'),
       showCancelButton: true,
       tip: `${t('data_set.field')}: ${allfields.value
-        .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
+        .filter(ele => [...new Set(idArr)].includes(ele.id) && ![2, 3].includes(ele.extField))
         .map(ele => ele.name)
         .join(',')}, ${t('data_set.confirm_the_deletion')}`,
       confirmButtonType: 'danger',
@@ -1029,7 +1031,8 @@ const fieldGroupRules = {
   name: [{ required: true, message: t('dataset.input_edit_name'), trigger: 'blur' }],
   groupList: [{ validator: validatePass }]
 }
-const currentGroupField = reactive({
+
+const defaultObj = {
   name: '',
   id: +new Date(),
   datasourceId: '',
@@ -1054,7 +1057,8 @@ const currentGroupField = reactive({
       max: null
     }
   ]
-})
+}
+const currentGroupField = reactive(cloneDeep(defaultObj))
 const ruleGroupFieldRef = ref()
 const editGroupField = ref(false)
 const enumValueLoading = ref(false)
@@ -1062,6 +1066,8 @@ const groupFields = shallowRef([])
 const enumValue = shallowRef([])
 const addGroupField = () => {
   groupFields.value = allfields.value.filter(ele => ![2, 3].includes(ele.extField))
+  Object.assign(currentGroupField, cloneDeep(defaultObj))
+  currentGroupField.id = guid()
   editGroupField.value = true
 }
 const handleFieldschange = val => {
