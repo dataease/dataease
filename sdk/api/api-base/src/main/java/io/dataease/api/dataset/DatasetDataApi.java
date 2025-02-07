@@ -38,6 +38,10 @@ public interface DatasetDataApi {
     @PostMapping("previewSqlCheck")
     Map<String, Object> previewSqlCheck(@RequestBody PreviewSqlDTO dto) throws Exception;
 
+    @Operation(summary = "数据集获取字段枚举值")
+    @PostMapping("enumValueDs")
+    List<String> getFieldEnumDs(@RequestBody DatasetTableFieldDTO field) throws Exception;
+
     @Operation(summary = "获取字段枚举值")
     @PostMapping("enumValue")
     List<String> getFieldEnum(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;

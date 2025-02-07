@@ -538,6 +538,117 @@ public class DatasetDataManage {
         }
     }
 
+    public List<String> getFieldEnumDs(DatasetTableFieldDTO field) throws Exception {
+        // 根据前端传的查询组件field ids，获取所有字段枚举值并去重合并
+//        List<List<String>> list = new ArrayList<>();
+        if (field == null) {
+            DEException.throwException(Translator.get("i18n_no_field"));
+        }
+        List<DatasetTableFieldDTO> allFields = new ArrayList<>();
+        // 根据图表计算字段，获取数据集
+        Long datasetGroupId = field.getDatasetGroupId();
+
+        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
+
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
+        String sql = (String) sqlMap.get("sql");
+
+        allFields.addAll(datasetGroupInfoDTO.getAllFields());
+
+        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (!crossDs) {
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
+        }
+
+        // build query sql
+        SQLMeta sqlMeta = new SQLMeta();
+        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+
+        // 获取allFields
+        List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+        if (ObjectUtils.isEmpty(fields)) {
+            DEException.throwException(Translator.get("i18n_no_column_permission"));
+        }
+        buildFieldName(sqlMap, fields);
+
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean needOrder = Utils.isNeedOrder(dsList);
+
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
+        TokenUserBO user = AuthUtils.getUser();
+        if (user != null) {
+            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+        }
+
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsList.getFirst());
+        }
+
+        String dsType = null;
+        if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+            Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+            dsType = next.getValue().getType();
+        }
+
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+        Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+        String querySQL;
+        querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, !StringUtils.equalsIgnoreCase(dsType, "es"));
+        querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+        logger.debug("calcite data enum sql: " + querySQL);
+
+        // 通过数据源请求数据
+        // 调用数据源的calcite获得data
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setQuery(querySQL);
+        datasourceRequest.setDsList(dsMap);
+
+        Map<String, Object> data = provider.fetchResultField(datasourceRequest);
+        List<String[]> dataList = (List<String[]>) data.get("data");
+        dataList = dataList.stream().filter(row -> {
+            boolean hasEmpty = false;
+            for (String s : row) {
+                if (StringUtils.isBlank(s)) {
+                    hasEmpty = true;
+                    break;
+                }
+            }
+            return !hasEmpty;
+        }).toList();
+        List<String> previewData = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(dataList)) {
+            List<String> tmpData = dataList.stream().map(ele -> (ObjectUtils.isNotEmpty(ele) && ele.length > 0) ? ele[0] : null).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(tmpData)) {
+                for (int i = 0; i < tmpData.size(); i++) {
+                    String val = tmpData.get(i);
+                    if (field.getDeType() == 3 && StringUtils.containsIgnoreCase(val, "E")) {
+                        BigDecimal bigDecimal = new BigDecimal(val);
+                        val = String.format("%.8f", bigDecimal);
+                        tmpData.set(i, val);
+                    }
+                }
+                if (desensitizationList.keySet().contains(field.getDataeaseName())) {
+                    for (int i = 0; i < tmpData.size(); i++) {
+                        previewData.add(ChartDataBuild.desensitizationValue(desensitizationList.get(field.getDataeaseName()), tmpData.get(i)));
+                    }
+                } else {
+                    previewData = tmpData;
+                }
+            }
+        }
+        return previewData;
+    }
+
     public List<String> getFieldEnum(MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         // 根据前端传的查询组件field ids，获取所有字段枚举值并去重合并
         List<List<String>> list = new ArrayList<>();

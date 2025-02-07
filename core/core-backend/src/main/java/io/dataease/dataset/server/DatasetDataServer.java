@@ -47,6 +47,17 @@ public class DatasetDataServer implements DatasetDataApi {
     }
 
     @Override
+    public List<String> getFieldEnumDs(DatasetTableFieldDTO field) throws Exception {
+        try {
+            return datasetDataManage.getFieldEnumDs(field);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtil.error(e);
+            return null;
+        }
+    }
+
+    @Override
     public List<String> getFieldEnum(MultFieldValuesRequest multFieldValuesRequest) {
         try {
             return datasetDataManage.getFieldEnum(multFieldValuesRequest);
