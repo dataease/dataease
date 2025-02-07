@@ -317,7 +317,7 @@ onMounted(async () => {
                     activeName === 'ldap' ? t('login.ldap_login') : t('login.account_login')
                   }}</span>
                 </div>
-                <el-form-item class="login-form-item" prop="username">
+                <el-form-item class="login-form-item login-input-module" prop="username">
                   <el-input
                     v-model="state.loginForm.username"
                     :placeholder="`${t('common.account')}${
@@ -326,7 +326,7 @@ onMounted(async () => {
                     autofocus
                   />
                 </el-form-item>
-                <el-form-item prop="password">
+                <el-form-item class="login-input-module" prop="password">
                   <CustomPassword
                     v-model="state.loginForm.password"
                     :placeholder="t('common.pwd')"
@@ -484,6 +484,14 @@ onMounted(async () => {
     box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.08);
     border: 1px solid #dee0e3;
     border-radius: 4px;
+
+    .login-input-module {
+      width: 100%;
+      :deep(.ed-input) {
+        height: 40px;
+        line-height: 40px;
+      }
+    }
 
     .login-form-item {
       margin-top: 24px;
