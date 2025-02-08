@@ -291,11 +291,13 @@ public class DatasetTableFieldManage {
                 if (StringUtils.isNotEmpty(ele.getParams())) {
                     TypeReference<List<CalParam>> tokenType = new TypeReference<>() {
                     };
+                    List<CalParam> calParams = JsonUtil.parseList(ele.getParams(), tokenType);
+                    dto.setParams(calParams);
+                }
+                if (StringUtils.isNotEmpty(ele.getGroupList())) {
                     TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
                     };
-                    List<CalParam> calParams = JsonUtil.parseList(ele.getParams(), tokenType);
                     List<FieldGroupDTO> fieldGroups = JsonUtil.parseList(ele.getGroupList(), groupTokenType);
-                    dto.setParams(calParams);
                     dto.setGroupList(fieldGroups);
                 }
                 return dto;
