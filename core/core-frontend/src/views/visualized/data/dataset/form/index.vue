@@ -1058,6 +1058,7 @@ const defaultObj = {
   groupType: 'd',
   title: '-',
   deType: 0,
+  type: 'ANY',
   deExtractType: 0,
   extField: 3,
   deTypeOrigin: null,
