@@ -1122,6 +1122,7 @@ const closeGroupField = () => {
 }
 
 const initGroupField = val => {
+  groupFields.value = allfields.value.filter(ele => ![2, 3].includes(ele.extField))
   Object.assign(currentGroupField, val)
   const groupList = []
   val.groupList.forEach(ele => {
@@ -1140,6 +1141,8 @@ const initGroupField = val => {
     }
     groupList.push(obj)
   })
+
+  handleFieldschange(currentGroupField.originName)
 
   currentGroupField.groupList = groupList
   editGroupField.value = true
