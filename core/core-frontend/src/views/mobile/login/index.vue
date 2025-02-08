@@ -17,12 +17,14 @@ import VanForm from 'vant/es/form'
 import VanField from 'vant/es/field'
 import VanButton from 'vant/es/button'
 import { XpackComponent } from '@/components/plugin'
+import { useI18n } from '@/hooks/web/useI18n'
 import 'vant/es/button/style'
 import 'vant/es/toast/style'
 import 'vant/es/field/style'
 import 'vant/es/form/style'
 import 'vant/es/cell-group/style'
 
+const { t } = useI18n()
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
@@ -169,7 +171,7 @@ const usernameEndValidate = ({ status, message }) => {
     <img class="mobile-login_bg" :src="mobileLoginBg ? mobileLoginBg : mobileWholeBg" alt="" />
     <div class="mobile-login-content">
       <img width="120" height="31" :src="mobileLogin ? mobileLogin : mobileDeTop" alt="" />
-      <div class="mobile-login-welcome">用户登录</div>
+      <div class="mobile-login-welcome">{{ t('login.account_login') }}</div>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
           <van-field
@@ -216,6 +218,7 @@ const usernameEndValidate = ({ status, message }) => {
         </van-cell-group>
         <van-button block type="primary" native-type="submit"> 登录 </van-button>
       </van-form>
+      <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9Nb2JpbGVIYW5kbGVy" />
     </div>
   </div>
   <XpackComponent
