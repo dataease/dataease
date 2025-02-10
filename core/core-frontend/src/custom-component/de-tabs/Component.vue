@@ -30,7 +30,7 @@
         >
           <template #label>
             <div class="custom-tab-title" @mousedown.stop>
-              <span :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
+              <span class="title-inner" :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
               <el-dropdown
                 v-if="isEditMode"
                 :effect="curThemes"
@@ -144,12 +144,12 @@ import eventBus from '@/utils/eventBus'
 import { canvasChangeAdaptor, findComponentIndexById, isDashboard } from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
-import { useEmitt } from '@/hooks/web/useEmitt'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
 import { deepCopyTabItemHelper } from '@/store/modules/data-visualization/copy'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
+import { imgUrlTrans } from '@/utils/imgUtils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
@@ -430,22 +430,78 @@ const headClass = computed(() => {
   }
 })
 
+const backgroundStyle = backgroundParams => {
+  if (backgroundParams) {
+    const {
+      backdropFilterEnable,
+      backdropFilter,
+      backgroundColorSelect,
+      backgroundColor,
+      backgroundImageEnable,
+      backgroundType,
+      outerImage,
+      innerPadding,
+      borderRadius
+    } = backgroundParams
+    let style = {
+      padding: innerPadding * scale.value + 'px',
+      borderRadius: borderRadius + 'px'
+    }
+    let colorRGBA = ''
+    if (backgroundColorSelect && backgroundColor) {
+      colorRGBA = backgroundColor
+    }
+    if (backgroundImageEnable) {
+      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
+        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
+      } else {
+        style['background-color'] = colorRGBA
+      }
+    } else {
+      style['background-color'] = colorRGBA
+    }
+    if (backdropFilterEnable) {
+      style['backdrop-filter'] = 'blur(' + backdropFilter + 'px)'
+    }
+    return style
+  }
+  return {}
+}
+
 const titleStyle = itemName => {
+  let style = {}
   if (editableTabsValue.value === itemName) {
-    return {
+    style = {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
       fontSize: (element.value.style.activeFontSize || 18) * scale.value + 'px'
     }
+    if (element.value.titleBackground?.enable) {
+      style = {
+        ...style,
+        ...backgroundStyle(element.value.titleBackground.active)
+      }
+    }
   } else {
-    return {
+    style = {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
       fontSize: (element.value.style.fontSize || 16) * scale.value + 'px'
     }
+    if (element.value.titleBackground?.enable) {
+      style = {
+        ...style,
+        ...backgroundStyle(
+          element.value.titleBackground.multiply
+            ? element.value.titleBackground.active
+            : element.value.titleBackground.inActive
+        )
+      }
+    }
   }
+  return style
 }
 
 const fontColor = computed(() => {
@@ -631,5 +687,8 @@ onBeforeMount(() => {
   height: 100%;
 }
 .custom-tab-title {
+  .title-inner {
+    background-size: 100% 100% !important;
+  }
 }
 </style>

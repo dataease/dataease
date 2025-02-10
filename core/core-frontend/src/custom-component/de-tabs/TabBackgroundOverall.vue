@@ -20,7 +20,9 @@ const { element } = toRefs(props)
 
 const onTitleBackgroundChange = (params, paramsName) => {
   // do change
-  element.value.titleBackground[paramsName] = params
+  if (params) {
+    element.value.titleBackground[paramsName] = params
+  }
   emits('onTitleBackgroundChange', element.value.titleBackground)
 }
 </script>
@@ -36,8 +38,21 @@ const onTitleBackgroundChange = (params, paramsName) => {
     />
     <div class="background-label">
       <span>{{ t('visualization.inactive_title_background') }}</span>
+      <span style="margin: -2px 0 0 24px">
+        <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            :effect="themes"
+            v-model="element.titleBackground.multiply"
+            @change="onTitleBackgroundChange(null, null)"
+          >
+            {{ t('visualization.multiply_active_title_background') }}
+          </el-checkbox>
+        </el-form-item>
+      </span>
     </div>
     <background-overall-common
+      v-show="!element.titleBackground.multiply"
       :themes="themes"
       :common-background-pop="element.titleBackground.inActive"
       component-position="component"
@@ -55,5 +70,7 @@ const onTitleBackgroundChange = (params, paramsName) => {
   font-weight: 500;
   font-size: 12px;
   margin-bottom: 8px;
+  display: flex;
+  background: ;
 }
 </style>
