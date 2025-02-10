@@ -417,7 +417,9 @@ export default {
     pwd_invalid_error: '密碼已過期請聯系管理員修改或重置',
     pwd_exp_tips: '密碼在 {0} 天後過期，請盡快修改密碼',
     qr_code: '二維碼',
-    platform_disable: '{0}設置未開啟！'
+    platform_disable: '{0}設置未開啟！',
+    input_account: '請輸入賬號',
+    redirect_2_auth: '正在跳轉至 {0} 認證，{1} 秒...'
   },
   component: {
     columnList: '列表項目',

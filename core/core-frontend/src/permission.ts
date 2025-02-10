@@ -54,7 +54,13 @@ router.beforeEach(async (to, from, next) => {
       isDesktop ||
       (!isPlatformClient() && !isLarkPlatform())
     ) {
-      window.location.href = window.origin + '/mobile.html#/index'
+      let pathname = window.location.pathname
+      pathname = pathname.substring(0, pathname.length - 1)
+      let url = window.origin + pathname + '/mobile.html#/index'
+      if (window.location.search) {
+        url += window.location.search
+      }
+      window.location.href = url
     }
   }
   await appearanceStore.setAppearance()

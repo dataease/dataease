@@ -418,7 +418,9 @@ export default {
     pwd_invalid_error: '密码已过期请联系管理员修改或重置',
     pwd_exp_tips: '密码在 {0} 天后过期，请尽快修改密码',
     qr_code: '二维码',
-    platform_disable: '{0}设置未开启！'
+    platform_disable: '{0}设置未开启！',
+    input_account: '请输入账号',
+    redirect_2_auth: '正在跳转至 {0} 认证，{1} 秒...'
   },
   component: {
     columnList: '列表项',

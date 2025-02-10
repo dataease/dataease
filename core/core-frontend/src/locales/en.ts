@@ -428,7 +428,9 @@ export default {
     pwd_exp_tips:
       'Password will expire in {0} days, please change your password as soon as possible',
     qr_code: 'QR Code',
-    platform_disable: '{0} setting disabled!'
+    platform_disable: '{0} setting disabled!',
+    input_account: 'Please enter account number',
+    redirect_2_auth: 'Redirecting to {0} authentication, {1} seconds...'
   },
   component: {
     columnList: 'List item',
