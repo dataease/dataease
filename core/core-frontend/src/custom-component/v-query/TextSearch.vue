@@ -109,6 +109,10 @@ const lineWidth = computed(() => {
   return { width: getCustomWidth() - 15 + 'px' }
 })
 
+const handleKeyEnter = () => {
+  handleValueChange()
+}
+
 const handleInnerMouseDown = e => {
   e.stopPropagation()
 }
@@ -136,6 +140,7 @@ const handleInnerMouseDown = e => {
         :style="selectStyle"
         :placeholder="placeholderText"
         @blur="handleValueChange"
+        @keydown.enter="handleKeyEnter"
         class="condition-value-input"
         v-model="config.conditionValueF"
       />
@@ -160,6 +165,7 @@ const handleInnerMouseDown = e => {
         :style="selectStyle"
         @blur="handleValueChange"
         :placeholder="placeholderText"
+        @keydown.enter="handleKeyEnter"
         class="condition-value-input"
         v-model="config.conditionValueS"
       />
