@@ -1084,6 +1084,7 @@ const addGroupField = () => {
   groupFields.value = allfields.value.filter(ele => ![2, 3].includes(ele.extField))
   Object.assign(currentGroupField, cloneDeep(defaultObj))
   currentGroupField.id = guid()
+  titleForGroup.value = t('dataset.create_grouping_field')
   editGroupField.value = true
 }
 const handleFieldschange = val => {
@@ -1121,6 +1122,8 @@ const closeGroupField = () => {
   editGroupField.value = false
 }
 
+const titleForGroup = ref(t('dataset.create_grouping_field'))
+
 const initGroupField = val => {
   groupFields.value = allfields.value.filter(ele => ![2, 3].includes(ele.extField))
   Object.assign(currentGroupField, val)
@@ -1145,6 +1148,7 @@ const initGroupField = val => {
   handleFieldschange(currentGroupField.originName)
 
   currentGroupField.groupList = groupList
+  titleForGroup.value = t('dataset.editing_grouping_field')
   editGroupField.value = true
 }
 
@@ -2044,8 +2048,13 @@ const getDsIconName = data => {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span v-if="scope.row.extField === 0">{{ scope.row.originName }}</span>
-                          <span style="color: #8d9199" v-else>{{ t('dataset.calc_field') }}</span>
+                          <span style="color: #8d9199" v-if="scope.row.extField === 2">{{
+                            t('dataset.calc_field')
+                          }}</span>
+                          <span style="color: #8d9199" v-else-if="scope.row.extField === 3">{{
+                            t('dataset.grouping_field')
+                          }}</span>
+                          <span v-else>{{ scope.row.originName }}</span>
                         </div>
                       </template>
                     </el-table-column>
@@ -2144,7 +2153,11 @@ const getDsIconName = data => {
                           placement="top"
                         >
                           <template #default>
-                            <el-button text @click="handleFieldMore(scope.row, 'translate')">
+                            <el-button
+                              v-if="![3].includes(scope.row.extField)"
+                              text
+                              @click="handleFieldMore(scope.row, 'translate')"
+                            >
                               <template #icon>
                                 <Icon name="icon_switch_outlined"
                                   ><icon_switch_outlined class="svg-icon"
@@ -2545,7 +2558,7 @@ const getDsIconName = data => {
   </el-dialog>
   <el-dialog
     class="create-dialog group-fields_dialog"
-    :title="t('dataset.create_grouping_field')"
+    :title="titleForGroup"
     v-model="editGroupField"
     width="1000px"
   >

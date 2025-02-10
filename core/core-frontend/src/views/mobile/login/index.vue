@@ -40,7 +40,8 @@ const xpackInvalidPwd = ref()
 const mfaRef = ref()
 const showMfa = ref(false)
 const mfaData = ref({ enabled: false, ready: false, uid: '', origin: 0 })
-
+const loginType = ref('default')
+const showPlatLoginMask = ref(true)
 const checkUsername = value => {
   if (!value) {
     return true
@@ -122,12 +123,17 @@ const onSubmit = async () => {
     const res = await queryDekey()
     wsCache.set(appStore.getDekey, res.data)
   }
-  const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
+  const isLdap = loginType.value === 'ldap'
+  const param = {
+    name: rsaEncryp(name),
+    pwd: rsaEncryp(pwd),
+    origin: isLdap ? 1 : 0
+  }
   duringLogin.value = true
   loginApi(param)
     .then(res => {
       const { token, exp, mfa } = res.data
-      if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
+      if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
         const param = {
           methodName: 'init',
           args: res.data
@@ -136,7 +142,7 @@ const onSubmit = async () => {
         return
       }
       showMfa.value = false
-      if (mfa?.enabled) {
+      if (!isLdap && mfa?.enabled) {
         for (const key in mfa) {
           mfaData.value[key] = mfa[key]
         }
@@ -164,21 +170,40 @@ const passwordEndValidate = ({ status, message }) => {
 const usernameEndValidate = ({ status, message }) => {
   usernameError.value = status === 'passed' ? '' : message
 }
+const switchType = type => {
+  loginType.value = type
+}
+const toMain = () => {
+  router.push({ path: '/index' })
+}
+const loadFail = () => {
+  xpackLoadFail.value = true
+  showPlatLoginMask.value = false
+}
 </script>
 
 <template>
+  <div
+    v-if="showPlatLoginMask"
+    class="platform-login-mask"
+    v-loading="true"
+    :element-loading-text="t('auth.loading')"
+    element-loading-background="#F5F6F7"
+  />
   <div class="de-mobile-login" v-loading="duringLogin">
     <img class="mobile-login_bg" :src="mobileLoginBg ? mobileLoginBg : mobileWholeBg" alt="" />
     <div class="mobile-login-content">
       <img width="120" height="31" :src="mobileLogin ? mobileLogin : mobileDeTop" alt="" />
-      <div class="mobile-login-welcome">{{ t('login.account_login') }}</div>
+      <div class="mobile-login-welcome">
+        {{ loginType === 'ldap' ? t('login.ldap_login') : t('login.account_login') }}
+      </div>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
           <van-field
             v-model="username"
             name="用户名"
             :style="{ borderColor: !!usernameError ? '#F54A45' : '#bbbfc4' }"
-            placeholder="请输入用户名"
+            :placeholder="t('login.input_account')"
             @blur="handleBlur"
             :class="inputFocus === 'username' && 'input-focus-primary'"
             @end-validate="usernameEndValidate"
@@ -218,13 +243,17 @@ const usernameEndValidate = ({ status, message }) => {
         </van-cell-group>
         <van-button block type="primary" native-type="submit"> 登录 </van-button>
       </van-form>
-      <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9Nb2JpbGVIYW5kbGVy" />
+      <XpackComponent
+        jsname="L2NvbXBvbmVudC9sb2dpbi9Nb2JpbGVIYW5kbGVy"
+        @switch-type="switchType"
+        @to-main="toMain"
+      />
     </div>
   </div>
   <XpackComponent
     ref="xpackInvalidPwd"
     jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
-    @load-fail="() => (xpackLoadFail = true)"
+    @load-fail="() => loadFail"
     @call-back="invalidPwdCb"
   />
   <XpackComponent
@@ -238,6 +267,16 @@ const usernameEndValidate = ({ status, message }) => {
 </template>
 
 <style lang="less">
+.platform-login-mask {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  position: absolute;
+  z-index: 100;
+}
 .de-mobile-login {
   height: 100vh;
   width: 100vw;

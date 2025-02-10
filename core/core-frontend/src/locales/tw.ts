@@ -417,7 +417,9 @@ export default {
     pwd_invalid_error: '密碼已過期請聯系管理員修改或重置',
     pwd_exp_tips: '密碼在 {0} 天後過期，請盡快修改密碼',
     qr_code: '二維碼',
-    platform_disable: '{0}設置未開啟！'
+    platform_disable: '{0}設置未開啟！',
+    input_account: '請輸入賬號',
+    redirect_2_auth: '正在跳轉至 {0} 認證，{1} 秒...'
   },
   component: {
     columnList: '列表項目',
@@ -2241,6 +2243,7 @@ export default {
     origin_type: '物理字段類型',
     field_diff: '所選字段類型不一致，不支持轉換',
     create_grouping_field: '新建分組字段',
+    editing_grouping_field: '編輯分組字段',
     grouping_field: '分組欄位',
     grouping_settings: '分組設定',
     ungrouped_value: '未分組的值',

@@ -26,11 +26,17 @@ export const logoutHandler = (justClean?: boolean) => {
   if (pathname) {
     if (pathname.includes('oidcbi/')) {
       pathname = pathname.replace('oidcbi/', '')
+      if (pathname.includes('mobile.html')) {
+        pathname = pathname.replace('mobile.html', '')
+      }
       pathname = pathname.substring(0, pathname.length - 1)
       window.location.href = pathname + '/oidcbi/oidc/logout'
       return
     } else if (pathname.includes('casbi/')) {
       pathname = pathname.replace('casbi/', '')
+      if (pathname.includes('mobile.html')) {
+        pathname = pathname.replace('mobile.html', '')
+      }
       pathname = pathname.substring(0, pathname.length - 1)
       const uri = window.location.href
       window.location.href = pathname + '/casbi/cas/logout?service=' + uri

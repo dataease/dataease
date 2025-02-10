@@ -71,6 +71,5 @@ const onTitleBackgroundChange = (params, paramsName) => {
   font-size: 12px;
   margin-bottom: 8px;
   display: flex;
-  background: ;
 }
 </style>
