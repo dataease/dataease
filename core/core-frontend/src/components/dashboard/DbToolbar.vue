@@ -326,6 +326,7 @@ onBeforeUnmount(() => {
 })
 const openDataBoardSetting = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
+  dvMainStore.setHiddenListStatus(false)
 }
 
 const openHiddenList = () => {
