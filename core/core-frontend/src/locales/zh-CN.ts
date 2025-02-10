@@ -2243,6 +2243,7 @@ export default {
     origin_type: '物理字段类型',
     field_diff: '所选字段类型不一致，不支持转换',
     create_grouping_field: '新建分组字段',
+    editing_grouping_field: '编辑分组字段',
     grouping_field: '分组字段',
     grouping_settings: '分组设置',
     ungrouped_value: '未分组的值',

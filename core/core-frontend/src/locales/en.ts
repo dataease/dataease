@@ -2298,6 +2298,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     origin_type: 'Physical field type',
     field_diff: 'The selected field types are inconsistent and do not support conversion',
     create_grouping_field: 'Create a new grouping field',
+    editing_grouping_field: 'Editing Grouping Fields',
     grouping_field: 'Grouping field',
     grouping_settings: 'Grouping settings',
     ungrouped_value: 'Ungrouped value',
