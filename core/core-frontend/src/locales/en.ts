@@ -2814,6 +2814,10 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     column_name: 'Field name'
   },
   visualization: {
+    title_background: 'Title Background',
+    active_title_background: 'Active Title Background',
+    multiply_active_title_background: 'Reuse Active Title Background',
+    inactive_title_background: 'Inactive Title Background',
     no_hidden_components: 'No Hidden Components',
     hidden_components: 'Hidden Components',
     dashboard_adaptor: 'Zoom Mode',

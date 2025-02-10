@@ -12,6 +12,7 @@ import CommonEvent from '@/custom-component/common/CommonEvent.vue'
 import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
 import CommonBorderSetting from '@/custom-component/common/CommonBorderSetting.vue'
 import CollapseSwitchItem from '../../components/collapse-switch-item/src/CollapseSwitchItem.vue'
+import TabBackgroundOverall from '@/custom-component/de-tabs/TabBackgroundOverall.vue'
 const snapshotStore = snapshotStoreWithOut()
 
 const { t } = useI18n()
@@ -57,6 +58,18 @@ const onBackgroundChange = val => {
   emits('onAttrChange', { custom: 'commonBackground' })
 }
 
+const onTitleBackgroundEnableChange = val => {
+  element.value.titleBackground.enable = val
+  snapshotStore.recordSnapshotCacheToMobile('titleBackground')
+  emits('onAttrChange', { custom: 'titleBackground' })
+}
+
+const onTitleBackgroundChange = val => {
+  element.value.titleBackground = val
+  snapshotStore.recordSnapshotCacheToMobile('titleBackground')
+  emits('onAttrChange', { custom: 'titleBackground' })
+}
+
 const onStyleAttrChange = ({ key, value }) => {
   snapshotStore.recordSnapshotCacheToMobile('style')
   emits('onAttrChange', { custom: 'style', property: key, value: value })
@@ -89,6 +102,11 @@ const backgroundCustomShow = computed(() => {
       !['CanvasBoard', 'CanvasIcon', 'CircleShape', 'RectShape'].includes(element.value.component))
   )
 })
+
+const titleBackgroundShow = computed(
+  () => ['DeTabs'].includes(element.value.component) && element.value.titleBackground
+)
+
 const tabTitleShow = computed(() => {
   return element.value && element.value.style && element.value.component === 'DeTabs'
 })
@@ -139,6 +157,22 @@ onMounted(() => {
           :background-border-select-width="backgroundBorderSelectWidth"
         />
       </el-collapse-item>
+
+      <collapse-switch-item
+        :effect="themes"
+        :title="t('visualization.title_background')"
+        name="titleBackground"
+        v-model="element.titleBackground.enable"
+        @modelChange="val => onTitleBackgroundEnableChange(val)"
+        v-if="element && titleBackgroundShow"
+      >
+        <tab-background-overall
+          :themes="themes"
+          :element="element"
+          component-position="component"
+          @onTitleBackgroundChange="onTitleBackgroundChange"
+        ></tab-background-overall>
+      </collapse-switch-item>
       <slot></slot>
       <collapse-switch-item
         v-if="tabTitleShow"

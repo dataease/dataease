@@ -2744,6 +2744,10 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    title_background: '标题背景',
+    active_title_background: '激活标题背景',
+    multiply_active_title_background: '复用激活标题背景',
+    inactive_title_background: '非激活标题背景',
     no_hidden_components: '当前无隐藏组件',
     hidden_components: '已隐藏的组件',
     dashboard_adaptor: '缩放模式',

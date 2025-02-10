@@ -29,7 +29,7 @@
           :name="tabItem.name"
         >
           <template #label>
-            <div @mousedown.stop>
+            <div class="custom-tab-title" @mousedown.stop>
               <span :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
               <el-dropdown
                 v-if="isEditMode"
@@ -629,5 +629,7 @@ onBeforeMount(() => {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+.custom-tab-title {
 }
 </style>
