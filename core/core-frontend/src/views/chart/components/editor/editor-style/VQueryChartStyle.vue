@@ -283,6 +283,7 @@ const onTitleChange = () => {
                 :effect="themes"
                 v-model="chart.customStyle.component.titleColor"
                 :trigger-width="204"
+                show-alpha
                 :disabled="!chart.customStyle.component.titleShow"
                 is-custom
                 :predefine="COLOR_PANEL"
@@ -309,6 +310,7 @@ const onTitleChange = () => {
                     :effect="themes"
                     :trigger-width="106"
                     is-custom
+                    show-alpha
                     v-model="chart.customStyle.component.borderColor"
                     :predefine="predefineColors"
                   />
@@ -324,6 +326,7 @@ const onTitleChange = () => {
                     :effect="themes"
                     :trigger-width="106"
                     is-custom
+                    show-alpha
                     v-model="chart.customStyle.component.bgColor"
                     :predefine="predefineColors"
                   />
@@ -364,6 +367,7 @@ const onTitleChange = () => {
                   :effect="themes"
                   :trigger-width="56"
                   is-custom
+                  show-alpha
                   v-model="chart.customStyle.component.text"
                   :disabled="!chart.customStyle.component.placeholderShow"
                   @change="handleCurrentPlaceholderCustomChange"
@@ -461,6 +465,7 @@ const onTitleChange = () => {
               <el-color-picker
                 :effect="themes"
                 is-custom
+                show-alpha
                 v-model="chart.customStyle.component.labelColor"
                 :predefine="predefineColors"
               /><el-tooltip
@@ -578,6 +583,7 @@ const onTitleChange = () => {
                 :effect="themes"
                 :trigger-width="108"
                 is-custom
+                show-alpha
                 v-model="chart.customStyle.component.btnColor"
                 :predefine="predefineColors"
               />
@@ -590,6 +596,7 @@ const onTitleChange = () => {
               <el-color-picker
                 :effect="themes"
                 is-custom
+                show-alpha
                 v-model="chart.customStyle.component.labelColorBtn"
                 :predefine="predefineColors"
               /><el-tooltip
