@@ -1540,6 +1540,16 @@ const confirmClick = () => {
   })
 }
 
+const fieldsComputed = computed(() => {
+  return curComponent.value.dataset.fields.filter(ele => {
+    return (
+      ele.deType === +curComponent.value.displayType ||
+      ([0, 2, 3, 4].includes(ele.deType) && [0, 2].includes(+curComponent.value.displayType)) ||
+      (ele.deType === 7 && +curComponent.value.displayType === 0)
+    )
+  })
+})
+
 const cancelValueSource = () => {
   valueSource.value = cloneDeep(curComponent.value.valueSource)
   if (!valueSource.value.length) {
@@ -2966,12 +2976,7 @@ defineExpose({
                         </el-icon>
                       </template>
                       <el-option
-                        v-for="ele in curComponent.dataset.fields.filter(
-                          ele =>
-                            ele.deType === +curComponent.displayType ||
-                            ([3, 4].includes(ele.deType) && +curComponent.displayType === 2) ||
-                            (ele.deType === 7 && +curComponent.displayType === 0)
-                        )"
+                        v-for="ele in fieldsComputed"
                         :key="ele.id"
                         :label="ele.name"
                         :value="ele.id"
