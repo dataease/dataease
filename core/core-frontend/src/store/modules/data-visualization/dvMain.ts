@@ -286,6 +286,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setCurComponent({ component, index }) {
       this.setCurTabName(null)
+      this.setHiddenListStatus(false)
       if (!component && this.curComponent) {
         this.curComponent['editing'] = false
         this.curComponent['resizing'] = false

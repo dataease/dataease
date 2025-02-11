@@ -77,7 +77,8 @@ const {
   canvasStyleData,
   mobileInPc,
   inMobile,
-  editMode
+  editMode,
+  hiddenListStatus
 } = storeToRefs(dvMainStore)
 
 const props = defineProps({

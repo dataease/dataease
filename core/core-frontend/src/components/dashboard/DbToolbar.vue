@@ -396,6 +396,7 @@ const batchOptStatusChange = value => {
     state.preBatchComponentData = []
     state.preBatchCanvasViewInfo = {}
   }
+  dvMainStore.setHiddenListStatus(false)
   dvMainStore.setBatchOptStatus(value)
 }
 

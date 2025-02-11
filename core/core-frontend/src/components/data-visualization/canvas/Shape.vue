@@ -28,6 +28,13 @@
         <Icon name="mobile-checkbox"><mobileCheckbox class="svg-icon" /></Icon>
       </el-icon>
     </div>
+    <div v-if="hiddenListStatus" class="del-from-mobile" @mousedown.stop="hiddenComponent">
+      <el-tooltip :content="$t('visualization.hidden')" placement="bottom">
+        <el-icon @click.stop>
+          <Icon @click.stop name="dvHidden"><dvHidden class="svg-icon" /></Icon>
+        </el-icon>
+      </el-tooltip>
+    </div>
     <div
       class="shape-outer"
       v-show="contentDisplay"
@@ -132,6 +139,7 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
+import dvHidden from '@/assets/svg/dv-hidden.svg'
 import { groupSizeStyleAdaptor, groupStyleRevert, tabInnerStyleRevert } from '@/utils/style'
 import {
   checkJoinTab,
@@ -166,7 +174,8 @@ const {
   tabMoveInActiveId,
   tabMoveOutComponentId,
   mobileInPc,
-  mainScrollTop
+  mainScrollTop,
+  hiddenListStatus
 } = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emit = defineEmits([
@@ -195,6 +204,16 @@ const state = reactive({
   tabMoveInXOffset: 40,
   collisionGap: 10 // 碰撞深度有效区域,
 })
+const hiddenComponent = event => {
+  event.preventDefault()
+  event.stopPropagation()
+  if (element.value) {
+    element.value.dashboardHidden = true
+    eventBus.emit('removeMatrixItemPosition-' + canvasId.value, element.value)
+    snapshotStore.recordSnapshotCache('hide')
+    dvMainStore.setLastHiddenComponent(element.value.id)
+  }
+}
 
 const contentDisplay = ref(true)
 const shapeLock = computed(() => {
