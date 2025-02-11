@@ -243,12 +243,12 @@ const loadFail = () => {
         </van-cell-group>
         <van-button block type="primary" native-type="submit"> 登录 </van-button>
       </van-form>
-      <XpackComponent
-        jsname="L2NvbXBvbmVudC9sb2dpbi9Nb2JpbGVIYW5kbGVy"
-        @switch-type="switchType"
-        @to-main="toMain"
-      />
     </div>
+    <XpackComponent
+      jsname="L2NvbXBvbmVudC9sb2dpbi9Nb2JpbGVIYW5kbGVy"
+      @switch-type="switchType"
+      @to-main="toMain"
+    />
   </div>
   <XpackComponent
     ref="xpackInvalidPwd"
