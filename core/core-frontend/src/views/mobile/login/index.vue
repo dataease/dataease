@@ -278,6 +278,7 @@ const loadFail = () => {
   z-index: 100;
 }
 .de-mobile-login {
+  overflow: hidden;
   height: 100vh;
   width: 100vw;
   position: relative;
