@@ -1175,7 +1175,12 @@ const confirmGroupField = () => {
         }
         groupList.push(obj)
       })
-      allfields.value.push({ ...currentGroupField, groupList })
+      const index = allfields.value.findIndex(ele => ele.id === currentGroupField.id)
+      if (index !== -1) {
+        allfields.value.splice(index, 1, { ...currentGroupField, groupList })
+      } else {
+        allfields.value.push({ ...currentGroupField, groupList })
+      }
       editGroupField.value = false
     }
   })
