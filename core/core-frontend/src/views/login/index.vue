@@ -145,15 +145,15 @@ const showLoginErrorMsg = () => {
   if (!loginErrorMsg.value) {
     return
   }
-  if (loginErrorMsg.value.startsWith('token is empty')) {
+  if (loginErrorMsg.value.includes('token is empty')) {
     ElMessage.error('token为空！')
     return
   }
-  if (loginErrorMsg.value.startsWith('token is Expired')) {
+  if (loginErrorMsg.value.includes('token is Expired')) {
     ElMessage.error('登录信息已过期，请重新登录！')
     return
   }
-  if (loginErrorMsg.value.startsWith('token is destroyed')) {
+  if (loginErrorMsg.value.includes('token is destroyed')) {
     ElMessage.error('登录信息已销毁，请重新登录！')
     return
   }

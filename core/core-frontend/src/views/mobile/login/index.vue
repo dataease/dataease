@@ -253,7 +253,7 @@ const loadFail = () => {
   <XpackComponent
     ref="xpackInvalidPwd"
     jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
-    @load-fail="() => loadFail"
+    @load-fail="loadFail"
     @call-back="invalidPwdCb"
   />
   <XpackComponent
