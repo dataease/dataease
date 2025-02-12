@@ -39,6 +39,7 @@ const emit = defineEmits(['onMiscChange'])
 watch(
   () => props.quotaFields,
   () => {
+    init()
     initField()
   },
   { deep: true }
@@ -105,115 +106,11 @@ const initField = () => {
   if (!isEmpty(state.miscForm.liquidMaxField.id)) {
     state.liquidMaxField = getQuotaField(state.miscForm.liquidMaxField.id)
   }
-  if (props.quotaFields.length) {
-    initDynamicDefaultField()
-  }
 }
 const COUNT_DE_TYPE = [0, 1, 5]
 const NUMBER_DE_TYPE = [1, 2, 3]
 const getFieldSummaryByDeType = (deType: number) => {
   return COUNT_DE_TYPE.includes(deType) || !deType ? 'count' : 'sum'
-}
-const initDynamicDefaultField = () => {
-  const yAxisField = props.chart.yAxis?.[0]
-  const yAxisId = yAxisField?.id
-  // 没有字表字段时，清空动态字段
-  if (quotaData.value?.length === 0) {
-    if (isLiquid.value && state.miscForm.liquidMaxType === 'dynamic') {
-      state.miscForm.liquidMax = state.miscForm.liquidMax
-        ? state.miscForm.liquidMax
-        : cloneDeep(defaultMaxValue.gaugeMax)
-      state.miscForm.liquidMaxType = 'fix'
-      state.miscForm.liquidMaxField = {}
-      changeMisc('liquidMaxField', true)
-    }
-    if (isGauge.value && state.miscForm.gaugeMaxType === 'dynamic') {
-      state.miscForm.gaugeMax = state.miscForm.gaugeMax
-        ? state.miscForm.gaugeMax
-        : cloneDeep(defaultMaxValue.liquidMax)
-      state.miscForm.gaugeMaxType = 'fix'
-      state.miscForm.gaugeMaxField = {}
-      state.miscForm.gaugeMinType = 'fix'
-      state.miscForm.gaugeMinField = {}
-      changeMisc('gaugeMaxField', true)
-    }
-  } else {
-    // 查找 quotaData 中是否存在 chart.yAxis[0].id
-    const yAxisExists = props.quotaFields.find(ele => ele.id === yAxisId)
-    // 如果不存在
-    if (!yAxisExists) {
-      if (isLiquid.value) {
-        state.liquidProcessedNoYAxis = true
-        state.miscForm.liquidMaxField.id = ''
-        state.miscForm.liquidMaxField.summary = ''
-        state.liquidMaxField = {}
-        changeMisc('liquidMaxField', true)
-      }
-      if (isGauge.value) {
-        state.gaugeProcessedNoYAxis = true
-        state.miscForm.gaugeMaxField.id = ''
-        state.miscForm.gaugeMaxField.summary = ''
-        state.maxField = {}
-        changeMisc('gaugeMaxField', true)
-      }
-    }
-    if (isLiquid.value) {
-      // 如果 liquidMaxType 是动态类型，重置 liquidMax
-      if (state.miscForm.liquidMaxType === 'dynamic') {
-        state.miscForm.liquidMax = undefined
-        // 检查 yAxisId 和 yAxisField 的条件
-        const isValidYAxisField =
-          yAxisId && (yAxisField.extField === 2 || NUMBER_DE_TYPE.includes(yAxisField.deType))
-        const isMatchingFieldId =
-          state.miscForm.liquidMaxField.id === yAxisId || !state.miscForm.liquidMaxField.id
-        // 如果条件满足，设置 liquidMaxField.id 和相关属性
-        if (isValidYAxisField && isMatchingFieldId) {
-          state.miscForm.liquidMaxField.id = getDynamicFieldId()
-          state.liquidMaxField = getQuotaField(state.miscForm.liquidMaxField.id)
-          const summary = state.miscForm.liquidMaxField.summary
-          state.miscForm.liquidMaxField.summary = summary
-            ? summary
-            : getFieldSummaryByDeType(state.liquidMaxField?.deType)
-
-          // 更新处理状态并触发 changeMisc
-          if (!state.liquidProcessedNoYAxis) {
-            state.liquidProcessedNoYAxis = true
-            changeMisc('liquidMaxField', true)
-          }
-        }
-      }
-      if (!state.miscForm.liquidMax && state.miscForm.liquidMaxType === 'fix') {
-        state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
-      }
-    } else {
-      if (state.miscForm.gaugeMaxType === 'dynamic') {
-        state.miscForm.gaugeMax = undefined
-
-        // 拖入的字段是计算字段，并且当前选择的是该字段时，取其他字段
-        if (
-          yAxisId &&
-          (yAxisField.extField === 2 || NUMBER_DE_TYPE.includes(yAxisField.deType)) &&
-          (state.miscForm.gaugeMaxField.id === yAxisId || !state.miscForm.gaugeMaxField.id)
-        ) {
-          // 根据查找结果设置 gaugeMaxField.id
-          state.miscForm.gaugeMaxField.id = getDynamicFieldId()
-          state.maxField = getQuotaField(state.miscForm.gaugeMaxField.id)
-          // 设置 summary 和 maxField
-          const summary = state.miscForm.gaugeMaxField.summary
-          state.miscForm.gaugeMaxField.summary = summary
-            ? summary
-            : getFieldSummaryByDeType(state.maxField?.deType)
-          if (!state.gaugeProcessedNoYAxis) {
-            state.gaugeProcessedNoYAxis = true
-            changeMisc('gaugeMaxField', true)
-          }
-        }
-      }
-      if (!state.miscForm.gaugeMax && state.miscForm.gaugeMaxType === 'fix') {
-        state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
-      }
-    }
-  }
 }
 
 const getDynamicFieldId = () => {
@@ -225,26 +122,54 @@ const getDynamicFieldId = () => {
 }
 
 const changeQuotaField = (type: string, resetSummary?: boolean) => {
-  const isCountField = props.chart.yAxis?.[0]?.id === '-1'
-  const isDynamic =
-    type === 'min'
-      ? state.miscForm.gaugeMinType === 'dynamic'
-      : state.miscForm.gaugeMaxType === 'dynamic'
-  const field = type === 'min' ? state.miscForm.gaugeMinField : state.miscForm.gaugeMaxField
-  const maxValueKey = props.chart.type === 'liquid' ? 'liquidMax' : 'gaugeMax'
-  if (isDynamic) {
-    if (!field.id && !isCountField) setDynamicFieldId(field)
-    if (!field.summary || resetSummary) field.summary = 'count'
-    if (field.id && field.summary) {
-      if (type === 'min') state.minField = getQuotaField(field.id)
-      else state.maxField = getQuotaField(field.id)
-      changeMisc(`${maxValueKey}Field`, true)
+  if (isGauge.value) {
+    if (type === 'max') {
+      const isDynamic = state.miscForm.gaugeMaxType === 'dynamic'
+      if (isDynamic) {
+        if (!state.miscForm.gaugeMaxField.id) {
+          setDynamicFieldId(state.miscForm.gaugeMaxField)
+        }
+        if (!state.miscForm.gaugeMaxField.summary || resetSummary) {
+          state.miscForm.gaugeMaxField.summary = 'sum'
+        }
+        if (state.miscForm.gaugeMaxField.id && state.miscForm.gaugeMaxField.summary) {
+          state.maxField = getQuotaField(state.miscForm.gaugeMaxField.id)
+        }
+      } else {
+        state.miscForm.gaugeMax = state.miscForm.gaugeMax || cloneDeep(defaultMaxValue.gaugeMax)
+      }
+      changeMisc('gaugeMaxField', true)
     }
-  } else {
-    if (type === 'max' && isLiquid) {
+    if (type === 'min') {
+      const isDynamic = state.miscForm.gaugeMinType === 'dynamic'
+      if (isDynamic) {
+        if (!state.miscForm.gaugeMinField.id) {
+          setDynamicFieldId(state.miscForm.gaugeMinField)
+        }
+        if (!state.miscForm.gaugeMinField.summary || resetSummary) {
+          state.miscForm.gaugeMinField.summary = 'sum'
+        }
+        if (state.miscForm.gaugeMinField.id && state.miscForm.gaugeMinField.summary) {
+          state.minField = getQuotaField(state.miscForm.gaugeMinField.id)
+        }
+      } else {
+        state.miscForm.gaugeMin = state.miscForm.gaugeMin ?? 0
+      }
+      changeMisc('gaugeMinField', true)
+    }
+  }
+  if (isLiquid.value) {
+    const field = state.miscForm.liquidMaxField
+    const maxValueKey = 'liquidMax'
+    const isDynamic = state.miscForm.liquidMaxType === 'dynamic'
+    if (isDynamic) {
+      if (!field.id) setDynamicFieldId(field)
+      if (!field.summary || resetSummary) field.summary = 'count'
+      if (field.id && field.summary) {
+        state.liquidMaxField = getQuotaField(field.id)
+      }
+    } else {
       state.miscForm.liquidMax = state.miscForm.liquidMax || cloneDeep(defaultMaxValue.liquidMax)
-    } else if (type === 'max') {
-      state.miscForm.gaugeMax = state.miscForm.gaugeMax || cloneDeep(defaultMaxValue.gaugeMax)
     }
     changeMisc(`${maxValueKey}Field`, true)
   }
@@ -310,8 +235,65 @@ const changeMaxValidate = prop => {
   changeMisc(prop, true)
 }
 const addAxis = (form: AxisEditForm) => {
+  initAxis(form.axis[0]?.id)
+}
+const initAxis = yAxisId => {
   state.quotaData = []
-  if (form.axis[0]?.id) {
+  if (yAxisId) {
+    const uniqueIds = new Set(state.quotaData.map(item => item.id))
+    state.quotaData = [
+      ...props.quotaFields.filter(
+        ele => ele.id !== '-1' && ele.extField !== 2 && !uniqueIds.has(ele.id)
+      )
+    ]
+    const maxTypeKey = isLiquid.value ? 'liquidMaxType' : 'gaugeMaxType'
+    const maxValueKey = isLiquid.value ? 'liquidMax' : 'gaugeMax'
+    if (state.quotaData.length) {
+      if (isLiquid.value) {
+        state.miscForm[maxTypeKey] = 'dynamic'
+        state.miscForm[maxValueKey + 'Field']['id'] = getDynamicFieldId() ?? state.quotaData[0]?.id
+        state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
+        state.liquidMaxField = getQuotaField(state.miscForm[maxValueKey + 'Field']['id'])
+        changeMisc(`${maxValueKey}Field`, true)
+      }
+      if (isGauge.value) {
+        // max
+        state.miscForm[maxTypeKey] = 'dynamic'
+        state.miscForm[maxValueKey + 'Field']['id'] = getDynamicFieldId() ?? state.quotaData[0]?.id
+        state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
+        state.maxField = getQuotaField(state.miscForm[maxValueKey + 'Field']['id'])
+        changeMisc(`${maxValueKey}Field`, true)
+        // min
+        state.miscForm.gaugeMinType = 'fix'
+        state.miscForm.gaugeMin = 0
+        changeMisc('gaugeMinField', true)
+      }
+    } else {
+      if (isLiquid.value) {
+        state.miscForm[maxTypeKey] = 'fix'
+        state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
+        state.miscForm[maxValueKey + 'Field']['id'] = ''
+        state.miscForm[maxValueKey + 'Field']['summary'] = ''
+      }
+      if (isGauge.value) {
+        // max
+        state.miscForm[maxTypeKey] = 'fix'
+        state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
+        state.miscForm[maxValueKey + 'Field']['id'] = ''
+        state.miscForm[maxValueKey + 'Field']['summary'] = ''
+        // min
+        state.miscForm.gaugeMinType = 'fix'
+        state.miscForm.gaugeMin = 0
+        state.miscForm.gaugeMinField.id = ''
+        state.miscForm.gaugeMinField.summary = ''
+      }
+      changeMisc('', false)
+    }
+  }
+}
+const initStateForm = () => {
+  state.quotaData = []
+  if (props.chart.yAxis?.[0]?.id) {
     const uniqueIds = new Set(state.quotaData.map(item => item.id))
     state.quotaData = [
       ...props.quotaFields.filter(
@@ -321,33 +303,93 @@ const addAxis = (form: AxisEditForm) => {
   }
   const maxTypeKey = isLiquid.value ? 'liquidMaxType' : 'gaugeMaxType'
   const maxValueKey = isLiquid.value ? 'liquidMax' : 'gaugeMax'
-  if (form.axis[0]?.id === '-1') {
-    state.miscForm[maxTypeKey] = 'fix'
-    state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey])
+  if (quotaData.value.length) {
+    if (isLiquid.value) {
+      const hasDynamicValue = props.quotaFields.find(
+        ele => ele.id === state.miscForm[maxValueKey + 'Field']['id']
+      )
+      const hasFixValue = state.miscForm[maxValueKey]
+      if (state.miscForm[maxTypeKey] === 'dynamic' && !hasDynamicValue) {
+        state.miscForm[maxValueKey + 'Field']['id'] = state.quotaData[0]?.id ?? ''
+        state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
+        state.liquidMaxField = getQuotaField(state.miscForm[maxValueKey + 'Field']['id'])
+        changeMisc(`${maxValueKey}Field`, true)
+      } else if (state.miscForm[maxTypeKey] === 'fix' && !hasFixValue && hasFixValue !== 0) {
+        state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
+        changeMisc(`${maxValueKey}Field`, true)
+      }
+    }
+    if (isGauge.value) {
+      // max
+      const hasDynamicValue = props.quotaFields.find(
+        ele => ele.id === state.miscForm[maxValueKey + 'Field']['id']
+      )
+      const hasFixValue = state.miscForm[maxValueKey]
+      if (state.miscForm[maxTypeKey] === 'dynamic' && !hasDynamicValue) {
+        state.miscForm[maxValueKey + 'Field']['id'] = state.quotaData[0]?.id ?? ''
+        state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
+        state.maxField = getQuotaField(state.miscForm[maxValueKey + 'Field']['id'])
+        changeMisc(`${maxValueKey}Field`, true)
+      } else if (state.miscForm[maxTypeKey] === 'fix' && !hasFixValue && hasFixValue !== 0) {
+        state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
+        changeMisc(`${maxValueKey}Field`, true)
+      }
+      // min
+      const hasDynamicMinValue = props.quotaFields.find(
+        ele => ele.id === state.miscForm.gaugeMinField.id
+      )
+      if (state.miscForm.gaugeMinType === 'dynamic' && !hasDynamicMinValue) {
+        state.miscForm.gaugeMin = 0
+        state.miscForm.gaugeMinField.id = state.quotaData[0]?.id ?? ''
+        state.miscForm.gaugeMinField.summary = 'sum'
+        state.minField = getQuotaField(state.miscForm.gaugeMinField.id)
+        changeMisc('gaugeMinField', true)
+      }
+    }
   } else {
-    state.miscForm[maxTypeKey] = 'dynamic'
-    state.miscForm[maxValueKey + 'Field']['id'] = getDynamicFieldId()
-    state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
+    if (isLiquid.value) {
+      state.miscForm[maxTypeKey] = 'fix'
+      state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
+      state.miscForm[maxValueKey + 'Field']['id'] = ''
+      state.miscForm[maxValueKey + 'Field']['summary'] = ''
+    }
+    if (isGauge.value) {
+      // max
+      state.miscForm[maxTypeKey] = 'fix'
+      state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
+      state.miscForm[maxValueKey + 'Field']['id'] = ''
+      state.miscForm[maxValueKey + 'Field']['summary'] = ''
+      // min
+      state.miscForm.gaugeMinType = 'fix'
+      state.miscForm.gaugeMin = 0
+      state.miscForm.gaugeMinField.id = ''
+      state.miscForm.gaugeMinField.summary = ''
+    }
+    changeMisc('', false)
   }
-  if (isGauge.value) {
-    state.miscForm.gaugeMinType = 'fix'
-    state.miscForm.gaugeMin = 0
-    state.miscForm.gaugeMinField.id = ''
-    state.miscForm.gaugeMinField.summary = ''
-  }
-  if (!quotaData.value.length) {
-    state.miscForm[maxTypeKey] = 'fix'
-    state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey])
-  }
-  changeMisc(`${maxValueKey}Field`, false)
 }
 
 onMounted(() => {
   init()
   initField()
+  initAxis(props.chart.yAxis[0]?.id)
   useEmitt({ name: 'addAxis', callback: addAxis })
-  useEmitt({ name: 'chart-data-change', callback: initField })
-  useEmitt({ name: 'chart-type-change', callback: initField })
+  useEmitt({
+    name: 'chart-data-change',
+    callback: () => {
+      initStateForm()
+    }
+  })
+  useEmitt({
+    name: 'chart-type-change',
+    callback: () => {
+      if (isLiquid.value || isGauge.value) {
+        init()
+        initField()
+        initAxis(props.chart.yAxis[0]?.id)
+      }
+    }
+  })
 })
 
 /**
