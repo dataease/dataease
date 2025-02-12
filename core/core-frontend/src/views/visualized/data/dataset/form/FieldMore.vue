@@ -146,7 +146,11 @@ const handleChange = () => {
 <template>
   <el-popover
     :popper-class="
-      options.length === 6 ? 'menu-more_popper_one menu-more_popper_six' : 'menu-more_popper_one'
+      options.length === 6
+        ? 'menu-more_popper_one menu-more_popper_six'
+        : extField === 3
+        ? 'menu-more_popper_one menu-more_popper_three'
+        : 'menu-more_popper_one'
     "
     :persistent="false"
     ref="popover"
@@ -205,6 +209,10 @@ const handleChange = () => {
 <style lang="less">
 .menu-more_popper_six > :first-child > :first-child > :first-child {
   height: 210px;
+}
+
+.menu-more_popper_three > :first-child > :first-child > :first-child {
+  height: 145px;
 }
 .menu-more_popper_one {
   padding: 0 !important;

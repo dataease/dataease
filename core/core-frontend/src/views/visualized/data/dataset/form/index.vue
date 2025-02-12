@@ -1202,6 +1202,34 @@ const addGroupFields = () => {
   })
 }
 
+const handleChangeGroupList = () => {
+  let result = false
+  currentGroupField.groupList.forEach(ele => {
+    const { name, text = [], time, min, max } = ele
+    if (!result) {
+      switch (currentGroupField.deTypeOrigin) {
+        case 0:
+          result = !name || !text.length
+          break
+        case 1:
+          result = !name || !time.length
+          break
+        case 2:
+        case 3:
+        case 4:
+          result = !name || min === null || max === null
+          break
+        default:
+          break
+      }
+    }
+  })
+  console.log(result, 'result')
+  if (currentGroupField.name && !result) {
+    ruleGroupFieldRef.value.validate()
+  }
+}
+
 const removeGroupFields = index => {
   currentGroupField.groupList.splice(index, 1)
 }
@@ -2619,11 +2647,13 @@ const getDsIconName = data => {
                 style="width: 278px"
                 :validate-event="false"
                 v-model="item.name"
+                @change="handleChangeGroupList"
                 :placeholder="t('common.inputText')"
               />
               <el-select
                 v-if="[0, null].includes(currentGroupField.deTypeOrigin)"
                 style="flex: 1; margin-left: 24px"
+                @change="handleChangeGroupList"
                 multiple
                 collapse-tags
                 :validate-event="false"
@@ -2640,6 +2670,7 @@ const getDsIconName = data => {
                 <el-input-number
                   :placeholder="t('dataset.please_enter_number')"
                   v-model="item.min"
+                  @change="handleChangeGroupList"
                   :validate-event="false"
                   controls-position="right"
                 />
@@ -2654,12 +2685,6 @@ const getDsIconName = data => {
                 <div :title="currentGroupField.title" class="name ellipsis">
                   {{ currentGroupField.title }}
                 </div>
-                <el-input-number
-                  :placeholder="t('dataset.please_enter_number')"
-                  v-model="item.max"
-                  :validate-event="false"
-                  controls-position="right"
-                />
                 <el-select v-model="item.maxTerm">
                   <el-option
                     v-for="item in equalMin"
@@ -2668,6 +2693,13 @@ const getDsIconName = data => {
                     :value="item.value"
                   />
                 </el-select>
+                <el-input-number
+                  :placeholder="t('dataset.please_enter_number')"
+                  v-model="item.max"
+                  @change="handleChangeGroupList"
+                  :validate-event="false"
+                  controls-position="right"
+                />
               </div>
               <div
                 class="group-fields_num"
@@ -2677,6 +2709,7 @@ const getDsIconName = data => {
                   :end-placeholder="t('commons.date.end_date')"
                   :start-placeholder="t('commons.date.start_date')"
                   :validate-event="false"
+                  @change="handleChangeGroupList"
                   v-model="item.time"
                   type="daterange"
                 />
