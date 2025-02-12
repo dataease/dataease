@@ -250,6 +250,7 @@ const svgInnerInActiveEnable = itemName => {
     element.value.titleBackground.inActive
   return (
     editableTabsValue.value !== itemName &&
+    !element.value.titleBackground.multiply &&
     element.value.titleBackground?.enable &&
     backgroundImageEnable &&
     backgroundType === 'innerImage' &&
@@ -260,7 +261,7 @@ const svgInnerInActiveEnable = itemName => {
 const svgInnerActiveEnable = itemName => {
   const { backgroundImageEnable, backgroundType, innerImage } = element.value.titleBackground.active
   return (
-    editableTabsValue.value === itemName &&
+    (editableTabsValue.value === itemName || element.value.titleBackground.multiply) &&
     element.value.titleBackground?.enable &&
     backgroundImageEnable &&
     backgroundType === 'innerImage' &&
