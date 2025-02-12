@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
-import { toRefs } from 'vue'
+import { ref, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 const emits = defineEmits(['onTitleBackgroundChange'])
 const { t } = useI18n()
+const activeName = ref('activeBackground')
 
 const props = withDefaults(
   defineProps<{
@@ -29,35 +30,39 @@ const onTitleBackgroundChange = (params, paramsName) => {
 
 <template>
   <div class="tab-title-background">
-    <div class="background-label">{{ t('visualization.active_title_background') }}</div>
-    <background-overall-common
-      :themes="themes"
-      :common-background-pop="element.titleBackground.active"
-      component-position="component"
-      @onBackgroundChange="onTitleBackgroundChange($event, 'active')"
-    />
-    <div class="background-label">
-      <span>{{ t('visualization.inactive_title_background') }}</span>
-      <span style="margin: -2px 0 0 24px">
-        <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
-          <el-checkbox
-            size="small"
-            :effect="themes"
-            v-model="element.titleBackground.multiply"
-            @change="onTitleBackgroundChange(null, null)"
-          >
-            {{ t('visualization.multiply_active_title_background') }}
-          </el-checkbox>
-        </el-form-item>
-      </span>
-    </div>
-    <background-overall-common
-      v-show="!element.titleBackground.multiply"
-      :themes="themes"
-      :common-background-pop="element.titleBackground.inActive"
-      component-position="component"
-      @onBackgroundChange="onTitleBackgroundChange($event, 'inActive')"
-    />
+    <el-tabs class="background-tabs" v-model="activeName" stretch>
+      <el-tab-pane :label="t('visualization.active_title_background')" name="activeBackground">
+        <background-overall-common
+          :themes="themes"
+          :common-background-pop="element.titleBackground.active"
+          component-position="component"
+          @onBackgroundChange="onTitleBackgroundChange($event, 'active')"
+        />
+      </el-tab-pane>
+      <el-tab-pane :label="t('visualization.inactive_title_background')" name="inActiveBackground">
+        <div class="background-label">
+          <span>
+            <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+              <el-checkbox
+                size="small"
+                :effect="themes"
+                v-model="element.titleBackground.multiply"
+                @change="onTitleBackgroundChange(null, null)"
+              >
+                {{ t('visualization.reuse_active_title_background') }}
+              </el-checkbox>
+            </el-form-item>
+          </span>
+        </div>
+        <background-overall-common
+          v-show="!element.titleBackground.multiply"
+          :themes="themes"
+          :common-background-pop="element.titleBackground.inActive"
+          component-position="component"
+          @onBackgroundChange="onTitleBackgroundChange($event, 'inActive')"
+        />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
@@ -71,5 +76,20 @@ const onTitleBackgroundChange = (params, paramsName) => {
   font-size: 12px;
   margin-bottom: 8px;
   display: flex;
+}
+.background-tabs {
+  --ed-tabs-header-height: 24px;
+
+  :deep(.ed-tabs__active-bar) {
+    height: 1px;
+  }
+
+  :deep(.ed-tabs__item) {
+    font-size: 12px;
+  }
+
+  :deep(.ed-tabs__content) {
+    padding: 12px 0;
+  }
 }
 </style>

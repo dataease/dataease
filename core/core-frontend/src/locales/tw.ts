@@ -2748,7 +2748,7 @@ export default {
     sync_pc_design: '同步PC設計',
     title_background: '標題背景',
     active_title_background: '激活標題背景',
-    multiply_active_title_background: '復用激活標題背景',
+    reuse_active_title_background: '復用激活標題背景',
     inactive_title_background: '非激活標題背景',
     no_hidden_components: '當前無隱藏組件',
     hidden_components: '已隱藏的組件',

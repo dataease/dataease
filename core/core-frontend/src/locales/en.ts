@@ -2820,7 +2820,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     sync_pc_design: 'Synchronize PC Design',
     title_background: 'Title Background',
     active_title_background: 'Active Title Background',
-    multiply_active_title_background: 'Reuse Active Title Background',
+    reuse_active_title_background: 'Reuse Active Title Background',
     inactive_title_background: 'Inactive Title Background',
     no_hidden_components: 'No Hidden Components',
     hidden_components: 'Hidden Components',

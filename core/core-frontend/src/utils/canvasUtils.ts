@@ -5,6 +5,7 @@ import componentList, {
   BASE_EVENTS,
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT,
+  COMMON_TAB_TITLE_BACKGROUND,
   MULTI_DIMENSIONAL
 } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
@@ -17,8 +18,7 @@ import {
   findById,
   findCopyResource,
   saveCanvas,
-  updateCanvas,
-  updateCheckVersion
+  updateCanvas
 } from '@/api/visualization/dataVisualization'
 import { storeToRefs } from 'pinia'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
@@ -211,6 +211,8 @@ export function historyItemAdaptor(
   componentItem['category'] = componentItem['category'] || 'base'
 
   if (componentItem.component === 'DeTabs') {
+    componentItem['titleBackground'] =
+      componentItem['titleBackground'] || deepCopy(COMMON_TAB_TITLE_BACKGROUND)
     componentItem.style.fontStyle = componentItem.style.fontStyle || 'normal'
     componentItem.style.fontWeight = componentItem.style.fontWeight || 'normal'
     componentItem.style.textDecoration = componentItem.style.textDecoration || 'none'

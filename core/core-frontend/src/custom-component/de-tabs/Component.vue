@@ -30,34 +30,54 @@
         >
           <template #label>
             <div class="custom-tab-title" @mousedown.stop>
-              <span class="title-inner" :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
-              <el-dropdown
-                v-if="isEditMode"
-                :effect="curThemes"
-                style="line-height: 4 !important"
-                trigger="click"
-                @command="handleCommand"
-              >
-                <span class="el-dropdown-link">
-                  <el-icon v-if="isEdit"><ArrowDown /></el-icon>
+              <span class="title-inner" :style="titleStyle(tabItem.name)"
+                >{{ tabItem.title }}
+                <Board
+                  v-show="svgInnerActiveEnable(tabItem.name)"
+                  :style="{
+                    color: element.titleBackground.active.innerImageColor,
+                    pointerEvents: 'none'
+                  }"
+                  :name="titleBackgroundActiveSvgInner"
+                ></Board>
+
+                <Board
+                  v-show="svgInnerInActiveEnable(tabItem.name)"
+                  :style="{
+                    color: element.titleBackground.inActive.innerImageColor,
+                    pointerEvents: 'none'
+                  }"
+                  :name="titleBackgroundInActiveSvgInner"
+                ></Board>
+                <span v-if="isEditMode">
+                  <el-dropdown
+                    popper-class="custom-de-tab-dropdown"
+                    :effect="curThemes"
+                    trigger="click"
+                    @command="handleCommand"
+                  >
+                    <span class="el-dropdown-link">
+                      <el-icon v-if="isEdit"><ArrowDown /></el-icon>
+                    </span>
+                    <template #dropdown>
+                      <el-dropdown-menu :style="{ 'font-family': fontFamily }">
+                        <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
+                          {{ t('visualization.edit_title') }}
+                        </el-dropdown-item>
+                        <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
+                          {{ t('visualization.copy') }}
+                        </el-dropdown-item>
+                        <el-dropdown-item
+                          v-if="element.propValue.length > 1"
+                          :command="beforeHandleCommand('deleteCur', tabItem)"
+                        >
+                          {{ t('visualization.delete') }}
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
                 </span>
-                <template #dropdown>
-                  <el-dropdown-menu :style="{ 'font-family': fontFamily }">
-                    <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
-                      {{ t('visualization.edit_title') }}
-                    </el-dropdown-item>
-                    <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
-                      {{ t('visualization.copy') }}
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      v-if="element.propValue.length > 1"
-                      :command="beforeHandleCommand('deleteCur', tabItem)"
-                    >
-                      {{ t('visualization.delete') }}
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              </span>
             </div>
           </template>
         </el-tab-pane>
@@ -150,6 +170,7 @@ import { deepCopyTabItemHelper } from '@/store/modules/data-visualization/copy'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
+import Board from '@/components/de-board/Board.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
@@ -215,6 +236,37 @@ const {
   scale,
   searchCount
 } = toRefs(props)
+
+const titleBackgroundActiveSvgInner = computed(() => {
+  return element.value.titleBackground.active.innerImage.replace('board/', '').replace('.svg', '')
+})
+
+const titleBackgroundInActiveSvgInner = computed(() => {
+  return element.value.titleBackground.inActive.innerImage.replace('board/', '').replace('.svg', '')
+})
+
+const svgInnerInActiveEnable = itemName => {
+  const { backgroundImageEnable, backgroundType, innerImage } =
+    element.value.titleBackground.inActive
+  return (
+    editableTabsValue.value !== itemName &&
+    element.value.titleBackground?.enable &&
+    backgroundImageEnable &&
+    backgroundType === 'innerImage' &&
+    typeof innerImage === 'string'
+  )
+}
+
+const svgInnerActiveEnable = itemName => {
+  const { backgroundImageEnable, backgroundType, innerImage } = element.value.titleBackground.active
+  return (
+    editableTabsValue.value === itemName &&
+    element.value.titleBackground?.enable &&
+    backgroundImageEnable &&
+    backgroundType === 'innerImage' &&
+    typeof innerImage === 'string'
+  )
+}
 
 const handleMouseEnter = () => {
   state.hoverFlag = true
@@ -475,7 +527,8 @@ const titleStyle = itemName => {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
-      fontSize: (element.value.style.activeFontSize || 18) * scale.value + 'px'
+      fontSize: (element.value.style.activeFontSize || 18) * scale.value + 'px',
+      lineHeight: (element.value.style.activeFontSize || 18) * scale.value + 'px'
     }
     if (element.value.titleBackground?.enable) {
       style = {
@@ -488,7 +541,8 @@ const titleStyle = itemName => {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
-      fontSize: (element.value.style.fontSize || 16) * scale.value + 'px'
+      fontSize: (element.value.style.fontSize || 16) * scale.value + 'px',
+      lineHeight: (element.value.style.fontSize || 16) * scale.value + 'px'
     }
     if (element.value.titleBackground?.enable) {
       style = {
@@ -635,6 +689,7 @@ onBeforeMount(() => {
   }
   :deep(.ed-tabs__item) {
     font-family: inherit;
+    padding-right: 0 !important;
   }
 }
 
@@ -688,7 +743,11 @@ onBeforeMount(() => {
 }
 .custom-tab-title {
   .title-inner {
+    position: relative;
     background-size: 100% 100% !important;
+  }
+  :deep(.ed-dropdown) {
+    vertical-align: middle !important;
   }
 }
 </style>
