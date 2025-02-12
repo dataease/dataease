@@ -2745,6 +2745,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    sync_pc_design: '同步PC設計',
     title_background: '標題背景',
     active_title_background: '激活標題背景',
     multiply_active_title_background: '復用激活標題背景',

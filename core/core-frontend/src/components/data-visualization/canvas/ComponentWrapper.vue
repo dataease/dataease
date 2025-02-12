@@ -370,7 +370,6 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
     element-loading-text="导出中..."
     element-loading-background="rgba(255, 255, 255, 1)"
   >
-    --- {{ viewInfo?.id }}
     <component-edit-bar
       v-if="!showPosition.includes('canvas') && !props.isSelector"
       class="wrapper-edit-bar"

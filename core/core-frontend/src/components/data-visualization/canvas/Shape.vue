@@ -28,7 +28,7 @@
         <Icon name="mobile-checkbox"><mobileCheckbox class="svg-icon" /></Icon>
       </el-icon>
     </div>
-    <div v-if="hiddenListStatus" class="del-from-mobile" @mousedown.stop="hiddenComponent">
+    <div v-if="showHiddenIcon" class="del-from-mobile" @mousedown.stop="hiddenComponent">
       <el-tooltip :content="$t('visualization.hidden')" placement="bottom">
         <el-icon @click.stop>
           <Icon @click.stop name="dvHidden"><dvHidden class="svg-icon" /></Icon>
@@ -214,7 +214,7 @@ const hiddenComponent = event => {
     dvMainStore.setLastHiddenComponent(element.value.id)
   }
 }
-
+const showHiddenIcon = computed(() => hiddenListStatus.value && isMainCanvas(canvasId.value))
 const contentDisplay = ref(true)
 const shapeLock = computed(() => {
   return element.value['isLock'] && isEditMode.value
