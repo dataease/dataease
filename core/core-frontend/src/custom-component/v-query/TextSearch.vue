@@ -82,7 +82,7 @@ onBeforeMount(() => {
   setParams()
 })
 const queryConditionWidth = inject('com-width', Function, true)
-const customStyle = inject<{ background: string }>('$custom-style-filter')
+const customStyle = inject<{ background: string; border: string }>('$custom-style-filter')
 const isConfirmSearch = inject('is-confirm-search', Function, true)
 
 const getCustomWidth = () => {
@@ -106,7 +106,7 @@ const handleValueChange = () => {
   }
 }
 const lineWidth = computed(() => {
-  return { width: getCustomWidth() - 15 + 'px' }
+  return { width: getCustomWidth() - 15 + 'px', background: customStyle.border }
 })
 
 const handleKeyEnter = () => {
