@@ -2,7 +2,7 @@ package io.dataease.chart.manage;
 
 import io.dataease.api.chart.request.ThresholdCheckRequest;
 import io.dataease.api.chart.vo.ThresholdCheckVO;
-import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;

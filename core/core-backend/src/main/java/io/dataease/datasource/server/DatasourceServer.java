@@ -28,7 +28,7 @@ import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
-import io.dataease.engine.constant.SQLConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.*;

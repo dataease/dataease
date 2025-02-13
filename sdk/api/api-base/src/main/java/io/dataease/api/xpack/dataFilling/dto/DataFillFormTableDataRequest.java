@@ -28,4 +28,6 @@ public class DataFillFormTableDataRequest implements Serializable {
 
     private List<String> primaryKeyValueList;
 
+    private List<DataFillFormTableDataSearchParam> searchParams;
+
 }

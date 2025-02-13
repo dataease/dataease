@@ -1,4 +1,4 @@
-package io.dataease.engine.constant;
+package io.dataease.constant;
 
 public class DeTypeConstants {
 

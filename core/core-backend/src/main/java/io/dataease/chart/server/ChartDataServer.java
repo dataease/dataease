@@ -12,7 +12,7 @@ import io.dataease.constant.AuthConstant;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dataset.server.DatasetFieldServer;
-import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.exportCenter.util.ExportCenterUtils;

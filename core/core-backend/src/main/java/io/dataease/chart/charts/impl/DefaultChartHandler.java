@@ -6,7 +6,7 @@ import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
-import io.dataease.engine.constant.SQLConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.Quota2SQLObj;

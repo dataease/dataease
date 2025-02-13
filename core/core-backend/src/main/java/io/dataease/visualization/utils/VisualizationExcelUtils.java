@@ -1,6 +1,6 @@
 package io.dataease.visualization.utils;
 
-import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.constant.DeTypeConstants;
 import io.dataease.utils.ConfigUtils;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.LogUtil;

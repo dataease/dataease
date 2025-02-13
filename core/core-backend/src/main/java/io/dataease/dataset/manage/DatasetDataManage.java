@@ -22,7 +22,7 @@ import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
-import io.dataease.engine.constant.SQLConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
