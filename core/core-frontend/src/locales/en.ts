@@ -2011,6 +2011,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     total: 'Total'
   },
   dataset: {
+    field_value: 'Field Value',
     scope_edit: 'Only effective when editing',
     scope_all: 'Globally effective when previewing datasets',
     spend_time: 'Time spent',

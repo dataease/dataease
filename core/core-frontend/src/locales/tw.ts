@@ -1961,6 +1961,7 @@ export default {
     total: '合計'
   },
   dataset: {
+    field_value: '欄位值',
     scope_edit: '僅編輯時生效',
     scope_all: '資料集預覽時全域生效',
     spend_time: '耗時',

@@ -1015,36 +1015,16 @@ const equalMin = [
 ]
 
 const validatePass = (_: any, value: any, callback: any) => {
-  let result = false
-  value.forEach(ele => {
-    const { name, text = [], time, min, max } = ele
-    if (!result) {
-      switch (currentGroupField.deTypeOrigin) {
-        case 0:
-          result = !name || !text.length
-          break
-        case 1:
-          result = !name || !time.length
-          break
-        case 2:
-        case 3:
-        case 4:
-          result = !name || min === null || max === null
-          break
-        default:
-          break
-      }
-    }
-  })
-  if (result) {
+  if (!value || !value.length) {
     callback(new Error(t('chart.value_can_not_empty')))
   } else {
     callback()
   }
 }
+const refsForm = ref([])
+
 const fieldGroupRules = {
-  name: [{ required: true, message: t('dataset.input_edit_name'), trigger: 'blur' }],
-  groupList: [{ validator: validatePass }]
+  name: [{ required: true, message: t('dataset.input_edit_name'), trigger: 'blur' }]
 }
 
 const defaultObj = {
@@ -1056,7 +1036,6 @@ const defaultObj = {
   originName: '',
   otherGroup: '',
   groupType: 'd',
-  title: '-',
   deType: 0,
   type: 'ANY',
   deExtractType: 0,
@@ -1089,9 +1068,9 @@ const addGroupField = () => {
 }
 const handleFieldschange = val => {
   const field = groupFields.value.find(ele => ele.id === val)
-  const { deType, name } = field
-  currentGroupField.title = name
+  const { deType } = field
   if (deType !== currentGroupField.deExtractType || deType === 0) {
+    refsForm.value = []
     currentGroupField.groupList = [
       {
         name: '',
@@ -1154,35 +1133,50 @@ const initGroupField = val => {
 
 const confirmGroupField = () => {
   ruleGroupFieldRef.value.validate(val => {
-    if (val) {
-      const groupList = []
-      currentGroupField.groupList.forEach(ele => {
-        const { name, text = [], time, min, max, minTerm, maxTerm } = ele
-        const obj = {
-          name,
-          text,
-          min,
-          max,
-          minTerm,
-          maxTerm,
-          startTime: '',
-          endTime: ''
+    let count = 0
+    let flag = false
+    let time
+    refsForm.value.forEach(ele => {
+      ele?.validate(val => {
+        if (val) {
+          count++
         }
-        if (currentGroupField.deTypeOrigin === 1) {
-          const [startTime, endTime] = time
-          obj.startTime = dayjs(startTime).format('YYYY-MM-DD HH:mm:ss')
-          obj.endTime = dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
-        }
-        groupList.push(obj)
       })
-      const index = allfields.value.findIndex(ele => ele.id === currentGroupField.id)
-      if (index !== -1) {
-        allfields.value.splice(index, 1, { ...currentGroupField, groupList })
-      } else {
-        allfields.value.push({ ...currentGroupField, groupList })
+    })
+    time = setTimeout(() => {
+      clearTimeout(time)
+      flag = true
+      time = null
+      if (val && count === currentGroupField.groupList.length) {
+        const groupList = []
+        currentGroupField.groupList.forEach(ele => {
+          const { name, text = [], time, min, max, minTerm, maxTerm } = ele
+          const obj = {
+            name,
+            text,
+            min,
+            max,
+            minTerm,
+            maxTerm,
+            startTime: '',
+            endTime: ''
+          }
+          if (currentGroupField.deTypeOrigin === 1) {
+            const [startTime, endTime] = time
+            obj.startTime = dayjs(startTime).format('YYYY-MM-DD HH:mm:ss')
+            obj.endTime = dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
+          }
+          groupList.push(obj)
+        })
+        const index = allfields.value.findIndex(ele => ele.id === currentGroupField.id)
+        if (index !== -1) {
+          allfields.value.splice(index, 1, { ...currentGroupField, groupList })
+        } else {
+          allfields.value.push({ ...currentGroupField, groupList })
+        }
+        editGroupField.value = false
       }
-      editGroupField.value = false
-    }
+    }, 1000)
   })
 }
 
@@ -1202,36 +1196,9 @@ const addGroupFields = () => {
   })
 }
 
-const handleChangeGroupList = () => {
-  let result = false
-  currentGroupField.groupList.forEach(ele => {
-    const { name, text = [], time, min, max } = ele
-    if (!result) {
-      switch (currentGroupField.deTypeOrigin) {
-        case 0:
-          result = !name || !text.length
-          break
-        case 1:
-          result = !name || !time.length
-          break
-        case 2:
-        case 3:
-        case 4:
-          result = !name || min === null || max === null
-          break
-        default:
-          break
-      }
-    }
-  })
-  console.log(result, 'result')
-  if (currentGroupField.name && !result) {
-    ruleGroupFieldRef.value.validate()
-  }
-}
-
 const removeGroupFields = index => {
   currentGroupField.groupList.splice(index, 1)
+  refsForm.value.splice(index, 1)
 }
 
 const dragstart = (e: DragEvent, ele) => {
@@ -1577,6 +1544,7 @@ const cascaderChangeArr = val => {
   })
   recoverSelection()
 }
+
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name?.toLowerCase().includes(value.toLowerCase())
@@ -2630,7 +2598,8 @@ const getDsIconName = data => {
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item prop="groupList" style="margin-top: 16px">
+
+      <el-form-item style="margin-top: 16px">
         <template v-slot:label>
           <div class="grouping_settings_label">
             {{ t('dataset.grouping_settings') }}
@@ -2640,80 +2609,126 @@ const getDsIconName = data => {
           <el-scrollbar max-height="393px"
             ><div
               class="group-fields_item"
-              v-for="(item, index) in currentGroupField.groupList"
+              v-for="(domain, index) in currentGroupField.groupList"
               :key="index"
             >
-              <el-input
-                style="width: 278px"
-                :validate-event="false"
-                v-model="item.name"
-                @change="handleChangeGroupList"
-                :placeholder="t('common.inputText')"
-              />
-              <el-select
-                v-if="[0, null].includes(currentGroupField.deTypeOrigin)"
-                style="flex: 1; margin-left: 24px"
-                @change="handleChangeGroupList"
-                multiple
-                collapse-tags
-                :validate-event="false"
-                collapse-tags-tooltip
-                :max-collapse-tags="2"
-                v-model="item.text"
+              <el-form
+                :ref="el => (refsForm[index] = el)"
+                :model="domain"
+                inline
+                :key="index"
+                label-width="auto"
+                class="form-dynamic"
               >
-                <el-option v-for="item in enumValue" :key="item" :label="item" :value="item" />
-              </el-select>
-              <div
-                class="group-fields_num"
-                v-else-if="[2, 3, 4].includes(currentGroupField.deTypeOrigin)"
-              >
-                <el-input-number
-                  :placeholder="t('dataset.please_enter_number')"
-                  v-model="item.min"
-                  @change="handleChangeGroupList"
-                  :validate-event="false"
-                  controls-position="right"
-                />
-                <el-select v-model="item.minTerm">
-                  <el-option
-                    v-for="item in equalMin"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-                <div :title="currentGroupField.title" class="name ellipsis">
-                  {{ currentGroupField.title }}
+                <el-form-item
+                  :key="index + 'name'"
+                  prop="name"
+                  :rules="{
+                    required: true,
+                    message: t('chart.value_can_not_empty'),
+                    trigger: 'blur'
+                  }"
+                  ><el-input
+                    style="width: 278px"
+                    v-model="domain.name"
+                    :placeholder="t('common.inputText')"
+                /></el-form-item>
+                <el-form-item
+                  :key="index + 'text'"
+                  v-if="[0, null].includes(currentGroupField.deTypeOrigin)"
+                  prop="text"
+                  style="width: 100%"
+                  :rules="{
+                    validator: validatePass,
+                    required: true,
+                    trigger: 'change'
+                  }"
+                  ><el-select
+                    style="width: 100%; margin-left: 24px"
+                    multiple
+                    collapse-tags
+                    collapse-tags-tooltip
+                    :max-collapse-tags="2"
+                    v-model="domain.text"
+                  >
+                    <el-option
+                      v-for="item in enumValue"
+                      :key="item"
+                      :label="item"
+                      :value="item"
+                    /> </el-select
+                ></el-form-item>
+
+                <div
+                  class="group-fields_num"
+                  v-else-if="[2, 3, 4].includes(currentGroupField.deTypeOrigin)"
+                >
+                  <el-form-item
+                    :key="index + 'min'"
+                    prop="min"
+                    :rules="{
+                      required: true,
+                      message: t('chart.value_can_not_empty'),
+                      trigger: 'blur'
+                    }"
+                    ><el-input-number
+                      :placeholder="t('dataset.please_enter_number')"
+                      v-model="domain.min"
+                      controls-position="right"
+                  /></el-form-item>
+                  <el-form-item :key="index + 'minTerm'"
+                    ><el-select v-model="domain.minTerm">
+                      <el-option
+                        v-for="item in equalMin"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      /> </el-select
+                  ></el-form-item>
+                  <div class="name">
+                    {{ t('dataset.field_value') }}
+                  </div>
+                  <el-form-item :key="index + 'maxTerm'"
+                    ><el-select v-model="domain.maxTerm">
+                      <el-option
+                        v-for="item in equalMin"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      /> </el-select
+                  ></el-form-item>
+                  <el-form-item
+                    :key="index + 'max'"
+                    prop="max"
+                    :rules="{
+                      required: true,
+                      message: t('chart.value_can_not_empty'),
+                      trigger: 'blur'
+                    }"
+                    ><el-input-number
+                      :placeholder="t('dataset.please_enter_number')"
+                      v-model="domain.max"
+                      :validate-even="false"
+                      controls-position="right"
+                  /></el-form-item>
                 </div>
-                <el-select v-model="item.maxTerm">
-                  <el-option
-                    v-for="item in equalMin"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-                <el-input-number
-                  :placeholder="t('dataset.please_enter_number')"
-                  v-model="item.max"
-                  @change="handleChangeGroupList"
-                  :validate-event="false"
-                  controls-position="right"
-                />
-              </div>
-              <div
-                class="group-fields_num"
-                v-else-if="[1].includes(currentGroupField.deTypeOrigin)"
-              >
-                <el-date-picker
-                  :end-placeholder="t('commons.date.end_date')"
-                  :start-placeholder="t('commons.date.start_date')"
-                  :validate-event="false"
-                  @change="handleChangeGroupList"
-                  v-model="item.time"
-                  type="daterange"
-                />
-              </div>
+                <el-form-item
+                  :key="index + 'time'"
+                  prop="time"
+                  class="group-fields_num"
+                  v-else-if="[1].includes(currentGroupField.deTypeOrigin)"
+                  :rules="{
+                    required: true,
+                    validator: validatePass,
+                    trigger: 'change'
+                  }"
+                  ><el-date-picker
+                    :end-placeholder="t('commons.date.end_date')"
+                    :start-placeholder="t('commons.date.start_date')"
+                    v-model="domain.time"
+                    type="daterange" /></el-form-item
+              ></el-form>
+
               <el-button
                 class="variable_del"
                 text
@@ -3358,8 +3373,24 @@ const getDsIconName = data => {
     border-radius: 4px;
     display: flex;
     align-items: center;
+
     & + .group-fields_item {
       margin-top: 8px;
+    }
+
+    .form-dynamic {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      .ed-form-item {
+        margin: 0;
+      }
+
+      .ed-form-item__error {
+        font-size: 12px;
+        line-height: 18px;
+        padding-top: 0;
+      }
     }
 
     .variable_del {
@@ -3387,7 +3418,7 @@ const getDsIconName = data => {
       gap: 8px;
       margin-left: 24px;
       .name {
-        max-width: 110px;
+        white-space: nowrap;
       }
     }
   }

@@ -1963,6 +1963,7 @@ export default {
     total: '合计'
   },
   dataset: {
+    field_value: '字段值',
     scope_edit: '仅编辑时生效',
     scope_all: '数据集预览时全局生效',
     spend_time: '耗时',
