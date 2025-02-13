@@ -465,7 +465,7 @@ const trackClick = trackAction => {
     }
   }
   let quotaList = state.pointParam.data.quotaList
-  if (['bar-range', 'circle-packing'].includes(curView.type)) {
+  if (['bar-range'].includes(curView.type)) {
     quotaList = state.pointParam.data.dimensionList
   } else {
     quotaList[0]['value'] = state.pointParam.data.value

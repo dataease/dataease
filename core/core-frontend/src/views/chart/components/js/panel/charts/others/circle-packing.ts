@@ -55,47 +55,34 @@ export class CirclePacking extends G2PlotChartView<CirclePackingOptions, G2Circl
   axisConfig: AxisConfig = {
     xAxis: {
       name: `${t('chart.circle_packing_name')} / ${t('chart.dimension')}`,
-      type: 'd'
+      type: 'd',
+      limit: 1
     },
     yAxis: {
       name: `${t('chart.circle_packing_value')} / ${t('chart.quota')}`,
       type: 'q',
-      limit: 1,
-      allowEmpty: true
+      limit: 1
     }
   }
   async drawChart(drawOptions: G2PlotDrawOptions<G2CirclePacking>): Promise<G2CirclePacking> {
     const { chart, container, action } = drawOptions
-    if (chart?.data?.tableRow?.length) {
+    if (chart?.data?.data?.length) {
       // data
-      const data = chart.data.tableRow
-      const { xAxis, yAxis } = chart
+      const data = chart.data.data
+      const { xAxis, yAxis, drillFields } = chart
       const ySort = yAxis[0]?.sort ?? 'none'
       const sort = {
         sort: (a, b) =>
           ySort === 'asc' ? a.value - b.value : ySort === 'desc' ? b.value - a.value : 0
       }
-      // 根据配置获取节点的key，用于构建节点树，拖入字段顺序即为节点的层级
-      const nodeKeys = xAxis.map(item => item.dataeaseName)
       // 将数据转为圆形填充图数据格式
       const getCirclePackingData = () => {
         const result = [{ name: t('commons.all'), children: [] }]
-        const addNode = (nodes, item, level) => {
-          if (level >= nodeKeys.length) return
-          const key = nodeKeys[level]
-          const value = item[key]
-          let node = nodes.find(n => n.name === value)
-          if (!node) {
-            node = { name: value, field: xAxis.find(f => f.dataeaseName === key), children: [] }
-            nodes.push(node)
-          }
-          if (level === nodeKeys.length - 1) {
-            node.value = yAxis.length ? item[yAxis[0].dataeaseName] : 1
-          } else {
-            addNode(node.children, item, level + 1)
-          }
+        const addNode = (nodes, item) => {
+          const node = { ...item, name: item.name, children: [] }
+          nodes.push(node)
         }
-        data.forEach(item => addNode(result[0].children, item, 0))
+        data.forEach(item => addNode(result[0].children, item))
         return result[0]
       }
       // options
@@ -137,26 +124,20 @@ export class CirclePacking extends G2PlotChartView<CirclePackingOptions, G2Circl
       )
       const newChart = new G2CirclePacking(container, options)
       newChart.on('point:click', param => {
-        const data = param?.data?.data
-        if (data?.name === t('commons.all')) {
+        const pointData = param?.data?.data
+        if (pointData?.name === t('commons.all')) {
           return
         }
-        action({
+        const actionParams = {
           x: param.x,
           y: param.y,
           data: {
             data: {
-              ...data,
-              dimensionList: [
-                {
-                  id: data?.field?.id,
-                  value: data.name,
-                  name: data.name
-                }
-              ]
+              ...pointData
             }
           }
-        })
+        }
+        action(actionParams)
       })
       return newChart
     }
