@@ -161,7 +161,12 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
-import { canvasChangeAdaptor, findComponentIndexById, isDashboard } from '@/utils/canvasUtils'
+import {
+  canvasChangeAdaptor,
+  findComponentIndexById,
+  findComponentIndexByIdWithFilterHidden,
+  isDashboard
+} from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
@@ -407,10 +412,9 @@ const componentMoveIn = component => {
   element.value.propValue.forEach((tabItem, index) => {
     if (editableTabsValue.value === tabItem.name) {
       //获取主画布当前组件的index
-      const curIndex = findComponentIndexById(component.id)
-      if (curIndex > -1) {
-        // 从主画布中移除
-        if (isDashboard()) {
+      if (isDashboard()) {
+        const curIndex = findComponentIndexByIdWithFilterHidden(component.id)
+        if (curIndex > -1) {
           eventBus.emit('removeMatrixItem-canvas-main', curIndex)
           dvMainStore.setCurComponent({ component: null, index: null })
           component.canvasId = element.value.id + '--' + tabItem.name
@@ -428,14 +432,15 @@ const componentMoveIn = component => {
               refInstance.canvasInitImmediately()
             })
           }
-        } else {
-          // 从主画布删除
-          dvMainStore.deleteComponent(curIndex)
-          dvMainStore.setCurComponent({ component: null, index: null })
-          component.canvasId = element.value.id + '--' + tabItem.name
-          dataVTabComponentAdd(component, element.value)
-          tabItem.componentData.push(component)
         }
+      } else {
+        const curIndex = findComponentIndexById(component.id)
+        // 从主画布删除
+        dvMainStore.deleteComponent(curIndex)
+        dvMainStore.setCurComponent({ component: null, index: null })
+        component.canvasId = element.value.id + '--' + tabItem.name
+        dataVTabComponentAdd(component, element.value)
+        tabItem.componentData.push(component)
       }
     }
   })

@@ -738,6 +738,21 @@ export function isTabCanvas(canvasId) {
   return canvasId && !canvasId.includes('Group') && !isMainCanvas(canvasId)
 }
 
+export function findComponentIndexByIdWithFilterHidden(
+  componentId,
+  componentDataMatch = componentData.value
+) {
+  let indexResult = -1
+  componentDataMatch
+    .filter(item => !item.dashboardHidden)
+    .forEach((component, index) => {
+      if (component.id === componentId) {
+        indexResult = index
+      }
+    })
+  return indexResult
+}
+
 export function findComponentIndexById(componentId, componentDataMatch = componentData.value) {
   let indexResult = -1
   componentDataMatch.forEach((component, index) => {
