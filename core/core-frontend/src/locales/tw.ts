@@ -1958,7 +1958,8 @@ export default {
     circle_packing_padding: '圓形間距',
     increase: '增加',
     decrease: '減少',
-    total: '合計'
+    total: '合計',
+    accumulate: '累加'
   },
   dataset: {
     field_value: '欄位值',

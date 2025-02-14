@@ -2008,7 +2008,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     circle_packing_padding: 'Circle padding',
     increase: 'Increase',
     decrease: 'Decrease',
-    total: 'Total'
+    total: 'Total',
+    accumulate: 'Accumulate'
   },
   dataset: {
     field_value: 'Field Value',

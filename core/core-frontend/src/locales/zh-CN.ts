@@ -1960,7 +1960,8 @@ export default {
     circle_packing_padding: '圆形间距',
     increase: '增加',
     decrease: '减少',
-    total: '合计'
+    total: '合计',
+    accumulate: '累加'
   },
   dataset: {
     field_value: '字段值',

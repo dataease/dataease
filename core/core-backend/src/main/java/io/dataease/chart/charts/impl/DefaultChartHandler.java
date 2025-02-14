@@ -43,6 +43,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Component
@@ -123,7 +124,9 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         //自定义排序
         data = ChartDataUtil.resultCustomSort(xAxis, yAxis, view.getSortPriority(), data);
         //快速计算
-        quickCalc(xAxis, yAxis, data);
+        var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
+        var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
+        quickCalc(xAxis, yAxis, xAxisExt, extStack, view.getType(), data);
         //数据重组逻辑可重载
         var result = this.buildResult(view, formatResult, filterResult, data);
         T calcResult = (T) new ChartCalcDataResult();
@@ -412,7 +415,19 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         return "SELECT " + stringBuilder + " FROM (" + sql + ") tmp";
     }
 
-    protected void quickCalc(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<String[]> data) {
+    protected List<String> mergeIds(List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> extStack) {
+        Set<String> idSet = new HashSet<>();
+        if (xAxisExt != null) {
+            xAxisExt.forEach(field -> idSet.add(String.valueOf(field.getId())));
+        }
+        if (extStack != null) {
+            extStack.forEach(field -> idSet.add(String.valueOf(field.getId())));
+        }
+        return new ArrayList<>(idSet);
+    }
+
+    protected void quickCalc(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis
+            , List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> extStack, String chartType, List<String[]> data) {
         for (int i = 0; i < yAxis.size(); i++) {
             ChartViewFieldDTO chartViewFieldDTO = yAxis.get(i);
             ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
@@ -504,6 +519,91 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                         item[dataIndex] = new BigDecimal(cValue)
                                 .divide(sum, 8, RoundingMode.HALF_UP)
                                 .toString();
+                    }
+                } else if (StringUtils.equalsIgnoreCase(compareCalc.getType(), "accumulate")) {
+                    // 累加
+                    if (CollectionUtils.isEmpty(data)) {
+                        break;
+                    }
+                    if (StringUtils.containsAny(chartType, "group", "stack")) {
+                        if (CollectionUtils.isEmpty(xAxis)) {
+                            break;
+                        }
+                        if (StringUtils.containsIgnoreCase(chartType, "stack") && extStack.isEmpty()) {
+                            break;
+                        }
+                        if (StringUtils.containsIgnoreCase(chartType, "group") && xAxisExt.isEmpty()) {
+                            break;
+                        }
+                        final Map<String, Integer> mainIndexMap = new HashMap<>();
+                        final List<List<String[]>> mainMatrix = new ArrayList<>();
+                        // 排除group和stack的字段
+                        List<String> groupStackAxisIds = mergeIds(xAxisExt, extStack);
+                        List<ChartViewFieldDTO> finalXAxisBase = xAxis.stream().filter(ele->!groupStackAxisIds.contains(String.valueOf(ele.getId()))).toList();
+                        if (CollectionUtils.isEmpty(finalXAxisBase) && CollectionUtils.isNotEmpty(xAxis)) {
+                            finalXAxisBase.add(xAxis.get(0));
+                        }
+                        data.forEach(item -> {
+                            String[] mainAxisArr = Arrays.copyOfRange(item, 0, finalXAxisBase.size());
+                            String mainAxis = StringUtils.join(mainAxisArr, '-');
+                            Integer index = mainIndexMap.get(mainAxis);
+                            if (index == null) {
+                                mainIndexMap.put(mainAxis, mainMatrix.size());
+                                List<String[]> tmp = new ArrayList<>();
+                                tmp.add(item);
+                                mainMatrix.add(tmp);
+                            } else {
+                                List<String[]> tmp = mainMatrix.get(index);
+                                tmp.add(item);
+                            }
+                        });
+                        int finalDataIndex = dataIndex;
+                        int subEndIndex = finalXAxisBase.size();
+                        if (StringUtils.containsIgnoreCase(chartType, "group")) {
+                            subEndIndex += xAxisExt.size();
+                        }
+                        if (StringUtils.containsIgnoreCase(chartType, "stack")) {
+                            subEndIndex += extStack.size();
+                        }
+                        int finalSubEndIndex = subEndIndex;
+                        //滑动累加
+                        for (int k = 1; k < mainMatrix.size(); k++) {
+                            List<String[]> preDataItems = mainMatrix.get(k - 1);
+                            List<String[]> curDataItems = mainMatrix.get(k);
+                            Map<String, BigDecimal> preDataMap = new HashMap<>();
+                            preDataItems.forEach(preDataItem -> {
+                                String[] groupStackAxisArr = Arrays.copyOfRange(preDataItem, finalXAxisBase.size(), finalSubEndIndex);
+                                String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
+                                String preVal = preDataItem[finalDataIndex];
+                                if (StringUtils.isBlank(preVal)) {
+                                    preVal = "0";
+                                }
+                                preDataMap.put(groupStackAxis, new BigDecimal(preVal));
+                            });
+                            curDataItems.forEach(curDataItem -> {
+                                String[] groupStackAxisArr = Arrays.copyOfRange(curDataItem, finalXAxisBase.size(), finalSubEndIndex);
+                                String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
+                                BigDecimal preValue = preDataMap.get(groupStackAxis);
+                                if (preValue != null) {
+                                    curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
+                                            .add(preValue)
+                                            .toString();
+                                }
+                            });
+                        }
+                    } else {
+                        final int index = dataIndex;
+                        final AtomicReference<BigDecimal> accumValue = new AtomicReference<>(new BigDecimal(0));
+                        data.forEach(item -> {
+                            String val = item[index];
+                            BigDecimal curAccumValue = accumValue.get();
+                            if (!StringUtils.isBlank(val)) {
+                                BigDecimal curVal = new BigDecimal(val);
+                                curAccumValue = curAccumValue.add(curVal);
+                                accumValue.set(curAccumValue);
+                            }
+                            item[index] = curAccumValue.toString();
+                        });
                     }
                 }
             }
