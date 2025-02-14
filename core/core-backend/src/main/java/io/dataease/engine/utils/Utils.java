@@ -516,12 +516,12 @@ public class Utils {
                 exp.append(" WHEN ");
                 for (int i = 0; i < fieldGroupDTO.getText().size(); i++) {
                     String value = fieldGroupDTO.getText().get(i);
-                    exp.append(originField.getDataeaseName()).append(" = ").append("'").append(value).append("'");
+                    exp.append(originField.getDataeaseName()).append(" = ").append("'").append(transValue(value)).append("'");
                     if (i < fieldGroupDTO.getText().size() - 1) {
                         exp.append(" OR ");
                     }
                 }
-                exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
+                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 1) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
@@ -529,7 +529,7 @@ public class Utils {
                 exp.append(originField.getDataeaseName()).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
                 exp.append(" AND ");
                 exp.append(originField.getDataeaseName()).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
-                exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
+                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
@@ -537,10 +537,14 @@ public class Utils {
                 exp.append(originField.getDataeaseName()).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
                 exp.append(" AND ");
                 exp.append(originField.getDataeaseName()).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
-                exp.append(" THEN '").append(fieldGroupDTO.getName()).append("'");
+                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
             }
         }
-        exp.append(" ELSE ").append("'").append(dto.getOtherGroup()).append("'").append(" END) ");
+        exp.append(" ELSE ").append("'").append(transValue(dto.getOtherGroup())).append("'").append(" END) ");
         return exp.toString();
+    }
+
+    public static String transValue(String value) {
+        return value.replace("\\", "\\\\").replace("'", "''");
     }
 }
