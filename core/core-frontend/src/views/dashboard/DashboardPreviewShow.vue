@@ -29,7 +29,6 @@ const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
 const dashboardPreview = ref(null)
 const slideShow = ref(true)
-const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const appStore = useAppStoreWithOut()
 const dataInitState = ref(true)
@@ -254,7 +253,7 @@ defineExpose({
     <el-container
       class="preview-area"
       :class="{ 'no-data': !hasTreeData }"
-      v-loading="requestStore.loadingMap && requestStore.loadingMap[permissionStore.currentPath]"
+      v-loading="!dataInitState"
     >
       <div
         @click="slideOpenChange"

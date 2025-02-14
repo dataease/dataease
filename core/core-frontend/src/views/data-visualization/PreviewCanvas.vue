@@ -201,7 +201,12 @@ defineExpose({
 </script>
 
 <template>
-  <div class="content" :class="{ 'canvas_keep-size': dataVKeepSize }" ref="previewCanvasContainer">
+  <div
+    class="content"
+    v-loading="!state.initState"
+    :class="{ 'canvas_keep-size': dataVKeepSize }"
+    ref="previewCanvasContainer"
+  >
     <de-preview
       ref="dvPreview"
       v-if="state.canvasStylePreview && state.initState"
