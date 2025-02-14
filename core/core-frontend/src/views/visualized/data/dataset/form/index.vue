@@ -2637,14 +2637,14 @@ const getDsIconName = data => {
                   :key="index + 'text'"
                   v-if="[0, null].includes(currentGroupField.deTypeOrigin)"
                   prop="text"
-                  style="width: 100%"
+                  style="width: 100%; margin-left: 24px"
                   :rules="{
                     validator: validatePass,
                     required: true,
                     trigger: 'change'
                   }"
                   ><el-select
-                    style="width: 100%; margin-left: 24px"
+                    style="width: 100%"
                     multiple
                     collapse-tags
                     collapse-tags-tooltip
