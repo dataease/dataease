@@ -189,9 +189,7 @@ public class DatasetTableFieldManage {
     public DatasetTableFieldDTO selectById(Long id) {
         CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(id);
         if (coreDatasetTableField == null) return null;
-        DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-        BeanUtils.copyBean(dto, coreDatasetTableField);
-        return dto;
+        return transObj(coreDatasetTableField);
     }
 
     /**
@@ -282,30 +280,31 @@ public class DatasetTableFieldManage {
         return tmp;
     }
 
+    public DatasetTableFieldDTO transObj(CoreDatasetTableField ele) {
+        DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+        if (ele == null) return null;
+        BeanUtils.copyBean(dto, ele);
+        if (StringUtils.isNotEmpty(ele.getParams())) {
+            TypeReference<List<CalParam>> tokenType = new TypeReference<>() {
+            };
+            List<CalParam> calParams = JsonUtil.parseList(ele.getParams(), tokenType);
+            dto.setParams(calParams);
+        }
+        if (StringUtils.isNotEmpty(ele.getGroupList())) {
+            TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
+            };
+            List<FieldGroupDTO> fieldGroups = JsonUtil.parseList(ele.getGroupList(), groupTokenType);
+            dto.setGroupList(fieldGroups);
+        }
+        return dto;
+    }
+
     public List<DatasetTableFieldDTO> transDTO(List<CoreDatasetTableField> list) {
         if (!CollectionUtils.isEmpty(list)) {
-            return list.stream().map(ele -> {
-                DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-                if (ele == null) return null;
-                BeanUtils.copyBean(dto, ele);
-                if (StringUtils.isNotEmpty(ele.getParams())) {
-                    TypeReference<List<CalParam>> tokenType = new TypeReference<>() {
-                    };
-                    List<CalParam> calParams = JsonUtil.parseList(ele.getParams(), tokenType);
-                    dto.setParams(calParams);
-                }
-                if (StringUtils.isNotEmpty(ele.getGroupList())) {
-                    TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
-                    };
-                    List<FieldGroupDTO> fieldGroups = JsonUtil.parseList(ele.getGroupList(), groupTokenType);
-                    dto.setGroupList(fieldGroups);
-                }
-                return dto;
-            }).collect(Collectors.toList());
+            return list.stream().map(this::transObj).collect(Collectors.toList());
         } else {
             return new ArrayList<>();
         }
-
     }
 
     private CoreDatasetTableField transDTO2Record(DatasetTableFieldDTO dto) {
