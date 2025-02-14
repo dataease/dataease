@@ -140,6 +140,7 @@ export function getTheme(chart: Chart) {
           },
           'g2-tooltip-name': {
             display: 'inline-block',
+            'line-height': tooltipFontsize + 'px',
             flex: 1
           },
           'g2-tooltip-marker': {
