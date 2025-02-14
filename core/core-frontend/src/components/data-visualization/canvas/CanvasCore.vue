@@ -919,7 +919,6 @@ function removeItemComponent(item) {
         checkedFields = [...ele.checkedFields, ...checkedFields]
       })
     }
-    dvMainStore.removeLinkageInfo(item['id'])
     if (!!checkedFields.length) {
       Array.from(new Set(checkedFields)).forEach(ele => {
         emitter.emit(`query-data-${ele}`)
@@ -933,6 +932,7 @@ function removeItem(index) {
   let item = componentData.value[index]
   if (item && isSameCanvas(item, canvasId.value)) {
     removeItemComponent(item)
+    dvMainStore.removeLinkageInfo(item['id'])
     if (isMainCanvas(canvasId.value)) {
       // 主画布中存在隐藏组件 直接从原始componentData中进行删除
       dvMainStore.deleteComponentById(item.id)
