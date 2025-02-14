@@ -731,20 +731,20 @@ const flatLine = (item, flatNodeList) => {
   }
   const from = { ...item, d: '' }
   ;(item.children || []).forEach(ele => {
-    let loaclSqlChangeFlag = true
+    let localSqlChangeFlag = true
     changedNodeId.value.some(element => {
       if (
         (element.from === item.id && ele.id === element.to) ||
         (element.from === ele.id && item.id === element.to)
       ) {
-        loaclSqlChangeFlag = false
+        localSqlChangeFlag = false
         return true
       }
       return false
     })
     flatNodeList.push({
       from,
-      sqlChangeFlag: loaclSqlChangeFlag && sqlChangeFlag,
+      sqlChangeFlag: localSqlChangeFlag && sqlChangeFlag,
       isShadow: ele.isShadow || item.isShadow,
       to: {
         ...ele
