@@ -133,6 +133,18 @@ export function getTheme(chart: Chart) {
             boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)',
             'z-index': 2000,
             position: 'fixed'
+          },
+          'g2-tooltip-list-item': {
+            display: 'flex',
+            'align-items': 'center'
+          },
+          'g2-tooltip-name': {
+            display: 'inline-block',
+            flex: 1
+          },
+          'g2-tooltip-marker': {
+            'min-width': '8px',
+            'min-height': '8px'
           }
         }
       },
