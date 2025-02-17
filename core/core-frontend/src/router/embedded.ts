@@ -4,15 +4,24 @@ import type { App } from 'vue'
 
 export const routes: AppRouteRecordRaw[] = []
 
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes: routes as RouteRecordRaw[]
-})
-router.push = () => {
-  console.log('push')
+const fn = () => {
+  console.log(fn)
 }
-router.replace = () => {
-  console.log('replace')
+const router = {
+  install: () => {},
+  currentRoute: fn,
+  listening: true,
+  addRoute: fn,
+  removeRoute: fn,
+  hasRoute: fn,
+  getRoutes: fn,
+  resolve: fn,
+  options: fn,
+  push: fn,
+  replace: fn,
+  go: fn,
+  back: fn,
+  forward: fn
 }
 
 export const setupRouter = (app: App<Element>) => {
