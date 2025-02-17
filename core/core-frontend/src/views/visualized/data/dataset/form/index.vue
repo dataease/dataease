@@ -3372,7 +3372,6 @@ const getDsIconName = data => {
     background: #f5f6f7;
     border-radius: 4px;
     display: flex;
-    align-items: center;
 
     & + .group-fields_item {
       margin-top: 8px;
@@ -3385,11 +3384,10 @@ const getDsIconName = data => {
       .ed-form-item {
         margin: 0;
       }
-
-      .ed-form-item__error {
-        font-size: 12px;
-        line-height: 18px;
-        padding-top: 0;
+      &:has(.is-error) {
+        .ed-form-item {
+          margin-bottom: 24px;
+        }
       }
     }
 
@@ -3397,6 +3395,7 @@ const getDsIconName = data => {
       color: #646a73;
       margin-left: 4px;
       margin-right: -4px;
+
       .ed-icon {
         font-size: 16px;
       }
