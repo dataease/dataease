@@ -224,8 +224,7 @@ const handleInnerMouseDown = e => {
     .bottom-line {
       box-sizing: border-box;
       height: 1px;
-      background-color: #000;
-      opacity: 0.3;
+      background-color: #bbbfc4;
       position: absolute;
       right: 5px;
       bottom: 3px;

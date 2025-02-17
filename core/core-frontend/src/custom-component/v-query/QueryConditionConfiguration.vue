@@ -3395,8 +3395,17 @@ defineExpose({
             .ed-select-tags-wrapper.has-prefix {
               margin-left: 25px;
             }
-            .ed-select__tags-text {
-              max-width: 30px !important;
+            .ed-select__input {
+              margin-left: 6px !important;
+            }
+            .ed-tag {
+              max-width: 52px;
+              .ed-tag__close {
+                margin-left: 2px;
+              }
+              .ed-select__tags-text {
+                max-width: 30px !important;
+              }
             }
           }
 
