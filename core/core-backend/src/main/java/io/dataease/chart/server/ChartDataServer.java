@@ -319,8 +319,7 @@ public class ChartDataServer implements ChartDataApi {
         if (viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) {
             for (ChartViewFieldDTO xAxi : xAxis) {
                 if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
-                    FormatterCfgDTO formatterCfgDTO = xAxi.getFormatterCfg() == null ? new FormatterCfgDTO() : xAxi.getFormatterCfg();
-                    CellStyle formatterCellStyle = createCellStyle(wb, formatterCfgDTO, null);
+                    CellStyle formatterCellStyle = createCellStyle(wb, xAxi.getFormatterCfg(), null);
                     styles.add(formatterCellStyle);
                 } else {
                     styles.add(null);
@@ -416,13 +415,7 @@ public class ChartDataServer implements ChartDataApi {
                                 if ((viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO() : xAxis.get(j).getFormatterCfg();
-                                        if (formatterCfgDTO.getType().equalsIgnoreCase("auto")) {
-                                            row.getCell(j).setCellStyle(createCellStyle(wb, formatterCfgDTO, cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()))));
-                                        }
-                                        if (styles.get(j) != null) {
-                                            row.getCell(j).setCellStyle(styles.get(j));
-                                        }
-
+                                        row.getCell(j).setCellStyle(styles.get(j));
                                         row.getCell(j).setCellValue(Double.valueOf(cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()))));
                                     } catch (Exception e) {
                                         cell.setCellValue(cellValObj.toString());
@@ -469,6 +462,11 @@ public class ChartDataServer implements ChartDataApi {
     private static CellStyle createCellStyle(Workbook workbook, FormatterCfgDTO formatter, String value) {
         CellStyle cellStyle = workbook.createCellStyle();
         DataFormat format = workbook.createDataFormat();
+
+        if (formatter == null) {
+            cellStyle.setDataFormat(format.getFormat("General"));
+            return cellStyle;
+        }
         String formatStr = "";
         if (formatter.getType().equals("auto")) {
             String[] valueSplit = String.valueOf(value).split(".");
