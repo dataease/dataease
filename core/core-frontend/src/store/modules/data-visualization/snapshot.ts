@@ -119,6 +119,7 @@ export const snapshotStore = defineStore('snapshot', {
         snapshotInfo.dvInfo.dataState = dvInfo.value.dataState
         snapshotInfo.dvInfo.contentId = dvInfo.value.contentId
         this.snapshotPublish(snapshotInfo)
+        this.styleChangeTimes++
         this.snapshotDisableTime = Date.now() + 3000
       }
     },
