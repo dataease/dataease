@@ -209,14 +209,14 @@ const defaultMaxValue = {
 const gaugeOrLiquidDefaultRangeData = args => {
   if (args.data.type === 'gauge') {
     defaultMaxValue.gaugeMax = cloneDeep(args.data.max)
-    if (!state.miscForm.gaugeMax || defaultMaxValue.gaugeMax !== state.miscForm.gaugeMax) {
+    if (!state.miscForm.gaugeMax) {
       state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
       changeMisc('gaugeMaxField', false)
     }
   }
   if (args.data.type === 'liquid') {
     defaultMaxValue.liquidMax = cloneDeep(args.data.max)
-    if (!state.miscForm.liquidMax || defaultMaxValue.liquidMax !== state.miscForm.liquidMax) {
+    if (!state.miscForm.liquidMax) {
       state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
       changeMisc('liquidMaxField', false)
     }
@@ -372,7 +372,6 @@ const initStateForm = () => {
 onMounted(() => {
   init()
   initField()
-  initAxis(props.chart.yAxis[0]?.id)
   useEmitt({ name: 'addAxis', callback: addAxis })
   useEmitt({
     name: 'chart-data-change',
