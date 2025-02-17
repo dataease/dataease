@@ -5,10 +5,13 @@ import type { App } from 'vue'
 export const routes: AppRouteRecordRaw[] = []
 
 const fn = () => {
-  console.log(fn)
+  console.log('push')
 }
+
 const router = {
-  install: () => {},
+  install: () => {
+    console.log('install')
+  },
   currentRoute: fn,
   listening: true,
   addRoute: fn,
