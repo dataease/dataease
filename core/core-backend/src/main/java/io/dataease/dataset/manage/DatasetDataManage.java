@@ -22,7 +22,7 @@ import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
-import io.dataease.engine.constant.SQLConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
@@ -564,11 +564,6 @@ public class DatasetDataManage {
 
         // 获取allFields
         List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
-        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-        fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
-        if (ObjectUtils.isEmpty(fields)) {
-            DEException.throwException(Translator.get("i18n_no_column_permission"));
-        }
         buildFieldName(sqlMap, fields);
 
         List<String> dsList = new ArrayList<>();
@@ -576,12 +571,6 @@ public class DatasetDataManage {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
-
-        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-        TokenUserBO user = AuthUtils.getUser();
-        if (user != null) {
-            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
-        }
 
         Provider provider;
         if (crossDs) {
@@ -597,7 +586,7 @@ public class DatasetDataManage {
         }
 
         Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
-        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+        WhereTree2Str.transFilterTrees(sqlMeta, null, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         String querySQL;
         querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, !StringUtils.equalsIgnoreCase(dsType, "es"));
@@ -634,13 +623,7 @@ public class DatasetDataManage {
                         tmpData.set(i, val);
                     }
                 }
-                if (desensitizationList.keySet().contains(field.getDataeaseName())) {
-                    for (int i = 0; i < tmpData.size(); i++) {
-                        previewData.add(ChartDataBuild.desensitizationValue(desensitizationList.get(field.getDataeaseName()), tmpData.get(i)));
-                    }
-                } else {
-                    previewData = tmpData;
-                }
+                previewData = tmpData;
             }
         }
         return previewData;

@@ -7,7 +7,7 @@ import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dataset.server.DatasetFieldServer;
-import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;

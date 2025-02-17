@@ -13,6 +13,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { isMobile } from '@/utils/utils'
 import { isDashboard } from '@/utils/canvasUtils'
+import view from '@antv/g2/src/chart/view'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)

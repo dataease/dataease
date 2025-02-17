@@ -29,35 +29,55 @@
           :name="tabItem.name"
         >
           <template #label>
-            <div @mousedown.stop>
-              <span :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
-              <el-dropdown
-                v-if="isEditMode"
-                :effect="curThemes"
-                style="line-height: 4 !important"
-                trigger="click"
-                @command="handleCommand"
-              >
-                <span class="el-dropdown-link">
-                  <el-icon v-if="isEdit"><ArrowDown /></el-icon>
+            <div class="custom-tab-title" @mousedown.stop>
+              <span class="title-inner" :style="titleStyle(tabItem.name)"
+                >{{ tabItem.title }}
+                <Board
+                  v-show="svgInnerActiveEnable(tabItem.name)"
+                  :style="{
+                    color: element.titleBackground.active.innerImageColor,
+                    pointerEvents: 'none'
+                  }"
+                  :name="titleBackgroundActiveSvgInner"
+                ></Board>
+
+                <Board
+                  v-show="svgInnerInActiveEnable(tabItem.name)"
+                  :style="{
+                    color: element.titleBackground.inActive.innerImageColor,
+                    pointerEvents: 'none'
+                  }"
+                  :name="titleBackgroundInActiveSvgInner"
+                ></Board>
+                <span v-if="isEditMode">
+                  <el-dropdown
+                    popper-class="custom-de-tab-dropdown"
+                    :effect="curThemes"
+                    trigger="click"
+                    @command="handleCommand"
+                  >
+                    <span class="el-dropdown-link">
+                      <el-icon v-if="isEdit"><ArrowDown /></el-icon>
+                    </span>
+                    <template #dropdown>
+                      <el-dropdown-menu :style="{ 'font-family': fontFamily }">
+                        <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
+                          {{ t('visualization.edit_title') }}
+                        </el-dropdown-item>
+                        <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
+                          {{ t('visualization.copy') }}
+                        </el-dropdown-item>
+                        <el-dropdown-item
+                          v-if="element.propValue.length > 1"
+                          :command="beforeHandleCommand('deleteCur', tabItem)"
+                        >
+                          {{ t('visualization.delete') }}
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
                 </span>
-                <template #dropdown>
-                  <el-dropdown-menu :style="{ 'font-family': fontFamily }">
-                    <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
-                      {{ t('visualization.edit_title') }}
-                    </el-dropdown-item>
-                    <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
-                      {{ t('visualization.copy') }}
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      v-if="element.propValue.length > 1"
-                      :command="beforeHandleCommand('deleteCur', tabItem)"
-                    >
-                      {{ t('visualization.delete') }}
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              </span>
             </div>
           </template>
         </el-tab-pane>
@@ -141,15 +161,21 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
-import { canvasChangeAdaptor, findComponentIndexById, isDashboard } from '@/utils/canvasUtils'
+import {
+  canvasChangeAdaptor,
+  findComponentIndexById,
+  findComponentIndexByIdWithFilterHidden,
+  isDashboard
+} from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
-import { useEmitt } from '@/hooks/web/useEmitt'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
 import { deepCopyTabItemHelper } from '@/store/modules/data-visualization/copy'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
+import { imgUrlTrans } from '@/utils/imgUtils'
+import Board from '@/components/de-board/Board.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
@@ -215,6 +241,38 @@ const {
   scale,
   searchCount
 } = toRefs(props)
+
+const titleBackgroundActiveSvgInner = computed(() => {
+  return element.value.titleBackground.active.innerImage.replace('board/', '').replace('.svg', '')
+})
+
+const titleBackgroundInActiveSvgInner = computed(() => {
+  return element.value.titleBackground.inActive.innerImage.replace('board/', '').replace('.svg', '')
+})
+
+const svgInnerInActiveEnable = itemName => {
+  const { backgroundImageEnable, backgroundType, innerImage } =
+    element.value.titleBackground.inActive
+  return (
+    editableTabsValue.value !== itemName &&
+    !element.value.titleBackground.multiply &&
+    element.value.titleBackground?.enable &&
+    backgroundImageEnable &&
+    backgroundType === 'innerImage' &&
+    typeof innerImage === 'string'
+  )
+}
+
+const svgInnerActiveEnable = itemName => {
+  const { backgroundImageEnable, backgroundType, innerImage } = element.value.titleBackground.active
+  return (
+    (editableTabsValue.value === itemName || element.value.titleBackground.multiply) &&
+    element.value.titleBackground?.enable &&
+    backgroundImageEnable &&
+    backgroundType === 'innerImage' &&
+    typeof innerImage === 'string'
+  )
+}
 
 const handleMouseEnter = () => {
   state.hoverFlag = true
@@ -354,10 +412,9 @@ const componentMoveIn = component => {
   element.value.propValue.forEach((tabItem, index) => {
     if (editableTabsValue.value === tabItem.name) {
       //获取主画布当前组件的index
-      const curIndex = findComponentIndexById(component.id)
-      if (curIndex > -1) {
-        // 从主画布中移除
-        if (isDashboard()) {
+      if (isDashboard()) {
+        const curIndex = findComponentIndexByIdWithFilterHidden(component.id)
+        if (curIndex > -1) {
           eventBus.emit('removeMatrixItem-canvas-main', curIndex)
           dvMainStore.setCurComponent({ component: null, index: null })
           component.canvasId = element.value.id + '--' + tabItem.name
@@ -375,14 +432,15 @@ const componentMoveIn = component => {
               refInstance.canvasInitImmediately()
             })
           }
-        } else {
-          // 从主画布删除
-          dvMainStore.deleteComponent(curIndex)
-          dvMainStore.setCurComponent({ component: null, index: null })
-          component.canvasId = element.value.id + '--' + tabItem.name
-          dataVTabComponentAdd(component, element.value)
-          tabItem.componentData.push(component)
         }
+      } else {
+        const curIndex = findComponentIndexById(component.id)
+        // 从主画布删除
+        dvMainStore.deleteComponent(curIndex)
+        dvMainStore.setCurComponent({ component: null, index: null })
+        component.canvasId = element.value.id + '--' + tabItem.name
+        dataVTabComponentAdd(component, element.value)
+        tabItem.componentData.push(component)
       }
     }
   })
@@ -430,22 +488,80 @@ const headClass = computed(() => {
   }
 })
 
+const backgroundStyle = backgroundParams => {
+  if (backgroundParams) {
+    const {
+      backdropFilterEnable,
+      backdropFilter,
+      backgroundColorSelect,
+      backgroundColor,
+      backgroundImageEnable,
+      backgroundType,
+      outerImage,
+      innerPadding,
+      borderRadius
+    } = backgroundParams
+    let style = {
+      padding: innerPadding * scale.value + 'px',
+      borderRadius: borderRadius + 'px'
+    }
+    let colorRGBA = ''
+    if (backgroundColorSelect && backgroundColor) {
+      colorRGBA = backgroundColor
+    }
+    if (backgroundImageEnable) {
+      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
+        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
+      } else {
+        style['background-color'] = colorRGBA
+      }
+    } else {
+      style['background-color'] = colorRGBA
+    }
+    if (backdropFilterEnable) {
+      style['backdrop-filter'] = 'blur(' + backdropFilter + 'px)'
+    }
+    return style
+  }
+  return {}
+}
+
 const titleStyle = itemName => {
+  let style = {}
   if (editableTabsValue.value === itemName) {
-    return {
+    style = {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
-      fontSize: (element.value.style.activeFontSize || 18) * scale.value + 'px'
+      fontSize: (element.value.style.activeFontSize || 18) * scale.value + 'px',
+      lineHeight: (element.value.style.activeFontSize || 18) * scale.value + 'px'
+    }
+    if (element.value.titleBackground?.enable) {
+      style = {
+        ...style,
+        ...backgroundStyle(element.value.titleBackground.active)
+      }
     }
   } else {
-    return {
+    style = {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
-      fontSize: (element.value.style.fontSize || 16) * scale.value + 'px'
+      fontSize: (element.value.style.fontSize || 16) * scale.value + 'px',
+      lineHeight: (element.value.style.fontSize || 16) * scale.value + 'px'
+    }
+    if (element.value.titleBackground?.enable) {
+      style = {
+        ...style,
+        ...backgroundStyle(
+          element.value.titleBackground.multiply
+            ? element.value.titleBackground.active
+            : element.value.titleBackground.inActive
+        )
+      }
     }
   }
+  return style
 }
 
 const fontColor = computed(() => {
@@ -579,6 +695,7 @@ onBeforeMount(() => {
   }
   :deep(.ed-tabs__item) {
     font-family: inherit;
+    padding-right: 0 !important;
   }
 }
 
@@ -629,5 +746,14 @@ onBeforeMount(() => {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+.custom-tab-title {
+  .title-inner {
+    position: relative;
+    background-size: 100% 100% !important;
+  }
+  :deep(.ed-dropdown) {
+    vertical-align: middle !important;
+  }
 }
 </style>

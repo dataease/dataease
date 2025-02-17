@@ -1608,6 +1608,12 @@ const saveValueFormatter = () => {
   closeValueFormatter()
 }
 
+const elRowStyle = computed(() => {
+  return {
+    height: embeddedStore.getToken ? 'calc(100% - 45px)' : 'calc(100vh - 110px)'
+  }
+})
+
 const addCalcField = groupType => {
   editCalcField.value = true
   isCalcFieldAdd.value = true
@@ -2038,7 +2044,7 @@ const deleteChartFieldItem = id => {
               </div>
             </el-row>
 
-            <el-row style="height: calc(100vh - 110px)">
+            <el-row :style="elRowStyle">
               <el-scrollbar v-if="view.type === 'VQuery' && curComponent">
                 <div class="query-style-tab">
                   <div style="padding-top: 1px">

@@ -197,7 +197,6 @@ const showTypeError = computed(() => {
     }
   }
   let displayTypeField = null
-  let hasParameterTimeArrType = 0
   let hasParameterNumArrType = 0
   let allNum =
     curComponent.value.checkedFields.every(id => {
@@ -236,32 +235,6 @@ const showTypeError = computed(() => {
       }
     }
 
-    if (
-      curComponent.value.checkedFieldsMapArr?.[id]?.length &&
-      ['7', '1'].includes(curComponent.value.displayType)
-    ) {
-      if (hasParameterTimeArrType === 0) {
-        hasParameterTimeArrType = 1
-      }
-
-      if (hasParameterTimeArrType === 2) {
-        return true
-      }
-    }
-
-    if (
-      !curComponent.value.checkedFieldsMapArr?.[id]?.length &&
-      ['7', '1'].includes(curComponent.value.displayType) &&
-      !!curComponent.value.parameters.length
-    ) {
-      if (hasParameterTimeArrType === 0) {
-        hasParameterTimeArrType = 2
-      }
-
-      if (hasParameterTimeArrType === 1) {
-        return true
-      }
-    }
     const arr = fields.value.find(ele => ele.componentId === id)
     const checkId = curComponent.value.checkedFieldsMap?.[id]
     const field = duplicateRemoval(Object.values(arr?.fields || {}).flat()).find(
@@ -280,12 +253,9 @@ const showTypeError = computed(() => {
         return false
       }
       if (displayTypeField.type?.length !== field.type?.length) {
+        console.log('displayTypeField')
+
         return true
-      }
-      for (let index = 0; index < displayTypeField.type.length; index++) {
-        if (displayTypeField.type[index] !== field.type[index]) {
-          return true
-        }
       }
     }
     return [2, 3].includes(field?.deType) && [2, 3].includes(displayTypeField.deType)
@@ -429,11 +399,6 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
 const isParametersDisable = item => {
   let isDisabled = false
   if (!isNumParameter.value && isTimeParameter.value) {
-    for (let index = 0; index < notTimeRangeType.value.length; index++) {
-      if (notTimeRangeType.value[index] !== item.type?.[index]) {
-        isDisabled = true
-      }
-    }
     if (notTimeRangeType.value.length && item.deType !== 1) {
       isDisabled = true
     }
@@ -1248,7 +1213,6 @@ const validate = () => {
     }
     let displayTypeField = null
     let errorTips = t('v_query.cannot_be_performed')
-    let hasParameterTimeArrType = 0
     let hasParameterNumArrType = 0
     if (
       ele.checkedFields.some(id => {
@@ -1279,30 +1243,6 @@ const validate = () => {
         if (ele.checkedFieldsMapArrNum?.[id]?.length === 1 && ele.displayType === '22') {
           errorTips = t('v_query.numerical_parameter_configuration')
           return true
-        }
-
-        if (ele.checkedFieldsMapArr?.[id]?.length && ['7', '1'].includes(ele.displayType)) {
-          if (hasParameterTimeArrType === 0) {
-            hasParameterTimeArrType = 1
-          }
-
-          if (hasParameterTimeArrType === 2) {
-            return true
-          }
-        }
-
-        if (
-          !ele.checkedFieldsMapArr?.[id]?.length &&
-          ['7', '1'].includes(ele.displayType) &&
-          !!ele.parameters.length
-        ) {
-          if (hasParameterTimeArrType === 0) {
-            hasParameterTimeArrType = 2
-          }
-
-          if (hasParameterTimeArrType === 1) {
-            return true
-          }
         }
 
         if (ele.checkedFieldsMapArr?.[id]?.length === 1 && ele.displayType === '7') {
@@ -1539,6 +1479,16 @@ const confirmClick = () => {
     })
   })
 }
+
+const fieldsComputed = computed(() => {
+  return curComponent.value.dataset.fields.filter(ele => {
+    return (
+      ele.deType === +curComponent.value.displayType ||
+      ([0, 2, 3, 4].includes(ele.deType) && [0, 2].includes(+curComponent.value.displayType)) ||
+      (ele.deType === 7 && +curComponent.value.displayType === 0)
+    )
+  })
+})
 
 const cancelValueSource = () => {
   valueSource.value = cloneDeep(curComponent.value.valueSource)
@@ -2966,12 +2916,7 @@ defineExpose({
                         </el-icon>
                       </template>
                       <el-option
-                        v-for="ele in curComponent.dataset.fields.filter(
-                          ele =>
-                            ele.deType === +curComponent.displayType ||
-                            ([3, 4].includes(ele.deType) && +curComponent.displayType === 2) ||
-                            (ele.deType === 7 && +curComponent.displayType === 0)
-                        )"
+                        v-for="ele in fieldsComputed"
                         :key="ele.id"
                         :label="ele.name"
                         :value="ele.id"
@@ -3450,8 +3395,17 @@ defineExpose({
             .ed-select-tags-wrapper.has-prefix {
               margin-left: 25px;
             }
-            .ed-select__tags-text {
-              max-width: 30px !important;
+            .ed-select__input {
+              margin-left: 6px !important;
+            }
+            .ed-tag {
+              max-width: 52px;
+              .ed-tag__close {
+                margin-left: 2px;
+              }
+              .ed-select__tags-text {
+                max-width: 30px !important;
+              }
             }
           }
 

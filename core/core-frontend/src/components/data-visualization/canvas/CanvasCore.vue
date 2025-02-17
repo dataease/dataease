@@ -47,6 +47,7 @@ import PopArea from '@/custom-component/pop-area/Component.vue'
 import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 import DeGrid from '@/components/data-visualization/DeGrid.vue'
 import DeGridScreen from '@/components/data-visualization/DeGridScreen.vue'
+import GroupAreaShadow from '@/custom-component/group-area/ComponentShadow.vue'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -55,7 +56,7 @@ const contextmenuStore = contextmenuStoreWithOut()
 
 const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState } =
   storeToRefs(dvMainStore)
-const { editorMap, areaData } = storeToRefs(composeStore)
+const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emits = defineEmits(['scrollCanvasToTop'])
 const props = defineProps({
   themes: {
@@ -919,7 +920,6 @@ function removeItemComponent(item) {
         checkedFields = [...ele.checkedFields, ...checkedFields]
       })
     }
-    dvMainStore.removeLinkageInfo(item['id'])
     if (!!checkedFields.length) {
       Array.from(new Set(checkedFields)).forEach(ele => {
         emitter.emit(`query-data-${ele}`)
@@ -933,6 +933,7 @@ function removeItem(index) {
   let item = componentData.value[index]
   if (item && isSameCanvas(item, canvasId.value)) {
     removeItemComponent(item)
+    dvMainStore.removeLinkageInfo(item['id'])
     if (isMainCanvas(canvasId.value)) {
       // 主画布中存在隐藏组件 直接从原始componentData中进行删除
       dvMainStore.deleteComponentById(item.id)
@@ -1471,6 +1472,19 @@ const dataVBatchOptAdaptor = () => {
   })
 }
 
+const itemShow = item => {
+  return (
+    item.isShow &&
+    (item.component !== 'GroupArea' || (item.component === 'GroupArea' && !isCtrlOrCmdDown.value))
+  )
+}
+
+const groupAreaShadowShow = computed(
+  () =>
+    componentData.value.length > 0 &&
+    componentData.value[componentData.value.length - 1].component === 'GroupArea' &&
+    isCtrlOrCmdDown.value
+)
 // 点击事件导致选择区域变更
 const groupAreaClickChange = async () => {
   let groupAreaCom
@@ -1611,11 +1625,15 @@ defineExpose({
 
     <!--切换canvas 拖拽阴影部分-->
     <point-shadow v-if="pointShadowShow" :canvas-id="canvasId" />
+    <GroupAreaShadow
+      v-if="groupAreaShadowShow"
+      :style="getShapeItemShowStyle(componentData[componentData.length - 1])"
+    ></GroupAreaShadow>
 
     <!--页面组件列表展示-->
     <Shape
       v-for="(item, index) in componentData"
-      v-show="item.isShow"
+      v-show="itemShow(item)"
       :canvas-id="canvasId"
       :scale="curScale"
       :key="item.id"

@@ -19,6 +19,10 @@ public class TableFieldWithValue implements Serializable {
     private String typeName;
     private Integer type;
 
+    private String isDateTime;
+    private String dateFormat;
+    private String term = "eq";
+
     public static TableFieldWithValue copy(TableFieldWithValue tableFieldWithValue) {
         return new TableFieldWithValue()
                 .setValue(tableFieldWithValue.getValue())

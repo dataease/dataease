@@ -1,7 +1,7 @@
 package io.dataease.chart.charts.impl.table;
 
 import io.dataease.chart.charts.impl.GroupChartHandler;
-import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;

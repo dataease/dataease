@@ -428,7 +428,9 @@ export default {
     pwd_exp_tips:
       'Password will expire in {0} days, please change your password as soon as possible',
     qr_code: 'QR Code',
-    platform_disable: '{0} setting disabled!'
+    platform_disable: '{0} setting disabled!',
+    input_account: 'Please enter account number',
+    redirect_2_auth: 'Redirecting to {0} authentication, {1} seconds...'
   },
   component: {
     columnList: 'List item',
@@ -2006,9 +2008,11 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     circle_packing_padding: 'Circle padding',
     increase: 'Increase',
     decrease: 'Decrease',
-    total: 'Total'
+    total: 'Total',
+    accumulate: 'Accumulate'
   },
   dataset: {
+    field_value: 'Field Value',
     scope_edit: 'Only effective when editing',
     scope_all: 'Globally effective when previewing datasets',
     spend_time: 'Time spent',
@@ -2298,6 +2302,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     origin_type: 'Physical field type',
     field_diff: 'The selected field types are inconsistent and do not support conversion',
     create_grouping_field: 'Create a new grouping field',
+    editing_grouping_field: 'Editing Grouping Fields',
     grouping_field: 'Grouping field',
     grouping_settings: 'Grouping settings',
     ungrouped_value: 'Ungrouped value',
@@ -2814,6 +2819,11 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     column_name: 'Field name'
   },
   visualization: {
+    sync_pc_design: 'Synchronize PC Design',
+    title_background: 'Title Background',
+    active_title_background: 'Active Title Background',
+    reuse_active_title_background: 'Reuse Active Title Background',
+    inactive_title_background: 'Inactive Title Background',
     no_hidden_components: 'No Hidden Components',
     hidden_components: 'Hidden Components',
     dashboard_adaptor: 'Zoom Mode',
@@ -4128,7 +4138,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     confirm_delete_folder: 'Are you sure you want to delete this folder?',
     confirm_delete_form: 'Are you sure you want to delete this form?',
     confirm_delete_multiple_data: 'Are you sure you want to delete {0} pieces of data?',
-    confirm_delete_data: 'Are you sure you want to delete the data? ',
+    confirm_delete_data: 'Are you sure you want to delete the data?',
     no_form: 'No form yet',
     on_the_left: 'Please select a form on the left',
     exporting: 'Backend export in progress, can go to',
@@ -4136,7 +4146,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     clear_selection: 'Clear selection',
     truncate_table: 'Truncate table',
     truncate: 'Truncate',
-    confirm_truncate_table: 'Confirm to truncate table',
+    confirm_truncate_table: 'Confirm to truncate table?',
+    add_search_condition: 'Add search condition',
     form: {
       add_detail_columns: 'Add column details',
       detail_columns: 'Column details',

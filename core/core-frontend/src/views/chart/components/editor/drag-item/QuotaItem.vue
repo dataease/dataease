@@ -271,6 +271,10 @@ const quickCalc = param => {
       item.value.compareCalc.type = 'percent'
       emit('onQuotaItemChange', item.value)
       break
+    case 'accumulate':
+      item.value.compareCalc.type = 'accumulate'
+      emit('onQuotaItemChange', item.value)
+      break
     default:
       break
   }
@@ -671,6 +675,25 @@ onMounted(() => {
                       {{ t('chart.percent') }}
                       <el-icon class="sub-menu-content--icon">
                         <Icon name="icon_done_outlined" v-if="'percent' === item.compareCalc.type"
+                          ><icon_done_outlined class="svg-icon"
+                        /></Icon>
+                      </el-icon>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="menu-item-padding"
+                    :disabled="state.quotaViews.indexOf(chart.type) > -1"
+                    :command="beforeQuickCalc('accumulate')"
+                  >
+                    <span
+                      class="sub-menu-content"
+                      :class="'accumulate' === item.compareCalc.type ? 'content-active' : ''"
+                    >
+                      {{ t('chart.accumulate') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon
+                          name="icon_done_outlined"
+                          v-if="'accumulate' === item.compareCalc.type"
                           ><icon_done_outlined class="svg-icon"
                         /></Icon>
                       </el-icon>

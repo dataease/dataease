@@ -417,7 +417,9 @@ export default {
     pwd_invalid_error: '密碼已過期請聯系管理員修改或重置',
     pwd_exp_tips: '密碼在 {0} 天後過期，請盡快修改密碼',
     qr_code: '二維碼',
-    platform_disable: '{0}設置未開啟！'
+    platform_disable: '{0}設置未開啟！',
+    input_account: '請輸入賬號',
+    redirect_2_auth: '正在跳轉至 {0} 認證，{1} 秒...'
   },
   component: {
     columnList: '列表項目',
@@ -1956,9 +1958,11 @@ export default {
     circle_packing_padding: '圓形間距',
     increase: '增加',
     decrease: '減少',
-    total: '合計'
+    total: '合計',
+    accumulate: '累加'
   },
   dataset: {
+    field_value: '欄位值',
     scope_edit: '僅編輯時生效',
     scope_all: '資料集預覽時全域生效',
     spend_time: '耗時',
@@ -2241,6 +2245,7 @@ export default {
     origin_type: '物理字段類型',
     field_diff: '所選字段類型不一致，不支持轉換',
     create_grouping_field: '新建分組字段',
+    editing_grouping_field: '編輯分組字段',
     grouping_field: '分組欄位',
     grouping_settings: '分組設定',
     ungrouped_value: '未分組的值',
@@ -2742,6 +2747,11 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    sync_pc_design: '同步PC設計',
+    title_background: '標題背景',
+    active_title_background: '激活標題背景',
+    reuse_active_title_background: '復用激活標題背景',
+    inactive_title_background: '非激活標題背景',
     no_hidden_components: '當前無隱藏組件',
     hidden_components: '已隱藏的組件',
     dashboard_adaptor: '縮放模式',
@@ -4022,7 +4032,8 @@ export default {
     clear_selection: '取消選擇',
     truncate_table: '清空數據',
     truncate: '清空',
-    confirm_truncate_table: '確定要清空數據嗎',
+    confirm_truncate_table: '確定要清空數據嗎？',
+    add_search_condition: '添加篩選條件',
     form: {
       add_detail_columns: '添加字段描述',
       detail_columns: '字段描述',

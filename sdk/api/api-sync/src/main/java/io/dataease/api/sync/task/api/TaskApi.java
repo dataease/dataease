@@ -1,11 +1,11 @@
 package io.dataease.api.sync.task.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.dataease.api.sync.task.dto.TaskGridRequest;
 import io.dataease.api.sync.task.dto.TaskInfoDTO;
 import io.dataease.api.sync.task.vo.TaskInfoVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.exception.DEException;
-import io.dataease.request.BaseGridRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import static io.dataease.constant.AuthResourceEnum.TASK;
 public interface TaskApi {
 
     @PostMapping("/pager/{goPage}/{pageSize}")
-    IPage<TaskInfoVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
+    IPage<TaskInfoVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody TaskGridRequest request);
 
     @PostMapping("/add")
     void add(@RequestBody TaskInfoDTO jobInfo) throws DEException;

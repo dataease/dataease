@@ -213,6 +213,13 @@ export const COMMON_COMPONENT_BACKGROUND_MAP = {
   dark: COMMON_COMPONENT_BACKGROUND_DARK
 }
 
+export const COMMON_TAB_TITLE_BACKGROUND = {
+  enable: false, // 是否启用tab标题背景
+  multiply: true, // 激活状态与非激活状态背景是否复用
+  active: COMMON_COMPONENT_BACKGROUND_LIGHT,
+  inActive: COMMON_COMPONENT_BACKGROUND_LIGHT
+}
+
 export const commonAttr = {
   animations: [],
   canvasId: 'canvas-main',
@@ -617,6 +624,7 @@ export function findNewComponentFromList(
       newComponent.innerType = innerType
       if (comp.component === 'DeTabs') {
         newComponent.propValue[0].name = guid()
+        newComponent['titleBackground'] = deepCopy(COMMON_TAB_TITLE_BACKGROUND)
       }
     }
   })

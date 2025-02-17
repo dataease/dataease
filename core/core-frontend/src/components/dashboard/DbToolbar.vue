@@ -326,6 +326,7 @@ onBeforeUnmount(() => {
 })
 const openDataBoardSetting = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
+  dvMainStore.setHiddenListStatus(false)
 }
 
 const openHiddenList = () => {
@@ -395,6 +396,7 @@ const batchOptStatusChange = value => {
     state.preBatchComponentData = []
     state.preBatchCanvasViewInfo = {}
   }
+  dvMainStore.setHiddenListStatus(false)
   dvMainStore.setBatchOptStatus(value)
 }
 

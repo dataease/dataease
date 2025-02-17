@@ -39,7 +39,7 @@ const addToDashboard = item => {
             class="wrapper-design"
             show-position="viewDialog"
             :search-count="0"
-            :scale="65"
+            :scale="canvasStyleData.scale"
           />
         </div>
         <div class="select-to-dashboard" @click="addToDashboard(item)">

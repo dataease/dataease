@@ -133,6 +133,19 @@ export function getTheme(chart: Chart) {
             boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)',
             'z-index': 2000,
             position: 'fixed'
+          },
+          'g2-tooltip-list-item': {
+            display: 'flex',
+            'align-items': 'center'
+          },
+          'g2-tooltip-name': {
+            display: 'inline-block',
+            'line-height': tooltipFontsize + 'px',
+            flex: 1
+          },
+          'g2-tooltip-marker': {
+            'min-width': '8px',
+            'min-height': '8px'
           }
         }
       },
@@ -1908,4 +1921,38 @@ export const getTooltipItemConditionColor = item => {
     color = item.data['conditionColor'][0]
   }
   return color
+}
+
+/**
+ * 配置空数据样式
+ * @param newChart
+ * @param newData
+ * @param container
+ */
+export const configEmptyDataStyle = (newChart, newData, container) => {
+  /**
+   * 辅助函数：移除空数据dom
+   */
+  const removeEmptyDom = () => {
+    const emptyElement = document.getElementById(container + '_empty')
+    if (emptyElement) {
+      emptyElement.parentElement.removeChild(emptyElement)
+    }
+  }
+  removeEmptyDom()
+  if (newData.length > 0) return
+  if (!newData.length) {
+    const emptyDom = document.createElement('div')
+    emptyDom.id = container + '_empty'
+    emptyDom.textContent = tI18n('data_set.no_data')
+    emptyDom.setAttribute(
+      'style',
+      `position: absolute;
+        left: 45%;
+        top: 50%;`
+    )
+    const parent = document.getElementById(container)
+    parent.insertBefore(emptyDom, parent.firstChild)
+    newChart.destroy()
+  }
 }

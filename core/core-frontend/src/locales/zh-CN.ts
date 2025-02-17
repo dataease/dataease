@@ -418,7 +418,9 @@ export default {
     pwd_invalid_error: '密码已过期请联系管理员修改或重置',
     pwd_exp_tips: '密码在 {0} 天后过期，请尽快修改密码',
     qr_code: '二维码',
-    platform_disable: '{0}设置未开启！'
+    platform_disable: '{0}设置未开启！',
+    input_account: '请输入账号',
+    redirect_2_auth: '正在跳转至 {0} 认证，{1} 秒...'
   },
   component: {
     columnList: '列表项',
@@ -1966,9 +1968,11 @@ export default {
     circle_packing_padding: '圆形间距',
     increase: '增加',
     decrease: '减少',
-    total: '合计'
+    total: '合计',
+    accumulate: '累加'
   },
   dataset: {
+    field_value: '字段值',
     scope_edit: '仅编辑时生效',
     scope_all: '数据集预览时全局生效',
     spend_time: '耗时',
@@ -2251,6 +2255,7 @@ export default {
     origin_type: '物理字段类型',
     field_diff: '所选字段类型不一致，不支持转换',
     create_grouping_field: '新建分组字段',
+    editing_grouping_field: '编辑分组字段',
     grouping_field: '分组字段',
     grouping_settings: '分组设置',
     ungrouped_value: '未分组的值',
@@ -2752,6 +2757,11 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    sync_pc_design: '同步PC设计',
+    title_background: '标题背景',
+    active_title_background: '激活标题背景',
+    reuse_active_title_background: '复用激活标题背景',
+    inactive_title_background: '非激活标题背景',
     no_hidden_components: '当前无隐藏组件',
     hidden_components: '已隐藏的组件',
     dashboard_adaptor: '缩放模式',
@@ -4034,7 +4044,8 @@ export default {
     clear_selection: '取消选择',
     truncate_table: '清空数据',
     truncate: '清空',
-    confirm_truncate_table: '确定要清空数据吗',
+    confirm_truncate_table: '确定要清空数据吗？',
+    add_search_condition: '添加筛选条件',
     form: {
       add_detail_columns: '添加字段描述',
       detail_columns: '字段描述',

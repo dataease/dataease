@@ -32,7 +32,6 @@ const { dvInfo, canvasViewDataInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
 const dvPreviewRef = ref(null)
 const slideShow = ref(true)
-const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
 const downloadStatus = ref(false)
@@ -258,7 +257,7 @@ onBeforeMount(() => {
     <el-container
       class="preview-area"
       :class="{ 'no-data': !hasTreeData }"
-      v-loading="requestStore.loadingMap[permissionStore.currentPath]"
+      v-loading="!dataInitState"
     >
       <div @click="slideOpenChange" class="flexible-button-area" v-if="false">
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>

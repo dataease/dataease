@@ -2,7 +2,6 @@ package io.dataease.datasource.dao.ext.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.datasource.dto.CoreDatasourceTaskDTO;
-import io.dataease.request.GridExample;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public interface ExtDatasourceTaskMapper {
                     SELECT QRTZ_TRIGGERS.* 
                     FROM QRTZ_TRIGGERS
                      ${ew.customSqlSegment}
-                             """
+                    """
     )
     @Results(
             id = "taskWithTriggers",

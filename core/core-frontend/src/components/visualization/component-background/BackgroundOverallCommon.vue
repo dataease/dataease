@@ -52,34 +52,35 @@
           </el-form-item>
         </el-col>
       </el-row>
-
-      <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
-        <el-checkbox
-          size="small"
-          :effect="themes"
-          v-model="state.commonBackground.backdropFilterEnable"
-          @change="onBackgroundChange"
-        >
-          {{ $t('chart.backdrop_blur') }}
-        </el-checkbox>
-      </el-form-item>
-      <div class="indented-container">
-        <div class="indented-item">
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-input-number
-              style="width: 100%"
-              :effect="themes"
-              controls-position="right"
-              size="middle"
-              :min="0"
-              :max="30"
-              :disabled="!state.commonBackground.backdropFilterEnable"
-              v-model="state.commonBackground.backdropFilter"
-              @change="onBackgroundChange"
-            />
-          </el-form-item>
+      <template v-if="editPosition === 'canvas'">
+        <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            :effect="themes"
+            v-model="state.commonBackground.backdropFilterEnable"
+            @change="onBackgroundChange"
+          >
+            {{ $t('chart.backdrop_blur') }}
+          </el-checkbox>
+        </el-form-item>
+        <div class="indented-container">
+          <div class="indented-item">
+            <el-form-item class="form-item" :class="'form-item-' + themes">
+              <el-input-number
+                style="width: 100%"
+                :effect="themes"
+                controls-position="right"
+                size="middle"
+                :min="0"
+                :max="30"
+                :disabled="!state.commonBackground.backdropFilterEnable"
+                v-model="state.commonBackground.backdropFilter"
+                @change="onBackgroundChange"
+              />
+            </el-form-item>
+          </div>
         </div>
-      </div>
+      </template>
 
       <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
         <el-checkbox
@@ -268,6 +269,7 @@ const maxImageSize = 15000000
 const props = withDefaults(
   defineProps<{
     componentPosition?: string
+    editPosition?: string
     themes?: EditorTheme
     commonBackgroundPop: any
     backgroundColorPickerWidth?: number
@@ -276,6 +278,7 @@ const props = withDefaults(
   {
     themes: 'dark',
     componentPosition: 'dashboard',
+    editPosition: 'canvas',
     backgroundColorPickerWidth: 50,
     backgroundBorderSelectWidth: 108
   }
