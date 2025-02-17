@@ -13,7 +13,8 @@ import {
   getYAxis,
   getConditions,
   handleConditionsStyle,
-  addConditionsStyleColorToData
+  addConditionsStyleColorToData,
+  configEmptyDataStyle
 } from '@/views/chart/components/js/panel/common/common_antv'
 import {
   AntVAbstractChartView,
@@ -188,6 +189,10 @@ export abstract class G2PlotChartView<
 
   protected addConditionsStyleColorToData(chart: Chart, data: any[]) {
     return addConditionsStyleColorToData(chart, data)
+  }
+
+  protected configEmptyDataStyle(newChart, newData: any[], container: string) {
+    configEmptyDataStyle(newChart, newData, container)
   }
 
   /**

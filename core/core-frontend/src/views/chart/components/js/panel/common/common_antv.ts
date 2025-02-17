@@ -1922,3 +1922,37 @@ export const getTooltipItemConditionColor = item => {
   }
   return color
 }
+
+/**
+ * 配置空数据样式
+ * @param newChart
+ * @param newData
+ * @param container
+ */
+export const configEmptyDataStyle = (newChart, newData, container) => {
+  /**
+   * 辅助函数：移除空数据dom
+   */
+  const removeEmptyDom = () => {
+    const emptyElement = document.getElementById(container + '_empty')
+    if (emptyElement) {
+      emptyElement.parentElement.removeChild(emptyElement)
+    }
+  }
+  removeEmptyDom()
+  if (newData.length > 0) return
+  if (!newData.length) {
+    const emptyDom = document.createElement('div')
+    emptyDom.id = container + '_empty'
+    emptyDom.textContent = tI18n('data_set.no_data')
+    emptyDom.setAttribute(
+      'style',
+      `position: absolute;
+        left: 45%;
+        top: 50%;`
+    )
+    const parent = document.getElementById(container)
+    parent.insertBefore(emptyDom, parent.firstChild)
+    newChart.destroy()
+  }
+}
