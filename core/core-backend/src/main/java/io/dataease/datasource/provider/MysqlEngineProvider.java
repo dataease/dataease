@@ -5,6 +5,7 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.extensions.datasource.dto.TableField;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,7 @@ public class MysqlEngineProvider extends EngineProvider {
                     .append("'),");
         }
         String insetSql = (insertSql + values.substring(0, values.length() - 1)).replaceAll("'null'", "null");
-        if (dsType.equalsIgnoreCase("api")) {
+        if (dsType.contains(DatasourceConfiguration.DatasourceType.API.name())) {
             List<TableField> keys = tableFields.stream().filter(tableField -> tableField.isPrimaryKey() && tableField.isChecked()).toList();
             List<TableField> notKeys = tableFields.stream().filter(tableField -> tableField.isChecked() && !tableField.isPrimaryKey()).toList();
             if (CollectionUtils.isNotEmpty(keys) && extractType.equals(DatasourceServer.UpdateType.add_scope)) {

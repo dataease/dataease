@@ -1096,7 +1096,15 @@ export default {
     sync_table: '同步指定表',
     req_completed: '请求成功',
     sync_rate: '更新频率',
-    has_same_ds: '存在相同配置数据源，确认保存？'
+    has_same_ds: '存在相同配置数据源，确认保存？',
+    table_addr: '表格地址',
+    input_addr: '请输入表格地址',
+    app_token: 'app_token',
+    input_app_token: '请输入app_token',
+    table_id: 'table_id',
+    input_table_id: '请输入table_id',
+    view_id: 'view_id',
+    input_view_id: '请输入view_id'
   },
   chart: {
     align: '对齐方式',

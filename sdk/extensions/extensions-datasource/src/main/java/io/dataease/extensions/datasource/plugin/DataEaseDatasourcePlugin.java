@@ -1,6 +1,7 @@
 package io.dataease.extensions.datasource.plugin;
 
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
@@ -15,7 +16,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -24,6 +27,13 @@ import java.util.jar.JarFile;
  */
 public abstract class DataEaseDatasourcePlugin extends Provider implements DataEasePlugin {
     private final String DEFAULT_FILE_PATH = "/opt/dataease2.0/drivers/plugin";
+
+
+    @Override
+    public List<String> getSchema(DatasourceRequest datasourceRequest) {
+        return new ArrayList<>();
+    }
+
 
     @Override
     public void loadPlugin() {
@@ -41,7 +51,7 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
         String localPath = StringUtils.isEmpty(config.getDriverPath()) ? DEFAULT_FILE_PATH : config.getDriverPath();
         ProtectionDomain protectionDomain = this.getClass().getProtectionDomain();
         URI uri = protectionDomain.getCodeSource().getLocation().toURI();
-        try(JarFile jarFile = new JarFile(new File(uri))) {
+        try (JarFile jarFile = new JarFile(new File(uri))) {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
@@ -52,8 +62,8 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
                         file.getParentFile().mkdirs();
                     }
 
-                    try(InputStream inputStream = jarFile.getInputStream(entry);
-                        FileOutputStream outputStream = new FileOutputStream(file)){
+                    try (InputStream inputStream = jarFile.getInputStream(entry);
+                         FileOutputStream outputStream = new FileOutputStream(file)) {
                         byte[] bytes = new byte[1024];
                         int length;
                         while ((length = inputStream.read(bytes)) >= 0) {
@@ -83,7 +93,7 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
         try {
             ProtectionDomain protectionDomain = this.getClass().getProtectionDomain();
             URI uri = protectionDomain.getCodeSource().getLocation().toURI();
-            try(JarFile jarFile = new JarFile(new File(uri))) {
+            try (JarFile jarFile = new JarFile(new File(uri))) {
                 Enumeration<JarEntry> entries = jarFile.entries();
                 while (entries.hasMoreElements()) {
                     JarEntry entry = entries.nextElement();

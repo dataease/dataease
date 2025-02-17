@@ -1,7 +1,6 @@
-package io.dataease.api.ds.vo;
+package io.dataease.extensions.datasource.dto;
 
 
-import io.dataease.extensions.datasource.dto.TableField;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -30,4 +29,8 @@ public class ApiDefinition {
     private boolean showApiStructure;
     private Long updateTime;
     private String type = "table";
+    private  String token;
+    private  String appToken;
+    private  String tableId;
+    private  String viewId;
 }

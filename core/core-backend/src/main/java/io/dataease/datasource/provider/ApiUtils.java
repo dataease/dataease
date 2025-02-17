@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
-import io.dataease.api.ds.vo.ApiDefinition;
-import io.dataease.api.ds.vo.ApiDefinitionRequest;
+import io.dataease.extensions.datasource.dto.ApiDefinition;
+import io.dataease.extensions.datasource.dto.ApiDefinitionRequest;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -75,7 +75,7 @@ public class ApiUtils {
         Map<String, Object> result = new HashMap<>();
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
-        ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
+        ApiDefinition apiDefinition = getApiDefinition(datasourceRequest);
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
@@ -178,7 +178,7 @@ public class ApiUtils {
     }
 
     private static List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
-        ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
+        ApiDefinition apiDefinition = getApiDefinition(datasourceRequest);
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
@@ -463,7 +463,28 @@ public class ApiUtils {
         }
     }
 
-    public static ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response) throws DEException {
+    public static ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws DEException {
+        ApiDefinition apiDefinition = new ApiDefinition();
+        List<ApiDefinition> apiDefinitionList = new ArrayList<>();
+        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
+        };
+        try {
+            apiDefinitionList = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+        if (!CollectionUtils.isEmpty(apiDefinitionList)) {
+            for (ApiDefinition definition : apiDefinitionList) {
+                if (definition != null && (definition.getType() == null || !definition.getType().equalsIgnoreCase("params"))) {
+                    apiDefinition = definition;
+                }
+            }
+        }
+        String response = execHttpRequest(true, apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
+        return checkApiDefinition(apiDefinition, response);
+    }
+
+    private static ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response) throws DEException {
         if (StringUtils.isEmpty(response)) {
             DEException.throwException("该请求返回数据为空");
         }
@@ -802,7 +823,7 @@ public class ApiUtils {
         return apiDefinitionListTemp.stream().filter(apiDefinition -> apiDefinition != null && apiDefinition.getType() != null && apiDefinition.getType().equalsIgnoreCase("params")).collect(Collectors.toList());
     }
 
-    private static ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws DEException {
+    private static ApiDefinition getApiDefinition(DatasourceRequest datasourceRequest) throws DEException {
         List<ApiDefinition> apiDefinitionList = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };

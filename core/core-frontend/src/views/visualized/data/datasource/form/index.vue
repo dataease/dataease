@@ -196,7 +196,7 @@ const activeApiStep = ref(0)
 
 const setNextStep = () => {
   activeApiStep.value = activeStep.value + 1
-  if (currentDsType.value === 'API' && activeStep.value === 1) return
+  if (currentDsType.value.includes('API') && activeStep.value === 1) return
   activeStep.value = activeStep.value + 1
 }
 
@@ -208,14 +208,14 @@ const next = () => {
 
   if (
     form.apiConfiguration?.length === 0 &&
-    currentDsType.value === 'API' &&
+    currentDsType.value.includes('API') &&
     activeStep.value !== 2
   ) {
     ElMessage.error(t('data_source.cannot_be_empty_table'))
     return
   }
 
-  if (currentDsType.value === 'API' && activeStep.value !== 2) {
+  if (currentDsType.value.includes('API') && activeStep.value !== 2) {
     const validateFrom = detail.value.submitForm()
     validateFrom(val => {
       if (val) {
@@ -284,7 +284,10 @@ const handleShowFinishPage = ({ id, name, pid }) => {
 emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
-  if ((currentDsType.value === 'API' && activeApiStep.value === 1) || activeStep.value === 1) {
+  if (
+    (currentDsType.value.includes('API') && activeApiStep.value === 1) ||
+    activeStep.value === 1
+  ) {
     ElMessageBox.confirm(t('data_source.the_previous_step'), {
       confirmButtonType: 'primary',
       type: 'warning',
@@ -299,7 +302,7 @@ const prev = () => {
 }
 
 const prevConfirm = () => {
-  if (currentDsType.value === 'API' && activeApiStep.value === 2) {
+  if (currentDsType.value.includes('API') && activeApiStep.value === 2) {
     activeApiStep.value = 1
     activeStep.value = 1
     return
@@ -336,7 +339,8 @@ const validateDS = () => {
     configuration: string
     apiConfiguration: string
   }
-  if (currentDsType.value === 'API') {
+  console.log(form)
+  if (currentDsType.value.includes('API')) {
     if (form.apiConfiguration.length === 0) {
       ElMessage.error(t('data_source.add_data_table'))
       return
@@ -417,6 +421,7 @@ const typeTitle = computed(() => {
 
 const saveDS = () => {
   isUpdate = false
+  console.log('1')
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
     Form,
     'configuration' | 'apiConfiguration'
@@ -424,6 +429,7 @@ const saveDS = () => {
     configuration: string
     apiConfiguration: string
   }
+  console.log('1')
   if (currentDsType.value === 'Excel') {
     excel.value.uploadStatus(false)
     if (!excel.value.sheetFile?.name) {
@@ -443,7 +449,7 @@ const saveDS = () => {
     })
 
     return
-  } else if (currentDsType.value === 'API') {
+  } else if (currentDsType.value.includes('API')) {
     for (let i = 0; i < request.apiConfiguration.length; i++) {
       if (
         request.apiConfiguration[i].deTableName === '' ||
@@ -461,6 +467,7 @@ const saveDS = () => {
         request.apiConfiguration[i].fields[j].value = []
       }
     }
+    console.log('3')
     let apiItems = []
     apiItems = apiItems.concat(request.apiConfiguration)
     if (request.paramsConfiguration) {
@@ -472,7 +479,7 @@ const saveDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-
+  console.log('4')
   if (isPlugin.value) {
     xpack?.value?.invokeMethod({
       methodName: 'submitForm',
@@ -483,6 +490,7 @@ const saveDS = () => {
     request.apiConfiguration = ''
     validate(val => {
       if (val) {
+        console.log('5')
         doSaveDs(request)
       }
     })
@@ -498,6 +506,7 @@ const doSaveDs = request => {
       showClose: false,
       tip: ''
     }
+    console.log('6')
     checkRepeat(request).then(res => {
       let method = request.id === '' ? save : update
       if (res) {
@@ -846,8 +855,8 @@ defineExpose({
         >
         <el-button
           v-show="
-            (activeStep === 0 && currentDsType !== 'API') ||
-            (activeApiStep !== 2 && currentDsType === 'API')
+            (activeStep === 0 && !currentDsType.startsWith('API')) ||
+            (activeApiStep !== 2 && currentDsType.startsWith('API'))
           "
           type="primary"
           @click="next"
@@ -856,8 +865,8 @@ defineExpose({
         >
         <el-button
           v-show="
-            (activeStep === 1 && currentDsType !== 'API') ||
-            (activeApiStep === 2 && currentDsType === 'API')
+            (activeStep === 1 && !currentDsType.startsWith('API')) ||
+            (activeApiStep === 2 && currentDsType.startsWith('API'))
           "
           type="primary"
           @click="saveDS"

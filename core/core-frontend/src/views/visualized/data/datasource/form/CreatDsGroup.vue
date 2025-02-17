@@ -291,7 +291,7 @@ const saveDataset = () => {
         request.apiConfiguration = ''
         checkRepeat(request).then(res => {
           let method = request.id === '' ? save : update
-          if (request.type !== 'API') {
+          if (!request.type.startsWith('API')) {
             request.syncSetting = null
           }
           if (res) {

@@ -292,7 +292,7 @@ const validateDS = () => {
   Object.assign(nodeTmpInfo, cloneDeep(nodeInfo))
   validateById(nodeTmpInfo.id as number)
     .then(res => {
-      if (res.data.type === 'API') {
+      if (res.data.type.startsWith('API')) {
         let error = 0
         const dsStatus = JSON.parse(res.data.status)
         for (let i = 0; i < dsStatus.length; i++) {
@@ -828,7 +828,7 @@ const handleCopy = async data => {
     datasource.id = ''
     datasource.copy = true
     datasource.name = t('datasource.copy')
-    if (datasource.type === 'API') {
+    if (datasource.type.startsWith('API')) {
       for (let i = 0; i < datasource.apiConfiguration.length; i++) {
         datasource.apiConfiguration[i].deTableName = ''
       }
@@ -1390,7 +1390,7 @@ const getMenuList = (val: boolean) => {
               <el-table-column
                 key="status"
                 prop="status"
-                v-if="['api'].includes(nodeInfo.type.toLowerCase())"
+                v-if="nodeInfo.type.startsWith('API')"
                 :label="t('data_source.latest_update_status')"
               >
                 <template #default="scope">
@@ -1420,7 +1420,10 @@ const getMenuList = (val: boolean) => {
               <el-table-column
                 key="lastUpdateTime"
                 prop="lastUpdateTime"
-                v-if="['excel', 'api'].includes(nodeInfo.type.toLowerCase())"
+                v-if="
+                  ['excel', 'api'].includes(nodeInfo.type.toLowerCase()) ||
+                  nodeInfo.type.startsWith('API')
+                "
                 :label="t('data_source.latest_update_time')"
               >
                 <template v-slot:default="scope">
@@ -1489,7 +1492,11 @@ const getMenuList = (val: boolean) => {
                 </el-col>
               </el-row>
               <template
-                v-if="!['Excel', 'API', 'es'].includes(nodeInfo.type) && nodeInfo.weight >= 7"
+                v-if="
+                  !['Excel', 'es'].includes(nodeInfo.type) &&
+                  !nodeInfo.type.startsWith('API') &&
+                  nodeInfo.weight >= 7
+                "
               >
                 <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
                   <el-col :span="12">
@@ -1639,7 +1646,7 @@ const getMenuList = (val: boolean) => {
             </template>
           </BaseInfoContent>
           <BaseInfoContent
-            v-if="nodeInfo.type === 'API' && nodeInfo.weight >= 7"
+            v-if="nodeInfo.type.startsWith('API') && nodeInfo.weight >= 7"
             v-slot="slotProps"
             :name="t('datasource.data_table')"
           >
@@ -1691,7 +1698,7 @@ const getMenuList = (val: boolean) => {
             </el-button>
           </BaseInfoContent>
           <BaseInfoContent
-            v-if="nodeInfo.type === 'API' && nodeInfo.weight >= 7"
+            v-if="nodeInfo.type.startsWith('API') && nodeInfo.weight >= 7"
             v-slot="slotProps"
             :name="t('dataset.update_setting')"
             :time="(nodeInfo.lastSyncTime as string)"

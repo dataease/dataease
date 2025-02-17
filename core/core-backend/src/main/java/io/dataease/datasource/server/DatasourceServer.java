@@ -10,10 +10,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
+import io.dataease.api.lark.vo.LarkInfoVO;
 import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
+import io.dataease.constant.MessageEnum;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.*;
@@ -25,7 +27,6 @@ import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
-import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.engine.constant.SQLConstants;
@@ -47,6 +48,9 @@ import io.dataease.model.BusiNodeVO;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
+import io.dataease.xpack.base.settings.dao.entity.ExternalTokenEntity;
+import io.dataease.xpack.base.settings.platform.common.ExternalTokenManage;
+import io.dataease.xpack.base.settings.platform.lark.manage.LarkManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -66,6 +70,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -100,6 +105,8 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DatasetDataManage datasetDataManage;
     @Resource
+    private LarkManage larkManage;
+    @Resource
     private ScheduleManager scheduleManager;
     @Resource
     private CoreUserManage coreUserManage;
@@ -107,11 +114,14 @@ public class DatasourceServer implements DatasourceApi {
     private PluginManageApi pluginManage;
     @Autowired(required = false)
     private RelationApi relationManage;
+    @Resource(name = "externalTokenManage")
+    private ExternalTokenManage externalTokenManage;
 
     public enum UpdateType {
         all_scope, add_scope
     }
 
+    private static final String tenantAccessTokenUrl = "https://open.larksuite.com/open-apis/auth/v3/tenant_access_token/internal";
     private TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
     };
     @Resource
@@ -126,7 +136,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public boolean checkRepeat(@RequestBody BusiDsRequest dataSourceDTO) {
-        if (Arrays.asList("API", "Excel", "folder", "es").contains(dataSourceDTO.getType())) {
+        if (Arrays.asList("Excel", "folder", "es").contains(dataSourceDTO.getType()) || dataSourceDTO.getType().contains("API")) {
             return false;
         }
         BusiNodeRequest request = new BusiNodeRequest();
@@ -152,7 +162,13 @@ public class DatasourceServer implements DatasourceApi {
             if (Arrays.asList("API", "Excel", "folder").contains(datasource.getType())) {
                 continue;
             }
+            if (StringUtils.isEmpty(datasource.getConfiguration())) {
+                continue;
+            }
             DatasourceConfiguration compare = JsonUtil.parseObject(datasource.getConfiguration(), DatasourceConfiguration.class);
+            if (compare == null) {
+                continue;
+            }
             switch (dataSourceDTO.getType()) {
                 case "sqlServer":
                 case "db2":
@@ -274,7 +290,7 @@ public class DatasourceServer implements DatasourceApi {
                 }
             }
             datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
-        } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
+        } else if (dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
             coreDatasourceTask.setName(coreDatasource.getName() + "-task");
@@ -294,11 +310,11 @@ public class DatasourceServer implements DatasourceApi {
             datasourceSyncManage.addSchedule(coreDatasourceTask);
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(dataSourceDTO);
-            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+            List<DatasetTableDTO> tables = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
             checkName(tables.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
             for (DatasetTableDTO api : tables) {
                 datasourceRequest.setTable(api.getTableName());
-                List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
+                List<TableField> tableFields = (List<TableField>) invokeMethod(coreDatasource.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
                 try {
                     datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
                 } catch (Exception e) {
@@ -344,10 +360,12 @@ public class DatasourceServer implements DatasourceApi {
         datasourceRequest.setDatasource(dataSourceDTO);
         List<String> toCreateTables = new ArrayList<>();
         List<String> toDeleteTables = new ArrayList<>();
-        if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
+        if (dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
             requestDatasource.setEnableDataFill(null);
-            List<String> sourceTables = ApiUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).toList();
-            List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
+            List<DatasetTableDTO> sourceTableDTOs = (List<DatasetTableDTO>) invokeMethod(sourceData.getType(), "getApiTables", DatasourceRequest.class, sourceTableRequest);
+            List<String> sourceTables = sourceTableDTOs.stream().map(DatasetTableDTO::getTableName).toList();
+            List<DatasetTableDTO> datasetTableDTOS = (List<DatasetTableDTO>) invokeMethod(sourceData.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
+
             List<String> tables = datasetTableDTOS.stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
             checkName(datasetTableDTOS.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
             toCreateTables = tables.stream().filter(table -> !sourceTables.contains(table)).collect(Collectors.toList());
@@ -356,9 +374,11 @@ public class DatasourceServer implements DatasourceApi {
                 for (String sourceTable : sourceTables) {
                     if (table.equals(sourceTable)) {
                         datasourceRequest.setTable(table);
-                        List<String> tableFields = ApiUtils.getTableFields(datasourceRequest).stream().map(TableField::getName).sorted().collect(Collectors.toList());
+                        List<TableField> tableFieldList = (List<TableField>) invokeMethod(datasourceRequest.getDatasource().getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
+                        List<String> tableFields = tableFieldList.stream().map(TableField::getName).sorted().collect(Collectors.toList());
                         sourceTableRequest.setTable(sourceTable);
-                        List<String> sourceTableFields = ApiUtils.getTableFields(sourceTableRequest).stream().map(TableField::getName).sorted().collect(Collectors.toList());
+                        List<TableField> sourceTableFieldList = (List<TableField>) invokeMethod(sourceTableRequest.getDatasource().getType(), "getTableFields", DatasourceRequest.class, sourceTableRequest);
+                        List<String> sourceTableFields = sourceTableFieldList.stream().map(TableField::getName).sorted().collect(Collectors.toList());
                         if (!String.join(",", tableFields).equals(String.join(",", sourceTableFields))) {
                             toDeleteTables.add(table);
                             toCreateTables.add(table);
@@ -390,7 +410,7 @@ public class DatasourceServer implements DatasourceApi {
             for (String toCreateTable : toCreateTables) {
                 datasourceRequest.setTable(toCreateTable);
                 try {
-                    datasourceSyncManage.createEngineTable(toCreateTable, ApiUtils.getTableFields(datasourceRequest));
+                    datasourceSyncManage.createEngineTable(toCreateTable, (List<TableField>) invokeMethod(sourceTableRequest.getDatasource().getType(), "getTableFields", DatasourceRequest.class, sourceTableRequest));
                 } catch (Exception e) {
                     DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
                 }
@@ -486,7 +506,7 @@ public class DatasourceServer implements DatasourceApi {
         if (datasource == null) {
             DEException.throwException(Translator.get("i18n_datasource_not_exists"));
         }
-        if (datasource.getType().equalsIgnoreCase("api")) {
+        if (datasource.getType().contains("API")) {
             datasource.setConfiguration("[]");
         } else {
             datasource.setConfiguration("");
@@ -589,10 +609,10 @@ public class DatasourceServer implements DatasourceApi {
                 }
             }
         }
-        if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
+        if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasourceDTO);
-            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+            List<DatasetTableDTO> tables = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
             for (DatasetTableDTO api : tables) {
                 datasourceRequest.setTable(api.getTableName());
                 try {
@@ -671,8 +691,8 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasourceDTO);
-        if (coreDatasource.getType().equals("API")) {
-            List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
+        if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
+            List<DatasetTableDTO> datasetTableDTOS = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
             datasetTableDTOS.forEach(datasetTableDTO1 -> {
                 CoreDatasourceTaskLog log = datasourceTaskServer.lastSyncLogForTable(datasetTableDTO.getDatasourceId(), datasetTableDTO1.getTableName());
                 if (log != null) {
@@ -701,7 +721,7 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(Long.parseLong(datasourceId));
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
-        if (coreDatasource.getType().equals("API") || coreDatasource.getType().equals("Excel")) {
+        if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().equals("Excel")) {
             datasourceRequest.setDatasource(transDTO(engineManage.getDeEngine()));
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
@@ -781,7 +801,7 @@ public class DatasourceServer implements DatasourceApi {
                 List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
                 for (ExcelSheetData sheet : excelFileData.getSheets()) {
                     for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
-                        if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())){
+                        if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
                             List<TableField> newTableFields = sheet.getFields();
                             datasourceRequest.setTable(datasetTableDTO.getTableName());
                             List<TableField> oldTableFields = ExcelUtils.getTableFields(datasourceRequest);
@@ -802,7 +822,7 @@ public class DatasourceServer implements DatasourceApi {
                 List<DatasetTableDTO> datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
                 for (ExcelSheetData sheet : excelFileData.getSheets()) {
                     for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
-                        if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())){
+                        if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
                             sheet.setDeTableName(datasetTableDTO.getTableName());
                         }
                     }
@@ -876,17 +896,63 @@ public class DatasourceServer implements DatasourceApi {
 
     public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
-        List<ApiDefinition> paramsList = JsonUtil.parseList(new String(java.util.Base64.getDecoder().decode(request.get("paramsList"))), listTypeReference);
-        String response = ApiUtils.execHttpRequest(true, apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
         if (request.keySet().contains("type") && request.get("type").equals("apiStructure")) {
             apiDefinition.setShowApiStructure(true);
         }
-        ApiUtils.checkApiDefinition(apiDefinition, response);
+        List<ApiDefinition> paramsList = JsonUtil.parseList(new String(java.util.Base64.getDecoder().decode(request.get("paramsList"))), listTypeReference);
+        paramsList.add(apiDefinition);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        DatasourceDTO datasource = new DatasourceDTO();
+        datasource.setConfiguration(JsonUtil.toJSONString(paramsList).toString());
+        datasourceRequest.setDatasource(datasource);
+
+        apiDefinition = (ApiDefinition) invokeMethod(request.get("dsType"), "checkApiDefinition", DatasourceRequest.class, datasourceRequest);
         if (apiDefinition.getRequest().getAuthManager() != null && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getUsername()) && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getPassword()) && apiDefinition.getRequest().getAuthManager().getVerification().equals("Basic Auth")) {
             apiDefinition.getRequest().getAuthManager().setUsername(new String(Base64.getEncoder().encode(apiDefinition.getRequest().getAuthManager().getUsername().getBytes())));
             apiDefinition.getRequest().getAuthManager().setPassword(new String(Base64.getEncoder().encode(apiDefinition.getRequest().getAuthManager().getPassword().getBytes())));
         }
         return apiDefinition;
+    }
+
+    private void generateToken(LarkInfoVO info) {
+        if (ObjectUtils.isEmpty(info)) {
+            info = larkManage.query();
+        }
+        HttpClientConfig clientConfig = new HttpClientConfig();
+        clientConfig.addHeader("Content-Type", "application/json");
+        String tokenPost = HttpClientUtil.post(tenantAccessTokenUrl, buildAccessTokenParam(info.getAppId(), info.getAppSecret()), clientConfig);
+        Map<String, Object> parse = null;
+        try {
+            parse = buildAccessTokenResult(tokenPost);
+        } catch (Exception e) {
+            DEException.throwException("请检查appId和appSecret参数," + e.getMessage());
+        }
+        String tenantAccessToken = parse.get("tenant_access_token").toString();
+        Integer expires_in = (Integer) parse.get("expire");
+        ExternalTokenEntity externalTokenEntity = new ExternalTokenEntity();
+        long expTimePoint = System.currentTimeMillis() + expires_in * 1000L;
+        externalTokenEntity.setId(MessageEnum.LARK.getFlag());
+        externalTokenEntity.setToken(tenantAccessToken);
+        externalTokenEntity.setExpTime(expTimePoint);
+        externalTokenManage.refreshToken(externalTokenEntity);
+    }
+
+    private Map<String, Object> buildAccessTokenResult(String json) {
+        if (ObjectUtils.isEmpty(json)) {
+            DEException.throwException("get access token error");
+        }
+        Map<String, Object> resultMap = JsonUtil.parse(json, Map.class);
+        if (Integer.parseInt(resultMap.get("code").toString()) != 0) {
+            DEException.throwException(resultMap.get("msg").toString());
+        }
+        return resultMap;
+    }
+
+    private String buildAccessTokenParam(String appId, String appSecret) {
+        Map<String, String> param = new HashMap<>();
+        param.put("app_id", appId);
+        param.put("app_secret", appSecret);
+        return Objects.requireNonNull(JsonUtil.toJSONString(param)).toString();
     }
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
@@ -909,8 +975,8 @@ public class DatasourceServer implements DatasourceApi {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
             String status = null;
-            if (coreDatasource.getType().equals("API")) {
-                status = ApiUtils.checkStatus(datasourceRequest);
+            if (coreDatasource.getType().startsWith("API")) {
+                status = (String) invokeMethod(coreDatasource.getType(), "checkAPIStatus", DatasourceRequest.class, datasourceRequest);
             } else {
                 Provider provider = ProviderFactory.getProvider(coreDatasource.getType());
                 status = provider.checkStatus(datasourceRequest);
@@ -921,6 +987,10 @@ public class DatasourceServer implements DatasourceApi {
         }
     }
 
+    public String getTenantAccessToken() {
+        LarkInfoVO larkInfo = larkManage.query();
+        return externalTokenManage.getToken(MessageEnum.LARK.getFlag(), t -> generateToken(larkInfo));
+    }
 
     public void updateDemoDs() {
     }
@@ -968,7 +1038,7 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dsId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
-        List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
+        List<DatasetTableDTO> datasetTableDTOS = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
         for (int i = 0; i < pager.getRecords().size(); i++) {
             for (int i1 = 0; i1 < datasetTableDTOS.size(); i1++) {
                 if (pager.getRecords().get(i).getTableName().equalsIgnoreCase(datasetTableDTOS.get(i1).getTableName())) {
@@ -1124,7 +1194,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, datasource);
 
-        if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
+        if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.toString())) {
             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
             List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
             List<ApiDefinition> params = new ArrayList<>();
@@ -1203,7 +1273,7 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         try {
             checkDatasourceStatus(datasourceDTO);
-            if (!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType())) {
+            if (!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType()) && !coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                 calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
             }
         } catch (DEException e) {
@@ -1240,5 +1310,36 @@ public class DatasourceServer implements DatasourceApi {
         }
         vo.setHost(host);
         return vo;
+    }
+
+    private Method getMethod(String dsType, String methodName, Class<?> classes) {
+        Method method = null;
+        try {
+            String ClassName = "io.dataease.datasource.provider.ApiUtils";
+            if (!dsType.equals(DatasourceConfiguration.DatasourceType.API.name())) {
+                ClassName = "io.dataease.datasource.provider.LarkUtils";
+            }
+            Class<?> clazz = Class.forName(ClassName);
+            method = clazz.getMethod(methodName, classes);
+        } catch (Exception e) {
+            DEException.throwException("Cant find method: " + e.getMessage());
+        }
+        return method;
+    }
+
+    public Object invokeMethod(String dsType, String methodName, Class<?> classes, Object object) {
+        Object resObj = null;
+        try {
+            Method method = getMethod(dsType, methodName, classes);
+            if (object instanceof DatasourceRequest) {
+                Class<?> clazz = Class.forName(DatasourceRequest.class.getName());
+                Method setToken = clazz.getMethod("setToken", String.class);
+                setToken.invoke(object, getTenantAccessToken());
+            }
+            resObj = method.invoke(null, object);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+        return resObj;
     }
 }

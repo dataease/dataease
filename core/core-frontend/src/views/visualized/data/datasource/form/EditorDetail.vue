@@ -24,9 +24,10 @@ import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
-import { XpackComponent } from '@/components/plugin'
+import {PluginComponent, XpackComponent} from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
+import LarkItemDraw from '@/views/visualized/data/datasource/form/LarkItemDraw_bak.vue'
 const { t } = useI18n()
 const prop = defineProps({
   form: {
@@ -95,6 +96,7 @@ const defaultRule = {
 const rule = ref<FormRules>(cloneDeep(defaultRule))
 const api_table_title = ref('')
 const editApiItem = ref()
+const editLarkItem = ref()
 const defaultApiItem = {
   name: '',
   deTableName: '',
@@ -127,7 +129,7 @@ const defaultApiItem = {
 }
 
 const initForm = type => {
-  if (type !== 'API') {
+  if (!type.startsWith('API')) {
     form.value.configuration = {
       dataBase: '',
       jdbcUrl: '',
@@ -148,7 +150,7 @@ const initForm = type => {
     rule.value = cloneDeep(defaultRule)
     setRules()
   }
-  if (type === 'API') {
+  if (type.startsWith('API')) {
     form.value.syncSetting = {
       updateType: 'all_scope',
       syncRate: 'SIMPLE_CRON',
@@ -170,7 +172,7 @@ const initForm = type => {
   }, 0)
 }
 
-const notapiexcelconfig = computed(() => form.value.type !== 'API')
+const notapiexcelconfig = computed(() => !form.value.type.startsWith('API'))
 
 const authMethodList = [
   {
@@ -353,7 +355,7 @@ const setRules = () => {
 watch(
   () => form.value.type,
   val => {
-    if (val !== 'API') {
+    if (!val.startsWith('API')) {
       rule.value = cloneDeep(defaultRule)
       setRules()
     }
@@ -422,6 +424,37 @@ const addApiItem = item => {
   }
   nextTick(() => {
     editApiItem.value.initApiItem(
+      apiItem,
+      form.value,
+      activeName.value,
+      editItem,
+      isSupportSetKey.value
+    )
+  })
+}
+
+const addLarkItem = item => {
+  let apiItem = null
+  let editItem = false
+  api_table_title.value = t('datasource.data_table')
+  if (item) {
+    apiItem = cloneDeep(item)
+    editItem = true
+  } else {
+    apiItem = cloneDeep(defaultApiItem)
+    apiItem.type = activeName.value
+    let serialNumber1 =
+      form.value.apiConfiguration.length > 0
+        ? form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
+        : 0
+    let serialNumber2 =
+      form.value.paramsConfiguration && form.value.paramsConfiguration.length > 0
+        ? form.value.paramsConfiguration[form.value.paramsConfiguration.length - 1].serialNumber + 1
+        : 0
+    apiItem.serialNumber = serialNumber1 + serialNumber2
+  }
+  nextTick(() => {
+    editLarkItem.value.initApiItem(
       apiItem,
       form.value,
       activeName.value,
@@ -604,6 +637,7 @@ const apiRule = {
 }
 const dialogEditParams = ref(false)
 const dialogRenameApi = ref(false)
+const dialogAddLarkItem = ref(false)
 const activeParamsName = ref('')
 const activeParamsID = ref(0)
 const paramsObj = ref({
@@ -757,7 +791,7 @@ defineExpose({
 <template>
   <div class="editor-detail">
     <div class="detail-inner create-dialog">
-      <div v-show="form.type === 'API'" class="info-update">
+      <div v-show="form.type.startsWith('API')" class="info-update">
         <div :class="activeStep === 1 && 'active'" class="info-text">
           {{ t('data_source.source_configuration_information') }}
         </div>
@@ -766,7 +800,10 @@ defineExpose({
           {{ t('data_source.data_update_settings') }}
         </div>
       </div>
-      <div class="title-form_primary base-info" v-show="activeStep !== 2 && form.type === 'API'">
+      <div
+        class="title-form_primary base-info"
+        v-show="activeStep !== 2 && form.type.startsWith('API')"
+      >
         {{ t('datasource.basic_info') }}
       </div>
       <el-form
@@ -968,6 +1005,90 @@ defineExpose({
               </el-table>
             </div>
           </div>
+        </template>
+        <template v-if="form.type === 'APILark'">
+          <div class="title-form_primary flex-space table-info-mr" v-show="activeStep !== 2">
+            <el-tabs v-model="activeName" class="api-tabs">
+              <el-tab-pane :label="t('datasource.data_table')" name="table"></el-tab-pane>
+            </el-tabs>
+            <el-button type="primary" style="margin-left: auto" @click="() => addLarkItem(null)">
+              <template #icon>
+                <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
+              </template>
+              {{ t('common.add') }}
+            </el-button>
+          </div>
+          <empty-background
+            v-show="activeStep !== 2"
+            v-if="!form.apiConfiguration.length && activeName === 'table'"
+            :description="t('datasource.no_data_table')"
+            img-type="noneWhite"
+          />
+          <template v-if="form.type === 'APILark' && activeStep === 1 && activeName === 'table'">
+            <div class="api-card-content">
+              <div
+                v-for="(api, idx) in form.apiConfiguration"
+                :key="api.id"
+                class="api-card"
+                @click="addLarkItem(api)"
+              >
+                <el-row>
+                  <el-col style="display: flex" :span="19">
+                    <span class="name ellipsis">{{ api.name }}</span>
+                    <span v-if="api.status === 'Error'" class="de-tag invalid">{{
+                      t('datasource.invalid')
+                    }}</span>
+                    <span v-if="api.status === 'Success'" class="de-tag valid">{{
+                      t('datasource.valid')
+                    }}</span>
+                  </el-col>
+                  <el-col style="text-align: right" :span="5">
+                    <el-icon class="de-copy-icon hover-icon" @click.stop="copyItem(api)">
+                      <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
+                    </el-icon>
+
+                    <span @click.stop>
+                      <el-popover
+                        placement="top"
+                        width="200"
+                        :ref="setItemRef"
+                        show-arrow
+                        popper-class="api-table-delete"
+                        trigger="click"
+                      >
+                        <template #reference>
+                          <el-icon class="de-delete-icon hover-icon">
+                            <Icon name="de-delete"><deDelete class="svg-icon" /></Icon>
+                          </el-icon>
+                        </template>
+                        <template #default>
+                          <el-icon class="de-copy-icon icon-warning">
+                            <Icon name="icon_warning_filled"
+                              ><icon_warning_filled class="svg-icon"
+                            /></Icon>
+                          </el-icon>
+                          <div class="tips">
+                            {{ t('datasource.delete_this_item') }}
+                          </div>
+                          <div class="foot">
+                            <el-button style="min-width: 48px" secondary @click="cancelItem(idx)">{{
+                              t('common.cancel')
+                            }}</el-button>
+                            <el-button
+                              style="min-width: 48px"
+                              type="primary"
+                              @click="deleteItem(api, idx)"
+                              >{{ t('common.sure') }}</el-button
+                            >
+                          </div>
+                        </template>
+                      </el-popover>
+                    </span>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </template>
         </template>
         <template v-if="notapiexcelconfig">
           <el-form-item
@@ -1344,7 +1465,7 @@ defineExpose({
         <el-form-item
           :label="t('datasource.update_type')"
           prop="syncSetting.updateType"
-          v-if="activeStep === 2 && form.type === 'API'"
+          v-if="activeStep === 2 && form.type.startsWith('API')"
         >
           <el-radio-group v-model="form.syncSetting.updateType">
             <el-radio label="all_scope">{{ t('datasource.all_scope') }}</el-radio>
@@ -1354,7 +1475,7 @@ defineExpose({
         <el-form-item
           :label="t('datasource.sync_rate')"
           prop="syncSetting.syncRate"
-          v-if="activeStep === 2 && form.type === 'API'"
+          v-if="activeStep === 2 && form.type.startsWith('API')"
         >
           <el-radio-group v-model="form.syncSetting.syncRate" @change="onRateChange">
             <el-radio label="RIGHTNOW">{{ t('data_source.update_now') }}</el-radio>
@@ -1363,7 +1484,11 @@ defineExpose({
           </el-radio-group>
         </el-form-item>
         <div
-          v-if="activeStep === 2 && form.type === 'API' && form.syncSetting.syncRate !== 'RIGHTNOW'"
+          v-if="
+            activeStep === 2 &&
+            form.type.startsWith('API') &&
+            form.syncSetting.syncRate !== 'RIGHTNOW'
+          "
           class="execute-rate-cont"
         >
           <el-form-item
@@ -1496,8 +1621,20 @@ defineExpose({
           <el-button type="primary" @click="saveApiObj">{{ t('dataset.confirm') }} </el-button>
         </template>
       </el-dialog>
-
       <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
+      <plugin-component
+        :jsname="getPluginStatic(currentDsType)"
+        ref="xpack"
+        :form="form"
+        :editDs="editDs"
+        :active-step="activeApiStep"
+        @submitForm="handleSubmit"
+        v-if="
+              activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible && isPlugin
+            "
+      >
+      </plugin-component>
+<!--      <lark-item-draw @return-item="returnItem" ref="editLarkItem"></lark-item-draw>-->
     </div>
   </div>
 </template>
