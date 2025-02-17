@@ -1588,7 +1588,6 @@ defineExpose({
     :style="editStyle"
     @contextmenu="handleContextMenu"
   >
-    ---{{ componentData[componentData.length - 1].component }}
     <slot name="canvasDragTips" />
     <drag-info v-if="dragInfoShow"></drag-info>
     <canvas-opt-bar
