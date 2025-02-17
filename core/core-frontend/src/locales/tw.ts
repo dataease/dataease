@@ -4032,7 +4032,8 @@ export default {
     clear_selection: '取消選擇',
     truncate_table: '清空數據',
     truncate: '清空',
-    confirm_truncate_table: '確定要清空數據嗎',
+    confirm_truncate_table: '確定要清空數據嗎？',
+    add_search_condition: '添加篩選條件',
     form: {
       add_detail_columns: '添加字段描述',
       detail_columns: '字段描述',

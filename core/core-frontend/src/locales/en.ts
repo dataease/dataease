@@ -4138,7 +4138,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     confirm_delete_folder: 'Are you sure you want to delete this folder?',
     confirm_delete_form: 'Are you sure you want to delete this form?',
     confirm_delete_multiple_data: 'Are you sure you want to delete {0} pieces of data?',
-    confirm_delete_data: 'Are you sure you want to delete the data? ',
+    confirm_delete_data: 'Are you sure you want to delete the data?',
     no_form: 'No form yet',
     on_the_left: 'Please select a form on the left',
     exporting: 'Backend export in progress, can go to',
@@ -4146,7 +4146,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     clear_selection: 'Clear selection',
     truncate_table: 'Truncate table',
     truncate: 'Truncate',
-    confirm_truncate_table: 'Confirm to truncate table',
+    confirm_truncate_table: 'Confirm to truncate table?',
+    add_search_condition: 'Add search condition',
     form: {
       add_detail_columns: 'Add column details',
       detail_columns: 'Column details',
