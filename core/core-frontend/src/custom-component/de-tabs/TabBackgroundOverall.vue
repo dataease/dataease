@@ -34,6 +34,7 @@ const onTitleBackgroundChange = (params, paramsName) => {
       <el-tab-pane :label="t('visualization.active_title_background')" name="activeBackground">
         <background-overall-common
           :themes="themes"
+          edit-position="tab"
           :common-background-pop="element.titleBackground.active"
           component-position="component"
           @onBackgroundChange="onTitleBackgroundChange($event, 'active')"
@@ -57,6 +58,7 @@ const onTitleBackgroundChange = (params, paramsName) => {
         <background-overall-common
           v-show="!element.titleBackground.multiply"
           :themes="themes"
+          edit-position="tab"
           :common-background-pop="element.titleBackground.inActive"
           component-position="component"
           @onBackgroundChange="onTitleBackgroundChange($event, 'inActive')"
