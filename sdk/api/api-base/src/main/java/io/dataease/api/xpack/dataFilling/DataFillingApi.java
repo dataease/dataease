@@ -54,6 +54,9 @@ public interface DataFillingApi {
     @GetMapping("/datasource/list")
     List<SimpleDatasourceDTO> listDatasourceList();
 
+    @GetMapping("/datasource/listAll")
+    List<SimpleDatasourceDTO> listDatasourceListAll();
+
     @PostMapping("/form/{optionDatasource}/options")
     List<ColumnOption> listColumnData(@PathVariable("optionDatasource") Long optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception;
 

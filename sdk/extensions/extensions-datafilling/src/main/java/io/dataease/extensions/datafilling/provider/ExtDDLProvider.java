@@ -19,7 +19,11 @@ public abstract class ExtDDLProvider {
 
     public abstract String createTableSql(String table, List<ExtTableField> formFields);
 
-    public abstract String getTableFieldsSql(String table);
+    @Deprecated
+    public String getTableFieldsSql(String table) {
+        String sql = "SELECT * FROM `$TABLE_NAME$` LIMIT 0 OFFSET 0";
+        return sql.replace("$TABLE_NAME$", table);
+    }
 
     public abstract String addTableColumnSql(String table, List<ExtTableField> formFieldsToCreate, List<ExtTableField> formFieldsToModify);
 
@@ -60,12 +64,30 @@ public abstract class ExtDDLProvider {
         return builder.toString();
     }
 
-    public abstract String searchColumnData(String table, String column, String order);
-
-    public abstract String searchColumnRowDataOne(String table, List<TableField> searchFields, TableFieldWithValue tableFieldWithValue);
+    @Deprecated
+    public String searchColumnData(String table, String column, String order) {
+        String baseSql = "SELECT DISTINCT `$Column_Field$` FROM `$TABLE_NAME$` ORDER BY `$Column_Field$` $Column_Order$;";
+        baseSql = baseSql.replace("$TABLE_NAME$", table).replace("$Column_Field$", column).replace("$Column_Field$", column);
+        if (StringUtils.equalsIgnoreCase(order, "desc")) {
+            baseSql = baseSql.replace("$Column_Order$", "DESC");
+        } else {
+            baseSql = baseSql.replace("$Column_Order$", "ASC");
+        }
+        return baseSql;
+    }
 
     @Deprecated
-    public String countSql(String table, String whereSql){
+    public String searchColumnRowDataOne(String table, List<TableField> searchFields, TableFieldWithValue tableFieldWithValue) {
+        String baseSql = "SELECT $Column_Fields$ FROM `$TABLE_NAME$` WHERE `$Column_Field$` = ? LIMIT 1;";
+        baseSql = baseSql
+                .replace("$Column_Fields$", StringUtils.join(searchFields.stream().map(s -> "`" + s.getOriginName() + "`").toList(), ", "))
+                .replace("$TABLE_NAME$", table)
+                .replace("$Column_Field$", tableFieldWithValue.getFiledName());
+        return baseSql;
+    }
+
+    @Deprecated
+    public String countSql(String table, String whereSql) {
         String baseSql = "SELECT COUNT(1) FROM `$TABLE_NAME$` $WHERE_SQL$ ;";
         baseSql = baseSql.replace("$TABLE_NAME$", table);
         if (StringUtils.isBlank(whereSql)) {
@@ -88,7 +110,19 @@ public abstract class ExtDDLProvider {
 
     public abstract String updateDataByIdSql(String tableName, List<TableFieldWithValue> fields, TableFieldWithValue pk);
 
-    public abstract String checkUniqueValueSql(String tableName, TableFieldWithValue field, TableFieldWithValue pk);
+    @Deprecated
+    public String checkUniqueValueSql(String tableName, TableFieldWithValue field, TableFieldWithValue pk) {
+        String sql = "SELECT COUNT(1) FROM `$TABLE_NAME$` WHERE `$Column_Field$` = ? $PRIMARY_KEY_CONDITION$;";
+
+        StringBuilder pkCondition = new StringBuilder();
+        if (pk != null) {
+            pkCondition.append("AND `").append(pk.getFiledName()).append("` != ?");
+        }
+
+        return sql.replace("$TABLE_NAME$", tableName)
+                .replace("$Column_Field$", field.getFiledName())
+                .replace("$PRIMARY_KEY_CONDITION$", pkCondition.toString());
+    }
 
     @Deprecated
     public String whereSql(String tableName, List<TableField> searchFields) {
