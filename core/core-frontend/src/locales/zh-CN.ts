@@ -4277,6 +4277,7 @@ export default {
     wecom: '企业微信',
     dingtalk: '钉钉',
     lark: '飞书',
+    larksuite: '国际飞书',
     notification_setting: '告警通知',
     notification_method: '通知方式',
     notification_user: '通知人',

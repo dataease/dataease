@@ -4272,6 +4272,8 @@ export default {
     email: '郵件',
     wecom: '企業微信',
     dingtalk: '釘釘',
+    lark: '飛書',
+    larksuite: '國際飛書',
     notification_setting: '告警通知',
     notification_method: '通知方式',
     notification_user: '通知人',

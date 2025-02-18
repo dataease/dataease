@@ -4395,6 +4395,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     wecom: 'WeCom',
     dingtalk: 'DingTalk',
     lark: 'Lark',
+    larksuite: 'Larksuite',
     notification_setting: 'Alarm notification',
     notification_method: 'Notification method',
     notification_user: 'Notifier',
