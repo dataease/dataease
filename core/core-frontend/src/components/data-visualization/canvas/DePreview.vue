@@ -397,9 +397,11 @@ const userViewEnlargeOpen = (opt, item) => {
   )
 }
 const handleMouseDown = () => {
-  dvMainStore.setCurComponent({ component: null, index: null })
-  if (!curComponent.value || (curComponent.value && curComponent.value.category !== 'hidden')) {
-    dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
+  if (showPosition.value !== 'viewDialog') {
+    dvMainStore.setCurComponent({ component: null, index: null })
+    if (!curComponent.value || (curComponent.value && curComponent.value.category !== 'hidden')) {
+      dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
+    }
   }
 }
 
