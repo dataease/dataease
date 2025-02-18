@@ -6,7 +6,7 @@ import { parseJson } from '@/views/chart/components/js/util'
 import { Scene } from '@antv/l7-scene'
 import { deepCopy } from '@/utils/utils'
 
-export const configCarouselTooltip = (chart, view, data, scene, customSubArea, drawOption?) => {
+export const configCarouselTooltip = (chart, view, data, scene, customSubArea?, drawOption?) => {
   if (['bubble-map', 'map'].includes(chart.type)) {
     data = view.source.data.dataArray
       ?.filter(i => i.dimensionList?.length > 0)
@@ -154,6 +154,17 @@ export class CarouselManager {
       const divElement = document.getElementById(this.chart.container)
       divElement.addEventListener('mouseenter', this.pauseCarouselPopups)
       divElement.addEventListener('mouseleave', this.resumeCarouselPopups)
+      // 移动端符号地图不支持mouseenter和mouseleave事件，这里特殊处理一下
+      if (this.chart.type === 'symbolic-map') {
+        // 监听符号触摸事件, 暂停轮播
+        scene?.getLayers()?.[0]?.addListener('touchend', () => {
+          this.pauseCarouselPopups()
+        })
+        // 地图空白区域触摸事件, 启动轮播
+        scene?.getMapCanvasContainer()?.addEventListener('touchend', () => {
+          this.resumeCarouselPopups()
+        })
+      }
       // 监听页面可见性变化
       document.addEventListener('visibilitychange', this.handleVisibilityChange)
       carouselManagerInstances[this.chart.container] = this
@@ -227,8 +238,26 @@ export class CarouselManager {
       const containerElement = document.getElementById(this.chart.container)
       if (containerElement) {
         if (this.chart.type === 'symbolic-map') {
+          // 轮播进行时，隐藏隐藏鼠标悬浮的tooltip
+          const mouseTooltip = containerElement.getElementsByClassName(
+            'l7-popup-' + this.chart.container
+          )
+          for (const tooltip of Array.from(mouseTooltip)) {
+            const tooltipElement = tooltip as HTMLElement
+            tooltipElement.classList.add('l7-popup-hide')
+          }
           this.createSymbolicMapPopup(index)
         } else {
+          if (this.chart.type === 'map') {
+            // 轮播进行时，隐藏隐藏鼠标悬浮的tooltip
+            const mouseTooltip = containerElement.getElementsByClassName(
+              'l7plot-tooltip-container'
+            )
+            for (const tooltip of Array.from(mouseTooltip)) {
+              const tooltipElement = tooltip as HTMLElement
+              tooltipElement.style.display = 'none'
+            }
+          }
           this.createPopup(index)
         }
         this.clearExistingTimers()

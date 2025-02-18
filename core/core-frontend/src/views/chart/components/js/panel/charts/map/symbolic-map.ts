@@ -16,7 +16,7 @@ import { deepCopy } from '@/utils/utils'
 import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
 import { PointLayer } from '@antv/l7-layers'
-import { LayerPopup } from '@antv/l7'
+import { LayerPopup, Popup } from '@antv/l7'
 import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
@@ -166,12 +166,12 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     const configList: L7Config[] = []
     const symbolicLayer = await this.buildSymbolicLayer(chart, scene)
     configList.push(symbolicLayer)
-    const tooltipLayer = this.buildTooltip(chart, container, symbolicLayer)
+    const tooltipLayer = this.buildTooltip(chart, container, symbolicLayer, scene)
     if (tooltipLayer) {
       scene.addPopup(tooltipLayer)
     }
     this.buildLabel(chart, configList)
-    symbolicLayer.on('inited', ev => {
+    symbolicLayer.on('inited', () => {
       chart.container = container
       configCarouselTooltip(chart, symbolicLayer, symbolicLayer.sourceOption.data, scene)
     })
@@ -444,7 +444,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
    * @param chart
    * @param pointLayer
    */
-  buildTooltip = (chart, container, pointLayer) => {
+  buildTooltip = (chart, container, pointLayer, scene) => {
     const customAttr = chart.customAttr ? parseJson(chart.customAttr) : null
     this.clearPopup(container)
     if (customAttr?.tooltip?.show) {
@@ -506,8 +506,26 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           }
         })
       }
+      pointLayer.on('touchend', e => {
+        if (e.lngLat) {
+          const fieldData = {
+            ...e.feature,
+            ...Object.fromEntries(this.mergeDetailsToMap(e.feature.details ?? []))
+          }
+          const content = this.buildTooltipContent(tooltip, fieldData, showFields)
+          const popup = new Popup({
+            lngLat: e.lngLat,
+            title: '',
+            closeButton: false,
+            closeOnClick: true,
+            html: `${htmlPrefix}${content}${htmlSuffix}`
+          })
+          scene.addPopup(popup)
+        }
+      })
       return new LayerPopup({
         anchor: 'top-left',
+        className: 'l7-popup-' + container,
         items: [
           {
             layer: pointLayer,
