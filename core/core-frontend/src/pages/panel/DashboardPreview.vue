@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive, onBeforeMount, nextTick, inject } from 'vue'
-import { initCanvasData, initCanvasDataMobile } from '@/utils/canvasUtils'
+import {initCanvasData, initCanvasDataMobile, onInitReady} from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmbedded } from '@/store/modules/embedded'
 import { isMobile } from '@/utils/utils'
@@ -105,10 +105,12 @@ onBeforeMount(async () => {
       state.curPreviewGap = curPreviewGap
       nextTick(() => {
         dashboardPreview.value.restore()
+        onInitReady({ resourceId: embeddedParams.dvId })
       })
       state.initState = false
       dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult, 'outer')
       state.initState = true
+
     }
   )
 })

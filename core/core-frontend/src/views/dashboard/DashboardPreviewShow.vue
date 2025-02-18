@@ -9,7 +9,6 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { initCanvasData, initCanvasDataPrepare, onInitReady } from '@/utils/canvasUtils'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
