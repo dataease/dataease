@@ -24,10 +24,9 @@ import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
-import {PluginComponent, XpackComponent} from '@/components/plugin'
+import { PluginComponent, XpackComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
-import LarkItemDraw from '@/views/visualized/data/datasource/form/LarkItemDraw_bak.vue'
 const { t } = useI18n()
 const prop = defineProps({
   form: {
@@ -97,6 +96,11 @@ const rule = ref<FormRules>(cloneDeep(defaultRule))
 const api_table_title = ref('')
 const editApiItem = ref()
 const editLarkItem = ref()
+const pluginDs = ref([])
+const pluginIndex = ref('')
+const isPlugin = ref(false)
+const xpack = ref()
+const visible = ref(false)
 const defaultApiItem = {
   name: '',
   deTableName: '',
@@ -128,7 +132,10 @@ const defaultApiItem = {
   jsonPath: ''
 }
 
-const initForm = type => {
+const initForm = (type, pluginDsList, indexPlugin, isPluginDs) => {
+  pluginDs.value = pluginDsList
+  pluginIndex.value = indexPlugin
+  isPlugin.value = isPluginDs
   if (!type.startsWith('API')) {
     form.value.configuration = {
       dataBase: '',
@@ -165,14 +172,10 @@ const initForm = type => {
   if (type === 'oracle') {
     form.value.configuration.connectionType = 'sid'
   }
-
   form.value.type = type
-  setTimeout(() => {
-    dsForm?.value?.clearValidate()
-  }, 0)
 }
 
-const notapiexcelconfig = computed(() => !form.value.type.startsWith('API'))
+const notapiexcelconfig = computed(() => form.value && !form.value.type.startsWith('API'))
 
 const authMethodList = [
   {
@@ -453,14 +456,12 @@ const addLarkItem = item => {
         : 0
     apiItem.serialNumber = serialNumber1 + serialNumber2
   }
+  visible.value = true
   nextTick(() => {
-    editLarkItem.value.initApiItem(
-      apiItem,
-      form.value,
-      activeName.value,
-      editItem,
-      isSupportSetKey.value
-    )
+    xpack?.value?.invokeMethod({
+      methodName: 'initApiItem',
+      args: [apiItem, form.value, activeName.value, editItem, isSupportSetKey.value]
+    })
   })
 }
 
@@ -758,6 +759,17 @@ const editParams = data => {
   dialogEditParams.value = true
 }
 
+const getPluginStatic = () => {
+  const arr = pluginDs.value.filter(ele => {
+    return ele.type === form.value.type
+  })
+  return pluginIndex.value
+    ? pluginIndex.value
+    : arr && arr.length > 0
+    ? arr[0].staticMap?.index
+    : null
+}
+
 const delParams = data => {
   ElMessageBox.confirm(t('data_source.sure_to_delete'), {
     confirmButtonType: 'danger',
@@ -1006,7 +1018,7 @@ defineExpose({
             </div>
           </div>
         </template>
-        <template v-if="form.type === 'APILark'">
+        <template v-if="form.type !== 'API' && form.type.startsWith('API')">
           <div class="title-form_primary flex-space table-info-mr" v-show="activeStep !== 2">
             <el-tabs v-model="activeName" class="api-tabs">
               <el-tab-pane :label="t('datasource.data_table')" name="table"></el-tab-pane>
@@ -1024,7 +1036,7 @@ defineExpose({
             :description="t('datasource.no_data_table')"
             img-type="noneWhite"
           />
-          <template v-if="form.type === 'APILark' && activeStep === 1 && activeName === 'table'">
+          <template v-if="activeStep === 1 && activeName === 'table'">
             <div class="api-card-content">
               <div
                 v-for="(api, idx) in form.apiConfiguration"
@@ -1623,18 +1635,12 @@ defineExpose({
       </el-dialog>
       <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
       <plugin-component
-        :jsname="getPluginStatic(currentDsType)"
+        :jsname="getPluginStatic()"
         ref="xpack"
-        :form="form"
-        :editDs="editDs"
-        :active-step="activeApiStep"
-        @submitForm="handleSubmit"
-        v-if="
-              activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible && isPlugin
-            "
+        @return-item="returnItem"
+        v-if="isPlugin && visible"
       >
       </plugin-component>
-<!--      <lark-item-draw @return-item="returnItem" ref="editLarkItem"></lark-item-draw>-->
     </div>
   </div>
 </template>

@@ -86,7 +86,7 @@ const selectDsType = (type: string) => {
   activeStep.value = 1
   activeApiStep.value = 1
   nextTick(() => {
-    detail?.value?.initForm(type) ||
+    detail?.value?.initForm(type, pluginDs.value, pluginIndex.value, isPlugin.value) ||
       xpack?.value?.invokeMethod({
         methodName: 'initForm',
         args: type
@@ -339,7 +339,6 @@ const validateDS = () => {
     configuration: string
     apiConfiguration: string
   }
-  console.log(form)
   if (currentDsType.value.includes('API')) {
     if (form.apiConfiguration.length === 0) {
       ElMessage.error(t('data_source.add_data_table'))
@@ -421,7 +420,6 @@ const typeTitle = computed(() => {
 
 const saveDS = () => {
   isUpdate = false
-  console.log('1')
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
     Form,
     'configuration' | 'apiConfiguration'
@@ -429,7 +427,6 @@ const saveDS = () => {
     configuration: string
     apiConfiguration: string
   }
-  console.log('1')
   if (currentDsType.value === 'Excel') {
     excel.value.uploadStatus(false)
     if (!excel.value.sheetFile?.name) {
@@ -467,7 +464,6 @@ const saveDS = () => {
         request.apiConfiguration[i].fields[j].value = []
       }
     }
-    console.log('3')
     let apiItems = []
     apiItems = apiItems.concat(request.apiConfiguration)
     if (request.paramsConfiguration) {
@@ -479,7 +475,6 @@ const saveDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  console.log('4')
   if (isPlugin.value) {
     xpack?.value?.invokeMethod({
       methodName: 'submitForm',
@@ -490,7 +485,6 @@ const saveDS = () => {
     request.apiConfiguration = ''
     validate(val => {
       if (val) {
-        console.log('5')
         doSaveDs(request)
       }
     })
@@ -506,7 +500,6 @@ const doSaveDs = request => {
       showClose: false,
       tip: ''
     }
-    console.log('6')
     checkRepeat(request).then(res => {
       let method = request.id === '' ? save : update
       if (res) {
@@ -812,7 +805,11 @@ defineExpose({
             :active-step="activeApiStep"
             :is-supportSetKey="isSupportSetKey"
             v-if="
-              activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible && !isPlugin
+              activeStep !== 0 &&
+              currentDsType &&
+              currentDsType !== 'Excel' &&
+              visible &&
+              (!isPlugin || currentDsType.startsWith('API'))
             "
           ></editor-detail>
           <plugin-component
@@ -823,7 +820,12 @@ defineExpose({
             :active-step="activeApiStep"
             @submitForm="handleSubmit"
             v-if="
-              activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible && isPlugin
+              activeStep !== 0 &&
+              currentDsType &&
+              currentDsType !== 'Excel' &&
+              visible &&
+              isPlugin &&
+              !currentDsType.startsWith('API')
             "
           >
           </plugin-component>
