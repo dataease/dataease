@@ -11,14 +11,10 @@ const router = createRouter({
 const rawInstall = router.install
 router.install = app => {
   const hash = window.location.hash
-  console.log('hash', hash)
   rawInstall(app)
-  console.log('hash1', window.location.hash)
   setTimeout(() => {
-    console.log('hash2', window.location.hash)
+    window.location.hash = hash
   }, 300)
-  window.location.hash = hash
-  console.log('hash3', window.location.hash)
 }
 
 export const setupRouter = (app: App<Element>) => {
