@@ -344,6 +344,7 @@ onUnmounted(() => {
         :title="t('visualization.dashboard_configuration')"
         :width="420"
         aside-position="right"
+        side-name="canvas"
         class="left-sidebar"
       >
         <DbCanvasAttr></DbCanvasAttr>
