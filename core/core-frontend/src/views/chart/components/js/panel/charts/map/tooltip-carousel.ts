@@ -250,9 +250,7 @@ export class CarouselManager {
         } else {
           if (this.chart.type === 'map') {
             // 轮播进行时，隐藏隐藏鼠标悬浮的tooltip
-            const mouseTooltip = containerElement.getElementsByClassName(
-              'l7plot-tooltip-container'
-            )
+            const mouseTooltip = containerElement.getElementsByClassName('l7plot-tooltip-container')
             for (const tooltip of Array.from(mouseTooltip)) {
               const tooltipElement = tooltip as HTMLElement
               tooltipElement.style.display = 'none'
