@@ -14,7 +14,7 @@ router.install = app => {
   rawInstall(app)
   setTimeout(() => {
     window.location.hash = hash
-  }, 300)
+  }, 100)
 }
 
 export const setupRouter = (app: App<Element>) => {
