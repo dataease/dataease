@@ -3,7 +3,10 @@ import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
 
 export const routes: AppRouteRecordRaw[] = []
-
+createRouter({
+  history: createWebHashHistory(),
+  routes: routes as RouteRecordRaw[]
+})
 const fn = () => {
   console.log('push')
 }
