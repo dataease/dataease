@@ -397,6 +397,7 @@ const emits = defineEmits(['update:item', 'del'])
                   v-for="i in checkListWithFilter"
                   class="infinite-list-item"
                   @click="checkItem(i)"
+                  :title="i"
                 >
                   <i class="el-icon-check" :style="{ opacity: checklist.includes(i) ? 1 : 0 }"></i>
                   <label>{{ i }}</label>

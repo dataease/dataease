@@ -337,8 +337,7 @@ const handleFieldIdChange = (val: EnumValue) => {
     })
     .finally(() => {
       loading.value = false
-      if (isFromRemote.value) return
-      if (config.value.defaultValueCheck) {
+      if (config.value.defaultValueCheck && !isFromRemote.value) {
         selectValue.value = Array.isArray(config.value.defaultValue)
           ? [...config.value.defaultValue]
           : config.value.defaultValue
@@ -365,6 +364,8 @@ const handleFieldIdChange = (val: EnumValue) => {
           ? [...selectValue.value]
           : selectValue.value
       }
+
+      isFromRemote.value = false
     })
 }
 
@@ -590,6 +591,7 @@ const getOptionFromCascade = () => {
   if (config.value.optionValueSource !== 1 || ![0, 2, 5].includes(+config.value.displayType)) return
   config.value.selectValue = config.value.multiple ? [] : undefined
   selectValue.value = config.value.multiple ? [] : undefined
+  isFromRemote.value = true
   debounceOptions(1)
 }
 const selectHideClick = () => {

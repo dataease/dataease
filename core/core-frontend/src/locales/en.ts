@@ -1933,7 +1933,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     radar_area_color: 'Enable area',
     table_freeze_tip: 'After merging cells, column and row freezing is not supported',
     merge_cells_tips:
-      'After merging cells, freezing rows and columns and automatic line wrapping will become invalid',
+      'After merging cells, row and column freezing, automatic line wrapping, and zebra pattern will become invalid',
     merge_cells_break_line_tip: 'After merging cells, automatic line wrapping is not supported',
     font_family_ya_hei: 'Microsoft YaHei',
     font_family_song_ti: 'SimSun',
@@ -2009,7 +2009,8 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     increase: 'Increase',
     decrease: 'Decrease',
     total: 'Total',
-    accumulate: 'Accumulate'
+    accumulate: 'Accumulate',
+    table_cross_bg_tip: 'After merging cells，the zebra pattern is not supported'
   },
   dataset: {
     field_value: 'Field Value',
@@ -4395,6 +4396,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     wecom: 'WeCom',
     dingtalk: 'DingTalk',
     lark: 'Lark',
+    larksuite: 'Larksuite',
     notification_setting: 'Alarm notification',
     notification_method: 'Notification method',
     notification_user: 'Notifier',

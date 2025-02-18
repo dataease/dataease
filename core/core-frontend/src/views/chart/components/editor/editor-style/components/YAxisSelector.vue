@@ -277,6 +277,49 @@ onMounted(() => {
         {{ t('chart.axis_show') }}
       </el-checkbox>
     </el-form-item>
+    <div style="padding-left: 22px" v-if="showProperty('axisLine')">
+      <div style="flex: 1; display: flex">
+        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
+          <el-color-picker
+            :disabled="!state.axisForm.axisLine.show"
+            v-model="state.axisForm.axisLine.lineStyle.color"
+            :predefine="predefineColors"
+            :effect="themes"
+            @change="changeAxisStyle('axisLine.lineStyle.color')"
+            is-custom
+          />
+        </el-form-item>
+        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding: 0 4px">
+          <el-select
+            :disabled="!state.axisForm.axisLine.show"
+            style="width: 62px"
+            :effect="props.themes"
+            v-model="state.axisForm.axisLine.lineStyle.style"
+            @change="changeAxisStyle('axisLine.lineStyle.style')"
+          >
+            <el-option
+              v-for="option in splitLineStyle"
+              :key="option.value"
+              :value="option.value"
+              :label="option.label"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
+          <el-input-number
+            :disabled="!state.axisForm.axisLine.show"
+            style="width: 70px"
+            :effect="props.themes"
+            v-model="state.axisForm.axisLine.lineStyle.width"
+            :min="1"
+            :max="10"
+            size="small"
+            controls-position="right"
+            @change="changeAxisStyle('axisLine.lineStyle.width')"
+          />
+        </el-form-item>
+      </div>
+    </div>
     <el-form-item
       class="form-item form-item-checkbox"
       :class="{

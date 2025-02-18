@@ -104,17 +104,19 @@ const closeEditComponentName = () => {
 }
 
 const editComponentName = () => {
-  componentNameEdit.value = true
-  if (isViewTitle.value) {
-    inputComponentName.value.name = view.value.title
-    inputComponentName.value.id = view.value.id
-  } else {
-    inputComponentName.value.name = element.value.name
-    inputComponentName.value.id = element.value.id
+  if (element.value?.id || view.value?.id) {
+    componentNameEdit.value = true
+    if (isViewTitle.value) {
+      inputComponentName.value.name = view.value.title
+      inputComponentName.value.id = view.value.id
+    } else {
+      inputComponentName.value.name = element.value.name
+      inputComponentName.value.id = element.value.id
+    }
+    nextTick(() => {
+      componentNameInputAttr.value.focus()
+    })
   }
-  nextTick(() => {
-    componentNameInputAttr.value.focus()
-  })
 }
 
 const onComponentNameChange = () => {

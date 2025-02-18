@@ -326,9 +326,13 @@ onMounted(() => {
       color: var(--ed-color-black) !important;
     }
     .ed-menu-item:not(.is-disabled):hover,
-    :deep(.ed-sub-menu__title):not(.is-disabled):hover {
+    :deep(.ed-sub-menu):not(.is-active) .ed-sub-menu__title:not(.is-disabled):hover {
       color: #1f2329;
       background: #1f23291a;
+    }
+    :deep(.ed-sub-menu).is-active .ed-sub-menu__title:not(.is-disabled):hover {
+      color: #ffffff !important;
+      background-color: var(--ed-color-primary);
     }
   }
 

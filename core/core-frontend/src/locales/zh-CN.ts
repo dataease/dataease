@@ -1897,7 +1897,7 @@ export default {
     radar_point_size: '辅助点大小',
     radar_area_color: '开启面积',
     table_freeze_tip: '合并单元格后，不支持行列冻结',
-    merge_cells_tips: '合并单元格后，行列冻结、自动换行会失效',
+    merge_cells_tips: '合并单元格后，行列冻结、自动换行、班马纹会失效',
     merge_cells_break_line_tip: '合并单元格后，不支持自动换行',
     font_family_ya_hei: '微软雅黑',
     font_family_song_ti: '宋体',
@@ -1969,7 +1969,8 @@ export default {
     increase: '增加',
     decrease: '减少',
     total: '合计',
-    accumulate: '累加'
+    accumulate: '累加',
+    table_cross_bg_tip: '合并单元格后，不支持班马纹'
   },
   dataset: {
     field_value: '字段值',
@@ -4285,6 +4286,7 @@ export default {
     wecom: '企业微信',
     dingtalk: '钉钉',
     lark: '飞书',
+    larksuite: '国际飞书',
     notification_setting: '告警通知',
     notification_method: '通知方式',
     notification_user: '通知人',

@@ -122,10 +122,27 @@ onMounted(() => {
     >
       <el-checkbox
         v-model="state.tableCellForm.enableTableCrossBG"
-        :label="t('chart.stripe')"
         :effect="themes"
+        :disabled="showProperty('mergeCells') && state.tableCellForm.mergeCells"
         @change="changeTableCell('enableTableCrossBG')"
-      />
+      >
+        <span class="data-area-label">
+          <span style="margin-right: 4px">{{ t('chart.stripe') }}</span>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+            v-if="state.tableCellForm.mergeCells"
+          >
+            <template #content>
+              <div>{{ t('chart.table_cross_bg_tip') }}</div>
+            </template>
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </span>
+      </el-checkbox>
     </el-form-item>
     <el-form-item
       :class="'form-item-' + themes"

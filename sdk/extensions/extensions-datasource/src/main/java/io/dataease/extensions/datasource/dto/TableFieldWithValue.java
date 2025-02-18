@@ -22,6 +22,7 @@ public class TableFieldWithValue implements Serializable {
     private String isDateTime;
     private String dateFormat;
     private String term = "eq";
+    private Integer deExtractType;
 
     public static TableFieldWithValue copy(TableFieldWithValue tableFieldWithValue) {
         return new TableFieldWithValue()
