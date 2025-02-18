@@ -109,6 +109,13 @@ const show = () => {
   snapshotStore.recordSnapshotCache('show')
   menuOpt('show')
 }
+const showMoveMenu = computed(
+  () =>
+    curComponent?.value?.canvasId === 'canvas-main' &&
+    curComponent?.value['category'] === 'base' &&
+    curComponent.value?.component === 'VQuery' &&
+    popComponentDataLength.value === 0
+)
 const categoryChange = type => {
   if (curComponent.value) {
     snapshotStore.recordSnapshotCache('categoryChange')
@@ -323,14 +330,7 @@ const editQueryCriteria = () => {
             is-screen
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
           />
-          <li
-            @click="categoryChange('hidden')"
-            v-show="
-              curComponent['category'] === 'base' &&
-              curComponent.component === 'VQuery' &&
-              popComponentDataLength === 0
-            "
-          >
+          <li @click="categoryChange('hidden')" v-show="showMoveMenu">
             {{ t('visualization.move_to_pop_area') }}
           </li>
           <el-divider class="custom-divider" />
