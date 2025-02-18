@@ -1887,7 +1887,7 @@ export default {
     radar_point_size: '輔助點大小',
     radar_area_color: '開啟面積',
     table_freeze_tip: '合併儲存格後，不支持行列凍結',
-    merge_cells_tips: '合併儲存格後，行列凍結、自動換行會失效',
+    merge_cells_tips: '合併儲存格後，行列凍結、自動換行、班馬紋會失效',
     merge_cells_break_line_tip: '合併儲存格後，不支持自動換行',
     font_family_ya_hei: '微軟雅黙',
     font_family_song_ti: '宋體',
@@ -1959,7 +1959,8 @@ export default {
     increase: '增加',
     decrease: '減少',
     total: '合計',
-    accumulate: '累加'
+    accumulate: '累加',
+    table_cross_bg_tip: '合併儲存格後，不支持斑馬紋'
   },
   dataset: {
     field_value: '欄位值',

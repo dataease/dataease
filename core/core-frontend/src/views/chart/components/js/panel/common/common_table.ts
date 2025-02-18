@@ -401,7 +401,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
         },
         dataCell: {
           cell: {
-            crossBackgroundColor: enableTableCrossBG ? tableItemSubBgColor : tableItemBgColor,
+            crossBackgroundColor: enableTableCrossBG && !tableCell.mergeCells ? tableItemSubBgColor : tableItemBgColor,
             backgroundColor: tableItemBgColor
           },
           bolderText: {
@@ -602,7 +602,8 @@ export function getConditions(chart: Chart) {
   const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
   if (conditions?.length > 0) {
     const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
-    const enableTableCrossBG = tableCell.enableTableCrossBG
+    // 合并单元格时，班马纹失效
+    const enableTableCrossBG = chart.type === 'table-info' ? tableCell.enableTableCrossBG && !tableCell.mergeCells : tableCell.enableTableCrossBG
     const valueColor = isAlphaColor(tableCell.tableFontColor)
       ? tableCell.tableFontColor
       : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
