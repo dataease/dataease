@@ -113,7 +113,8 @@ const onSubmit = async () => {
   if (!checkUsername(username.value) || !validatePwd(password.value)) {
     showToast({
       duration: 2000,
-      message: '用户名、密码不对'
+      message: '用户名、密码不对',
+      className: 'de-mobile-error'
     })
     return
   }
@@ -368,5 +369,8 @@ const loadFail = () => {
       }
     }
   }
+}
+.de-mobile-error {
+  background: var(--van-toast-background) !important;
 }
 </style>
