@@ -120,5 +120,8 @@ const onClickLeft = () => {
   --van-nav-bar-title-text-color: #1f2329;
   --van-font-bold: 500;
   --van-nav-bar-title-font-size: 17px;
+  #preview-canvas-main {
+    height: calc(100% - 44px) !important;
+  }
 }
 </style>
