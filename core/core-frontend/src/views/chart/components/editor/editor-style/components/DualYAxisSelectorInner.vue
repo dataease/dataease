@@ -135,65 +135,76 @@ onMounted(() => {
         </div>
       </el-radio-group>
     </el-form-item>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      :label="t('chart.name')"
-      v-if="showProperty('name')"
-    >
-      <el-input
-        :effect="props.themes"
-        v-model="state.axisForm.name"
+    <el-form-item class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
         size="small"
-        maxlength="50"
-        @blur="changeAxisStyle('name')"
-      />
+        :effect="props.themes"
+        v-model="state.axisForm.nameShow"
+        @change="changeAxisStyle('nameShow')"
+      >
+        {{ t('chart.axis_nameShow') }}
+      </el-checkbox>
     </el-form-item>
-
-    <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes"
-      >{{ t('chart.name') }}{{ t('chart.text') }}</label
-    >
-    <div style="display: flex">
+    <div style="margin-left: 22px">
       <el-form-item
         class="form-item"
         :class="'form-item-' + themes"
-        v-if="showProperty('color')"
-        style="padding-right: 4px"
+        :label="t('chart.name')"
+        v-if="showProperty('name')"
       >
-        <el-color-picker
-          v-model="state.axisForm.color"
-          class="color-picker-style"
-          :predefine="predefineColors"
-          @change="changeAxisStyle('color')"
-          :effect="themes"
-          is-custom
+        <el-input
+          :effect="props.themes"
+          v-model="state.axisForm.name"
+          size="small"
+          maxlength="50"
+          @blur="changeAxisStyle('name')"
         />
       </el-form-item>
-      <el-form-item
-        class="form-item"
-        :class="'form-item-' + themes"
-        v-if="showProperty('fontSize')"
-        style="padding-left: 4px"
-      >
-        <el-tooltip :content="t('chart.font_size')" :effect="toolTip" placement="top">
-          <el-select
-            style="width: 108px"
-            :effect="props.themes"
-            v-model="state.axisForm.fontSize"
-            :placeholder="t('chart.axis_name_fontsize')"
-            @change="changeAxisStyle('fontSize')"
-          >
-            <el-option
-              v-for="option in fontSizeList"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-tooltip>
-      </el-form-item>
-    </div>
 
+      <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes"
+        >{{ t('chart.name') }}{{ t('chart.text') }}</label
+      >
+      <div style="display: flex">
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('color')"
+          style="padding-right: 4px"
+        >
+          <el-color-picker
+            v-model="state.axisForm.color"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeAxisStyle('color')"
+            :effect="themes"
+            is-custom
+          />
+        </el-form-item>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('fontSize')"
+          style="padding-left: 4px"
+        >
+          <el-tooltip :content="t('chart.font_size')" :effect="toolTip" placement="top">
+            <el-select
+              style="width: 108px"
+              :effect="props.themes"
+              v-model="state.axisForm.fontSize"
+              :placeholder="t('chart.axis_name_fontsize')"
+              @change="changeAxisStyle('fontSize')"
+            >
+              <el-option
+                v-for="option in fontSizeList"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-tooltip>
+        </el-form-item>
+      </div>
+    </div>
     <template v-if="showProperty('axisValue')">
       <el-divider class="m-divider" :class="'m-divider--' + themes" />
 

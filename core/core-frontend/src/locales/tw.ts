@@ -1403,6 +1403,7 @@ export default {
     table_item_height: '表格行高',
     text: '文字',
     axis_show: '軸線顯示',
+    axis_nameShow: '軸名稱顯示',
     axis_color: '軸線顏色',
     axis_width: '軸線寬度',
     axis_type: '軸線類型',

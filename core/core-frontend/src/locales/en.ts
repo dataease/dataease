@@ -1436,6 +1436,7 @@ export default {
     table_item_height: 'Table row height',
     text: 'Text',
     axis_show: 'Axis display',
+    axis_nameShow: 'Axis name display',
     axis_color: 'Axis color',
     axis_width: 'Axis width',
     axis_type: 'Axis type',

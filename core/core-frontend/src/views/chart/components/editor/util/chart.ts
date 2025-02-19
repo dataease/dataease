@@ -592,6 +592,7 @@ export const DEFAULT_MARGIN_STYLE = {
 export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
   show: true,
   position: 'bottom',
+  nameShow: false,
   name: '',
   color: '#333333',
   fontSize: 12,
@@ -637,6 +638,7 @@ export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
 export const DEFAULT_YAXIS_STYLE: ChartAxisStyle = {
   show: true,
   position: 'left',
+  nameShow: false,
   name: '',
   color: '#333333',
   fontSize: 12,
