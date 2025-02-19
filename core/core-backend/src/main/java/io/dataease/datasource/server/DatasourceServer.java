@@ -105,8 +105,6 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DatasetDataManage datasetDataManage;
     @Resource
-    private LarkManage larkManage;
-    @Resource
     private ScheduleManager scheduleManager;
     @Resource
     private CoreUserManage coreUserManage;
@@ -114,14 +112,11 @@ public class DatasourceServer implements DatasourceApi {
     private PluginManageApi pluginManage;
     @Autowired(required = false)
     private RelationApi relationManage;
-    @Resource(name = "externalTokenManage")
-    private ExternalTokenManage externalTokenManage;
 
     public enum UpdateType {
         all_scope, add_scope
     }
 
-    private static final String tenantAccessTokenUrl = "https://open.larksuite.com/open-apis/auth/v3/tenant_access_token/internal";
     private TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
     };
     @Resource
@@ -914,29 +909,6 @@ public class DatasourceServer implements DatasourceApi {
         return apiDefinition;
     }
 
-    private void generateToken(LarkInfoVO info) {
-        if (ObjectUtils.isEmpty(info)) {
-            info = larkManage.query();
-        }
-        HttpClientConfig clientConfig = new HttpClientConfig();
-        clientConfig.addHeader("Content-Type", "application/json");
-        String tokenPost = HttpClientUtil.post(tenantAccessTokenUrl, buildAccessTokenParam(info.getAppId(), info.getAppSecret()), clientConfig);
-        Map<String, Object> parse = null;
-        try {
-            parse = buildAccessTokenResult(tokenPost);
-        } catch (Exception e) {
-            DEException.throwException("请检查appId和appSecret参数," + e.getMessage());
-        }
-        String tenantAccessToken = parse.get("tenant_access_token").toString();
-        Integer expires_in = (Integer) parse.get("expire");
-        ExternalTokenEntity externalTokenEntity = new ExternalTokenEntity();
-        long expTimePoint = System.currentTimeMillis() + expires_in * 1000L;
-        externalTokenEntity.setId(MessageEnum.LARK.getFlag());
-        externalTokenEntity.setToken(tenantAccessToken);
-        externalTokenEntity.setExpTime(expTimePoint);
-        externalTokenManage.refreshToken(externalTokenEntity);
-    }
-
     private Map<String, Object> buildAccessTokenResult(String json) {
         if (ObjectUtils.isEmpty(json)) {
             DEException.throwException("get access token error");
@@ -987,10 +959,6 @@ public class DatasourceServer implements DatasourceApi {
         }
     }
 
-    public String getTenantAccessToken() {
-        LarkInfoVO larkInfo = larkManage.query();
-        return externalTokenManage.getToken(MessageEnum.LARK.getFlag(), t -> generateToken(larkInfo));
-    }
 
     public void updateDemoDs() {
     }
@@ -1334,7 +1302,7 @@ public class DatasourceServer implements DatasourceApi {
             if (object instanceof DatasourceRequest) {
                 Class<?> clazz = Class.forName(DatasourceRequest.class.getName());
                 Method setToken = clazz.getMethod("setToken", String.class);
-                setToken.invoke(object, getTenantAccessToken());
+                setToken.invoke(object, dataSourceManage.getTenantAccessToken());
             }
             resObj = method.invoke(null, object);
         } catch (Exception e) {

@@ -2,9 +2,11 @@ package io.dataease.datasource.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import io.dataease.api.lark.vo.LarkInfoVO;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.DataSourceType;
+import io.dataease.constant.MessageEnum;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.ext.mapper.CoreDatasourceExtMapper;
@@ -33,7 +35,6 @@ import java.util.Stack;
 
 @Component
 public class DataSourceManage {
-
 
     @Resource
     private DataSourceExtMapper dataSourceExtMapper;
@@ -123,6 +124,11 @@ public class DataSourceManage {
         if (list.size() > 0) {
             DEException.throwException(Translator.get("i18n_ds_name_exists"));
         }
+    }
+
+    @XpackInteract(value = "larkManageInteract", before = true)
+    public String getTenantAccessToken() {
+        return null;
     }
 
 
