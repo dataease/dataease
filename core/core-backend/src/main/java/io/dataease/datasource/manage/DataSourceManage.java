@@ -126,7 +126,7 @@ public class DataSourceManage {
         }
     }
 
-    @XpackInteract(value = "larkManageInteract", before = true)
+    @XpackInteract(value = "larkManage", replace = true)
     public String getTenantAccessToken() {
         return null;
     }

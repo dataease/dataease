@@ -35,7 +35,7 @@ public class ApiUtils {
     private static TypeReference<List<Map<String, Object>>> listForMapTypeReference = new TypeReference<List<Map<String, Object>>>() {
     };
 
-    public static List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws DEException {
+    public static List<DatasetTableDTO> getApiTables(DatasourceRequest datasourceRequest) throws DEException {
         List<DatasetTableDTO> tableDescs = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
@@ -71,7 +71,7 @@ public class ApiUtils {
     }
 
 
-    public static Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
+    public static Map<String, Object> fetchApiResultField(DatasourceRequest datasourceRequest) throws DEException {
         Map<String, Object> result = new HashMap<>();
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
@@ -152,7 +152,7 @@ public class ApiUtils {
         return tableFields;
     }
 
-    public static String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+    public static String checkAPIStatus(DatasourceRequest datasourceRequest) throws Exception {
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
         List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
