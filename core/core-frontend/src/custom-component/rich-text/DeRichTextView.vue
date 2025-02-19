@@ -174,9 +174,6 @@ const init = ref({
   branding: false,
   icons: 'vertical-content',
   vertical_align: element.value.propValue.verticalAlign,
-  table_default_attributes: {
-    width: '400' // 使用 table_default_attributes 设置表格的宽度
-  },
   table_default_styles: {
     width: '400px' // 或者使用 table_default_styles 设置宽度，单位为 px
   },
