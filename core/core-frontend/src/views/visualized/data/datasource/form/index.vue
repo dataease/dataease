@@ -85,6 +85,14 @@ const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
   activeApiStep.value = 1
+  currentTypeList.value
+    .map(ele => ele.dbList)
+    .flat()
+    .some(ele => {
+      if (ele.type === currentDsType.value) {
+        isPlugin.value = ele['isPlugin']
+      }
+    })
   nextTick(() => {
     detail?.value?.initForm(type, pluginDs.value, pluginIndex.value, isPlugin.value) ||
       xpack?.value?.invokeMethod({
@@ -108,8 +116,8 @@ const selectDsType = (type: string) => {
 
 const handleDsNodeClick = data => {
   if (!data.type) return
-  selectDsType(data.type)
   isPlugin.value = data['isPlugin']
+  selectDsType(data.type)
 }
 const handleNodeClick = (data: Node) => {
   currentType.value = data.type
@@ -355,7 +363,7 @@ const validateDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  if (isPlugin.value) {
+  if (isPlugin.value && !currentDsType.value.includes('API')) {
     xpack?.value?.invokeMethod({
       methodName: 'submitForm',
       args: [{ eventName: 'validateDs', args: request }]
@@ -475,10 +483,10 @@ const saveDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  if (isPlugin.value) {
+  if (isPlugin.value && !currentDsType.value.includes('API')) {
     xpack?.value?.invokeMethod({
       methodName: 'submitForm',
-      args: [{ eventName: 'saveDs', args: request }]
+      args: [{ eventName: 'save Ds', args: request }]
     })
   } else {
     const validate = detail?.value?.submitForm()

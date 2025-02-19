@@ -431,7 +431,10 @@ const addApiItem = item => {
       form.value,
       activeName.value,
       editItem,
-      isSupportSetKey.value
+      isSupportSetKey.value,
+      pluginDs.value,
+      pluginIndex.value,
+      isPlugin.value
     )
   })
 }
@@ -850,7 +853,7 @@ defineExpose({
             show-word-limit
           />
         </el-form-item>
-        <template v-if="form.type === 'API'">
+        <template v-if="form.type.startsWith('API')">
           <div class="title-form_primary flex-space table-info-mr" v-show="activeStep !== 2">
             <el-tabs v-model="activeName" class="api-tabs">
               <el-tab-pane :label="t('datasource.data_table')" name="table"></el-tab-pane>
@@ -872,7 +875,9 @@ defineExpose({
             :description="t('datasource.no_data_table')"
             img-type="noneWhite"
           />
-          <template v-if="form.type === 'API' && activeStep === 1 && activeName === 'table'">
+          <template
+            v-if="form.type.startsWith('API') && activeStep === 1 && activeName === 'table'"
+          >
             <div class="api-card-content">
               <div
                 v-for="(api, idx) in form.apiConfiguration"
@@ -1017,90 +1022,6 @@ defineExpose({
               </el-table>
             </div>
           </div>
-        </template>
-        <template v-if="form.type !== 'API' && form.type.startsWith('API')">
-          <div class="title-form_primary flex-space table-info-mr" v-show="activeStep !== 2">
-            <el-tabs v-model="activeName" class="api-tabs">
-              <el-tab-pane :label="t('datasource.data_table')" name="table"></el-tab-pane>
-            </el-tabs>
-            <el-button type="primary" style="margin-left: auto" @click="() => addLarkItem(null)">
-              <template #icon>
-                <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
-              </template>
-              {{ t('common.add') }}
-            </el-button>
-          </div>
-          <empty-background
-            v-show="activeStep !== 2"
-            v-if="!form.apiConfiguration.length && activeName === 'table'"
-            :description="t('datasource.no_data_table')"
-            img-type="noneWhite"
-          />
-          <template v-if="activeStep === 1 && activeName === 'table'">
-            <div class="api-card-content">
-              <div
-                v-for="(api, idx) in form.apiConfiguration"
-                :key="api.id"
-                class="api-card"
-                @click="addLarkItem(api)"
-              >
-                <el-row>
-                  <el-col style="display: flex" :span="19">
-                    <span class="name ellipsis">{{ api.name }}</span>
-                    <span v-if="api.status === 'Error'" class="de-tag invalid">{{
-                      t('datasource.invalid')
-                    }}</span>
-                    <span v-if="api.status === 'Success'" class="de-tag valid">{{
-                      t('datasource.valid')
-                    }}</span>
-                  </el-col>
-                  <el-col style="text-align: right" :span="5">
-                    <el-icon class="de-copy-icon hover-icon" @click.stop="copyItem(api)">
-                      <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
-                    </el-icon>
-
-                    <span @click.stop>
-                      <el-popover
-                        placement="top"
-                        width="200"
-                        :ref="setItemRef"
-                        show-arrow
-                        popper-class="api-table-delete"
-                        trigger="click"
-                      >
-                        <template #reference>
-                          <el-icon class="de-delete-icon hover-icon">
-                            <Icon name="de-delete"><deDelete class="svg-icon" /></Icon>
-                          </el-icon>
-                        </template>
-                        <template #default>
-                          <el-icon class="de-copy-icon icon-warning">
-                            <Icon name="icon_warning_filled"
-                              ><icon_warning_filled class="svg-icon"
-                            /></Icon>
-                          </el-icon>
-                          <div class="tips">
-                            {{ t('datasource.delete_this_item') }}
-                          </div>
-                          <div class="foot">
-                            <el-button style="min-width: 48px" secondary @click="cancelItem(idx)">{{
-                              t('common.cancel')
-                            }}</el-button>
-                            <el-button
-                              style="min-width: 48px"
-                              type="primary"
-                              @click="deleteItem(api, idx)"
-                              >{{ t('common.sure') }}</el-button
-                            >
-                          </div>
-                        </template>
-                      </el-popover>
-                    </span>
-                  </el-col>
-                </el-row>
-              </div>
-            </div>
-          </template>
         </template>
         <template v-if="notapiexcelconfig">
           <el-form-item
@@ -1634,13 +1555,6 @@ defineExpose({
         </template>
       </el-dialog>
       <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
-      <plugin-component
-        :jsname="getPluginStatic()"
-        ref="xpack"
-        @return-item="returnItem"
-        v-if="isPlugin && visible"
-      >
-      </plugin-component>
     </div>
   </div>
 </template>
