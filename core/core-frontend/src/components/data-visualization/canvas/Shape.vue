@@ -10,8 +10,8 @@
     @dblclick="handleDbClick"
   >
     <div
-      title="同步PC设计"
-      v-if="showCheck && ['VQuery'].includes(element.component)"
+      :title="t('visualization.sync_pc_design')"
+      v-if="showCheck"
       class="refresh-from-pc"
       @click="updateFromMobile($event, 'syncPcDesign')"
     >
@@ -151,6 +151,8 @@ import {
 } from '@/utils/canvasUtils'
 import Board from '@/components/de-board/Board.vue'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
