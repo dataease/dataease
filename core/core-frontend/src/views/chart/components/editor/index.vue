@@ -360,6 +360,12 @@ const recordSnapshotInfo = type => {
   snapshotStore.recordSnapshotCache(type, view.value.id)
 }
 
+const changeDataset = () => {
+  // change dataset, do clear field or other thing
+  view.value['calParams'] = []
+  recordSnapshotInfo('calcData')
+}
+
 const filterNode = (value, data) => {
   if (!value) {
     return true
@@ -3410,7 +3416,7 @@ const deleteChartFieldItem = id => {
                   :state-obj="state"
                   :themes="themes"
                   @add-ds-window="addDsWindow"
-                  @on-dataset-change="recordSnapshotInfo('calcData')"
+                  @on-dataset-change="changeDataset"
                 />
                 <el-tooltip
                   :effect="toolTip"
