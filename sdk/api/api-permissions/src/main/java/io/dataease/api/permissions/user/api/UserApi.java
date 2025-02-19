@@ -163,9 +163,9 @@ public interface UserApi {
     @GetMapping("/firstEchelon/{limit}")
     List<Long> firstEchelon(@PathVariable("limit") Long limit);
 
-    @Hidden
-    @GetMapping("/queryByAccount")
-    CurUserVO queryByAccount(String account);
+    @Operation(summary = "根据账号查询用户")
+    @GetMapping("/queryByAccount/{account}")
+    CurUserVO queryByAccount(@PathVariable("account") String account);
 
     @Hidden
     @PostMapping("/all")
