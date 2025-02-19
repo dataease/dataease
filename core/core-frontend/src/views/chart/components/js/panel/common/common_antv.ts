@@ -415,7 +415,7 @@ export function getXAxis(chart: Chart) {
       const a = JSON.parse(JSON.stringify(customStyle.xAxis))
       if (a.show) {
         const title =
-          a.name && a.name !== ''
+          a.nameShow && a.name && a.name !== ''
             ? {
                 text: a.name,
                 style: {
@@ -501,7 +501,7 @@ export function getYAxis(chart: Chart) {
     return false
   }
   const title =
-    yAxis.name && yAxis.name !== ''
+    yAxis.nameShow && yAxis.name && yAxis.name !== ''
       ? {
           text: yAxis.name,
           style: {

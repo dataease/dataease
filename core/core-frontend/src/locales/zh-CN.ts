@@ -1413,6 +1413,7 @@ export default {
     table_item_height: '表格行高',
     text: '文本',
     axis_show: '轴线显示',
+    axis_nameShow: '轴名称显示',
     axis_color: '轴线颜色',
     axis_width: '轴线宽度',
     axis_type: '轴线类型',
@@ -1968,7 +1969,7 @@ export default {
     circle_packing_padding: '圆形间距',
     increase: '增加',
     decrease: '减少',
-    total: '合计',
+    waterfall_total: '合计',
     accumulate: '累加',
     table_cross_bg_tip: '合并单元格后，不支持班马纹'
   },
@@ -3706,7 +3707,9 @@ export default {
     please_select: '请选择',
     query_timeout: '查询超时',
     description: '描述',
-    tips: '提示'
+    tips: '提示',
+    replication: 'BE 副本',
+    replication_tip: 'BE 节点数量'
   },
   sync_summary: {
     summary: '概览',

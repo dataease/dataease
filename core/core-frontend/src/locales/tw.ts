@@ -1403,6 +1403,7 @@ export default {
     table_item_height: '表格行高',
     text: '文字',
     axis_show: '軸線顯示',
+    axis_nameShow: '軸名稱顯示',
     axis_color: '軸線顏色',
     axis_width: '軸線寬度',
     axis_type: '軸線類型',
@@ -3695,7 +3696,9 @@ export default {
     please_select: '請選擇',
     query_timeout: '查詢超時',
     description: '描述',
-    tips: '提示'
+    tips: '提示',
+    replication: 'BE 複本',
+    replication_tip: 'BE 節點數量'
   },
   sync_summary: {
     summary: '概覽',
