@@ -36,6 +36,7 @@ import type { PickOptions } from '@antv/g2plot/lib/core/plot'
 import { defaults } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t: tI18n } = useI18n()
+import { isMobile } from '@/utils/utils'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -1369,7 +1370,7 @@ export function getTooltipContainer(id) {
   g2Tooltip.classList.add('g2-tooltip')
   // 最多半屏，鼠标移入可滚动
   g2Tooltip.style.maxHeight = '50%'
-  g2Tooltip.style.maxWidth = '25%'
+  isMobile() ? (g2Tooltip.style.maxWidth = '50%') : (g2Tooltip.style.maxWidth = '25%')
   g2Tooltip.style.overflowY = 'auto'
   g2Tooltip.style.display = 'none'
   g2Tooltip.style.position = 'fixed'
