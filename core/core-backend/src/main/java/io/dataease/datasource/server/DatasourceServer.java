@@ -10,12 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
-import io.dataease.api.lark.vo.LarkInfoVO;
 import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
-import io.dataease.constant.MessageEnum;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.*;
@@ -1170,15 +1168,14 @@ public class DatasourceServer implements DatasourceApi {
                     JsonNode jsonNode = null;
                     try {
                         jsonNode = objectMapper.readTree(datasourceDTO.getStatus());
-                    } catch (Exception e) {
-                        DEException.throwException(e);
-                    }
-                    for (JsonNode node : jsonNode) {
-                        if (node.get("name").asText().equals(apiDefinition.getName())) {
-                            status = node.get("status").asText();
+                        for (JsonNode node : jsonNode) {
+                            if (node.get("name").asText().equals(apiDefinition.getName())) {
+                                status = node.get("status").asText();
+                            }
                         }
+                        apiDefinition.setStatus(status);
+                    } catch (Exception ignore) {
                     }
-                    apiDefinition.setStatus(status);
                 }
                 if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
                     success++;
