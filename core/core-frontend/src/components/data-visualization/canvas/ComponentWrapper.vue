@@ -13,7 +13,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { isMobile } from '@/utils/utils'
 import { isDashboard } from '@/utils/canvasUtils'
-import view from '@antv/g2/src/chart/view'
+import { XpackComponent } from '@/components/plugin'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -434,6 +434,10 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
         :name="commonBackgroundSvgInner"
       ></Board>
     </div>
+    <XpackComponent
+      ref="openHandler"
+      jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
+    />
   </div>
 </template>
 
