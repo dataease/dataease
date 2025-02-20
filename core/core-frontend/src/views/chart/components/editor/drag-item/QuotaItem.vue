@@ -15,7 +15,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType, resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
-import { quotaViews } from '@/views/chart/components/js/util'
+import { quotaViews, notSupportAccumulateViews } from '@/views/chart/components/js/util'
 import { SUPPORT_Y_M } from '@/views/chart/components/editor/util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
@@ -27,7 +27,8 @@ const tagType = ref('success')
 const state = reactive({
   formatterItem: formatterItem,
   disableEditCompare: false,
-  quotaViews: quotaViews
+  quotaViews: quotaViews,
+  notSupportAccumulateViews: notSupportAccumulateViews
 })
 
 const props = defineProps({
@@ -93,6 +94,13 @@ watch(
   () => props.chart,
   () => {
     isEnableCompare()
+    // 不支持累加计算的图表，自动设置快速计算为无
+    if (
+      state.notSupportAccumulateViews.indexOf(chart.value.type) > -1 &&
+      item.value.compareCalc.type === 'accumulate'
+    ) {
+      quickCalc({ type: 'none' })
+    }
   },
   { deep: true }
 )
@@ -317,6 +325,9 @@ const showSort = computed(() => {
     )
   )
 })
+
+// 同环比计算类型
+const yoyLabel = ['day_mom', 'month_yoy', 'year_yoy', 'month_mom', 'year_mom']
 
 onMounted(() => {
   isEnableCompare()
@@ -651,26 +662,30 @@ onMounted(() => {
                     :disabled="state.disableEditCompare"
                     :command="beforeQuickCalc('setting')"
                   >
-                    <span
+                    <div
                       class="sub-menu-content"
-                      :class="'yoy_label' === item.compareCalc.type ? 'content-active' : ''"
+                      :class="yoyLabel.includes(item.compareCalc.type) ? 'content-active' : ''"
+                      :disabled="state.disableEditCompare"
                     >
                       {{ t('chart.yoy_label') }}
                       <el-icon class="sub-menu-content--icon">
-                        <Icon name="icon_done_outlined" v-if="'yoy_label' === item.compareCalc.type"
+                        <Icon
+                          name="icon_done_outlined"
+                          v-if="yoyLabel.includes(item.compareCalc.type)"
                           ><icon_done_outlined class="svg-icon"
                         /></Icon>
                       </el-icon>
-                    </span>
+                    </div>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     :disabled="state.quotaViews.indexOf(chart.type) > -1"
                     :command="beforeQuickCalc('percent')"
                   >
-                    <span
+                    <div
                       class="sub-menu-content"
                       :class="'percent' === item.compareCalc.type ? 'content-active' : ''"
+                      :disabled="state.quotaViews.indexOf(chart.type) > -1"
                     >
                       {{ t('chart.percent') }}
                       <el-icon class="sub-menu-content--icon">
@@ -678,16 +693,17 @@ onMounted(() => {
                           ><icon_done_outlined class="svg-icon"
                         /></Icon>
                       </el-icon>
-                    </span>
+                    </div>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    :disabled="state.quotaViews.indexOf(chart.type) > -1"
+                    :disabled="state.notSupportAccumulateViews.indexOf(chart.type) > -1"
                     :command="beforeQuickCalc('accumulate')"
                   >
-                    <span
+                    <div
                       class="sub-menu-content"
                       :class="'accumulate' === item.compareCalc.type ? 'content-active' : ''"
+                      :disabled="state.notSupportAccumulateViews.indexOf(chart.type) > -1"
                     >
                       {{ t('chart.accumulate') }}
                       <el-icon class="sub-menu-content--icon">
@@ -697,7 +713,7 @@ onMounted(() => {
                           ><icon_done_outlined class="svg-icon"
                         /></Icon>
                       </el-icon>
-                    </span>
+                    </div>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>

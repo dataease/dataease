@@ -241,6 +241,33 @@ export function getRemark(chart) {
 }
 
 export const quotaViews = ['label', 'richTextView', 'indicator', 'gauge', 'liquid']
+// 地图
+const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
+// 分布图
+const distributionChartTypes = [
+  'pie',
+  'pie-donut',
+  'pie-rose',
+  'pie-donut-rose',
+  'radar',
+  'treemap',
+  'word-cloud'
+]
+// 关系图
+const relationChartTypes = ['scatter', 'quadrant', 'funnel', 'sankey', 'circle-packing']
+// 不支持指标累加的图表
+export const notSupportAccumulateViews = [
+  ...quotaViews,
+  ...mapChartTypes,
+  ...distributionChartTypes,
+  ...relationChartTypes,
+  'table-info',
+  't-heatmap',
+  'percentage-bar-stack',
+  'percentage-bar-stack-horizontal',
+  'progress-bar',
+  'stock-line'
+]
 
 export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, options: O): O {
   const { data } = options as unknown as Options

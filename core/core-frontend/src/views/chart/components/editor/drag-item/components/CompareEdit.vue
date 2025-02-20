@@ -204,7 +204,8 @@ const initFieldList = () => {
     compareItem.value.compareCalc.field = state.fieldList[0].id
   }
 }
-
+// 同环比计算类型
+const yoyLabel = ['day_mom', 'month_yoy', 'year_yoy', 'month_mom', 'year_mom']
 // 获得不同字段格式对应能计算的同环比列表
 const initCompareType = () => {
   const checkedField = state.fieldList.filter(ele => ele.id === compareItem.value.compareCalc.field)
@@ -226,12 +227,7 @@ const initCompareType = () => {
     state.compareList = []
   }
   // 如果没有选中一个同环比类型，则默认选中第一个
-  if (
-    (!compareItem.value.compareCalc.type ||
-      compareItem.value.compareCalc.type === '' ||
-      compareItem.value.compareCalc.type === 'none') &&
-    state.compareList.length > 0
-  ) {
+  if (!yoyLabel.includes(compareItem.value.compareCalc.type) && state.compareList.length > 0) {
     compareItem.value.compareCalc.type = state.compareList[0].value
   }
 }
