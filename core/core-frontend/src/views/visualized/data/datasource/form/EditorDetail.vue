@@ -52,7 +52,6 @@ const prop = defineProps({
     },
     type: Object
   },
-
   activeStep: {
     required: false,
     default: 1,
@@ -61,10 +60,22 @@ const prop = defineProps({
   isSupportSetKey: {
     type: boolean,
     required: true
+  },
+  pluginDs: {
+    type: [],
+    required: true
+  },
+  pluginIndex: {
+    type: String,
+    required: true
+  },
+  isPlugin: {
+    type: boolean,
+    required: true
   }
 })
 
-const { form, activeStep, isSupportSetKey } = toRefs(prop)
+const { form, activeStep, isSupportSetKey, pluginDs, pluginIndex, isPlugin } = toRefs(prop)
 
 const state = reactive({
   itemRef: []
@@ -95,10 +106,6 @@ const defaultRule = {
 const rule = ref<FormRules>(cloneDeep(defaultRule))
 const api_table_title = ref('')
 const editApiItem = ref()
-const editLarkItem = ref()
-const pluginDs = ref([])
-const pluginIndex = ref('')
-const isPlugin = ref(false)
 const xpack = ref()
 const visible = ref(false)
 const defaultApiItem = {

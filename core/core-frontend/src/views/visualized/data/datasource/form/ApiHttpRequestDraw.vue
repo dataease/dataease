@@ -355,16 +355,23 @@ const saveItem = () => {
 const before = () => {
   active.value -= 1
 }
+
 const next = () => {
-  console.log(apiItem)
   if (isPlugin.value) {
+    xpackApiItemBasicInfo?.value?.invokeMethod({
+      methodName: 'submitForm',
+      args: [{ eventName: 'stepNext', args: apiItem }]
+    })
   } else {
     apiItemBasicInfo.value.validate(val => {
-      if (!val) {
-        return
+      if (val) {
+        stepNext()
       }
     })
   }
+}
+
+const stepNext = () => {
   if (apiItem.useJsonPath && !apiItem.jsonPath) {
     ElMessage.error(t('datasource.please_input_dataPath'))
     return
@@ -415,20 +422,24 @@ const next = () => {
       console.warn(error?.message)
     })
 }
-
 const validate = () => {
   if (isPlugin.value) {
     xpackApiItemBasicInfo?.value?.invokeMethod({
       methodName: 'submitForm',
-      args: [apiItem]
+      args: [{ eventName: 'validateItem', args: apiItem }]
     })
   } else {
     apiItemBasicInfo.value.validate(val => {
       if (!val) {
         return
+      } else {
+        validateItem()
       }
     })
   }
+}
+
+const validateItem = () => {
   if (apiItem.useJsonPath && !apiItem.jsonPath) {
     ElMessage.error(t('datasource.please_input_dataPath'))
     return
@@ -452,6 +463,20 @@ const validate = () => {
       ElMessage.error(t('data_source.verification_failed'))
     })
 }
+
+const handleSubmit = param => {
+  const validateFrom = param.validate
+  validateFrom(val => {
+    if (val) {
+      if (param.eventName === 'validateItem') {
+        validateItem()
+      } else {
+        stepNext()
+      }
+    }
+  })
+}
+
 const closeEditItem = () => {
   cancelMap['/datasource/checkApiDatasource']?.()
   edit_api_item.value = false
@@ -760,46 +785,10 @@ defineExpose({
         :jsname="jsName"
         :api-item="apiItem"
         ref="xpackApiItemBasicInfo"
+        @submitForm="handleSubmit"
         v-if="dsType !== 'API'"
       >
       </plugin-component>
-      <!--      <el-form-->
-      <!--        ref="xpackApiItemBasicInfo"-->
-      <!--        :model="apiItem"-->
-      <!--        label-position="top"-->
-      <!--        label-width="100px"-->
-      <!--        require-asterisk-position="right"-->
-      <!--        :rules="rule"-->
-      <!--        v-loading="formLoading"-->
-      <!--      >-->
-      <!--        <div class="title-form_primary base-info">-->
-      <!--          <span>{{ t('datasource.base_info') }}</span>-->
-      <!--        </div>-->
-      <!--        <el-form-item :label="t('common.name')">-->
-      <!--          <el-input v-model="apiItem.name" autocomplete="off" />-->
-      <!--        </el-form-item>-->
-      <!--        <el-form-item :label="t('datasource.app_token')" prop="appToken">-->
-      <!--          <el-input-->
-      <!--            v-model="apiItem.appToken"-->
-      <!--            :placeholder="t('datasource.input_app_token')"-->
-      <!--            autocomplete="off"-->
-      <!--          />-->
-      <!--        </el-form-item>-->
-      <!--        <el-form-item :label="t('datasource.table_id')" prop="tableId">-->
-      <!--          <el-input-->
-      <!--            v-model="apiItem.tableId"-->
-      <!--            :placeholder="t('datasource.input_table_id')"-->
-      <!--            autocomplete="off"-->
-      <!--          />-->
-      <!--        </el-form-item>-->
-      <!--        <el-form-item :label="t('datasource.view_id')" prop="viewId">-->
-      <!--          <el-input-->
-      <!--            v-model="apiItem.viewId"-->
-      <!--            :placeholder="t('datasource.input_view_id')"-->
-      <!--            autocomplete="off"-->
-      <!--          />-->
-      <!--        </el-form-item>-->
-      <!--      </el-form>-->
     </el-row>
     <el-row v-show="active === 1">
       <el-form

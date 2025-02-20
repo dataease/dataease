@@ -1282,10 +1282,13 @@ public class DatasourceServer implements DatasourceApi {
         try {
             String ClassName = "io.dataease.datasource.provider.ApiUtils";
             if (!dsType.equals(DatasourceConfiguration.DatasourceType.API.name())) {
-                ClassName = "io.dataease.datasource.provider.LarkUtils";
+                Provider provider = ProviderFactory.getProvider(dsType);
+                method = provider.getClass().getMethod(methodName, classes);
+            } else {
+                Class<?> clazz = Class.forName(ClassName);
+                method = clazz.getMethod(methodName, classes);
             }
-            Class<?> clazz = Class.forName(ClassName);
-            method = clazz.getMethod(methodName, classes);
+
         } catch (Exception e) {
             DEException.throwException("Cant find method: " + e.getMessage());
         }

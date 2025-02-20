@@ -809,6 +809,9 @@ defineExpose({
           <editor-detail
             ref="detail"
             :form="form"
+            :is-plugin="isPlugin"
+            :plugin-ds="pluginDs"
+            :plugin-index="pluginIndex"
             :editDs="editDs"
             :active-step="activeApiStep"
             :is-supportSetKey="isSupportSetKey"
