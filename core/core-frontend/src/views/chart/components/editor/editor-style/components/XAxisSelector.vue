@@ -156,7 +156,7 @@ onMounted(() => {
       </el-radio-group>
     </el-form-item>
 
-    <el-form-item class="form-item" :class="'form-item-' + themes">
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-if="!isBidirectionalBar">
       <el-checkbox
         size="small"
         :effect="props.themes"
