@@ -10,6 +10,8 @@ export default {
       dateRange: 'Date Range Picker',
       add_component_hint: 'Click or drag the component on the left to add a field'
     },
+    list_selection: 'List selection',
+    date_setting: 'Date setting',
     openMobileTerminal: 'Open mobile terminal',
     watermarkManagement: 'Watermark Management',
     inputText: 'Please enter',

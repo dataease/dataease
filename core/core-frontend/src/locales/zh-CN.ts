@@ -2,6 +2,8 @@ export default {
   common: {
     timeout_tips: '请求超时，请稍后再试',
     watermarkManagement: '水印管理',
+    list_selection: '列表选择',
+    date_setting: '日期设置',
     component: {
       input: '单行输入',
       textarea: '多行输入',
