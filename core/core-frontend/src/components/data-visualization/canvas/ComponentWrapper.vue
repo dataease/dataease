@@ -14,6 +14,8 @@ import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/wa
 import { isMobile } from '@/utils/utils'
 import { isDashboard } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
+import { useAppStoreWithOut } from '@/store/modules/app'
+const appStore = useAppStoreWithOut()
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -295,6 +297,7 @@ const slotStyle = computed(() => {
 const onPointClick = param => {
   emits('onPointClick', param)
 }
+const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 
 const eventEnable = computed(
   () =>
@@ -319,17 +322,17 @@ const onWrapperClick = e => {
       const url = config.value.events.jump.value
       const jumpType = config.value.events.jump.type
       try {
-        let newWindow
         if ('newPop' === jumpType) {
           window.open(
             url,
             '_blank',
             'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
           )
+        } else if ('_blank' === jumpType && isEmbedded.value) {
+          window.open(url, '_blank')
         } else {
-          newWindow = window.open(url, jumpType)
+          initOpenHandler(window.open(url, jumpType))
         }
-        initOpenHandler(newWindow)
       } catch (e) {
         console.warn('url 格式错误:' + url)
       }
