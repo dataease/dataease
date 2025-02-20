@@ -153,6 +153,7 @@ onMounted(() => {
         v-if="showProperty('name')"
       >
         <el-input
+          :disabled="!state.axisForm.nameShow"
           :effect="props.themes"
           v-model="state.axisForm.name"
           size="small"
@@ -172,6 +173,7 @@ onMounted(() => {
           style="padding-right: 4px"
         >
           <el-color-picker
+            :disabled="!state.axisForm.nameShow"
             v-model="state.axisForm.color"
             class="color-picker-style"
             :predefine="predefineColors"
@@ -188,6 +190,7 @@ onMounted(() => {
         >
           <el-tooltip :content="t('chart.font_size')" :effect="toolTip" placement="top">
             <el-select
+              :disabled="!state.axisForm.nameShow"
               style="width: 108px"
               :effect="props.themes"
               v-model="state.axisForm.fontSize"

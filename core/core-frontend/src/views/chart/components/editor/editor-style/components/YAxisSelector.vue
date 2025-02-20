@@ -142,6 +142,7 @@ onMounted(() => {
         <el-input
           :effect="props.themes"
           v-model="state.axisForm.name"
+          :disabled="!state.axisForm.nameShow"
           size="small"
           maxlength="50"
           @blur="changeAxisStyle('name')"
@@ -158,6 +159,7 @@ onMounted(() => {
         >
           <el-color-picker
             v-model="state.axisForm.color"
+            :disabled="!state.axisForm.nameShow"
             class="color-picker-style"
             :predefine="predefineColors"
             @change="changeAxisStyle('color')"
@@ -174,6 +176,7 @@ onMounted(() => {
           <template #label>&nbsp;</template>
           <el-tooltip :content="t('chart.font_size')" :effect="toolTip" placement="top">
             <el-select
+              :disabled="!state.axisForm.nameShow"
               style="width: 108px"
               :effect="props.themes"
               v-model="state.axisForm.fontSize"
