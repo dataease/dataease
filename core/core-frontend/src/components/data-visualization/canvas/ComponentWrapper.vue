@@ -328,8 +328,13 @@ const onWrapperClick = e => {
             'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
           )
         } else if ('_blank' === jumpType) {
-          console.info('DataEase Component Jump _blank')
-          window.open(url, '_blank')
+          console.info('DataEase Component Jump _blank value:' + window['originOpen'])
+          if (window['originOpen']) {
+            console.info('DataEase Component originOpen _blank')
+            window['originOpen'](url, '_blank')
+          } else {
+            window.open(url, '_blank')
+          }
         } else {
           initOpenHandler(window.open(url, jumpType))
         }
