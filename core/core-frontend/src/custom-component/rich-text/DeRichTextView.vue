@@ -373,7 +373,6 @@ const assignment = content => {
     const on = content?.match(/\[(.+?)\]/g)
     if (on) {
       const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
-      console.info('Rich Text assignment value:' + JSON.stringify(dataRowNameSelect.value))
       on.forEach(itm => {
         if (dataRowFiledName.value.includes(itm)) {
           const ele = itm.slice(1, -1)
@@ -566,7 +565,8 @@ const calcData = (view: Chart, callback) => {
           state.viewDataInfo = res
           state.totalItems = res?.totalItems
           const curViewInfo = canvasViewInfo.value[element.value.id]
-          if (res.data) {
+          // 此处是编辑时使用，多仪表板嵌入 canvasViewInfo 会被覆盖可能出现无法读取情况
+          if (res.data && curViewInfo) {
             curViewInfo['curFields'] = res.data.fields
           }
           dvMainStore.setViewDataDetails(element.value.id, res)
