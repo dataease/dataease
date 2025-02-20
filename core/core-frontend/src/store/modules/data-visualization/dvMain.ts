@@ -115,10 +115,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       nowPanelJumpInfo: {},
       // 当前仪表板的跳转信息(只包括仪表板)
       nowPanelJumpInfoTargetPanel: {},
-      // 当前仪表板的外部参数信息
-      nowPanelOuterParamsInfo: {},
-      // 当前仪表板的外部参数基础信息
-      nowPanelOuterParamsBaseInfo: null,
+      // 当前仪表板的外部参数信息 兼容多仪表板嵌入式div
+      nowPanelOuterParamsInfoV2: {},
+      // 当前仪表板的外部参数基础信息 兼容多仪表板嵌入式div
+      nowPanelOuterParamsBaseInfoV2: {},
       // 拖拽的组件信息
       dragComponentInfo: null,
       // 移动端布局状态
@@ -983,9 +983,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     setNowTargetPanelJumpInfo(jumpInfo) {
       this.nowPanelJumpInfoTargetPanel = jumpInfo.baseJumpInfoVisualizationMap
     },
-    setNowPanelOuterParamsInfo(outerParamsInfo) {
-      this.nowPanelOuterParamsInfo = outerParamsInfo.outerParamsInfoMap
-      this.nowPanelOuterParamsBaseInfo = outerParamsInfo.outerParamsInfoBaseMap
+    setNowPanelOuterParamsInfoV2(outerParamsInfo, dvId = this.dvInfo.id) {
+      this.nowPanelOuterParamsInfoV2[dvId] = outerParamsInfo.outerParamsInfoMap
+      this.nowPanelOuterParamsBaseInfoV2[dvId] = outerParamsInfo.outerParamsInfoBaseMap
     },
     // 添加联动 下钻 等查询组件
     addViewTrackFilter(data) {
@@ -1061,15 +1061,20 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
     // 添加外部参数的过滤条件
-    addOuterParamsFilter(paramsPre, curComponentData = this.componentData, source = 'inner') {
+    addOuterParamsFilter(
+      paramsPre,
+      curComponentData = this.componentData,
+      source = 'inner',
+      dvId = this.dvInfo.id
+    ) {
       // params 结构 {key1:value1,key2:value2}
       const params = {}
       const paramsVersion = (paramsPre && paramsPre['outerParamsVersion']) || 'v1'
-      if (this.nowPanelOuterParamsBaseInfo) {
+      if (this.nowPanelOuterParamsBaseInfoV2[dvId]) {
         let errorCount = 0
         let errorMes = ''
-        Object.keys(this.nowPanelOuterParamsBaseInfo).forEach(key => {
-          const targetInfo = this.nowPanelOuterParamsBaseInfo[key]
+        Object.keys(this.nowPanelOuterParamsBaseInfoV2[dvId]).forEach(key => {
+          const targetInfo = this.nowPanelOuterParamsBaseInfoV2[dvId][key]
           const userParams = paramsPre ? paramsPre[key] : null
           const userParamsIsNull = !userParams || userParams.length === 0
           if (targetInfo.required && userParamsIsNull) {
@@ -1098,7 +1103,7 @@ export const dvMainStore = defineStore('dataVisualization', {
 
       if (params) {
         const preActiveComponentIds = []
-        const trackInfo = this.nowPanelOuterParamsInfo
+        const trackInfo = this.nowPanelOuterParamsInfoV2[dvId]
         for (let index = 0; index < curComponentData.length; index++) {
           const element = curComponentData[index]
           if (['UserView', 'VQuery'].includes(element.component)) {

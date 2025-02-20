@@ -72,7 +72,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   // 添加外部参数
   let attachParam
   await getOuterParamsInfo(dvId).then(rsp => {
-    dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
+    dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, dvId)
   })
 
   // 外部参数（iframe 或者 iframe嵌入）

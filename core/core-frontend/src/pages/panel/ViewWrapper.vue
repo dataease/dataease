@@ -72,7 +72,7 @@ onBeforeMount(async () => {
   // 添加外部参数
   let attachParams
   await getOuterParamsInfo(embeddedParams.dvId).then(rsp => {
-    dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
+    dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, embeddedParams.dvId)
   })
 
   // div嵌入
