@@ -297,7 +297,6 @@ const slotStyle = computed(() => {
 const onPointClick = param => {
   emits('onPointClick', param)
 }
-const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 
 const eventEnable = computed(
   () =>
@@ -328,7 +327,8 @@ const onWrapperClick = e => {
             '_blank',
             'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
           )
-        } else if ('_blank' === jumpType && isEmbedded.value) {
+        } else if ('_blank' === jumpType) {
+          console.info('DataEase Component Jump _blank')
           window.open(url, '_blank')
         } else {
           initOpenHandler(window.open(url, jumpType))

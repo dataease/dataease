@@ -373,6 +373,7 @@ const assignment = content => {
     const on = content?.match(/\[(.+?)\]/g)
     if (on) {
       const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
+      console.info('Rich Text assignment value:' + JSON.stringify(dataRowNameSelect.value))
       on.forEach(itm => {
         if (dataRowFiledName.value.includes(itm)) {
           const ele = itm.slice(1, -1)
@@ -663,12 +664,10 @@ const initCurFields = chartDetails => {
   }
   element.value.propValue['innerType'] = chartDetails.type
   element.value.propValue['render'] = chartDetails.render
-  if (chartDetails.type === 'rich-text') {
-    nextTick(() => {
-      initCurFieldsChange()
-      eventBus.emit('initCurFields-' + element.value.id)
-    })
-  }
+  nextTick(() => {
+    initCurFieldsChange()
+    eventBus.emit('initCurFields-' + element.value.id)
+  })
 }
 
 // 初始化此处不必刷新
