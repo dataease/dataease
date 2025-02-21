@@ -21,12 +21,12 @@
           <el-dropdown-menu class="de-card-dropdown">
             <slot>
               <el-dropdown-item command="templateEdit">
-                <el-icon><EditPen /></el-icon>
-                {{ t('commons.edit') }}
+                <el-icon class="opt-icon"><EditPen /></el-icon>
+                <span class="opt-name">{{ t('commons.edit') }}</span>
               </el-dropdown-item>
               <el-dropdown-item command="delete">
-                <el-icon><Delete /></el-icon>
-                {{ t('chart.delete') }}
+                <el-icon class="opt-icon"><Delete /></el-icon>
+                <span class="opt-name">{{ t('chart.delete') }}</span>
               </el-dropdown-item>
             </slot>
           </el-dropdown-menu>
@@ -180,5 +180,16 @@ const handleCommand = key => {
   border-radius: 4px;
   color: #fff;
   padding: 3px;
+}
+.opt-icon {
+  font-size: 16px;
+  color: rgba(100, 106, 115, 1);
+}
+.opt-name {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  margin-left: 3px;
+  color: rgba(31, 35, 41, 1);
 }
 </style>

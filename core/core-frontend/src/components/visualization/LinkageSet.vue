@@ -241,7 +241,7 @@
                     </div>
 
                     <el-button class="m-del-icon-btn" text @click="deleteLinkageField(index)">
-                      <el-icon size="20px">
+                      <el-icon size="16px">
                         <Icon name="icon_delete-trash_outlined"
                           ><icon_deleteTrash_outlined class="svg-icon"
                         /></Icon>

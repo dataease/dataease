@@ -24,12 +24,12 @@
             <template #dropdown>
               <el-dropdown-menu class="de-template-dropdown">
                 <el-dropdown-item command="edit">
-                  <el-icon><EditPen /></el-icon>
-                  {{ t('visualization.rename') }}
+                  <el-icon class="opt-icon"><EditPen /></el-icon>
+                  <span class="opt-name">{{ t('visualization.rename') }}</span>
                 </el-dropdown-item>
                 <el-dropdown-item command="delete">
-                  <el-icon><Delete /></el-icon>
-                  {{ t('visualization.delete') }}
+                  <el-icon class="opt-icon"><Delete /></el-icon>
+                  <span class="opt-name">{{ t('visualization.delete') }}</span>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -234,5 +234,17 @@ defineExpose({
   background: rgba(31, 35, 41, 0.15);
   border: 0;
   height: 1px;
+}
+
+.opt-icon {
+  font-size: 16px;
+  color: rgba(100, 106, 115, 1);
+}
+.opt-name {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  margin-left: 3px;
+  color: rgba(31, 35, 41, 1);
 }
 </style>
