@@ -530,28 +530,25 @@ const getSelectArea = () => {
   return result
 }
 
-const handleContextMenu = e => {
+const handleContextMenu = event => {
   // 仪表板和预览状态不显示菜单和组创建
   if (dashboardActive.value || editMode.value === 'preview') {
     return
   }
-  e.stopPropagation()
-  e.preventDefault()
+  event.stopPropagation()
+  event.preventDefault()
+  // 获取鼠标的全局坐标
+  const mouseX = event.clientX
+  const mouseY = event.clientY
 
-  // 计算菜单相对于编辑器的位移
-  let target = e.target
-  let top = e.offsetY
-  let left = e.offsetX
-  while (target instanceof SVGElement) {
-    target = target.parentNode
-  }
+  // 获取最外层 div 的偏移量
+  const rect = container.value.getBoundingClientRect()
+  const offsetX = rect.left
+  const offsetY = rect.top
 
-  while (!target.className.includes('editor-main')) {
-    left += target.offsetLeft
-    top += target.offsetTop
-    target = target.parentNode
-  }
-
+  // 计算鼠标相对于最外层 div 的坐标
+  const left = mouseX - offsetX
+  let top = mouseY - offsetY
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
     if (
@@ -559,7 +556,6 @@ const handleContextMenu = e => {
       ['VQuery'].includes(curComponent.value.component) &&
       curComponent?.value['category'] === 'base'
     ) {
-      left = left * curBaseScale.value + 150
       top = top * curBaseScale.value + curComponent.value.style.top * (1 - curBaseScale.value)
     }
     contextmenuStore.showContextMenu({ top, left, position: 'canvasCore' })
