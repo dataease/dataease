@@ -181,8 +181,6 @@ onMounted(() => {
 })
 
 const onClick = e => {
-  e.preventDefault()
-  e.stopPropagation()
   // 将当前点击组件的事件传播出去
   eventBus.emit('componentClick')
   dvMainStore.setInEditorStatus(true)
