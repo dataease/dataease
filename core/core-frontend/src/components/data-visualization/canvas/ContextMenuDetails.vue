@@ -259,6 +259,7 @@ const editQueryCriteria = () => {
           trigger="hover"
           effect="dark"
           placement="right-start"
+          :teleported="false"
           popper-class="context-menu-details"
         >
           <li>
