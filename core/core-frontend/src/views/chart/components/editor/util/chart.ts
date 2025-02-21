@@ -448,7 +448,12 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   isColItalic: false,
   isBolder: true,
   isCornerBolder: true,
-  isColBolder: true
+  isColBolder: true,
+  headerGroup: false,
+  headerGroupConfig: {
+    columns: [],
+    meta: []
+  }
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',
@@ -1671,7 +1676,10 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   maxLines: 3,
   radarShowPoint: true,
   radarPointSize: 4,
-  radarAreaColor: true
+  radarAreaColor: true,
+  circleBorderColor: '#fff',
+  circleBorderWidth: 0,
+  circlePadding: 0
 }
 
 export const BASE_VIEW_CONFIG = {

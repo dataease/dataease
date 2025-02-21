@@ -4,6 +4,7 @@ import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
 import icon_leftAlignment_outlined from '@/assets/svg/icon_left-alignment_outlined.svg'
 import icon_centerAlignment_outlined from '@/assets/svg/icon_center-alignment_outlined.svg'
 import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
@@ -12,6 +13,8 @@ import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { convertToAlphaColor, isAlphaColor } from '@/views/chart/components/js/util'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import TableHeaderGroupConfig from './TableHeaderGroupConfig.vue'
+
 const dvMainStore = dvMainStoreWithOut()
 const { mobileInPc } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -58,13 +61,21 @@ const fontSizeList = computed(() => {
 })
 
 const state = reactive({
-  tableHeaderForm: {} as ChartTableHeaderAttr
+  tableHeaderForm: {} as ChartTableHeaderAttr,
+  showTableHeaderGroupConfig: false
 })
 
 const emit = defineEmits(['onTableHeaderChange'])
 
 const changeTableHeader = prop => {
   emit('onTableHeaderChange', state.tableHeaderForm, prop)
+}
+
+const changeHeaderGroupConfig = (headerGroupConfig: ChartTableHeaderAttr['headerGroupConfig']) => {
+  state.tableHeaderForm.headerGroupConfig = headerGroupConfig
+  state.showTableHeaderGroupConfig = false
+  log(headerGroupConfig)
+  changeTableHeader('headerGroupConfig')
 }
 
 const init = () => {
@@ -723,7 +734,67 @@ onMounted(() => {
         {{ t('chart.table_header_show_vertical_border') }}
       </el-checkbox>
     </el-form-item>
+    <el-form-item
+      v-if="showProperty('headerGroup')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableHeaderForm.headerGroup"
+        @change="changeTableHeader('headerGroup')"
+      >
+        {{ t('chart.table_header_group') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('headerGroup') && state.tableHeaderForm.headerGroup"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <div class="header-group-config">
+        <span>{{ t('chart.table_header_group_config') }}</span>
+        <div class="group-icon">
+          <span v-if="state.tableHeaderForm.headerGroupConfig?.columns?.length">
+            {{ t('visualization.already_setting') }}
+          </span>
+          <div
+            class="icon-btn"
+            :class="{
+              dark: themes === 'dark'
+            }"
+          >
+            <el-icon @click="state.showTableHeaderGroupConfig = true">
+              <Icon>
+                <icon_edit_outlined class="svg-icon" />
+              </Icon>
+            </el-icon>
+          </div>
+        </div>
+      </div>
+    </el-form-item>
   </el-form>
+  <el-dialog
+    v-model="state.showTableHeaderGroupConfig"
+    :effect="themes"
+    destroy-on-close
+    append-to-body
+    :show-close="false"
+    :class="themes === 'dark' ? 'table-header-group-config-dialog' : ''"
+  >
+    <template #header>
+      {{ t('chart.table_header_group_config') }}
+      <span style="font-size: 12px">({{ t('chart.table_header_group_config_tip') }})</span>
+    </template>
+    <table-header-group-config
+      :chart="chart"
+      :themes="themes"
+      :tableHeaderForm="state.tableHeaderForm"
+      @onConfigChange="changeHeaderGroupConfig"
+      @onCancelConfig="() => (state.showTableHeaderGroupConfig = false)"
+    />
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -802,6 +873,30 @@ onMounted(() => {
 
   &.divider-dark {
     border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+.header-group-config {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 22px;
+  font-size: 12px;
+  .group-icon {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+  }
+}
+</style>
+<style lang="less">
+.table-header-group-config-dialog {
+  .ed-dialog__header,
+  .ed-dialog__body {
+    color: #a6a6a6;
+    background-color: #1a1a1a;
+    margin-right: 0;
   }
 }
 </style>

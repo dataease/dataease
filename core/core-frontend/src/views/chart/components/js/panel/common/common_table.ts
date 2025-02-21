@@ -1963,3 +1963,35 @@ export const configEmptyDataStyle = (newChart, basicStyle, newData, container) =
     }
   })
 }
+
+export const getLeafNodes = (tree: Array<ColumnNode>): ColumnNode[] => {
+  const result: ColumnNode[] = []
+  const inorderTraversal = node => {
+    if (!node.children?.length) {
+      // 叶子节点，添加到结果数组
+      result.push(node)
+      return
+    }
+    // 中序遍历
+    for (let i = 0; i < node.children?.length; i++) {
+      inorderTraversal(node.children[i])
+    }
+  }
+
+  // 遍历树中所有节点
+  tree.forEach(node => inorderTraversal(node))
+  return result
+}
+
+export const getColumns = (fields, cols: Array<ColumnNode>) => {
+  const result = []
+  for (let i = 0; i < cols.length; i++) {
+    if (fields.includes(cols[i].key)) {
+      result.push(cols[i])
+    }
+    if (cols[i].children?.length) {
+      result.push(...getColumns(fields, cols[i].children as Array<ColumnNode>))
+    }
+  }
+  return result
+}
