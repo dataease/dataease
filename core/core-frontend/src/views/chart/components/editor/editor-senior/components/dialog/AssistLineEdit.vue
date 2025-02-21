@@ -375,6 +375,6 @@ span {
 
 .ed-select-dropdown__item {
   padding: 0 20px;
-  font-size: 12px;
+  font-size: 14px;
 }
 </style>
