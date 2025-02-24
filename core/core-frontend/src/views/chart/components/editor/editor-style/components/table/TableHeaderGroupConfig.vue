@@ -20,8 +20,8 @@ import {
   TooltipShowOptions
 } from '@antv/s2'
 import { ElMessageBox } from 'element-plus-secondary'
-import { cloneDeep, isEqual, isNumber } from 'lodash-es'
-import { computed, nextTick, onMounted, PropType } from 'vue'
+import { cloneDeep, debounce, isEqual, isNumber } from 'lodash-es'
+import { computed, nextTick, onMounted, onUnmounted, PropType } from 'vue'
 import { uuid } from 'vue-uuid'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
@@ -484,8 +484,37 @@ const getTreesMaxDepth = (nodes: Array<ColumnNode>): number => {
   return Math.max(...rootDepths)
 }
 
+const resize = debounce((width, height) => {
+  if (s2) {
+    s2.changeSheetSize(width, height)
+    s2.render(false)
+  }
+}, 500)
+const preSize = [0, 0]
+const TOLERANCE = 1
+let resizeObserver: ResizeObserver
 onMounted(() => {
   init()
+  resizeObserver = new ResizeObserver(([entry] = []) => {
+    const [size] = entry.borderBoxSize || []
+    // 拖动的时候宽高重新计算，误差范围内不重绘，误差先设置为1
+    if (!(preSize[0] || preSize[1])) {
+      preSize[0] = size.inlineSize
+      preSize[1] = size.blockSize
+    }
+    const widthOffset = Math.abs(size.inlineSize - preSize[0])
+    const heightOffset = Math.abs(size.blockSize - preSize[1])
+    if (widthOffset < TOLERANCE && heightOffset < TOLERANCE) {
+      return
+    }
+    preSize[0] = size.inlineSize
+    preSize[1] = size.blockSize
+    resize(size.inlineSize, Math.round(size.blockSize))
+  })
+  resizeObserver.observe(document.getElementById(containerId.value))
+})
+onUnmounted(() => {
+  resizeObserver?.disconnect()
 })
 class GroupMenu extends BaseTooltip {
   show<T = string | Element>(showOptions: TooltipShowOptions<T>): void {
