@@ -253,8 +253,6 @@ const showTypeError = computed(() => {
         return false
       }
       if (displayTypeField.type?.length !== field.type?.length) {
-        console.log('displayTypeField')
-
         return true
       }
     }
@@ -704,8 +702,15 @@ const setParameters = field => {
         curComponent.value.checkedFieldsMap[field.componentId]
     }
   })
+
+  const notChangeType =
+    curComponent.value.checkedFields.some(ele => {
+      return (
+        curComponent.value.checkedFieldsMapStart[ele] || curComponent.value.checkedFieldsMapEnd[ele]
+      )
+    }) && +curComponent.value.displayType === 7
   nextTick(() => {
-    if (isTimeParameter.value) {
+    if (isTimeParameter.value && !notChangeType) {
       const timeParameter = curComponent.value.parameters.find(ele => ele.deType === 1)
       curComponent.value.timeGranularity =
         typeTimeMap[timeParameter.type[1] || timeParameter.type[0]]
@@ -735,6 +740,8 @@ const setParameters = field => {
     }
     setTypeChange()
   })
+
+  if (notChangeType) return
   setType()
   if (curComponent.value.displayType === '9') {
     setTreeDefault()
@@ -772,6 +779,17 @@ const setType = () => {
         setTypeChange()
       }
     }
+  }
+
+  if (
+    curComponent.value.checkedFields.some(ele => {
+      return (
+        curComponent.value.checkedFieldsMapStart[ele] || curComponent.value.checkedFieldsMapEnd[ele]
+      )
+    }) &&
+    +curComponent.value.displayType === 1
+  ) {
+    curComponent.value.displayType = '7'
   }
 }
 
