@@ -747,6 +747,7 @@ defineExpose({
   font-size: 20px;
   cursor: pointer;
   margin-right: 8px;
+  color: rgba(31, 35, 41, 1);
 }
 
 .img-main-create {
