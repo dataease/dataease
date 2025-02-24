@@ -943,7 +943,6 @@ span {
 }
 
 .custom-tree {
-  max-height: 100%;
   overflow-y: auto;
 }
 .m-del-icon-btn {
