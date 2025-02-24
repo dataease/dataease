@@ -2833,6 +2833,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     column_name: 'Field name'
   },
   visualization: {
+    no_details: 'No Data',
     sync_pc_design: 'Synchronize PC Design',
     title_background: 'Title Background',
     active_title_background: 'Active Title Background',

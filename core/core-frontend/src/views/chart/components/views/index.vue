@@ -411,26 +411,6 @@ const windowsJump = (url, jumpType, size = 'middle') => {
     let newWindow
     if ('newPop' === jumpType) {
       dePreviewPopDialogRef.value.previewInit({ url, size })
-      // let sizeX, sizeY
-      // if (size === 'large') {
-      //   sizeX = 0.95
-      //   sizeY = 0.9
-      // } else if (size === 'middle') {
-      //   sizeX = 0.8
-      //   sizeY = 0.75
-      // } else {
-      //   sizeX = 0.6
-      //   sizeY = 0.5
-      // }
-      // const height = screen.height * sizeY
-      // const width = screen.width * sizeX
-      // const left = screen.width * ((1 - sizeX) / 2)
-      // const top = screen.height * ((1 - sizeY) / 2)
-      // newWindow = window.open(
-      //   url,
-      //   '_blank',
-      //   `width=${width},height=${height},left=${left},top=${top},toolbar=no,scrollbars=yes,resizable=yes,location=no`
-      // )
     } else if ('_self' === jumpType) {
       newWindow = window.open(url, jumpType)
       if (inMobile.value) {

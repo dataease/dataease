@@ -121,12 +121,19 @@
           :font-family="canvasStyleData?.fontFamily"
           show-position="viewDialog"
         />
-        <chart-component-s2
-          v-if="optType === 'details' && !sourceViewType.includes('chart-mix')"
-          :view="viewInfo"
-          show-position="viewDialog"
-          ref="chartComponentDetails"
-        />
+        <template v-if="optType === 'details' && !sourceViewType.includes('chart-mix')">
+          <chart-component-s2
+            v-if="!detailsError"
+            :view="viewInfo"
+            show-position="viewDialog"
+            ref="chartComponentDetails"
+          />
+          <empty-background
+            v-if="detailsError"
+            :description="t('visualization.no_details')"
+            img-type="noneWhite"
+          />
+        </template>
         <template v-else-if="optType === 'details' && sourceViewType.includes('chart-mix')">
           <el-tabs class="tab-header" v-model="activeName" @tab-change="handleClick">
             <el-tab-pane :label="t('chart.drag_block_value_axis_left')" name="left"></el-tab-pane>
@@ -173,6 +180,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import { getCanvasStyle } from '@/utils/style'
 import { exportPermission } from '@/utils/utils'
+import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -190,6 +198,7 @@ const { dvInfo, editMode, isIframe } = storeToRefs(dvMainStore)
 const exportLoading = ref(false)
 const sourceViewType = ref()
 const activeName = ref('left')
+const detailsError = ref(false)
 const DETAIL_CHART_ATTR: DeepPartial<ChartObj> = {
   render: 'antv',
   type: 'table-info',
@@ -240,8 +249,7 @@ const exportPermissions = computed(() =>
 
 const customExport = computed(() => {
   const style =
-    canvasStyleData.value &&
-    (optType.value === 'enlarge' || state.componentSourceType?.includes('table'))
+    canvasStyleData.value && optType.value === 'enlarge'
       ? getCanvasStyle(canvasStyleData.value, 'canvas-main')
       : {}
   if (downLoading.value) {
@@ -295,6 +303,7 @@ const pixelOptions = [
 const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   state.scale = params.scale
   sourceViewType.value = view.type
+  detailsError.value = false
   optType.value = opt
   dialogShow.value = true
   state.componentSourceType = view.type
@@ -321,11 +330,15 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
 const dataDetailsOpt = () => {
   nextTick(() => {
     const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
-    if (sourceViewType.value.includes('chart-mix')) {
-      chartComponentDetails.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.left)
-      chartComponentDetails2.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.right)
+    if (viewDataInfo) {
+      if (sourceViewType.value.includes('chart-mix')) {
+        chartComponentDetails.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.left)
+        chartComponentDetails2.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.right)
+      } else {
+        chartComponentDetails.value.renderChartFromDialog(viewInfo.value, viewDataInfo)
+      }
     } else {
-      chartComponentDetails.value.renderChartFromDialog(viewInfo.value, viewDataInfo)
+      detailsError.value = true
     }
   })
 }

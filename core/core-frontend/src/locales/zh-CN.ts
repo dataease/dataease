@@ -2770,6 +2770,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    no_details: '无明细数据',
     sync_pc_design: '同步PC设计',
     title_background: '标题背景',
     active_title_background: '激活标题背景',

@@ -2760,6 +2760,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    no_details: '無明細數據',
     sync_pc_design: '同步PC設計',
     title_background: '標題背景',
     active_title_background: '激活標題背景',
