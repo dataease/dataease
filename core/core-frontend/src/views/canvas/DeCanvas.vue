@@ -271,7 +271,7 @@ const getBaseMatrixSize = () => {
   }
 }
 
-const scrollTo = y => {
+const scrollTo = (y = 1) => {
   setTimeout(() => {
     canvasInner.value.scrollTo({
       top: (y - 1) * baseHeight.value,
@@ -334,7 +334,7 @@ defineExpose({
         :base-width="baseWidth"
         :base-height="baseHeight"
         :font-family="fontFamily"
-        @scrollCanvasToTop="scrollTo(1)"
+        @scrollCanvasAdjust="scrollTo"
       ></canvas-core>
     </div>
   </div>

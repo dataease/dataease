@@ -54,10 +54,10 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState } =
+const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState, mainScrollTop } =
   storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
-const emits = defineEmits(['scrollCanvasToTop'])
+const emits = defineEmits(['scrollCanvasAdjust'])
 const props = defineProps({
   themes: {
     type: String,
@@ -1377,7 +1377,8 @@ const handleDragStartMoveIn = componentInfo => {
     adaptCurThemeCommonStyle(moveInItemInfo)
   }
   addItemBox(moveInItemInfo)
-  emits('scrollCanvasToTop')
+  // 直接定位到当前画布位置
+  // emits('scrollCanvasAdjust', 1)
   if (!infoBox.value) {
     infoBox.value = {}
   }
@@ -1400,7 +1401,7 @@ const handleDragOver = e => {
     return
   }
   infoBox.value.moveItem.style.left = e.pageX
-  infoBox.value.moveItem.style.top = e.pageY
+  infoBox.value.moveItem.style.top = e.pageY + mainScrollTop.value
   onDragging(e, infoBox.value.moveItem, 0)
 }
 
