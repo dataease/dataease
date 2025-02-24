@@ -3708,7 +3708,7 @@ export default {
     query_timeout: '查詢超時',
     description: '描述',
     tips: '提示',
-    replication: 'BE 複本',
+    replication: 'BE 複本數',
     replication_tip: 'BE 節點數量'
   },
   sync_summary: {

@@ -3719,7 +3719,7 @@ export default {
     query_timeout: '查询超时',
     description: '描述',
     tips: '提示',
-    replication: 'BE 副本',
+    replication: 'BE 副本数',
     replication_tip: 'BE 节点数量'
   },
   sync_summary: {
