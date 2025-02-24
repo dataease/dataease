@@ -982,6 +982,10 @@ export function configHeaderInteraction(chart: Chart, option: S2Options) {
         if (meta.field === SERIES_NUMBER_FIELD) {
           return false
         }
+        // 分组
+        if (meta.colIndex === -1) {
+          return false
+        }
         const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
         const sortType = sortMethodMap?.[meta.field]
         if (sortType) {

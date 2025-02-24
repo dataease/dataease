@@ -1,10 +1,10 @@
 <template>
-  <div id="table-container"></div>
+  <div :id="containerId" class="table-container"></div>
   <div class="button-group">
     <el-button :effect="themes" @click="onCancelConfig">{{ t('chart.cancel') }}</el-button>
     <el-button type="primary" @click="onConfigChange">{{ t('chart.confirm') }}</el-button>
   </div>
-  <div id="menu-group" class="group-menu"></div>
+  <div :id="menuGroupId" class="group-menu"></div>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +21,7 @@ import {
 } from '@antv/s2'
 import { ElMessageBox } from 'element-plus-secondary'
 import { cloneDeep, isEqual, isNumber } from 'lodash-es'
-import { nextTick, onMounted, PropType } from 'vue'
+import { computed, nextTick, onMounted, PropType } from 'vue'
 import { uuid } from 'vue-uuid'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
@@ -89,10 +89,16 @@ const init = () => {
     renderTable(chart)
   })
 }
+const menuGroupId = computed(() => {
+  return 'menu-group-' + props.chart.id
+})
+const containerId = computed(() => {
+  return 'table-container-' + props.chart.id
+})
 let s2: TableSheet
 const renderTable = (chart: ChartObj) => {
   const data = dvMainStore.getViewDataDetails(chart.id)
-  const containerDom = document.getElementById('table-container')
+  const containerDom = document.getElementById(containerId.value)
   let realData = []
   if (data?.tableRow?.length) {
     realData = data.tableRow.slice(0, 10)
@@ -165,7 +171,7 @@ const renderTable = (chart: ChartObj) => {
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
   const theme = getCustomTheme(chart)
   s2.setTheme(theme)
-  const groupMenuContainer = document.getElementById('menu-group')
+  const groupMenuContainer = document.getElementById(menuGroupId.value)
   s2.on(S2Event.COL_CELL_CONTEXT_MENU, e => {
     e.preventDefault()
     const curColumns = s2.dataCfg.fields.columns as Array<ColumnNode>
@@ -373,6 +379,7 @@ const renderTable = (chart: ChartObj) => {
           showInput: true,
           inputPlaceholder: t('chart.group_name_edit_tip'),
           inputErrorMessage: t('chart.group_name_error_tip'),
+          inputValue: t('chart.group'),
           // 正则校验，长度 1-20
           inputValidator: val => {
             if (val?.length < 1 || val?.length > 20) {
@@ -494,7 +501,7 @@ class GroupMenu extends BaseTooltip {
 </script>
 
 <style scoped lang="less">
-#table-container {
+.table-container {
   position: relative;
   width: 100%;
   height: 40vh;

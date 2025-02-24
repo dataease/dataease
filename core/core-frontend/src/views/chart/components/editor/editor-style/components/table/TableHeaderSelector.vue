@@ -74,9 +74,16 @@ const changeTableHeader = prop => {
 const changeHeaderGroupConfig = (headerGroupConfig: ChartTableHeaderAttr['headerGroupConfig']) => {
   state.tableHeaderForm.headerGroupConfig = headerGroupConfig
   state.showTableHeaderGroupConfig = false
-  log(headerGroupConfig)
   changeTableHeader('headerGroupConfig')
 }
+
+const enableGroupConfig = computed(() => {
+  return (
+    showProperty('headerGroup') &&
+    state.tableHeaderForm.headerGroup &&
+    state.tableHeaderForm.showTableHeader !== false
+  )
+})
 
 const init = () => {
   const tableHeader = props.chart?.customAttr?.tableHeader
@@ -738,6 +745,7 @@ onMounted(() => {
       v-if="showProperty('headerGroup')"
       class="form-item"
       :class="'form-item-' + themes"
+      :disabled="!state.tableHeaderForm.showTableHeader"
     >
       <el-checkbox
         size="small"
@@ -748,11 +756,7 @@ onMounted(() => {
         {{ t('chart.table_header_group') }}
       </el-checkbox>
     </el-form-item>
-    <el-form-item
-      v-if="showProperty('headerGroup') && state.tableHeaderForm.headerGroup"
-      class="form-item"
-      :class="'form-item-' + themes"
-    >
+    <el-form-item v-if="enableGroupConfig" class="form-item" :class="'form-item-' + themes">
       <div class="header-group-config">
         <span>{{ t('chart.table_header_group_config') }}</span>
         <div class="group-icon">

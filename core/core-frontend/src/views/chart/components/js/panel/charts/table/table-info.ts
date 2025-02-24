@@ -25,7 +25,6 @@ import {
   configSummaryRow,
   summaryRowStyle,
   configEmptyDataStyle,
-  getValidLeafNodes,
   getLeafNodes,
   getColumns
 } from '@/views/chart/components/js/panel/common/common_table'
@@ -154,8 +153,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
     })
     const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // 表头分组
-    const { headerGroup } = tableHeader
-    if (headerGroup) {
+    const { headerGroup, showTableHeader } = tableHeader
+    if (headerGroup && showTableHeader !== false) {
       const { headerGroupConfig } = tableHeader
       if (headerGroupConfig?.columns?.length) {
         const allKeys = columns.map(c => drillFieldMap[c] || c)
