@@ -163,4 +163,7 @@ public interface DatasourceApi {
     @GetMapping("/simple/{id}")
     DsSimpleVO simple(@PathVariable("id") Long id);
 
+    @PostMapping("/multidimensionalTables")
+    @Operation(summary = "获取多维表格列表")
+    List<Map<String, String>> multidimensionalTables(@RequestBody Map<String, String> data) throws DEException;
 }

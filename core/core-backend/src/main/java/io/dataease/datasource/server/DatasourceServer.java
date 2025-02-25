@@ -1274,6 +1274,25 @@ public class DatasourceServer implements DatasourceApi {
         return vo;
     }
 
+    @Override
+    public List<Map<String, String>> multidimensionalTables(Map<String, String> request) throws DEException {
+        List<ApiDefinition> paramsList = new ArrayList<>();
+        ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
+        paramsList.add(apiDefinition);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        DatasourceDTO datasource = new DatasourceDTO();
+        datasource.setConfiguration(JsonUtil.toJSONString(paramsList).toString());
+        datasourceRequest.setDatasource(datasource);
+        List<Map<String, String>> result = new ArrayList<>();
+        if (request.keySet().contains("type") && request.get("type").equals("tables")) {
+            result = (List<Map<String, String>>) invokeMethod(request.get("dsType"), "listTables", DatasourceRequest.class, datasourceRequest);
+        }
+        if (request.keySet().contains("type") && request.get("type").equals("views")) {
+            result = (List<Map<String, String>>) invokeMethod(request.get("dsType"), "listViews", DatasourceRequest.class, datasourceRequest);
+        }
+        return result;
+    }
+
     private Method getMethod(String dsType, String methodName, Class<?> classes) {
         Method method = null;
         try {

@@ -913,7 +913,7 @@ export default {
     field_description: '字段備註',
     dl: '資料湖',
     other: '其他',
-    local_file: '本地檔案',
+    local_file: '檔案',
     select_ds_type: '選擇資料來源類型',
     select_ds: '選擇資料來源',
     ds_info: '錄入資料來源資訊',
@@ -1098,7 +1098,13 @@ export default {
     sync_table: '同步指定表',
     req_completed: '請求成功',
     sync_rate: '更新頻率',
-    has_same_ds: '存在相同配置資料來源，確認保存？ '
+    has_same_ds: '存在相同配置資料來源，確認保存？ ',
+    app_token: 'app_token',
+    input_app_token: '請輸入app_token',
+    table_id: 'table_id',
+    input_table_id: '請選擇數據表',
+    view_id: 'view_id',
+    input_view_id: '請選擇視圖'
   },
   chart: {
     align: '對齊方式',
@@ -3662,6 +3668,9 @@ export default {
     oracle_sid: 'SID',
     oracle_service_name: '服務名',
     get_schema: '取得Schema',
+    get_tables: '獲取數據表',
+    get_views: '獲取視圖',
+    view: '視圖',
     schema: 'Schema',
     charset: '字符集',
     targetCharset: '目標字元集',

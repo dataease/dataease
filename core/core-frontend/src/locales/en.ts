@@ -943,7 +943,7 @@ export default {
     field_description: 'Field remark',
     dl: 'Data lake',
     other: 'Other',
-    local_file: 'Local file',
+    local_file: 'File',
     select_ds_type: 'Select Datasource type',
     select_ds: 'Select Datasource',
     ds_info: 'Enter Datasource information',
@@ -998,6 +998,9 @@ export default {
     oracle_sid: 'SID',
     oracle_service_name: 'Service name',
     get_schema: 'Get Schema',
+    get_tables: 'Get data tables',
+    get_views: 'Get views',
+    view: 'View',
     schema: 'Schema',
     charset: 'Character set',
     targetCharset: 'Target character set',
@@ -1129,7 +1132,13 @@ export default {
     sync_table: 'Synchronize the specified table',
     req_completed: 'Request successful',
     sync_rate: 'Update frequency',
-    has_same_ds: 'There is a Datasource with the same configuration, confirm to save? '
+    has_same_ds: 'There is a Datasource with the same configuration, confirm to save? ',
+    app_token: 'app_token',
+    input_app_token: 'Please enter the app_token',
+    table_id: 'table_id',
+    input_table_id: 'Please select a data table',
+    view_id: 'view_id',
+    input_view_id: 'Please select a view'
   },
   chart: {
     align: 'Alignment',
