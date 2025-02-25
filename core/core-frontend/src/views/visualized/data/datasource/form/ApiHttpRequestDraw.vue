@@ -220,6 +220,10 @@ const initApiItem = (
         methodName: 'clearForm',
         args: []
       })
+      xpackApiItemBasicInfo?.value?.invokeMethod({
+        methodName: 'initForm',
+        args: []
+      })
     } else {
       apiItemBasicInfo.value.clearValidate()
     }

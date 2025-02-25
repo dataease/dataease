@@ -493,7 +493,16 @@ const saveDS = () => {
     request.apiConfiguration = ''
     validate(val => {
       if (val) {
-        doSaveDs(request)
+        if (currentDsType.value.includes('API')) {
+          const validateApi = detail?.value?.submitApiForm()
+          validateApi(v => {
+            if (v) {
+              doSaveDs(request)
+            }
+          })
+        } else {
+          doSaveDs(request)
+        }
       }
     })
   }

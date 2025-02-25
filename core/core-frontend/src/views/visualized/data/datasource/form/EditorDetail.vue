@@ -491,6 +491,11 @@ const submitForm = () => {
   return dsForm.value.validate
 }
 
+const submitApiForm = () => {
+  dsApiForm.value.clearValidate()
+  return dsApiForm.value.validate
+}
+
 const clearForm = () => {
   return dsForm.value.clearValidate()
 }
@@ -641,7 +646,7 @@ const apiRule = {
   'syncSetting.startTime': [
     {
       required: true,
-      message: t('datasource.start_time'),
+      message: t('sync_task.please_choose_start_time'),
       trigger: 'change'
     }
   ]
@@ -804,6 +809,7 @@ const datasetTypeList = [
 ]
 defineExpose({
   submitForm,
+  submitApiForm,
   resetForm,
   initForm,
   clearForm
