@@ -68,7 +68,7 @@ public interface DataFillingApi {
 
     @DePermit({"#p0+':manage'"})
     @GetMapping("/form/{formId}/delete/{id}")
-    void deleteRowData(@PathVariable("formId") Long formId, @PathVariable("id") Long id) throws Exception;
+    void deleteRowData(@PathVariable("formId") Long formId, @PathVariable("id") String id) throws Exception;
 
     @DePermit({"#p0+':manage'"})
     @GetMapping("/form/{formId}/truncate")
@@ -76,7 +76,7 @@ public interface DataFillingApi {
 
     @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/batch-delete")
-    void batchDeleteRowData(@PathVariable("formId") Long formId, @RequestBody List<Long> ids) throws Exception;
+    void batchDeleteRowData(@PathVariable("formId") Long formId, @RequestBody List<String> ids) throws Exception;
 
     @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/rowData/save")

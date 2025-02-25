@@ -10,3 +10,5 @@ DROP PRIMARY KEY;
 
 alter table `per_data_filling_task_sub_instance`
     modify `data_id` varchar(255) null comment '数据ID';
+alter table per_data_filling_commit_log
+    modify `data_id` varchar(255) not null comment '操作的数据ID';
