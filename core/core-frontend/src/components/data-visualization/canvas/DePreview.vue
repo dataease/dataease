@@ -28,6 +28,7 @@ const openHandler = ref(null)
 const customDatasetParamsRef = ref(null)
 const emits = defineEmits(['onResetLayout'])
 const fullScreeRef = ref(null)
+const isOverSize = ref(false)
 const isDesktopFlag = isDesktop()
 const props = defineProps({
   canvasStyleData: {
@@ -286,6 +287,10 @@ const resetLayout = () => {
       }
       renderReady.value = true
       emits('onResetLayout')
+      isOverSize.value = false
+      if (previewCanvas.value?.clientHeight - previewCanvas.value?.parentNode?.clientHeight > 0) {
+        isOverSize.value = true
+      }
     }
   })
 }
@@ -464,6 +469,7 @@ const linkOptBarShow = computed(() => {
 const downloadAsPDF = () => {
   // test
 }
+
 defineExpose({
   restore
 })
@@ -480,7 +486,7 @@ defineExpose({
     v-if="state.initState"
   >
     <!--弹框触发区域-->
-    <canvas-filter-btn v-if="filterBtnShow"></canvas-filter-btn>
+    <canvas-filter-btn :is-fixed="isOverSize" v-if="filterBtnShow"></canvas-filter-btn>
     <!-- 弹框区域 -->
     <PopArea
       v-if="popAreaAvailable"
