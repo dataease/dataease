@@ -21,7 +21,7 @@ public class Mysql extends DatasourceConfiguration {
     public String getJdbc() {
         if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
             for (String illegalParameter : illegalParameters) {
-                if (getJdbcUrl().toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
+                if (URLDecoder.decode(getJdbcUrl()).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
                 }
             }
@@ -34,7 +34,7 @@ public class Mysql extends DatasourceConfiguration {
                     .replace("DATABASE", getDataBase().trim());
         } else {
             for (String illegalParameter : illegalParameters) {
-                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
+                if (URLDecoder.decode(getExtraParams()).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
                 }
             }
