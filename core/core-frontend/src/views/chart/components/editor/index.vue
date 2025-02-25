@@ -175,7 +175,7 @@ const toolTip = computed(() => {
 })
 
 const templateStatusShow = computed(() => {
-  return view.value['dataFrom'] === 'template'
+  return view.value['dataFrom'] === 'template' && !mobileInPc.value
 })
 
 const { view } = toRefs(props)
