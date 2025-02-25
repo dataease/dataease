@@ -871,6 +871,7 @@ defineExpose({
             <el-tabs v-model="activeName" class="api-tabs">
               <el-tab-pane :label="t('datasource.data_table')" name="table"></el-tab-pane>
               <el-tab-pane
+                v-if="form.type === 'API'"
                 :label="t('data_source.interface_parameters')"
                 name="params"
               ></el-tab-pane>

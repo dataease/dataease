@@ -401,7 +401,7 @@ public class DatasourceServer implements DatasourceApi {
             for (String toCreateTable : toCreateTables) {
                 datasourceRequest.setTable(toCreateTable);
                 try {
-                    datasourceSyncManage.createEngineTable(toCreateTable, (List<TableField>) invokeMethod(sourceTableRequest.getDatasource().getType(), "getTableFields", DatasourceRequest.class, sourceTableRequest));
+                    datasourceSyncManage.createEngineTable(toCreateTable, (List<TableField>) invokeMethod(sourceTableRequest.getDatasource().getType(), "getTableFields", DatasourceRequest.class, datasourceRequest));
                 } catch (Exception e) {
                     DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
                 }

@@ -140,7 +140,7 @@ public class ApiUtils {
 
         List<TableField> tableFields = new ArrayList<>();
         try {
-            List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+            List<ApiDefinition> lists = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
             for (ApiDefinition apiDefinition : lists) {
                 if (datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getDeTableName())) {
                     tableFields = getTableFields(apiDefinition);
@@ -465,14 +465,9 @@ public class ApiUtils {
 
     public static ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws DEException {
         ApiDefinition apiDefinition = new ApiDefinition();
-        List<ApiDefinition> apiDefinitionList = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
-        try {
-            apiDefinitionList = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
         if (!CollectionUtils.isEmpty(apiDefinitionList)) {
             for (ApiDefinition definition : apiDefinitionList) {
                 if (definition != null && (definition.getType() == null || !definition.getType().equalsIgnoreCase("params"))) {
@@ -814,12 +809,7 @@ public class ApiUtils {
     private static List<ApiDefinition> params(DatasourceRequest datasourceRequest) {
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
-        List<ApiDefinition> apiDefinitionListTemp = null;
-        try {
-            apiDefinitionListTemp = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        List<ApiDefinition> apiDefinitionListTemp = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
         return apiDefinitionListTemp.stream().filter(apiDefinition -> apiDefinition != null && apiDefinition.getType() != null && apiDefinition.getType().equalsIgnoreCase("params")).collect(Collectors.toList());
     }
 
@@ -827,12 +817,8 @@ public class ApiUtils {
         List<ApiDefinition> apiDefinitionList = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
-        List<ApiDefinition> apiDefinitionListTemp = null;
-        try {
-            apiDefinitionListTemp = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        List<ApiDefinition> apiDefinitionListTemp = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+
         if (!CollectionUtils.isEmpty(apiDefinitionListTemp)) {
             for (ApiDefinition apiDefinition : apiDefinitionListTemp) {
                 if (apiDefinition == null || apiDefinition.getType() == null || apiDefinition.getType().equalsIgnoreCase("params")) {
