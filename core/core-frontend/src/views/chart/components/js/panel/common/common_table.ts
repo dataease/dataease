@@ -1056,6 +1056,14 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
     if (!cells?.length) {
       return
     }
+    if (cells.length === 1) {
+      const curCell = cells[0]
+      if (cell.getMeta().id === curCell.id) {
+        copyString(cellMeta.value + '', true)
+      }
+      s2Instance.interaction.clearState()
+      return
+    }
     const brushSelection = s2Instance.interaction.interactions.get(
       InteractionName.BRUSH_SELECTION
     ) as DataCellBrushSelection
@@ -1091,7 +1099,7 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
         arr.forEach((cell, index) => {
           const cellMeta = cell.getMeta()
           const value = cellMeta.data?.[cellMeta.valueField]
-          const metaObj = find(fieldMeta, m => m.field === valueField)
+          const metaObj = find(fieldMeta, m => m.field === cellMeta.valueField)
           let fieldVal = value?.toString()
           if (metaObj) {
             fieldVal = metaObj.formatter(value)
@@ -1487,7 +1495,7 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
         p[n.dataeaseName] = n
         return p
       }, {}) || {}
-    const quotaIndex = dataConfig.meta.findIndex(m => fieldsMap[m.field].groupType === 'q')
+    const quotaIndex = dataConfig.meta.findIndex(m => fieldsMap[m.field]?.groupType === 'q')
     const data = chart.data?.tableRow
     if (quotaIndex === 0 || !data?.length) {
       return
