@@ -177,8 +177,10 @@ onMounted(async () => {
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   // 检查外部参数
   const ignoreParams = router.currentRoute.value.query.ignoreParams === 'true'
+  const isPopWindow = router.currentRoute.value.query.popWindow === 'true'
   const isFrameFlag = window.self !== window.top
   dvMainStore.setIframeFlag(isFrameFlag)
+  dvMainStore.setIsPopWindow(isPopWindow)
   const { dvType, callBackFlag, taskId, showWatermark } = router.currentRoute.value.query
   if (!!taskId) {
     dvMainStore.setCanvasAttachInfo({ taskId, showWatermark })

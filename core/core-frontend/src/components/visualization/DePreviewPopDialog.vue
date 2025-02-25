@@ -43,7 +43,11 @@ const dialogStyle = computed(() => {
 })
 
 const previewInit = params => {
-  state.url = params.url
+  if (params.url.includes('?')) {
+    state.url = `${params.url}&popWindow=true`
+  } else {
+    state.url = `${params.url}&popWindow=true`
+  }
   if (params.size === 'large') {
     state.fullscreen = true
   } else if (params.size === 'middle') {

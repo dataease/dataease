@@ -197,7 +197,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       dataPrepareState: false, //数据准备状态
       multiplexingStyleAdapt: true, //复用样式跟随主题
       mainScrollTop: 0, //主画布运动量
-      isIframe: false // 当前是否在iframe中
+      isIframe: false, // 当前是否在iframe中
+      isPopWindow: false // 当前是否在iframe弹框中
     }
   },
   actions: {
@@ -210,6 +211,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setIframeFlag(value) {
       this.isIframe = value
+    },
+    setIsPopWindow(value) {
+      this.isPopWindow = value
     },
     setCanvasAttachInfo(value) {
       this.canvasAttachInfo = value

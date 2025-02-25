@@ -363,7 +363,7 @@ const {
   canvasViewInfo,
   mobileInPc,
   dvInfo,
-  isIframe,
+  isPopWindow,
   hiddenListStatus
 } = storeToRefs(dvMainStore)
 
@@ -634,7 +634,7 @@ const initCurFields = () => {
 }
 
 const showDownload = computed(
-  () => canvasViewInfo.value[element.value.id]?.dataFrom !== 'template' && !isIframe.value
+  () => canvasViewInfo.value[element.value.id]?.dataFrom !== 'template' && !isPopWindow.value
 )
 // 富文本-End
 
