@@ -735,7 +735,7 @@ const emits = defineEmits(['update:item', 'del'])
     word-wrap: break-word;
     line-height: 28px;
     color: #7e7e7e;
-    font-size: 12px;
+    font-size: 14px;
     white-space: nowrap;
     box-sizing: border-box;
     margin-right: 5px;
@@ -745,7 +745,7 @@ const emits = defineEmits(['update:item', 'del'])
   }
 
   .font12 {
-    font-size: 12px;
+    font-size: 14px;
     margin: 0 10px;
     cursor: pointer;
   }
@@ -810,7 +810,6 @@ const emits = defineEmits(['update:item', 'del'])
     text-align: left;
     line-height: 28px;
     color: #7e7e7e;
-    font-size: 12px;
     white-space: pre;
     box-sizing: border-box;
     height: 1px;
@@ -855,7 +854,7 @@ const emits = defineEmits(['update:item', 'del'])
     word-wrap: break-word;
     text-align: left;
     color: rgba(0, 0, 0, 0.65);
-    font-size: 12px;
+    font-size: 14px;
     list-style: none;
     user-select: none;
     cursor: pointer;
@@ -906,7 +905,7 @@ const emits = defineEmits(['update:item', 'del'])
         padding 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
       position: relative;
       overflow: hidden;
-      font-size: 12px;
+      font-size: 14px;
       text-overflow: ellipsis;
       padding: 0 16px 0 28px;
       line-height: 32px;
@@ -937,7 +936,7 @@ const emits = defineEmits(['update:item', 'del'])
     height: 28px;
     padding: 4px 7px;
     color: rgba(0, 0, 0, 0.65);
-    font-size: 12px;
+    font-size: 14px;
     line-height: 28px;
     background-color: #fff;
     background-image: none;
@@ -968,7 +967,7 @@ const emits = defineEmits(['update:item', 'del'])
     box-sizing: border-box;
     margin: 0;
     color: rgba(0, 0, 0, 0.65);
-    font-size: 12px;
+    font-size: 14px;
     font-variant: tabular-nums;
     line-height: 1.5;
     list-style: none;
@@ -986,7 +985,7 @@ const emits = defineEmits(['update:item', 'del'])
   border: none !important;
   .de-panel {
     color: rgba(0, 0, 0, 0.65);
-    font-size: 12px;
+    font-size: 14px;
     box-sizing: border-box;
     position: relative;
     padding: 0;
@@ -1011,7 +1010,7 @@ const emits = defineEmits(['update:item', 'del'])
     .mod-left {
       font-family: var(--de-custom_font, 'PingFang');
       color: rgba(0, 0, 0, 0.65);
-      font-size: 12px;
+      font-size: 14px;
       vertical-align: top;
       padding: 5px;
       width: 50%;
@@ -1026,7 +1025,7 @@ const emits = defineEmits(['update:item', 'del'])
         position: relative;
         display: inline-block;
         color: rgba(0, 0, 0, 0.65);
-        font-size: 12px;
+        font-size: 14px;
         line-height: 28px;
         background-color: #fff;
         background-image: none;
@@ -1142,14 +1141,14 @@ const emits = defineEmits(['update:item', 'del'])
       border-bottom: 1px solid #f8f8fa;
       height: 30px;
       width: 100%;
-      font-size: 12px;
+      font-size: 14px;
       line-height: 27px;
       text-overflow: ellipsis;
       white-space: nowrap;
 
       .right-btn {
         color: rgba(0, 0, 0, 0.65);
-        font-size: 12px;
+        font-size: 14px;
         box-sizing: border-box;
         position: relative;
         z-index: 10;
@@ -1191,7 +1190,7 @@ const emits = defineEmits(['update:item', 'del'])
       position: relative;
       display: inline-block;
       color: rgba(0, 0, 0, 0.65);
-      font-size: 12px;
+      font-size: 14px;
       background-color: #fff;
       background-image: none;
       max-width: 100%;
@@ -1226,7 +1225,7 @@ const emits = defineEmits(['update:item', 'del'])
         touch-action: manipulation;
         height: 28px;
         padding: 0 15px;
-        font-size: 12px;
+        font-size: 14px;
         color: rgba(0, 0, 0, 0.65);
         background-color: #fff;
         outline: 0;
