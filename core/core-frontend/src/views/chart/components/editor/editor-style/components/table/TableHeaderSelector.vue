@@ -16,7 +16,7 @@ import { storeToRefs } from 'pinia'
 import TableHeaderGroupConfig from './TableHeaderGroupConfig.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { mobileInPc } = storeToRefs(dvMainStore)
+const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const props = defineProps({
@@ -79,6 +79,7 @@ const changeHeaderGroupConfig = (headerGroupConfig: ChartTableHeaderAttr['header
 
 const enableGroupConfig = computed(() => {
   return (
+    !batchOptStatus.value &&
     showProperty('headerGroup') &&
     state.tableHeaderForm.headerGroup &&
     state.tableHeaderForm.showTableHeader !== false
@@ -742,7 +743,7 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
     <el-form-item
-      v-if="showProperty('headerGroup')"
+      v-if="!batchOptStatus && showProperty('headerGroup')"
       class="form-item"
       :class="'form-item-' + themes"
       :disabled="!state.tableHeaderForm.showTableHeader"

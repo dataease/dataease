@@ -192,6 +192,8 @@ const renderTable = (chart: ChartObj) => {
     }
     //只有一个cell，并且colIndex为-1，那就是组合的，显示取消分组按钮和重命名按钮
     if (activeColumns?.length === 1 && curCell.getMeta().colIndex === -1) {
+      s2.interaction.clearState()
+      s2.interaction.selectHeaderCell({ cell: curCell })
       const cancelBtn = document.createElement('span')
       groupMenuContainer.appendChild(cancelBtn)
       cancelBtn.innerText = t('chart.cancel_group')
