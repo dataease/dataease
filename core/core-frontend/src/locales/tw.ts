@@ -4052,6 +4052,11 @@ export default {
     confirm_truncate_table: '確定要清空數據嗎？',
     add_search_condition: '添加篩選條件',
     form: {
+      create_type: '創建方式',
+      create_new_table: '創建新表',
+      bind_exists_table: '綁定已有表',
+      create_new_column: '新建字段',
+      select_exists_column: '綁定字段',
       add_detail_columns: '添加字段描述',
       detail_columns: '字段描述',
       display_name: '顯示名稱',

@@ -89,5 +89,5 @@ public class DataFillingDTO implements Serializable {
     private String creator;
     private String updater;
 
-
+    private boolean useExistsTable;
 }

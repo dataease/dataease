@@ -4064,6 +4064,12 @@ export default {
     confirm_truncate_table: '确定要清空数据吗？',
     add_search_condition: '添加筛选条件',
     form: {
+      create_type: '创建方式',
+      create_new_table: '创建新表',
+      bind_exists_table: '绑定已有表',
+      create_new_column: '新建字段',
+      select_exists_column: '绑定字段',
+      table_primary_key_not_exists: '此表不存在主键，不支持关联',
       add_detail_columns: '添加字段描述',
       detail_columns: '字段描述',
       display_name: '显示名称',

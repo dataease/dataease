@@ -33,7 +33,7 @@ public class DfUserTaskData implements Serializable {
         @JsonSerialize(using = ToStringSerializer.class)
         private Long formId;
         @JsonSerialize(using = ToStringSerializer.class)
-        private Long dataId;
+        private String dataId;
 
         private Long finishTime;
         private Integer status;
@@ -43,8 +43,8 @@ public class DfUserTaskData implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long formId;
     private String formTitle;
-    @JsonSerialize(using = LongArray2StringSerialize.class)
-    private List<Long> dataIds;
+    //@JsonSerialize(using = LongArray2StringSerialize.class)
+    private List<String> dataIds;
 
     private List<DfSubInstance> subInstances;
 

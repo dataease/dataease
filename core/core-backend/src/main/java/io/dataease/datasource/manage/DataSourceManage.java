@@ -48,6 +48,9 @@ public class DataSourceManage {
     @Resource
     private CoreDatasourceExtMapper coreDatasourceExtMapper;
 
+    @Resource
+    private EngineManage engineManage;
+
     private DatasourceNodeBO rootNode() {
         return new DatasourceNodeBO(0L, "root", false, 7, -1L, 0, "mysql");
     }
@@ -95,7 +98,7 @@ public class DataSourceManage {
     }
 
     public void checkName(DatasourceDTO dto) {
-        if(StringUtils.isEmpty(dto.getName()) || StringUtils.isEmpty(dto.getName().trim())){
+        if (StringUtils.isEmpty(dto.getName()) || StringUtils.isEmpty(dto.getName().trim())) {
             DEException.throwException(Translator.get("i18n_df_name_can_not_empty"));
         }
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
@@ -182,6 +185,9 @@ public class DataSourceManage {
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public CoreDatasource getCoreDatasource(Long id) {
+        if (id == -1L) {
+            return engineManage.getDeEngine();
+        }
         return coreDatasourceMapper.selectById(id);
     }
 

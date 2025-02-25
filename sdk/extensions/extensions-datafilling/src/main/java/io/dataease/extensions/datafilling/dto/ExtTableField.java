@@ -115,6 +115,8 @@ public class ExtTableField implements Serializable {
         //精度
         private Integer accuracy;
 
+        private boolean useExistsTable;
+
     }
 
     public enum BaseType {
