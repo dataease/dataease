@@ -1,7 +1,12 @@
 <!-- IconSlider.vue -->
 <template>
   <el-tooltip offset="22" effect="dark" placement="left" :content="t('visualization.query')">
-    <div class="canvas-filter" @mousedown.stop @mousedup.stop>
+    <div
+      class="canvas-filter"
+      :class="{ 'filter-btn-fix': isFixed }"
+      @mousedown.stop
+      @mousedup.stop
+    >
       <div class="icon-slider" @mouseenter="slideOut" @mouseleave="slideBack">
         <div
           class="icon-container"
@@ -28,6 +33,12 @@ const slideDistance = ref(14) // 滑动距离
 const { canvasState } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
+defineProps({
+  isFixed: {
+    type: Boolean,
+    default: false
+  }
+})
 const filterActive = computed(() => canvasState.value.curPointArea === 'hidden')
 const slideOut = () => {
   offset.value = -slideDistance.value
@@ -81,5 +92,9 @@ const slideBack = () => {
 img {
   max-width: 100%;
   max-height: 100%;
+}
+
+.filter-btn-fix {
+  position: fixed !important;
 }
 </style>
