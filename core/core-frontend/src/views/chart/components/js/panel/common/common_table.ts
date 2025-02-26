@@ -1185,7 +1185,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   const rowLength = fields?.rows?.length || 0
   const colLength = fields?.columns?.length || 0
   const workbook = new Exceljs.Workbook()
-  const worksheet = workbook.addWorksheet(chart.title)
+  const worksheet = workbook.addWorksheet(i18nt('chart.chart_data'))
   const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
     if (n.field) {
       p[n.field] = n
@@ -1354,7 +1354,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
   const { meta, fields } = instance.dataCfg
   const colLength = fields?.columns?.length || 0
   const workbook = new Exceljs.Workbook()
-  const worksheet = workbook.addWorksheet(chart.title)
+  const worksheet = workbook.addWorksheet(i18nt('chart.chart_data'))
 
   const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
     if (n.field) {
