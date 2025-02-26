@@ -4065,6 +4065,7 @@ export default {
     confirm_truncate_table: '确定要清空数据吗？',
     add_search_condition: '添加筛选条件',
     form: {
+      please_select_valid_column: '请选择符合要求的字段',
       create_type: '创建方式',
       create_new_table: '创建新表',
       bind_exists_table: '绑定已有表',

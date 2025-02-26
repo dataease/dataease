@@ -4176,6 +4176,7 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     confirm_truncate_table: 'Confirm to truncate table?',
     add_search_condition: 'Add search condition',
     form: {
+      please_select_valid_column: 'Please select valid column',
       create_type: 'Create type',
       create_new_table: 'Create new table',
       bind_exists_table: 'Bind exists table',
