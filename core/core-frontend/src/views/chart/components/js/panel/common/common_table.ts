@@ -1181,9 +1181,15 @@ function getTooltipPosition(event) {
 }
 
 export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
+  const { layoutResult } = instance.facet
   const { meta, fields } = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
   const colLength = fields?.columns?.length || 0
+  const colNums = layoutResult.colLeafNodes.length + rowLength + 1
+  if (colNums > 16384) {
+    ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
+    return
+  }
   const workbook = new Exceljs.Workbook()
   const worksheet = workbook.addWorksheet(i18nt('chart.chart_data'))
   const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
@@ -1215,7 +1221,6 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       cell.border.right = { style: 'thick', color: { argb: '00000000' } }
     }
   })
-  const { layoutResult } = instance.facet
   // 行头
   const { rowLeafNodes, rowsHierarchy, rowNodes } = layoutResult
   const maxColIndex = rowsHierarchy.maxLevel + 1
@@ -1351,18 +1356,21 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
 }
 
 export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
+  const layoutResult = instance.facet.layoutResult
+  if (layoutResult.colLeafNodes.length + 2 > 16384) {
+    ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
+    return
+  }
   const { meta, fields } = instance.dataCfg
   const colLength = fields?.columns?.length || 0
   const workbook = new Exceljs.Workbook()
   const worksheet = workbook.addWorksheet(i18nt('chart.chart_data'))
-
   const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
     if (n.field) {
       p[n.field] = n
     }
     return p
   }, {})
-  const layoutResult = instance.facet.layoutResult
 
   // 角头
   fields.columns?.forEach((column, index) => {
@@ -1473,7 +1481,7 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
   const rowLength = fields?.rows?.length || 0
   const valueLength = fields?.values?.length || 0
   if (!(rowLength && valueLength)) {
-    ElMessage.warning('行维度或指标维度为空不可导出！')
+    ElMessage.warning(i18nt('chart.pivot_export_invalid_field'))
     return
   }
   if (chart.customAttr.basicStyle.tableLayoutMode !== 'tree') {

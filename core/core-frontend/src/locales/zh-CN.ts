@@ -1983,7 +1983,9 @@ export default {
     decrease: '减少',
     waterfall_total: '合计',
     accumulate: '累加',
-    table_cross_bg_tip: '合并单元格后，不支持班马纹'
+    table_cross_bg_tip: '合并单元格后，不支持班马纹',
+    pivot_export_invalid_field: '行维度或指标维度为空不可导出!',
+    pivot_export_invalid_col_exceed: '表格列数超过最大限制不可导出!'
   },
   dataset: {
     field_value: '字段值',

@@ -1976,9 +1976,10 @@ export default {
     circle_packing_padding: '圓形間距',
     increase: '增加',
     decrease: '減少',
-    total: '合計',
     accumulate: '累加',
-    table_cross_bg_tip: '合併儲存格後，不支持斑馬紋'
+    table_cross_bg_tip: '合併儲存格後，不支持斑馬紋',
+    pivot_export_invalid_field: '行維度或指標維度為空不可導出！',
+    pivot_export_invalid_col_exceed: '表格列數超過最大限制不可導出!'
   },
   dataset: {
     field_value: '欄位值',

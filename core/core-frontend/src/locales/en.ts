@@ -2030,9 +2030,12 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     circle_packing_padding: 'Circle padding',
     increase: 'Increase',
     decrease: 'Decrease',
-    total: 'Total',
     accumulate: 'Accumulate',
-    table_cross_bg_tip: 'After merging cells，the zebra pattern is not supported'
+    table_cross_bg_tip: 'After merging cells，the zebra pattern is not supported',
+    pivot_export_invalid_field:
+      'The row dimension or indicator dimension is empty and can not be exported !',
+    pivot_export_invalid_col_exceed:
+      'Table can not be exported cause the number of columns exceeds the maximum limit!'
   },
   dataset: {
     field_value: 'Field Value',
