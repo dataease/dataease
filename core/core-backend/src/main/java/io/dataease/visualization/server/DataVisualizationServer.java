@@ -162,12 +162,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Long dvId = request.getId();
         String busiFlag = request.getBusiFlag();
         DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
-        // get creator
-        String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
-        if (StringUtils.isNotBlank(userName)) {
-            result.setCreatorName(userName);
-        }
         if (result != null) {
+            // get creator
+            String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
+            if (StringUtils.isNotBlank(userName)) {
+                result.setCreatorName(userName);
+            }
             //获取图表信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
