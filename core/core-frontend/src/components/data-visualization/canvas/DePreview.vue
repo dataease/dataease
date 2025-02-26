@@ -343,7 +343,7 @@ const refreshDataV = () => {
 }
 
 const initWatermark = (waterDomId = 'preview-canvas-main') => {
-  if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
+  if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value) && !downloadStatus.value) {
     activeWatermarkCheckUser(waterDomId, canvasId.value, scaleMin.value / 100)
   }
 }
