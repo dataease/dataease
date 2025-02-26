@@ -11,7 +11,8 @@ import {
   Meta,
   SERIES_NUMBER_FIELD,
   setTooltipContainerStyle,
-  S2DataConfig
+  S2DataConfig,
+  S2Event
 } from '@antv/s2'
 import {
   configHeaderInteraction,
@@ -34,6 +35,7 @@ declare interface PageInfo {
 export interface S2DrawOptions<O> extends AntVDrawOptions<O> {
   pageInfo?: PageInfo
   resizeAction?: (...args: any) => void
+  touchAction?: (...args: any) => void
 }
 export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractChartView {
   public abstract drawChart(drawOption: S2DrawOptions<P>): P
@@ -111,6 +113,57 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
       content,
       meta,
       event
+    })
+  }
+
+  protected configTouchEvent(s2Instance: P, option: S2DrawOptions<P>, meta: Meta[]) {
+    const { touchAction } = option
+    // touch action
+    s2Instance.once(S2Event.LAYOUT_AFTER_RENDER, () => {
+      const touchActionInit = s2Instance.store.get('touchActionInit')
+      if (touchActionInit) {
+        return
+      }
+      s2Instance.store.set('touchActionInit', true)
+      const canvas = s2Instance.getCanvasElement()
+      let startTime = Date.now()
+      canvas.addEventListener('touchstart', () => {
+        startTime = Date.now()
+      })
+      canvas.addEventListener('touchend', e => {
+        const duration = Date.now() - startTime
+        // 超过 300ms 触发复制
+        if (duration > 300) {
+          return
+        }
+        const callback = () => {
+          const canvasPosition = canvas.getBoundingClientRect()
+          const touchPosition = [e.changedTouches[0].pageX, e.changedTouches[0].pageY]
+          const relativePosition = [
+            touchPosition[0] - canvasPosition.x,
+            touchPosition[1] - canvasPosition.y
+          ]
+          const shape = s2Instance.container.getShape(relativePosition[0], relativePosition[1])
+          // 图片单元格点击放大图片
+          if (shape.cfg?.parent.constructor.name === 'ImageCell') {
+            return
+          }
+          e.preventDefault()
+          e.stopPropagation()
+          if (shape) {
+            const event = {
+              target: shape,
+              x: relativePosition[0],
+              y: relativePosition[1],
+              clientX: touchPosition[0],
+              clientY: touchPosition[1],
+              originEvent: e
+            }
+            this.showTooltip(s2Instance, event, meta)
+          }
+        }
+        touchAction(callback)
+      })
     })
   }
 }
