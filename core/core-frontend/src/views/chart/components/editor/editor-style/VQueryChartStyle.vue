@@ -298,7 +298,7 @@ const onTitleChange = () => {
           </el-form>
         </el-collapse-item>
         <el-collapse-item :effect="themes" name="addition" :title="t('v_query.query_condition')">
-          <el-form @keydown.stop.prevent.enter label-position="top">
+          <el-form @keydown.stop.prevent.enter label-position="top" style="padding-bottom: 8px">
             <el-row :gutter="8">
               <el-col :span="12">
                 <el-form-item
@@ -441,6 +441,7 @@ const onTitleChange = () => {
             :class="!chart.customStyle.component.labelShow && 'is-disabled'"
             :disabled="!chart.customStyle.component.labelShow"
             label-position="top"
+            style="padding-bottom: 8px"
           >
             <el-form-item
               :effect="themes"
@@ -544,7 +545,7 @@ const onTitleChange = () => {
           </el-form>
         </collapse-switch-item>
         <el-collapse-item :effect="themes" name="button" :title="t('commons.button')">
-          <el-form @keydown.stop.prevent.enter label-position="top">
+          <el-form @keydown.stop.prevent.enter label-position="top" style="padding-bottom: 8px">
             <el-form-item
               :effect="themes"
               class="form-item"
