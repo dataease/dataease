@@ -211,14 +211,14 @@ const gaugeOrLiquidDefaultRangeData = args => {
     defaultMaxValue.gaugeMax = cloneDeep(args.data.max)
     if (!state.miscForm.gaugeMax) {
       state.miscForm.gaugeMax = cloneDeep(defaultMaxValue.gaugeMax)
-      changeMisc('gaugeMaxField', false)
+      changeMisc('gaugeMaxField', true)
     }
   }
   if (args.data.type === 'liquid') {
     defaultMaxValue.liquidMax = cloneDeep(args.data.max)
     if (!state.miscForm.liquidMax) {
       state.miscForm.liquidMax = cloneDeep(defaultMaxValue.liquidMax)
-      changeMisc('liquidMaxField', false)
+      changeMisc('liquidMaxField', true)
     }
   }
 }
@@ -347,16 +347,21 @@ const initStateForm = () => {
       }
     }
   } else {
+    const hasFixValue = state.miscForm[maxValueKey]
     if (isLiquid.value) {
       state.miscForm[maxTypeKey] = 'fix'
-      state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
+      state.miscForm[maxValueKey] = hasFixValue
+        ? hasFixValue
+        : cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
       state.miscForm[maxValueKey + 'Field']['id'] = ''
       state.miscForm[maxValueKey + 'Field']['summary'] = ''
     }
     if (isGauge.value) {
       // max
       state.miscForm[maxTypeKey] = 'fix'
-      state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
+      state.miscForm[maxValueKey] = hasFixValue
+        ? hasFixValue
+        : cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
       state.miscForm[maxValueKey + 'Field']['id'] = ''
       state.miscForm[maxValueKey + 'Field']['summary'] = ''
       // min
@@ -716,7 +721,6 @@ const isGauge = computed(() => props.chart.type === 'gauge')
       <el-input-number
         :effect="themes"
         v-model="state.miscForm.liquidMax"
-        :min="1"
         size="small"
         controls-position="right"
         @blur="changeMaxValidate('liquidMax')"
