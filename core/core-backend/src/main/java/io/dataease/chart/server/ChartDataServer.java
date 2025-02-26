@@ -194,7 +194,11 @@ public class ChartDataServer implements ChartDataApi {
         }
         String suffix = formatter.getSuffix().trim();
         if (!suffix.isEmpty()) {
-            sb.append(suffix);
+            if (suffix.equals("%")) {
+                sb.append("\"%\"");
+            } else {
+                sb.append(suffix);
+            }
         }
         return sb.toString();
     }
@@ -495,7 +499,11 @@ public class ChartDataServer implements ChartDataApi {
                 formatStr = "#,##" + formatStr;
             }
             if (StringUtils.isNotEmpty(formatter.getSuffix())) {
-                formatStr = formatStr + formatter.getSuffix();
+                if (formatter.getSuffix().equals("%")) {
+                    formatStr = formatStr + "\"%\"";
+                } else {
+                    formatStr = formatStr + formatter.getSuffix();
+                }
             }
         }
         if (formatter.getType().equals("value")) {
@@ -524,7 +532,11 @@ public class ChartDataServer implements ChartDataApi {
                 formatStr = "#,##" + formatStr;
             }
             if (StringUtils.isNotEmpty(formatter.getSuffix())) {
-                formatStr = formatStr + formatter.getSuffix();
+                if (formatter.getSuffix().equals("%")) {
+                    formatStr = formatStr + "\"%\"";
+                } else {
+                    formatStr = formatStr + formatter.getSuffix();
+                }
             }
         } else if (formatter.getType().equals("percent")) {
             if (formatter.getDecimalCount() > 0) {
