@@ -64,6 +64,10 @@ export function findNewComponent(componentName, innerType, staticMap?) {
   componentList.forEach(comp => {
     if (comp.component === componentName || comp.component === innerType) {
       newComponent = cloneDeep(comp)
+      if (newComponent.component === 'DeTabs') {
+        newComponent.propValue[0].name = guid()
+        newComponent['titleBackground'] = deepCopy(COMMON_TAB_TITLE_BACKGROUND)
+      }
       newComponent.innerType = innerType
       if (newComponent.innerType === 'richText') {
         newComponent.propValue = {
