@@ -171,7 +171,6 @@ public class SqlparserUtils {
         } else {
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
-            sysParams.clear();
             while (matcher.find()) {
                 hasVariables = true;
                 tmpSql = tmpSql.replace(matcher.group(), SysParamsSubstitutedParams + matcher.group().substring(1, matcher.group().length() - 1));
