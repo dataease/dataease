@@ -238,7 +238,8 @@ const debounceRender = debounce(resetPageInfo => {
     chartObj: myChart,
     pageInfo: state.pageInfo,
     action,
-    resizeAction
+    resizeAction,
+    touchAction
   })
   myChart?.render()
   dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
@@ -366,6 +367,12 @@ const handlePageSizeChange = pageSize => {
 const pointClickTrans = () => {
   if (embeddedCallBack.value === 'yes') {
     trackClick('pointClick')
+  }
+}
+
+const touchAction = callback => {
+  if (!trackMenu.value.length) {
+    callback?.()
   }
 }
 
