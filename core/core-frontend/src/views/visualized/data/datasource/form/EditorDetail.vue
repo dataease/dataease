@@ -599,7 +599,10 @@ const getDsSchema = () => {
       loading.value = true
       getSchema(request)
         .then(res => {
-          schemas.value = res.data
+          schemas.value = (res.data || []).map(ele => ({
+            value: ele,
+            label: ele
+          }))
           ElMessage.success(t('commons.success'))
         })
         .finally(() => {
@@ -1195,16 +1198,15 @@ defineExpose({
                 {{ t('datasource.get_schema') }}
               </el-button>
             </template>
-            <el-select
+            <el-select-v2
               v-model="form.configuration.schema"
+              :options="schemas"
               filterable
               :placeholder="t('common.please_select')"
               class="de-select"
               @change="validatorSchema"
               @blur="validatorSchema"
-            >
-              <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
-            </el-select>
+            />
           </el-form-item>
           <el-form-item
             :label="t('datasource.extra_params')"
