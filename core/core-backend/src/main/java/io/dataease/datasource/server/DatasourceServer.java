@@ -1323,11 +1323,22 @@ public class DatasourceServer implements DatasourceApi {
             }
             resObj = method.invoke(null, object);
         } catch (Exception e) {
-            if (e.getCause() != null && e.getCause() instanceof DEException) {
-                DEException.throwException(e.getCause().getMessage());
-            }
-            DEException.throwException(e);
+            DEException.throwException(msg(e));
         }
         return resObj;
+    }
+
+    private String msg(Throwable e) {
+        Throwable exception = e;
+        while (true) {
+            if (exception.getCause() == null) {
+                return exception.getMessage();
+            }
+            if (exception instanceof DEException && !(exception.getCause() instanceof DEException)) {
+                return exception.getMessage();
+            }
+            exception = exception.getCause();
+
+        }
     }
 }

@@ -829,6 +829,7 @@ defineExpose({
             >
               <template #default="scope">
                 <el-checkbox
+                  style="display: inline-block; max-width: 80px; white-space: nowrap"
                   :key="scope.row.jsonPath"
                   v-model="scope.row.checked"
                   :disabled="apiItem.useJsonPath"
@@ -902,7 +903,6 @@ defineExpose({
                 </el-select>
               </template>
             </el-table-column>
-
             <el-table-column
               prop="length"
               :label="t('datasource.length')"
@@ -923,7 +923,6 @@ defineExpose({
                 />
               </template>
             </el-table-column>
-
             <el-table-column
               prop="primaryKey"
               class-name="checkbox-table"
