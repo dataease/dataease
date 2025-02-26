@@ -13,7 +13,7 @@ import { SERIES_NUMBER_FIELD } from '@antv/s2'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { isNumber } from 'mathjs'
-import { ElFormItem, ElInputNumber, ElMessage, UploadProps } from 'element-plus-secondary'
+import { ElFormItem, ElInputNumber, ElMessage } from 'element-plus-secondary'
 import { svgStrToUrl } from '../../../js/util'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -881,7 +881,7 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
     <el-form-item
-      v-if="state.basicStyleForm.autoWrap"
+      v-if="showProperty('autoWrap') && state.basicStyleForm.autoWrap"
       :label="t('chart.table_break_line_max_lines')"
       class="form-item form-item-slider"
       :class="'form-item-' + themes"
