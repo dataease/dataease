@@ -1961,3 +1961,26 @@ export const configEmptyDataStyle = (newChart, newData, container) => {
     newChart.destroy()
   }
 }
+
+export const numberToChineseUnderHundred = (num: number): string => {
+  // 合法性检查
+  if (num <= 0 || num > 99 || !Number.isInteger(num)) {
+    throw new Error('请输入1-99之间的整数')
+  }
+
+  const digits = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九']
+
+  // 处理个位数
+  if (num < 10) return digits[num]
+
+  const tens = Math.floor(num / 10)
+  const ones = num % 10
+
+  // 处理整十
+  if (ones === 0) {
+    return tens === 1 ? '十' : digits[tens] + '十'
+  }
+
+  // 处理其他两位数
+  return tens === 1 ? '十' + digits[ones] : digits[tens] + '十' + digits[ones]
+}

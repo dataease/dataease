@@ -1651,6 +1651,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   zoomButtonColor: '#aaa',
   zoomBackground: '#fff',
   tableLayoutMode: 'grid',
+  defaultExpandLevel: 1,
   calcTopN: false,
   topN: 5,
   topNLabel: t('datasource.other'),
