@@ -16,6 +16,10 @@ import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.s
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import dayjs from 'dayjs'
+import {
+  iconFieldCalculatedMap,
+  iconFieldCalculatedQMap
+} from '@/components/icon-group/field-calculated-list'
 import { enumValueDs } from '@/api/dataset'
 import {
   ref,
@@ -1662,6 +1666,14 @@ const getDsIconName = data => {
   if (!data.leaf) return dvFolder
   return iconDatasourceMap[data.type]
 }
+
+const getIconNameCalc = (deType, extField, dimension = false) => {
+  if (extField === 2) {
+    const iconFieldCalculated = dimension ? iconFieldCalculatedMap : iconFieldCalculatedQMap
+    return iconFieldCalculated[deType]
+  }
+  return iconFieldMap[fieldType[deType]]
+}
 </script>
 
 <template>
@@ -1919,7 +1931,7 @@ const getDsIconName = data => {
                           ><component
                             class="svg-icon"
                             :class="`field-icon-${fieldType[[2, 3].includes(data.deType) ? 2 : 0]}`"
-                            :is="iconFieldMap[fieldType[data.deType]]"
+                            :is="getIconNameCalc(data.deType, data.extField)"
                           ></component
                         ></Icon>
                       </el-icon>
@@ -1953,7 +1965,7 @@ const getDsIconName = data => {
                           ><component
                             class="svg-icon"
                             :class="`field-icon-${fieldType[[2, 3].includes(data.deType) ? 2 : 0]}`"
-                            :is="iconFieldMap[fieldType[data.deType]]"
+                            :is="getIconNameCalc(data.deType, data.extField, true)"
                           ></component
                         ></Icon>
                       </el-icon>
