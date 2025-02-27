@@ -1118,7 +1118,7 @@ const initGroupField = val => {
       maxTerm,
       time: []
     }
-    if (currentGroupField.deTypeOrigin === 1) {
+    if (startTime && endTime) {
       obj.time = [startTime, endTime]
     }
     groupList.push(obj)
