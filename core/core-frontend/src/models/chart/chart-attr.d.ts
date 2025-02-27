@@ -105,6 +105,10 @@ declare interface ChartBasicStyle {
    */
   tableLayoutMode: 'grid' | 'tree'
   /**
+   * 表格默认展开层级
+   */
+  defaultExpandLevel: number | 'all'
+  /**
    * 仪表盘样式
    */
   gaugeStyle: string

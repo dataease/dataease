@@ -292,7 +292,23 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     }
     // options
     s2Options.style = this.configStyle(chart, s2DataConfig)
-    s2Options.style.hierarchyCollapse = true
+    // 默认展开层级
+    if (basicStyle.tableLayoutMode === 'tree') {
+      const { defaultExpandLevel } = basicStyle
+      if (isNumber(defaultExpandLevel)) {
+        if (defaultExpandLevel >= chart.xAxis.length) {
+          s2Options.style.rowExpandDepth = defaultExpandLevel
+        } else {
+          s2Options.style.rowExpandDepth = defaultExpandLevel - 2
+        }
+      }
+      if (defaultExpandLevel === 'all') {
+        s2Options.style.rowExpandDepth = chart.xAxis.length
+      }
+      if (!defaultExpandLevel) {
+        s2Options.style.hierarchyCollapse = true
+      }
+    }
     // tooltip
     this.configTooltip(chart, s2Options)
     // 开始渲染

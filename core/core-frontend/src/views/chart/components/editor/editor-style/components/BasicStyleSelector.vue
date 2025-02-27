@@ -12,11 +12,14 @@ import { cloneDeep, debounce, defaultsDeep } from 'lodash-es'
 import { SERIES_NUMBER_FIELD } from '@antv/s2'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { isNumber } from 'mathjs'
+import { isNumber } from 'lodash-es'
 import { ElFormItem, ElInputNumber, ElMessage } from 'element-plus-secondary'
 import { svgStrToUrl } from '../../../js/util'
+import { numberToChineseUnderHundred } from '../../../js/panel/common/common_antv'
+import { useLocaleStoreWithOut } from '@/store/modules/locale'
 
 const dvMainStore = dvMainStoreWithOut()
+const localeStore = useLocaleStoreWithOut()
 const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const props = defineProps({
@@ -33,6 +36,7 @@ const props = defineProps({
   }
 })
 const showProperty = prop => props.propertyInner?.includes(prop)
+const tableExpandLevelOptions = reactive([{ name: t('chart.expand_all'), value: 'all' }])
 const predefineColors = COLOR_PANEL
 const state = reactive({
   basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle,
@@ -105,6 +109,20 @@ const init = () => {
   if (!state.customColor) {
     state.customColor = state.basicStyleForm.colors[0]
     state.colorIndex = 0
+  }
+  if (basicStyle.tableLayoutMode === 'tree') {
+    tableExpandLevelOptions.splice(1)
+    let maxLevel = props.chart.xAxis?.length
+    if (isNumber(basicStyle.defaultExpandLevel)) {
+      maxLevel = Math.max(maxLevel, basicStyle.defaultExpandLevel)
+    }
+    for (let i = 1; i <= maxLevel; i++) {
+      let name = t('chart.level_label', { num: i })
+      if (localeStore.getCurrentLocale.lang !== 'en') {
+        name = t('chart.level_label', { num: numberToChineseUnderHundred(i) })
+      }
+      tableExpandLevelOptions.push({ name, value: i })
+    }
   }
   initTableColumnWidth()
 }
@@ -306,6 +324,25 @@ onMounted(() => {
         <el-radio label="grid" :effect="themes">{{ t('chart.table_layout_grid') }}</el-radio>
         <el-radio label="tree" :effect="themes">{{ t('chart.table_layout_tree') }}</el-radio>
       </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      class="form-item"
+      v-if="showProperty('tableLayoutMode') && state.basicStyleForm.tableLayoutMode === 'tree'"
+      :label="t('chart.default_expand_level')"
+      :class="'form-item-' + themes"
+    >
+      <el-select
+        :effect="themes"
+        v-model="state.basicStyleForm.defaultExpandLevel"
+        @change="changeBasicStyle('defaultExpandLevel')"
+      >
+        <el-option
+          v-for="item in tableExpandLevelOptions"
+          :key="item.value"
+          :label="item.name"
+          :value="item.value"
+        />
+      </el-select>
     </el-form-item>
 
     <div class="alpha-setting" v-if="showProperty('alpha')">

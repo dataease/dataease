@@ -1814,12 +1814,12 @@ export default {
     axis_tip:
       'Minimum value, maximum value, and interval are all numeric types; if not filled in, this item will be considered automatic. <br/>Please make sure that the filled value can be calculated correctly, otherwise the axis value will not be displayed normally. ',
     format_tip: `The template variables are {a}, {b}, {c}, {d}, which represent the series name, data name, data value, etc. <br>
-When the trigger position is 'coordinate axis', there will be multiple series of data. At this time, the index of the series can be represented by {a0}, {a1}, {a2} followed by an index. <br>
-The meanings of {a}, {b}, {c}, {d} in different chart types are different. The variables {a}, {b}, {c}, {d} represent the data meanings in different chart types: <br><br>
-Line (area) chart, column (bar) chart, dashboard: {a} (series name), {b} (category value), {c} (value) <br>
-Pie chart, funnel chart: {a} (series name), {b} (data item name), {c} (value), {d} (percentage) <br>
-Map: {a} (series name), {b} (area name), {c} (combined value), {d} (none) <br>
-Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value array), {d} (none)`,
+      When the trigger position is 'coordinate axis', there will be multiple series of data. At this time, the index of the series can be represented by {a0}, {a1}, {a2} followed by an index. <br>
+      The meanings of {a}, {b}, {c}, {d} in different chart types are different. The variables {a}, {b}, {c}, {d} represent the data meanings in different chart types: <br><br>
+      Line (area) chart, column (bar) chart, dashboard: {a} (series name), {b} (category value), {c} (value) <br>
+      Pie chart, funnel chart: {a} (series name), {b} (data item name), {c} (value), {d} (percentage) <br>
+      Map: {a} (series name), {b} (area name), {c} (combined value), {d} (none) <br>
+      Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value array), {d} (none)`,
     h_position: 'Horizontal position',
     v_position: 'Vertical position',
     p_left: 'Left alignment',
@@ -2035,7 +2035,10 @@ Scatter chart (bubble) chart: {a} (series name), {b} (data name), {c} (value arr
     pivot_export_invalid_field:
       'The row dimension or indicator dimension is empty and can not be exported !',
     pivot_export_invalid_col_exceed:
-      'Table can not be exported cause the number of columns exceeds the maximum limit!'
+      'Table can not be exported cause the number of columns exceeds the maximum limit!',
+    expand_all: 'Expand all',
+    level_label: 'Level {num}',
+    default_expand_level: 'Default expand level'
   },
   dataset: {
     field_value: 'Field Value',
