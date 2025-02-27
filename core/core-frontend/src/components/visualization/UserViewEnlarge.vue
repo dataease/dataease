@@ -181,6 +181,7 @@ import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import { getCanvasStyle } from '@/utils/style'
 import { exportPermission } from '@/utils/utils'
 import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
+import { supportExtremumChartType } from '@/views/chart/components/js/extremumUitl'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -422,7 +423,12 @@ const openMessageLoading = cb => {
 const htmlToImage = () => {
   downLoading.value = true
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
-  const renderTime = viewInfo.value.type?.includes('table') ? 2000 : 500
+  // 表格和支持最值图表的渲染时间为2000毫秒，其他图表为500毫秒。
+  const renderTime =
+    viewInfo.value.type?.includes('table') ||
+    supportExtremumChartType({ type: viewInfo.value.type })
+      ? 2000
+      : 500
   setTimeout(() => {
     initWatermark()
     toPng(viewContainer.value)

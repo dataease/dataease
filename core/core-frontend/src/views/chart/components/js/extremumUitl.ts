@@ -109,7 +109,7 @@ const noChildrenFieldChart = chart => {
  * 支持最值图表的折线图，面积图，柱状图，分组柱状图
  * @param chart
  */
-const supportExtremumChartType = chart => {
+export const supportExtremumChartType = chart => {
   return ['line', 'area', 'bar', 'bar-group'].includes(chart.type)
 }
 

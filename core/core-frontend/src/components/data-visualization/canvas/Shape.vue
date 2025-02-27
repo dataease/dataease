@@ -1138,13 +1138,11 @@ onMounted(() => {
   })
   settingAttribute()
   const methodName = 'componentImageDownload-' + element.value.id
-  useEmitt().emitter.off(methodName)
-  useEmitt({
-    name: methodName,
-    callback: () => {
+  if (!useEmitt().emitter.all.get(methodName)?.length) {
+    useEmitt().emitter.on(methodName, () => {
       htmlToImage()
-    }
-  })
+    })
+  }
 })
 </script>
 
