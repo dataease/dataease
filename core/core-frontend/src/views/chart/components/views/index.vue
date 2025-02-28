@@ -1241,6 +1241,7 @@ const titleTooltipWidth = computed(() => {
   overflow: hidden;
 }
 .title-container {
+  position: relative;
   margin: 0;
   width: 100%;
 
