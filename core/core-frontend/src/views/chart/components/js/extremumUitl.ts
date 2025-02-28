@@ -79,7 +79,8 @@ function createExtremumDiv(id, value, formatterCfg, chart) {
         transform: translateX(-50%);
         opacity: 1;
         transition: opacity 0.2s ease-in-out;
-        white-space:nowrap;`
+        white-space:nowrap;
+        overflow:auto;`
     )
     div.textContent = valueFormatter(value, formatterCfg)
     const span = document.createElement('span')
@@ -223,6 +224,7 @@ export const createExtremumPoint = (chart, ev) => {
     divParent.style.zIndex = '1'
     divParent.style.opacity = '0'
     divParent.style.transition = 'opacity 0.2s ease-in-out'
+    divParent.style.overflow = 'visible'
     // 将父标注加入到图表中
     const containerElement = document.getElementById(chart.container)
     containerElement.insertBefore(divParent, containerElement.firstChild)
