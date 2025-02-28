@@ -439,7 +439,7 @@ const getEmptyDesc = (): string => {
                       class="hover-icon hover-icon-in-table"
                       @click.stop="executeCancelStore(scope.row)"
                     >
-                      <Icon name="icon_cancel_store"><icon_cancel_store class="svg-icon" /></Icon>
+                      <Icon name="icon_cancel_store"><visualStar class="svg-icon" /></Icon>
                     </el-icon>
                   </el-tooltip>
                 </template>
