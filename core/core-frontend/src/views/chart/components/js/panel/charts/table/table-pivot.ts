@@ -538,7 +538,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 }
 function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, customCalc) {
   if (!data?.length || !query[EXTRA_FIELD]) {
-    return 0
+    return '-'
   }
   const aggregation = totalCfgMap[query[EXTRA_FIELD]]?.aggregation || 'SUM'
   switch (aggregation) {
@@ -564,6 +564,9 @@ function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, custom
         return parseFloat(n[query[EXTRA_FIELD]])
       })
       return result?.[query[EXTRA_FIELD]]
+    }
+    case 'NONE': {
+      return '-'
     }
     case 'CUSTOM': {
       const val = getCustomCalcResult(query, axisMap, chart, status, customCalc || {})
