@@ -212,7 +212,7 @@ public class DatasourceServer implements DatasourceApi {
         if (StringUtils.isEmpty(dataSourceDTO.getName())) {
             DEException.throwException("名称不能为空！");
         }
-        CoreDatasource datasource = dataSourceManage.getCoreDatasource(dataSourceDTO.getId());
+        CoreDatasource datasource = dataSourceManage.getDatasource(dataSourceDTO.getId());
         datasource.setName(dataSourceDTO.getName());
         dataSourceDTO.setPid(datasource.getPid());
         dataSourceManage.checkName(dataSourceDTO);
