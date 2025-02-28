@@ -162,8 +162,8 @@ const contentStyle = computed(() => {
   } else {
     return {
       minWidth: '1600px',
-      width: width * 1.5 + 'px',
-      height: height * 1.5 + 'px'
+      width: width * scrollOffset.value + 'px',
+      height: height * scrollOffset.value + 'px'
     }
   }
 })
@@ -259,6 +259,8 @@ const initDataset = () => {
   })
 }
 
+const scrollOffset = computed(() => (canvasStyleData.value.scale < 150 ? 1.5 : 2))
+
 // 全局监听按键事件
 listenGlobalKeyDown()
 
@@ -268,8 +270,8 @@ const initScroll = () => {
       const { width, height } = canvasStyleData.value
       const mainWidth = canvasCenterRef.value.clientWidth
       mainHeight.value = canvasCenterRef.value.clientHeight
-      const scrollX = (1.5 * width - mainWidth) / 2
-      const scrollY = (1.5 * height - mainHeight.value) / 2 + 20
+      const scrollX = (scrollOffset.value * width - mainWidth) / 2
+      const scrollY = (scrollOffset.value * height - mainHeight.value) / 2 + 20
       // 设置画布初始滚动条位置
       canvasOut.value.scrollTo(scrollX, scrollY)
     }
