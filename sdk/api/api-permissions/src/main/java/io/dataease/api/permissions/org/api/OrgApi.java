@@ -37,7 +37,7 @@ public interface OrgApi {
     @Operation(summary = "创建")
     @DePermit({"m:read"})
     @PostMapping("/page/create")
-    void create(@RequestBody OrgCreator creator);
+    Long create(@RequestBody OrgCreator creator);
 
     @Operation(summary = "编辑")
     @DePermit({"m:read", "#p0.id+':manage'"})
