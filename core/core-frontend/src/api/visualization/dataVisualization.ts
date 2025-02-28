@@ -6,6 +6,7 @@ export interface ResourceOrFolder {
   pid?: number | string
   nodeType: 'folder' | 'leaf'
   type: string
+  mobileLayout: boolean
 }
 
 export interface Panel {
