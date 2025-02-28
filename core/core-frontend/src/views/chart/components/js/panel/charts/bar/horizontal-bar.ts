@@ -135,7 +135,10 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
           tickCount: axisValue.splitCount
         }
       }
-      return { ...tmpOptions, ...axis }
+      // 根据axis的最小值，过滤options中的data数据，过滤掉小于最小值的数据
+      const { data } = options
+      const newData = data.filter(item => item.value > axisValue.min)
+      return { ...tmpOptions, data: newData, ...axis }
     }
     return tmpOptions
   }

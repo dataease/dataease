@@ -139,8 +139,8 @@ function removeDivsWithPrefix(parentDivId, prefix) {
 
 export const extremumEvt = (newChart, chart, _options, container) => {
   chart.container = container
+  clearExtremum(chart)
   if (!supportExtremumChartType(chart)) {
-    clearExtremum(chart)
     return
   }
   const { label: labelAttr } = parseJson(chart.customAttr)
@@ -151,7 +151,9 @@ export const extremumEvt = (newChart, chart, _options, container) => {
         i.forEach(item => {
           delete item._origin.EXTREME
         })
-        const { minItem, maxItem } = findMinMax(i.filter(item => item._origin.value))
+        const { minItem, maxItem } = findMinMax(
+          i.filter(item => item?._origin?.value !== null && item?._origin?.value !== undefined)
+        )
         if (!minItem || !maxItem) {
           return
         }
