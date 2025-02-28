@@ -420,9 +420,12 @@ const openMessageLoading = cb => {
     customClass
   })
 }
+// 地图
+const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
 const htmlToImage = () => {
-  downLoading.value = true
+  downLoading.value = mapChartTypes.includes(viewInfo.value.type) ? false : true
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+  useEmitt().emitter.emit('l7-prepare-picture', viewInfo.value.id)
   // 表格和支持最值图表的渲染时间为2000毫秒，其他图表为500毫秒。
   const renderTime =
     viewInfo.value.type?.includes('table') ||
@@ -438,12 +441,14 @@ const htmlToImage = () => {
         a.setAttribute('download', viewInfo.value.title)
         a.href = dataUrl
         a.click()
+        useEmitt().emitter.emit('l7-unprepare-picture', viewInfo.value.id)
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
         initWatermark()
       })
       .catch(error => {
         downLoading.value = false
         initWatermark()
+        useEmitt().emitter.emit('l7-unprepare-picture', viewInfo.value.id)
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
         console.error('oops, something went wrong!', error)
       })
