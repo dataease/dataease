@@ -1934,7 +1934,7 @@ export const getTooltipItemConditionColor = item => {
  * @param newData
  * @param container
  */
-export const configEmptyDataStyle = (newChart, newData, container) => {
+export const configEmptyDataStyle = (newData, container, newChart?, content?) => {
   /**
    * 辅助函数：移除空数据dom
    */
@@ -1949,16 +1949,19 @@ export const configEmptyDataStyle = (newChart, newData, container) => {
   if (!newData.length) {
     const emptyDom = document.createElement('div')
     emptyDom.id = container + '_empty'
-    emptyDom.textContent = tI18n('data_set.no_data')
+    emptyDom.textContent = content || tI18n('data_set.no_data')
     emptyDom.setAttribute(
       'style',
       `position: absolute;
-        left: 45%;
-        top: 50%;`
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: darkgray;
+        textAlign: center;`
     )
     const parent = document.getElementById(container)
     parent.insertBefore(emptyDom, parent.firstChild)
-    newChart.destroy()
+    newChart?.destroy()
   }
 }
 

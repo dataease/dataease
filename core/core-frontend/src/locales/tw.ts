@@ -1982,7 +1982,8 @@ export default {
     pivot_export_invalid_col_exceed: '表格列數超過最大限制不可導出!',
     expand_all: '全展開',
     level_label: '第{num}層級',
-    default_expand_level: '默認展開層級'
+    default_expand_level: '默認展開層級',
+    no_data_or_not_positive: '暫無數據，或數據均不是正數，無法繪製'
   },
   dataset: {
     field_value: '欄位值',

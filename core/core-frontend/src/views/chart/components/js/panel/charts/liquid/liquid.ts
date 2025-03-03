@@ -74,7 +74,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     })
     // 处理空数据, 只要有一个指标是空数据，就不显示图表
     const hasNoneData = chart.data?.series.some(s => !s.data?.[0])
-    this.configEmptyDataStyle(newChart, hasNoneData ? [] : [1], container)
+    this.configEmptyDataStyle(hasNoneData ? [] : [1], container, newChart)
     if (hasNoneData) {
       return
     }

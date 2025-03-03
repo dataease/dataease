@@ -1988,7 +1988,8 @@ export default {
     pivot_export_invalid_col_exceed: '表格列数超过最大限制不可导出!',
     expand_all: '全展开',
     level_label: '第{num}层级',
-    default_expand_level: '默认展开层级'
+    default_expand_level: '默认展开层级',
+    no_data_or_not_positive: '暂无数据，或数据均不是正数，无法绘制'
   },
   dataset: {
     field_value: '字段值',

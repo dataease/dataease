@@ -2038,7 +2038,8 @@ export default {
       'Table can not be exported cause the number of columns exceeds the maximum limit!',
     expand_all: 'Expand all',
     level_label: 'Level {num}',
-    default_expand_level: 'Default expand level'
+    default_expand_level: 'Default expand level',
+    no_data_or_not_positive: 'No data available, or all data are not positive, unable to plot'
   },
   dataset: {
     field_value: 'Field Value',
