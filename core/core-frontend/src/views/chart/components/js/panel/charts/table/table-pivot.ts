@@ -244,9 +244,23 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       col: chart.xAxisExt,
       quota: chart.yAxis
     }
-    //树形模式下，列维度为空，行小计会变成列总计，特殊处理下
-    if (basicStyle.tableLayoutMode === 'tree' && !chart.xAxisExt?.length) {
-      tableTotal.col.calcTotals = tableTotal.row.calcSubTotals
+    // 沒有列维度需要特殊处理
+    if (!chart.xAxisExt?.length) {
+      //树形模式下，列维度为空，行小计的配置会变成列总计
+      if (basicStyle.tableLayoutMode === 'tree') {
+        tableTotal.col.calcTotals = tableTotal.row.calcSubTotals
+        if (!tableTotal.col.calcTotals.cfg?.length) {
+          tableTotal.col.calcTotals.cfg = chart.yAxis.map(y => {
+            return {
+              dataeaseName: y.dataeaseName,
+              aggregation: 'SUM'
+            }
+          })
+        }
+      } else {
+        // 列总计设置为空
+        tableTotal.col.calcTotals.calcFunc = () => '-'
+      }
     }
     totals.forEach(total => {
       if (total.cfg?.length) {
