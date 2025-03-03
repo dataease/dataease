@@ -3828,7 +3828,7 @@ const deleteChartFieldItem = id => {
         </div>
       </el-row>
     </template>
-    <chart-template-info v-if="templateStatusShow"></chart-template-info>
+    <chart-template-info v-if="templateStatusShow" :themes="themes"></chart-template-info>
     <!--显示名修改-->
     <el-dialog
       v-model="state.renameItem"
@@ -5082,6 +5082,7 @@ span {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  z-index: 1000;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 .style-collapse {
