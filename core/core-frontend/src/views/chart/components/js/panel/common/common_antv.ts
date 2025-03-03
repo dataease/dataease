@@ -137,14 +137,20 @@ export function getTheme(chart: Chart) {
           },
           'g2-tooltip-list-item': {
             display: 'flex',
-            'align-items': 'center'
+            'align-items': 'flex-start',
+            'line-height': tooltipFontsize + 'px'
           },
           'g2-tooltip-name': {
             display: 'inline-block',
             'line-height': tooltipFontsize + 'px',
             flex: 1
           },
+          'g2-tooltip-value': {
+            display: 'inline-block',
+            'line-height': tooltipFontsize + 'px'
+          },
           'g2-tooltip-marker': {
+            'margin-top': (tooltipFontsize - 8) / 2 + 'px',
             'min-width': '8px',
             'min-height': '8px'
           }
