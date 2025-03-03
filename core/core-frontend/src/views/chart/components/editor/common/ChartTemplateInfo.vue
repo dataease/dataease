@@ -1,45 +1,72 @@
 <script lang="tsx" setup>
-import dvUpArrow from '@/assets/svg/dv-up-arrow.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 </script>
 
 <template>
   <div class="view-panel-Mask">
-    <Icon class-name="item-icon" name="dv-up-arrow"><dvUpArrow class="svg-icon item-icon" /></Icon>
-    <div>
-      <el-button style="opacity: 1 !important" type="warning" size="mini" round>
-        <span style="font-weight: bold; opacity: 1">{{
-          t('visualization.template_view_tips')
-        }}</span>
-      </el-button>
-    </div>
+    <el-popover
+      :visible="true"
+      placement="bottom"
+      popper-class="template-popper-tips"
+      :width="256"
+      show-arrow
+    >
+      <div class="template-popper-tips-content">
+        <p class="constant">{{ t('visualization.template_view_tips') }}</p>
+      </div>
+      <template #reference>
+        <div class="view-panel-mask-inner"></div>
+      </template>
+    </el-popover>
   </div>
 </template>
 
 <style lang="less" scoped>
 .view-panel-Mask {
-  display: flex;
-  height: calc(100vh - 148px);
+  height: 100%;
   width: 100%;
-  background-color: rgba(92, 94, 97, 0.7);
+  background-color: rgba(31, 35, 41);
+  opacity: 0.4;
   position: absolute;
-  top: 85px;
-  left: 0px;
+  top: 0;
+  left: 0;
   z-index: 2;
   cursor: not-allowed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  pointer-events: none;
 }
+.view-panel-mask-inner {
+  top: 51px;
+  left: 246px;
+  height: 34px;
+  width: 170px;
+  background: white;
+  position: relative;
+  pointer-events: none;
+  border-radius: 5px;
+}
+</style>
 
-.item-icon {
-  position: absolute;
-  top: 10px;
-  left: 300px;
-  width: 40px;
-  height: 40px;
-  opacity: 1;
-  color: #ff8800;
+<style lang="less">
+.template-popper-tips {
+  z-index: 1000 !important;
+  padding: 24px !important;
+  box-shadow: none !important;
+  border: 0px !important;
+  background: var(--ed-color-primary) !important;
+  .ed-popper__arrow::before {
+    border: 1px solid var(--ed-color-primary) !important;
+    background: var(--ed-color-primary) !important;
+  }
+}
+.template-popper-tips-content {
+  color: rgba(255, 255, 255, 1);
+  .content {
+    font-family: var(--de-custom_font, 'PingFang');
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    text-align: left;
+  }
 }
 </style>
