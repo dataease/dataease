@@ -132,7 +132,10 @@ const clearLinkage = () => {
 }
 const reDrawView = () => {
   linkageActiveHistory.value = false
-  myChart?.render()
+  const slider = myChart?.chart?.getController('slider')
+  if (!slider) {
+    myChart?.render()
+  }
 }
 const linkageActivePre = () => {
   if (linkageActiveHistory.value) {
@@ -144,22 +147,28 @@ const linkageActivePre = () => {
 }
 const linkageActive = () => {
   linkageActiveHistory.value = true
+  myChart?.setState('active', () => true, false)
+  myChart?.setState('inactive', () => true, false)
+  myChart?.setState('selected', () => true, false)
   myChart?.setState('active', param => {
     if (Array.isArray(param)) {
       return false
     } else {
-      if (checkSelected(param)) {
-        return true
-      }
+      return checkSelected(param)
     }
   })
   myChart?.setState('inactive', param => {
     if (Array.isArray(param)) {
       return false
     } else {
-      if (!checkSelected(param)) {
-        return true
-      }
+      return !checkSelected(param)
+    }
+  })
+  myChart?.setState('selected', param => {
+    if (Array.isArray(param)) {
+      return false
+    } else {
+      return checkSelected(param)
     }
   })
 }
