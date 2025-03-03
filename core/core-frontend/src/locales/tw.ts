@@ -1905,7 +1905,7 @@ export default {
     radar_point_size: '輔助點大小',
     radar_area_color: '開啟面積',
     table_freeze_tip: '合併儲存格後，不支持行列凍結',
-    merge_cells_tips: '合併儲存格後，行列凍結、自動換行、班馬紋會失效',
+    merge_cells_tips: '合併儲存格後，行列凍結、自動換行、班馬紋會失效，當前頁的序號會從 1 開始',
     merge_cells_break_line_tip: '合併儲存格後，不支持自動換行',
     font_family_ya_hei: '微軟雅黙',
     font_family_song_ti: '宋體',

@@ -2031,7 +2031,8 @@ export default {
     increase: 'Increase',
     decrease: 'Decrease',
     accumulate: 'Accumulate',
-    table_cross_bg_tip: 'After merging cells，the zebra pattern is not supported',
+    table_cross_bg_tip:
+      'After merging cells, the zebra pattern is not supported, and the serial number of the current page will start from 1',
     pivot_export_invalid_field:
       'The row dimension or indicator dimension is empty and can not be exported !',
     pivot_export_invalid_col_exceed:

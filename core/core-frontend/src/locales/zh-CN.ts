@@ -1910,7 +1910,7 @@ export default {
     radar_point_size: '辅助点大小',
     radar_area_color: '开启面积',
     table_freeze_tip: '合并单元格后，不支持行列冻结',
-    merge_cells_tips: '合并单元格后，行列冻结、自动换行、班马纹会失效',
+    merge_cells_tips: '合并单元格后，行列冻结、自动换行、班马纹会失效，当前页的序号会从 1 开始',
     merge_cells_break_line_tip: '合并单元格后，不支持自动换行',
     font_family_ya_hei: '微软雅黑',
     font_family_song_ti: '宋体',
