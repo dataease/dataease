@@ -916,7 +916,16 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
   if (resetDrill) {
     useEmitt().emitter.emit('resetDrill-' + view.id, 0)
   } else {
-    useEmitt().emitter.emit('calcData-' + view.id, view)
+    if (mobileInPc.value) {
+      //移动端设计
+      useEmitt().emitter.emit('onMobileStatusChange', {
+        type: 'componentStyleChange',
+        value: { type: 'calcData', component: JSON.parse(JSON.stringify(view)) }
+      })
+    } else {
+      useEmitt().emitter.emit('calcData-' + view.id, view)
+      snapshotStore.recordSnapshotCache('renderChart', view.id)
+    }
   }
   snapshotStore.recordSnapshotCache('calcData', view.id)
   if (updateQuery === 'updateQuery') {
