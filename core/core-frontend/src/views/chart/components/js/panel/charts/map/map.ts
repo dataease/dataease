@@ -301,7 +301,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           content.push(name)
         }
         if (label.showQuota) {
-          areaMap[name] && content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
+          ;(areaMap[name] || areaMap[name] === 0) &&
+            content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
         }
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }
@@ -508,7 +509,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
             content.push(area.name)
           }
           if (label.showQuota) {
-            areaMap[area.name] &&
+            ;(areaMap[area.name] || areaMap[area.name] === 0) &&
               content.push(valueFormatter(areaMap[area.name].value, label.quotaLabelFormatter))
           }
           labelLocation.push({
