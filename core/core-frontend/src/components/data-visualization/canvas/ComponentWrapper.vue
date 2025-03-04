@@ -171,13 +171,11 @@ const handleInnerMouseDown = e => {
 onMounted(() => {
   currentInstance = getCurrentInstance()
   const methodName = 'componentImageDownload-' + config.value.id
-  useEmitt().emitter.off(methodName)
-  useEmitt({
-    name: methodName,
-    callback: () => {
+  if (!useEmitt().emitter.all.get(methodName)?.length) {
+    useEmitt().emitter.on(methodName, () => {
       htmlToImage()
-    }
-  })
+    })
+  }
 })
 
 const onClick = e => {

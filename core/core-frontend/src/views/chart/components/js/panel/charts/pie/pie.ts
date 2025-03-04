@@ -27,7 +27,9 @@ import type { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
 import { cloneDeep } from 'lodash-es'
-
+import { Chart } from '@antv/g2'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   axis: AxisType[] = PIE_AXIS_TYPE
@@ -40,6 +42,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): Promise<G2Pie> {
     const { chart, container, action } = drawOptions
+    this.configEmptyDataStyle(chart.data?.data, container, null, t('chart.no_data_or_not_positive'))
     if (!chart.data?.data?.length) {
       return
     }

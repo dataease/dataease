@@ -1916,7 +1916,7 @@ export default {
     radar_point_size: '辅助点大小',
     radar_area_color: '开启面积',
     table_freeze_tip: '合并单元格后，不支持行列冻结',
-    merge_cells_tips: '合并单元格后，行列冻结、自动换行、班马纹会失效',
+    merge_cells_tips: '合并单元格后，行列冻结、自动换行、班马纹会失效，当前页的序号会从 1 开始',
     merge_cells_break_line_tip: '合并单元格后，不支持自动换行',
     font_family_ya_hei: '微软雅黑',
     font_family_song_ti: '宋体',
@@ -1989,7 +1989,13 @@ export default {
     decrease: '减少',
     waterfall_total: '合计',
     accumulate: '累加',
-    table_cross_bg_tip: '合并单元格后，不支持班马纹'
+    table_cross_bg_tip: '合并单元格后，不支持班马纹',
+    pivot_export_invalid_field: '行维度或指标维度为空不可导出!',
+    pivot_export_invalid_col_exceed: '表格列数超过最大限制不可导出!',
+    expand_all: '全展开',
+    level_label: '第{num}层级',
+    default_expand_level: '默认展开层级',
+    no_data_or_not_positive: '暂无数据，或数据均不是正数，无法绘制'
   },
   dataset: {
     field_value: '字段值',
@@ -4071,6 +4077,9 @@ export default {
     confirm_truncate_table: '确定要清空数据吗？',
     add_search_condition: '添加筛选条件',
     form: {
+      set_enableDefaultTime: '默认值',
+      currentTime: '当前时间',
+      defaultTime: '固定时间',
       please_select_valid_column: '请选择符合要求的字段',
       create_type: '创建方式',
       create_new_table: '创建新表',

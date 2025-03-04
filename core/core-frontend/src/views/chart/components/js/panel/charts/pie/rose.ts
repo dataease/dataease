@@ -40,6 +40,7 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Rose>): Promise<G2Rose> {
     const { chart, container, action } = drawOptions
+    this.configEmptyDataStyle(chart.data?.data, container, null, t('chart.no_data_or_not_positive'))
     if (!chart?.data?.data?.length) {
       return
     }

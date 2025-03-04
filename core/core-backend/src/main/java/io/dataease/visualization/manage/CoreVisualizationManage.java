@@ -191,20 +191,20 @@ public class CoreVisualizationManage {
 
     public IPage<VisualizationResourcePO> queryVisualizationPage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();
-        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
+        Map<String,Object> params = new HashMap<>();
         if (StringUtils.isNotBlank(request.getType())) {
             BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());
             if (ObjectUtils.isEmpty(busiResourceEnum)) {
                 DEException.throwException("type is invalid");
             }
-            queryWrapper.eq("dvResource.type", request.getType());
+            params.put("type",request.getType());
         }
         String info = CommunityUtils.getInfo();
         if (StringUtils.isNotBlank(info)) {
-            queryWrapper.notExists(String.format(info, "core_opt_recent.resource_id"));
+            params.put("info",info);
         }
-        queryWrapper.orderBy(true, request.isAsc(), "core_opt_recent.time");
+        params.put("isAsc",request.isAsc());
         Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
-        return extDataVisualizationMapper.findRecent(page, uid, request.getKeyword(), queryWrapper);
+        return extDataVisualizationMapper.findRecent(page, uid, request.getKeyword(), params);
     }
 }

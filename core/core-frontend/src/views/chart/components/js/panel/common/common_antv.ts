@@ -137,14 +137,20 @@ export function getTheme(chart: Chart) {
           },
           'g2-tooltip-list-item': {
             display: 'flex',
-            'align-items': 'center'
+            'align-items': 'flex-start',
+            'line-height': tooltipFontsize + 'px'
           },
           'g2-tooltip-name': {
             display: 'inline-block',
             'line-height': tooltipFontsize + 'px',
             flex: 1
           },
+          'g2-tooltip-value': {
+            display: 'inline-block',
+            'line-height': tooltipFontsize + 'px'
+          },
           'g2-tooltip-marker': {
+            'margin-top': (tooltipFontsize - 8) / 2 + 'px',
             'min-width': '8px',
             'min-height': '8px'
           }
@@ -1934,7 +1940,7 @@ export const getTooltipItemConditionColor = item => {
  * @param newData
  * @param container
  */
-export const configEmptyDataStyle = (newChart, newData, container) => {
+export const configEmptyDataStyle = (newData, container, newChart?, content?) => {
   /**
    * 辅助函数：移除空数据dom
    */
@@ -1949,15 +1955,41 @@ export const configEmptyDataStyle = (newChart, newData, container) => {
   if (!newData.length) {
     const emptyDom = document.createElement('div')
     emptyDom.id = container + '_empty'
-    emptyDom.textContent = tI18n('data_set.no_data')
+    emptyDom.textContent = content || tI18n('data_set.no_data')
     emptyDom.setAttribute(
       'style',
       `position: absolute;
-        left: 45%;
-        top: 50%;`
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: darkgray;
+        textAlign: center;`
     )
     const parent = document.getElementById(container)
     parent.insertBefore(emptyDom, parent.firstChild)
-    newChart.destroy()
+    newChart?.destroy()
   }
+}
+
+export const numberToChineseUnderHundred = (num: number): string => {
+  // 合法性检查
+  if (num <= 0 || num > 99 || !Number.isInteger(num)) {
+    throw new Error('请输入1-99之间的整数')
+  }
+
+  const digits = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九']
+
+  // 处理个位数
+  if (num < 10) return digits[num]
+
+  const tens = Math.floor(num / 10)
+  const ones = num % 10
+
+  // 处理整十
+  if (ones === 0) {
+    return tens === 1 ? '十' : digits[tens] + '十'
+  }
+
+  // 处理其他两位数
+  return tens === 1 ? '十' + digits[ones] : digits[tens] + '十' + digits[ones]
 }

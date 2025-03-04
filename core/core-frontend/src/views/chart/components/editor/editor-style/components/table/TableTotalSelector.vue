@@ -32,6 +32,7 @@ watch(
 )
 
 const aggregations = [
+  { name: t('chart.none'), value: 'NONE' },
   { name: t('chart.sum'), value: 'SUM' },
   { name: t('chart.avg'), value: 'AVG' },
   { name: t('chart.max'), value: 'MAX' },

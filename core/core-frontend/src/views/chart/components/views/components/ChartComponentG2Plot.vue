@@ -29,6 +29,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ExportImage } from '@antv/l7'
+import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack, inMobile } =
@@ -132,7 +133,10 @@ const clearLinkage = () => {
 }
 const reDrawView = () => {
   linkageActiveHistory.value = false
-  myChart?.render()
+  const slider = myChart?.chart?.getController('slider')
+  if (!slider) {
+    myChart?.render()
+  }
 }
 const linkageActivePre = () => {
   if (linkageActiveHistory.value) {
@@ -144,22 +148,28 @@ const linkageActivePre = () => {
 }
 const linkageActive = () => {
   linkageActiveHistory.value = true
+  myChart?.setState('active', () => true, false)
+  myChart?.setState('inactive', () => true, false)
+  myChart?.setState('selected', () => true, false)
   myChart?.setState('active', param => {
     if (Array.isArray(param)) {
       return false
     } else {
-      if (checkSelected(param)) {
-        return true
-      }
+      return checkSelected(param)
     }
   })
   myChart?.setState('inactive', param => {
     if (Array.isArray(param)) {
       return false
     } else {
-      if (!checkSelected(param)) {
-        return true
-      }
+      return !checkSelected(param)
+    }
+  })
+  myChart?.setState('selected', param => {
+    if (Array.isArray(param)) {
+      return false
+    } else {
+      return checkSelected(param)
     }
   })
 }
@@ -274,6 +284,8 @@ const renderG2Plot = async (chart, chartView: G2PlotChartView<any, any>) => {
   g2Timer && clearTimeout(g2Timer)
   g2Timer = setTimeout(async () => {
     try {
+      // 在这里清理掉之前图表的空dom
+      configEmptyDataStyle([1], containerId)
       myChart?.destroy()
       myChart = await chartView.drawChart({
         chartObj: myChart,

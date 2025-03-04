@@ -79,7 +79,8 @@ function createExtremumDiv(id, value, formatterCfg, chart) {
         transform: translateX(-50%);
         opacity: 1;
         transition: opacity 0.2s ease-in-out;
-        white-space:nowrap;`
+        white-space:nowrap;
+        overflow:auto;`
     )
     div.textContent = valueFormatter(value, formatterCfg)
     const span = document.createElement('span')
@@ -109,7 +110,7 @@ const noChildrenFieldChart = chart => {
  * 支持最值图表的折线图，面积图，柱状图，分组柱状图
  * @param chart
  */
-const supportExtremumChartType = chart => {
+export const supportExtremumChartType = chart => {
   return ['line', 'area', 'bar', 'bar-group'].includes(chart.type)
 }
 
@@ -138,8 +139,8 @@ function removeDivsWithPrefix(parentDivId, prefix) {
 
 export const extremumEvt = (newChart, chart, _options, container) => {
   chart.container = container
+  clearExtremum(chart)
   if (!supportExtremumChartType(chart)) {
-    clearExtremum(chart)
     return
   }
   const { label: labelAttr } = parseJson(chart.customAttr)
@@ -150,7 +151,9 @@ export const extremumEvt = (newChart, chart, _options, container) => {
         i.forEach(item => {
           delete item._origin.EXTREME
         })
-        const { minItem, maxItem } = findMinMax(i.filter(item => item._origin.value))
+        const { minItem, maxItem } = findMinMax(
+          i.filter(item => item?._origin?.value !== null && item?._origin?.value !== undefined)
+        )
         if (!minItem || !maxItem) {
           return
         }
@@ -223,6 +226,7 @@ export const createExtremumPoint = (chart, ev) => {
     divParent.style.zIndex = '1'
     divParent.style.opacity = '0'
     divParent.style.transition = 'opacity 0.2s ease-in-out'
+    divParent.style.overflow = 'visible'
     // 将父标注加入到图表中
     const containerElement = document.getElementById(chart.container)
     containerElement.insertBefore(divParent, containerElement.firstChild)

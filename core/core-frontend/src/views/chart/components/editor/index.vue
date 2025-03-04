@@ -916,7 +916,16 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
   if (resetDrill) {
     useEmitt().emitter.emit('resetDrill-' + view.id, 0)
   } else {
-    useEmitt().emitter.emit('calcData-' + view.id, view)
+    if (mobileInPc.value) {
+      //移动端设计
+      useEmitt().emitter.emit('onMobileStatusChange', {
+        type: 'componentStyleChange',
+        value: { type: 'calcData', component: JSON.parse(JSON.stringify(view)) }
+      })
+    } else {
+      useEmitt().emitter.emit('calcData-' + view.id, view)
+      snapshotStore.recordSnapshotCache('renderChart', view.id)
+    }
   }
   snapshotStore.recordSnapshotCache('calcData', view.id)
   if (updateQuery === 'updateQuery') {
@@ -3828,7 +3837,7 @@ const deleteChartFieldItem = id => {
         </div>
       </el-row>
     </template>
-    <chart-template-info v-if="templateStatusShow"></chart-template-info>
+    <chart-template-info v-if="templateStatusShow" :themes="themes"></chart-template-info>
     <!--显示名修改-->
     <el-dialog
       v-model="state.renameItem"
@@ -5082,6 +5091,7 @@ span {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  z-index: 1000;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 .style-collapse {

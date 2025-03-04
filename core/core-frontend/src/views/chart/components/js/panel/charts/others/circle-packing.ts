@@ -123,7 +123,7 @@ export class CirclePacking extends G2PlotChartView<CirclePackingOptions, G2Circl
         '@antv/g2plot/esm/plots/circle-packing'
       )
       const newChart = new G2CirclePacking(container, options)
-      newChart.on('point:click', param => {
+      newChart.on('element:click', param => {
         const pointData = param?.data?.data
         if (pointData?.name === t('commons.all')) {
           return

@@ -533,8 +533,8 @@ const titleStyle = itemName => {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
-      fontSize: (element.value.style.activeFontSize || 18) * scale.value + 'px',
-      lineHeight: (element.value.style.activeFontSize || 18) * scale.value + 'px'
+      fontSize: (element.value.style.activeFontSize || 18) + 'px',
+      lineHeight: (element.value.style.activeFontSize || 18) + 'px'
     }
     if (element.value.titleBackground?.enable) {
       style = {
@@ -547,8 +547,8 @@ const titleStyle = itemName => {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
       fontWeight: element.value.style.fontWeight,
-      fontSize: (element.value.style.fontSize || 16) * scale.value + 'px',
-      lineHeight: (element.value.style.fontSize || 16) * scale.value + 'px'
+      fontSize: (element.value.style.fontSize || 16) + 'px',
+      lineHeight: (element.value.style.fontSize || 16) + 'px'
     }
     if (element.value.titleBackground?.enable) {
       style = {

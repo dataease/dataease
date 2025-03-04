@@ -402,7 +402,8 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           content.push(name)
         }
         if (label.showQuota) {
-          areaMap[name] && content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
+          ;(areaMap[name] || areaMap[name] === 0) &&
+            content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
         }
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }

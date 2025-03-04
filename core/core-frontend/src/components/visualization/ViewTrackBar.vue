@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dropdown :teleported="false" trigger="click">
+    <el-dropdown :teleported="false" trigger="click" @visible-change="visibleChange">
       <input id="input" ref="trackButton" type="button" hidden />
       <template #dropdown>
         <div :class="{ 'data-mobile': isDataVMobile }">
@@ -55,6 +55,20 @@ const state = reactive({
     enlarge: t('visualization.enlarge')
   }
 })
+const visibleChange = isVisible => {
+  const tooltips = document.querySelectorAll('.g2-tooltip')
+  if (tooltips) {
+    tooltips.forEach(tooltip => {
+      if (isVisible) {
+        // 当下拉菜单显示时，添加隐藏样式
+        tooltip.classList.add('hidden-tooltip')
+      } else {
+        // 当下拉菜单隐藏时，移除隐藏样式
+        tooltip.classList.remove('hidden-tooltip')
+      }
+    })
+  }
+}
 
 const trackButtonClick = () => {
   setTimeout(() => {

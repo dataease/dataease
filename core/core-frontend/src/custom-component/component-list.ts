@@ -648,7 +648,14 @@ export function findBaseDeFaultAttr(componentName) {
     if (comp.component === componentName) {
       const stylePropertyInner = []
       Object.keys(comp.style).forEach(styleKey => {
-        stylePropertyInner.push(styleKey)
+        if (
+          (!['width', 'height'].includes(styleKey) &&
+            componentName === 'VQuery' &&
+            !Object.keys(commonStyle).includes(styleKey)) ||
+          componentName !== 'VQuery'
+        ) {
+          stylePropertyInner.push(styleKey)
+        }
       })
       result = {
         properties: ['common-style', 'background-overall-component'],

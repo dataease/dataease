@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; padding-bottom: 8px">
+  <div style="width: 100%; padding-bottom: 16px">
     <el-form label-position="top" style="width: 100%">
       <div style="width: 100%; padding: 16px 8px 0">
         <el-row :gutter="8">

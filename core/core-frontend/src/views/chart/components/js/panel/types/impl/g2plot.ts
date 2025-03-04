@@ -191,8 +191,8 @@ export abstract class G2PlotChartView<
     return addConditionsStyleColorToData(chart, data)
   }
 
-  protected configEmptyDataStyle(newChart, newData: any[], container: string) {
-    configEmptyDataStyle(newChart, newData, container)
+  protected configEmptyDataStyle(newData, container, newChart?, content?) {
+    configEmptyDataStyle(newData, container, newChart, content)
   }
 
   /**

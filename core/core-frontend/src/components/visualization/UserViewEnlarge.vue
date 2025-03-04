@@ -181,6 +181,7 @@ import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import { getCanvasStyle } from '@/utils/style'
 import { exportPermission } from '@/utils/utils'
 import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
+import { supportExtremumChartType } from '@/views/chart/components/js/extremumUitl'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -188,13 +189,12 @@ const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 let viewInfo = ref<DeepPartial<ChartObj>>(null)
 const config = ref(null)
-const canvasStyleData = ref(null)
 const viewContainer = ref(null)
 const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
 const chartComponentDetails2 = ref(null)
-const { dvInfo, editMode, isIframe } = storeToRefs(dvMainStore)
+const { dvInfo, editMode, isIframe, canvasStyleData } = storeToRefs(dvMainStore)
 const exportLoading = ref(false)
 const sourceViewType = ref()
 const activeName = ref('left')
@@ -311,7 +311,6 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   viewInfo.value = deepCopy(view) as DeepPartial<ChartObj>
   viewInfo.value.customStyle.text.show = false
   config.value = deepCopy(item)
-  canvasStyleData.value = canvasStyle
   if (opt === 'details') {
     if (!viewInfo.value.type?.includes('table')) {
       assign(viewInfo.value, DETAIL_CHART_ATTR)
@@ -419,10 +418,18 @@ const openMessageLoading = cb => {
     customClass
   })
 }
+// 地图
+const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
 const htmlToImage = () => {
-  downLoading.value = true
+  downLoading.value = mapChartTypes.includes(viewInfo.value.type) ? false : true
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
-  const renderTime = viewInfo.value.type?.includes('table') ? 2000 : 500
+  useEmitt().emitter.emit('l7-prepare-picture', viewInfo.value.id)
+  // 表格和支持最值图表的渲染时间为2000毫秒，其他图表为500毫秒。
+  const renderTime =
+    viewInfo.value.type?.includes('table') ||
+    supportExtremumChartType({ type: viewInfo.value.type })
+      ? 2000
+      : 500
   setTimeout(() => {
     initWatermark()
     toPng(viewContainer.value)
@@ -432,12 +439,14 @@ const htmlToImage = () => {
         a.setAttribute('download', viewInfo.value.title)
         a.href = dataUrl
         a.click()
+        useEmitt().emitter.emit('l7-unprepare-picture', viewInfo.value.id)
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
         initWatermark()
       })
       .catch(error => {
         downLoading.value = false
         initWatermark()
+        useEmitt().emitter.emit('l7-unprepare-picture', viewInfo.value.id)
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
         console.error('oops, something went wrong!', error)
       })

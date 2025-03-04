@@ -30,7 +30,8 @@ const { t } = useI18n()
 
 const state = reactive({
   tData: [],
-  nameList: []
+  nameList: [],
+  targetInfo: null
 })
 
 const showParentSelected = ref(false)
@@ -136,6 +137,7 @@ const placeholder = ref('')
 
 const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   showParentSelected.value = parentSelect
+  state.targetInfo = data
   nodeType.value = type
   const optSource = data.leaf || type === 'leaf' ? sourceLabel.value : t('visualization.folder')
   const placeholderLabel =
@@ -253,7 +255,8 @@ const saveResource = () => {
       const params: ResourceOrFolder = {
         nodeType: nodeType.value as 'folder' | 'leaf',
         name: resourceForm.name,
-        type: curCanvasType.value
+        type: curCanvasType.value,
+        mobileLayout: state.targetInfo?.extraFlag
       }
 
       switch (cmd.value) {

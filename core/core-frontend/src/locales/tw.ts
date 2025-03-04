@@ -1777,12 +1777,12 @@ export default {
     axis_tip:
       '最小值、最大值、間隔均為數值類型；若不填，則該項視為自動。 <br/>請確保填入數值能正確計算，否則將無法正常顯示軸值。 ',
     format_tip: `模板變數有{a}, {b}，{c}，{d}，分別表示系列名，資料名，資料值等。 <br>
-在觸發位置為'座標軸' 的時候，會有多個系列的數據，此時可以透過{a0}, {a1}, {a2} 這種後面加索引的方式表示系列的索引。 <br>
-不同圖表類型下的{a}，{b}，{c}，{d} 意義不一樣。 其中變數{a}, {b}, {c}, {d}在不同圖表類型下代表資料意義為：<br><br>
-折線（區域）圖、柱狀（長條）圖、儀錶板: {a}（系列名稱），{b}（類目值），{c}（數值）<br>
-圓餅圖、漏斗圖: {a}（系列名稱），{b}（資料項名稱），{c}（數值）, {d}（百分比）<br>
-地圖: {a}（系列名稱），{b}（區域名稱），{c}（合併數值）, {d}（無）<br>
-散佈圖（氣泡）圖: {a}（系列名稱），{b}（資料名稱），{c}（數值陣列）, {d}（無）`,
+      在觸發位置為'座標軸' 的時候，會有多個系列的數據，此時可以透過{a0}, {a1}, {a2} 這種後面加索引的方式表示系列的索引。 <br>
+      不同圖表類型下的{a}，{b}，{c}，{d} 意義不一樣。 其中變數{a}, {b}, {c}, {d}在不同圖表類型下代表資料意義為：<br><br>
+      折線（區域）圖、柱狀（長條）圖、儀錶板: {a}（系列名稱），{b}（類目值），{c}（數值）<br>
+      圓餅圖、漏斗圖: {a}（系列名稱），{b}（資料項名稱），{c}（數值）, {d}（百分比）<br>
+      地圖: {a}（系列名稱），{b}（區域名稱），{c}（合併數值）, {d}（無）<br>
+      散佈圖（氣泡）圖: {a}（系列名稱），{b}（資料名稱），{c}（數值陣列）, {d}（無）`,
     h_position: '水平位置',
     v_position: '垂直位置',
     p_left: '左對齊',
@@ -1911,7 +1911,7 @@ export default {
     radar_point_size: '輔助點大小',
     radar_area_color: '開啟面積',
     table_freeze_tip: '合併儲存格後，不支持行列凍結',
-    merge_cells_tips: '合併儲存格後，行列凍結、自動換行、班馬紋會失效',
+    merge_cells_tips: '合併儲存格後，行列凍結、自動換行、班馬紋會失效，當前頁的序號會從 1 開始',
     merge_cells_break_line_tip: '合併儲存格後，不支持自動換行',
     font_family_ya_hei: '微軟雅黙',
     font_family_song_ti: '宋體',
@@ -1982,9 +1982,14 @@ export default {
     circle_packing_padding: '圓形間距',
     increase: '增加',
     decrease: '減少',
-    total: '合計',
     accumulate: '累加',
-    table_cross_bg_tip: '合併儲存格後，不支持斑馬紋'
+    table_cross_bg_tip: '合併儲存格後，不支持斑馬紋',
+    pivot_export_invalid_field: '行維度或指標維度為空不可導出！',
+    pivot_export_invalid_col_exceed: '表格列數超過最大限制不可導出!',
+    expand_all: '全展開',
+    level_label: '第{num}層級',
+    default_expand_level: '默認展開層級',
+    no_data_or_not_positive: '暫無數據，或數據均不是正數，無法繪製'
   },
   dataset: {
     field_value: '欄位值',
@@ -4067,6 +4072,9 @@ export default {
     confirm_truncate_table: '確定要清空數據嗎？',
     add_search_condition: '添加篩選條件',
     form: {
+      set_enableDefaultTime: '默認值',
+      currentTime: '當前時間',
+      defaultTime: '固定時間',
       please_select_valid_column: '請選擇符合要求的字段',
       create_type: '創建方式',
       create_new_table: '創建新表',

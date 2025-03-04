@@ -35,7 +35,7 @@ public interface RoleApi {
     @Operation(summary = "创建")
     @DePermit("m:read")
     @PostMapping("/create")
-    void create(@RequestBody RoleCreator creator);
+    Long create(@RequestBody RoleCreator creator);
 
     @Operation(summary = "编辑")
     @DePermit({"m:read", "#p0.id + ':manage'"})

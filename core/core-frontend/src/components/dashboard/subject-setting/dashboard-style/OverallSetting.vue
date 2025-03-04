@@ -238,6 +238,7 @@
       v-show="dvInfo.type === 'dashboard'"
       class="form-item"
       :class="'form-item-' + themes"
+      style="margin-bottom: 0"
     >
       <el-checkbox
         :effect="themes"

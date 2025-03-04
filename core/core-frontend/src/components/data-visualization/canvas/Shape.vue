@@ -1107,12 +1107,14 @@ const dragCollision = computed(() => {
 
 const htmlToImage = () => {
   downLoading.value = true
+  useEmitt().emitter.emit('l7-prepare-picture', element.value.id)
   setTimeout(() => {
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value)
     downloadCanvas2('img', componentInnerRef.value, '图表', () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false
+      useEmitt().emitter.emit('l7-unprepare-picture', element.value.id)
     })
   }, 200)
 }
@@ -1138,13 +1140,11 @@ onMounted(() => {
   })
   settingAttribute()
   const methodName = 'componentImageDownload-' + element.value.id
-  useEmitt().emitter.off(methodName)
-  useEmitt({
-    name: methodName,
-    callback: () => {
+  if (!useEmitt().emitter.all.get(methodName)?.length) {
+    useEmitt().emitter.on(methodName, () => {
       htmlToImage()
-    }
-  })
+    })
+  }
 })
 </script>
 

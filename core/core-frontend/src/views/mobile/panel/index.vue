@@ -87,7 +87,11 @@ const hanedleMessage = event => {
       mobileComponent['events'] = component['events']
       mobileComponent['propValue'] = component['propValue']
       mobileViewStyleSwitch(otherComponent)
-      useEmitt().emitter.emit('renderChart-' + component.id, otherComponent)
+      if (mobileComponent.component === 'VQuery') {
+        useEmitt().emitter.emit('renderChart-' + component.id, otherComponent)
+      } else if (mobileComponent.component === 'UserView') {
+        useEmitt().emitter.emit('calcData-' + component.id, otherComponent)
+      }
     }
   }
 
