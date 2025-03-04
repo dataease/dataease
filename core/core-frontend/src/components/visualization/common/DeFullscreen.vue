@@ -46,12 +46,21 @@ const toggleFullscreen = () => {
   }
 }
 
+const handleKeydown = event => {
+  console.log('FullScreen key: ' + event.key)
+  if (event.key === 'Escape') {
+    document.exitFullscreen()
+  }
+}
+
 onMounted(() => {
   document.addEventListener('fullscreenchange', fullscreenChange)
+  document.addEventListener('keydown', handleKeydown)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('fullscreenchange', fullscreenChange)
+  document.removeEventListener('keydown', handleKeydown)
 })
 
 defineExpose({

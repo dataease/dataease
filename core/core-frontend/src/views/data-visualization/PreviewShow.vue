@@ -9,7 +9,6 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { storeToRefs } from 'pinia'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { initCanvasData, initCanvasDataPrepare, onInitReady } from '@/utils/canvasUtils'
-import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
