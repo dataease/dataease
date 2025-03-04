@@ -46,9 +46,9 @@ const toggleFullscreen = () => {
   }
 }
 
+// 针对钉钉windows版无法退出全屏问题 这里主动退出
 const handleKeydown = event => {
-  console.log('FullScreen key: ' + event.key)
-  if (event.key === 'Escape') {
+  if (event.key === 'Escape' && document.fullscreenElement) {
     document.exitFullscreen()
   }
 }

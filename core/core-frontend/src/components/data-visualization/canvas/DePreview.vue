@@ -22,7 +22,6 @@ import EmptyBackground from '../../empty-background/src/EmptyBackground.vue'
 import LinkOptBar from '@/components/data-visualization/canvas/LinkOptBar.vue'
 import { isDesktop } from '@/utils/ModelUtil'
 import { isMobile } from '@/utils/utils'
-import CanvasExtFullscreenBar from '@/components/visualization/CanvasExtFullscreenBar.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState, inMobile } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
@@ -505,8 +504,6 @@ defineExpose({
       :canvas-style-data="canvasStyleData"
       :component-data="baseComponentData"
     ></canvas-opt-bar>
-    <canvas-ext-fullscreen-bar :canvas-id="canvasId" :show-position="showPosition">
-    </canvas-ext-fullscreen-bar>
     <template v-if="renderReady">
       <ComponentWrapper
         v-for="(item, index) in baseComponentData"
