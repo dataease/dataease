@@ -495,7 +495,7 @@ const jumpClick = param => {
           if (jumpInfo.publicJumpId) {
             let url = `${embeddedBaseUrl}#/de-link/${
               jumpInfo.publicJumpId
-            }?fromLink=true&jumpInfoParam=${encodeURIComponent(
+            }?fromLink=true&ignoreParams=true&jumpInfoParam=${encodeURIComponent(
               Base64.encode(JSON.stringify(param))
             )}`
             if (attachParamsInfo) {
@@ -510,7 +510,9 @@ const jumpClick = param => {
         } else {
           let url = `${embeddedBaseUrl}#/preview?dvId=${
             jumpInfo.targetDvId
-          }&fromLink=true&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
+          }&fromLink=true&ignoreParams=true&jumpInfoParam=${encodeURIComponent(
+            Base64.encode(JSON.stringify(param))
+          )}`
           if (attachParamsInfo) {
             url = url + attachParamsInfo
           }
