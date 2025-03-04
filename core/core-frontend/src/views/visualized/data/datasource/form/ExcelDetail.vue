@@ -1,6 +1,5 @@
 <script lang="tsx" setup>
 import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
-import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
 import { Icon } from '@/components/icon-custom'
 import { ElIcon } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -36,6 +35,7 @@ export interface Param {
   creator?: string
   isPlugin?: boolean
   staticMap?: any
+  configuration?: {}
 }
 
 export interface Field {
@@ -44,6 +44,9 @@ export interface Field {
   fieldSize: number
   fieldType: string
   name: string
+  checked: boolean
+  primaryKey: boolean
+  length: number
 }
 const props = defineProps({
   param: {

@@ -1332,7 +1332,7 @@ public class CalciteProvider extends Provider {
     public void initConnectionPool() {
         LogUtil.info("Begin to init datasource pool...");
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
-        List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
+        List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel", "ExcelRemote").contains(coreDatasource.getType())).collect(Collectors.toList());
         CoreDatasource engine = engineManage.deEngine();
         if (engine != null) {
             coreDatasources.add(engine);
@@ -1382,8 +1382,8 @@ public class CalciteProvider extends Provider {
                 buildSchema(datasourceRequest, calciteConnection);
             }
             DatasourceConfiguration configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), DatasourceConfiguration.class);
-            if(configuration.isUseSSH()){
-                Session session =Provider.getSessions().get(datasourceDTO.getId());
+            if (configuration.isUseSSH()) {
+                Session session = Provider.getSessions().get(datasourceDTO.getId());
                 session.disconnect();
                 Provider.getSessions().remove(datasourceDTO.getId());
                 startSshSession(configuration, null, datasourceDTO.getId());

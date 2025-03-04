@@ -1047,6 +1047,7 @@ export default {
     primary_key_change: '主键不能改变:',
     primary_key_length: '主键必须设置长度: ',
     api_field_not_empty: '字段不能为空',
+    file_not_empty: '文件不能为空',
     success_copy: '复制成功',
     valid: '有效',
     invalid: '无效',
@@ -1109,7 +1110,12 @@ export default {
     table_id: 'table_id',
     input_table_id: '请选择数据表',
     view_id: 'view_id',
-    input_view_id: '请选择视图'
+    input_view_id: '请选择视图',
+    remote_excel_url: '远程 Excel/CSV 地址',
+    remote_excel_url_placeholder:
+      '请输入远程 Excel/CSV 地址，例如 ftp://192.168.1.101/files/data.xlsx',
+    remote_excel_url_empty: '远程地址不能为空',
+    load_data: '加载数据'
   },
   chart: {
     align: '对齐方式',

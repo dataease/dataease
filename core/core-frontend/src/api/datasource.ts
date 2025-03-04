@@ -175,6 +175,10 @@ export const uploadFile = async (data): Promise<IResponse> => {
     })
 }
 
+export const loadRemoteFile = async (data = {}) => {
+  return request.post({ url: '/datasource/loadRemoteFile', data })
+}
+
 export const listSyncRecord = (page: number, limit: number, dsId: number | string) =>
   request.post({ url: '/datasource/listSyncRecord/' + dsId + '/' + page + '/' + limit })
 

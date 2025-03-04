@@ -30,10 +30,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -369,6 +366,61 @@ public class HttpClientUtil {
         return EntityUtils.toString(response.getEntity(), config.getCharset());
     }
 
+    public static Map<String, String> downloadFile(String url, HttpClientConfig config, String path) {
+        Map<String, String> name = new HashMap<>();
+        try (CloseableHttpClient httpClient = buildHttpClient(url)) {
+            HttpGet httpGet = new HttpGet(url);
+            // 设置请求配置
+            httpGet.setConfig(config.buildRequestConfig());
+
+            // 设置请求头
+            config.getHeader().forEach(httpGet::addHeader);
+            HttpResponse response = httpClient.execute(httpGet);
+            String fileName = extractFileName(response, url);
+            String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+            String tranName = UUID.randomUUID().toString() + "." + suffix;
+            name.put("fileName", fileName);
+            name.put("tranName", tranName);
+            try {
+                FileOutputStream outputStream = new FileOutputStream(path + tranName);
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = response.getEntity().getContent().read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            } finally {
+
+            }
+
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new RuntimeException("HttpClient查询失败: " + e.getMessage(), e);
+        }
+        return name;
+    }
+
+    private static String extractFileName(HttpResponse response, String url) {
+        String fileName = "";
+        String disposition = response.getHeaders("Content-Disposition").toString();
+        if (disposition != null) {
+            int filenameIndex = disposition.indexOf("filename=");
+            if (filenameIndex > 0) {
+                fileName = disposition.substring(filenameIndex + 9)
+                        .replaceAll("\"", "") // 去除引号
+                        .trim();
+            }
+        }
+        if (fileName.isEmpty()) {
+            fileName = url.contains("/")
+                    ? url.substring(url.lastIndexOf('/') + 1)
+                    : "download_" + System.currentTimeMillis();
+        }
+        if (fileName.trim().isEmpty()) {
+            fileName = "download_" + System.currentTimeMillis();
+        }
+        return fileName;
+    }
+
     public static byte[] downloadBytes(String url) {
         HttpClientConfig config = new HttpClientConfig();
         return HttpClientUtil.downFromRemote(url, config);
@@ -383,7 +435,6 @@ public class HttpClientUtil {
             // 设置请求头
             config.getHeader().forEach(httpGet::addHeader);
             HttpResponse response = httpClient.execute(httpGet);
-
             try (InputStream inputStream = response.getEntity().getContent();
                  ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 

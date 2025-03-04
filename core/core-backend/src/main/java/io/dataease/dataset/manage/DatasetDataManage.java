@@ -104,7 +104,7 @@ public class DatasetDataManage {
         if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB) || StringUtils.equalsIgnoreCase(type, DatasetTableType.SQL)) {
             CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasetTableDTO.getDatasourceId());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-            if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
+            if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                 coreDatasource = engineManage.getDeEngine();
             }
             if (StringUtils.isNotEmpty(coreDatasource.getStatus()) && "Error".equalsIgnoreCase(coreDatasource.getStatus())) {
@@ -407,7 +407,7 @@ public class DatasetDataManage {
     public Map<String, Object> previewSql(PreviewSqlDTO dto) throws DEException {
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-        if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().equalsIgnoreCase("Excel")) {
+        if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name())) {
             BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
         } else {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);

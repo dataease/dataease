@@ -233,7 +233,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     // Excel 数据表明映射
                     if (StringUtils.isNotEmpty(datasourceOld.getConfiguration())) {
                         if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
-                            dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getConfiguration()));
+                            dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getType(), datasourceOld.getConfiguration()));
                         } else if (datasourceOld.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                             dsTableNamesMap.put(datasourceOld.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceOld.getType(), "getTableNamesMap", String.class, datasourceOld.getConfiguration()));
                         }
@@ -245,7 +245,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     // Excel 数据表明映射
                     if (StringUtils.isNotEmpty(datasourceNew.getConfiguration())) {
                         if (datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
-                            dsTableNamesMap.put(datasourceNew.getId(), ExcelUtils.getTableNamesMap(datasourceNew.getConfiguration()));
+                            dsTableNamesMap.put(datasourceNew.getId(), ExcelUtils.getTableNamesMap(datasourceNew.getType(), datasourceNew.getConfiguration()));
                         } else if (datasourceNew.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                             dsTableNamesMap.put(datasourceNew.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceNew.getType(), "getTableNamesMap", String.class, datasourceNew.getConfiguration()));
                         }

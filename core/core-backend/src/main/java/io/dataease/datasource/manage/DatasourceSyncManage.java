@@ -127,7 +127,11 @@ public class DatasourceSyncManage {
                 record.setQrtzInstance(context.getFireInstanceId());
                 datasourceMapper.update(record, updateWrapper);
             }
-            extractedData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
+            if (coreDatasource.getType().equalsIgnoreCase("ExcelRemote")) {
+                extractedExcelData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
+            } else {
+                extractedData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
+            }
         } catch (Exception e) {
             LogUtil.error(e);
         } finally {
@@ -167,6 +171,46 @@ public class DatasourceSyncManage {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
                 datasetTableTaskLog.setTaskStatus(TaskStatus.Error.toString());
                 datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+            } finally {
+                datasourceTaskServer.saveLog(datasetTableTaskLog);
+            }
+        }
+    }
+
+    public void extractedExcelData(Long taskId, CoreDatasource coreDatasource, DatasourceServer.UpdateType updateType, String scheduleType) {
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(transDTO(coreDatasource));
+        List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
+        for (DatasetTableDTO tableDTO : tables) {
+            CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), taskId, tableDTO.getTableName(), scheduleType);
+            datasourceRequest.setTable(tableDTO.getTableName());
+            ExcelUtils.getTableFields(datasourceRequest);
+            List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
+            try {
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
+                createEngineTable(datasourceRequest.getTable(), tableFields);
+                if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                    createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
+                }
+                extractExcelData(datasourceRequest, updateType, tableFields);
+                if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                    replaceTable(datasourceRequest.getTable());
+                }
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
+                datasetTableTaskLog.setTaskStatus(TaskStatus.Completed.toString());
+                datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+            } catch (Exception e) {
+                try {
+                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                        dropEngineTable(TableUtils.tmpName(datasourceRequest.getTable()));
+                    }
+                } catch (Exception ignore) {
+                }
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
+                datasetTableTaskLog.setTaskStatus(TaskStatus.Error.toString());
+                datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+
+                e.printStackTrace();
             } finally {
                 datasourceTaskServer.saveLog(datasetTableTaskLog);
             }

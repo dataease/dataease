@@ -707,7 +707,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 }
 
 const editDatasource = (editType?: number) => {
-  if (nodeInfo.type === 'Excel') {
+  if (nodeInfo.type.startsWith('Excel')) {
     nodeInfo.editType = editType
   }
   return getById(nodeInfo.id).then(res => {
@@ -940,7 +940,7 @@ const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
     case 'config':
       tableData.value = []
-      if (nodeInfo.type === 'Excel') {
+      if (nodeInfo.type.startsWith('Excel')) {
         listDatasourceTables({ datasourceId: nodeInfo.id }).then(res => {
           tabList.value = res.data.map(ele => {
             const { name, tableName } = ele
@@ -1485,7 +1485,17 @@ const getMenuList = (val: boolean) => {
                     <ExcelInfo :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfo>
                   </BaseInfoItem>
                 </el-col>
-                <el-col v-else :span="24">
+                <el-col v-if="nodeInfo.type === 'ExcelRemote'" :span="12">
+                  <BaseInfoItem :label="t('datasource.remote_excel_url')">
+                    {{ nodeInfo.configuration.url }}
+                  </BaseInfoItem>
+                </el-col>
+                <el-col v-if="nodeInfo.type === 'ExcelRemote'" :span="12">
+                  <BaseInfoItem :label="t('data_source.document')">
+                    <ExcelInfo :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfo>
+                  </BaseInfoItem>
+                </el-col>
+                <el-col v-if="!nodeInfo.type.startsWith('Excel')" :span="24">
                   <BaseInfoItem :label="t('common.description')">{{
                     nodeInfo.description
                   }}</BaseInfoItem>
@@ -1495,6 +1505,7 @@ const getMenuList = (val: boolean) => {
                 v-if="
                   !['Excel', 'es'].includes(nodeInfo.type) &&
                   !nodeInfo.type.startsWith('API') &&
+                  !nodeInfo.type.startsWith('Excel') &&
                   nodeInfo.weight >= 7
                 "
               >
@@ -1698,42 +1709,7 @@ const getMenuList = (val: boolean) => {
             </el-button>
           </BaseInfoContent>
           <BaseInfoContent
-            v-if="nodeInfo.type.startsWith('API') && nodeInfo.weight >= 7"
-            v-slot="slotProps"
-            :name="t('dataset.update_setting')"
-            :time="(nodeInfo.lastSyncTime as string)"
-          >
-            <template v-if="slotProps.active">
-              <el-row :gutter="24">
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('dataset.update_type')">{{
-                    t(`dataset.${nodeInfo.syncSetting.updateType}`)
-                  }}</BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('dataset.execute_rate')">
-                    <p
-                      class="value"
-                      :key="ele"
-                      v-for="ele in formatSimpleCron(nodeInfo.syncSetting)"
-                    >
-                      {{ ele }}
-                    </p>
-                  </BaseInfoItem>
-                </el-col>
-              </el-row>
-            </template>
-            <el-button @click="getRecord" class="update-records" text>
-              <template #icon>
-                <icon name="icon_describe_outlined"
-                  ><icon_describe_outlined class="svg-icon"
-                /></icon>
-              </template>
-              {{ t('dataset.update_records') }}
-            </el-button>
-          </BaseInfoContent>
-          <BaseInfoContent
-            v-if="nodeInfo.type === 'Excel'"
+            v-if="nodeInfo.type.startsWith('Excel')"
             v-slot="slotProps"
             :name="t('dataset.data_preview')"
           >
@@ -1766,6 +1742,44 @@ const getMenuList = (val: boolean) => {
                 </div>
               </div>
             </template>
+          </BaseInfoContent>
+          <BaseInfoContent
+            v-if="
+              (nodeInfo.type.startsWith('API') || nodeInfo.type === 'ExcelRemote') &&
+              nodeInfo.weight >= 7
+            "
+            v-slot="slotProps"
+            :name="t('dataset.update_setting')"
+            :time="(nodeInfo.lastSyncTime as string)"
+          >
+            <template v-if="slotProps.active">
+              <el-row :gutter="24">
+                <el-col :span="12">
+                  <BaseInfoItem :label="t('dataset.update_type')">{{
+                    t(`dataset.${nodeInfo.syncSetting.updateType}`)
+                  }}</BaseInfoItem>
+                </el-col>
+                <el-col :span="12">
+                  <BaseInfoItem :label="t('dataset.execute_rate')">
+                    <p
+                      class="value"
+                      :key="ele"
+                      v-for="ele in formatSimpleCron(nodeInfo.syncSetting)"
+                    >
+                      {{ ele }}
+                    </p>
+                  </BaseInfoItem>
+                </el-col>
+              </el-row>
+            </template>
+            <el-button @click="getRecord" class="update-records" text>
+              <template #icon>
+                <icon name="icon_describe_outlined"
+                  ><icon_describe_outlined class="svg-icon"
+                /></icon>
+              </template>
+              {{ t('dataset.update_records') }}
+            </el-button>
           </BaseInfoContent>
         </template>
       </template>

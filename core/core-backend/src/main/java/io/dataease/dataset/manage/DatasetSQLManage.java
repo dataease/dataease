@@ -510,7 +510,7 @@ public class DatasetSQLManage {
             if (coreDatasource == null) {
                 DEException.throwException(Translator.get("i18n_dataset_ds_error") + ",ID:" + ds.getDatasourceId());
             }
-            if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
+            if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                 coreDatasource = engineManage.getDeEngine();
             }
 

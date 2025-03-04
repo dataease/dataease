@@ -1077,6 +1077,7 @@ export default {
     has_repeat_field_name: 'Duplicate field name, please modify before selecting',
     primary_key_change: 'Primary key cannot be changed:',
     api_field_not_empty: 'Field cannot be empty',
+    file_not_empty: 'File cannot be empty',
     success_copy: 'Copy successfully',
     valid: 'Valid',
     invalid: 'Invalid',
@@ -1138,7 +1139,12 @@ export default {
     table_id: 'table_id',
     input_table_id: 'Please select a data table',
     view_id: 'view_id',
-    input_view_id: 'Please select a view'
+    input_view_id: 'Please select a view',
+    remote_excel_url: 'Remote Excel/CSV Address',
+    remote_excel_url_placeholder:
+      'Please enter the remote Excel/CSV address, for example, ftp://192.168.1.101/files/data.xlsx',
+    remote_excel_url_empty: 'The remote address cannot be empty',
+    load_data: 'Load Data'
   },
   chart: {
     align: 'Alignment',

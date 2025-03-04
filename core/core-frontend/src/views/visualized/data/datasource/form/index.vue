@@ -9,7 +9,15 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { save, update, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
+import {
+  save,
+  update,
+  validate,
+  latestUse,
+  isShowFinishPage,
+  checkRepeat,
+  loadRemoteFile
+} from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
 import type { Configuration, ApiConfiguration, SyncSetting } from './option'
@@ -23,6 +31,7 @@ import { useCache } from '@/hooks/web/useCache'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { XpackComponent, PluginComponent } from '@/components/plugin'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
+import ExcelRemoteDetail from '@/views/visualized/data/datasource/form/ExcelRemoteDetail.vue'
 
 interface Node {
   name: string
@@ -73,6 +82,7 @@ const activeStep = ref(0)
 const detail = ref()
 const xpack = ref()
 const excel = ref()
+const excelRemote = ref()
 const latestUseTypes = ref([])
 const currentType = ref<DsType>('OLTP')
 const filterText = ref('')
@@ -99,6 +109,7 @@ const selectDsType = (type: string) => {
         methodName: 'initForm',
         args: type
       })
+    excelRemote?.value?.initForm(type)
     if (!dsTree.value) return
     currentTypeList.value
       .map(ele => ele.dbList)
@@ -204,7 +215,11 @@ const activeApiStep = ref(0)
 
 const setNextStep = () => {
   activeApiStep.value = activeStep.value + 1
-  if (currentDsType.value.includes('API') && activeStep.value === 1) return
+  if (
+    (currentDsType.value.includes('API') || currentDsType.value === 'ExcelRemote') &&
+    activeStep.value === 1
+  )
+    return
   activeStep.value = activeStep.value + 1
 }
 
@@ -223,6 +238,14 @@ const next = () => {
     return
   }
 
+  if (currentDsType.value.includes('ExcelRemote') && activeStep.value !== 2) {
+    const validate = excelRemote.value.validateExcel()
+    if (validate) {
+      setNextStep()
+    }
+    return
+  }
+
   if (currentDsType.value.includes('API') && activeStep.value !== 2) {
     const validateFrom = detail.value.submitForm()
     validateFrom(val => {
@@ -237,7 +260,15 @@ const next = () => {
 }
 
 const complete = (params, successCb, finallyCb) => {
-  excel.value.saveExcelDs(
+  excel?.value?.saveExcelDs(
+    params,
+    () => {
+      pid.value = params.pid
+      successCb()
+    },
+    finallyCb
+  )
+  excelRemote?.value?.saveExcelDs(
     params,
     () => {
       pid.value = params.pid
@@ -293,7 +324,8 @@ emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
   if (
-    (currentDsType.value.includes('API') && activeApiStep.value === 1) ||
+    ((currentDsType.value.includes('API') || currentDsType.value === 'ExcelRemote') &&
+      activeApiStep.value === 1) ||
     activeStep.value === 1
   ) {
     ElMessageBox.confirm(t('data_source.the_previous_step'), {
@@ -310,7 +342,10 @@ const prev = () => {
 }
 
 const prevConfirm = () => {
-  if (currentDsType.value.includes('API') && activeApiStep.value === 2) {
+  if (
+    (currentDsType.value.includes('API') || currentDsType.value === 'ExcelRemote') &&
+    activeApiStep.value === 2
+  ) {
     activeApiStep.value = 1
     activeStep.value = 1
     return
@@ -369,7 +404,10 @@ const validateDS = () => {
       args: [{ eventName: 'validateDs', args: request }]
     })
   } else {
-    const validateFrom = detail?.value?.submitForm()
+    let validateFrom = detail?.value?.submitForm()
+    if (excelRemote?.value?.submitForm()) {
+      validateFrom = excelRemote?.value?.submitForm()
+    }
     validateFrom(val => {
       if (val) {
         doValidateDs(request)
@@ -380,9 +418,23 @@ const validateDS = () => {
 
 const doValidateDs = request => {
   dsLoading.value = true
+  if (currentDsType.value === 'ExcelRemote') {
+    let excelRequest = JSON.parse(JSON.stringify(form2.configuration))
+    excelRequest.datasourceId = form2.id || 0
+    excelRequest.editType = form2.editType
+    return loadRemoteFile(excelRequest)
+      .then(() => {
+        ElMessage.success(t('datasource.validate_success'))
+        dsLoading.value = false
+      })
+      .catch(() => {
+        ElMessage.error(t('data_source.verification_failed'))
+        dsLoading.value = false
+      })
+  }
   validate(request)
     .then(res => {
-      if (res.data.type === 'API') {
+      if (res.data.type.includes('API')) {
         let error = 0
         const status = JSON.parse(res.data.status) as Array<{ status: string; name: string }>
         for (let i = 0; i < status.length; i++) {
@@ -435,13 +487,13 @@ const saveDS = () => {
     configuration: string
     apiConfiguration: string
   }
+
   if (currentDsType.value === 'Excel') {
     excel.value.uploadStatus(false)
     if (!excel.value.sheetFile?.name) {
       excel.value.uploadStatus(true)
       return
     }
-
     const validate = excel.value.submitForm()
     validate(val => {
       if (val) {
@@ -452,7 +504,25 @@ const saveDS = () => {
         }
       }
     })
+    return
+  }
 
+  if (currentDsType.value === 'ExcelRemote') {
+    const validate = excelRemote.value.submitForm()
+    validate(val => {
+      if (val) {
+        const validateApi = excelRemote?.value?.submitSyncSettingForm()
+        validateApi(v => {
+          if (v) {
+            if (editDs.value) {
+              complete(null, null, null)
+            } else {
+              creatDsFolder.value.createInit('datasource', { id: pid.value }, '', form2.name)
+            }
+          }
+        })
+      }
+    })
     return
   } else if (currentDsType.value.includes('API')) {
     for (let i = 0; i < request.apiConfiguration.length; i++) {
@@ -569,16 +639,18 @@ const defaultForm = {
   paramsConfiguration: [],
   enableDataFill: false
 }
-const form = reactive<Form>(cloneDeep(defaultForm))
-const origin = reactive<Form>(cloneDeep(defaultForm))
 const defaultForm2 = {
   type: '',
   id: '0',
   editType: 0,
   name: '',
-  creator: ''
+  creator: '',
+  configuration: {}
 }
+const origin = reactive<Form>(cloneDeep(defaultForm))
+const form = reactive<Form>(cloneDeep(defaultForm))
 const form2 = reactive<Param>(cloneDeep(defaultForm2))
+
 const visible = ref(false)
 const editDs = ref(false)
 const pid = ref('0')
@@ -611,7 +683,7 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object, supportSetKey: 
   showFinishPage.value = false
 
   if (!!nodeInfo) {
-    if (nodeInfo.type == 'Excel') {
+    if (nodeInfo.type.startsWith('Excel')) {
       Object.assign(form2, cloneDeep(nodeInfo))
     } else {
       Object.assign(form, cloneDeep(nodeInfo))
@@ -833,7 +905,7 @@ defineExpose({
             v-if="
               activeStep !== 0 &&
               currentDsType &&
-              currentDsType !== 'Excel' &&
+              !currentDsType.startsWith('Excel') &&
               visible &&
               (!isPlugin || currentDsType.startsWith('API'))
             "
@@ -863,6 +935,15 @@ defineExpose({
               :param="form2"
             ></excel-detail>
           </template>
+          <template v-if="activeStep !== 0 && currentDsType == 'ExcelRemote'">
+            <excel-remote-detail
+              :editDs="editDs"
+              :is-supportSetKey="isSupportSetKey"
+              ref="excelRemote"
+              :active-step="activeApiStep"
+              :form="form2"
+            ></excel-remote-detail>
+          </template>
         </div>
       </div>
       <div class="editor-footer">
@@ -883,8 +964,11 @@ defineExpose({
         >
         <el-button
           v-show="
-            (activeStep === 0 && !currentDsType.startsWith('API')) ||
-            (activeApiStep !== 2 && currentDsType.startsWith('API'))
+            (activeStep === 0 &&
+              !currentDsType.startsWith('API') &&
+              currentDsType !== 'ExcelRemote') ||
+            (activeApiStep !== 2 &&
+              (currentDsType.startsWith('API') || currentDsType === 'ExcelRemote'))
           "
           type="primary"
           @click="next"
@@ -893,8 +977,11 @@ defineExpose({
         >
         <el-button
           v-show="
-            (activeStep === 1 && !currentDsType.startsWith('API')) ||
-            (activeApiStep === 2 && currentDsType.startsWith('API'))
+            (activeStep === 1 &&
+              !currentDsType.startsWith('API') &&
+              currentDsType !== 'ExcelRemote') ||
+            (activeApiStep === 2 &&
+              (currentDsType.startsWith('API') || currentDsType === 'ExcelRemote'))
           "
           type="primary"
           @click="saveDS"

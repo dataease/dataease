@@ -12,6 +12,7 @@ import db2Ds from '@/assets/svg/db2-ds.svg'
 import redshiftDs from '@/assets/svg/redshift-ds.svg'
 import APIDs from '@/assets/svg/API-ds.svg'
 import ExcelDs from '@/assets/svg/Excel-ds.svg'
+import ExcelRemoteDs from '@/assets/svg/Excel-remote-ds.svg'
 import dorisDs from '@/assets/svg/doris-ds.svg'
 import esDs from '@/assets/svg/es-ds.svg'
 const iconDatasourceMap = {
@@ -29,6 +30,7 @@ const iconDatasourceMap = {
   redshift: redshiftDs,
   API: APIDs,
   Excel: ExcelDs,
+  ExcelRemote: ExcelRemoteDs,
   doris: dorisDs,
   es: esDs
 }

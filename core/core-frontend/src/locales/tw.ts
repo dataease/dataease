@@ -1041,6 +1041,7 @@ export default {
     has_repeat_field_name: '欄位名稱重複，請修改後再選擇',
     primary_key_change: '主鍵不能改變:',
     api_field_not_empty: '欄位不能為空',
+    file_not_empty: '文件不能為空',
     success_copy: '複製成功',
     primary_key_length: '主鍵必須設置長度: ',
     valid: '有效',
@@ -1104,7 +1105,12 @@ export default {
     table_id: 'table_id',
     input_table_id: '請選擇數據表',
     view_id: 'view_id',
-    input_view_id: '請選擇視圖'
+    input_view_id: '請選擇視圖',
+    remote_excel_url: '遠端 Excel/CSV 地址',
+    remote_excel_url_placeholder:
+      '請輸入遠端 Excel/CSV 地址，例如 ftp://192.168.1.101/files/data.xlsx',
+    remote_excel_url_empty: '遠端地址不能為空',
+    load_data: '載入資料'
   },
   chart: {
     align: '對齊方式',

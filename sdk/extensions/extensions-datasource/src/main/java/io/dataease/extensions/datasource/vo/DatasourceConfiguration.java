@@ -14,6 +14,7 @@ public class DatasourceConfiguration extends Configuration {
         folder("folder", "folder", "folder", null, null),
         API("API", "API", "API", "`", "`"),
         Excel("Excel", "Excel", "LOCALFILE", "`", "`"),
+        ExcelRemote("ExcelRemote", "ExcelRemote", "LOCALFILE", "`", "`"),
         mysql("mysql", "Mysql", "OLTP", "`", "`"),
         impala("impala", "Apache Impala", "OLAP", "`", "`"),
         mariadb("mariadb", "Mariadb", "OLTP", "`", "`"),

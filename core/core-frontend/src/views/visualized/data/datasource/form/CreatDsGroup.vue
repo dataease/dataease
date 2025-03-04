@@ -291,7 +291,7 @@ const saveDataset = () => {
         request.apiConfiguration = ''
         checkRepeat(request).then(res => {
           let method = request.id === '' ? save : update
-          if (!request.type.startsWith('API')) {
+          if (!request.type.startsWith('API') || request.type !== 'ExcelRemote') {
             request.syncSetting = null
           }
           if (res) {
