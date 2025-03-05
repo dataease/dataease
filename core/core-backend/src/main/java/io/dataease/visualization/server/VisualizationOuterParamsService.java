@@ -61,11 +61,6 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     }
 
     @Override
-    public VisualizationOuterParamsDTO queryWithVisualizationIdDS(String dvId) {
-        return null;
-    }
-
-    @Override
     public void updateOuterParamsSet(VisualizationOuterParamsDTO outerParamsDTO) {
         String visualizationId = outerParamsDTO.getVisualizationId();
         Assert.notNull(visualizationId, "visualizationId cannot be null");

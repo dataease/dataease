@@ -113,11 +113,6 @@ public class StaticResourceServer implements StaticResourceApi {
         return result;
     }
 
-    @Override
-    public Map<String, String> urlTest() {
-        return null;
-    }
-
     private static boolean isValidSVG(MultipartFile file){
         if (file == null || file.isEmpty()) {
             return false;
