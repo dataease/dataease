@@ -75,12 +75,14 @@ const init = () => {
     tableCell.mergeCells = tableCell.mergeCells === undefined ? false : tableCell.mergeCells
     state.tableCellForm = defaultsDeep(cloneDeep(tableCell), cloneDeep(DEFAULT_TABLE_CELL))
     const alpha = props.chart.customAttr.basicStyle.alpha
+
     if (!isAlphaColor(state.tableCellForm.tableItemBgColor)) {
       state.tableCellForm.tableItemBgColor = convertToAlphaColor(
         state.tableCellForm.tableItemBgColor,
         alpha
       )
     }
+
     if (!isAlphaColor(state.tableCellForm.tableItemSubBgColor)) {
       state.tableCellForm.tableItemSubBgColor = convertToAlphaColor(
         state.tableCellForm.tableItemSubBgColor,
@@ -102,7 +104,7 @@ onMounted(() => {
       :label="t('chart.backgroundColor')"
       class="form-item"
       :class="'form-item-' + themes"
-      v-if="showProperty('tableItemBgColor')"
+      v-if="showProperty('tableItemBgColor') && state.tableCellForm.tableItemBgColor"
     >
       <el-color-picker
         :effect="themes"
