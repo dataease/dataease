@@ -24,6 +24,7 @@ import SheetTabs from '@/views/visualized/data/datasource/SheetTabs.vue'
 import { loadRemoteFile, save, update } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { CustomPassword } from '@/components/custom-password'
 const { t } = useI18n()
 export interface Param {
   editType: number
@@ -759,18 +760,19 @@ defineExpose({
             :placeholder="t('datasource.remote_excel_url_placeholder')"
           />
         </el-form-item>
-        <el-form-item label="username" v-show="activeStep !== 2">
+        <el-form-item :label="t('datasource.username')" v-show="activeStep !== 2">
           <el-input
             v-model="form.configuration.userName"
             autocomplete="off"
             :placeholder="t('datasource.please_input_user_name')"
           />
         </el-form-item>
-        <el-form-item label="passwd" v-show="activeStep !== 2">
-          <el-input
+        <el-form-item :label="t('datasource.password')" v-show="activeStep !== 2">
+          <CustomPassword
+            :placeholder="t('common.inputText') + ' ' + t('datasource.password')"
+            show-password
+            type="password"
             v-model="form.configuration.passwd"
-            autocomplete="off"
-            :placeholder="t('datasource.please_input_password')"
           />
         </el-form-item>
         <el-form-item v-show="activeStep !== 2">

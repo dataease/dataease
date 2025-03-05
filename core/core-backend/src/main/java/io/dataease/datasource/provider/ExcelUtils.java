@@ -178,7 +178,7 @@ public class ExcelUtils {
         List<String[]> dataList = new ArrayList<>();
         if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ExcelRemote")) {
             ExcelConfiguration excelConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), ExcelConfiguration.class);
-            Map<String, String> fileNames = downLoadRemoteExcel(excelConfiguration, datasourceRequest.getDatasource().getCreateBy());
+            Map<String, String> fileNames = downLoadRemoteExcel(excelConfiguration);
             for (ExcelSheetData sheet : excelConfiguration.getSheets()) {
                 if (sheet.getDeTableName().equalsIgnoreCase(datasourceRequest.getTable())) {
                     List<TableField> tableFields = sheet.getFields();
@@ -275,7 +275,7 @@ public class ExcelUtils {
         returnSheetDataList = returnSheetDataList.stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
         // save file
         String excelId = UUID.randomUUID().toString();
-        String filePath = saveFile(file, excelId, createBy);
+        String filePath = saveFile(file, excelId);
 
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
@@ -335,22 +335,20 @@ public class ExcelUtils {
         ExcelConfiguration excelConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), ExcelConfiguration.class);
         Map<String, String> fileNames = new HashMap<>();
         try {
-            fileNames = downLoadRemoteExcel(excelConfiguration, datasourceRequest.getDatasource().getCreateBy());
+            fileNames = downLoadRemoteExcel(excelConfiguration);
             return "Success";
         } catch (Exception e) {
             throw e;
         } finally {
-            String dirPath = path + datasourceRequest.getDatasource().getCreateBy() + "/";
             if (StringUtils.isNotEmpty(fileNames.get("tranName"))) {
-                FileUtils.deleteFile(dirPath + fileNames.get("tranName"));
+                FileUtils.deleteFile(path + fileNames.get("tranName"));
             }
         }
     }
 
-    public ExcelFileData parseRemoteExcel(RemoteExcelRequest remoteExcelRequest, String createBy) throws DEException, FileNotFoundException {
-        String dirPath = path + createBy + "/";
-        Map<String, String> fileNames = downLoadRemoteExcel(remoteExcelRequest, createBy);
-        FileInputStream fileInputStream = new FileInputStream(dirPath + fileNames.get("tranName"));
+    public ExcelFileData parseRemoteExcel(RemoteExcelRequest remoteExcelRequest) throws DEException, FileNotFoundException {
+        Map<String, String> fileNames = downLoadRemoteExcel(remoteExcelRequest);
+        FileInputStream fileInputStream = new FileInputStream(path + fileNames.get("tranName"));
         List<ExcelSheetData> excelSheetDataList = null;
         try {
             excelSheetDataList = parseExcel(fileNames.get("fileName"), fileInputStream, true);
@@ -365,7 +363,7 @@ public class ExcelUtils {
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
             excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
-            excelSheetData.setPath(dirPath + fileNames.get("tranName"));
+            excelSheetData.setPath(path + fileNames.get("tranName"));
             excelSheetData.setSheetId(UUID.randomUUID().toString());
             excelSheetData.setSheetExcelId(fileNames.get("tranName").split("\\.")[0]);
             excelSheetData.setFileName(fileNames.get("fileName"));
@@ -392,7 +390,7 @@ public class ExcelUtils {
                 }
             }
             long size = 0;
-            File file = new File(dirPath + fileNames.get("tranName"));
+            File file = new File(path + fileNames.get("tranName"));
             String unit = "B";
             if (file.length() / 1024 == 0) {
                 size = file.length();
@@ -411,13 +409,13 @@ public class ExcelUtils {
         ExcelFileData excelFileData = new ExcelFileData();
         excelFileData.setExcelLabel(fileNames.get("fileName").split("\\.")[0]);
         excelFileData.setId(fileNames.get("tranName").split("\\.")[0]);
-        excelFileData.setPath(dirPath + fileNames.get("tranName"));
+        excelFileData.setPath(path + fileNames.get("tranName"));
         excelFileData.setSheets(returnSheetDataList);
 
         return excelFileData;
     }
 
-    private static Map<String, String> downLoadRemoteExcel(ExcelConfiguration remoteExcelRequest, String createBy) throws DEException, FileNotFoundException {
+    private static Map<String, String> downLoadRemoteExcel(ExcelConfiguration remoteExcelRequest) throws DEException, FileNotFoundException {
         Map<String, String> fileNames = new HashMap<>();
         if (remoteExcelRequest.getUrl().trim().startsWith("http")) {
             HttpClientConfig httpClientConfig = new HttpClientConfig();
@@ -425,27 +423,29 @@ public class ExcelUtils {
                 String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((remoteExcelRequest.getUsername() + ":" + remoteExcelRequest.getPassword()).getBytes());
                 httpClientConfig.addHeader("Authorization", authValue);
             }
-            String dirPath = path + createBy + "/";
-            fileNames = HttpClientUtil.downloadFile(remoteExcelRequest.getUrl(), httpClientConfig, dirPath);
-        }else if (remoteExcelRequest.getUrl().trim().startsWith("ftp")) {
-            fileNames = downLoadFromFtp(remoteExcelRequest, createBy);
-        }else {
+            File p = new File(path);
+            if (!p.exists()) {
+                p.mkdirs();
+            }
+            fileNames = HttpClientUtil.downloadFile(remoteExcelRequest.getUrl(), httpClientConfig, path);
+        } else if (remoteExcelRequest.getUrl().trim().startsWith("ftp")) {
+            fileNames = downLoadFromFtp(remoteExcelRequest);
+        } else {
             DEException.throwException("不支持的协议！");
         }
         return fileNames;
     }
 
-    private static String saveFile(MultipartFile file, String fileNameUUID, String createBy) throws DEException {
+    private static String saveFile(MultipartFile file, String fileNameUUID) throws DEException {
         String filePath = null;
         try {
             String filename = file.getOriginalFilename();
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            String dirPath = path + createBy + "/";
-            File p = new File(dirPath);
+            File p = new File(path);
             if (!p.exists()) {
                 p.mkdirs();
             }
-            filePath = dirPath + fileNameUUID + "." + suffix;
+            filePath = path + fileNameUUID + "." + suffix;
             File f = new File(filePath);
             FileOutputStream fileOutputStream = new FileOutputStream(f);
             fileOutputStream.write(file.getBytes());
@@ -723,7 +723,7 @@ public class ExcelUtils {
         return excelSheetDataList;
     }
 
-    private static Map<String, String> downLoadFromFtp(ExcelConfiguration remoteExcelRequest, String createBy) {
+    private static Map<String, String> downLoadFromFtp(ExcelConfiguration remoteExcelRequest) {
         Map<String, String> fileNames = new HashMap<>();
         String username = "";
         String password = "";
@@ -752,14 +752,14 @@ public class ExcelUtils {
                 DEException.throwException("无效的地址！");
             }
         }
-        if(StringUtils.isNotEmpty(remoteExcelRequest.getUsername()) && StringUtils.isNotEmpty(remoteExcelRequest.getPassword())){
+        if (StringUtils.isNotEmpty(remoteExcelRequest.getUsername()) && StringUtils.isNotEmpty(remoteExcelRequest.getPassword())) {
             username = remoteExcelRequest.getUsername();
             password = remoteExcelRequest.getPassword();
         }
         int port = 21;
         String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);
-        String tranName = UUID.randomUUID().toString() + "." + suffix;;
-        String localFilePath = path + createBy +  "/" + tranName;
+        String tranName = UUID.randomUUID().toString() + "." + suffix;
+        String localFilePath = path + tranName;
         fileNames.put("fileName", filePath);
         fileNames.put("tranName", tranName);
         FTPClient ftpClient = new FTPClient();
@@ -772,7 +772,7 @@ public class ExcelUtils {
             try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(localFile))) {
                 boolean success = ftpClient.retrieveFile(filePath, outputStream);
                 if (!success) {
-                   DEException.throwException("文件下载失败！");
+                    DEException.throwException("文件下载失败！");
                 }
             }
         } catch (IOException e) {

@@ -923,7 +923,7 @@ public class DatasourceServer implements DatasourceApi {
             coreDatasource = dataSourceManage.getCoreDatasource(remoteExcelRequest.getDatasourceId());
         }
         ExcelUtils excelUtils = new ExcelUtils();
-        ExcelFileData excelFileData = excelUtils.parseRemoteExcel(remoteExcelRequest, String.valueOf(AuthUtils.getUser().getUserId()));
+        ExcelFileData excelFileData = excelUtils.parseRemoteExcel(remoteExcelRequest);
         if (Objects.equals(remoteExcelRequest.getEditType(), append)) { //按照excel sheet 名称匹配，替换：0；追加：1
             if (coreDatasource != null) {
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
