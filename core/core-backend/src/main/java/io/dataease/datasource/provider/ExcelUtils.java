@@ -183,7 +183,7 @@ public class ExcelUtils {
                 if (sheet.getDeTableName().equalsIgnoreCase(datasourceRequest.getTable())) {
                     List<TableField> tableFields = sheet.getFields();
                     String suffix = fileNames.get("fileName").substring(fileNames.get("fileName").lastIndexOf(".") + 1);
-                    InputStream inputStream = new FileInputStream(path + datasourceRequest.getDatasource().getCreateBy() + "/" + fileNames.get("tranName"));
+                    InputStream inputStream = new FileInputStream(path + fileNames.get("tranName"));
                     if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                         reader.readLine();//去掉表头
