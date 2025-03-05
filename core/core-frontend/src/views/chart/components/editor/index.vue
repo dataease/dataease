@@ -1513,13 +1513,18 @@ const addDsWindow = () => {
 const editDs = () => {
   const path =
     embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded-form' : '/dataset-form'
+  const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
+  // 此处校验提前 防止router返回时找到错误的路径
+  if (openType === '_self' && !dvInfo.value.id) {
+    ElMessage.warning(t('visualization.save_page_tips'))
+    return
+  }
   let routeData = router.resolve({
     path: path,
     query: {
       id: view.value.tableId
     }
   })
-  const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
   // 检查是否保存
   if (openType === '_self') {
     if (!dvInfo.value.id) {
@@ -1527,6 +1532,7 @@ const editDs = () => {
       return
     }
     canvasSave(() => {
+      wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
       const newWindow = window.open(routeData.href, openType)
       initOpenHandler(newWindow)
     })
