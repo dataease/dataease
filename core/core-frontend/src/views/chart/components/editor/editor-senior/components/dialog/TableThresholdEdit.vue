@@ -25,7 +25,7 @@ const props = defineProps({
 const emit = defineEmits(['onTableThresholdChange'])
 
 const thresholdCondition = {
-  term: 'eq',
+  term: '',
   field: '0',
   value: '0',
   color: '#ff0000ff',
