@@ -388,21 +388,23 @@ const selectSecond = ref(false)
 
 const setArrValue = () => {
   currentDate.value = currentDate.value.slice(0, getIndex() + 1)
+  const timeFormat =
+    currentDate.value.length === 2 ? currentDate.value.concat(['01']) : currentDate.value
   if (isRange.value) {
     const [start, end] = selectValue.value || []
     if (selectSecond.value) {
       selectValue.value = [
-        start ? start : new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`),
-        new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`)
+        start ? start : new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`),
+        new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`)
       ]
     } else {
       selectValue.value = [
-        new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`),
-        end ? end : new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`)
+        new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`),
+        end ? end : new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`)
       ]
     }
   } else {
-    selectValue.value = new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`)
+    selectValue.value = new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`)
   }
 }
 
