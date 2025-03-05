@@ -193,6 +193,9 @@ public class ExcelUtils {
                     }
                 }
             }
+            if (StringUtils.isNotEmpty(fileNames.get("tranName"))) {
+                FileUtils.deleteFile(path + fileNames.get("tranName"));
+            }
         } else {
             try {
                 JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
@@ -411,7 +414,9 @@ public class ExcelUtils {
         excelFileData.setId(fileNames.get("tranName").split("\\.")[0]);
         excelFileData.setPath(path + fileNames.get("tranName"));
         excelFileData.setSheets(returnSheetDataList);
-
+        if (StringUtils.isNotEmpty(fileNames.get("tranName"))) {
+            FileUtils.deleteFile(path + fileNames.get("tranName"));
+        }
         return excelFileData;
     }
 
