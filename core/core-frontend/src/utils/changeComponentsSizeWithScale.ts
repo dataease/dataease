@@ -53,7 +53,7 @@ function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
     })
 
     if (['Group'].includes(component.component)) {
-      changeComponentsSizeWithScaleCircle(component.propValue, scale)
+      groupSizeStyleAdaptor(component)
     } else if (['DeTabs'].includes(component.component)) {
       component.propValue.forEach(tabItem => {
         changeComponentsSizeWithScaleCircle(tabItem.componentData, scale)
