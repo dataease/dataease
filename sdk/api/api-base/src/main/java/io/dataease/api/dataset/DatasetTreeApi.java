@@ -61,6 +61,7 @@ public interface DatasetTreeApi {
     @PostMapping("move")
     DatasetNodeDTO move(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
+    @Operation(summary = "是否有仪表板、大屏正在使用此数据集")
     @DePermit({"#p0+':manage'"})
     @PostMapping("perDelete/{id}")
     boolean perDelete(@PathVariable("id") Long id);
