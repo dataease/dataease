@@ -54,9 +54,11 @@ public interface SysVariablesApi {
     @GetMapping("/value/delete/{id}")
     void deleteValue(@PathVariable("id") String id);
 
+    @Operation(summary = "查看变量详细信息")
     @GetMapping("/value/selected/{id}")
     List<SysVariableValueDto> selectVariableValue(@PathVariable("id") Long id);
 
+    @Operation(summary = "系统变量列表")
     @PostMapping("/value/selected/{goPage}/{pageSize}")
     IPage<SysVariableValueDto> selectPage(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody SysVariableValueDto sysVariableValueDto);
 
