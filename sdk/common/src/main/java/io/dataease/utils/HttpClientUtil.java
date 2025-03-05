@@ -67,6 +67,7 @@ public class HttpClientUtil {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         }
     }
+
     private static CloseableHttpClient buildHttpClient(boolean ssl) {
         try {
             if (ssl) {
@@ -381,17 +382,13 @@ public class HttpClientUtil {
             String tranName = UUID.randomUUID().toString() + "." + suffix;
             name.put("fileName", fileName);
             name.put("tranName", tranName);
-            try {
-                FileOutputStream outputStream = new FileOutputStream(path + tranName);
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = response.getEntity().getContent().read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            } finally {
-
+            File localFile = new File(path + tranName);
+            FileOutputStream outputStream = new FileOutputStream(localFile);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = response.getEntity().getContent().read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
             }
-
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage(), e);

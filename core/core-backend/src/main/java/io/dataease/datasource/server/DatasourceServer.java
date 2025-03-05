@@ -115,6 +115,8 @@ public class DatasourceServer implements DatasourceApi {
         all_scope, add_scope
     }
 
+    public static final List<String> notFullDs = List.of("folder", "Excel", "API");
+
     private TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
     };
     @Resource
@@ -152,7 +154,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceConfiguration configuration = JsonUtil.parseObject(dataSourceDTO.getConfiguration(), DatasourceConfiguration.class);
         boolean hasRepeat = false;
         for (CoreDatasource datasource : datasources) {
-            if (Arrays.asList("API", "Excel", "folder").contains(datasource.getType())) {
+            if (notFullDs.stream().anyMatch(e -> datasource.getType().contains(e))) {
                 continue;
             }
             if (StringUtils.isEmpty(datasource.getConfiguration())) {
@@ -699,9 +701,8 @@ public class DatasourceServer implements DatasourceApi {
 
             datasourceTaskServer.deleteByDSId(datasourceId);
         }
-
         datasourceMapper.deleteById(datasourceId);
-        if (!Arrays.asList("API", "Excel", "folder", "APILark", "ExcelRemote").contains(coreDatasource.getType())) {
+        if (notFullDs.stream().allMatch(e -> !coreDatasource.getType().contains(e))) {
             calciteProvider.delete(coreDatasource);
         }
 
