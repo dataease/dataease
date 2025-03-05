@@ -13,7 +13,7 @@
       "
       @change="reUpload"
     />
-    <el-form label-position="top" style="width: 100%; margin-bottom: 8px">
+    <el-form label-position="top" style="width: 100%">
       <el-row :gutter="8">
         <el-col :span="12">
           <el-form-item
