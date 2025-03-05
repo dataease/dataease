@@ -1469,7 +1469,7 @@ const getMenuList = (val: boolean) => {
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <BaseInfoItem :label="t('auth.datasource') + ' ' + t('common.name')">{{
+                  <BaseInfoItem :label="t('data_source.data_source_name')">{{
                     nodeInfo.name
                   }}</BaseInfoItem>
                 </el-col>
