@@ -111,13 +111,13 @@ export const dsTypes = [
   },
   {
     type: 'Excel',
-    name: '本地 Excel/Csv',
+    name: '本地 Excel/CSV',
     catalog: 'LOCAL',
     extraParams: ''
   },
   {
     type: 'ExcelRemote',
-    name: '远程 Excel/Csv',
+    name: '远程 Excel/CSV',
     catalog: 'LOCAL',
     extraParams: ''
   }
