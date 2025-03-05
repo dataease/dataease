@@ -900,7 +900,9 @@ export function getLineDash(type) {
  */
 export function setGradientColor(rawColor: string, show = false, angle = 0, start = 0) {
   const item = rawColor.split(',')
-  item.splice(3, 1, '0.3)')
+  const alpha = parseFloat(item[3].replace(')', ''))
+  const startAlpha = alpha * 0.3
+  item.splice(3, 1, `${startAlpha})`)
   let color: string
   if (start == 0) {
     color = `l(${angle}) 0:${item.join(',')} 1:${rawColor}`
