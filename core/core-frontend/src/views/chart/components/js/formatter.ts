@@ -51,11 +51,25 @@ function transUnit(value, formatter) {
 }
 
 function transDecimal(value, formatter) {
-  const resultV = value.toFixed(formatter.decimalCount)
+  const resultV = retain(value, formatter.decimalCount) as string
   if (Object.is(parseFloat(resultV), -0)) {
     return resultV.slice(1)
   }
   return resultV
+}
+
+function retain(value, n) {
+  if (!n) return Math.round(value)
+  const tran = Math.round(value * Math.pow(10, n)) / Math.pow(10, n)
+  let tranV = tran.toString()
+  const newVal = tranV.indexOf('.')
+  if (newVal < 0) {
+    tranV += '.'
+  }
+  for (let i = tranV.length - tranV.indexOf('.'); i <= n; i++) {
+    tranV += '0'
+  }
+  return tranV
 }
 
 function transSeparatorAndSuffix(value, formatter) {
