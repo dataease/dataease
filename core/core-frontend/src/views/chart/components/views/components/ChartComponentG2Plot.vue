@@ -435,10 +435,28 @@ const trackClick = trackAction => {
   if (!param?.data?.dimensionList) {
     return
   }
-  let checkName = state.pointParam.data.name
-  // 对多维度的处理 取第一个
-  if (state.pointParam.data.dimensionList.length > 1) {
-    checkName = state.pointParam.data.dimensionList[0].id
+  let checkName = undefined
+  if (param.data.dimensionList.length > 1) {
+    // 分组堆叠处理 去能比较出来值的那个维度
+    if (view.value.type === 'bar-group-stack') {
+      const length = param.data.dimensionList.length
+      // 存在最后一个id
+      if (param.data.dimensionList[length - 1].id === param.data.dimensionList[length - 2].id) {
+        param.data.dimensionList.pop()
+      }
+      param.data.dimensionList.forEach(dimension => {
+        if (dimension.value === param.data.category) {
+          checkName = dimension.id
+        }
+      })
+    }
+    if (!checkName) {
+      // 对多维度的处理 取第一个
+      checkName = param.data.dimensionList[0].id
+    }
+  }
+  if (!checkName) {
+    checkName = param.data.name
   }
   // 跳转字段处理
   let jumpName = state.pointParam.data.name

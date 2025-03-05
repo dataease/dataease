@@ -554,12 +554,14 @@ const linkageFieldAdaptor = async data => {
           const curCheckAllAxisStr =
             JSON.stringify(state.curLinkageViewInfo.xAxis) +
             JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
+            JSON.stringify(state.curLinkageViewInfo.extStack) +
             (state.curLinkageViewInfo.type.includes('chart-mix')
               ? JSON.stringify(state.curLinkageViewInfo.extBubble)
               : '')
           const targetCheckAllAxisStr =
             JSON.stringify(targetChartDetails.xAxis) +
             JSON.stringify(targetChartDetails.xAxisExt) +
+            JSON.stringify(state.curLinkageViewInfo.extStack) +
             (targetChartDetails.type.includes('chart-mix')
               ? JSON.stringify(targetChartDetails.extBubble)
               : '')
@@ -586,6 +588,7 @@ const sourceLinkageInfoFilter = computed(() => {
       JSON.stringify(state.curLinkageViewInfo.xAxis) +
       JSON.stringify(state.curLinkageViewInfo.drillFields) +
       JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
+      JSON.stringify(state.curLinkageViewInfo.extStack) +
       (state.curLinkageViewInfo.type.includes('chart-mix')
         ? JSON.stringify(state.curLinkageViewInfo.extBubble)
         : '') +
