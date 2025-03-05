@@ -269,6 +269,11 @@ public class ChartDataServer implements ChartDataApi {
                         ViewDetailField[] detailFields = request.getDetailFields();
                         Object[] header = request.getHeader();
                         Sheet detailsSheet = wb.createSheet("数据");
+                        if (request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
+                            setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
+                        } else {
+                            setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
+                        }
                         setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
                     } else {
                         for (int i = 0; i < request.getMultiInfo().size(); i++) {
