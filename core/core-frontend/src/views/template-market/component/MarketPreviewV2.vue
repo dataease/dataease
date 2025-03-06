@@ -135,7 +135,7 @@
           </div>
         </el-row>
         <el-row v-if="state.curTemplate" class="img-main">
-          <img style="height: 100%" :src="imgUrlTrans(state.templatePreviewUrl)" alt="" />
+          <img :src="imgUrlTrans(state.templatePreviewUrl)" alt="" />
         </el-row>
       </el-col>
     </el-row>
@@ -612,6 +612,13 @@ onMounted(() => {
   width: 100%;
   height: calc(100% - 76px) !important;
 }
+
+.img-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 保持图片比例，不裁剪 */
+}
+
 .open-button {
   cursor: pointer;
   font-size: 30px;
