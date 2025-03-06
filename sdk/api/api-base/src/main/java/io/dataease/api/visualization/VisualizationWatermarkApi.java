@@ -18,12 +18,13 @@ public interface VisualizationWatermarkApi {
 
     @ResponseBody
     @GetMapping("/find")
-    @Tag(name = "查询")
+    @Operation(summary = "查询")
     VisualizationWatermarkVO getWatermarkInfo();
 
     @ResponseBody
     @PostMapping("/save")
     @Tag(name = "保存")
+    @Operation(summary = "保存")
     void saveWatermarkInfo(@RequestBody VisualizationWatermarkRequest watermarkRequest);
 
 }
