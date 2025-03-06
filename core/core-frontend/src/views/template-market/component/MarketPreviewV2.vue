@@ -377,9 +377,10 @@ onMounted(() => {
   }
 }
 .aside-list {
-  padding: 0px 12px 12px 12px;
+  padding: 0 12px 12px 12px;
   width: 100%;
   height: calc(100vh - 200px);
+  overflow-x: hidden;
   //overflow-y: auto;
   :deep(.ed-collapse) {
     --ed-collapse-header-font-size: 14px !important;
@@ -658,7 +659,6 @@ onMounted(() => {
   cursor: pointer;
   font-weight: 400;
   color: #646a73;
-  min-width: 64px;
   height: 22px;
   display: flex;
   align-items: center;
@@ -700,9 +700,10 @@ onMounted(() => {
   font-weight: 400;
   color: #1f2329;
   cursor: default;
+  margin-left: 4px;
 }
 .mp-divider {
-  border-color: #1f232926;
+  border-color: rgba(31, 35, 41, 0.15);
   margin-top: 16px;
   margin-bottom: 8px;
 }
