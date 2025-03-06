@@ -373,7 +373,6 @@ public class HttpClientUtil {
             HttpGet httpGet = new HttpGet(url);
             // 设置请求配置
             httpGet.setConfig(config.buildRequestConfig());
-
             // 设置请求头
             config.getHeader().forEach(httpGet::addHeader);
             HttpResponse response = httpClient.execute(httpGet);
@@ -408,6 +407,7 @@ public class HttpClientUtil {
             }
         }
         if (fileName.isEmpty()) {
+            url = url.split("\\?")[0];
             fileName = url.contains("/")
                     ? url.substring(url.lastIndexOf('/') + 1)
                     : "download_" + System.currentTimeMillis();

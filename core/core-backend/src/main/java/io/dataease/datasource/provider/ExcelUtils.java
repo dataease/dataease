@@ -352,16 +352,12 @@ public class ExcelUtils {
     public ExcelFileData parseRemoteExcel(RemoteExcelRequest remoteExcelRequest) throws DEException, FileNotFoundException {
         Map<String, String> fileNames = downLoadRemoteExcel(remoteExcelRequest);
         FileInputStream fileInputStream = new FileInputStream(path + fileNames.get("tranName"));
-        List<ExcelSheetData> excelSheetDataList = null;
+        List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
         try {
-            excelSheetDataList = parseExcel(fileNames.get("fileName"), fileInputStream, true);
+            returnSheetDataList = parseExcel(fileNames.get("tranName"), fileInputStream, true).stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
         } catch (Exception e) {
-            e.printStackTrace();
             DEException.throwException(e);
         }
-        List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
-        returnSheetDataList = excelSheetDataList;
-        returnSheetDataList = returnSheetDataList.stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
