@@ -3,6 +3,7 @@ package io.dataease.api.permissions.dataset.api;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
 import io.dataease.auth.DeApiPath;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static io.dataease.constant.AuthResourceEnum.DATASET;
 
+@Hidden
 @Tag(name = "列权限")
 @DeApiPath(value = "/dataset/columnPermissions", rt = DATASET)
 public interface ColumnPermissionsApi {

@@ -8,6 +8,7 @@ import io.dataease.api.permissions.login.dto.PwdLoginDTO;
 import io.dataease.api.permissions.login.vo.MfaQrVO;
 import io.dataease.api.permissions.user.dto.ModifyPwdRequest;
 import io.dataease.auth.vo.TokenVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,14 +44,19 @@ public interface LoginApi {
     @ApiOperationSupport(order = 3)
     @PostMapping("/login/platformLogin/{origin}")
     TokenVO platformLogin(@PathVariable("origin") Integer origin);
+
     @Operation(summary = "登出")
     @ApiOperationSupport(order = 4)
     @GetMapping("/logout")
     void logout();
 
+    @Operation(summary = "MFA二维码信息")
+    @ApiOperationSupport(order = 5)
     @PostMapping("/mfa/qr/{id}")
     MfaQrVO mfaQr(@PathVariable("id") Long id);
 
+    @Operation(summary = "MFA登录")
+    @ApiOperationSupport(order = 6)
     @PostMapping("/mfa/login")
     TokenVO mfaLogin(@RequestBody MfaLoginDTO dto);
 

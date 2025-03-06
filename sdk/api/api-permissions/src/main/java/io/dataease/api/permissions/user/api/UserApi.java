@@ -207,21 +207,27 @@ public interface UserApi {
 
     List<Map<String, Object>> listUserInfosByIds(List<Long> ids);
 
+    @Operation(summary = "MFA二维码信息")
     @GetMapping("/mfaQr")
     MfaQrVO mfaQr();
 
+    @Operation(summary = "MFA绑定状态")
     @GetMapping("/mfabound")
     Boolean mfaBound();
 
+    @Operation(summary = "绑定MFA")
     @PostMapping("/mfaBind")
     void mfaBind(@RequestBody MfaLoginDTO dto);
 
+    @Operation(summary = "解绑MFA")
     @PostMapping("/mfaUnbind/{code}")
     String mfaUnbind(@PathVariable("code") String code);
 
+    @Operation(summary = "重置MFA绑定状态")
     @PostMapping("/mfaRest/{id}")
     void resetBind(@PathVariable("id") Long id);
 
+    @Hidden
     @GetMapping("/lang")
     String userLang();
 

@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 import static io.dataease.constant.AuthResourceEnum.ORG;
-import static io.dataease.constant.AuthResourceEnum.ROLE;
 
 @Tag(name = "组织")
 @ApiSupport(order = 886, author = "fit2cloud-someone")

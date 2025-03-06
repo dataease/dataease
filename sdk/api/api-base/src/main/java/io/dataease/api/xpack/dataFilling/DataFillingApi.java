@@ -11,6 +11,7 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 import static io.dataease.constant.AuthResourceEnum.DATA_FILLING;
 
+@Hidden
 @Tag(name = "数据填报")
 @ApiSupport(order = 1000, author = "fit2cloud-someone")
 @DeApiPath(value = "/data-filling", rt = DATA_FILLING)

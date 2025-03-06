@@ -4,11 +4,13 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.xpack.settings.request.XpackOauth2TokenRequest;
 import io.dataease.api.xpack.settings.vo.XpackOauthAuthVO;
 import io.dataease.api.xpack.settings.vo.XpackOauthTokenVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+@Hidden
 @Tag(name = "Oauth2认证")
 @ApiSupport(order = 899)
 public interface XpackOauth2Api {

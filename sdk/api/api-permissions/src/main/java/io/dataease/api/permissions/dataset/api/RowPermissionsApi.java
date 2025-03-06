@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.permissions.dataset.dto.*;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.auth.DeApiPath;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static io.dataease.constant.AuthResourceEnum.DATASET;
 
+@Hidden
 @Tag(name = "行权限")
 @DeApiPath(value = "/dataset/rowPermissions", rt = DATASET)
 public interface RowPermissionsApi {

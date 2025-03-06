@@ -6,6 +6,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.variable.dto.SysVariableDto;
 import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
 import io.dataease.auth.DeApiPath;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import static io.dataease.constant.AuthResourceEnum.SYSTEM;
 
+@Hidden
 @Tag(name = "系统变量")
 @ApiSupport(order = 881, author = "fit2cloud-someone")
 @DeApiPath(value = "/sysVariable", rt = SYSTEM)

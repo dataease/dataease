@@ -3,11 +3,13 @@ package io.dataease.api.free;
 import io.dataease.api.free.dto.*;
 import io.dataease.api.free.vo.FreeRelationVO;
 import io.dataease.api.free.vo.FreeVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+@Hidden
 public interface FreeApi {
 
     @PostMapping("/query")
