@@ -1109,7 +1109,7 @@ export default {
     remote_excel_url: '遠端 Excel/CSV 地址',
     remote_excel_url_placeholder:
       '請輸入遠端 Excel/CSV 地址，例如 ftp://192.168.1.101/files/data.xlsx',
-    remote_excel_url_empty: '遠端地址不能為空',
+    remote_excel_url_empty: '請輸入遠端 Excel/CSV 地址',
     load_data: '載入資料'
   },
   chart: {

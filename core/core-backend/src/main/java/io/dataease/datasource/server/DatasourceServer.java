@@ -878,13 +878,11 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isNotEmpty(remoteExcelRequest.getDatasourceId()) && 0L != remoteExcelRequest.getDatasourceId()) {
             coreDatasource = dataSourceManage.getCoreDatasource(remoteExcelRequest.getDatasourceId());
         }
-
         if (coreDatasource != null) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(transDTO(coreDatasource));
             List<DatasetTableDTO> datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
             List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
-
             for (ExcelSheetData sheet : excelFileData.getSheets()) {
                 for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
                     if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
@@ -900,7 +898,6 @@ public class DatasourceServer implements DatasourceApi {
             }
             excelFileData.setSheets(excelSheetDataList);
         }
-
         for (ExcelSheetData sheet : excelFileData.getSheets()) {
             for (int i = 0; i < sheet.getFields().size() - 1; i++) {
                 for (int j = i + 1; j < sheet.getFields().size(); j++) {

@@ -1143,7 +1143,7 @@ export default {
     remote_excel_url: 'Remote Excel/CSV Address',
     remote_excel_url_placeholder:
       'Please enter the remote Excel/CSV address, for example, ftp://192.168.1.101/files/data.xlsx',
-    remote_excel_url_empty: 'The remote address cannot be empty',
+    remote_excel_url_empty: 'Please enter the remote Excel/CSV address',
     load_data: 'Load Data'
   },
   chart: {

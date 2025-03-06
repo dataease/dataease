@@ -323,11 +323,7 @@ const handleShowFinishPage = ({ id, name, pid }) => {
 emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
-  if (
-    ((currentDsType.value.includes('API') || currentDsType.value === 'ExcelRemote') &&
-      activeApiStep.value === 1) ||
-    activeStep.value === 1
-  ) {
+  if (activeApiStep.value === 1) {
     ElMessageBox.confirm(t('data_source.the_previous_step'), {
       confirmButtonType: 'primary',
       type: 'warning',

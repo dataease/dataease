@@ -160,7 +160,10 @@ public class ExcelUtils {
 
     public static String getSize(CoreDatasource datasource) throws DEException {
         if (datasource.getType().equalsIgnoreCase("ExcelRemote")) {
-            return "0 B";
+            ExcelConfiguration excelConfiguration = JsonUtil.parseObject(datasource.getConfiguration(), ExcelConfiguration.class);
+            for (ExcelSheetData sheet : excelConfiguration.getSheets()) {
+                return sheet.getSize();
+            }
         }
         try {
             JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
@@ -170,7 +173,6 @@ public class ExcelUtils {
         } catch (Exception e) {
             DEException.throwException(e);
         }
-
         return "0 B";
     }
 

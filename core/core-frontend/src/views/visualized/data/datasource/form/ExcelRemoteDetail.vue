@@ -114,7 +114,7 @@ const defaultRule = {
   name: [
     {
       required: true,
-      message: t('datasource.input_name'),
+      message: t('sync_datasource.input_ds_name'),
       trigger: 'blur'
     },
     {
@@ -739,7 +739,7 @@ defineExpose({
         v-show="activeStep !== 2"
       >
         <el-form-item
-          :label="t('auth.datasource') + ' ' + t('chart.name')"
+          :label="t('data_source.data_source_name')"
           prop="name"
           v-show="activeStep !== 2"
         >
@@ -912,8 +912,8 @@ defineExpose({
           v-if="activeStep === 2"
         >
           <el-radio-group v-model="form.syncSetting.updateType">
-            <el-radio label="all_scope">{{ t('datasource.all_scope') }}</el-radio>
-            <el-radio label="add_scope"> {{ t('datasource.add_scope') }}</el-radio>
+            <el-radio label="add_scope"> {{ t('datasource.append_data') }}</el-radio>
+            <el-radio label="all_scope">{{ t('datasource.replace_data') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
@@ -1009,100 +1009,6 @@ defineExpose({
 
 <style lang="less" scoped>
 .editor-detail {
-  display: flex;
-  justify-content: center;
-  width: calc(100% + 48px);
-  margin: -8px -24px 0 -24px;
-  .ed-form-item {
-    margin-bottom: 16px;
-  }
-
-  .table-select_mode {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #f5f6f7;
-    padding: 16px;
-    .btn-select {
-      width: 164px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #ffffff;
-      border: 1px solid #bbbfc4;
-      border-radius: 4px;
-
-      .is-active {
-        background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-      }
-
-      .ed-button:not(.is-active) {
-        color: #1f2329;
-      }
-      .ed-button.is-text {
-        height: 24px;
-        width: 74px;
-        line-height: 24px;
-      }
-      .ed-button + .ed-button {
-        margin-left: 4px;
-      }
-    }
-  }
-
-  .detail-operate {
-    height: 56px;
-    padding: 16px 24px;
-    font-size: 16px;
-    font-weight: 500;
-    width: 100%;
-    border-bottom: 1px solid rgba(31, 35, 41, 0.15);
-  }
-  .detail-inner {
-    width: 800px;
-    padding-top: 16px;
-    height: calc(100vh - 280px);
-    min-height: 700px;
-
-    .dropdown-icon {
-      .down-outlined {
-        transform: rotate(180deg);
-      }
-      &[aria-expanded='true'] {
-        .down-outlined {
-          transform: rotate(0);
-        }
-      }
-      cursor: pointer;
-    }
-
-    .error-status {
-      margin-top: 32px;
-    }
-
-    .upload-tip {
-      color: #8f959e;
-      font-family: var(--de-custom_font, 'PingFang');
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 22px;
-    }
-
-    .title-form_primary {
-      margin: 16px 0;
-      margin-top: 32px;
-    }
-
-    .info-table {
-      width: 100%;
-      height: calc(100% - 200px);
-      &.info-table_height {
-        height: calc(100% - 379px);
-      }
-    }
-  }
   width: 100%;
   display: flex;
   justify-content: center;
@@ -1162,6 +1068,46 @@ defineExpose({
     }
   }
   .detail-inner {
+    height: calc(100vh - 280px);
+    min-height: 700px;
+
+    .dropdown-icon {
+      .down-outlined {
+        transform: rotate(180deg);
+      }
+      &[aria-expanded='true'] {
+        .down-outlined {
+          transform: rotate(0);
+        }
+      }
+      cursor: pointer;
+    }
+
+    .error-status {
+      margin-top: 32px;
+    }
+
+    .upload-tip {
+      color: #8f959e;
+      font-family: var(--de-custom_font, 'PingFang');
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+    }
+
+    .title-form_primary {
+      margin: 16px 0;
+      margin-top: 32px;
+    }
+
+    .info-table {
+      width: 100%;
+      height: calc(100% - 200px);
+      &.info-table_height {
+        height: calc(100% - 379px);
+      }
+    }
     width: 800px;
     padding-top: 8px;
 
@@ -1276,6 +1222,47 @@ defineExpose({
       display: flex;
       align-items: center;
     }
+  }
+  .table-select_mode {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f5f6f7;
+    padding: 16px;
+    .btn-select {
+      width: 164px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid #bbbfc4;
+      border-radius: 4px;
+
+      .is-active {
+        background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+      }
+
+      .ed-button:not(.is-active) {
+        color: #1f2329;
+      }
+      .ed-button.is-text {
+        height: 24px;
+        width: 74px;
+        line-height: 24px;
+      }
+      .ed-button + .ed-button {
+        margin-left: 4px;
+      }
+    }
+  }
+  .detail-operate {
+    height: 56px;
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    border-bottom: 1px solid rgba(31, 35, 41, 0.15);
   }
 }
 
