@@ -25,6 +25,7 @@ import { viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { filterEnumMap } from '@/utils/componentUtils'
 const { t } = useI18n()
 
 export const dvMainStore = defineStore('dataVisualization', {
@@ -1313,19 +1314,19 @@ export const dvMainStore = defineStore('dataVisualization', {
         })
       }
     },
-    trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
+    async trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
       let currentFilters = element.linkageFilters || [] // 当前联动filter
       if (['table-info', 'table-normal'].includes(element.innerType)) {
         currentFilters = []
       }
       // 联动的图表情况历史条件
       // const currentFilters = []
-      checkQDList.forEach(QDItem => {
+      for (const QDItem of checkQDList) {
         const sourceInfo = viewId + '#' + QDItem.id
         // 获取所有目标联动信息
         const targetInfoList = trackInfo[sourceInfo] || []
         const paramValue = [QDItem.value]
-        targetInfoList.forEach(targetInfo => {
+        for (const targetInfo of targetInfoList) {
           const targetInfoArray = targetInfo.split('#')
           const targetViewId = targetInfoArray[0] // 目标图表
           if (element.component === 'UserView' && element.id === targetViewId) {
@@ -1364,12 +1365,21 @@ export const dvMainStore = defineStore('dataVisualization', {
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery') {
-            element.propValue.forEach(filterItem => {
+            for (const filterItem of element.propValue) {
+              const { optionValueSource, field, displayId } = filterItem
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
                 if (!['1', '7'].includes(filterItem.displayType)) {
                   // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
                   queryParams = paramValue.map(number => String(number))
+                }
+                // 当前是选择数据集模式，可能出现展示字段和选择字段不同的情况 这里需要兼容
+                if (optionValueSource === 1 && field.id) {
+                  queryParams = await filterEnumMap(queryParams, {
+                    queryId: field.id,
+                    displayId,
+                    searchText: ''
+                  })
                 }
                 filterItem.defaultValueCheck = true
                 filterItem.timeType = 'fixed'
@@ -1406,10 +1416,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                   filterItem['defaultConditionValueF'] = queryParams[0]
                 }
               }
-            })
+            }
           }
-        })
-      })
+        }
+      }
       element.linkageFilters = currentFilters
     },
 
