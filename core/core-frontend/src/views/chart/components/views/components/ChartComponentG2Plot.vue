@@ -90,6 +90,14 @@ const emit = defineEmits([
 const g2TypeSeries1 = ['bidirectional-bar']
 const g2TypeSeries0 = ['bar-range']
 const g2TypeTree = ['circle-packing']
+const g2TypeStack = [
+  'bar-stack',
+  'bar-group-stack',
+  'percentage-bar-stack',
+  'bar-stack-horizontal',
+  'percentage-bar-stack-horizontal'
+]
+const g2TypeGroup = ['bar-group']
 
 const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 
@@ -174,23 +182,74 @@ const linkageActive = () => {
   })
 }
 const checkSelected = param => {
+  // 获取当前视图的所有联动字段ID
+  const mappingFieldIds = Array.from(
+    new Set(
+      chartData.value?.fields
+        .map(item => item.id)
+        .filter(id =>
+          Object.keys(nowPanelTrackInfo.value).some(
+            key => key.startsWith(view.value.id) && key.split('#')[1] === id
+          )
+        )
+    )
+  )
+  // 维度字段匹配
+  const [xAxis, xAxisExt, extStack] = ['xAxis', 'xAxisExt', 'extStack'].map(key =>
+    view.value[key].find(item => mappingFieldIds.includes(item.id))
+  )
+  // 选中字段数据
+  const { group, name, category } = state.linkageActiveParam
+  // 选中字段数据匹配
   if (g2TypeSeries1.includes(view.value.type)) {
-    return state.linkageActiveParam.name === param.field
+    return name === param.field
   } else if (g2TypeSeries0.includes(view.value.type)) {
-    return state.linkageActiveParam.category === param.category
+    return category === param.category
   } else if (g2TypeTree.includes(view.value.type)) {
-    if (
-      param.path?.startsWith(state.linkageActiveParam.name) ||
-      state.linkageActiveParam.name === t('commons.all')
-    ) {
+    if (param.path?.startsWith(name) || name === t('commons.all')) {
       return true
     }
-    return state.linkageActiveParam.name === param.name
+    return name === param.name
+  } else if (g2TypeGroup.includes(view.value.type)) {
+    const isNameMatch = name === param.name || (name === 'NO_DATA' && !param.name)
+    const isCategoryMatch = category === param.category
+    if (xAxis && xAxisExt) {
+      return isNameMatch && isCategoryMatch
+    }
+    if (xAxis && !xAxisExt) {
+      return isNameMatch
+    }
+    if (!xAxis && xAxisExt) {
+      return isCategoryMatch
+    }
+    return false
+  } else if (g2TypeStack.includes(view.value.type)) {
+    const isGroupMatch = group === param.group || (group === 'NO_DATA' && !param.group)
+    const isNameMatch = name === param.name || (name === 'NO_DATA' && !param.name)
+    const isCategoryMatch = category === param.category
+    // 全部匹配
+    if (xAxis && xAxisExt && extStack) {
+      return isNameMatch && isGroupMatch && isCategoryMatch
+    }
+    // 只匹配到维度
+    if (xAxis && !xAxisExt && !extStack) {
+      return isNameMatch
+    } else if (!xAxis && xAxisExt && !extStack) {
+      return isGroupMatch
+    } else if (!xAxis && !xAxisExt && extStack) {
+      return isCategoryMatch
+    } else if (xAxis && xAxisExt && !extStack) {
+      return isNameMatch && isGroupMatch
+    } else if (xAxis && !xAxisExt && extStack) {
+      return isNameMatch && isCategoryMatch
+    } else if (!xAxis && xAxisExt && extStack) {
+      return isGroupMatch && isCategoryMatch
+    } else {
+      return false
+    }
   } else {
     return (
-      (state.linkageActiveParam.name === param.name ||
-        (state.linkageActiveParam.name === 'NO_DATA' && !param.name)) &&
-      state.linkageActiveParam.category === param.category
+      (name === param.name || (name === 'NO_DATA' && !param.name)) && category === param.category
     )
   }
 }
@@ -396,7 +455,8 @@ const action = param => {
   // 下钻 联动 跳转
   state.linkageActiveParam = {
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
-    name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA'
+    name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA',
+    group: state.pointParam.data.group ? state.pointParam.data.group : 'NO_DATA'
   }
   if (trackMenu.value.length < 2) {
     // 只有一个事件直接调用
