@@ -162,7 +162,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (![2, 3].includes(f.deType) || !isNumber(value)) {
+          if (![2, 3, 4].includes(f.deType) || !isNumber(value)) {
             return value
           }
           if (f.formatterCfg) {
