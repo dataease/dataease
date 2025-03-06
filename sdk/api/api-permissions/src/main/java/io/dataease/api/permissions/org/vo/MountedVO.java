@@ -17,7 +17,7 @@ public class MountedVO implements Serializable {
     private static final long serialVersionUID = -7642741925705465785L;
 
     @Schema(description = "ID")
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     @Schema(description = "名称")
     private String name;
@@ -25,4 +25,6 @@ public class MountedVO implements Serializable {
     private boolean readOnly = true;
     @Schema(description = "子集")
     private List<MountedVO> children;
+
+    private boolean leaf;
 }
