@@ -95,14 +95,6 @@ const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
   activeApiStep.value = 1
-  currentTypeList.value
-    .map(ele => ele.dbList)
-    .flat()
-    .some(ele => {
-      if (ele.type === currentDsType.value) {
-        isPlugin.value = ele['isPlugin']
-      }
-    })
   nextTick(() => {
     detail?.value?.initForm(type, pluginDs.value, pluginIndex.value, isPlugin.value) ||
       xpack?.value?.invokeMethod({
