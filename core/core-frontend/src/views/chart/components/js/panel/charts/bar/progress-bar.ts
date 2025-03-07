@@ -66,7 +66,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
       'fontSize',
       'axisForm',
       'axisLabel',
-      'position',
+      // 'position',
       'showLengthLimit'
     ],
     'function-cfg': ['emptyDataStrategy'],
@@ -297,12 +297,31 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     if (!baseOption.yAxis) {
       return baseOption
     }
-    if (baseOption.yAxis.position === 'left') {
+    baseOption.yAxis.position = 'bottom'
+    const yAxis = parseJson(chart.customStyle).yAxis
+    if (yAxis.axisLabel.show) {
+      const rotate = yAxis.axisLabel.rotate
+      let textAlign = 'end'
+      let textBaseline = 'middle'
+      if (Math.abs(rotate) > 75) {
+        textAlign = 'center'
+      }
+      if (rotate > 75) {
+        textBaseline = 'top'
+      }
+      if (rotate < -75) {
+        textBaseline = 'bottom'
+      }
+      baseOption.yAxis.label.style.textBaseline = textBaseline
+      baseOption.yAxis.label.style.textAlign = textAlign
+    }
+
+    /*if (baseOption.yAxis.position === 'left') {
       baseOption.yAxis.position = 'bottom'
     }
     if (baseOption.yAxis.position === 'right') {
       baseOption.yAxis.position = 'top'
-    }
+    }*/
     return baseOption
   }
   setupDefaultOptions(chart: ChartObj): ChartObj {
