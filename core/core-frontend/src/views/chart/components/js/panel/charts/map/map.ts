@@ -421,7 +421,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         const isLessThanMin = range[0] < ranges[0][0] && range[1] < ranges[0][0]
         let rangeColor = colors[colorIndex]
         if (isLessThanMin) {
-          rangeColor = hexColorToRGBA(basicStyle.areaBaseColor, basicStyle.alpha)
+          rangeColor = basicStyle.areaBaseColor
         }
         items.push({
           value: tmpRange,
@@ -436,7 +436,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
       options.color['value'] = ({ value }) => {
         const item = items.find(item => value >= item.value[0] && value <= item.value[1])
-        return item ? item.color : hexColorToRGBA(basicStyle.areaBaseColor, basicStyle.alpha)
+        return item ? item.color : basicStyle.areaBaseColor
       }
       options.color.scale.domain = [ranges[0][0], ranges[ranges.length - 1][1]]
     } else {
