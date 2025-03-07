@@ -120,7 +120,7 @@ public class WhereTree2Str {
                 originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
             }
         } else if (ObjectUtils.isNotEmpty(field.getExtField()) && Objects.equals(field.getExtField(), ExtFieldConstant.EXT_GROUP)) {
-            String groupFieldExp = Utils.transGroupFieldToSql(field, originFields);
+            String groupFieldExp = Utils.transGroupFieldToSql(field, originFields, isCross, dsMap, pluginManage);
             // 给计算字段处加一个占位符，后续SQL方言转换后再替换
             originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
             fieldsDialect.put(originName, groupFieldExp);

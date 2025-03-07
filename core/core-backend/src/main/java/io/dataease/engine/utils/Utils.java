@@ -1,7 +1,7 @@
 package io.dataease.engine.utils;
 
-import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.constant.SQLConstants;
+import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
@@ -496,7 +496,7 @@ public class Utils {
         return null;
     }
 
-    public static String transGroupFieldToSql(DatasetTableFieldDTO dto, List<DatasetTableFieldDTO> fields) {
+    public static String transGroupFieldToSql(DatasetTableFieldDTO dto, List<DatasetTableFieldDTO> fields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage) {
         // get origin field
         DatasetTableFieldDTO originField = null;
         for (DatasetTableFieldDTO ele : fields) {
@@ -509,6 +509,22 @@ public class Utils {
             DEException.throwException("Field not exists");
         }
 
+        DsTypeDTO datasourceType = null;
+        if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+            Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+            datasourceType = getDs(pluginManage, next.getValue().getType());
+        }
+        if (datasourceType == null) {
+            DEException.throwException("Datasource not exists");
+        }
+
+        String fieldName;
+        if (isCross) {
+            fieldName = originField.getDataeaseName();
+        } else {
+            fieldName = datasourceType.getPrefix() + originField.getDataeaseName() + datasourceType.getSuffix();
+        }
+
         StringBuilder exp = new StringBuilder();
         exp.append(" (CASE ");
         if (originField.getDeType() == 0) {
@@ -516,7 +532,7 @@ public class Utils {
                 exp.append(" WHEN ");
                 for (int i = 0; i < fieldGroupDTO.getText().size(); i++) {
                     String value = fieldGroupDTO.getText().get(i);
-                    exp.append(originField.getDataeaseName()).append(" = ").append("'").append(transValue(value)).append("'");
+                    exp.append(fieldName).append(" = ").append("'").append(transValue(value)).append("'");
                     if (i < fieldGroupDTO.getText().size() - 1) {
                         exp.append(" OR ");
                     }
@@ -526,17 +542,17 @@ public class Utils {
         } else if (originField.getDeType() == 1) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
                 exp.append(" WHEN ");
-                exp.append(originField.getDataeaseName()).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
+                exp.append(fieldName).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
                 exp.append(" AND ");
-                exp.append(originField.getDataeaseName()).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
+                exp.append(fieldName).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
                 exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
                 exp.append(" WHEN ");
-                exp.append(originField.getDataeaseName()).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
+                exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
                 exp.append(" AND ");
-                exp.append(originField.getDataeaseName()).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
+                exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
                 exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
             }
         }

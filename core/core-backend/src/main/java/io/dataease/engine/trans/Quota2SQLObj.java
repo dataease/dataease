@@ -60,7 +60,7 @@ public class Quota2SQLObj {
                         originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
                     }
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_GROUP)) {
-                    String groupFieldExp = Utils.transGroupFieldToSql(y, originFields);
+                    String groupFieldExp = Utils.transGroupFieldToSql(y, originFields, isCross, dsMap, pluginManage);
                     // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                     originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, y.getId());
                     fieldsDialect.put(originField, groupFieldExp);
