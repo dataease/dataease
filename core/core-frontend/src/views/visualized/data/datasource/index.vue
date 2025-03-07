@@ -1712,6 +1712,8 @@ const getMenuList = (val: boolean) => {
             v-if="nodeInfo.type.startsWith('Excel')"
             v-slot="slotProps"
             :name="t('dataset.data_preview')"
+            :time="nodeInfo.lastSyncTime"
+            :showTime="nodeInfo.type === 'ExcelRemote'"
           >
             <template v-if="slotProps.active">
               <div class="excel-table">
