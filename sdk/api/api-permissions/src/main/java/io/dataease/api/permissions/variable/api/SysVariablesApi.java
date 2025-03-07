@@ -24,47 +24,47 @@ import static io.dataease.constant.AuthResourceEnum.SYSTEM;
 @DeApiPath(value = "/sysVariable", rt = SYSTEM)
 public interface SysVariablesApi {
 
-    @Operation(summary = "创建")
+    @Operation(summary = "创建变量")
     @PostMapping("/create")
     SysVariableDto create(@RequestBody SysVariableDto sysVariableDto);
 
-    @Operation(summary = "编辑")
+    @Operation(summary = "编辑变量")
     @PostMapping("/edit")
     SysVariableDto edit(@RequestBody SysVariableDto sysVariableDto);
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除变量")
     @GetMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
-    @Operation(summary = "详细信息")
+    @Operation(summary = "变量详细信息")
     @GetMapping("/detail/{id}")
     SysVariableDto detail(@PathVariable("id") Long id);
 
-    @Operation(summary = "查询")
+    @Operation(summary = "系统变量列表")
     @PostMapping("/query")
     List<SysVariableDto> query(@RequestBody SysVariableDto sysVariableDto);
 
-    @Operation(summary = "创建")
+    @Operation(summary = "创建变量值")
     @PostMapping("/value/create")
     SysVariableValueDto createValue(@RequestBody SysVariableValueDto sysVariableDto);
 
-    @Operation(summary = "编辑")
+    @Operation(summary = "编辑变量值")
     @PostMapping("/value/edit")
     SysVariableValueDto editValue(@RequestBody SysVariableValueDto sysVariableDto);
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除变量值")
     @GetMapping("/value/delete/{id}")
     void deleteValue(@PathVariable("id") String id);
 
-    @Operation(summary = "查看变量详细信息")
+    @Operation(summary = "查看变量值详细信息")
     @GetMapping("/value/selected/{id}")
     List<SysVariableValueDto> selectVariableValue(@PathVariable("id") Long id);
 
-    @Operation(summary = "系统变量列表")
+    @Operation(summary = "系统变量值列表")
     @PostMapping("/value/selected/{goPage}/{pageSize}")
     IPage<SysVariableValueDto> selectPage(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody SysVariableValueDto sysVariableValueDto);
 
-    @Operation(summary = "批量删除")
+    @Operation(summary = "批量删除变量值")
     @PostMapping("/value/batchDel")
     void batchDel(@RequestBody List<Long> ids);
 
