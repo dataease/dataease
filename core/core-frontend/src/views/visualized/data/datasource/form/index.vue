@@ -544,7 +544,7 @@ const saveDS = () => {
   if (isPlugin.value && !currentDsType.value.includes('API')) {
     xpack?.value?.invokeMethod({
       methodName: 'submitForm',
-      args: [{ eventName: 'save Ds', args: request }]
+      args: [{ eventName: 'saveDs', args: request }]
     })
   } else {
     const validate = detail?.value?.submitForm()
