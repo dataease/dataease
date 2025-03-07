@@ -525,7 +525,9 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                     if (CollectionUtils.isEmpty(data)) {
                         break;
                     }
-                    if (StringUtils.containsAny(chartType, "group", "stack")) {
+                    boolean isStack = StringUtils.containsIgnoreCase(chartType, "stack") && !extStack.isEmpty();
+                    boolean isGroup = StringUtils.containsIgnoreCase(chartType, "group") && !xAxisExt.isEmpty();
+                    if (isStack || isGroup) {
                         if (CollectionUtils.isEmpty(xAxis)) {
                             break;
                         }
