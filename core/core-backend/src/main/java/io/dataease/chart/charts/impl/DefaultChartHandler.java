@@ -569,28 +569,16 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                         }
                         int finalSubEndIndex = subEndIndex;
                         //滑动累加
+                        // 记录上期累加的值，遇到当期值为空时，取上一期的值作为当期值，防止出现断层，重新开始累加的问题
+                        Map<String, BigDecimal> groupStackAxisMap = new HashMap<>();
                         for (int k = 1; k < mainMatrix.size(); k++) {
-                            List<String[]> preDataItems = mainMatrix.get(k - 1);
                             List<String[]> curDataItems = mainMatrix.get(k);
-                            Map<String, BigDecimal> preDataMap = new HashMap<>();
-                            preDataItems.forEach(preDataItem -> {
-                                String[] groupStackAxisArr = Arrays.copyOfRange(preDataItem, finalXAxisBase.size(), finalSubEndIndex);
-                                String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
-                                String preVal = preDataItem[finalDataIndex];
-                                if (StringUtils.isBlank(preVal)) {
-                                    preVal = "0";
-                                }
-                                preDataMap.put(groupStackAxis, new BigDecimal(preVal));
-                            });
                             curDataItems.forEach(curDataItem -> {
                                 String[] groupStackAxisArr = Arrays.copyOfRange(curDataItem, finalXAxisBase.size(), finalSubEndIndex);
                                 String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
-                                BigDecimal preValue = preDataMap.get(groupStackAxis);
-                                if (preValue != null) {
-                                    curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
-                                            .add(preValue)
-                                            .toString();
-                                }
+                                BigDecimal currentValue = new BigDecimal(curDataItem[finalDataIndex]);
+                                groupStackAxisMap.merge(groupStackAxis, currentValue, BigDecimal::add);
+                                curDataItem[finalDataIndex] = groupStackAxisMap.get(groupStackAxis).toString();
                             });
                         }
                     } else {
