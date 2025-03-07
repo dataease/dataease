@@ -220,12 +220,12 @@ const activeTableData = computed(() => {
 
 <style lang="less" scoped>
 .de-mobile-user {
-  height: 100vh;
+  height: calc(100% - 48px);
   width: 100vw;
   background: #f5f6f7;
 
   .cell-org_scroll {
-    height: calc(100% - 96px);
+    height: calc(100% - 144px);
     overflow-y: auto;
   }
 

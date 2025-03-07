@@ -74,7 +74,7 @@ import {
 } from '@/api/datasource'
 import type { SyncSetting, Node } from './form/option'
 import EditorDatasource from './form/index.vue'
-import ExcelInfo from './ExcelInfo.vue'
+import ExcelInfoBase from './ExcelInfoBase.vue'
 import SheetTabs from './SheetTabs.vue'
 import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
@@ -1482,7 +1482,7 @@ const getMenuList = (val: boolean) => {
               <el-row :gutter="24">
                 <el-col v-if="nodeInfo.type === 'Excel'" :span="12">
                   <BaseInfoItem :label="t('data_source.document')">
-                    <ExcelInfo :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfo>
+                    <ExcelInfoBase :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfoBase>
                   </BaseInfoItem>
                 </el-col>
                 <el-col v-if="nodeInfo.type === 'ExcelRemote'" :span="12">
@@ -1492,7 +1492,7 @@ const getMenuList = (val: boolean) => {
                 </el-col>
                 <el-col v-if="nodeInfo.type === 'ExcelRemote'" :span="12">
                   <BaseInfoItem :label="t('data_source.document')">
-                    <ExcelInfo :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfo>
+                    <ExcelInfoBase :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfoBase>
                   </BaseInfoItem>
                 </el-col>
                 <el-col v-if="!nodeInfo.type.startsWith('Excel')" :span="24">
