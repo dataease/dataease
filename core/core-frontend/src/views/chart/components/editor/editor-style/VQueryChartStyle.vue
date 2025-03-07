@@ -423,6 +423,7 @@ const onTitleChange = () => {
             >
               <el-input-number
                 :effect="themes"
+                :min="100"
                 controls-position="right"
                 @change="handleCurrentPlaceholderChange"
                 :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
