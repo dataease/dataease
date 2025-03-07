@@ -99,6 +99,17 @@ const dfsComponentData = () => {
             com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
           )
         ]
+
+        itx.componentData.forEach(j => {
+          if (j.component === 'Group') {
+            arr = [
+              ...arr,
+              j.propValue.filter(
+                com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
+              )
+            ]
+          }
+        })
       })
     } else if (ele.component === 'Group') {
       arr = [
