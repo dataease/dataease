@@ -165,7 +165,9 @@ watch(
 )
 
 let p = null
+let p1 = null
 const XpackLoaded = () => p(true)
+const initIframe = () => p1(true)
 onMounted(async () => {
   useEmitt({
     name: 'canvasDownload',
@@ -174,6 +176,7 @@ onMounted(async () => {
     }
   })
   await new Promise(r => (p = r))
+  await new Promise(r => (p1 = r))
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   // 检查外部参数
   const ignoreParams = router.currentRoute.value.query.ignoreParams === 'true'
@@ -231,6 +234,12 @@ defineExpose({
     jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
+  />
+
+  <XpackComponent
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvRW50cmFuY2Vz"
+    @init-iframe="initIframe"
+    @load-fail="initIframe"
   />
 </template>
 
