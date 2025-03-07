@@ -1366,6 +1366,8 @@ export function getTooltipContainer(id) {
   let wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
   if (!wrapperDom) {
     wrapperDom = document.createElement('div')
+    wrapperDom.style.position = 'absolute'
+    wrapperDom.style.zIndex = '9999'
     wrapperDom.id = G2_TOOLTIP_WRAPPER
     document.body.appendChild(wrapperDom)
   }
