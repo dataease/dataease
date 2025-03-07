@@ -609,7 +609,7 @@ export function getYAxisExt(chart: Chart) {
     return false
   }
   const title =
-    yAxis.name && yAxis.name !== ''
+    yAxis.nameShow && yAxis.name && yAxis.name !== ''
       ? {
           text: yAxis.name,
           style: {
