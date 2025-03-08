@@ -20,6 +20,7 @@ import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.job.schedule.ExtractDataJob;
 import io.dataease.job.schedule.ScheduleManager;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
@@ -99,6 +100,7 @@ public class DatasourceSyncManage {
 
 
     public void extractData(Long datasourceId, Long taskId, JobExecutionContext context) {
+        LicenseUtil.validate();
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (coreDatasource == null) {
             LogUtil.error("Can not find datasource: " + datasourceId);
