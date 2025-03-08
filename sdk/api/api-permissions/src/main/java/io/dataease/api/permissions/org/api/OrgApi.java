@@ -5,10 +5,7 @@ import io.dataease.api.permissions.org.dto.OrgCreator;
 import io.dataease.api.permissions.org.dto.OrgEditor;
 import io.dataease.api.permissions.org.dto.OrgLazyRequest;
 import io.dataease.api.permissions.org.dto.OrgRequest;
-import io.dataease.api.permissions.org.vo.LazyMountedVO;
-import io.dataease.api.permissions.org.vo.MountedVO;
-import io.dataease.api.permissions.org.vo.OrgDetailVO;
-import io.dataease.api.permissions.org.vo.OrgPageVO;
+import io.dataease.api.permissions.org.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.KeywordRequest;
@@ -34,6 +31,11 @@ public interface OrgApi {
     @PostMapping("/page/tree")
     @DePermit("m:read")
     List<OrgPageVO> pageTree(@RequestBody OrgRequest request);
+
+    @Operation(summary = "懒加载组织树")
+    @PostMapping("/page/lazyTree")
+    @DePermit("m:read")
+    LazyTreeVO lazyPageTree(@RequestBody OrgLazyRequest request);
 
     @Operation(summary = "创建")
     @DePermit({"m:read"})
