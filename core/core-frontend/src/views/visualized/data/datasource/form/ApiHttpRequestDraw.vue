@@ -353,6 +353,12 @@ const saveItem = () => {
       }
     }
   }
+  if (isPlugin.value) {
+    xpackApiItemBasicInfo?.value?.invokeMethod({
+      methodName: 'resetForm',
+      args: []
+    })
+  }
   returnAPIItem('returnItem', cloneDeep(apiItem))
   edit_api_item.value = false
 }
@@ -483,6 +489,12 @@ const handleSubmit = param => {
 
 const closeEditItem = () => {
   cancelMap['/datasource/checkApiDatasource']?.()
+  if (isPlugin.value) {
+    xpackApiItemBasicInfo?.value?.invokeMethod({
+      methodName: 'resetForm',
+      args: []
+    })
+  }
   edit_api_item.value = false
 }
 
