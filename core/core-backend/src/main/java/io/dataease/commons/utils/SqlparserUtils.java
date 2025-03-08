@@ -148,7 +148,19 @@ public class SqlparserUtils {
         return sql;
     }
 
-
+    private static boolean isParams(String paramId){
+        boolean isLong = false;
+        try {
+            Long.valueOf(paramId);
+            isLong = true;
+        }catch (Exception e){
+            isLong = false;
+        }
+        if(paramId.length() >= 18 && isLong){
+            return true;
+        }
+        return false;
+    }
     private String removeVariables(final String sql, String dsType) throws Exception {
         String tmpSql = sql.replaceAll("(?m)^\\s*$[\n\r]{0,}", "");
         Pattern pattern = Pattern.compile(regex);
@@ -165,6 +177,10 @@ public class SqlparserUtils {
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
             while (matcher.find()) {
+                String paramId = matcher.group().substring(1, matcher.group().length() - 1);
+                if(!isParams(paramId)){
+                    continue;
+                }
                 hasVariables = true;
                 tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
             }
@@ -172,6 +188,10 @@ public class SqlparserUtils {
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
             while (matcher.find()) {
+                String paramId = matcher.group().substring(1, matcher.group().length() - 1);
+                if(!isParams(paramId)){
+                    continue;
+                }
                 hasVariables = true;
                 tmpSql = tmpSql.replace(matcher.group(), SysParamsSubstitutedParams + matcher.group().substring(1, matcher.group().length() - 1));
                 Map<String, String> sysParam = new HashMap<>();

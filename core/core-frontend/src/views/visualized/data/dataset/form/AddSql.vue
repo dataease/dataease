@@ -203,6 +203,8 @@ const insertFieldToCodeMirror = (value: string) => {
 
 const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   let name2Id = originName
+  const ids = [...builtInList.value, ...fieldFormList.value].map(item => item.id)
+  const names = [...builtInList.value, ...fieldFormList.value].map(item => item.name)
   const nameIdMap = [...builtInList.value, ...fieldFormList.value].reduce((pre, next) => {
     pre[next[from]] = next[to]
     return pre
@@ -214,7 +216,12 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
       if (name2Auto) {
         name2Auto.push(nameIdMap[ele])
       }
-      name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
+      if (from === 'id' && ids.includes(ele)) {
+        name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
+      }
+      if (from === 'name' && names.includes(ele)) {
+        name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
+      }
     })
   }
   return name2Id
