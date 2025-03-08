@@ -175,8 +175,7 @@ onMounted(async () => {
       downloadH2(type)
     }
   })
-  await new Promise(r => (p = r))
-  await new Promise(r => (p1 = r))
+  await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   // 检查外部参数
   const ignoreParams = router.currentRoute.value.query.ignoreParams === 'true'
