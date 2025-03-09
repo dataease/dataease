@@ -767,6 +767,7 @@ public class ExcelUtils {
         fileNames.put("tranName", tranName);
         FTPClient ftpClient = new FTPClient();
         try {
+            ftpClient.setConnectTimeout(5 * 1000);
             ftpClient.connect(serverAddress, port);
             ftpClient.login(username, password);
             ftpClient.enterLocalPassiveMode();

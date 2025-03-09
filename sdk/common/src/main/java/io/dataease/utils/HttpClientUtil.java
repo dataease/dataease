@@ -376,6 +376,13 @@ public class HttpClientUtil {
             // 设置请求头
             config.getHeader().forEach(httpGet::addHeader);
             HttpResponse response = httpClient.execute(httpGet);
+            if (response.getStatusLine().getStatusCode() >= 400) {
+                String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
+                if (StringUtils.isEmpty(msg)) {
+                    msg = "StatusCode: " + response.getStatusLine().getStatusCode();
+                }
+                throw new Exception(msg);
+            }
             String fileName = extractFileName(response, url);
             String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
             String tranName = UUID.randomUUID().toString() + "." + suffix;
