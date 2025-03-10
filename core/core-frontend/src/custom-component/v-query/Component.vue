@@ -1017,7 +1017,7 @@ const autoStyle = computed(() => {
           .label-wrapper-tooltip {
             position: absolute;
             right: 0;
-            top: -26px;
+            top: -21px;
             z-index: 11;
             padding: 4px 8px;
             height: 26px;
