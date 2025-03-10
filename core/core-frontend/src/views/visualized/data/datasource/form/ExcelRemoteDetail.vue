@@ -919,8 +919,8 @@ defineExpose({
           v-if="activeStep === 2"
         >
           <el-radio-group v-model="form.syncSetting.updateType">
-            <el-radio label="add_scope"> {{ t('datasource.append_data') }}</el-radio>
-            <el-radio label="all_scope">{{ t('datasource.replace_data') }}</el-radio>
+            <el-radio label="add_scope"> {{ t('data_source.append_data') }}</el-radio>
+            <el-radio label="all_scope">{{ t('data_source.replace_data') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
