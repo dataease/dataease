@@ -25,7 +25,7 @@ import { viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { filterEnumMap } from '@/utils/componentUtils'
+import { filterEnumParams } from '@/utils/componentUtils'
 const { t } = useI18n()
 
 export const dvMainStore = defineStore('dataVisualization', {
@@ -1314,19 +1314,19 @@ export const dvMainStore = defineStore('dataVisualization', {
         })
       }
     },
-    async trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
+    trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
       let currentFilters = element.linkageFilters || [] // 当前联动filter
       if (['table-info', 'table-normal'].includes(element.innerType)) {
         currentFilters = []
       }
       // 联动的图表情况历史条件
       // const currentFilters = []
-      for (const QDItem of checkQDList) {
+      checkQDList.forEach(QDItem => {
         const sourceInfo = viewId + '#' + QDItem.id
         // 获取所有目标联动信息
         const targetInfoList = trackInfo[sourceInfo] || []
         const paramValue = [QDItem.value]
-        for (const targetInfo of targetInfoList) {
+        targetInfoList.forEach(targetInfo => {
           const targetInfoArray = targetInfo.split('#')
           const targetViewId = targetInfoArray[0] // 目标图表
           if (element.component === 'UserView' && element.id === targetViewId) {
@@ -1365,25 +1365,22 @@ export const dvMainStore = defineStore('dataVisualization', {
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery') {
-            for (const filterItem of element.propValue) {
-              const { optionValueSource, field, displayId } = filterItem
+            element.propValue.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
                 if (!['1', '7'].includes(filterItem.displayType)) {
                   // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
                   queryParams = paramValue.map(number => String(number))
                 }
-                // 当前是选择数据集模式，可能出现展示字段和选择字段不同的情况 这里需要兼容
-                if (optionValueSource === 1 && field.id) {
-                  queryParams = await filterEnumMap(queryParams, {
-                    queryId: field.id,
-                    displayId,
-                    searchText: ''
-                  })
-                }
                 filterItem.defaultValueCheck = true
                 filterItem.timeType = 'fixed'
                 if (['0', '2'].includes(filterItem.displayType)) {
+                  const { optionValueSource, field, displayId } = filterItem
+                  const queryMapFlag = optionValueSource === 1 && field.id !== displayId
+                  let queryMapParams = queryParams
+                  if (queryMapFlag) {
+                    queryMapParams = filterEnumParams(queryParams, field.id)
+                  }
                   // 0 文本类型 1 数字类型
                   if (filterItem.multiple) {
                     // multiple === true 多选
@@ -1394,8 +1391,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                     filterItem['selectValue'] = queryParams[0]
                     filterItem['defaultValue'] = queryParams[0]
                   }
-                  filterItem['defaultMapValue'] = queryParams
-                  filterItem['mapValue'] = queryParams
+                  filterItem['defaultMapValue'] = queryMapParams
+                  filterItem['mapValue'] = queryMapParams
                 } else if (filterItem.displayType === '1') {
                   // 1 时间类型
                   filterItem['selectValue'] = queryParams[0]
@@ -1416,10 +1413,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                   filterItem['defaultConditionValueF'] = queryParams[0]
                 }
               }
-            }
+            })
           }
-        }
-      }
+        })
+      })
       element.linkageFilters = currentFilters
     },
 

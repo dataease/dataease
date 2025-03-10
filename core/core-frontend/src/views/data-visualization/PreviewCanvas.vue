@@ -17,6 +17,7 @@ import { downloadCanvas2 } from '@/utils/imgUtils'
 import { isLink, setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { useRoute } from 'vue-router'
+import { filterEnumMapSync } from '@/utils/componentUtils'
 const routeWatch = useRoute()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -112,21 +113,22 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
   await initCanvasData(
     dvId,
     dvType,
-    function ({
+    async function ({
       canvasDataResult,
       canvasStyleResult,
       dvInfo,
       canvasViewInfoPreview,
       curPreviewGap
     }) {
+      if (jumpParam) {
+        await filterEnumMapSync(canvasDataResult)
+        dvMainStore.addViewTrackFilter(jumpParam)
+      }
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      if (jumpParam) {
-        dvMainStore.addViewTrackFilter(jumpParam)
-      }
       if (!ignoreParams) {
         state.initState = false
         dvMainStore.addOuterParamsFilter(attachParam)
@@ -138,7 +140,7 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
         setTitle(dvInfo.name)
       }
       initBrowserTimer()
-      nextTick(() => {
+      await nextTick(() => {
         onInitReady({ resourceId: dvId })
       })
     }

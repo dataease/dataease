@@ -14,6 +14,7 @@ import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
 import { setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
+import { filterEnumMapSync } from '@/utils/componentUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -96,7 +97,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   req(
     dvId,
     dvType,
-    function ({
+    async function ({
       canvasDataResult,
       canvasStyleResult,
       dvInfo,
@@ -104,17 +105,18 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       curPreviewGap
     }) {
       if (!dvInfo.mobileLayout && dvType === 'dashboard') {
-        router.push('/DashboardEmpty')
+        await router.push('/DashboardEmpty')
         return
+      }
+      if (jumpParam) {
+        await filterEnumMapSync(canvasDataResult)
+        dvMainStore.addViewTrackFilter(jumpParam)
       }
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      if (jumpParam) {
-        dvMainStore.addViewTrackFilter(jumpParam)
-      }
       state.initState = false
 
       dvMainStore.addOuterParamsFilter(attachParam)
