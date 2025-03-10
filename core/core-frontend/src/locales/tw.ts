@@ -99,7 +99,7 @@ export default {
   },
   operate_log: {
     name: '操作日誌',
-    search_by_operate_info: '透過操作詳情搜尋',
+    search_by_operate_info: '透過操作對象搜尋',
     detail: '操作詳情',
     type: '操作類型',
     status: '操作狀態',

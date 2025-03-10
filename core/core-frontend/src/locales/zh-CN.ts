@@ -100,7 +100,7 @@ export default {
   },
   operate_log: {
     name: '操作日志',
-    search_by_operate_info: '通过操作详情搜索',
+    search_by_operate_info: '通过操作对象搜索',
     detail: '操作详情',
     type: '操作类型',
     status: '操作状态',

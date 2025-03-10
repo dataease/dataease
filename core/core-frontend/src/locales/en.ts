@@ -99,7 +99,7 @@ export default {
   },
   operate_log: {
     name: 'Operation log',
-    search_by_operate_info: 'Search by operation details',
+    search_by_operate_info: 'Search by operation target',
     detail: 'Operation details',
     type: 'Operation type',
     status: 'Operation status',
