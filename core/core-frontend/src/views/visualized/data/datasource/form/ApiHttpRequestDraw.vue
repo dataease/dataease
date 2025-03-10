@@ -353,13 +353,13 @@ const saveItem = () => {
       }
     }
   }
+  returnAPIItem('returnItem', cloneDeep(apiItem))
   if (isPlugin.value) {
     xpackApiItemBasicInfo?.value?.invokeMethod({
       methodName: 'resetForm',
       args: []
     })
   }
-  returnAPIItem('returnItem', cloneDeep(apiItem))
   edit_api_item.value = false
 }
 const before = () => {
