@@ -231,10 +231,10 @@ const fakeValue = ''
 const treeValue = ref()
 const getCustomWidth = () => {
   if (placeholder?.value?.placeholderShow) {
-    if (props.config.queryConditionWidth === undefined) {
-      return queryConditionWidth()
+    if (props.config.queryConditionWidth !== undefined) {
+      return props.config.queryConditionWidth
     }
-    return props.config.queryConditionWidth
+    return queryConditionWidth()
   }
   return 227
 }
@@ -258,7 +258,7 @@ const selectStyle = computed(() => {
     :filter-node-method="filterMethod"
     :showWholePath="showWholePath"
     collapse-tags-tooltip
-    key="multipleTree"
+    :key="'multipleTree' + getCustomWidth()"
     filterable
     :style="selectStyle"
     multiple
@@ -273,7 +273,7 @@ const selectStyle = computed(() => {
     :placeholder="placeholderText"
     :render-after-expand="false"
     v-else-if="!multiple && !loading"
-    key="singleTree"
+    :key="'singleTree' + getCustomWidth()"
     :showWholePath="showWholePath"
     :style="selectStyle"
     filterable
