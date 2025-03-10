@@ -889,6 +889,8 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public ExcelFileData loadRemoteFile(RemoteExcelRequest remoteExcelRequest) throws DEException, IOException {
+        remoteExcelRequest.setUserName(new String(Base64.getDecoder().decode(remoteExcelRequest.getUserName())));
+        remoteExcelRequest.setPasswd(new String(Base64.getDecoder().decode(remoteExcelRequest.getPasswd())));
         ExcelFileData excelFileData = new ExcelUtils().parseRemoteExcel(remoteExcelRequest);
         CoreDatasource coreDatasource = null;
         if (ObjectUtils.isNotEmpty(remoteExcelRequest.getDatasourceId()) && 0L != remoteExcelRequest.getDatasourceId()) {

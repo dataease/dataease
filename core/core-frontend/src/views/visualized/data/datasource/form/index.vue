@@ -504,7 +504,7 @@ const saveDS = () => {
         const validateApi = excelRemote?.value?.submitSyncSettingForm()
         validateApi(v => {
           if (v) {
-            if (editDs.value) {
+            if (editDs.value && form2.id) {
               complete(null, null, null)
             } else {
               creatDsFolder.value.createInit('datasource', { id: pid.value }, '', form2.name)
@@ -691,6 +691,8 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object, supportSetKey: 
     Object.assign(form, cloneDeep(defaultForm))
     pid.value = id || '0'
   }
+  console.log(nodeInfo)
+  console.log(pid.value)
   activeStep.value = Number(editDs.value)
   activeApiStep.value = activeStep.value
 

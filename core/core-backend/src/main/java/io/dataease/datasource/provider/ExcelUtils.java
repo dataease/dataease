@@ -423,7 +423,7 @@ public class ExcelUtils {
         if (remoteExcelRequest.getUrl().trim().startsWith("http")) {
             HttpClientConfig httpClientConfig = new HttpClientConfig();
             if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName()) && StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
-                String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((new String(Base64.getDecoder().decode(remoteExcelRequest.getUserName())) + ":" + new String(Base64.getDecoder().decode(remoteExcelRequest.getPasswd()))).getBytes());
+                String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((remoteExcelRequest.getUserName() + ":" + remoteExcelRequest.getPasswd()).getBytes());
                 httpClientConfig.addHeader("Authorization", authValue);
             }
             File p = new File(path);
@@ -756,8 +756,8 @@ public class ExcelUtils {
             }
         }
         if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName()) && StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
-            username = new String(Base64.getDecoder().decode(remoteExcelRequest.getUserName()));
-            password = new String(Base64.getDecoder().decode(remoteExcelRequest.getPasswd()));
+            username = remoteExcelRequest.getUserName();
+            password = remoteExcelRequest.getPasswd();
         }
         filePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
         int port = 21;
