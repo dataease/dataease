@@ -49,7 +49,8 @@ import {
   uploadFile,
   perDeleteDatasource,
   getSimpleDs,
-  supportSetKey
+  supportSetKey,
+  getTableStatus
 } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
@@ -960,8 +961,29 @@ const handleClick = (tabName: TabPaneName) => {
     case 'table':
       tableData.value = []
       listDatasourceTables({ datasourceId: nodeInfo.id }).then(res => {
+        console.log(nodeInfo)
         tableData.value = res.data
         initSearch()
+        if (nodeInfo.type.startsWith('API') || nodeInfo.type === 'ExcelRemote') {
+          getTableStatus({ datasourceId: nodeInfo.id }).then(res => {
+            for (let i = 0; i < state.filterTable.length; i++) {
+              for (let j = 0; j < res.data.length; j++) {
+                if (state.filterTable[i].tableName === res.data[j].tableName) {
+                  state.filterTable[i].lastUpdateTime = res.data[j].lastUpdateTime
+                  state.filterTable[i].status = res.data[j].status
+                }
+              }
+            }
+            for (let i = 0; i < tableData.value.length; i++) {
+              for (let j = 0; j < res.data.length; j++) {
+                if (tableData.value[i].tableName === res.data[j].tableName) {
+                  tableData.value[i].lastUpdateTime = res.data[j].lastUpdateTime
+                  tableData.value[i].status = res.data[j].status
+                }
+              }
+            }
+          })
+        }
       })
       break
     default:

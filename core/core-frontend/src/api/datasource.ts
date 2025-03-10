@@ -60,6 +60,12 @@ export const listDatasourceTables = async (data = {}): Promise<IResponse> => {
   })
 }
 
+export const getTableStatus = async (data = {}): Promise<IResponse> => {
+  return request.post({ url: '/datasource/getTableStatus', data }).then(res => {
+    return res
+  })
+}
+
 export const getSchema = (data = {}) => {
   return request.post({ url: '/datasource/getSchema', data })
 }

@@ -48,8 +48,6 @@ import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +55,6 @@ import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,8 +64,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -723,13 +719,6 @@ public class DatasourceServer implements DatasourceApi {
         datasourceRequest.setDatasource(datasourceDTO);
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
             List<DatasetTableDTO> datasetTableDTOS = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
-            datasetTableDTOS.forEach(datasetTableDTO1 -> {
-                CoreDatasourceTaskLog log = datasourceTaskServer.lastSyncLogForTable(datasetTableDTO.getDatasourceId(), datasetTableDTO1.getTableName());
-                if (log != null) {
-                    datasetTableDTO1.setLastUpdateTime(log.getStartTime());
-                    datasetTableDTO1.setStatus(log.getTaskStatus());
-                }
-            });
             return datasetTableDTOS;
         }
         if (coreDatasource.getType().contains("Excel")) {
@@ -737,6 +726,33 @@ public class DatasourceServer implements DatasourceApi {
         }
         Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
         return provider.getTables(datasourceRequest);
+    }
+
+    @Override
+    public List<DatasetTableDTO> getTableStatus(DatasetTableDTO datasetTableDTO) throws DEException {
+        CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasetTableDTO.getDatasourceId());
+        if (coreDatasource == null) {
+            DEException.throwException("无效数据源！");
+        }
+        List<DatasetTableDTO> datasetTableDTOS = new ArrayList<>();
+        DatasourceDTO datasourceDTO = new DatasourceDTO();
+        BeanUtils.copyBean(datasourceDTO, coreDatasource);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(datasourceDTO);
+        if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
+            datasetTableDTOS = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
+        }
+        if (coreDatasource.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
+            datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
+        }
+        datasetTableDTOS.forEach(datasetTableDTO1 -> {
+            CoreDatasourceTaskLog log = datasourceTaskServer.lastSyncLogForTable(datasetTableDTO.getDatasourceId(), datasetTableDTO1.getTableName());
+            if (log != null) {
+                datasetTableDTO1.setLastUpdateTime(log.getStartTime());
+                datasetTableDTO1.setStatus(log.getTaskStatus());
+            }
+        });
+        return datasetTableDTOS;
     }
 
     @Override

@@ -127,6 +127,11 @@ public interface DatasourceApi {
     @Operation(summary = "获取表")
     List<DatasetTableDTO> getTables(@RequestBody DatasetTableDTO datasetTableDTO) throws DEException;
 
+    @DePermit({"#p0.datasourceId+':read'"})
+    @PostMapping("getTableStatus")
+    @Operation(summary = "获取数据表更新状态")
+    List<DatasetTableDTO> getTableStatus(@RequestBody DatasetTableDTO datasetTableDTO) throws DEException;
+
     @PostMapping("/checkApiDatasource")
     @Operation(summary = "校验API数据源")
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;
