@@ -382,6 +382,8 @@ const loadData = () => {
   remoteExcelForm.value.validate(val => {
     if (val) {
       const request = JSON.parse(JSON.stringify(form.value.configuration))
+      request.userName = Base64.encode(request.userName)
+      request.passwd = Base64.encode(request.passwd)
       request.datasourceId = form.value.id || 0
       request.editType = form.value.editType
       loading.value = true
@@ -411,6 +413,11 @@ const loadData = () => {
 
 const uploadSuccess = response => {
   if (!response) {
+    state.excelData = []
+    activeTab.value = ''
+    tabList.value = []
+    Object.assign(sheetObj, cloneDeep(defaultSheetObj))
+    ElMessage.warning(response.msg)
     return
   }
   if (response?.code !== 0) {

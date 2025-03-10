@@ -8,6 +8,6 @@ import java.util.List;
 public class ExcelConfiguration {
     private String url;
     private List<ExcelSheetData> sheets;
-    private String username;
-    private String password;
+    private String userName;
+    private String passwd;
 }

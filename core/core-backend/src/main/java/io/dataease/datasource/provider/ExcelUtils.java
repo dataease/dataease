@@ -422,8 +422,8 @@ public class ExcelUtils {
         Map<String, String> fileNames = new HashMap<>();
         if (remoteExcelRequest.getUrl().trim().startsWith("http")) {
             HttpClientConfig httpClientConfig = new HttpClientConfig();
-            if (StringUtils.isNotEmpty(remoteExcelRequest.getUsername()) && StringUtils.isNotEmpty(remoteExcelRequest.getPassword())) {
-                String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((remoteExcelRequest.getUsername() + ":" + remoteExcelRequest.getPassword()).getBytes());
+            if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName()) && StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
+                String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((new String(Base64.getDecoder().decode(remoteExcelRequest.getUserName())) + ":" + new String(Base64.getDecoder().decode(remoteExcelRequest.getPasswd()))).getBytes());
                 httpClientConfig.addHeader("Authorization", authValue);
             }
             File p = new File(path);
@@ -755,9 +755,9 @@ public class ExcelUtils {
                 DEException.throwException("无效的地址！");
             }
         }
-        if (StringUtils.isNotEmpty(remoteExcelRequest.getUsername()) && StringUtils.isNotEmpty(remoteExcelRequest.getPassword())) {
-            username = remoteExcelRequest.getUsername();
-            password = remoteExcelRequest.getPassword();
+        if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName()) && StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
+            username = new String(Base64.getDecoder().decode(remoteExcelRequest.getUserName()));
+            password = new String(Base64.getDecoder().decode(remoteExcelRequest.getPasswd()));
         }
         int port = 21;
         String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);

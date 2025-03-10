@@ -410,6 +410,8 @@ const doValidateDs = request => {
     let excelRequest = JSON.parse(JSON.stringify(form2.configuration))
     excelRequest.datasourceId = form2.id || 0
     excelRequest.editType = form2.editType
+    excelRequest.userName = Base64.encode(request.userName)
+    excelRequest.passwd = Base64.encode(request.passwd)
     return loadRemoteFile(excelRequest)
       .then(() => {
         ElMessage.success(t('datasource.validate_success'))
