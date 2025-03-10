@@ -176,7 +176,10 @@ onMounted(async () => {
     }
   })
   await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
-  const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+  let dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+  if (router.currentRoute.value.query.jumpInfoParam && router.currentRoute.value.query.dvId) {
+    dvId = router.currentRoute.value.query.dvId
+  }
   // 检查外部参数
   const ignoreParams = router.currentRoute.value.query.ignoreParams === 'true'
   const isPopWindow = router.currentRoute.value.query.popWindow === 'true'
