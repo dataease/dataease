@@ -7,6 +7,7 @@ import io.dataease.api.xpack.dataFilling.dto.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -194,4 +195,8 @@ public interface DataFillingApi {
     @Operation(summary = "下载数据填报表数据")
     @PostMapping("/innerExport/{isDataEaseBi}/{formId}")
     void innerExport(@PathVariable("formId") Long formId, @PathVariable("isDataEaseBi") boolean isDataEaseBi, HttpServletResponse response) throws Exception;
+
+    @PostMapping("getBuiltInTables")
+    @Operation(summary = "获取内置数据源表")
+    List<DatasetTableDTO> getBuiltInTables() throws DEException;
 }
