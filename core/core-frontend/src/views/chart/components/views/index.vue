@@ -245,14 +245,6 @@ const clearViewLinkage = () => {
   useEmitt().emitter.emit('clearPanelLinkage', { viewId: element.value.id })
 }
 
-watch(
-  [() => view.value],
-  () => {
-    initTitle()
-  },
-  { deep: true }
-)
-
 watch([() => scale.value], () => {
   initTitle()
 })
