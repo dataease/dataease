@@ -759,6 +759,7 @@ public class ExcelUtils {
             username = new String(Base64.getDecoder().decode(remoteExcelRequest.getUserName()));
             password = new String(Base64.getDecoder().decode(remoteExcelRequest.getPasswd()));
         }
+        filePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
         int port = 21;
         String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);
         String tranName = UUID.randomUUID().toString() + "." + suffix;
