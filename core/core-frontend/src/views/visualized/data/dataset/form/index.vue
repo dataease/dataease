@@ -1105,6 +1105,14 @@ const closeGroupField = () => {
   editGroupField.value = false
 }
 
+const disabledEnumArr = computed(() => {
+  return currentGroupField.groupList?.map(ele => ele.text).flat()
+})
+
+const disabledEnum = (item, arr) => {
+  return disabledEnumArr.value.includes(item) && !arr.includes(item)
+}
+
 const titleForGroup = ref(t('dataset.create_grouping_field'))
 
 const initGroupField = val => {
@@ -2659,6 +2667,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     style="width: 100%"
                     multiple
                     collapse-tags
+                    filterable
                     collapse-tags-tooltip
                     :max-collapse-tags="2"
                     v-model="domain.text"
@@ -2667,6 +2676,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       v-for="item in enumValue"
                       :key="item"
                       :label="item"
+                      :disabled="disabledEnum(item, domain.text)"
                       :value="item"
                     /> </el-select
                 ></el-form-item>
