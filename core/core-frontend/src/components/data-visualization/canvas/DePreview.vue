@@ -171,6 +171,7 @@ const canvasStyle = computed(() => {
     if (canvasStyleData.value?.screenAdaptor === 'keep') {
       style['height'] = canvasStyleData.value?.height + 'px'
       style['width'] = canvasStyleData.value?.width + 'px'
+      style['margin'] = 'auto'
     } else {
       style['height'] = dashboardActive.value
         ? downloadStatus.value
