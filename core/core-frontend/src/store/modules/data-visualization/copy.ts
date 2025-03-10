@@ -40,7 +40,8 @@ export const copyStore = defineStore('copy', {
       canvasViewInfoPreview,
       outerMultiplexingComponents = curMultiplexingComponents.value,
       keepSize = false,
-      copyFrom = 'multiplexing'
+      copyFrom = 'multiplexing',
+      multiplexingScale = canvasStyleData.value?.scale
     ) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
@@ -60,6 +61,9 @@ export const copyStore = defineStore('copy', {
             // dataV 数据大屏
             newComponent.style.width = ((canvasStyleData.value.width / 3) * scale) / 100
             newComponent.style.height = ((canvasStyleData.value.height / 3) * scale) / 100
+          } else {
+            newComponent.style.width = (newComponent.style.width * scale) / multiplexingScale
+            newComponent.style.height = (newComponent.style.height * scale) / multiplexingScale
           }
           // dataV 数据大屏
           newComponent.x = newComponent.sizeX * xPositionOffset + 1
