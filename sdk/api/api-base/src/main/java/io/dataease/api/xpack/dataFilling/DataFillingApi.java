@@ -1,7 +1,6 @@
 package io.dataease.api.xpack.dataFilling;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.report.dto.ReportInstanceMsgRequest;
 import io.dataease.api.report.vo.ReportGridVO;
 import io.dataease.api.xpack.dataFilling.dto.*;
@@ -11,7 +10,6 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,9 +21,7 @@ import java.util.Map;
 
 import static io.dataease.constant.AuthResourceEnum.DATA_FILLING;
 
-@Hidden
 @Tag(name = "数据填报")
-@ApiSupport(order = 1000, author = "fit2cloud-someone")
 @DeApiPath(value = "/data-filling", rt = DATA_FILLING)
 public interface DataFillingApi {
 
@@ -151,6 +147,7 @@ public interface DataFillingApi {
     @GetMapping("/sub-task/{id}/users/list/{type}")
     List<Map<String, Object>> listSubTaskUser(@PathVariable("id") Long id, @PathVariable("type") String type) throws Exception;
 
+    @Operation(summary = "查询用户待任务列表")
     @PostMapping("/user-task/page/{goPage}/{pageSize}")
     IPage<DfUserTaskVo> listUserTask(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfUserTaskRequest request) throws Exception;
 
