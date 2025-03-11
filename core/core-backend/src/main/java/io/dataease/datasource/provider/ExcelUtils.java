@@ -271,7 +271,7 @@ public class ExcelUtils {
         String filename = file.getOriginalFilename();
         List<ExcelSheetData> excelSheetDataList = null;
         try {
-            excelSheetDataList = parseExcel(filename, file.getInputStream(), true);
+            excelSheetDataList = parseExcel(filename, file.getInputStream(), true, filename);
         } catch (Exception e) {
             DEException.throwException(e);
         }
@@ -356,7 +356,7 @@ public class ExcelUtils {
         FileInputStream fileInputStream = new FileInputStream(path + fileNames.get("tranName"));
         List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
         try {
-            returnSheetDataList = parseExcel(fileNames.get("tranName"), fileInputStream, true).stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
+            returnSheetDataList = parseExcel(fileNames.get("tranName"), fileInputStream, true, fileNames.get("fileName")).stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
         } catch (Exception e) {
             DEException.throwException(e);
         }
@@ -605,7 +605,7 @@ public class ExcelUtils {
     }
 
 
-    private List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws IOException {
+    private List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview, String originFilename) throws IOException {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx") || StringUtils.equalsIgnoreCase(suffix, "xls")) {
@@ -701,7 +701,7 @@ public class ExcelUtils {
             excelSheetData.setFields(fields);
             excelSheetData.setData(data);
             excelSheetData.setFileName(filename);
-            excelSheetData.setExcelLabel(filename.substring(0, filename.lastIndexOf('.')));
+            excelSheetData.setExcelLabel(originFilename.substring(0, originFilename.lastIndexOf('.')));
             excelSheetDataList.add(excelSheetData);
         }
         inputStream.close();
