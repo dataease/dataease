@@ -55,7 +55,7 @@ onBeforeMount(() => {
   setParams()
 })
 const queryConditionWidth = inject('com-width', Function, true)
-const customStyle = inject<{ background: string }>('$custom-style-filter')
+const customStyle = inject<{ background: string; border: string }>('$custom-style-filter')
 const isConfirmSearch = inject('is-confirm-search', Function, true)
 
 const getCustomWidth = () => {
@@ -78,6 +78,10 @@ const handleValueChange = () => {
     return
   }
 }
+
+const color = computed(() => {
+  return customStyle.border
+})
 </script>
 
 <template>
@@ -104,11 +108,18 @@ const handleValueChange = () => {
 .num-search-select {
   display: flex;
   align-items: center;
+  border-radius: 4px;
   .num-value_line {
     background: #1f2329;
     width: 12px;
     height: 1px;
     margin: 0 8px;
+  }
+
+  :deep(.ed-input-number__increase),
+  :deep(.ed-input-number__decrease) {
+    background-color: transparent !important;
+    border-color: v-bind(color) !important;
   }
 }
 </style>
