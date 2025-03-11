@@ -334,10 +334,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         //表名映射更新
                         Map<String, String> appDsTableNamesMap = dsTableNamesMap.get(key);
                         Map<String, String> systemDsTableNamesMap = dsTableNamesMap.get(value);
-                        if (!CollectionUtils.isEmpty(appDsTableNamesMap) && !CollectionUtils.isEmpty(systemDsTableNamesMap)) {
+                        if (!CollectionUtils.isEmpty(appDsTableNamesMap)) {
                             appDsTableNamesMap.forEach((keyName, valueName) -> {
-                                if (StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
+                                if (!CollectionUtils.isEmpty(systemDsTableNamesMap) && StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
                                     dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, systemDsTableNamesMap.get(keyName)));
+                                }else{
+                                    dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, "excel_can_not_find"));
                                 }
                             });
                         }
