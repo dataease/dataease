@@ -197,6 +197,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { Base64 } from 'js-base64'
+import { getActiveCategories } from '@/utils/utils'
 const { t } = useI18n()
 const { wsCache } = useCache()
 const embeddedStore = useEmbedded()
@@ -415,10 +416,13 @@ const initMarketTemplate = async () => {
     .then(rsp => {
       state.baseUrl = rsp.data.baseUrl
       state.currentMarketTemplateShowList = rsp.data.contents
-      state.marketTabs = rsp.data.categories
-      state.marketActiveTab = state.marketTabs[1].label
       initStyle()
       initTemplateShow()
+      const activeCategories = getActiveCategories(state.currentMarketTemplateShowList)
+      state.marketTabs = rsp.data.categories.filter(category =>
+        activeCategories.has(category.label)
+      )
+      state.marketActiveTab = state.marketTabs[1].label
     })
     .catch(() => {
       state.networkStatus = false

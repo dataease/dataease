@@ -295,3 +295,17 @@ export const nameTrim = (target: {}, msg = '名称字段长度1-64个字符') =>
     }
   }
 }
+
+export const getActiveCategories = contents => {
+  const result = []
+  if (contents) {
+    contents.forEach(item => {
+      if (item.showFlag) {
+        item.categories.forEach(category => {
+          result.push(category.name)
+        })
+      }
+    })
+  }
+  return new Set(result)
+}

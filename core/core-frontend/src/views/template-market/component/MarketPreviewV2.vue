@@ -151,7 +151,7 @@ import { searchMarketPreview } from '@/api/templateMarket'
 import { onMounted, reactive, watch, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import TemplateMarketPreviewItem from '@/views/template-market/component/TemplateMarketPreviewItem.vue'
-import { deepCopy } from '@/utils/utils'
+import { deepCopy, getActiveCategories } from '@/utils/utils'
 import { imgUrlTrans } from '@/utils/imgUtils'
 
 const { t } = useI18n()
@@ -269,6 +269,11 @@ const initMarketTemplate = () => {
       state.marketTemplatePreviewShowList = rsp.data.contents
       state.hasResult = true
       state.categories = rsp.data.categories
+      initTemplateShow()
+      const activeCategoriesShow = getActiveCategories(state.currentMarketTemplateShowList)
+      state.categories = rsp.data.categories.filter(category =>
+        activeCategoriesShow.has(category.label)
+      )
       activeCategories.value = deepCopy(state.categories)
       if (props.previewId) {
         state.marketTemplatePreviewShowList.forEach(categoryTemplates => {
