@@ -15,6 +15,7 @@ import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.DataSourceType;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
+import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.*;
@@ -28,7 +29,6 @@ import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
-import io.dataease.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.*;
@@ -64,8 +64,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.lang.reflect.Method;
-
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
@@ -582,13 +582,40 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
         List<CoreDatasource> dsList = datasourceMapper.selectList(queryWrapper);
-        for (CoreDatasource datasource : dsList) {
+
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Callable<DatasourceDTO>> tasks = new ArrayList<>();
+            // 创建多个任务
+            for (CoreDatasource datasource : dsList) {
+                tasks.add(() -> {
+                    try {
+                        return convertCoreDatasource(datasource.getId(), false, datasource);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                });
+            }
+
+            // 提交所有任务并等待结果
+            List<Future<DatasourceDTO>> futures = executor.invokeAll(tasks);
+            for (Future<DatasourceDTO> future : futures) {
+                DatasourceDTO datasourceDTO = future.get();
+                if (datasourceDTO != null) {
+                    list.add(datasourceDTO);
+                }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        /*for (CoreDatasource datasource : dsList) {
             try {
                 list.add(convertCoreDatasource(datasource.getId(), false, datasource));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         return list;
     }
 
