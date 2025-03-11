@@ -2,6 +2,7 @@ package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jcraft.jsch.Session;
+import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
@@ -9,7 +10,6 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.*;
-import io.dataease.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.provider.DriverShim;
@@ -31,6 +31,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -240,6 +241,36 @@ public class CalciteProvider extends Provider {
         return fieldList;
     }
 
+    private Map<String, Integer> getTableTypeMap(DatasourceRequest datasourceRequest, DatasourceConfiguration datasourceConfiguration, String tableName) throws DEException {
+        Map<String, Integer> map = new HashMap<>();
+        String schemaTable = (ObjectUtils.isNotEmpty(datasourceConfiguration.getSchema()) ? (datasourceConfiguration.getSchema() + "`.`") : "") + tableName;
+        String sql = "SELECT * FROM `$TABLE_NAME$` LIMIT 0 OFFSET 0".replace("$TABLE_NAME$", schemaTable);
+        sql = transSqlDialect(sql, datasourceRequest.getDsList());
+        ResultSet resultSet = null;
+        try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
+            resultSet = statement.executeQuery(sql);
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            for (int j = 0; j < columnCount; j++) {
+                String name = StringUtils.lowerCase(metaData.getColumnName(j + 1));
+                Integer type = metaData.getColumnType(j + 1);
+                map.put(name, type);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return map;
+    }
+
     @Override
     public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
         List<TableField> datasetTableFields = new ArrayList<>();
@@ -281,8 +312,11 @@ public class CalciteProvider extends Provider {
                 } else {
                     resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
                 }
+
+                Map<String, Integer> tableTypeMap = getTableTypeMap(datasourceRequest, datasourceConfiguration, table);
+
                 while (resultSet.next()) {
-                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet, 3);
+                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet, 3, tableTypeMap);
                     boolean repeat = false;
                     for (TableField ele : datasetTableFields) {
                         if (StringUtils.equalsIgnoreCase(ele.getOriginName(), tableFieldDesc.getOriginName())) {
@@ -705,7 +739,7 @@ public class CalciteProvider extends Provider {
         }
     }
 
-    private TableField getTableFieldDesc(DatasourceRequest datasourceRequest, ResultSet resultSet, int commentIndex) throws SQLException {
+    private TableField getTableFieldDesc(DatasourceRequest datasourceRequest, ResultSet resultSet, int commentIndex, Map<String, Integer> tableTypeMap) throws SQLException {
         TableField tableField = new TableField();
         tableField.setOriginName(resultSet.getString(1));
         tableField.setType(resultSet.getString(2).toUpperCase());
@@ -716,6 +750,10 @@ public class CalciteProvider extends Provider {
         tableField.setName(resultSet.getString(commentIndex));
         try {
             tableField.setPrimary(resultSet.getInt(4) > 0);
+        } catch (Exception e) {
+        }
+        try {
+            tableField.setTypeNumber(tableTypeMap.get(StringUtils.lowerCase(tableField.getOriginName())));
         } catch (Exception e) {
         }
         return tableField;
