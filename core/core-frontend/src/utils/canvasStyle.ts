@@ -160,6 +160,9 @@ export const customStyleTrans = {
     axisLabel: ['fontSize'],
     splitLine: {
       lineStyle: ['width']
+    },
+    axisLine: {
+      lineStyle: ['width']
     }
   },
   yAxis: {
@@ -167,12 +170,18 @@ export const customStyleTrans = {
     axisLabel: ['fontSize'],
     splitLine: {
       lineStyle: ['width']
+    },
+    axisLine: {
+      lineStyle: ['width']
     }
   },
   yAxisExt: {
     fontSize: 'fontSize',
     axisLabel: ['fontSize'],
     splitLine: {
+      lineStyle: ['width']
+    },
+    axisLine: {
       lineStyle: ['width']
     }
   },
