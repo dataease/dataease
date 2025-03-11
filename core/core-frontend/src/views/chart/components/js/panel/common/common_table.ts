@@ -401,7 +401,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
         },
         dataCell: {
           cell: {
-            crossBackgroundColor: enableTableCrossBG && !tableCell.mergeCells ? tableItemSubBgColor : tableItemBgColor,
+            crossBackgroundColor: enableTableCrossBG ? tableItemSubBgColor : tableItemBgColor,
             backgroundColor: tableItemBgColor
           },
           bolderText: {

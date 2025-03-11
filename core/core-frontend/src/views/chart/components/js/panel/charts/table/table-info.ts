@@ -444,6 +444,11 @@ export class TableInfo extends S2ChartView<TableSheet> {
       const fontStyle = tableCell.isItalic ? 'italic' : 'normal'
       const fontWeight = tableCell.isBolder === false ? 'normal' : 'bold'
       const mergeCellTheme: S2Theme = {
+        dataCell: {
+          cell: {
+            crossBackgroundColor: tableItemBgColor
+          }
+        },
         mergedCell: {
           cell: {
             backgroundColor: tableItemBgColor,
