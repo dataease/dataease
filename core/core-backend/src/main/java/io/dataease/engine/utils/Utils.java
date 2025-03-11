@@ -497,6 +497,14 @@ public class Utils {
     }
 
     public static String transGroupFieldToSql(DatasetTableFieldDTO dto, List<DatasetTableFieldDTO> fields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage) {
+        // 从fields里取最新的dto
+        for (DatasetTableFieldDTO fieldDTO : fields) {
+            if (Objects.equals(dto.getId(), fieldDTO.getId())) {
+                dto.setGroupList(fieldDTO.getGroupList());
+                dto.setOtherGroup(fieldDTO.getOtherGroup());
+                break;
+            }
+        }
         // get origin field
         DatasetTableFieldDTO originField = null;
         for (DatasetTableFieldDTO ele : fields) {
