@@ -72,7 +72,8 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       'axisForm',
       'axisLabel',
       'axisLabelFormatter',
-      'showLengthLimit'
+      'showLengthLimit',
+      'axisLine'
     ],
     threshold: ['lineThreshold']
   }
