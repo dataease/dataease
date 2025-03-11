@@ -17,9 +17,11 @@ import {
   S2Event,
   S2Options,
   TableSheet,
-  TooltipShowOptions
+  TooltipShowOptions,
+  ColCell,
+  Node
 } from '@antv/s2'
-import { ElMessageBox } from 'element-plus-secondary'
+import ElMessageBox from 'element-plus-secondary'
 import { cloneDeep, debounce, isEqual, isNumber } from 'lodash-es'
 import { computed, nextTick, onMounted, onUnmounted, PropType } from 'vue'
 import { uuid } from 'vue-uuid'
@@ -166,6 +168,9 @@ const renderTable = (chart: ChartObj) => {
         position: 'absolute',
         borderRadius: '4px'
       }
+    },
+    interaction: {
+      rangeSelection: false
     }
   }
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
@@ -441,6 +446,42 @@ const renderTable = (chart: ChartObj) => {
         content: groupMenuContainer
       })
       return
+    }
+  })
+  s2.on(S2Event.COL_CELL_CLICK, e => {
+    const lastCell = s2.store.get('lastClickedCell') as ColCell
+    const originEvent = e.originalEvent as MouseEvent
+    if (!lastCell || !(originEvent?.ctrlKey || originEvent?.metaKey || originEvent?.shiftKey)) {
+      const cell = s2.getCell(e.target)
+      s2.store.set('lastClickedCell', cell)
+      return
+    }
+    if (originEvent?.shiftKey) {
+      if (!lastCell) {
+        const cell = s2.getCell(e.target)
+        s2.store.set('lastClickedCell', cell)
+        return
+      }
+      const curCell = s2.getCell(e.target)
+      const lastMeta = lastCell.getMeta()
+      const curMeta = curCell.getMeta()
+      if (
+        lastMeta.key === curMeta.key ||
+        lastMeta.level !== curMeta.level ||
+        lastMeta.parent !== curMeta.parent
+      ) {
+        return
+      }
+      const parent = curMeta.parent as Node
+      const lastIndex = parent.children.findIndex(item => item.key === lastMeta.key)
+      const curIndex = parent.children.findIndex(item => item.key === curMeta.key)
+      const startIndex = Math.min(lastIndex, curIndex)
+      const endIndex = Math.max(lastIndex, curIndex)
+      const activeCells = parent.children.slice(startIndex, endIndex - startIndex + 1)
+      s2.interaction.clearState()
+      activeCells.forEach(cell => {
+        s2.interaction.selectHeaderCell({ cell: cell.belongsCell, isMultiSelection: true })
+      })
     }
   })
   s2.render()
