@@ -150,7 +150,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
       class="form-item"
       label=""
-      v-if="showProperty('tableItemSubBgColor')"
+      v-if="showProperty('tableItemSubBgColor') && state.tableCellForm.tableItemSubBgColor"
     >
       <el-color-picker
         v-model="state.tableCellForm.tableItemSubBgColor"
