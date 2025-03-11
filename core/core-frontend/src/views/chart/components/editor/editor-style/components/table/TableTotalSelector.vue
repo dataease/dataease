@@ -470,7 +470,7 @@ onMounted(() => {
         <el-radio-group
           :effect="themes"
           v-model="state.tableTotalForm.row.reverseSubLayout"
-          :disabled="chart.xAxis.length < 2"
+          :disabled="chart.xAxis.length < 2 || state.basicStyleForm.tableLayoutMode === 'tree'"
           @change="changeTableTotal('row')"
         >
           <el-radio :effect="themes" :label="true">{{ t('chart.total_pos_top') }}</el-radio>

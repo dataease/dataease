@@ -724,8 +724,8 @@ function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, custom
     }
     case 'CUSTOM': {
       const val = getCustomCalcResult(query, axisMap, chart, status, customCalc || {})
-      if (val === '') {
-        return val
+      if (val === '' || val === undefined) {
+        return '-'
       }
       return parseFloat(val)
     }
@@ -820,7 +820,7 @@ function getTreeCustomCalcResult(query, axisMap, status: TotalStatus, customCalc
   if (status.isRowTotal && status.isColSubTotal) {
     const { colSubInRowTotal } = customCalc
     const colLevel = getSubLevel(query, col)
-    const { data } = colSubInRowTotal?.[colLevel]
+    const data = colSubInRowTotal?.[colLevel]?.data
     const colPath = getTreePath(query, col)
     let val
     if (colPath.length && colSubInRowTotal) {
@@ -858,7 +858,7 @@ function getTreeCustomCalcResult(query, axisMap, status: TotalStatus, customCalc
     }
     return val
   }
-  return NaN
+  return '-'
 }
 
 function getGridCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
@@ -932,7 +932,7 @@ function getGridCustomCalcResult(query, axisMap, status: TotalStatus, customCalc
   if (status.isRowTotal && status.isColSubTotal) {
     const { colSubInRowTotal } = customCalc
     const colLevel = getSubLevel(query, col)
-    const { data } = colSubInRowTotal?.[colLevel]
+    const data = colSubInRowTotal?.[colLevel]?.data
     const colPath = getTreePath(query, col)
     let val
     if (colPath.length && colSubInRowTotal) {
