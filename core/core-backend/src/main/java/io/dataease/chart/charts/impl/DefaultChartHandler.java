@@ -525,16 +525,16 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                     if (CollectionUtils.isEmpty(data)) {
                         break;
                     }
-                    boolean isStack = StringUtils.containsIgnoreCase(chartType, "stack") && !extStack.isEmpty();
-                    boolean isGroup = StringUtils.containsIgnoreCase(chartType, "group") && !xAxisExt.isEmpty();
+                    boolean isStack = StringUtils.containsIgnoreCase(chartType, "stack") && CollectionUtils.isNotEmpty(extStack);
+                    boolean isGroup = StringUtils.containsIgnoreCase(chartType, "group") && CollectionUtils.isNotEmpty(xAxisExt);
                     if (isStack || isGroup) {
                         if (CollectionUtils.isEmpty(xAxis)) {
                             break;
                         }
-                        if (StringUtils.containsIgnoreCase(chartType, "stack") && extStack.isEmpty()) {
+                        if (StringUtils.containsIgnoreCase(chartType, "stack") && CollectionUtils.isEmpty(extStack)) {
                             break;
                         }
-                        if (StringUtils.containsIgnoreCase(chartType, "group") && xAxisExt.isEmpty()) {
+                        if (StringUtils.containsIgnoreCase(chartType, "group") && CollectionUtils.isEmpty(xAxisExt)) {
                             break;
                         }
                         final Map<String, Integer> mainIndexMap = new HashMap<>();
