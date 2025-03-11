@@ -1961,7 +1961,7 @@ export default {
     radar_area_color: 'Enable area',
     table_freeze_tip: 'After merging cells, column and row freezing is not supported',
     merge_cells_tips:
-      'After merging cells, row and column freezing, automatic line wrapping, and zebra pattern will become invalid',
+      'After merging cells, row and column freezing, automatic line wrapping, and zebra pattern will become invalid, the serial number of the current page will start from 1',
     merge_cells_break_line_tip: 'After merging cells, automatic line wrapping is not supported',
     font_family_ya_hei: 'Microsoft YaHei',
     font_family_song_ti: 'SimSun',
@@ -2037,8 +2037,7 @@ export default {
     increase: 'Increase',
     decrease: 'Decrease',
     accumulate: 'Accumulate',
-    table_cross_bg_tip:
-      'After merging cells, the zebra pattern is not supported, and the serial number of the current page will start from 1',
+    table_cross_bg_tip: 'After merging cells, the zebra pattern is not supported',
     pivot_export_invalid_field:
       'The row dimension or indicator dimension is empty and can not be exported !',
     pivot_export_invalid_col_exceed:

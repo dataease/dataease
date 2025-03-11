@@ -602,7 +602,7 @@ export function getConditions(chart: Chart) {
   const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
   if (conditions?.length > 0) {
     const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
-    // 合并单元格时，班马纹失效
+    // 合并单元格时斑马纹失效
     const enableTableCrossBG = chart.type === 'table-info' ? tableCell.enableTableCrossBG && !tableCell.mergeCells : tableCell.enableTableCrossBG
     const valueColor = isAlphaColor(tableCell.tableFontColor)
       ? tableCell.tableFontColor
