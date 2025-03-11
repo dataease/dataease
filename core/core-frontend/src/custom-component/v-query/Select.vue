@@ -4,6 +4,7 @@ import {
   toRefs,
   PropType,
   onBeforeMount,
+  onMounted,
   shallowRef,
   watch,
   nextTick,
@@ -617,6 +618,26 @@ onBeforeMount(() => {
   })
 })
 
+const isDataV = ref(false)
+
+const popperClass = computed(() => {
+  let str = 'filter-select-popper_class'
+  if (visible.value) {
+    str = 'load-select ' + str
+  }
+
+  if (isDataV.value) {
+    str = str + ' color-scrollbar__thumb'
+  }
+  return str
+})
+
+onMounted(() => {
+  isDataV.value =
+    Boolean(document.querySelector('#canvas-dv-outer')) ||
+    Boolean(document.querySelector('.datav-preview'))
+})
+
 defineExpose({
   displayTypeChange,
   mult,
@@ -635,9 +656,7 @@ defineExpose({
     filterable
     @click="selectHideClick"
     @change="handleValueChange"
-    :popper-class="
-      visible ? 'load-select filter-select-popper_class' : 'filter-select-popper_class'
-    "
+    :popper-class="popperClass"
     multiple
     show-checked
     scrollbar-always-on
@@ -661,9 +680,7 @@ defineExpose({
     :style="selectStyle"
     filterable
     radio
-    :popper-class="
-      visible ? 'load-select filter-select-popper_class' : 'filter-select-popper_class'
-    "
+    :popper-class="popperClass"
     :options="options"
   >
     <template #default="{ item }">
@@ -703,6 +720,13 @@ defineExpose({
 
   .ed-select-btn-group {
     color: #1f2329;
+  }
+}
+
+.color-scrollbar__thumb {
+  .ed-scrollbar__thumb {
+    background: #bbbfc4 !important;
+    opacity: 1 !important;
   }
 }
 </style>
