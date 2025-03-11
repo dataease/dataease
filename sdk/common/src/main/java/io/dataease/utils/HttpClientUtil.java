@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -403,6 +404,7 @@ public class HttpClientUtil {
     }
 
     private static String extractFileName(HttpResponse response, String url) {
+        url = URLDecoder.decode(url);
         String fileName = "";
         String disposition = response.getHeaders("Content-Disposition").toString();
         if (disposition != null) {

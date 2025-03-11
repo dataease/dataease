@@ -190,7 +190,17 @@ const initApiItem = (
 ) => {
   pluginDs.value = pluginDsList
   pluginIndex.value = indexPlugin
-  isPlugin.value = isPluginDs
+  if (!isPluginDs) {
+    const arr = pluginDs.value.filter(ele => {
+      return ele.type === from.type
+    })
+    if (arr && arr.length > 0) {
+      isPlugin.value = true
+    }
+  } else {
+    isPlugin.value = isPluginDs
+  }
+
   copyItem.value = val.copy
   copyDs.value = from.copy
   dsType.value = from.type

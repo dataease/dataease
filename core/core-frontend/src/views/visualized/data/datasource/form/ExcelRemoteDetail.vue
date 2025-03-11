@@ -252,6 +252,10 @@ const validateExcel = () => {
 }
 
 const clearForm = () => {
+  state.excelData = []
+  activeTab.value = ''
+  tabList.value = []
+  Object.assign(sheetObj, cloneDeep(defaultSheetObj))
   return remoteExcelForm.value.clearValidate()
 }
 

@@ -711,6 +711,7 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object, supportSetKey: 
       }
       nextTick(() => {
         detail?.value?.clearForm()
+        excelRemote?.value?.clearForm()
         xpack?.value?.invokeMethod({
           methodName: 'clearForm',
           args: []
@@ -724,6 +725,13 @@ const drawTitle = computed(() => {
   const { id, editType, creator } = form2
   if (creator && id && currentDsType.value == 'Excel') {
     return editType === 1 ? t('data_source.append_data') : t('data_source.replace_data')
+  }
+  if (currentDsType.value == 'ExcelRemote') {
+    return editDs.value
+      ? !form2.id
+        ? t('data_source.copy_data_source')
+        : t('datasource.modify')
+      : t('data_source.create_data_source')
   }
   return editDs.value
     ? !form.id
