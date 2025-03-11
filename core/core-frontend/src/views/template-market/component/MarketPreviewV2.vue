@@ -507,6 +507,7 @@ onMounted(() => {
   white-space: nowrap;
   cursor: pointer;
   color: var(--TextPrimary, #1f2329);
+  background: rgba(255, 255, 255, 1);
   -webkit-appearance: none;
   text-align: center;
   box-sizing: border-box;
@@ -515,16 +516,14 @@ onMounted(() => {
   transition: 0.1s;
   border-radius: 3px;
 
-  &:active {
-    color: #000;
-    border-color: #3a8ee6;
-    background-color: red;
-    outline: 0;
+  &:hover {
+    background-color: rgba(245, 246, 247, 1);
+    border-color: rgba(187, 191, 196, 1);
   }
 
-  &:hover {
-    background-color: rgba(225, 234, 255, 1);
-    border-color: rgba(51, 112, 255, 1);
+  &:active {
+    background-color: rgba(239, 240, 241, 1);
+    border-color: rgba(187, 191, 196, 1);
   }
 }
 
@@ -646,13 +645,11 @@ onMounted(() => {
 }
 
 .filter-icon-active {
-  border: 1px solid var(--ed-color-primary);
+  border: 1px solid var(--ed-color-primary) !important;
   color: var(--ed-color-primary);
-}
-
-.filter-icon-active {
-  border: 1px solid var(--ed-color-primary);
-  color: var(--ed-color-primary);
+  &:hover {
+    background-color: rgba(225, 234, 255, 1);
+  }
 }
 
 .search-area {
