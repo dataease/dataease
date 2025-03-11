@@ -523,8 +523,8 @@ onMounted(() => {
   }
 
   &:hover {
-    background-color: rgba(31, 35, 41, 0.1);
-    color: #3a8ee6;
+    background-color: rgba(225, 234, 255, 1);
+    border-color: rgba(51, 112, 255, 1);
   }
 }
 
@@ -667,6 +667,7 @@ onMounted(() => {
   font-weight: 400;
   color: #646a73;
   height: 22px;
+  line-height: 22px;
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -682,7 +683,7 @@ onMounted(() => {
     height: 100%;
     transform: translate(-50%, -50%);
     display: none;
-    border-radius: 4px 0 0 0;
+    border-radius: 4px;
   }
 
   &:hover {
