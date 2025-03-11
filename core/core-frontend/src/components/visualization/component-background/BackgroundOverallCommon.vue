@@ -302,7 +302,7 @@ const goFile = () => {
 }
 
 const sizeMessage = () => {
-  ElMessage.success('图片大小不符合')
+  ElMessage.success('图片大小不能超过15M')
 }
 
 const reUpload = e => {
