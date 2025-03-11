@@ -456,7 +456,8 @@ defineExpose({
       </el-popover>
       <span
         v-if="
-          curComponent.timeRange.intervalType !== 'none' || curComponent.timeRange.dynamicWindow
+          curComponent.timeRange &&
+          (curComponent.timeRange.intervalType !== 'none' || curComponent.timeRange.dynamicWindow)
         "
         class="config-flag range-filter-time-flag"
         >{{ t('v_query.configured') }}</span

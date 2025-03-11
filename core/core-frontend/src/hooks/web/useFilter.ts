@@ -1,5 +1,6 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import dayjs from 'dayjs'
 import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
 import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
 const dvMainStore = dvMainStoreWithOut()
@@ -58,23 +59,24 @@ export const getRange = (selectValue, timeGranularity) => {
   }
 }
 const getYearEnd = timestamp => {
-  const time = new Date(timestamp)
   return [
-    +new Date(time.getFullYear(), 0, 1),
-    +new Date(time.getFullYear(), 11, 31) + 60 * 1000 * 60 * 24 - 1000
+    +new Date(dayjs(timestamp).startOf('year').format('YYYY/MM/DD HH:mm:ss')),
+    +new Date(dayjs(timestamp).endOf('year').format('YYYY/MM/DD HH:mm:ss'))
   ]
 }
 
 const getMonthEnd = timestamp => {
-  const time = new Date(timestamp)
-  const date = new Date(time.getFullYear(), time.getMonth(), 1)
-  date.setDate(1)
-  date.setMonth(date.getMonth() + 1)
-  return [+new Date(time.getFullYear(), time.getMonth(), 1), +new Date(date.getTime() - 1000)]
+  return [
+    +new Date(dayjs(timestamp).startOf('month').format('YYYY/MM/DD HH:mm:ss')),
+    +new Date(dayjs(timestamp).endOf('month').format('YYYY/MM/DD HH:mm:ss'))
+  ]
 }
 
 const getDayEnd = timestamp => {
-  return [+new Date(timestamp), +new Date(timestamp) + 60 * 1000 * 60 * 24 - 1000]
+  return [
+    +new Date(dayjs(timestamp).startOf('day').format('YYYY/MM/DD HH:mm:ss')),
+    +new Date(dayjs(timestamp).endOf('day').format('YYYY/MM/DD HH:mm:ss'))
+  ]
 }
 
 const getFieldId = (arr, result) => {
