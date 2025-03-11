@@ -691,8 +691,6 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object, supportSetKey: 
     Object.assign(form, cloneDeep(defaultForm))
     pid.value = id || '0'
   }
-  console.log(nodeInfo)
-  console.log(pid.value)
   activeStep.value = Number(editDs.value)
   activeApiStep.value = activeStep.value
 

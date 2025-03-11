@@ -961,7 +961,6 @@ const handleClick = (tabName: TabPaneName) => {
     case 'table':
       tableData.value = []
       listDatasourceTables({ datasourceId: nodeInfo.id }).then(res => {
-        console.log(nodeInfo)
         tableData.value = res.data
         initSearch()
         if (nodeInfo.type.startsWith('API') || nodeInfo.type === 'ExcelRemote') {
