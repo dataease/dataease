@@ -742,6 +742,7 @@ defineExpose({
   trackMenu,
   clearLinkage
 })
+let intersectionObserver
 let resizeObserver
 const TOLERANCE = 0.01
 const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
@@ -766,6 +767,15 @@ onMounted(() => {
     preSize[1] = size.blockSize
   })
   resizeObserver.observe(containerDom)
+  intersectionObserver = new IntersectionObserver(([entry]) => {
+    if (RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
+      return
+    }
+    if (entry.intersectionRatio <= 0) {
+      myChart?.emit('tooltip:hidden')
+    }
+  })
+  intersectionObserver.observe(containerDom)
   useEmitt({ name: 'l7-prepare-picture', callback: preparePicture })
   useEmitt({ name: 'l7-unprepare-picture', callback: unPreparePicture })
 })
@@ -773,6 +783,7 @@ onBeforeUnmount(() => {
   try {
     myChart?.destroy()
     resizeObserver?.disconnect()
+    intersectionObserver?.disconnect()
   } catch (e) {
     console.warn(e)
   }

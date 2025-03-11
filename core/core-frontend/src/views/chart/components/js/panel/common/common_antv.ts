@@ -1467,13 +1467,21 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
       if (!tooltipCtl) {
         return
       }
-      const container = tooltipCtl.tooltip.cfg.container
+      const container = tooltipCtl.tooltip?.cfg.container
       for (const ele of wrapperDom.children) {
-        if (container.id !== ele.id) {
+        if (!container || container.id !== ele.id) {
           ele.style.display = 'none'
         }
       }
     }
+  })
+  plot.on('tooltip:hidden', () => {
+    const tooltipCtl = plot.chart.getController('tooltip')
+    if (!tooltipCtl) {
+      return
+    }
+    const container = tooltipCtl.tooltip?.cfg.container
+    container && (container.style.display = 'none')
   })
 }
 

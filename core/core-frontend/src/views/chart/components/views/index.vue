@@ -1028,6 +1028,14 @@ const titleTooltipWidth = computed(() => {
   }
   return '500px'
 })
+const clearG2Tooltip = () => {
+  const g2TooltipWrapper = document.getElementById('g2-tooltip-wrapper')
+  if (g2TooltipWrapper) {
+    for (const ele of g2TooltipWrapper.children) {
+      ele.style.display = 'none'
+    }
+  }
+}
 </script>
 
 <template>
@@ -1168,6 +1176,7 @@ const titleTooltipWidth = computed(() => {
         :show-position="showPosition"
         :suffixId="suffixId"
         :font-family="fontFamily"
+        @touchstart="clearG2Tooltip"
       />
       <chart-component-g2-plot
         :scale="scale"
