@@ -315,18 +315,7 @@ const handleShowFinishPage = ({ id, name, pid }) => {
 emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
-  if (activeApiStep.value === 1) {
-    ElMessageBox.confirm(t('data_source.the_previous_step'), {
-      confirmButtonType: 'primary',
-      type: 'warning',
-      autofocus: false,
-      showClose: false
-    }).then(() => {
-      prevConfirm()
-    })
-  } else {
-    prevConfirm()
-  }
+  prevConfirm()
 }
 
 const prevConfirm = () => {

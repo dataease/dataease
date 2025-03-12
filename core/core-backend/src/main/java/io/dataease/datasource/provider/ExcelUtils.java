@@ -4,6 +4,7 @@ package io.dataease.datasource.provider;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.enums.CellDataTypeEnum;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
@@ -564,7 +565,13 @@ public class ExcelUtils {
             super.invokeHead(headMap, context);
             for (Integer key : headMap.keySet()) {
                 ReadCellData<?> cellData = headMap.get(key);
-                String value = cellData.getStringValue();
+                String value = null;
+                if (cellData.getType().equals(CellDataTypeEnum.STRING)) {
+                    value = cellData.getStringValue();
+                }
+                if (cellData.getType().equals(CellDataTypeEnum.NUMBER)) {
+                    value = cellData.getNumberValue().toString();
+                }
                 if (StringUtils.isEmpty(value)) {
                     continue;
                 }
