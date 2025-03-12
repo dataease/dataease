@@ -21,7 +21,7 @@ import {
   ColCell,
   Node
 } from '@antv/s2'
-import ElMessageBox from 'element-plus-secondary'
+import { ElMessageBox } from 'element-plus-secondary'
 import { cloneDeep, debounce, isEqual, isNumber } from 'lodash-es'
 import { computed, nextTick, onMounted, onUnmounted, PropType } from 'vue'
 import { uuid } from 'vue-uuid'
@@ -477,7 +477,7 @@ const renderTable = (chart: ChartObj) => {
       const curIndex = parent.children.findIndex(item => item.key === curMeta.key)
       const startIndex = Math.min(lastIndex, curIndex)
       const endIndex = Math.max(lastIndex, curIndex)
-      const activeCells = parent.children.slice(startIndex, endIndex - startIndex + 1)
+      const activeCells = parent.children.slice(startIndex, endIndex + 1)
       s2.interaction.clearState()
       activeCells.forEach(cell => {
         s2.interaction.selectHeaderCell({ cell: cell.belongsCell, isMultiSelection: true })
