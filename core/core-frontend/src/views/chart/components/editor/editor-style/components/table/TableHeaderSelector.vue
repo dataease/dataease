@@ -88,8 +88,7 @@ const enableGroupConfig = computed(() => {
 })
 
 const groupConfigValid = computed(() => {
-  const headerConfig = props.chart?.customAttr?.tableHeader?.headerGroupConfig
-  const columns = headerConfig?.columns
+  const columns = props.chart?.customAttr?.tableHeader?.headerGroupConfig?.columns
   if (!columns?.length) {
     return false
   }

@@ -1216,6 +1216,7 @@ const clearG2Tooltip = () => {
       v-if="(!chartAreaShow || showEmpty) && !allEmptyCheck"
       :themes="canvasStyleData.dashboard.themeColor"
       :view-icon="view.type"
+      @touchstart="clearG2Tooltip"
     ></chart-empty-info>
     <drill-path
       :disabled="optType === 'enlarge'"
