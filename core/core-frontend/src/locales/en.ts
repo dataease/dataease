@@ -2991,7 +2991,7 @@ export default {
     dashboard_configuration: 'Dashboard Configuration',
     batch_style_set: 'Batch Style Setting',
     pic_import_tips: 'Supports JPG, PNG, GIF, SVG, size not exceeding {0}',
-    pic_size_error: 'Image size does not match',
+    pic_size_error: 'The image size cannot exceed 15MB',
     re_upload: 'Re-upload',
     screen_configuration: 'Screen Configuration',
     mobile_ios_tips: 'May not display on IOS',

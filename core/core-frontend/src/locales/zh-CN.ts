@@ -2915,7 +2915,7 @@ export default {
     dashboard_configuration: '仪表板配置',
     batch_style_set: '批量设置样式',
     pic_import_tips: '支持JPG、PNG、GIF、SVG，大小不超过 {0}',
-    pic_size_error: '图片大小不符合',
+    pic_size_error: '图片大小不能超过15M',
     re_upload: '重新上传',
     screen_configuration: '仪表板配置',
     mobile_ios_tips: 'IOS可能无法显示',

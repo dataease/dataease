@@ -2908,7 +2908,7 @@ export default {
     dashboard_configuration: '儀表板配置',
     batch_style_set: '批量設置樣式',
     pic_import_tips: '支持JPG、PNG、GIF、SVG，大小不超過 {0}',
-    pic_size_error: '圖片大小不符合',
+    pic_size_error: '圖片大小不能超過15M',
     re_upload: '重新上傳',
     screen_configuration: '儀表板配置',
     mobile_ios_tips: 'IOS可能無法顯示',
