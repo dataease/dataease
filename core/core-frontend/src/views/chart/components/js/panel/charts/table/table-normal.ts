@@ -16,6 +16,7 @@ import {
   S2Options,
   ScrollbarPositionType,
   TableColCell,
+  TableDataCell,
   TableSheet,
   ViewMeta
 } from '@antv/s2'
@@ -171,6 +172,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
           col.label = indexLabel
           col.value = indexLabel
         }
+      }
+      s2Options.dataCell = meta => {
+        return new TableDataCell(meta, meta.spreadsheet)
       }
     }
     // tooltip
