@@ -3,10 +3,12 @@ package io.dataease.extensions.datasource.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serial;
 import java.io.Serializable;
 
+@Slf4j
 @Getter
 @Setter
 @Accessors(chain = true)
@@ -18,6 +20,7 @@ public class TableFieldWithValue implements Serializable {
     private String filedName;
     private String typeName;
     private Integer type;
+    private String columnTypeName;
 
     private String isDateTime;
     private String dateFormat;
@@ -29,6 +32,11 @@ public class TableFieldWithValue implements Serializable {
                 .setValue(tableFieldWithValue.getValue())
                 .setFiledName(tableFieldWithValue.getFiledName())
                 .setTypeName(tableFieldWithValue.getTypeName())
-                .setType(tableFieldWithValue.getType());
+                .setType(tableFieldWithValue.getType())
+                .setColumnTypeName(tableFieldWithValue.getColumnTypeName())
+                .setIsDateTime(tableFieldWithValue.getIsDateTime())
+                .setDateFormat(tableFieldWithValue.getDateFormat())
+                .setTerm(tableFieldWithValue.getTerm())
+                .setDeExtractType(tableFieldWithValue.getDeExtractType());
     }
 }
