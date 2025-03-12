@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; padding-bottom: 16px">
+  <div style="width: 100%; padding-bottom: 8px">
     <el-form label-position="top" style="width: 100%">
       <div style="width: 100%; padding: 16px 8px 0">
         <el-row :gutter="8">
@@ -109,7 +109,7 @@ onMounted(() => {
   }
 }
 .ed-form-item {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 
   :deep(.ed-form-item__label) {
     color: #646a73;

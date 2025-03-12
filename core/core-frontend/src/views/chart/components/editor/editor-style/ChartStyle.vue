@@ -671,6 +671,6 @@ span {
 }
 
 :deep(.ed-collapse-item__content) {
-  padding: 16px 8px 0 8px !important;
+  padding: 16px 8px 8px 8px !important;
 }
 </style>
