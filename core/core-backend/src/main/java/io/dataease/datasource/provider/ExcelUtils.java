@@ -30,6 +30,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -761,6 +763,12 @@ public class ExcelUtils {
                 DEException.throwException(Translator.get("i18n_invalid_address"));
             }
         }
+        if(StringUtils.isNotEmpty(remoteExcelRequest.getUserName())){
+            username = remoteExcelRequest.getUserName();
+        }
+        if(StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())){
+            password = remoteExcelRequest.getPasswd();
+        }
         filePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
         String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);
         if (!Arrays.asList("csv", "xlsx", "xls").contains(suffix)) {
@@ -772,20 +780,26 @@ public class ExcelUtils {
         fileNames.put("tranName", tranName);
 
         try {
-            String command = "curl  -o " + localFilePath; // 在Unix/Linux系统中
-            if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName()) && StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
-                command = command + " -u " + remoteExcelRequest.getUserName() + ":" + remoteExcelRequest.getPasswd();
+            URL url;
+            if(StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password)){
+                url= new URL("ftp://" + username + ":" +password + "@" + serverAddress + "/" + filePath);
+            }else {
+                url= new URL("ftp://" + serverAddress + "/" + filePath);
             }
-            command = command + " " + remoteExcelRequest.getUrl();
-            Process process = Runtime.getRuntime().exec(command);
-            int exitValue = process.waitFor();
-            if (exitValue != 0) {
-                DEException.throwException(Translator.get("i18n_file_download_failed"));
+
+            URLConnection conn = url.openConnection();
+            InputStream inputStream = conn.getInputStream();
+            FileOutputStream outputStream = new FileOutputStream(localFilePath);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
             }
+            inputStream.close();
+            outputStream.close();
+
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            DEException.throwException(Translator.get("i18n_file_download_failed"));
         }
         return fileNames;
     }
