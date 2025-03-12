@@ -318,11 +318,21 @@ const onWrapperClick = e => {
       const jumpType = config.value.events.jump.type
       try {
         if ('newPop' === jumpType) {
-          window.open(
-            url,
-            '_blank',
-            'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
-          )
+          console.info('DataEase Component Jump newPop value:' + window['originOpen'])
+          if (window['originOpen']) {
+            console.info('DataEase Component originOpen newPop')
+            window['originOpen'](
+              url,
+              '_blank',
+              'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
+            )
+          } else {
+            window.open(
+              url,
+              '_blank',
+              'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
+            )
+          }
         } else if ('_blank' === jumpType) {
           console.info('DataEase Component Jump _blank value:' + window['originOpen'])
           if (window['originOpen']) {
