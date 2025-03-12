@@ -12,6 +12,7 @@ import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.FieldUtils;
@@ -22,7 +23,6 @@ import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
-import io.dataease.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
@@ -285,54 +285,58 @@ public class DatasetDataManage {
         return 0L;
     }
 
-    public Long getDatasetCountWithWhere(Long datasetGroupId) throws Exception {
-        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getForCount(datasetGroupId);
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
-        String sql = (String) sqlMap.get("sql");
+    public Long getDatasetCountWithWhere(Long datasetGroupId) {
+        try {
+            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getForCount(datasetGroupId);
+            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+            String sql = (String) sqlMap.get("sql");
 
-        // 获取allFields
-        List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
-        if (ObjectUtils.isEmpty(fields)) {
-            DEException.throwException(Translator.get("i18n_no_fields"));
-        }
-
-        buildFieldName(sqlMap, fields);
-
-        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        DatasourceUtils.checkDsStatus(dsMap);
-        List<String> dsList = new ArrayList<>();
-        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
-            dsList.add(next.getValue().getType());
-        }
-        boolean crossDs = Utils.isCrossDs(dsMap);
-        if (!crossDs) {
-            if (notFullDs.contains(dsMap.entrySet().iterator().next().getValue().getType()) && (boolean) sqlMap.get("isFullJoin")) {
-                DEException.throwException(Translator.get("i18n_not_full"));
+            // 获取allFields
+            List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
+            if (ObjectUtils.isEmpty(fields)) {
+                DEException.throwException(Translator.get("i18n_no_fields"));
             }
-            sql = Utils.replaceSchemaAlias(sql, dsMap);
-        }
 
-        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-        TokenUserBO user = AuthUtils.getUser();
-        if (user != null) {
-            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
-        }
+            buildFieldName(sqlMap, fields);
 
-        Provider provider;
-        if (crossDs) {
-            provider = ProviderFactory.getDefaultProvider();
-        } else {
-            provider = ProviderFactory.getProvider(dsList.getFirst());
-        }
+            Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+            DatasourceUtils.checkDsStatus(dsMap);
+            List<String> dsList = new ArrayList<>();
+            for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+                dsList.add(next.getValue().getType());
+            }
+            boolean crossDs = Utils.isCrossDs(dsMap);
+            if (!crossDs) {
+                if (notFullDs.contains(dsMap.entrySet().iterator().next().getValue().getType()) && (boolean) sqlMap.get("isFullJoin")) {
+                    DEException.throwException(Translator.get("i18n_not_full"));
+                }
+                sql = Utils.replaceSchemaAlias(sql, dsMap);
+            }
 
-        // build query sql
-        SQLMeta sqlMeta = new SQLMeta();
-        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
-        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
-        Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
-        String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
-        return getDatasetTotal(datasetGroupInfoDTO, replaceSql, null);
+            List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
+            TokenUserBO user = AuthUtils.getUser();
+            if (user != null) {
+                rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+            }
+
+            Provider provider;
+            if (crossDs) {
+                provider = ProviderFactory.getDefaultProvider();
+            } else {
+                provider = ProviderFactory.getProvider(dsList.getFirst());
+            }
+
+            // build query sql
+            SQLMeta sqlMeta = new SQLMeta();
+            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+            Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+            Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+            String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
+            return getDatasetTotal(datasetGroupInfoDTO, replaceSql, null);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO, String s, ChartExtRequest request) throws Exception {
