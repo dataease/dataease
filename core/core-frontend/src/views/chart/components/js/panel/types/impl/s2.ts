@@ -144,7 +144,7 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
         ]
         const shape = s2Instance.container.getShape(relativePosition[0], relativePosition[1])
         // 图片单元格，表头排序图标点击放大图片
-        if (['GuiIcon2', 'ImageCell'].includes(shape.cfg?.parent.constructor.name)) {
+        if (shape.cfg?.type === 'image') {
           return
         }
         const callback = () => {
