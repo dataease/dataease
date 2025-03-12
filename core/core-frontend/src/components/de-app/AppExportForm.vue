@@ -138,43 +138,28 @@ const close = () => {
   state.applyDownloadDrawer = false
 }
 
-const gatherAppInfo = (viewIds, dsIds) => {
-  componentData.value.forEach(item => {
+const gatherAppInfo = (viewIds, dsIds, componentDataCheck) => {
+  componentDataCheck.forEach(item => {
     if (item.component === 'UserView' && canvasViewInfo.value[item.id]) {
       const viewDetails = canvasViewInfo.value[item.id]
       const { id, tableId } = viewDetails
       viewIds.push(id)
       dsIds.push(tableId)
     } else if (item.component === 'Group') {
-      item.propValue.forEach(groupItem => {
-        if (groupItem.component === 'UserView') {
-          const viewDetails = canvasViewInfo.value[groupItem.id]
-          const { id, tableId } = viewDetails
-          viewIds.push(id)
-          dsIds.push(tableId)
-        }
-      })
+      gatherAppInfo(viewIds, dsIds, item.propValue)
     } else if (item.component === 'DeTabs') {
       item.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
-          if (tabComponent.component === 'UserView') {
-            const viewDetails = canvasViewInfo.value[tabComponent.id]
-            const { id, tableId } = viewDetails
-            viewIds.push(id)
-            dsIds.push(tableId)
-          }
-        })
+        gatherAppInfo(viewIds, dsIds, tabItem.componentData)
       })
     }
   })
 }
-
 const downloadApp = () => {
   applyDownloadForm.value?.validate(valid => {
     if (valid) {
       const viewIds = []
       const dsIds = []
-      gatherAppInfo(viewIds, dsIds)
+      gatherAppInfo(viewIds, dsIds, componentData.value)
       export2AppCheck({ dvId: dvInfo.value.id, viewIds, dsIds }).then(rsp => {
         const params = {
           ...rsp.data,
