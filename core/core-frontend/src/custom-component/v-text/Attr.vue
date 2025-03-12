@@ -37,9 +37,6 @@ const { themes } = toRefs(props)
     font-size: 12px !important;
     font-weight: 400 !important;
   }
-  :deep(.ed-collapse-item__content) {
-    padding: 16px !important;
-  }
   :deep(.ed-form-item) {
     display: block;
     margin-bottom: 8px;

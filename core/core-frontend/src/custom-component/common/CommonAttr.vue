@@ -252,7 +252,7 @@ onMounted(() => {
     }
   }
   :deep(.ed-collapse-item__content) {
-    padding: 16px 8px 0;
+    padding: 16px 8px 8px !important;
     border: none;
   }
   :deep(.ed-form-item) {
