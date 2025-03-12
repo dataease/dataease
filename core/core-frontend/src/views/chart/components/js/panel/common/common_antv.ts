@@ -635,14 +635,16 @@ export function getYAxisExt(chart: Chart) {
     ? {
         style: {
           stroke: axisCfg.lineStyle.color,
-          lineWidth: axisCfg.lineStyle.width
+          lineWidth: axisCfg.lineStyle.width,
+          lineDash: getLineDash(axisCfg.lineStyle.style)
         }
       }
     : null
   const tickLine = axisCfg.show
     ? {
         style: {
-          stroke: axisCfg.lineStyle.color
+          stroke: axisCfg.lineStyle.color,
+          lineWidth: axisCfg.lineStyle.width
         }
       }
     : null
