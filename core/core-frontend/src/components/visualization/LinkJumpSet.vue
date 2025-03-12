@@ -746,6 +746,28 @@ const dialogInit = viewItem => {
   init(viewItem)
 }
 
+const initCurFilterFieldArray = componentDataCheck => {
+  componentDataCheck.forEach(componentItem => {
+    if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
+      componentItem.propValue.forEach(filterItem => {
+        if (filterItem.checkedFields.includes(state.viewId)) {
+          state.linkJumpCurFilterFieldArray.push({
+            id: filterItem.id,
+            name: filterItem.name,
+            deType: 'filter'
+          })
+        }
+      })
+    } else if (componentItem.component === 'Group') {
+      initCurFilterFieldArray(componentItem.propValue)
+    } else if (componentItem.component === 'DeTabs') {
+      componentItem.propValue.forEach(tabItem => {
+        initCurFilterFieldArray(tabItem.componentData)
+      })
+    }
+  })
+}
+
 const init = viewItem => {
   state.initState = false
   state.viewId = viewItem.id
@@ -792,19 +814,7 @@ const init = viewItem => {
 
   // 获取当前过滤条件明细 过滤原则：1.在当前仪表板或者大屏 2.作用于当前图表
   state.linkJumpCurFilterFieldArray = []
-  componentData.value.forEach(componentItem => {
-    if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
-      componentItem.propValue.forEach(filterItem => {
-        if (filterItem.checkedFields.includes(state.viewId)) {
-          state.linkJumpCurFilterFieldArray.push({
-            id: filterItem.id,
-            name: filterItem.name,
-            deType: 'filter'
-          })
-        }
-      })
-    }
-  })
+  initCurFilterFieldArray(componentData.value)
 
   if (chartDetails.tableId) {
     // 获取当前数据集信息
