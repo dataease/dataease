@@ -136,18 +136,18 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
         if (duration > 300) {
           return
         }
+        const canvasPosition = canvas.getBoundingClientRect()
+        const touchPosition = [e.changedTouches[0].pageX, e.changedTouches[0].pageY]
+        const relativePosition = [
+          touchPosition[0] - canvasPosition.x,
+          touchPosition[1] - canvasPosition.y
+        ]
+        const shape = s2Instance.container.getShape(relativePosition[0], relativePosition[1])
+        // 图片单元格，表头排序图标点击放大图片
+        if (['GuiIcon2', 'ImageCell'].includes(shape.cfg?.parent.constructor.name)) {
+          return
+        }
         const callback = () => {
-          const canvasPosition = canvas.getBoundingClientRect()
-          const touchPosition = [e.changedTouches[0].pageX, e.changedTouches[0].pageY]
-          const relativePosition = [
-            touchPosition[0] - canvasPosition.x,
-            touchPosition[1] - canvasPosition.y
-          ]
-          const shape = s2Instance.container.getShape(relativePosition[0], relativePosition[1])
-          // 图片单元格，表头排序图标点击放大图片
-          if (['GuiIcon2', 'ImageCell'].includes(shape.cfg?.parent.constructor.name)) {
-            return
-          }
           e.preventDefault()
           e.stopPropagation()
           if (shape) {
