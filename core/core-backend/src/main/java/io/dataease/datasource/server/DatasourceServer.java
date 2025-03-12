@@ -65,7 +65,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
@@ -583,39 +582,45 @@ public class DatasourceServer implements DatasourceApi {
         }
         List<CoreDatasource> dsList = datasourceMapper.selectList(queryWrapper);
 
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            List<Callable<DatasourceDTO>> tasks = new ArrayList<>();
-            // 创建多个任务
-            for (CoreDatasource datasource : dsList) {
-                tasks.add(() -> {
-                    try {
-                        return convertCoreDatasource(datasource.getId(), false, datasource);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                });
-            }
+        for (CoreDatasource datasource : dsList) {
+            DatasourceDTO datasourceDTO = new DatasourceDTO();
+            BeanUtils.copyBean(datasourceDTO, datasource);
 
-            // 提交所有任务并等待结果
-            List<Future<DatasourceDTO>> futures = executor.invokeAll(tasks);
-            for (Future<DatasourceDTO> future : futures) {
-                DatasourceDTO datasourceDTO = future.get();
-                if (datasourceDTO != null) {
-                    list.add(datasourceDTO);
+            if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.toString())) {
+                List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
+                int success = 0;
+                for (ApiDefinition apiDefinition : apiDefinitionList) {
+                    String status = null;
+                    if (StringUtils.isNotEmpty(datasourceDTO.getStatus())) {
+                        JsonNode jsonNode = null;
+                        try {
+                            jsonNode = objectMapper.readTree(datasourceDTO.getStatus());
+                            for (JsonNode node : jsonNode) {
+                                if (node.get("name").asText().equals(apiDefinition.getName())) {
+                                    status = node.get("status").asText();
+                                }
+                            }
+                            apiDefinition.setStatus(status);
+                        } catch (Exception ignore) {
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
+                        success++;
+                    }
+                }
+                if (success == apiDefinitionList.size()) {
+                    datasourceDTO.setStatus("Success");
+                } else {
+                    if (success > 0 && success < apiDefinitionList.size()) {
+                        datasourceDTO.setStatus("Warning");
+                    } else {
+                        datasourceDTO.setStatus("Error");
+                    }
                 }
             }
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
 
-        /*for (CoreDatasource datasource : dsList) {
-            try {
-                list.add(convertCoreDatasource(datasource.getId(), false, datasource));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
+            list.add(datasourceDTO);
+        }
         return list;
     }
 
