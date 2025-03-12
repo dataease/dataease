@@ -402,7 +402,16 @@ const doValidateDs = request => {
     excelRequest.userName = Base64.encode(request.userName)
     excelRequest.passwd = Base64.encode(request.passwd)
     return loadRemoteFile(excelRequest)
-      .then(() => {
+      .then(res => {
+        dsLoading.value = false
+        if (!res) {
+          ElMessage.warning(res.msg)
+          return
+        }
+        if (res?.code !== 0) {
+          ElMessage.warning(res.msg)
+          return
+        }
         ElMessage.success(t('datasource.validate_success'))
         dsLoading.value = false
       })
