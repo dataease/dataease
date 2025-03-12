@@ -1312,4 +1312,4 @@ declare interface ColumnNode {
   children?: Columns
 }
 
-declare type Columns = Array<string | ColumnNode>
+declare type Columns = Array<ColumnNode>

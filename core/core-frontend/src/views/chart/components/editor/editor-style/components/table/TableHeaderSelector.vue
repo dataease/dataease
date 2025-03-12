@@ -92,6 +92,10 @@ const groupConfigValid = computed(() => {
   if (!columns?.length) {
     return false
   }
+  const noGroup = columns.every(item => !item.children?.length)
+  if (noGroup) {
+    return false
+  }
   const xAxis = props.chart.xAxis
   const showColumns = []
   xAxis?.forEach(axis => {

@@ -74,7 +74,7 @@ const init = () => {
   }
   if (headerGroupConfig?.columns?.length) {
     const allAxis = showColumns.map(item => item.key)
-    const leafNodes = getLeafNodes(headerGroupConfig.columns as Array<ColumnNode>)
+    const leafNodes = getLeafNodes(headerGroupConfig.columns)
     const leafKeys = leafNodes.map(item => item.key)
     if (!isEqual(allAxis, leafKeys)) {
       const { columns, meta } = headerGroupConfig
