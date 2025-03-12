@@ -191,15 +191,17 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       tableTotal.row.showGrandTotals &&
       v.indexOf(tableTotal.row.totalSortField) > -1
     ) {
-      const sort = {
-        sortFieldId: c[0],
-        sortMethod: tableTotal.row.totalSort.toUpperCase(),
-        sortByMeasure: TOTAL_VALUE,
-        query: {
-          [EXTRA_FIELD]: tableTotal.row.totalSortField
+      c.forEach(i => {
+        const sort = {
+          sortFieldId: i,
+          sortMethod: tableTotal.row.totalSort.toUpperCase(),
+          sortByMeasure: TOTAL_VALUE,
+          query: {
+            [EXTRA_FIELD]: tableTotal.row.totalSortField
+          }
         }
-      }
-      sortParams.push(sort)
+        sortParams.push(sort)
+      })
     }
     if (
       tableTotal.col.totalSort &&
@@ -208,15 +210,17 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       tableTotal.col.showGrandTotals &&
       v.indexOf(tableTotal.col.totalSortField) > -1
     ) {
-      const sort = {
-        sortFieldId: r[0],
-        sortMethod: tableTotal.col.totalSort.toUpperCase(),
-        sortByMeasure: TOTAL_VALUE,
-        query: {
-          [EXTRA_FIELD]: tableTotal.col.totalSortField
+      r.forEach(i => {
+        const sort = {
+          sortFieldId: i,
+          sortMethod: tableTotal.col.totalSort.toUpperCase(),
+          sortByMeasure: TOTAL_VALUE,
+          query: {
+            [EXTRA_FIELD]: tableTotal.col.totalSortField
+          }
         }
-      }
-      sortParams.push(sort)
+        sortParams.push(sort)
+      })
     }
     //列维度为空，行排序按照指标列来排序，取第一个有排序设置的指标
     if (!columnFields?.length) {
