@@ -762,42 +762,31 @@ public class ExcelUtils {
                 DEException.throwException("无效的地址！");
             }
         }
-        if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName()) && StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
-            username = remoteExcelRequest.getUserName();
-            password = remoteExcelRequest.getPasswd();
-        }
         filePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
-        int port = 21;
         String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);
+        if (!Arrays.asList("csv", "xlsx", "xls").contains(suffix)) {
+            DEException.throwException("不支持的文件格式！");
+        }
         String tranName = UUID.randomUUID().toString() + "." + suffix;
         String localFilePath = path + tranName;
         fileNames.put("fileName", filePath);
         fileNames.put("tranName", tranName);
-        FTPClient ftpClient = new FTPClient();
+
         try {
-            ftpClient.setConnectTimeout(5 * 1000);
-            ftpClient.connect(serverAddress, port);
-            ftpClient.login(username, password);
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            File localFile = new File(localFilePath);
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(localFile))) {
-                boolean success = ftpClient.retrieveFile(filePath, outputStream);
-                if (!success) {
-                    DEException.throwException("文件下载失败！");
-                }
+            String command = "curl  -o " + localFilePath; // 在Unix/Linux系统中
+            if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName()) && StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
+                command = command + " -u " + remoteExcelRequest.getUserName() + ":" + remoteExcelRequest.getPasswd();
+            }
+            command = command + " " + remoteExcelRequest.getUrl();
+            Process process = Runtime.getRuntime().exec(command);
+            int exitValue = process.waitFor();
+            if (exitValue != 0) {
+                DEException.throwException("文件下载失败！");
             }
         } catch (IOException e) {
-            DEException.throwException(e);
-        } finally {
-            try {
-                if (ftpClient.isConnected()) {
-                    ftpClient.logout();
-                    ftpClient.disconnect();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         return fileNames;
     }
