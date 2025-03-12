@@ -9,11 +9,12 @@ import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 import { ElDivider, ElSpace } from 'element-plus-secondary'
-import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep, isEqual } from 'lodash-es'
 import { convertToAlphaColor, isAlphaColor } from '@/views/chart/components/js/util'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import TableHeaderGroupConfig from './TableHeaderGroupConfig.vue'
+import { getLeafNodes } from '@/views/chart/components/js/panel/common/common_table'
 
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
@@ -86,6 +87,25 @@ const enableGroupConfig = computed(() => {
   )
 })
 
+const groupConfigValid = computed(() => {
+  const headerConfig = props.chart?.customAttr?.tableHeader?.headerGroupConfig
+  const columns = headerConfig?.columns
+  if (!columns?.length) {
+    return false
+  }
+  const xAxis = props.chart.xAxis
+  const showColumns = []
+  xAxis?.forEach(axis => {
+    axis.hide !== true && showColumns.push({ key: axis.dataeaseName })
+  })
+  if (!showColumns.length) {
+    return false
+  }
+  const allAxis = showColumns.map(item => item.key)
+  const leafNodes = getLeafNodes(columns as Array<ColumnNode>)
+  const leafKeys = leafNodes.map(item => item.key)
+  return isEqual(allAxis, leafKeys)
+})
 const init = () => {
   const tableHeader = props.chart?.customAttr?.tableHeader
   if (tableHeader) {
@@ -761,7 +781,7 @@ onMounted(() => {
       <div class="header-group-config">
         <span>{{ t('chart.table_header_group_config') }}</span>
         <div class="group-icon">
-          <span v-if="state.tableHeaderForm.headerGroupConfig?.columns?.length">
+          <span v-if="groupConfigValid">
             {{ t('visualization.already_setting') }}
           </span>
           <div
