@@ -22,6 +22,7 @@ export function getItemType(dimensionData, quotaData, item) {
         }
       } else {
         if (
+          ele.id === item.id &&
           ele.originName === item.originName &&
           ele.deType === item.deType &&
           ele.groupType === item.groupType
