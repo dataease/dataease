@@ -215,7 +215,7 @@ public class DatasourceServer implements DatasourceApi {
         datasource.setName(dataSourceDTO.getName());
         dataSourceDTO.setPid(datasource.getPid());
         dataSourceManage.checkName(dataSourceDTO);
-        dataSourceManage.innerEdit(datasource);
+        dataSourceManage.innerEditName(datasource);
         return dataSourceDTO;
     }
 

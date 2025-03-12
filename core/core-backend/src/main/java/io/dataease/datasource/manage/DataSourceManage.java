@@ -2,11 +2,9 @@ package io.dataease.datasource.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import io.dataease.api.lark.vo.LarkInfoVO;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.DataSourceType;
-import io.dataease.constant.MessageEnum;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.ext.mapper.CoreDatasourceExtMapper;
@@ -22,7 +20,10 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
-import io.dataease.utils.*;
+import io.dataease.utils.AuthUtils;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.CommunityUtils;
+import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -146,6 +147,17 @@ public class DataSourceManage {
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 
+
+    @XpackInteract(value = "datasourceResourceTree", before = false)
+    public void innerEditName(CoreDatasource coreDatasource) {
+        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", coreDatasource.getId());
+        coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+        coreDatasource.setUpdateTime(System.currentTimeMillis());
+        coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
+        coreDatasourceMapper.update(coreDatasource, updateWrapper);
+        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
+    }
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEditStatus(CoreDatasource coreDatasource) {
