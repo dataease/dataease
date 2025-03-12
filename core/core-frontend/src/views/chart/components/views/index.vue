@@ -492,7 +492,7 @@ const jumpClick = param => {
             if (attachParamsInfo) {
               url = url + attachParamsInfo + jumpInfoParam
             } else {
-              url = url + '&ignoreParams=true' + attachParamsInfo + jumpInfoParam
+              url = url + '&ignoreParams=true' + jumpInfoParam
             }
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
@@ -505,7 +505,7 @@ const jumpClick = param => {
           if (attachParamsInfo) {
             url = url + attachParamsInfo + jumpInfoParam
           } else {
-            url = url + '&ignoreParams=true' + attachParamsInfo + jumpInfoParam
+            url = url + '&ignoreParams=true' + jumpInfoParam
           }
           const currentUrl = window.location.href
           localStorage.setItem('beforeJumpUrl', currentUrl)
