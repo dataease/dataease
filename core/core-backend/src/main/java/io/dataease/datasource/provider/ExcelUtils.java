@@ -22,11 +22,10 @@ import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.api.ds.vo.ExcelConfiguration;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.*;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -435,7 +434,7 @@ public class ExcelUtils {
         } else if (remoteExcelRequest.getUrl().trim().startsWith("ftp")) {
             fileNames = downLoadFromFtp(remoteExcelRequest);
         } else {
-            DEException.throwException("不支持的协议！");
+            DEException.throwException(Translator.get("i18n_unsupported_protocol"));
         }
         return fileNames;
     }
@@ -671,7 +670,7 @@ public class ExcelUtils {
             for (int i = 0; i < split.length; i++) {
                 String filedName = split[i];
                 if (StringUtils.isEmpty(filedName)) {
-                    DEException.throwException("首行行中不允许有空单元格！");
+                    DEException.throwException(Translator.get("i18n_excel_error_first_row"));
                 }
                 if (filedName.startsWith(UFEFF)) {
                     filedName = filedName.replace(UFEFF, "");
@@ -749,7 +748,7 @@ public class ExcelUtils {
                 serverAddress = matcher.group(3);
                 filePath = matcher.group(4);
             } else {
-                DEException.throwException("无效的地址！");
+                DEException.throwException(Translator.get("i18n_invalid_address"));
             }
         } else {
             String regex = "ftp://([^/]+)(.*)";
@@ -759,13 +758,13 @@ public class ExcelUtils {
                 serverAddress = matcher.group(1);
                 filePath = matcher.group(2);
             } else {
-                DEException.throwException("无效的地址！");
+                DEException.throwException(Translator.get("i18n_invalid_address"));
             }
         }
         filePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
         String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);
         if (!Arrays.asList("csv", "xlsx", "xls").contains(suffix)) {
-            DEException.throwException("不支持的文件格式！");
+            DEException.throwException(Translator.get("i18n_unsupported_file_format"));
         }
         String tranName = UUID.randomUUID().toString() + "." + suffix;
         String localFilePath = path + tranName;
@@ -781,7 +780,7 @@ public class ExcelUtils {
             Process process = Runtime.getRuntime().exec(command);
             int exitValue = process.waitFor();
             if (exitValue != 0) {
-                DEException.throwException("文件下载失败！");
+                DEException.throwException(Translator.get("i18n_file_download_failed"));
             }
         } catch (IOException e) {
             e.printStackTrace();
