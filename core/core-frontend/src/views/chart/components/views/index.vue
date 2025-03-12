@@ -450,6 +450,9 @@ const jumpClick = param => {
     if (isDataEaseBi.value) {
       embeddedBaseUrl = embeddedStore.baseUrl
     }
+    const jumpInfoParam = `&jumpInfoParam=${encodeURIComponent(
+      Base64.encode(JSON.stringify(param))
+    )}`
     // 内部仪表板跳转
     if (jumpInfo.linkType === 'inner') {
       if (jumpInfo.targetDvId) {
@@ -485,13 +488,11 @@ const jumpClick = param => {
         if (publicLinkStatus.value) {
           // 判断是否有公共链接ID
           if (jumpInfo.publicJumpId) {
-            let url = `${embeddedBaseUrl}#/de-link/${
-              jumpInfo.publicJumpId
-            }?fromLink=true&ignoreParams=true&jumpInfoParam=${encodeURIComponent(
-              Base64.encode(JSON.stringify(param))
-            )}`
+            let url = `${embeddedBaseUrl}#/de-link/${jumpInfo.publicJumpId}?fromLink=true`
             if (attachParamsInfo) {
-              url = url + attachParamsInfo
+              url = url + attachParamsInfo + jumpInfoParam
+            } else {
+              url = url + '&ignoreParams=true' + attachParamsInfo + jumpInfoParam
             }
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
@@ -500,13 +501,11 @@ const jumpClick = param => {
             ElMessage.warning(t('visualization.public_link_tips'))
           }
         } else {
-          let url = `${embeddedBaseUrl}#/preview?dvId=${
-            jumpInfo.targetDvId
-          }&fromLink=true&ignoreParams=true&jumpInfoParam=${encodeURIComponent(
-            Base64.encode(JSON.stringify(param))
-          )}`
+          let url = `${embeddedBaseUrl}#/preview?dvId=${jumpInfo.targetDvId}&fromLink=true`
           if (attachParamsInfo) {
-            url = url + attachParamsInfo
+            url = url + attachParamsInfo + jumpInfoParam
+          } else {
+            url = url + '&ignoreParams=true' + attachParamsInfo + jumpInfoParam
           }
           const currentUrl = window.location.href
           localStorage.setItem('beforeJumpUrl', currentUrl)
