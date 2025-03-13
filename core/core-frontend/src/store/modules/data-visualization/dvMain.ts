@@ -1012,7 +1012,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             this.trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId)
             this.componentData[indexOuter] = element
           } else if (element.component === 'Group') {
-            element.propValue.forEach((groupItem, index) => {
+            element.propValue?.forEach((groupItem, index) => {
               this.trackFilterCursor(
                 groupItem,
                 checkQDList,
@@ -1023,7 +1023,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               element.propValue[index] = groupItem
             })
           } else if (element.component === 'DeTabs') {
-            element.propValue.forEach(tabItem => {
+            element.propValue?.forEach(tabItem => {
               tabItem.componentData.forEach((tabComponent, index) => {
                 this.trackFilterCursor(
                   tabComponent,
@@ -1050,12 +1050,12 @@ export const dvMainStore = defineStore('dataVisualization', {
             this.trackWebFilterCursor(element, params)
             this.componentData[index] = element
           } else if (element.component === 'Group') {
-            element.propValue.forEach((groupItem, index) => {
+            element.propValue?.forEach((groupItem, index) => {
               this.trackWebFilterCursor(groupItem, params)
               element.propValue[index] = groupItem
             })
           } else if (element.component === 'DeTabs') {
-            element.propValue.forEach(tabItem => {
+            element.propValue?.forEach(tabItem => {
               tabItem.componentData.forEach((tabComponent, index) => {
                 this.trackWebFilterCursor(tabComponent, params)
                 tabItem.componentData[index] = tabComponent
@@ -1122,7 +1122,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             )
             this.componentData[index] = element
           } else if (element.component === 'Group') {
-            element.propValue.forEach((groupItem, index) => {
+            element.propValue?.forEach((groupItem, index) => {
               this.trackOuterFilterCursor(
                 groupItem,
                 params,
@@ -1134,7 +1134,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               element.propValue[index] = groupItem
             })
           } else if (element.component === 'DeTabs') {
-            element.propValue.forEach(tabItem => {
+            element.propValue?.forEach(tabItem => {
               tabItem.componentData.forEach((tabComponent, index) => {
                 this.trackOuterFilterCursor(
                   tabComponent,
@@ -1235,7 +1235,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
           if (element.component === 'VQuery') {
             const defaultValueMap = {}
-            element.propValue.forEach(filterItem => {
+            element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
                 if (!['1', '7'].includes(filterItem.displayType)) {
@@ -1365,7 +1365,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery') {
-            element.propValue.forEach(filterItem => {
+            element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
                 if (!['1', '7'].includes(filterItem.displayType)) {
