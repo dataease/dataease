@@ -668,21 +668,23 @@ public class ExcelUtils {
             List<TableField> fields = new ArrayList<>();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String s = reader.readLine();// first line
-            String[] split = s.split(",");
-            for (int i = 0; i < split.length; i++) {
-                String filedName = split[i];
-                if (StringUtils.isEmpty(filedName)) {
-                    DEException.throwException(Translator.get("i18n_excel_error_first_row"));
+            if(StringUtils.isNotEmpty(s)){
+                String[] split = s.split(",");
+                for (int i = 0; i < split.length; i++) {
+                    String filedName = split[i];
+                    if (StringUtils.isEmpty(filedName)) {
+                        DEException.throwException(Translator.get("i18n_excel_error_first_row"));
+                    }
+                    if (filedName.startsWith(UFEFF)) {
+                        filedName = filedName.replace(UFEFF, "");
+                    }
+                    TableField tableFiled = new TableField();
+                    tableFiled.setName(filedName);
+                    tableFiled.setOriginName(filedName);
+                    tableFiled.setFieldType(null);
+                    tableFiled.setChecked(true);
+                    fields.add(tableFiled);
                 }
-                if (filedName.startsWith(UFEFF)) {
-                    filedName = filedName.replace(UFEFF, "");
-                }
-                TableField tableFiled = new TableField();
-                tableFiled.setName(filedName);
-                tableFiled.setOriginName(filedName);
-                tableFiled.setFieldType(null);
-                tableFiled.setChecked(true);
-                fields.add(tableFiled);
             }
 
             List<String[]> data = csvData(reader, isPreview, fields.size());
@@ -734,7 +736,7 @@ public class ExcelUtils {
         return excelSheetDataList;
     }
 
-    private static Map<String, String> downLoadFromFtp(ExcelConfiguration remoteExcelRequest) {
+    public static Map<String, String> downLoadFromFtp(ExcelConfiguration remoteExcelRequest) {
         Map<String, String> fileNames = new HashMap<>();
         String username = "";
         String password = "";
