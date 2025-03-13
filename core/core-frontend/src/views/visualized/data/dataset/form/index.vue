@@ -2771,7 +2771,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         {{ t('auth.add_condition') }}
       </el-button>
       <div class="line"></div>
-      <div class="group-fields_item">
+      <div class="group-fields_item" style="align-items: center">
         <el-input
           :placeholder="t('common.inputText')"
           style="width: 278px; margin-right: 24px"
