@@ -2,14 +2,17 @@ package io.dataease.chart.charts.impl.mix;
 
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
+import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
+import io.dataease.extensions.view.util.FieldUtil;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -129,12 +132,18 @@ public class MixHandler extends YoyChartHandler {
         formatResult2.getContext().remove("yoyFiltered");
         formatResult2.getContext().put("isRight", "isRight");
 
+        CustomFilterResult originFilter = new CustomFilterResult();
+        originFilter.setContext(filterResult.getContext());
+        List<ChartExtFilterDTO> list = (List<ChartExtFilterDTO>) formatResult.getContext().get("originFilter");
+        originFilter.setFilterList(ObjectUtils.isEmpty(list) ? new ArrayList<>() : list);
 
         formatResult.getContext().put("subAxisMap", axisMap);
 
         // 右轴重新检测同环比过滤
-        customFilter(view, filterResult.getFilterList(), formatResult2);
-        var rightResult = (T) super.calcChartResult(view, formatResult2, filterResult, sqlMap, sqlMeta, provider);
+        customFilter(view, originFilter.getFilterList(), formatResult2);
+        var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
+        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, originFilter.getFilterList(), FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+        var rightResult = (T) super.calcChartResult(view, formatResult2, originFilter, sqlMap, sqlMeta, provider);
         try {
             //如果有同环比过滤,应该用原始sql
             var originSql = rightResult.getQuerySql();
