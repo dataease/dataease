@@ -208,8 +208,8 @@ public class TablePivotHandler extends GroupChartHandler {
             }
         }
         // 列总计里面的行小计
-        if (col.isShowGrandTotals() && row.isShowGrandTotals() && rowAxis.size() >= 2) {
-            var yAxis = getCustomFields(view, row.getCalcTotals().getCfg());
+        if (col.isShowGrandTotals() && row.isShowSubTotals() && rowAxis.size() >= 2) {
+            var yAxis = getCustomFields(view, row.getCalcSubTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
                 dataMap.put("rowSubInColTotal", tmpData);
