@@ -780,7 +780,7 @@ defineExpose({
         </el-form-item>
         <el-form-item :label="t('datasource.password')" v-show="activeStep !== 2">
           <CustomPassword
-            :placeholder="t('common.inputText') + t('common.empty') + +t('datasource.password')"
+            :placeholder="t('common.inputText') + t('common.empty') + t('datasource.password')"
             show-password
             type="password"
             v-model="form.configuration.passwd"
