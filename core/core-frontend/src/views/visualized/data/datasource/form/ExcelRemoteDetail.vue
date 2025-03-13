@@ -780,7 +780,7 @@ defineExpose({
         </el-form-item>
         <el-form-item :label="t('datasource.password')" v-show="activeStep !== 2">
           <CustomPassword
-            :placeholder="t('common.inputText') + ' ' + t('datasource.password')"
+            :placeholder="t('common.inputText') + t('common.empty') + +t('datasource.password')"
             show-password
             type="password"
             v-model="form.configuration.passwd"
@@ -1241,7 +1241,8 @@ defineExpose({
     background: #f5f6f7;
     padding: 16px;
     .btn-select {
-      width: 164px;
+      min-width: 164px;
+      padding: 0 6px;
       height: 32px;
       display: flex;
       align-items: center;
@@ -1259,7 +1260,7 @@ defineExpose({
       }
       .ed-button.is-text {
         height: 24px;
-        width: 74px;
+        min-width: 74px;
         line-height: 24px;
       }
       .ed-button + .ed-button {

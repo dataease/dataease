@@ -1,6 +1,9 @@
 export default {
   common: {
+    empty: '',
     timeout_tips: '请求超时，请稍后再试',
+    local_excel: '本地 Excel/CSV',
+    remote_excel: '远程 Excel/CSV',
     watermarkManagement: '水印管理',
     list_selection: '列表选择',
     date_setting: '日期设置',

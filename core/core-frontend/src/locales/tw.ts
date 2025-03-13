@@ -1,5 +1,6 @@
 export default {
   common: {
+    empty: '',
     component: {
       input: '單行輸入',
       textarea: '多行輸入',
@@ -10,6 +11,8 @@ export default {
       dateRange: '時間範圍',
       add_component_hint: '點選或拖曳左側元件新增欄位'
     },
+    local_excel: '本地 Excel/CSV',
+    remote_excel: '遠端 Excel/CSV',
     list_selection: '清單選擇',
     date_setting: '日期設定',
     openMobileTerminal: '開啟行動端',

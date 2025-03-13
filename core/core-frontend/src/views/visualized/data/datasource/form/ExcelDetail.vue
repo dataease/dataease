@@ -641,14 +641,31 @@ defineExpose({
           :rules="[
             {
               required: true,
-              message: t('common.please_input') + t('datasource.datasource') + t('common.name')
+              message:
+                t('common.please_input') +
+                t('common.empty') +
+                t('datasource.datasource') +
+                t('common.empty') +
+                t('common.name')
             }
           ]"
-          :label="t('visualization.custom') + t('datasource.datasource') + t('common.name')"
+          :label="
+            t('visualization.custom') +
+            t('common.empty') +
+            t('datasource.datasource') +
+            t('common.empty') +
+            t('common.name')
+          "
         >
           <el-input
             v-model="param.name"
-            :placeholder="t('common.please_input') + t('datasource.datasource') + t('common.name')"
+            :placeholder="
+              t('common.please_input') +
+              t('common.empty') +
+              t('datasource.datasource') +
+              t('common.empty') +
+              t('common.name')
+            "
           />
         </el-form-item>
       </el-form>
@@ -787,7 +804,8 @@ defineExpose({
     background: #f5f6f7;
     padding: 16px;
     .btn-select {
-      width: 164px;
+      min-width: 164px;
+      padding: 0 6px;
       height: 32px;
       display: flex;
       align-items: center;
@@ -805,7 +823,7 @@ defineExpose({
       }
       .ed-button.is-text {
         height: 24px;
-        width: 74px;
+        min-width: 74px;
         line-height: 24px;
       }
       .ed-button + .ed-button {
