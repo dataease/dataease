@@ -399,8 +399,8 @@ const doValidateDs = request => {
     let excelRequest = JSON.parse(JSON.stringify(form2.configuration))
     excelRequest.datasourceId = form2.id || 0
     excelRequest.editType = form2.editType
-    excelRequest.userName = Base64.encode(request.userName)
-    excelRequest.passwd = Base64.encode(request.passwd)
+    excelRequest.userName = Base64.encode(excelRequest.userName)
+    excelRequest.passwd = Base64.encode(excelRequest.passwd)
     return loadRemoteFile(excelRequest)
       .then(res => {
         dsLoading.value = false
