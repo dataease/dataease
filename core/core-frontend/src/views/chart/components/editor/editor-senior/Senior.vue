@@ -239,19 +239,6 @@ const removeJumpSenior = () => {
     })
   })
 }
-const styleCollapseEnd = ref<HTMLElement | null>(null)
-
-onMounted(() => {
-  if (styleCollapseEnd.value) {
-    const newDiv = document.createElement('div')
-    newDiv.innerHTML = `<div class="ed-collapse-item ed-collapse--light">
-            <div style="display: none">
-              <div class="ed-collapse-item__header"></div>
-            </div>
-          </div>`
-    styleCollapseEnd.value.appendChild(newDiv)
-  }
-})
 </script>
 
 <template>
@@ -481,7 +468,6 @@ onMounted(() => {
           >
             <common-event :themes="themes" :events-info="eventInfo"></common-event>
           </el-collapse-item>
-          <div ref="styleCollapseEnd" />
         </el-collapse>
       </el-row>
     </div>
@@ -537,6 +523,9 @@ span {
   }
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
+  }
+  :deep(.style-collapse) {
+    border-bottom: none;
   }
 }
 
