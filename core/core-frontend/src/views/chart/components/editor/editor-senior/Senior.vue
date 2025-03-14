@@ -468,10 +468,8 @@ const removeJumpSenior = () => {
           >
             <common-event :themes="themes" :events-info="eventInfo"></common-event>
           </el-collapse-item>
-          <div class="ed-collapse-item ed-collapse--light">
-            <div style="display: none">
-              <div class="ed-collapse-item__header"></div>
-            </div>
+          <div class="lastChildren">
+            <collapse-switch-item :themes="themes" />
           </div>
         </el-collapse>
       </el-row>
@@ -579,5 +577,8 @@ span {
       background: rgba(235, 235, 235, 0.1);
     }
   }
+}
+.lastChildren * * {
+  display: none;
 }
 </style>
