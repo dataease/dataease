@@ -89,7 +89,6 @@ public class PieHandler extends YoyChartHandler {
     }
 
     private boolean isPositive(Object value) {
-        if (Objects.isNull(value)) return false;
         if (value instanceof String) {
             try {
                 return new BigDecimal((String) value).compareTo(BigDecimal.ZERO) >= 0;
