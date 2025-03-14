@@ -9,7 +9,7 @@ import Threshold from '@/views/chart/components/editor/editor-senior/components/
 import MapMapping from '@/views/chart/components/editor/editor-senior/components/MapMapping.vue'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { computed, PropType, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, PropType, ref, toRefs, watch } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
@@ -239,6 +239,19 @@ const removeJumpSenior = () => {
     })
   })
 }
+const styleCollapseEnd = ref<HTMLElement | null>(null)
+
+onMounted(() => {
+  if (styleCollapseEnd.value) {
+    const newDiv = document.createElement('div')
+    newDiv.innerHTML = `<div class="ed-collapse-item ed-collapse--light">
+            <div style="display: none">
+              <div class="ed-collapse-item__header"></div>
+            </div>
+          </div>`
+    styleCollapseEnd.value.appendChild(newDiv)
+  }
+})
 </script>
 
 <template>
@@ -468,9 +481,7 @@ const removeJumpSenior = () => {
           >
             <common-event :themes="themes" :events-info="eventInfo"></common-event>
           </el-collapse-item>
-          <div class="lastChildren">
-            <collapse-switch-item :themes="themes" />
-          </div>
+          <div ref="styleCollapseEnd" />
         </el-collapse>
       </el-row>
     </div>
@@ -577,8 +588,5 @@ span {
       background: rgba(235, 235, 235, 0.1);
     }
   }
-}
-.lastChildren * * {
-  display: none;
 }
 </style>
