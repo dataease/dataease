@@ -212,6 +212,20 @@ const toggleHide = () => {
 const showHideIcon = computed(() => {
   return ['table-info', 'table-normal'].includes(props.chart.type) && item.value.hide
 })
+const dateShowFormatConfig = [
+  { name: t('chart.y'), value: 'y', noSplit: true },
+  { name: t('chart.y_M'), value: 'y_M', noSplit: false },
+  { name: t('chart.y_M_d'), value: 'y_M_d', noSplit: false },
+  { name: t('chart.M'), value: 'M', noSplit: true },
+  { name: t('chart.M_d'), value: 'M_d', noSplit: false },
+  { name: t('chart.d'), value: 'd', noSplit: true },
+  { name: t('chart.y_M_d_H'), value: 'y_M_d_H', noSplit: false },
+  { name: t('chart.y_M_d_H_m'), value: 'y_M_d_H_m', noSplit: false },
+  { name: t('chart.y_M_d_H_m_s'), value: 'y_M_d_H_m_s', noSplit: false },
+  { name: t('chart.H'), value: 'H', noSplit: true },
+  { name: t('chart.H_m'), value: 'H_m', noSplit: true },
+  { name: t('chart.H_m_s'), value: 'H_m_s', noSplit: true }
+]
 onMounted(() => {
   getItemTagType()
 })
@@ -526,6 +540,25 @@ onMounted(() => {
                       {{ t('chart.H_m_s') }}
                       <el-icon class="sub-menu-content--icon">
                         <Icon name="icon_done_outlined" v-if="'H_m_s' === item.dateStyle"
+                          ><icon_done_outlined class="svg-icon"
+                        /></Icon>
+                      </el-icon>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="menu-item-padding"
+                    :command="beforeDateStyle('y_M_d_H')"
+                    :divided="
+                      chart.type.includes('bar-range') && ['quota', 'quotaExt'].includes(type)
+                    "
+                  >
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_M_d_H' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_M_d_H') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_M_d_H' === item.dateStyle"
                           ><icon_done_outlined class="svg-icon"
                         /></Icon>
                       </el-icon>

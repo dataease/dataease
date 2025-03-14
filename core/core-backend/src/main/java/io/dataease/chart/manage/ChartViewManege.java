@@ -356,6 +356,7 @@ public class ChartViewManege {
             BeanUtils.copyBean(dto, ele);
             dto.setDateStyle("y_M_d");
             dto.setDatePattern("date_sub");
+            dto.setDateShowFormat("y_M_d");
             dto.setChartType("bar");
 
             if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1 || dto.getDeType() == 7) {
