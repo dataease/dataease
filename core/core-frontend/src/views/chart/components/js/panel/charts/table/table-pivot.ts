@@ -770,11 +770,17 @@ function getTreeCustomCalcResult(query, axisMap, status: TotalStatus, customCalc
   // 列小计
   if (status.isColSubTotal && !status.isRowTotal && !status.isRowSubTotal) {
     const { colSubTotal } = customCalc
-    const subLevel = getSubLevel(query, col)
+    const subColLevel = getSubLevel(query, col)
+    const subRowLevel = getSubLevel(query, row)
     const rowPath = getTreePath(query, row)
     const colPath = getTreePath(query, col)
     const path = [...rowPath, ...colPath]
-    const data = colSubTotal?.[subLevel]?.data
+    let data = colSubTotal?.[subColLevel]?.data
+    // 列小计里面的行小计
+    if (rowPath.length < row.length) {
+      const { rowSubInColSub } = customCalc
+      data = rowSubInColSub?.[subRowLevel]?.[subColLevel]?.data
+    }
     let val
     if (path.length && data) {
       path.push(quotaField)
@@ -841,22 +847,6 @@ function getTreeCustomCalcResult(query, axisMap, status: TotalStatus, customCalc
     const path = getTreePath(query, row)
     let val
     if (path.length && rowSubInColTotal) {
-      path.push(quotaField)
-      val = get(data, path)
-    }
-    return val
-  }
-  // 列小计里面的行小计
-  if (status.isColSubTotal && status.isRowSubTotal) {
-    const { rowSubInColSub } = customCalc
-    const rowSubLevel = getSubLevel(query, row)
-    const colSubLevel = getSubLevel(query, col)
-    const data = rowSubInColSub?.[rowSubLevel]?.[colSubLevel]?.data
-    const rowPath = getTreePath(query, row)
-    const colPath = getTreePath(query, col)
-    const path = [...rowPath, ...colPath]
-    let val
-    if (path.length && rowSubInColSub) {
       path.push(quotaField)
       val = get(data, path)
     }

@@ -243,11 +243,11 @@ public class TablePivotHandler extends GroupChartHandler {
                     var tmpList = new ArrayList<Map<String, Object>>();
                     tmpData.add(tmpList);
                     var subRow = rowAxis.subList(0, i + 1);
-                    var xAxis = new ArrayList<>(subRow);
                     for (int j = 0; j < colAxis.size(); j++) {
                         if (j == colAxis.size() - 1) {
                             break;
                         }
+                        var xAxis = new ArrayList<>(subRow);
                         var subCol = colAxis.subList(0, j + 1);
                         xAxis.addAll(subCol);
                         var tmpAllList = new ArrayList<>(allFields);
