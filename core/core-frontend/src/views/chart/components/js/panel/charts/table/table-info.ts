@@ -1,5 +1,6 @@
 import {
   type LayoutResult,
+  MergedCell,
   S2DataConfig,
   S2Event,
   S2Options,
@@ -26,33 +27,15 @@ import {
   summaryRowStyle,
   configEmptyDataStyle,
   getLeafNodes,
-  getColumns
+  getColumns,
+  drawImage
 } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
+
 class ImageCell extends CustomDataCell {
   protected drawTextShape(): void {
-    const img = new Image()
-    const { x, y, width, height, fieldValue } = this.meta
-    img.src = fieldValue as string
-    img.setAttribute('crossOrigin', 'anonymous')
-    img.onload = () => {
-      !this.cfg.children && (this.cfg.children = [])
-      const { width: imgWidth, height: imgHeight } = img
-      const ratio = Math.max(imgWidth / width, imgHeight / height)
-      // 不铺满，部分留白
-      const imgShowWidth = (imgWidth / ratio) * 0.8
-      const imgShowHeight = (imgHeight / ratio) * 0.8
-      this.textShape = this.addShape('image', {
-        attrs: {
-          x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
-          y: y + (imgShowHeight < height ? (height - imgShowHeight) / 2 : 0),
-          width: imgShowWidth,
-          height: imgShowHeight,
-          img
-        }
-      })
-    }
+    drawImage.apply(this)
   }
 }
 /**

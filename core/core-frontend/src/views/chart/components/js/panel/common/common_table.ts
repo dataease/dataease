@@ -1567,6 +1567,7 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
       if (showIndex && meta.colIndex === 0) {
         meta.fieldValue = getRowIndex(mergedCellsInfo, meta)
       }
+      meta.deFieldType = fieldsMap[meta.valueField]?.deType
       return new CustomMergedCell(sheet, cells, meta)
     }
   }
@@ -1594,6 +1595,7 @@ export function getRowIndex(mergedCellsInfo: MergedCellInfo[][], meta: ViewMeta)
   }, 0)
   return curRangeStartIndex - lostCells + 1
 }
+
 class CustomMergedCell extends MergedCell {
   protected drawBackgroundShape() {
     const allPoints = getPolygonPoints(this.cells)
@@ -1607,6 +1609,13 @@ class CustomMergedCell extends MergedCell {
       fill,
       lineHeight: cellTheme.horizontalBorderWidth
     })
+  }
+  drawTextShape(): void {
+    if (this.meta.deFieldType === 7) {
+      drawImage.apply(this)
+    } else {
+      super.drawTextShape()
+    }
   }
 }
 
@@ -2014,4 +2023,28 @@ export const getColumns = (fields, cols: Array<ColumnNode>) => {
     }
   }
   return result
+}
+
+export function drawImage() {
+  const img = new Image()
+  const { x, y, width, height, fieldValue } = this.meta
+  img.src = fieldValue as string
+  img.setAttribute('crossOrigin', 'anonymous')
+  img.onload = () => {
+    !this.cfg.children && (this.cfg.children = [])
+    const { width: imgWidth, height: imgHeight } = img
+    const ratio = Math.max(imgWidth / width, imgHeight / height)
+    // 不铺满，部分留白
+    const imgShowWidth = (imgWidth / ratio) * 0.8
+    const imgShowHeight = (imgHeight / ratio) * 0.8
+    this.textShape = this.addShape('image', {
+      attrs: {
+        x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
+        y: y + (imgShowHeight < height ? (height - imgShowHeight) / 2 : 0),
+        width: imgShowWidth,
+        height: imgShowHeight,
+        img
+      }
+    })
+  }
 }
