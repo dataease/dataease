@@ -148,7 +148,8 @@ const args2ArgList = () => {
       const row = { name: key, val: JSON.stringify(val) }
       state.argList.push(row)
     } else {
-      const row = { name: key, val: argObj[key] }
+      const tempArray = [val]
+      const row = { name: key, val: JSON.stringify(tempArray) }
       state.argList.push(row)
     }
   }
@@ -165,7 +166,7 @@ const argList2Args = () => {
   const argObj = {}
   state.argList.forEach(row => {
     if (row.name && row.val) {
-      argObj[row.name] = row.val
+      argObj[row.name] = JSON.parse(row.val)
     }
   })
   state.form.args = JSON.stringify(argObj)

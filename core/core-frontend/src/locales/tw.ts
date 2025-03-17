@@ -3536,7 +3536,7 @@ export default {
     refresh: '刷新',
     time_tips: '單位: 分鐘，範圍: [0-1440],0代表無期限，自首次使用ticket訪問開始',
     arg_val_tips: '請輸入參數值',
-    arg_format_tips: '請使用JSON格式字符串，示例單值argVal，多值[argVal1, argVal2]'
+    arg_format_tips: '請使用JSON格式字符串，示例單值[argVal]，多值[argVal1, argVal2]'
   },
   pblink: {
     key_pwd: '請輸入密碼開啟連結',
