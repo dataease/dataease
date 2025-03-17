@@ -18,6 +18,7 @@ import { isLink, setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { useRoute } from 'vue-router'
 import { filterEnumMapSync } from '@/utils/componentUtils'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const routeWatch = useRoute()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -216,6 +217,11 @@ defineExpose({
     :class="{ 'canvas_keep-size': dataVKeepSize }"
     ref="previewCanvasContainer"
   >
+    <canvas-opt-bar
+      canvas-id="canvas-main"
+      :canvas-style-data="state.canvasStylePreview || {}"
+      :component-data="state.canvasDataPreview || []"
+    ></canvas-opt-bar>
     <de-preview
       ref="dvPreview"
       v-if="state.canvasStylePreview && state.initState"
@@ -227,6 +233,7 @@ defineExpose({
       :is-selector="props.isSelector"
       :download-status="downloadStatus"
       :show-pop-bar="true"
+      :show-linkage-button="false"
     ></de-preview>
     <empty-background
       v-if="!state.initState"
@@ -252,6 +259,7 @@ defineExpose({
   display: none;
 }
 .content {
+  position: relative;
   background-color: #ffffff;
   width: 100%;
   height: 100vh;

@@ -93,6 +93,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  // 联动按钮位置
+  showLinkageButton: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -501,9 +506,11 @@ defineExpose({
       :show-position="'preview'"
     ></PopArea>
     <canvas-opt-bar
+      v-if="showLinkageButton"
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
       :component-data="baseComponentData"
+      :is-fixed="isOverSize"
     ></canvas-opt-bar>
     <template v-if="renderReady">
       <ComponentWrapper

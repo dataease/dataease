@@ -19,6 +19,7 @@ import AppExportForm from '@/components/de-app/AppExportForm.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useI18n } from '@/hooks/web/useI18n'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const userStore = useUserStoreWithOut()
 
 const userName = computed(() => userStore.getName)
@@ -283,6 +284,11 @@ defineExpose({
           id="de-preview-content"
           :class="{ 'de-screen-full': fullscreenFlag }"
         >
+          <canvas-opt-bar
+            canvas-id="canvas-main"
+            :canvas-style-data="state.canvasStylePreview || {}"
+            :component-data="state.canvasDataPreview || []"
+          ></canvas-opt-bar>
           <de-preview
             ref="dashboardPreview"
             v-if="state.canvasStylePreview && dataInitState"
@@ -293,6 +299,7 @@ defineExpose({
             :canvas-view-info="state.canvasViewInfoPreview"
             :show-position="showPosition"
             :download-status="downloadStatus"
+            :show-linkage-button="false"
           ></de-preview>
         </div>
       </template>
@@ -354,6 +361,7 @@ defineExpose({
     }
 
     .content {
+      position: relative;
       display: flex;
       width: 100%;
       height: 100%;
