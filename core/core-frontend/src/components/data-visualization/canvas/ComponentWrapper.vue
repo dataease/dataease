@@ -163,8 +163,10 @@ const handleInnerMouseDown = e => {
     e.stopPropagation()
     e.preventDefault()
   }
-  if (showPosition.value.includes('popEdit') || dvMainStore.mobileInPc) {
+  if (['popEdit', 'preview'].includes(showPosition.value) || dvMainStore.mobileInPc) {
     onClick(e)
+    e.stopPropagation()
+    e.preventDefault()
   }
 }
 
@@ -438,6 +440,7 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
           :is-edit="false"
           :suffix-id="suffixId"
           :font-family="fontFamily"
+          :active="active"
           @onPointClick="onPointClick"
         />
       </div>
