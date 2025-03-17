@@ -85,7 +85,6 @@ const activeConditionForRename = reactive({
 })
 const datasetMap = {}
 const snapshotStore = snapshotStoreWithOut()
-
 const dfsComponentData = () => {
   let arr = componentData.value.filter(
     com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
@@ -273,22 +272,6 @@ const showTypeError = computed(() => {
   })
 })
 
-const showDatasetError = computed(() => {
-  if (!curComponent.value || curComponent.value.displayType !== '9') return false
-  if (!curComponent.value.checkedFields?.length) return false
-  if (!fields.value?.length) return false
-  let displayField = null
-  return curComponent.value.checkedFields.some(id => {
-    const arr = fields.value.find(itx => itx.componentId === id)
-    const field = arr.id
-    if (!field) return false
-    if (displayField === null) {
-      displayField = field
-      return false
-    }
-    return displayField !== field
-  })
-})
 const typeList = [
   {
     label: t('data_fill.rename'),
@@ -306,52 +289,6 @@ const handleCheckAllChange = (val: boolean) => {
   val && setSameId()
 }
 
-const setTreeDefault = () => {
-  if (!!curComponent.value.checkedFields.length) {
-    let checkId = ''
-    let tableId = ''
-    let comId = ''
-    fields.value.forEach(ele => {
-      if (
-        curComponent.value.checkedFields.includes(ele.componentId) &&
-        curComponent.value.checkedFieldsMap[ele.componentId] &&
-        !checkId
-      ) {
-        checkId = curComponent.value.checkedFieldsMap[ele.componentId]
-        comId = ele.componentId
-        tableId = datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId
-      }
-    })
-    if (checkId && tableId) {
-      const componentObj = fields.value.find(ele => ele.componentId === comId)
-      const fieldArr =
-        curComponent.value.optionValueSource === 0
-          ? componentObj?.fields?.dimensionList
-          : (fields.value.find(itx => itx.id === tableId) || {}).fields?.dimensionList
-      fields.value.forEach(ele => {
-        if (curComponent.value.checkedFields.includes(ele.componentId)) {
-          if (datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId === tableId) {
-            curComponent.value.checkedFieldsMap[ele.componentId] = checkId
-          }
-        }
-      })
-      const fieldObj = fieldArr.find(element => element.id === checkId)
-      if (!!curComponent.value.treeFieldList.length) {
-        const [fir] = curComponent.value.treeFieldList
-        if (fir && fir.field !== checkId) {
-          const [top] = curComponent.value.treeFieldList || []
-          if (top?.id === fieldObj.id) return
-
-          curComponent.value.treeFieldList = [fieldObj]
-        }
-      } else if (fieldObj) {
-        const [top] = curComponent.value.treeFieldList || []
-        if (top?.id === fieldObj.id) return
-        curComponent.value.treeFieldList = [fieldObj]
-      }
-    }
-  }
-}
 const handleCheckedFieldsChange = (value: string[]) => {
   handleDialogClick()
   const checkedCount = value.length
@@ -398,10 +335,6 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
   setSameId()
   if (curComponent.value.displayType === '8') return
-  if (curComponent.value.displayType === '9') {
-    setTreeDefault()
-    return
-  }
   setType()
 }
 
@@ -754,9 +687,6 @@ const setParameters = field => {
 
   if (notChangeType) return
   setType()
-  if (curComponent.value.displayType === '9') {
-    setTreeDefault()
-  }
 }
 
 const setType = () => {
@@ -816,10 +746,6 @@ const setTypeChange = () => {
       )
     ) {
       curComponent.value.timeGranularityMultiple = curComponent.value.timeGranularity
-    }
-
-    if (curComponent.value.displayType === '9') {
-      setTreeDefault()
     }
   })
 }
@@ -989,6 +915,14 @@ const handleDatasetChange = () => {
   curComponent.value.displayId = ''
   curComponent.value.sortId = ''
   getOptions(curComponent.value.dataset.id, curComponent.value)
+}
+
+const handleDatasetTreeChange = () => {
+  curComponent.value.treeFieldList = []
+  curComponent.value.treeCheckedList = []
+  relationshipChartIndex.value = 0
+  curComponent.value.oldTreeLoad = true
+  getOptions(curComponent.value.treeDatasetId, curComponent.value)
 }
 
 const handleFieldChange = () => {
@@ -1219,6 +1153,30 @@ const validate = () => {
     if (!ele.checkedFields?.length || ele.checkedFields.some(itx => !ele.checkedFieldsMap[itx])) {
       ElMessage.error(t('v_query.be_linked_first'))
       return true
+    }
+
+    if (ele.displayType === '9') {
+      if (!ele.treeDatasetId) {
+        ElMessage.error(t('data_set.dataset_cannot_be'))
+        return true
+      }
+
+      if (!ele.treeFieldList?.length) {
+        ElMessage.error(t('common.tree_structure'))
+        return true
+      }
+      if (
+        ele.treeCheckedList
+          ?.slice(0, ele.treeFieldList.length)
+          .some(
+            item =>
+              !item.checkedFields?.length ||
+              item.checkedFields.some(itx => !item.checkedFieldsMap[itx])
+          )
+      ) {
+        ElMessage.error(t('v_query.be_linked_first'))
+        return true
+      }
     }
 
     if (ele.displayType === '22' && ele.defaultValueCheck) {
@@ -1553,12 +1511,16 @@ const confirmValueSource = () => {
 }
 
 const setCondition = (queryId: string) => {
-  conditions.value = cloneDeep(props.queryElement.propValue) || []
+  conditions.value = (cloneDeep(props.queryElement.propValue) || []).map(ele =>
+    parameterCompletion(ele)
+  )
   init(queryId)
 }
 
 const setConditionOut = () => {
-  conditions.value = cloneDeep(props.queryElement.propValue) || []
+  conditions.value = (cloneDeep(props.queryElement.propValue) || []).map(ele =>
+    parameterCompletion(ele)
+  )
   addQueryCriteria()
   init(conditions.value[conditions.value.length - 1].id)
 }
@@ -1636,7 +1598,7 @@ const weightlessness = () => {
   valueSource.value = Array.from(new Set(valueSource.value))
 }
 
-const parameterCompletion = () => {
+const parameterCompletion = ele => {
   const attributes = {
     timeType: 'fixed',
     hideConditionSwitching: false,
@@ -1664,6 +1626,7 @@ const parameterCompletion = () => {
     timeNumRange: 0,
     relativeToCurrentTypeRange: 'year',
     aroundRange: 'f',
+    treeDatasetId: '',
     displayId: '',
     sortId: '',
     sort: 'asc',
@@ -1688,18 +1651,26 @@ const parameterCompletion = () => {
       relativeToCurrentTypeRange: 'year',
       aroundRange: 'f'
     },
+    oldTreeLoad: false,
+    treeCheckedList: [],
     treeFieldList: []
   }
   Object.entries(attributes).forEach(([key, val]) => {
-    curComponent.value[key] ?? (curComponent.value[key] = val)
+    ele[key] ?? (ele[key] = val)
   })
 
-  if (!curComponent.value.timeRange.relativeToCurrentRange) {
-    curComponent.value.timeRange.relativeToCurrentRange = 'custom'
+  if (!ele.treeDatasetId) {
+    ele.treeDatasetId = ele.dataset.id
   }
+
+  if (!ele.timeRange.relativeToCurrentRange) {
+    ele.timeRange.relativeToCurrentRange = 'custom'
+  }
+
+  return ele
 }
 
-const handleCondition = item => {
+const handleCondition = (item, idx = 0) => {
   handleDialogClick()
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
@@ -1791,8 +1762,10 @@ const handleCondition = item => {
   if (!valueSource.value.length) {
     valueSource.value.push('')
   }
-  parameterCompletion()
   nextTick(() => {
+    if (curComponent.value.displayType === '9') {
+      handleRelationshipChart(idx)
+    }
     curComponent.value.showError = showError.value
     curComponent.value.auto && (document.querySelector('.chart-field').scrollTop = 0)
   })
@@ -1839,14 +1812,7 @@ const sortComputed = computed(() => {
 
 const treeDialog = ref()
 const startTreeDesign = () => {
-  const [comId] = curComponent.value.checkedFields
-  const componentObj = fields.value.find(ele => ele.componentId === comId)
-  treeDialog.value.init(
-    componentObj?.fields?.dimensionList.filter(
-      ele => ele.deType === +curComponent.value.field.deType
-    ),
-    curComponent.value.treeFieldList
-  )
+  treeDialog.value.init(curComponent.value.dataset.fields, curComponent.value.treeFieldList)
 }
 const saveTree = arr => {
   curComponent.value.treeFieldList = arr
@@ -1859,22 +1825,8 @@ const showError = computed(() => {
   if (!checkedFields.length || !arr.length) {
     return true
   }
-  if ([1, 7, 8, 22].includes(+displayType)) {
+  if ([1, 7, 8, 22, 9].includes(+displayType)) {
     return false
-  }
-
-  if (displayType === '9') {
-    let displayField = null
-    return checkedFields.some(id => {
-      const arr = (fields.value || []).find(itx => itx.componentId === id)
-      const field = arr?.id
-      if (!field) return false
-      if (displayField === null) {
-        displayField = field
-        return false
-      }
-      return displayField !== field
-    })
   }
   return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
 })
@@ -2102,6 +2054,48 @@ watch(
 const setRenameInput = val => {
   renameInput.value.push(val)
 }
+const relationshipChartIndex = ref(0)
+const notCurrentEle = (ele, index) => {
+  if (activeCondition.value !== ele.id) {
+    handleCondition(ele, index)
+  } else {
+    handleRelationshipChart(index)
+  }
+}
+const handleRelationshipChart = index => {
+  if (curComponent.value.treeCheckedList?.length) {
+    curComponent.value.treeCheckedList[relationshipChartIndex.value] = {
+      checkedFields: [...curComponent.value.checkedFields],
+      checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
+    }
+  }
+  relationshipChartIndex.value = index
+  if (!curComponent.value?.treeCheckedList?.length && !curComponent.value.oldTreeLoad) {
+    curComponent.value.treeCheckedList = curComponent.value.treeFieldList.map(ele => {
+      return {
+        checkedFields: [...curComponent.value.checkedFields],
+        checkedFieldsMap: curComponent.value.checkedFields.reduce((pre, next) => {
+          pre[next] = ele.id
+          return pre
+        }, {})
+      }
+    })
+  } else if (!curComponent.value?.treeCheckedList?.length && curComponent.value.oldTreeLoad) {
+    curComponent.value.treeCheckedList = curComponent.value.treeFieldList.map(() => {
+      return {
+        checkedFields: [...curComponent.value.checkedFields],
+        checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
+      }
+    })
+  }
+  if (!curComponent.value?.treeCheckedList[index]) return
+  const { checkedFields, checkedFieldsMap } = curComponent.value?.treeCheckedList[index]
+  curComponent.value.checkedFields = checkedFields
+  curComponent.value.checkedFieldsMap = checkedFieldsMap
+  const checkedCount = checkedFields?.length
+  checkAll.value = checkedCount === fields.value?.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value?.length
+}
 
 const addOperation = (cmd, condition, index) => {
   switch (cmd) {
@@ -2157,7 +2151,7 @@ const renameInputBlur = () => {
 }
 
 const addQueryCriteria = () => {
-  conditions.value.push(addQueryCriteriaConfig())
+  conditions.value.push(parameterCompletion(addQueryCriteriaConfig()))
 }
 
 const addQueryCriteriaAndSelect = () => {
@@ -2202,48 +2196,77 @@ defineExpose({
               :key="element.id"
               @dblclick.stop="addOperation('rename', element, index)"
               @click.stop="handleCondition(element)"
-              class="list-item_primary"
-              :class="element.id === activeCondition && 'active'"
+              class="list-item_box"
+              :style="{
+                marginBottom: element.treeFieldList
+                  ? element.treeFieldList.slice(1).length * 40 + 'px'
+                  : 0
+              }"
             >
-              <el-icon class="handle">
-                <Icon name="icon_drag_outlined"><icon_drag_outlined class="svg-icon" /></Icon>
-              </el-icon>
-              <div class="label flex-align-center icon" :title="element.name">
-                <el-icon
-                  v-if="!element.auto && element.showError"
-                  style="font-size: 16px; color: #f54a45"
+              <div
+                class="list-item_primary"
+                :class="element.id === activeCondition && relationshipChartIndex === 0 && 'active'"
+              >
+                <el-icon class="handle">
+                  <Icon name="icon_drag_outlined"><icon_drag_outlined class="svg-icon" /></Icon>
+                </el-icon>
+                <div class="label flex-align-center icon" :title="element.name">
+                  <el-icon
+                    v-if="!element.auto && element.showError"
+                    style="font-size: 16px; color: #f54a45"
+                  >
+                    <icon name="icon_warning_filled"><icon_warning_filled class="svg-icon" /></icon>
+                  </el-icon>
+                  {{ element.name }}
+                </div>
+                <div class="condition-icon flex-align-center">
+                  <handle-more
+                    @handle-command="cmd => addOperation(cmd, element, index)"
+                    :menu-list="typeList"
+                    :icon-name="more_v"
+                    placement="bottom-end"
+                  ></handle-more>
+                  <el-icon
+                    class="hover-icon"
+                    @click.stop="element.visible = !element.visible"
+                    v-if="element.visible"
+                  >
+                    <Icon name="icon_visible_outlined"
+                      ><icon_visible_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                  <el-icon
+                    class="hover-icon"
+                    @click.stop="element.visible = !element.visible"
+                    v-else
+                  >
+                    <Icon name="de_pwd_invisible"><de_pwd_invisible class="svg-icon" /></Icon>
+                  </el-icon>
+                </div>
+                <div @click.stop v-if="activeConditionForRename.id === element.id" class="rename">
+                  <el-input
+                    @blur="renameInputBlur"
+                    :ref="setRenameInput"
+                    v-model="activeConditionForRename.name"
+                  ></el-input>
+                </div>
+              </div>
+              <template v-if="element.treeFieldList">
+                <div
+                  :class="
+                    element.id === activeCondition &&
+                    relationshipChartIndex === index + 1 &&
+                    'active'
+                  "
+                  class="list-item_primary list-tree_primary"
+                  :style="{ top: 40 * (index + 1) + 'px' }"
+                  v-for="(itx, index) in element.treeFieldList.slice(1)"
+                  :key="itx.field"
+                  @click.stop="notCurrentEle(element, index + 1)"
                 >
-                  <icon name="icon_warning_filled"><icon_warning_filled class="svg-icon" /></icon>
-                </el-icon>
-                {{ element.name }}
-              </div>
-              <div class="condition-icon flex-align-center">
-                <handle-more
-                  @handle-command="cmd => addOperation(cmd, element, index)"
-                  :menu-list="typeList"
-                  :icon-name="more_v"
-                  placement="bottom-end"
-                ></handle-more>
-                <el-icon
-                  class="hover-icon"
-                  @click.stop="element.visible = !element.visible"
-                  v-if="element.visible"
-                >
-                  <Icon name="icon_visible_outlined"
-                    ><icon_visible_outlined class="svg-icon"
-                  /></Icon>
-                </el-icon>
-                <el-icon class="hover-icon" @click.stop="element.visible = !element.visible" v-else>
-                  <Icon name="de_pwd_invisible"><de_pwd_invisible class="svg-icon" /></Icon>
-                </el-icon>
-              </div>
-              <div @click.stop v-if="activeConditionForRename.id === element.id" class="rename">
-                <el-input
-                  @blur="renameInputBlur"
-                  :ref="setRenameInput"
-                  v-model="activeConditionForRename.name"
-                ></el-input>
-              </div>
+                  {{ itx.name }}
+                </div>
+              </template>
             </div>
           </template>
         </draggable>
@@ -2633,13 +2656,19 @@ defineExpose({
           <div class="title flex-align-center">
             {{ t('v_query.query_condition_configuration') }}
             <el-checkbox
-              :disabled="curComponent.auto"
+              :disabled="
+                curComponent.auto ||
+                (curComponent.displayType === '9' && relationshipChartIndex !== 0)
+              "
               v-model="curComponent.required"
               :label="t('v_query.required_items')"
             />
           </div>
           <div
-            v-show="showConfiguration && !showTypeError && !showDatasetError"
+            v-show="
+              (curComponent.displayType !== '9' && showConfiguration && !showTypeError) ||
+              (curComponent.displayType === '9' && relationshipChartIndex == 0)
+            "
             class="configuration-list"
           >
             <div class="list-item">
@@ -2718,6 +2747,42 @@ defineExpose({
               </div>
             </div>
             <div class="list-item" v-if="curComponent.displayType === '9'">
+              <div :title="t('copilot.pls_choose_dataset')" class="label ellipsis">
+                {{ t('copilot.pls_choose_dataset') }}
+              </div>
+              <div class="value">
+                <el-tree-select
+                  :teleported="false"
+                  v-model="curComponent.treeDatasetId"
+                  :data="datasetTree"
+                  :placeholder="t('copilot.pls_choose_dataset')"
+                  @change="handleDatasetTreeChange"
+                  :props="dsSelectProps"
+                  placement="bottom"
+                  :render-after-expand="false"
+                  filterable
+                  popper-class="dataset-tree"
+                >
+                  <template #default="{ node, data }">
+                    <div class="content">
+                      <el-icon size="18px" v-if="!data.leaf">
+                        <Icon><dvFolder class="svg-icon" /></Icon>
+                      </el-icon>
+                      <el-icon size="18px" v-if="data.leaf">
+                        <Icon><icon_dataset class="svg-icon" /></Icon>
+                      </el-icon>
+                      <span
+                        class="label-tree ellipsis"
+                        style="margin-left: 8px"
+                        :title="node.label"
+                        >{{ node.label }}</span
+                      >
+                    </div>
+                  </template>
+                </el-tree-select>
+              </div>
+            </div>
+            <div class="list-item" v-if="curComponent.displayType === '9'">
               <div class="label" style="width: 135px; height: 26px; line-height: 26px">
                 {{ t('v_query.tree_structure_design') }}
                 <el-button
@@ -2726,7 +2791,7 @@ defineExpose({
                   @click="startTreeDesign"
                 >
                   <template #icon>
-                    <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
+                    <icon><icon_edit_outlined class="svg-icon" /></icon>
                   </template>
                 </el-button>
               </div>
@@ -2742,7 +2807,7 @@ defineExpose({
                     >
                     <span class="field-type"
                       ><el-icon>
-                        <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                        <Icon
                           ><component
                             :class="`field-icon-${fieldType[ele.deType]}`"
                             class="svg-icon"
@@ -2750,10 +2815,18 @@ defineExpose({
                           ></component
                         ></Icon> </el-icon
                     ></span>
-                    <span class="field-tree_name">{{ ele.name }}</span>
+                    <span class="field-tree_name ellipsis" :title="ele.name">{{ ele.name }}</span>
+                    <span class="field-relationship_chart" v-if="index === 0">{{
+                      t('common.associated_chart_first')
+                    }}</span>
+                    <span class="field-relationship_chart" v-else>
+                      <el-button text @click="handleRelationshipChart(index)">
+                        {{ t('common.associated_chart') }}
+                      </el-button>
+                    </span>
                   </div>
                 </template>
-                <el-button @click="startTreeDesign" v-else text>
+                <el-button class="start-tree_design" @click="startTreeDesign" v-else text>
                   <template #icon>
                     <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
                   </template>
@@ -3169,8 +3242,11 @@ defineExpose({
           <div v-if="showTypeError && showConfiguration" class="empty">
             <empty-background :description="t('v_query.cannot_be_performed')" img-type="error" />
           </div>
-          <div v-else-if="showDatasetError && showConfiguration" class="empty">
-            <empty-background :description="t('v_query.cannot_be_displayed')" img-type="error" />
+          <div
+            v-else-if="curComponent.displayType === '9' && relationshipChartIndex !== 0"
+            class="empty"
+          >
+            <empty-background :description="t('common.other_levels')" img-type="error" />
           </div>
           <div v-else-if="!showConfiguration" class="empty">
             <empty-background :description="t('v_query.be_linked_first')" img-type="noneWhite" />
@@ -3339,6 +3415,17 @@ defineExpose({
           cursor: pointer;
           font-size: 16px;
           color: var(--ed-color-primary);
+        }
+      }
+
+      .list-item_box {
+        width: 100%;
+        position: relative;
+        .list-tree_primary {
+          position: absolute;
+          left: 0;
+          padding: 8px 32px;
+          width: 100%;
         }
       }
       .list-item_primary {
@@ -3549,7 +3636,7 @@ defineExpose({
             padding: 16px;
             box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
 
-            .ed-button {
+            .start-tree_design {
               position: absolute;
               left: 50%;
               top: 50%;
@@ -3572,6 +3659,11 @@ defineExpose({
               }
 
               .field-tree_name {
+                margin-left: 8px;
+                max-width: 100px;
+              }
+
+              .field-relationship_chart {
                 margin-left: 8px;
               }
             }

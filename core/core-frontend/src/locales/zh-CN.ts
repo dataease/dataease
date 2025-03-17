@@ -1,6 +1,10 @@
 export default {
   common: {
     empty: '',
+    other_levels: '除层级一外,其他层级无需进行查询条件配置',
+    tree_structure: '下拉树的结构不能为空',
+    associated_chart: '关联图表',
+    associated_chart_first: '第一层级已关联图表',
     timeout_tips: '请求超时，请稍后再试',
     local_excel: '本地 Excel/CSV',
     remote_excel: '远程 Excel/CSV',

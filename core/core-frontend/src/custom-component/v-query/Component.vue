@@ -3,6 +3,7 @@ import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import eventBus from '@/utils/eventBus'
 import { isISOMobile, isMobile } from '@/utils/utils'
+import { cloneDeep } from 'lodash-es'
 import { ElMessage } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
@@ -251,6 +252,27 @@ const releaseSelect = id => {
   unMountSelect.value = unMountSelect.value.filter(ele => ele !== id)
 }
 
+const getKeyList = next => {
+  let checkedFieldsMapArr = Object.entries(next.checkedFieldsMap)
+  if (next.displayType === '9') {
+    checkedFieldsMapArr = (
+      next.treeCheckedList?.length
+        ? next.treeCheckedList
+        : next.treeFieldList.map(() => {
+            return {
+              checkedFields: [...next.checkedFields],
+              checkedFieldsMap: cloneDeep(next.checkedFieldsMap)
+            }
+          })
+    )
+      .map(item => Object.entries(item.checkedFieldsMap))
+      .flat()
+  }
+  return checkedFieldsMapArr
+    .filter(ele => next.checkedFields.includes(ele[0]))
+    .filter(ele => !!ele[1])
+    .map(ele => ele[0])
+}
 const queryDataForId = id => {
   let requiredName = ''
   let numName = ''
@@ -302,10 +324,8 @@ const queryDataForId = id => {
           requiredName = next.name
         }
       }
-      const keyList = Object.entries(next.checkedFieldsMap)
-        .filter(ele => next.checkedFields.includes(ele[0]))
-        .filter(ele => !!ele[1])
-        .map(ele => ele[0])
+
+      const keyList = getKeyList(next)
       pre = [...new Set([...keyList, ...pre])]
       return pre
     }, [])
@@ -490,11 +510,7 @@ const resetData = () => {
         }
       })
     })
-
-    const keyList = Object.entries(next.checkedFieldsMap)
-      .filter(ele => next.checkedFields.includes(ele[0]))
-      .filter(ele => !!ele[1])
-      .map(ele => ele[0])
+    const keyList = getKeyList(next)
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
@@ -525,10 +541,7 @@ const clearData = () => {
       next.numValueEnd = undefined
       next.numValueStart = undefined
     }
-    const keyList = Object.entries(next.checkedFieldsMap)
-      .filter(ele => next.checkedFields.includes(ele[0]))
-      .filter(ele => !!ele[1])
-      .map(ele => ele[0])
+    const keyList = getKeyList(next)
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
@@ -607,10 +620,7 @@ const queryData = () => {
         requiredName = next.name
       }
     }
-    const keyList = Object.entries(next.checkedFieldsMap)
-      .filter(ele => next.checkedFields.includes(ele[0]))
-      .filter(ele => !!ele[1])
-      .map(ele => ele[0])
+    const keyList = getKeyList(next)
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])

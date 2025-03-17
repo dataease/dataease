@@ -147,23 +147,6 @@ onMounted(() => {
   }, 0)
 })
 
-watch(
-  () => config.value.selectValue,
-  val => {
-    if (props.isConfig) return
-    if (config.value.multiple) {
-      treeValue.value = Array.isArray(val) ? [...val] : val
-    }
-    nextTick(() => {
-      multiple.value = config.value.multiple
-      if (!config.value.multiple) {
-        treeValue.value = Array.isArray(config.value.selectValue)
-          ? [...config.value.selectValue]
-          : config.value.selectValue
-      }
-    })
-  }
-)
 const showWholePath = ref(false)
 watch(
   () => config.value.multiple,
@@ -253,6 +236,7 @@ const selectStyle = computed(() => {
     :render-after-expand="false"
     show-checkbox
     showBtn
+    @change="handleValueChange"
     :placeholder="placeholderText"
     collapse-tags
     :filter-node-method="filterMethod"

@@ -1,6 +1,10 @@
 export default {
   common: {
     empty: ' ',
+    associated_chart: 'Associated chart',
+    associated_chart_first: 'First level associated chart',
+    other_levels: 'Except for level 1, no query condition configuration is required for other levels',
+    tree_structure: 'The drop-down tree structure cannot be empty',
     component: {
       input: 'Input',
       textarea: 'Textarea',

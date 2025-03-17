@@ -102,12 +102,7 @@ defineExpose({
       <div class="cascade-item" v-for="(ele, idx) in treeList" :key="ele.id">
         <div class="label">{{ t('visualization.level') }}{{ indexNumCascade[idx] }}</div>
         <div class="item-name">
-          <el-select
-            :disabled="idx === 0 && ele.field"
-            value-key="id"
-            v-model="ele.field"
-            style="width: 300px"
-          >
+          <el-select value-key="id" v-model="ele.field" style="width: 300px">
             <el-option
               :disabled="disableFieldArr.includes(item.id)"
               v-for="item in datasetMap"
@@ -117,7 +112,7 @@ defineExpose({
             />
           </el-select>
         </div>
-        <el-button v-show="idx !== 0" @click="deleteCascade(idx)" class="cascade-delete" text>
+        <el-button @click="deleteCascade(idx)" class="cascade-delete" text>
           <template #icon>
             <Icon name="icon_delete-trash_outlined"
               ><icon_deleteTrash_outlined class="svg-icon"
