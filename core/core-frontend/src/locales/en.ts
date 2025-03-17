@@ -3,7 +3,8 @@ export default {
     empty: ' ',
     associated_chart: 'Associated chart',
     associated_chart_first: 'First level associated chart',
-    other_levels: 'Except for level 1, no query condition configuration is required for other levels',
+    other_levels:
+      'Except for level 1, no query condition configuration is required for other levels',
     tree_structure: 'The drop-down tree structure cannot be empty',
     component: {
       input: 'Input',
@@ -3653,7 +3654,7 @@ export default {
       'Unit: minutes, range: [0-1440], 0 means no time limit, starting from the first access using the ticket',
     arg_val_tips: 'Please enter parameter values',
     arg_format_tips:
-      'Please use JSON format string, example single valued [argVal], multi valued [argVal1, argVal2]'
+      'Please use JSON format string, example single valued argVal, multi valued [argVal1, argVal2]'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
