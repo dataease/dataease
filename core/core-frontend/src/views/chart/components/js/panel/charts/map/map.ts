@@ -157,6 +157,11 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         })
       })
       data = filterChartDataByRange(sourceData, maxValue, minValue)
+      if (chart.drill) {
+        getMaxAndMinValueByData(sourceData, 'value', 0, 0, (max, min) => {
+          data = filterChartDataByRange(sourceData, max, min)
+        })
+      }
     } else {
       data = sourceData
     }
