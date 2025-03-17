@@ -568,6 +568,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           return result
         }
         const head = originalItem.properties
+        if (!head) {
+          return result
+        }
         const { adcode } = head
         const areaName = subAreaMap['156' + adcode]
         const valItem = areaMap[areaName]

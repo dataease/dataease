@@ -1003,6 +1003,9 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
         return result
       }
       const head = originalItem.properties
+      if (!head) {
+        return result
+      }
       const formatter = formatterMap[head.quotaList?.[0]?.id]
       if (!isEmpty(formatter)) {
         const originValue = parseFloat(head.value as string)
