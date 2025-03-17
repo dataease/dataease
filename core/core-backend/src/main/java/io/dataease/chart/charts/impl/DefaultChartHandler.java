@@ -533,7 +533,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                     }
                     boolean isStack = StringUtils.containsIgnoreCase(chartType, "stack") && CollectionUtils.isNotEmpty(extStack);
                     boolean isGroup = StringUtils.containsIgnoreCase(chartType, "group")
-                            || (StringUtils.containsIgnoreCase(chartType, "-mix") && CollectionUtils.isNotEmpty(xAxisExt));
+                            || (CollectionUtils.isNotEmpty(xAxisExt));
                     if (isStack || isGroup) {
                         if (CollectionUtils.isEmpty(xAxis)) {
                             break;
@@ -562,18 +562,21 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                         });
                         int finalDataIndex = dataIndex;
                         int subEndIndex = xAxisBase.size();
-                        if (StringUtils.containsIgnoreCase(chartType, "group") || StringUtils.containsIgnoreCase(chartType, "-mix")) {
+                        if (CollectionUtils.isNotEmpty(xAxisExt)
+                                || StringUtils.containsIgnoreCase(chartType, "group")
+                                || StringUtils.containsIgnoreCase(chartType, "-mix")) {
                             subEndIndex += xAxisExt.size();
                         }
                         if (StringUtils.containsIgnoreCase(chartType, "stack")) {
                             subEndIndex += extStack.size();
                         }
                         int finalSubEndIndex = subEndIndex;
+                        // 存储上次的值
+                        Map<String, BigDecimal> preDataMap = new HashMap<>();
                         //滑动累加
                         for (int k = 1; k < mainMatrix.size(); k++) {
                             List<String[]> preDataItems = mainMatrix.get(k - 1);
                             List<String[]> curDataItems = mainMatrix.get(k);
-                            Map<String, BigDecimal> preDataMap = new HashMap<>();
                             preDataItems.forEach(preDataItem -> {
                                 String[] groupStackAxisArr = Arrays.copyOfRange(preDataItem, xAxisBase.size(), finalSubEndIndex);
                                 String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
@@ -591,6 +594,12 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                                     curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
                                             .add(preValue)
                                             .toString();
+                                } else {
+                                    if (preDataMap.containsKey(groupStackAxis)) {
+                                        curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
+                                                .add(preDataMap.get(groupStackAxis))
+                                                .toString();
+                                    }
                                 }
                             });
                         }
