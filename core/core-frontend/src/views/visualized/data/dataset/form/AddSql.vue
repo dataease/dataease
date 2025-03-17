@@ -209,18 +209,18 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
     pre[next[from]] = next[to]
     return pre
   }, {})
-  const on = originName.match(/\[(.+?)\]/g)
+  const on = originName.match(/\$f2cde\[(.+?)\]/g)
   if (on) {
     on.forEach(itm => {
-      const ele = itm.slice(1, -1)
+      const ele = itm.slice(7, -1)
       if (name2Auto) {
         name2Auto.push(nameIdMap[ele])
       }
       if (from === 'id' && ids.includes(ele)) {
-        name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
+        name2Id = name2Id.replace(`$f2cde[${ele}]`, `$f2cde[${nameIdMap[ele]}]`)
       }
       if (from === 'name' && names.includes(ele)) {
-        name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
+        name2Id = name2Id.replace(`$f2cde[${ele}]`, `$f2cde[${nameIdMap[ele]}]`)
       }
     })
   }
@@ -785,6 +785,7 @@ const mousedownDrag = () => {
         @change="changeFlagCode = true"
         :height="`${dragHeight}px`"
         dom-id="sql-editor"
+        :regexp="/\$f2cde\[(.*?)\]/g"
         ref="myCm"
         :quotaMap="fieldFormList.filter(ele => ['num'].includes(ele.type)).map(ele => ele.name)"
         :dimensionMap="
@@ -912,7 +913,7 @@ const mousedownDrag = () => {
             </div>
             <div
               class="variable-item flex-align-center"
-              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
+              @click="insertFieldToCodeMirror(`$f2cde[${fieldForm.name}]`)"
               v-for="fieldForm in builtInList"
               :key="fieldForm.id"
             >
@@ -925,7 +926,7 @@ const mousedownDrag = () => {
               class="variable-item flex-align-center"
               v-for="fieldForm in fieldFormListComputed"
               :key="fieldForm.id"
-              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
+              @click="insertFieldToCodeMirror(`$f2cde[${fieldForm.name}]`)"
               :class="['num'].includes(fieldForm.type) && 'with-type'"
             >
               <el-icon>

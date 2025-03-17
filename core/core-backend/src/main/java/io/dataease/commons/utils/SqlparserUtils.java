@@ -42,7 +42,7 @@ import static org.apache.calcite.sql.SqlKind.*;
 
 public class SqlparserUtils {
     public static final String regex = "\\$\\{(.*?)\\}";
-    public static final String regex2 = "\\[(.*?)\\]";
+    public static final String regex2 = "\\$f2cde\\[(.*?)\\]";
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SysParamsSubstitutedParams = "DeSysParams_";
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
@@ -177,7 +177,7 @@ public class SqlparserUtils {
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
             while (matcher.find()) {
-                String paramId = matcher.group().substring(1, matcher.group().length() - 1);
+                String paramId = matcher.group().substring(7, matcher.group().length() - 1);
                 if(!isParams(paramId)){
                     continue;
                 }
@@ -188,15 +188,15 @@ public class SqlparserUtils {
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
             while (matcher.find()) {
-                String paramId = matcher.group().substring(1, matcher.group().length() - 1);
+                String paramId = matcher.group().substring(7, matcher.group().length() - 1);
                 if(!isParams(paramId)){
                     continue;
                 }
                 hasVariables = true;
-                tmpSql = tmpSql.replace(matcher.group(), SysParamsSubstitutedParams + matcher.group().substring(1, matcher.group().length() - 1));
+                tmpSql = tmpSql.replace(matcher.group(), SysParamsSubstitutedParams + matcher.group().substring(7, matcher.group().length() - 1));
                 Map<String, String> sysParam = new HashMap<>();
                 sysParam.put("origin", matcher.group());
-                sysParam.put("replace", SysParamsSubstitutedParams + matcher.group().substring(1, matcher.group().length() - 1));
+                sysParam.put("replace", SysParamsSubstitutedParams + matcher.group().substring(7, matcher.group().length() - 1));
                 sysParams.add(sysParam);
             }
         }
