@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import icon_collection_outlined from '@/assets/svg/icon_collection_outlined.svg'
+import visualStar from '@/assets/svg/visual-star.svg'
+import icon_replace_outlined from '@/assets/svg/icon_replace_outlined.svg'
 import { initCanvasDataMobile } from '@/utils/canvasUtils'
 import { ref, nextTick, onBeforeMount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import VanSticky from 'vant/es/sticky'
@@ -17,7 +21,8 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: {
-    name: ''
+    name: '',
+    id: ''
   },
   curPreviewGap: 0
 })
@@ -46,6 +51,7 @@ const loadCanvasData = (dvId, weight?) => {
       state.curPreviewGap = curPreviewGap
       dataInitState.value = true
       nextTick(() => {
+        storeQuery()
         dashboardPreview.value.restore()
       })
     }
@@ -89,6 +95,25 @@ const onClickLeft = () => {
     }
   })
 }
+const reload = () => {
+  window.location.reload()
+}
+const favorited = ref(false)
+const executeStore = () => {
+  const param = {
+    id: state.dvInfo.id,
+    type: 'panel'
+  }
+  storeApi(param).then(() => {
+    storeQuery()
+  })
+}
+const storeQuery = () => {
+  if (!state.dvInfo?.id) return
+  storeStatusApi(state.dvInfo.id).then(res => {
+    favorited.value = res.data
+  })
+}
 </script>
 
 <template>
@@ -96,6 +121,23 @@ const onClickLeft = () => {
     <van-sticky>
       <van-nav-bar :title="state.dvInfo.name" left-arrow @click-left="onClickLeft" />
     </van-sticky>
+    <div class="top-nav_refresh">
+      <el-icon
+        size="16"
+        @click="executeStore"
+        :style="{ color: favorited ? '#FFC60A' : '#646A73' }"
+      >
+        <icon
+          ><component
+            class="svg-icon"
+            :is="favorited ? visualStar : icon_collection_outlined"
+          ></component
+        ></icon>
+      </el-icon>
+      <el-icon style="margin-left: 16px" @click="reload" color="#646A73" size="16"
+        ><icon_replace_outlined
+      /></el-icon>
+    </div>
     <de-preview
       ref="dashboardPreview"
       v-if="state.canvasStylePreview && dataInitState"
@@ -120,6 +162,15 @@ const onClickLeft = () => {
   --van-nav-bar-title-text-color: #1f2329;
   --van-font-bold: 500;
   --van-nav-bar-title-font-size: 17px;
+
+  .top-nav_refresh {
+    position: absolute;
+    top: 14px;
+    right: 24px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+  }
   #preview-canvas-main {
     height: calc(100% - 44px) !important;
   }
