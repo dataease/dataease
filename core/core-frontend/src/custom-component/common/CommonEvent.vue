@@ -130,6 +130,11 @@ const typeMap = {
 </template>
 
 <style scoped lang="less">
+.form-item-light {
+  .ed-radio {
+    margin-right: 3px !important;
+  }
+}
 .form-item-dark {
   .ed-radio {
     margin-right: 3px !important;

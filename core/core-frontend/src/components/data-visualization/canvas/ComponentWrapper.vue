@@ -15,6 +15,7 @@ import { isMobile } from '@/utils/utils'
 import { isDashboard } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 const appStore = useAppStoreWithOut()
 
 const componentWrapperInnerRef = ref(null)
@@ -23,6 +24,7 @@ const dvMainStore = dvMainStoreWithOut()
 const downLoading = ref(false)
 const { wsCache } = useCache('localStorage')
 const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+const dePreviewPopDialogRef = ref(null)
 const commonFilterAttrsFilterBorder = [
   'width',
   'height',
@@ -320,25 +322,9 @@ const onWrapperClick = e => {
       const jumpType = config.value.events.jump.type
       try {
         if ('newPop' === jumpType) {
-          console.info('DataEase Component Jump newPop value:' + window['originOpen'])
-          if (window['originOpen']) {
-            console.info('DataEase Component originOpen newPop')
-            window['originOpen'](
-              url,
-              '_blank',
-              'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
-            )
-          } else {
-            window.open(
-              url,
-              '_blank',
-              'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
-            )
-          }
+          dePreviewPopDialogRef.value.previewInit({ url, size: 'middle' })
         } else if ('_blank' === jumpType) {
-          console.info('DataEase Component Jump _blank value:' + window['originOpen'])
           if (window['originOpen']) {
-            console.info('DataEase Component originOpen _blank')
             window['originOpen'](url, '_blank')
           } else {
             window.open(url, '_blank')
@@ -455,6 +441,7 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
       ref="openHandler"
       jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
     />
+    <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>
 
