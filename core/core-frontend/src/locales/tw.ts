@@ -2789,6 +2789,11 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    gap_size: '間隙大小',
+    small: '小',
+    middle: '中',
+    large: '大',
+    custom: '自定義',
     no_details: '無明細數據',
     sync_pc_design: '同步PC設計',
     title_background: '標題背景',

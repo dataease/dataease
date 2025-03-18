@@ -2868,6 +2868,11 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    gap_size: 'Gap Size',
+    small: 'Small',
+    middle: 'Medium',
+    large: 'Large',
+    custom: 'Custom',
     no_details: 'No Data',
     sync_pc_design: 'Synchronize PC Design',
     title_background: 'Title Background',

@@ -2795,6 +2795,11 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    gap_size: '间隙大小',
+    small: '小',
+    middle: '中',
+    large: '大',
+    custom: '自定义',
     no_details: '无明细数据',
     sync_pc_design: '同步PC设计',
     title_background: '标题背景',

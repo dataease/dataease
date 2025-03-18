@@ -50,6 +50,34 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item
+      v-if="canvasStyleData.dashboard.gap === 'yes'"
+      class="form-item"
+      :class="'form-item-' + themes"
+      :label="t('visualization.gap_size')"
+    >
+      <el-radio-group v-model="canvasStyleData.dashboard.gapMode" @change="onGapModeChange">
+        <el-radio :effect="themes" label="small">{{ t('visualization.small') }}</el-radio>
+        <el-radio :effect="themes" label="middle">{{ t('visualization.middle') }}</el-radio>
+        <el-radio :effect="themes" label="large">{{ t('visualization.large') }}</el-radio>
+        <el-radio :effect="themes" label="custom">{{ t('visualization.custom') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-show="canvasStyleData.dashboard.gapMode === 'custom'"
+    >
+      <el-input-number
+        v-model="canvasStyleData.dashboard.gapSize"
+        :effect="themes"
+        controls-position="right"
+        size="middle"
+        :min="0"
+        :max="50"
+        @change="themeChange"
+      />
+    </el-form-item>
+    <el-form-item
       v-if="dvInfo.type === 'dashboard'"
       class="form-item"
       :class="'form-item-' + themes"
@@ -291,6 +319,7 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { isDesktop } from '@/utils/ModelUtil'
 import eventBus from '@/utils/eventBus'
+import { resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
 const appearanceStore = useAppearanceStoreWithOut()
 const isDesktopFlag = isDesktop()
 const snapshotStore = snapshotStoreWithOut()
@@ -337,6 +366,22 @@ const fontFamilyChange = () => {
 const onKeepSizeChange = () => {
   eventBus.emit('event-canvas-size-init')
   snapshotStore.recordSnapshotCache('renderChart')
+}
+const onGapModeChange = () => {
+  snapshotStore.recordSnapshotCache('renderChart')
+  switch (canvasStyleData.value.dashboard.gapMode) {
+    case 'small':
+      canvasStyleData.value.dashboard.gapSize = 3
+      break
+    case 'middle':
+      canvasStyleData.value.dashboard.gapSize = 5
+      break
+    case 'large':
+      canvasStyleData.value.dashboard.gapSize = 10
+      break
+    default:
+      break
+  }
 }
 
 const themeChange = (modifyName?) => {
