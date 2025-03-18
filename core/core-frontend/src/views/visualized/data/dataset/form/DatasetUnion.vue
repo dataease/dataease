@@ -244,7 +244,13 @@ const saveSqlNode = (val: SqlNode, cb) => {
     }
     return
   }
-  const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName, sqlVariableDetails }
+  const obj = {
+    info: JSON.stringify({ table: tableName, sql }),
+    id,
+    datasourceId,
+    tableName,
+    sqlVariableDetails
+  }
   dfsNodeBack([obj], [id], state.nodeList)
   emits('reGetName')
 }
