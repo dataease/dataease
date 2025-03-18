@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useI18n } from '@/hooks/web/useI18n'
 import { shortcutOption } from '@/views/workbranch/ShortcutOption'
@@ -16,6 +16,8 @@ import 'vant/es/sticky/style'
 import 'vant/es/tab/style'
 import 'vant/es/nav-bar/style'
 import 'vant/es/tabs/style'
+import { cloneDeep } from 'lodash-es'
+import { XpackComponent } from '@/components/plugin'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -43,18 +45,6 @@ const loadTableData = () => {
     })
 }
 
-const setEmptyTips = () => {
-  emptyTips.value = state.tableData.length
-    ? ''
-    : `暂无${
-        {
-          recent: '数据',
-          store: '收藏',
-          share: '分享'
-        }[activeTab.value]
-      }`
-}
-
 const loadShareTableData = () => {
   emits('setLoading', true)
   request
@@ -71,11 +61,21 @@ const loadShareTableData = () => {
     })
 }
 
-const tablePaneList = ref([
+const baseTablePaneList = ref([
   { title: t('work_branch.recent'), name: 'recent', disabled: false },
   { title: '我的收藏', name: 'store', disabled: false },
   { title: t('visualization.share_out'), name: 'share', disabled: false }
 ])
+
+const dfTablePaneList = ref([])
+
+const tablePaneList = computed(() => {
+  const list = cloneDeep(!!busiAuthList.length ? baseTablePaneList.value : [])
+  for (const valueElement of dfTablePaneList.value) {
+    list.push(valueElement)
+  }
+  return list
+})
 
 const busiDataMap = computed(() => interactiveStore.getData)
 
@@ -87,13 +87,40 @@ const getBusiListWithPermission = () => {
       busiFlagList.push(baseFlagList[parseInt(key)])
     }
   }
-  tablePaneList.value[0].disabled = !busiFlagList?.length
-  tablePaneList.value[1].disabled =
+  baseTablePaneList.value[0].disabled = !busiFlagList?.length
+  baseTablePaneList.value[1].disabled =
     !busiFlagList.includes('panel') && !busiFlagList.includes('screen')
   return busiFlagList
 }
 
 const busiAuthList = getBusiListWithPermission()
+
+const shortName = {
+  recent: '数据',
+  store: '收藏',
+  share: '分享'
+}
+
+const loadedDataFilling = data => {
+  dfTablePaneList.value.push(data)
+  shortName[data.name] = data.shortName
+}
+
+const setEmptyTips = () => {
+  emptyTips.value = state.tableData.length ? '' : `暂无${shortName[activeTab.value]}`
+}
+
+const firstChangeActiveName = ref(false)
+
+watch(
+  () => tablePaneList.value.length,
+  (v1, v2) => {
+    if (tablePaneList.value.length > 0 && !firstChangeActiveName.value) {
+      firstChangeActiveName.value = true
+      activeTab.value = tablePaneList.value[0].name
+    }
+  }
+)
 
 const handleClick = ({ name, disabled }) => {
   if (disabled) return
@@ -101,8 +128,10 @@ const handleClick = ({ name, disabled }) => {
     emits('setLoading', true)
     shortcutOption.setBusiFlag(name)
     loadTableData()
-  } else {
+  } else if (name === 'share') {
     loadShareTableData()
+  } else {
+    emptyTips.value = undefined
   }
 }
 onMounted(() => {
@@ -145,13 +174,19 @@ const formatterTime = val => {
       </van-tabs>
     </van-sticky>
     <div class="workbranch-cell-group">
-      <Workbranch
-        @click="handleCellClick(ele)"
-        v-for="ele in state.tableData"
-        :key="ele.id"
-        size="large"
-        :label="ele.name"
-        :time="formatterTime(ele.lastEditTime || ele.time)"
+      <template v-if="baseTablePaneList.includes(activeTab)">
+        <Workbranch
+          @click="handleCellClick(ele)"
+          v-for="ele in state.tableData"
+          :key="ele.id"
+          size="large"
+          :label="ele.name"
+          :time="formatterTime(ele.lastEditTime || ele.time)"
+        />
+      </template>
+      <XpackComponent
+        jsname="L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5lVGFibGU="
+        v-else-if="activeTab === 'data-filling'"
       />
     </div>
     <div class="empty-img-mobile" v-if="!!emptyTips">
@@ -161,6 +196,11 @@ const formatterTime = val => {
       </div>
     </div>
   </div>
+
+  <XpackComponent
+    jsname="L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5l"
+    @loaded="loadedDataFilling"
+  />
 </template>
 
 <style lang="less" scoped>

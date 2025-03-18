@@ -4165,7 +4165,8 @@ export default {
       'After data filling is enabled, the form data can be stored in the Datasource. Once enabled, it is not allowed to be closed later. ',
     new_folder: 'New folder',
     form_manage: 'Form management',
-    my_job: 'My reports',
+    my_job: 'My data filling task',
+    short_name: 'Task',
     disable_data_fill_hint:
       'After closing data filling, the form data will fail to submit. Are you sure you want to close it? ',
     enable_data_fill_hint:
@@ -4173,6 +4174,7 @@ export default {
     todo: 'To be filled',
     finished: 'Filled',
     expired: 'Expired',
+    all: 'All',
     required_select: 'Required',
     condition: 'Filter value',
     add_condition: 'Add condition',
