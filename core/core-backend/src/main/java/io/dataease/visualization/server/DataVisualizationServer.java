@@ -232,7 +232,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     newDatasourceId.add(datasourceOld.getSystemDatasourceId());
                     // Excel 数据表明映射
                     if (StringUtils.isNotEmpty(datasourceOld.getConfiguration())) {
-                        if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+                        if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
+                            DEException.throwException(Translator.get("i18n_app_error_no_api"));
+                        } else if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
                             dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getType(), datasourceOld.getConfiguration()));
                         } else if (datasourceOld.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                             dsTableNamesMap.put(datasourceOld.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceOld.getType(), "getTableNamesMap", String.class, datasourceOld.getConfiguration()));
@@ -338,7 +340,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                             appDsTableNamesMap.forEach((keyName, valueName) -> {
                                 if (!CollectionUtils.isEmpty(systemDsTableNamesMap) && StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
                                     dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, systemDsTableNamesMap.get(keyName)));
-                                }else{
+                                } else {
                                     dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, "excel_can_not_find"));
                                 }
                             });
@@ -813,6 +815,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         if (CollectionUtils.isEmpty(datasourceVOInfo)) {
             DEException.throwException("当前不存在数据源无法导出");
+        } else if(datasourceVOInfo.stream()
+                .anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()))){
+            DEException.throwException(Translator.get("i18n_app_error_no_api"));
         }
 
         List<VisualizationLinkageVO> linkageVOInfo = appTemplateMapper.findAppLinkageInfo(dvId);
