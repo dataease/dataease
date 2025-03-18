@@ -3049,6 +3049,7 @@ export default {
     custom_sort: 'Custom Sort',
     show_date: 'Show Date',
     show_time: 'Show Time',
+    show_week: 'Show Week',
     link_info: 'Link Information',
     pic_upload_tips: 'Please upload an image...',
     pic_group: 'Image Group',

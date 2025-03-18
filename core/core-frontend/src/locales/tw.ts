@@ -2965,6 +2965,7 @@ export default {
     custom_sort: '自定義排序',
     show_date: '顯示日期',
     show_time: '顯示時間',
+    show_week: '顯示星期',
     link_info: '鏈接信息',
     pic_upload_tips: '請上傳圖片...',
     pic_group: '圖片組',

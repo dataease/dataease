@@ -2972,6 +2972,7 @@ export default {
     custom_sort: '自定义排序',
     show_date: '显示日期',
     show_time: '显示时间',
+    show_week: '显示星期',
     link_info: '链接信息',
     pic_upload_tips: '请上传图片...',
     pic_group: '图片组',
