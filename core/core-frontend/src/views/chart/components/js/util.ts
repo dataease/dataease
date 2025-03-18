@@ -589,18 +589,21 @@ export const exportExcelDownload = (chart, callBack?) => {
 }
 
 export const copyString = (content: string, notify = false) => {
-  const clipboard = navigator.clipboard || {
-    writeText: data => {
-      return new Promise(resolve => {
-        const textareaDom = document.createElement('textarea')
-        textareaDom.setAttribute('style', 'z-index: -1;position: fixed;opacity: 0;')
-        textareaDom.value = data
-        document.body.appendChild(textareaDom)
-        textareaDom.select()
-        document.execCommand('copy')
-        textareaDom.remove()
-        resolve()
-      })
+  let clipboard = navigator.clipboard as Pick<Clipboard, 'writeText'>
+  if (!clipboard || window.top !== window.self) {
+    clipboard = {
+      writeText: data => {
+        return new Promise<void>(resolve => {
+          const textareaDom = document.createElement('textarea')
+          textareaDom.setAttribute('style', 'z-index: -1;position: fixed;opacity: 0;')
+          textareaDom.value = data
+          document.body.appendChild(textareaDom)
+          textareaDom.select()
+          document.execCommand('copy')
+          textareaDom.remove()
+          resolve()
+        })
+      }
     }
   }
   clipboard.writeText(content).then(() => {
