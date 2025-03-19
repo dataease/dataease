@@ -1852,7 +1852,10 @@ const sortComputed = computed(() => {
 
 const treeDialog = ref()
 const startTreeDesign = () => {
-  treeDialog.value.init(curComponent.value.dataset.fields, curComponent.value.treeFieldList)
+  treeDialog.value.init(
+    curComponent.value.dataset.fields.filter(ele => ele.groupType === 'd'),
+    curComponent.value.treeFieldList
+  )
 }
 const saveTree = arr => {
   curComponent.value.treeFieldList = arr
