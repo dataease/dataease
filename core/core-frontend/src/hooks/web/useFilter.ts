@@ -290,7 +290,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
           item.treeCheckedList.forEach((itx, idx) => {
             if (
               itx.checkedFields.includes(curComponentId) &&
-              itx.checkedFieldsMap[curComponentId]
+              itx.checkedFieldsMap[curComponentId] &&
+              idx < item.treeFieldList.length
             ) {
               relationshipChartIndex.push(idx)
             }

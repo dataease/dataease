@@ -253,11 +253,13 @@ const releaseSelect = id => {
 }
 
 const getKeyList = next => {
-  let checkedFieldsMapArr = Object.entries(next.checkedFieldsMap)
+  let checkedFieldsMapArr = Object.entries(next.checkedFieldsMap).filter(ele =>
+    next.checkedFields.includes(ele[0])
+  )
   if (next.displayType === '9') {
     checkedFieldsMapArr = (
       next.treeCheckedList?.length
-        ? next.treeCheckedList
+        ? next.treeCheckedList.filter((_, index) => index < next.treeFieldList.length)
         : next.treeFieldList.map(() => {
             return {
               checkedFields: [...next.checkedFields],
@@ -265,13 +267,12 @@ const getKeyList = next => {
             }
           })
     )
-      .map(item => Object.entries(item.checkedFieldsMap))
+      .map(item =>
+        Object.entries(item.checkedFieldsMap).filter(ele => item.checkedFields.includes(ele[0]))
+      )
       .flat()
   }
-  return checkedFieldsMapArr
-    .filter(ele => next.checkedFields.includes(ele[0]))
-    .filter(ele => !!ele[1])
-    .map(ele => ele[0])
+  return checkedFieldsMapArr.filter(ele => !!ele[1]).map(ele => ele[0])
 }
 const queryDataForId = id => {
   let requiredName = ''

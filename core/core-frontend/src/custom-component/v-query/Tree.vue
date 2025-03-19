@@ -88,14 +88,14 @@ const handleValueChange = () => {
   config.value.defaultValue = value
 }
 
+const changeFromId = ref(false)
 watch(
-  () => config.value.defaultValue,
-  val => {
-    if (config.value.multiple) {
-      treeValue.value = Array.isArray(val) ? [...val] : val
-    }
+  () => config.value.id,
+  () => {
+    changeFromId.value = true
+    init()
     nextTick(() => {
-      multiple.value = config.value.multiple
+      changeFromId.value = false
     })
   }
 )
@@ -103,13 +103,17 @@ watch(
 watch(
   () => config.value.treeFieldList,
   () => {
+    if (changeFromId.value) return
     treeValue.value = config.value.multiple ? [] : undefined
+    config.value.defaultValue = config.value.multiple ? [] : undefined
+    config.value.selectValue = config.value.multiple ? [] : undefined
     showOrHide.value = false
     getTreeOption()
   }
 )
 
 const init = () => {
+  loading.value = true
   const { defaultValueCheck, multiple: plus, defaultValue } = config.value
   if (defaultValueCheck) {
     config.value.selectValue = Array.isArray(defaultValue)
@@ -126,12 +130,6 @@ const init = () => {
   getTreeOption()
 }
 
-watch(
-  () => config.value.id,
-  () => {
-    init()
-  }
-)
 const showOrHide = ref(true)
 const queryConditionWidth = inject('com-width', Function, true)
 const isConfirmSearch = inject('is-confirm-search', Function, true)
@@ -151,7 +149,7 @@ const showWholePath = ref(false)
 watch(
   () => config.value.multiple,
   val => {
-    if (!props.isConfig) return
+    if (!props.isConfig || changeFromId.value) return
     showWholePath.value = false
     if (val) {
       treeValue.value = []

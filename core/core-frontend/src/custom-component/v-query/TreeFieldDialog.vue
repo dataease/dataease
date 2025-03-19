@@ -39,7 +39,7 @@ const cancelClick = () => {
 const setCascadeArrBack = () => {
   let isError = false
   const arr = cloneDeep(treeList.value).map(item => {
-    if (!item.field) {
+    if (!item.field?.id) {
       isError = true
     }
     return item.field

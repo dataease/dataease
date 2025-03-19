@@ -335,6 +335,7 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
   setSameId()
   if (curComponent.value.displayType === '8') return
+  setTreeDefault()
   setType()
 }
 
@@ -480,6 +481,26 @@ const timeTypeChange = () => {
   setParametersTimeType(currentComponentId)
   setTypeChange()
   timeDialogShow.value = false
+}
+
+const setTreeDefault = () => {
+  if (curComponent.value.displayType !== '9') return
+  if (!!curComponent.value.checkedFields.length) {
+    let tableId = ''
+    fields.value.forEach(ele => {
+      if (
+        curComponent.value.checkedFields.includes(ele.componentId) &&
+        curComponent.value.checkedFieldsMap[ele.componentId] &&
+        !tableId
+      ) {
+        tableId = datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId
+      }
+    })
+    if (tableId && !curComponent.value.treeDatasetId) {
+      curComponent.value.treeDatasetId = tableId
+      getOptions(curComponent.value.treeDatasetId, curComponent.value)
+    }
+  }
 }
 
 const numTypeChange = () => {
@@ -687,6 +708,7 @@ const setParameters = field => {
 
   if (notChangeType) return
   setType()
+  setTreeDefault()
 }
 
 const setType = () => {
@@ -747,6 +769,7 @@ const setTypeChange = () => {
     ) {
       curComponent.value.timeGranularityMultiple = curComponent.value.timeGranularity
     }
+    setTreeDefault()
   })
 }
 
@@ -1155,7 +1178,23 @@ const validate = () => {
       return true
     }
 
+    if (
+      ele.displayType === '0' &&
+      ele.defaultValueCheck &&
+      ((Array.isArray(ele.defaultValue) && !ele.defaultValue.length) || !ele.defaultValue)
+    ) {
+      ElMessage.error(t('report.filter.title'))
+      return true
+    }
+
     if (ele.displayType === '9') {
+      if (
+        ele.defaultValueCheck &&
+        ((Array.isArray(ele.defaultValue) && !ele.defaultValue.length) || !ele.defaultValue)
+      ) {
+        ElMessage.error(t('report.filter.title'))
+        return true
+      }
       if (!ele.treeDatasetId) {
         ElMessage.error(t('data_set.dataset_cannot_be'))
         return true
@@ -1401,10 +1440,6 @@ const validate = () => {
       return false
     }
 
-    if ([1].includes(+ele.displayType)) {
-      return false
-    }
-
     if (
       ele.displayType !== '9' &&
       ele.optionValueSource === 2 &&
@@ -1427,6 +1462,7 @@ const handleBeforeClose = () => {
   defaultConfigurationRef.value?.mult()
   defaultConfigurationRef.value?.single()
   handleDialogClick()
+  curComponent.value.id = ''
   dialogVisible.value = false
 }
 const emits = defineEmits(['queryData'])
@@ -1765,6 +1801,7 @@ const handleCondition = (item, idx = 0) => {
   nextTick(() => {
     if (curComponent.value.displayType === '9') {
       handleRelationshipChart(idx)
+      getOptions(curComponent.value.treeDatasetId, curComponent.value)
     }
     curComponent.value.showError = showError.value
     curComponent.value.auto && (document.querySelector('.chart-field').scrollTop = 0)
@@ -3660,7 +3697,7 @@ defineExpose({
 
               .field-tree_name {
                 margin-left: 8px;
-                max-width: 100px;
+                width: 100px;
               }
 
               .field-relationship_chart {
