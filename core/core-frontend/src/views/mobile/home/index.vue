@@ -16,7 +16,7 @@ import 'vant/es/sticky/style'
 import 'vant/es/tab/style'
 import 'vant/es/nav-bar/style'
 import 'vant/es/tabs/style'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, map } from 'lodash-es'
 import { XpackComponent } from '@/components/plugin'
 
 const router = useRouter()
@@ -66,6 +66,10 @@ const baseTablePaneList = ref([
   { title: '我的收藏', name: 'store', disabled: false },
   { title: t('visualization.share_out'), name: 'share', disabled: false }
 ])
+
+const computedBaseTablePaneNameList = computed(() => {
+  return map(baseTablePaneList.value, l => l.name)
+})
 
 const dfTablePaneList = ref([])
 
@@ -174,7 +178,7 @@ const formatterTime = val => {
       </van-tabs>
     </van-sticky>
     <div class="workbranch-cell-group">
-      <template v-if="baseTablePaneList.includes(activeTab)">
+      <template v-if="computedBaseTablePaneNameList.includes(activeTab)">
         <Workbranch
           @click="handleCellClick(ele)"
           v-for="ele in state.tableData"
