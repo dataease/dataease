@@ -336,6 +336,7 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
   setSameId()
   if (curComponent.value.displayType === '8') return
   setTreeDefault()
+  setRelationBack()
   setType()
 }
 
@@ -484,7 +485,7 @@ const timeTypeChange = () => {
 }
 
 const setTreeDefault = () => {
-  if (curComponent.value.displayType !== '9') return
+  if (curComponent.value.displayType !== '9' || relationshipChartIndex.value !== 0) return
   if (!!curComponent.value.checkedFields.length) {
     let tableId = ''
     fields.value.forEach(ele => {
@@ -709,6 +710,7 @@ const setParameters = field => {
   if (notChangeType) return
   setType()
   setTreeDefault()
+  setRelationBack()
 }
 
 const setType = () => {
@@ -770,6 +772,7 @@ const setTypeChange = () => {
       curComponent.value.timeGranularityMultiple = curComponent.value.timeGranularity
     }
     setTreeDefault()
+    setRelationBack()
   })
 }
 
@@ -1856,12 +1859,33 @@ const saveTree = arr => {
 }
 const showError = computed(() => {
   if (!curComponent.value) return false
-  const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource, displayType } =
-    curComponent.value
+  const {
+    optionValueSource,
+    checkedFieldsMap,
+    checkedFields,
+    field,
+    valueSource,
+    displayType,
+    treeCheckedList,
+    treeFieldList
+  } = curComponent.value
   const arr = checkedFields.filter(ele => !!checkedFieldsMap[ele])
   if (!checkedFields.length || !arr.length) {
     return true
   }
+
+  if (9 === +displayType) {
+    for (const key in treeCheckedList) {
+      if (key > treeFieldList.length) continue
+      const treeArr = treeCheckedList[key].checkedFields.filter(
+        ele => !!treeCheckedList[key].checkedFieldsMap[ele]
+      )
+      if (!treeCheckedList[key].checkedFields.length || !treeArr.length) {
+        return true
+      }
+    }
+  }
+
   if ([1, 7, 8, 22, 9].includes(+displayType)) {
     return false
   }
@@ -2099,6 +2123,13 @@ const notCurrentEle = (ele, index) => {
     handleRelationshipChart(index)
   }
 }
+
+const setRelationBack = () => {
+  curComponent.value.treeCheckedList[relationshipChartIndex.value] = {
+    checkedFields: [...curComponent.value.checkedFields],
+    checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
+  }
+}
 const handleRelationshipChart = index => {
   if (curComponent.value.treeCheckedList?.length) {
     curComponent.value.treeCheckedList[relationshipChartIndex.value] = {
@@ -2188,6 +2219,7 @@ const renameInputBlur = () => {
 }
 
 const addQueryCriteria = () => {
+  relationshipChartIndex.value = 0
   conditions.value.push(parameterCompletion(addQueryCriteriaConfig()))
 }
 
