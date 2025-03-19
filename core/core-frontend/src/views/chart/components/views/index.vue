@@ -1172,10 +1172,15 @@ const clearG2Tooltip = () => {
         :themes="canvasStyleData.dashboard.themeColor"
         ref="chartComponent"
         :view="view"
+        :element="element"
         :show-position="showPosition"
         :suffixId="suffixId"
         :font-family="fontFamily"
         @touchstart="clearG2Tooltip"
+        @onChartClick="chartClick"
+        @onPointClick="onPointClick"
+        @onDrillFilters="onDrillFilters"
+        @onJumpClick="jumpClick"
       />
       <chart-component-g2-plot
         :scale="scale"

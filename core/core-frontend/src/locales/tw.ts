@@ -2789,6 +2789,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    indicator_linkage: '指標卡聯動僅攜帶圖表過濾參數',
     gap_size: '間隙大小',
     small: '小',
     middle: '中',

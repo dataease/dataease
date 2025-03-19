@@ -3,7 +3,7 @@ import { getData } from '@/api/chart'
 import { ref, reactive, shallowRef, computed, CSSProperties, toRefs, PropType } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
-import { deepCopy } from '@/utils/utils'
+import { deepCopy, isMobile } from '@/utils/utils'
 import { cloneDeep, defaultsDeep, defaultTo } from 'lodash-es'
 import {
   BASE_VIEW_CONFIG,
@@ -13,8 +13,18 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { storeToRefs } from 'pinia'
+import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
+import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 
 const props = defineProps({
+  element: {
+    type: Object,
+    default() {
+      return {
+        propValue: null
+      }
+    }
+  },
   view: {
     type: Object as PropType<ChartObj>,
     default() {
@@ -50,18 +60,25 @@ const props = defineProps({
   }
 })
 
-const { view, scale, terminal } = toRefs(props)
+const { view, scale, terminal, showPosition } = toRefs(props)
 
 const dvMainStore = dvMainStoreWithOut()
-
-const { batchOptStatus } = storeToRefs(dvMainStore)
-
+const dataVMobile = !isDashboard() && isMobile()
+const { embeddedCallBack, nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, inMobile } =
+  storeToRefs(dvMainStore)
+const viewTrack = ref(null)
 const errMsg = ref('')
 const isError = ref(false)
 const state = reactive({
+  pointParam: null,
   data: null,
   loading: false,
-  totalItems: 0
+  totalItems: 0,
+  trackBarStyle: {
+    position: 'absolute',
+    left: '50px',
+    top: '50px'
+  }
 })
 
 const chartData = shallowRef<Partial<Chart['data']>>({
@@ -101,7 +118,6 @@ const result = computed(() => {
 })
 
 const indicatorColor = ref(DEFAULT_INDICATOR_STYLE.color)
-
 const thresholdColor = computed(() => {
   let color: string = indicatorColor.value
   let backgroundColor: string = DEFAULT_INDICATOR_STYLE.backgroundColor
@@ -184,8 +200,7 @@ const formattedResult = computed(() => {
   return _result
 })
 
-const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
-
+const emit = defineEmits(['onPointClick', 'onChartClick', 'onDrillFilters', 'onJumpClick'])
 const contentStyle = ref<CSSProperties>({
   display: 'flex',
   'flex-direction': 'column',
@@ -375,6 +390,143 @@ const calcData = (view, callback) => {
   }
 }
 
+const trackClick = trackAction => {
+  const param = state.pointParam
+  if (!param?.data?.dimensionList) {
+    return
+  }
+  const linkageParam = {
+    option: 'linkage',
+    name: state.pointParam.data.name,
+    viewId: view.value.id,
+    dimensionList: state.pointParam.data.dimensionList,
+    quotaList: state.pointParam.data.quotaList
+  }
+  const jumpParam = {
+    option: 'jump',
+    name: state.pointParam.data.name,
+    viewId: view.value.id,
+    dimensionList: state.pointParam.data.dimensionList,
+    quotaList: state.pointParam.data.quotaList,
+    sourceType: state.pointParam.data.sourceType
+  }
+
+  const clickParams = {
+    option: 'pointClick',
+    name: state.pointParam.data.name,
+    viewId: view.value.id,
+    dimensionList: state.pointParam.data.dimensionList,
+    quotaList: state.pointParam.data.quotaList
+  }
+
+  switch (trackAction) {
+    case 'pointClick':
+      emit('onPointClick', clickParams)
+      break
+    case 'linkageAndDrill':
+      dvMainStore.addViewTrackFilter(linkageParam)
+      emit('onChartClick', param)
+      break
+    case 'drill':
+      emit('onChartClick', param)
+      break
+    case 'linkage':
+      dvMainStore.addViewTrackFilter(linkageParam)
+      break
+    case 'jump':
+      if (mobileInPc.value && !inMobile.value) return
+      emit('onJumpClick', jumpParam)
+      break
+    default:
+      break
+  }
+}
+
+const trackMenu = computed(() => {
+  let trackMenuInfo = []
+  if (showPosition.value === 'viewDialog') {
+    return trackMenuInfo
+  }
+  let linkageCount = 0
+  let jumpCount = 0
+  chartData.value?.fields?.forEach(item => {
+    const sourceInfo = view.value.id + '#' + item.id
+    if (nowPanelTrackInfo.value[sourceInfo]) {
+      linkageCount++
+    }
+    if (nowPanelJumpInfo.value[sourceInfo]) {
+      jumpCount++
+    }
+  })
+  jumpCount &&
+    view.value?.jumpActive &&
+    (!mobileInPc.value || inMobile.value) &&
+    trackMenuInfo.push('jump')
+  linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
+  view.value.drillFields.length && trackMenuInfo.push('drill')
+  // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
+  if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
+    trackMenuInfo = ['jump', 'linkageAndDrill']
+  } else if (
+    trackMenuInfo.length === 2 &&
+    props.element.actionSelection.linkageActive === 'auto' &&
+    !trackMenuInfo.includes('jump')
+  ) {
+    trackMenuInfo = ['linkageAndDrill']
+  }
+  return trackMenuInfo
+})
+
+const pointClickTrans = () => {
+  if (embeddedCallBack.value === 'yes') {
+    trackClick('pointClick')
+  }
+}
+
+const action = param => {
+  state.pointParam = param
+  // 点击
+  pointClickTrans()
+  // 联动 跳转
+  if (trackMenu.value.length < 2) {
+    // 只有一个事件直接调用
+    trackClick(trackMenu.value[0])
+  } else {
+    // 图表关联多个事件
+    const barStyleTemp = {
+      left: param.x - 50,
+      top: param.y + 10
+    }
+    trackBarStyleCheck(props.element, barStyleTemp, props.scale, trackMenu.value.length)
+    if (dataVMobile) {
+      state.trackBarStyle.left = barStyleTemp.left + 40 + 'px'
+      state.trackBarStyle.top = barStyleTemp.top + 70 + 'px'
+    } else {
+      state.trackBarStyle.left = barStyleTemp.left + 'px'
+      state.trackBarStyle.top = barStyleTemp.top + 'px'
+    }
+
+    viewTrack.value.trackButtonClick()
+  }
+}
+
+const onPointClick = () => {
+  if (view.value?.yAxis?.length) {
+    const axis = view.value.yAxis[0]
+    // 模拟点击
+    const params = {
+      data: {
+        data: {
+          name: axis.name,
+          dimensionList: [],
+          quotaList: view.value.yAxis
+        }
+      }
+    }
+    action(params)
+  }
+}
+
 defineExpose({
   calcData,
   renderChart
@@ -382,7 +534,16 @@ defineExpose({
 </script>
 
 <template>
-  <div :style="contentStyle">
+  <div :style="contentStyle" @click="onPointClick">
+    <view-track-bar
+      ref="viewTrack"
+      :track-menu="trackMenu"
+      :font-family="fontFamily"
+      class="track-bar"
+      :style="state.trackBarStyle"
+      @trackClick="trackClick"
+      :is-data-v-mobile="dataVMobile"
+    />
     <div>
       <span :style="indicatorClass">{{ formattedResult }}</span>
       <span :style="indicatorSuffixClass" v-if="showSuffix">{{ suffixContent }}</span>

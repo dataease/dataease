@@ -2868,6 +2868,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    indicator_linkage: 'Indicator card linkage only carries chart filtering parameters',
     gap_size: 'Gap Size',
     small: 'Small',
     middle: 'Medium',

@@ -158,7 +158,23 @@
           </el-col>
           <el-col :span="16" class="preview-show">
             <el-row class="content-head">{{ t('visualization.linkage_setting_tips1') }}</el-row>
-            <el-row v-if="state.linkageInfo && state.linkageInfo.linkageActive">
+            <el-row
+              v-if="
+                state.linkageInfo &&
+                state.linkageInfo.linkageActive &&
+                curComponent?.innerType === 'indicator'
+              "
+              style="height: 100%"
+              class="custom-position"
+            >
+              <Icon name="dv-empty"
+                ><dvEmpty style="width: 125px; height: 125px" class="svg-icon"
+              /></Icon>
+              <span style="margin-top: 8px; font-size: 14px">
+                {{ t('visualization.indicator_linkage') }}</span
+              >
+            </el-row>
+            <el-row v-else-if="state.linkageInfo && state.linkageInfo.linkageActive">
               <el-row style="margin-top: 5px">
                 <div style="display: flex" class="inner-content">
                   <div style="flex: 1">{{ t('visualization.current_chart_source_field') }}</div>
@@ -367,7 +383,10 @@ const sameDsShow = computed(
 )
 
 const diffDsShow = computed(
-  () => curLinkageTargetViewsInfoDiffDs.value && curLinkageTargetViewsInfoDiffDs.value.length > 0
+  () =>
+    curLinkageTargetViewsInfoDiffDs.value &&
+    curLinkageTargetViewsInfoDiffDs.value.length > 0 &&
+    curComponent.value.innerType !== 'indicator'
 )
 
 const dialogInit = viewItem => {
@@ -557,6 +576,9 @@ const linkageFieldAdaptor = async data => {
             JSON.stringify(state.curLinkageViewInfo.extStack) +
             (state.curLinkageViewInfo.type.includes('chart-mix')
               ? JSON.stringify(state.curLinkageViewInfo.extBubble)
+              : '') +
+            (['indicator'].includes(state.curLinkageViewInfo.type)
+              ? JSON.stringify(state.curLinkageViewInfo.yAxis)
               : '')
           const targetCheckAllAxisStr =
             JSON.stringify(targetChartDetails.xAxis) +
@@ -564,6 +586,9 @@ const linkageFieldAdaptor = async data => {
             JSON.stringify(state.curLinkageViewInfo.extStack) +
             (targetChartDetails.type.includes('chart-mix')
               ? JSON.stringify(targetChartDetails.extBubble)
+              : '') +
+            (['indicator'].includes(state.curLinkageViewInfo.type)
+              ? JSON.stringify(state.curLinkageViewInfo.yAxis)
               : '')
           state.sourceLinkageInfo.targetViewFields.forEach(item => {
             if (
@@ -592,7 +617,7 @@ const sourceLinkageInfoFilter = computed(() => {
       (state.curLinkageViewInfo.type.includes('chart-mix')
         ? JSON.stringify(state.curLinkageViewInfo.extBubble)
         : '') +
-      (state.curLinkageViewInfo.type.includes('table-normal')
+      (['table-normal', 'indicator'].includes(state.curLinkageViewInfo.type)
         ? JSON.stringify(state.curLinkageViewInfo.yAxis)
         : '')
     return state.sourceLinkageInfo.targetViewFields.filter(item =>
