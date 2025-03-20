@@ -1935,10 +1935,9 @@ export const summaryRowStyle = (newChart, newData, tableCell, tableHeader, showS
     const totalHeight =
       tableHeader.tableTitleHeight * headerAndSummaryHeight +
       tableCell.tableItemHeight * (newData.length - 1)
-    if (totalHeight < newChart.options.height) {
-      // 6 是阴影高度
+    if (totalHeight < newChart.container.cfg.height) {
       newChart.options.height =
-        totalHeight < newChart.options.height - 6 ? totalHeight + 6 : totalHeight
+        totalHeight < newChart.container.cfg.height - 8 ? totalHeight + 8 : totalHeight
     }
   })
 }
