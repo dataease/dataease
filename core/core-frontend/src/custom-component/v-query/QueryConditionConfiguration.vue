@@ -1629,6 +1629,11 @@ const init = (queryId: string) => {
         .filter(ele => !!ele)
     })
     .finally(() => {
+      if (!curComponent.value.treeDatasetId) {
+        nextTick(() => {
+          setTreeDefault()
+        })
+      }
       handleCheckedFieldsChange(curComponent.value.checkedFields)
     })
 }
@@ -1804,7 +1809,13 @@ const handleCondition = (item, idx = 0) => {
   nextTick(() => {
     if (curComponent.value.displayType === '9') {
       handleRelationshipChart(idx)
-      getOptions(curComponent.value.treeDatasetId, curComponent.value)
+      if (!curComponent.value.treeDatasetId && fields.value?.length) {
+        nextTick(() => {
+          setTreeDefault()
+        })
+      } else if (curComponent.value.treeDatasetId) {
+        getOptions(curComponent.value.treeDatasetId, curComponent.value)
+      }
     }
     curComponent.value.showError = showError.value
     curComponent.value.auto && (document.querySelector('.chart-field').scrollTop = 0)
