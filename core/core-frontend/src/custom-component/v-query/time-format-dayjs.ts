@@ -1,10 +1,10 @@
 import dayjs from 'dayjs'
 import type { ManipulateType } from 'dayjs'
-function getThisStart(val = 'month' as ManipulateType) {
+function getThisStart(val = 'month' as ManipulateType | 'quarter') {
   return new Date(dayjs().startOf(val).format('YYYY/MM/DD HH:mm:ss'))
 }
 
-function getThisEnd(val = 'month' as ManipulateType) {
+function getThisEnd(val = 'month' as ManipulateType | 'quarter') {
   return new Date(dayjs().endOf(val).format('YYYY/MM/DD HH:mm:ss'))
 }
 
@@ -17,7 +17,17 @@ function getLastEnd(val = 'month' as ManipulateType) {
 }
 
 function getAround(val = 'month' as ManipulateType, type = 'add', num = 0) {
+  if (val === 'week') {
+    return new Date(dayjs().endOf('week').add(1, 'day').endOf('day').format('YYYY/MM/DD HH:mm:ss'))
+  }
   return new Date(dayjs()[type](num, val).startOf('day').format('YYYY/MM/DD HH:mm:ss'))
+}
+
+function getThisWeek(): [Date, Date] {
+  return [
+    new Date(dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')),
+    new Date(dayjs().endOf('week').add(1, 'day').endOf('day').format('YYYY/MM/DD HH:mm:ss'))
+  ]
 }
 
 function getCustomRange(relativeToCurrentRange: string): [Date, Date] {
@@ -30,6 +40,10 @@ function getCustomRange(relativeToCurrentRange: string): [Date, Date] {
       return [getThisStart('month'), getThisEnd('month')]
     case 'lastMonth':
       return [getLastStart('month'), getLastEnd('month')]
+    case 'thisQuarter':
+      return [getThisStart('quarter'), getThisEnd('quarter')]
+    case 'thisWeek':
+      return getThisWeek()
     case 'LastThreeMonths':
       return [
         new Date(dayjs().subtract(3, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss')),

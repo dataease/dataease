@@ -376,6 +376,7 @@ export default {
     lweek: 'Last week',
     cmonth: 'This month',
     cquarter: 'This quarter',
+    tquarter: 'This quarter',
     lquarter: 'Last quarter',
     cyear: 'This year'
   },

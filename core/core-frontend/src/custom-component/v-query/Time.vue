@@ -297,6 +297,14 @@ const disabledDate = val => {
       case 'lastMonth':
         startTime = getLastStart('month')
         break
+      case 'thisQuarter':
+        startTime = getThisStart('quarter')
+        break
+      case 'thisWeek':
+        startTime = new Date(
+          dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')
+        )
+        break
       case 'today':
         startTime = getThisStart('day')
         break

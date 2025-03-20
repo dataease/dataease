@@ -366,6 +366,7 @@ export default {
     lweek: '上週',
     cmonth: '本月',
     cquarter: '本季',
+    tquarter: '本季',
     lquarter: '上季',
     cyear: '本年'
   },
