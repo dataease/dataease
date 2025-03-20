@@ -2350,7 +2350,10 @@ defineExpose({
                     'active'
                   "
                   class="list-item_primary list-tree_primary"
-                  :style="{ top: 40 * (index + 1) + 'px' }"
+                  :style="{
+                    top: 40 * (index + 1) + 'px',
+                    paddingLeft: 32 + 16 * (index + 1) + 'px'
+                  }"
                   v-for="(itx, index) in element.treeFieldList.slice(1)"
                   :key="itx.field"
                   @click.stop="notCurrentEle(element, index + 1)"
