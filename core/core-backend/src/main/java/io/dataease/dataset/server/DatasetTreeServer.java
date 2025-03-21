@@ -33,19 +33,19 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) throws Exception {
-        return datasetGroupManage.save(datasetNodeDTO, false);
+        return datasetGroupManage.save(datasetNodeDTO, false, true);
     }
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO rename(DatasetGroupInfoDTO dto) throws Exception {
-        return datasetGroupManage.save(dto, true);
+        return datasetGroupManage.save(dto, true, false);
     }
 
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO create(DatasetGroupInfoDTO dto) throws Exception {
-        return datasetGroupManage.save(dto, false);
+        return datasetGroupManage.save(dto, false, true);
     }
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)

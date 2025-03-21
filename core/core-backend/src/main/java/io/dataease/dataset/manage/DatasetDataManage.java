@@ -196,7 +196,11 @@ public class DatasetDataManage {
         }).collect(Collectors.toList());
     }
 
-    public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count, boolean checkPermission) throws Exception {
+    public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count, boolean checkPermission, boolean encode) throws Exception {
+        if (encode) {
+            DatasetUtils.dsDecode(datasetGroupInfoDTO);
+        }
+
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
         String sql = (String) sqlMap.get("sql");
 
@@ -264,12 +268,15 @@ public class DatasetDataManage {
 
         Map<String, Object> map = new LinkedHashMap<>();
         // 重新构造data
-        Map<String, Object> previewData = buildPreviewData(data, fields, desensitizationList);
+        Map<String, Object> previewData = buildPreviewData(data, fields, desensitizationList, encode);
         map.put("data", previewData);
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
             map.put("allFields", fields);
         } else {
             List<DatasetTableFieldDTO> fieldList = datasetTableFieldManage.selectByDatasetGroupId(datasetGroupInfoDTO.getId());
+            if (encode) {
+                DatasetUtils.listEncode(fieldList);
+            }
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
@@ -467,14 +474,14 @@ public class DatasetDataManage {
         // 重新构造data
         List<TableField> fList = (List<TableField>) data.get("fields");
         List<DatasetTableFieldDTO> fields = transFields(fList, false);
-        Map<String, Object> previewData = buildPreviewData(data, fields, new HashMap<>());
+        Map<String, Object> previewData = buildPreviewData(data, fields, new HashMap<>(), false);
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("data", previewData);
         map.put("sql", Base64.getEncoder().encodeToString(sql.getBytes()));
         return map;
     }
 
-    public Map<String, Object> buildPreviewData(Map<String, Object> data, List<DatasetTableFieldDTO> fields, Map<String, ColumnPermissionItem> desensitizationList) {
+    public Map<String, Object> buildPreviewData(Map<String, Object> data, List<DatasetTableFieldDTO> fields, Map<String, ColumnPermissionItem> desensitizationList, boolean isEncode) {
         Map<String, Object> map = new LinkedHashMap<>();
         List<String[]> dataList = (List<String[]>) data.get("data");
         List<LinkedHashMap<String, Object>> dataObjectList = new ArrayList<>();
@@ -500,6 +507,10 @@ public class DatasetDataManage {
                 }
                 dataObjectList.add(obj);
             }
+        }
+
+        if (isEncode) {
+            DatasetUtils.listEncode(fields);
         }
 
         map.put("fields", fields);

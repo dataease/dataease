@@ -544,7 +544,7 @@ public class ExportCenterManage implements BaseExportApi {
                         DatasourceRequest datasourceRequest = new DatasourceRequest();
                         datasourceRequest.setQuery(querySQL);
                         datasourceRequest.setDsList(dsMap);
-                        Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList);
+                        Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList, false);
                         List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
                         if (p.equals(0L)) {
                             detailsSheet = wb.createSheet("数据" + s);

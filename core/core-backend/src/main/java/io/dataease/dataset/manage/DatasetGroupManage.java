@@ -14,6 +14,7 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
 import io.dataease.dataset.dto.DataSetNodeBO;
+import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -86,9 +87,12 @@ public class DatasetGroupManage {
 
 
     @Transactional
-    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO, boolean rename) throws Exception {
+    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO, boolean rename, boolean encode) throws Exception {
         lock.lock();
         try {
+            if (encode) {
+                DatasetUtils.dsDecode(datasetGroupInfoDTO);
+            }
             boolean isCreate;
             // 用于重命名获取pid
             if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getPid()) && ObjectUtils.isNotEmpty(datasetGroupInfoDTO.getId())) {
@@ -137,6 +141,9 @@ public class DatasetGroupManage {
                 // 删除不要的table和field
                 datasetTableManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), tableIds);
                 datasetTableFieldManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), fieldIds);
+            }
+            if (encode) {
+                DatasetUtils.dsEncode(datasetGroupInfoDTO);
             }
             return datasetGroupInfoDTO;
         } catch (Exception e) {
@@ -339,7 +346,7 @@ public class DatasetGroupManage {
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getUnion())) {
             return;
         }
-        datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 1, false);
+        datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 1, false, false);
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
         List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
@@ -480,7 +487,7 @@ public class DatasetGroupManage {
 
             if ("preview".equalsIgnoreCase(type)) {
                 // 请求数据
-                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100, true);
+                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100, true, false);
                 // 获取data,sql
                 Map<String, List> data = (Map<String, List>) map.get("data");
                 String sql = (String) map.get("sql");

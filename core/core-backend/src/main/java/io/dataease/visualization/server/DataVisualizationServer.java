@@ -261,7 +261,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 datasetFolderNewRequest.setName(datasetFolderName);
                 datasetFolderNewRequest.setNodeType("folder");
                 datasetFolderNewRequest.setPid(datasetFolderPid);
-                DatasetGroupInfoDTO datasetFolderNew = datasetGroupManage.save(datasetFolderNewRequest, false);
+                DatasetGroupInfoDTO datasetFolderNew = datasetGroupManage.save(datasetFolderNewRequest, false, false);
                 Long datasetFolderNewId = datasetFolderNew.getId();
                 //新建数据集
                 appData.getDatasetGroupsInfo().forEach(appDatasetGroup -> {
@@ -815,8 +815,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         if (CollectionUtils.isEmpty(datasourceVOInfo)) {
             DEException.throwException("当前不存在数据源无法导出");
-        } else if(datasourceVOInfo.stream()
-                .anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()))){
+        } else if (datasourceVOInfo.stream()
+                .anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()))) {
             DEException.throwException(Translator.get("i18n_app_error_no_api"));
         }
 
