@@ -117,6 +117,16 @@ const currentSearch = ref({
   queryConditionWidth: 227
 })
 
+const onFreezeChange = () => {
+  if (element.value.freeze) {
+    dvMainStore.componentData.forEach(item => {
+      if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+        item.freeze = false
+      }
+    })
+  }
+}
+
 const handleCurrentPlaceholder = val => {
   const obj = props.element.propValue.find(ele => {
     return ele.id === val
@@ -252,6 +262,16 @@ const onTitleChange = () => {
       <el-collapse v-model="styleActiveNames" class="style-collapse">
         <el-collapse-item :effect="themes" name="basicStyle" :title="t('chart.basic_style')">
           <el-form @keydown.stop.prevent.enter label-position="top">
+            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
+              <el-checkbox
+                :effect="themes"
+                size="small"
+                v-model="element.freeze"
+                @change="onFreezeChange"
+              >
+                {{ t('visualization.freeze_top') }}
+              </el-checkbox>
+            </el-form-item>
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox
                 :effect="themes"

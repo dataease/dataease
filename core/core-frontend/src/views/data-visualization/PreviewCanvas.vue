@@ -4,7 +4,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { initCanvasData, onInitReady } from '@/utils/canvasUtils'
+import { initCanvasData, isMainCanvas, onInitReady } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
 import { getOuterParamsInfo } from '@/api/visualization/outerParams'
@@ -33,7 +33,8 @@ const state = reactive({
   dvInfo: null,
   curPreviewGap: 0,
   initState: true,
-  showPosition: null
+  showPosition: null,
+  scrollMain: 0
 })
 
 const props = defineProps({
@@ -205,6 +206,10 @@ const dataVKeepSize = computed(() => {
   return state.canvasStylePreview?.screenAdaptor === 'keep'
 })
 
+const scrollPreview = () => {
+  dvMainStore.mainScrollTop = previewCanvasContainer.value.scrollTop
+}
+
 defineExpose({
   loadCanvasDataAsync
 })
@@ -216,6 +221,7 @@ defineExpose({
     v-loading="!state.initState"
     :class="{ 'canvas_keep-size': dataVKeepSize }"
     ref="previewCanvasContainer"
+    @scroll="scrollPreview"
   >
     <canvas-opt-bar
       canvas-id="canvas-main"

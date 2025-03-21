@@ -296,6 +296,7 @@ const list = [
     icon: 'icon_search',
     innerType: 'VQuery',
     isHang: false,
+    freeze: false, // 是否冻结再顶部 主画布生效
     x: 1,
     y: 1,
     sizeX: 72,

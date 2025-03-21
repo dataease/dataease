@@ -141,6 +141,9 @@ export function historyItemAdaptor(
   canvasInfo
 ) {
   componentItem['canvasActive'] = false
+  if (componentItem.component === 'VQuery') {
+    componentItem['freeze'] = componentItem['freeze'] || false // 冻结字段适配
+  }
   // 定时报告过滤组件适配 如果当前是定时报告默认切有设置对应的过滤组件默认值，则替换过滤组件
   if (
     componentItem.component === 'VQuery' &&
