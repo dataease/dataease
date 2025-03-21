@@ -860,7 +860,7 @@ onMounted(() => {
         <template #append>%</template>
       </el-input>
     </el-form-item>
-    <el-form-item
+    <!--    <el-form-item
       v-if="showProperty('showSummary')"
       class="form-item"
       :class="'form-item-' + themes"
@@ -887,7 +887,7 @@ onMounted(() => {
         :max-length="10"
         @blur="changeBasicStyle('summaryLabel')"
       />
-    </el-form-item>
+    </el-form-item>-->
     <el-form-item v-if="showProperty('autoWrap')" class="form-item" :class="'form-item-' + themes">
       <el-checkbox
         size="small"

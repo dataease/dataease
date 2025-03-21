@@ -6,6 +6,7 @@ export const TABLE_EDITOR_PROPERTY: EditorProperty[] = [
   'table-cell-selector',
   'title-selector',
   'tooltip-selector',
+  'summary-selector',
   'function-cfg',
   'threshold',
   'scroll-cfg',

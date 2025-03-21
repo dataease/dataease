@@ -293,6 +293,12 @@ declare interface ChartBasicStyle {
    * 汇总表总计标签
    */
   summaryLabel: string
+
+  seriesSummary?: Array<{
+    show: boolean
+    field: string
+    summary: string
+  }>
   /**
    * 符号地图符号大小最小值
    */

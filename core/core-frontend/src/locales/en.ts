@@ -1388,6 +1388,7 @@ export default {
     table_show_col_tooltip: 'Turn on column header tooltip',
     table_show_cell_tooltip: 'Turn on cell tooltip',
     table_show_header_tooltip: 'Turn on header tooltip',
+    table_summary: 'Total',
     table_show_summary: 'Show total',
     table_summary_label: 'Total label',
     table_header_show_horizon_border: 'Header horizontal border',

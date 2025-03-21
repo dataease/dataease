@@ -1357,6 +1357,7 @@ export default {
     table_show_col_tooltip: '开启列头提示',
     table_show_cell_tooltip: '开启单元格提示',
     table_show_header_tooltip: '开启表头提示',
+    table_summary: '总计',
     table_show_summary: '显示总计',
     table_summary_label: '总计标签',
     table_header_show_horizon_border: '表头横边框线',

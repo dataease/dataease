@@ -9,6 +9,7 @@ import YAxisSelector from '@/views/chart/components/editor/editor-style/componen
 import DualYAxisSelector from '@/views/chart/components/editor/editor-style/components/DualYAxisSelector.vue'
 import TitleSelector from '@/views/chart/components/editor/editor-style/components/TitleSelector.vue'
 import LegendSelector from '@/views/chart/components/editor/editor-style/components/LegendSelector.vue'
+import SummarySelector from '@/views/chart/components/editor/editor-style/components/SummarySelector.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
@@ -614,6 +615,23 @@ watch(
               :chart="chart"
               @onChangeYAxisForm="onChangeYAxisForm"
               @onChangeYAxisExtForm="onChangeYAxisExtForm"
+            />
+          </collapse-switch-item>
+
+          <collapse-switch-item
+            :themes="themes"
+            v-if="showProperties('summary-selector')"
+            v-model="chart.customAttr.basicStyle.showSummary"
+            :change-model="chart.customAttr.basicStyle"
+            @modelChange="val => onBasicStyleChange({ data: val }, 'showSummary')"
+            :title="t('chart.table_summary')"
+            name="summary"
+          >
+            <summary-selector
+              :property-inner="propertyInnerAll['summary-selector']"
+              :themes="themes"
+              :chart="chart"
+              @onBasicStyleChange="onBasicStyleChange"
             />
           </collapse-switch-item>
         </el-collapse>

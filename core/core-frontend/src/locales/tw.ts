@@ -1352,6 +1352,7 @@ export default {
     table_show_col_tooltip: '開啟列頭提示',
     table_show_cell_tooltip: '開啟單元格提示',
     table_show_header_tooltip: '開啟表頭提示',
+    table_summary: '總計',
     table_show_summary: '顯示總計',
     table_summary_label: '總計標籤',
     table_header_show_horizon_border: '表頭橫邊框線',

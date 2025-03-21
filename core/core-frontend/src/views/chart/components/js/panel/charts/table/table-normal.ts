@@ -39,8 +39,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
     'basic-style-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['basic-style-selector'],
       'tablePageMode',
-      'showSummary',
-      'summaryLabel',
       'showHoverStyle'
     ],
     'table-cell-selector': [
@@ -48,7 +46,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       'tableFreeze',
       'tableColumnFreezeHead',
       'tableRowFreezeHead'
-    ]
+    ],
+    'summary-selector': ['showSummary', 'summaryLabel']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   axisConfig: AxisConfig = {

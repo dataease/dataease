@@ -58,9 +58,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
       'alpha',
       'tablePageMode',
       'showHoverStyle',
-      'autoWrap',
-      'showSummary',
-      'summaryLabel'
+      'autoWrap'
     ],
     'table-cell-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-cell-selector'],
@@ -68,7 +66,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
       'tableColumnFreezeHead',
       'tableRowFreezeHead',
       'mergeCells'
-    ]
+    ],
+    'summary-selector': ['showSummary', 'summaryLabel']
   }
   axis: AxisType[] = ['xAxis', 'filter', 'drill']
   axisConfig: AxisConfig = {
