@@ -2,6 +2,8 @@
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import eventBus from '@/utils/eventBus'
+import colorFunctions from 'less/lib/less/functions/color.js'
+import colorTree from 'less/lib/less/tree/color.js'
 import { isISOMobile, isMobile } from '@/utils/utils'
 import { cloneDeep } from 'lodash-es'
 import { ElMessage } from 'element-plus-secondary'
@@ -97,8 +99,6 @@ const snapshotStore = snapshotStoreWithOut()
 
 const btnStyle = computed(() => {
   const style = {
-    backgroundColor: customStyle.btnColor,
-    borderColor: customStyle.btnColor,
     color: customStyle.labelColorBtn
   } as CSSProperties
   if (customStyle.fontSizeBtn) {
@@ -114,6 +114,49 @@ const btnStyle = computed(() => {
   }
 
   return style
+})
+
+const btnHoverStyle = computed(() => {
+  return {
+    rawColor: customStyle.btnColor ?? '#3370ff',
+    hoverColor: customStyle.btnColor
+      ? colorFunctions
+          .mix(new colorTree('ffffff'), new colorTree(customStyle.btnColor.substr(1)), {
+            value: 15
+          })
+          .toRGB()
+      : '#5285FF',
+    activeColor: customStyle.btnColor
+      ? colorFunctions
+          .mix(new colorTree('000000'), new colorTree(customStyle.btnColor.substr(1)), {
+            value: 15
+          })
+          .toRGB()
+      : '#2B5FD9'
+  }
+})
+
+const btnPrimaryColor = computed(() => {
+  return btnHoverStyle.value.rawColor
+})
+
+const btnPrimaryHoverColor = computed(() => {
+  return btnHoverStyle.value.hoverColor
+})
+
+const btnPrimaryActiveColor = computed(() => {
+  return btnHoverStyle.value.activeColor
+})
+
+const tagColor = computed(() => {
+  if (customStyle.background) {
+    return colorFunctions
+      .mix(new colorTree('ffffff'), new colorTree(customStyle.background.substr(1)), {
+        value: 15
+      })
+      .toRGB()
+  }
+  return '#f0f2f5'
 })
 
 const btnPlainStyle = computed(() => {
@@ -823,6 +866,28 @@ const autoStyle = computed(() => {
   overflow: auto;
   position: relative;
   --ed-font-size-base: v-bind(boxWidth);
+
+  :deep(.ed-select-v2 .ed-select-v2__selection .ed-tag) {
+    background-color: v-bind(tagColor);
+  }
+
+  .ed-button--primary {
+    --ed-button-bg-color: v-bind(btnHoverStyle.rawColor);
+    --ed-button-border-color: v-bind(btnHoverStyle.rawColor);
+    --ed-button-hover-border-color: v-bind(btnHoverStyle.hoverColor);
+    --ed-button-hover-bg-color: v-bind(btnHoverStyle.hoverColor);
+    background-color: v-bind(btnPrimaryColor);
+  }
+
+  .ed-button--primary.ed-button--primary.ed-button--primary:hover,
+  .ed-button--primary.ed-button--primary.ed-button--primary:focus {
+    background-color: v-bind(btnPrimaryHoverColor);
+  }
+
+  .ed-button--primary.ed-button--primary.ed-button--primary:active {
+    background-color: v-bind(btnPrimaryActiveColor);
+    border-color: v-bind(btnPrimaryHoverColor);
+  }
 
   :deep(.ed-tag) {
     --ed-tag-font-size: v-bind(boxWidth);
