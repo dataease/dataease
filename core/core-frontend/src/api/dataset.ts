@@ -1,5 +1,7 @@
 import request from '@/config/axios'
+import { Base64 } from 'js-base64'
 import { type Field } from '@/api/chart'
+import { cloneDeep } from 'lodash-es'
 import type { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { nameTrim } from '@/utils/utils'
 export interface DatasetOrFolder {
@@ -68,11 +70,32 @@ export interface Table {
   type: string
   unableCheck?: boolean
 }
+
+const originNameHandle = arr => {
+  arr.forEach(ele => {
+    if (ele.extField === 2) {
+      ele.originName = Base64.encodeURI(ele.originName)
+    }
+  })
+}
+
+const originNameHandleBack = arr => {
+  arr.forEach(ele => {
+    if (ele.extField === 2) {
+      ele.originName = Base64.decode(ele.originName)
+    }
+  })
+}
 // 获取权限路
 // edit
 export const saveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
   nameTrim(data)
-  return request.post({ url: '/datasetTree/save', data }).then(res => {
+  const copyData = cloneDeep(data)
+  originNameHandle(copyData.allFields)
+  return request.post({ url: '/datasetTree/save', data: copyData }).then(res => {
+    if (res?.data?.allFields?.length) {
+      originNameHandleBack(res?.data?.allFields)
+    }
     return res?.data
   })
 }
@@ -80,7 +103,12 @@ export const saveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse>
 // create
 export const createDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
   nameTrim(data)
-  return request.post({ url: '/datasetTree/create', data }).then(res => {
+  const copyData = cloneDeep(data)
+  originNameHandle(copyData.allFields)
+  return request.post({ url: '/datasetTree/create', data: copyData }).then(res => {
+    if (res?.data?.allFields?.length) {
+      originNameHandleBack(res?.data?.allFields)
+    }
     return res?.data
   })
 }
@@ -174,7 +202,16 @@ export const getTableField = async (data): Promise<IResponse> => {
 }
 
 export const getPreviewData = async (data): Promise<IResponse> => {
-  return request.post({ url: '/datasetData/previewData', data }).then(res => {
+  const copyData = cloneDeep(data)
+  originNameHandle(copyData.allFields)
+  return request.post({ url: '/datasetData/previewData', data: copyData }).then(res => {
+    if (res?.data?.allFields?.length) {
+      originNameHandleBack(res?.data?.allFields)
+    }
+
+    if (res?.data?.data?.fields?.length) {
+      originNameHandleBack(res?.data?.data?.fields)
+    }
     return res?.data
   })
 }
@@ -193,6 +230,9 @@ export const getDatasetTotal = async (id): Promise<FieldData> => {
 
 export const getDatasetDetails = async (id): Promise<Dataset> => {
   return request.post({ url: `/datasetTree/details/${id}`, data: {} }).then(res => {
+    if (res?.data?.allFields?.length) {
+      originNameHandleBack(res?.data?.allFields)
+    }
     return res?.data
   })
 }
