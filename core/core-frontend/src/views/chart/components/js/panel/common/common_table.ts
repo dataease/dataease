@@ -1872,40 +1872,11 @@ const getWrapTextHeight = (wrapText, textStyle, spreadsheet, maxLines) => {
   return Math.min(lines, maxLines) * maxHeight
 }
 
-/**
- * 设置汇总行
- * @param chart
- * @param s2Options
- * @param newData
- * @param tableHeader
- * @param basicStyle
- * @param showSummary
- */
-export const configSummaryRow = (
-  chart,
-  s2Options,
-  newData,
-  tableHeader,
-  basicStyle,
-  showSummary
-) => {
-  if (!showSummary || !newData.length) return
-  // 设置汇总行高度和表头一致
-  const heightByField = {}
-  heightByField[newData.length] = tableHeader.tableTitleHeight
-  s2Options.style.rowCfg = {heightByField}
-  // 计算汇总加入到数据里，冻结最后一行
-  s2Options.frozenTrailingRowCount = 1
-
-  const xAxis = chart.xAxis
-
-  const axis = chart.type === 'table-info'
-    ? filter(chart.xAxis, axis => [2, 3, 4].includes(axis.deType))
-    : chart.yAxis
-  const summaryObj = {SUMMARY: true}
+export function getSummaryRow(data, axis, sumCon = []) {
+  const summaryObj = { SUMMARY: true }
   for (let i = 0; i < axis.length; i++) {
     const a = axis[i].dataeaseName
-    let savedAxis = find(basicStyle.seriesSummary, s => s.field === a)
+    let savedAxis = find(sumCon, s => s.field === a)
     if (savedAxis) {
       if (savedAxis.summary == undefined) {
         savedAxis.summary = 'sum'
@@ -1925,58 +1896,45 @@ export const configSummaryRow = (
     }
     switch (savedAxis.summary) {
       case 'sum':
-        summaryObj[a] = sumBy(newData, d => (parseFloat(d[a]) || 0))
+        summaryObj[a] = sumBy(data, d => parseFloat(d[a]) || 0)
         break
       case 'avg':
-        summaryObj[a] = meanBy(newData, d => (parseFloat(d[a]) || 0))
+        summaryObj[a] = meanBy(data, d => parseFloat(d[a]) || 0)
         break
       case 'max':
-        summaryObj[a] = maxBy(filter(newData, d => parseFloat(d[a]) !== undefined), d => parseFloat(d[a]))[a]
+        summaryObj[a] = maxBy(
+          filter(data, d => parseFloat(d[a]) !== undefined),
+          d => parseFloat(d[a])
+        )[a]
         break
       case 'min':
-        summaryObj[a] = minBy(filter(newData, d => parseFloat(d[a]) !== undefined), d => parseFloat(d[a]))[a]
+        summaryObj[a] = minBy(
+          filter(data, d => parseFloat(d[a]) !== undefined),
+          d => parseFloat(d[a])
+        )[a]
         break
-      case 'var_pop'://方差
-        if (newData.length < 2) {
+      case 'var_pop': //方差
+        if (data.length < 2) {
           continue
         } else {
-          const mean = meanBy(newData, d => (parseFloat(d[a]) || 0)) // 计算均值
-          const squaredDeviations = map(newData, d => ((parseFloat(d[a]) || 0) - mean) ** 2); // 计算偏差平方
-          summaryObj[a] = sum(squaredDeviations) / (size(newData) - 1); // 样本方差（分母n-1）
+          const mean = meanBy(data, d => parseFloat(d[a]) || 0) // 计算均值
+          const squaredDeviations = map(data, d => ((parseFloat(d[a]) || 0) - mean) ** 2) // 计算偏差平方
+          summaryObj[a] = sum(squaredDeviations) / (size(data) - 1) // 样本方差（分母n-1）
         }
         break
-      case 'stddev_pop'://标准差
-        if (newData.length < 2) {
+      case 'stddev_pop': //标准差
+        if (data.length < 2) {
           continue
         } else {
-          const mean = meanBy(newData, d => (parseFloat(d[a]) || 0)) // 计算均值
-          const squaredDeviations = map(newData, d => ((parseFloat(d[a]) || 0) - mean) ** 2); // 计算偏差平方
-          const sampleVariance = sum(squaredDeviations) / (size(newData) - 1); // 样本方差（分母n-1）
-          summaryObj[a] = Math.sqrt(sampleVariance); // 样本标准差
+          const mean = meanBy(data, d => parseFloat(d[a]) || 0) // 计算均值
+          const squaredDeviations = map(data, d => ((parseFloat(d[a]) || 0) - mean) ** 2) // 计算偏差平方
+          const sampleVariance = sum(squaredDeviations) / (size(data) - 1) // 样本方差（分母n-1）
+          summaryObj[a] = Math.sqrt(sampleVariance) // 样本标准差
         }
         break
     }
   }
-
-  newData.push(summaryObj)
-  s2Options.dataCell = viewMeta => {
-    // 配置文本自动换行参数
-    viewMeta.autoWrap = basicStyle.autoWrap
-    viewMeta.maxLines = basicStyle.maxLines
-    if (viewMeta.rowIndex !== newData.length - 1) {
-      return new CustomDataCell(viewMeta, viewMeta.spreadsheet)
-    }
-    if (viewMeta.colIndex === 0) {
-      if (tableHeader.showIndex) {
-        viewMeta.fieldValue = basicStyle.summaryLabel ?? i18nt('chart.total_show')
-      } else {
-        if (xAxis.length) {
-          viewMeta.fieldValue = basicStyle.summaryLabel ?? i18nt('chart.total_show')
-        }
-      }
-    }
-    return new SummaryCell(viewMeta, viewMeta.spreadsheet)
-  }
+  return summaryObj
 }
 
 /**

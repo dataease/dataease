@@ -209,3 +209,9 @@ declare interface Filter {
   datasetTableField: ChartViewField
   fieldId: string
 }
+
+declare interface PageInfo {
+  currentPage: number
+  pageSize: number
+  total: number
+}

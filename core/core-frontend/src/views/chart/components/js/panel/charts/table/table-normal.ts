@@ -2,9 +2,11 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   configEmptyDataStyle,
-  configSummaryRow,
   copyContent,
+  CustomDataCell,
+  getSummaryRow,
   SortTooltip,
+  SummaryCell,
   summaryRowStyle
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
@@ -16,11 +18,10 @@ import {
   S2Options,
   ScrollbarPositionType,
   TableColCell,
-  TableDataCell,
   TableSheet,
   ViewMeta
 } from '@antv/s2'
-import { cloneDeep, isNumber } from 'lodash-es'
+import { isNumber } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
 const { t } = useI18n()
@@ -161,26 +162,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
       s2Options.frozenColCount = tableCell.tableColumnFreezeHead ?? 0
       s2Options.frozenRowCount = tableCell.tableRowFreezeHead ?? 0
     }
-    // 开启序号之后，第一列就是序号列，修改 label 即可
-    if (s2Options.showSeriesNumber) {
-      let indexLabel = tableHeader.indexLabel
-      if (!indexLabel) {
-        indexLabel = ''
-      }
-      s2Options.layoutCoordinate = (_, __, col) => {
-        if (col.colIndex === 0 && col.rowIndex === 0) {
-          col.label = indexLabel
-          col.value = indexLabel
-        }
-      }
-      s2Options.dataCell = viewMeta => {
-        if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
-          viewMeta.fieldValue =
-            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
-        }
-        return new TableDataCell(viewMeta, viewMeta.spreadsheet)
-      }
-    }
     // tooltip
     this.configTooltip(chart, s2Options)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
@@ -201,9 +182,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       chart.container = container
       this.configHeaderInteraction(chart, s2Options)
     }
-
-    // 总计
-    configSummaryRow(chart, s2Options, newData, tableHeader, basicStyle, basicStyle.showSummary)
+    // 配置总计和序号列
+    this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     // 总计紧贴在单元格后面
@@ -302,6 +282,57 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
     return newChart
   }
+
+  protected configSummaryRowAndIndex(
+    chart: Chart,
+    pageInfo: PageInfo,
+    s2Options: S2Options,
+    s2DataConfig: S2DataConfig
+  ) {
+    const { tableHeader, basicStyle } = parseJson(chart.customAttr)
+    // 开启序号之后，第一列就是序号列，修改 label 即可
+    if (s2Options.showSeriesNumber) {
+      let indexLabel = tableHeader.indexLabel
+      if (!indexLabel) {
+        indexLabel = ''
+      }
+      s2Options.layoutCoordinate = (_, __, col) => {
+        if (col.colIndex === 0 && col.rowIndex === 0) {
+          col.label = indexLabel
+          col.value = indexLabel
+        }
+      }
+    }
+    const { showSummary, summaryLabel } = basicStyle
+    const data = s2DataConfig.data
+    const { xAxis, yAxis } = chart
+    if (showSummary && data?.length) {
+      // 设置汇总行高度和表头一致
+      const heightByField = {}
+      heightByField[data.length] = tableHeader.tableTitleHeight
+      s2Options.style.rowCfg = { heightByField }
+      // 计算汇总加入到数据里，冻结最后一行
+      s2Options.frozenTrailingRowCount = 1
+      const summaryObj = getSummaryRow(data, yAxis, basicStyle.seriesSummary) as any
+      data.push(summaryObj)
+    }
+    s2Options.dataCell = viewMeta => {
+      // 总计行处理
+      if (showSummary && viewMeta.rowIndex === data.length - 1) {
+        if (viewMeta.colIndex === 0) {
+          if (tableHeader.showIndex || xAxis?.length) {
+            viewMeta.fieldValue = summaryLabel ?? t('chart.total_show')
+          }
+        }
+        return new SummaryCell(viewMeta, viewMeta?.spreadsheet)
+      }
+      if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
+        viewMeta.fieldValue = pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+      }
+      return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
+    }
+  }
+
   constructor() {
     super('table-normal', [])
   }
