@@ -447,6 +447,8 @@ public class DatasetGroupManage {
                 return datasetTableFieldDTO;
             }).collect(Collectors.toList());
 
+            DatasetUtils.listEncode(allFields);
+
             dto.setAllFields(allFields);
         }
         return dto;
