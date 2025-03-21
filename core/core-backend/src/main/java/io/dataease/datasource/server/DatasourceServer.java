@@ -12,7 +12,6 @@ import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.TaskStatus;
-import io.dataease.constant.DataSourceType;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
@@ -1446,7 +1445,7 @@ public class DatasourceServer implements DatasourceApi {
         Object resObj = null;
         try {
             Method method = getMethod(dsType, methodName, classes);
-            if (object instanceof DatasourceRequest && dsType.equals(DataSourceType.APILark.name())) {
+            if (object instanceof DatasourceRequest && dsType.equals("APILark")) {
                 Class<?> clazz = Class.forName(DatasourceRequest.class.getName());
                 Method setToken = clazz.getMethod("setToken", String.class);
                 setToken.invoke(object, dataSourceManage.getTenantAccessToken());

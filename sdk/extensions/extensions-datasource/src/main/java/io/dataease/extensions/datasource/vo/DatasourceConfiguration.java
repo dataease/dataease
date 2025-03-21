@@ -11,39 +11,40 @@ public class DatasourceConfiguration extends Configuration {
 
 
     static public enum DatasourceType {
-        folder("folder", "folder", "folder", null, null),
-        API("API", "API", "API", "`", "`"),
-        Excel("Excel", "Excel", "LOCALFILE", "`", "`"),
-        ExcelRemote("ExcelRemote", "ExcelRemote", "LOCALFILE", "`", "`"),
-        mysql("mysql", "Mysql", "OLTP", "`", "`"),
-        impala("impala", "Apache Impala", "OLAP", "`", "`"),
-        mariadb("mariadb", "Mariadb", "OLTP", "`", "`"),
-        StarRocks("StarRocks", "StarRocks", "OLAP", "`", "`"),
-        es("es", "Elasticsearch", "OLAP", "\"", "\""),
-        doris("doris", "Apache Doris", "OLAP", "`", "`"),
-        TiDB("TiDB", "TiDB", "OLTP", "`", "`"),
-        oracle("oracle", "ORACLE", "OLTP", "\"", "\""),
-        pg("pg", "PostgreSQL", "OLTP", "\"", "\""),
-        redshift("redshift", "AWS Redshift", "OLTP", "\"", "\""),
-        db2("db2", "Db2", "OLTP", "", ""),
-        ck("ck", "Clickhouse", "OLAP", "`", "`"),
-        h2("h2", "H2", "OLAP", "\"", "\""),
-        sqlServer("sqlServer", "Sqlserver", "DL", "[", "]"),
-        mongo("mongo", "MongoDB", "DL", "`", "`");
+        folder("folder", "folder", "folder", null, null, 25),
+        API("API", "API", "API", "`", "`", 15),
+        Excel("Excel", "Excel", "LOCALFILE", "`", "`", 16),
+        ExcelRemote("ExcelRemote", "ExcelRemote", "LOCALFILE", "`", "`", 29),
+        mysql("mysql", "Mysql", "OLTP", "`", "`", 27),
+        impala("impala", "Apache Impala", "OLAP", "`", "`", 5),
+        mariadb("mariadb", "Mariadb", "OLTP", "`", "`", 6),
+        StarRocks("StarRocks", "StarRocks", "OLAP", "`", "`", 7),
+        es("es", "Elasticsearch", "OLAP", "\"", "\"", 14),
+        doris("doris", "Apache Doris", "OLAP", "`", "`", 26),
+        TiDB("TiDB", "TiDB", "OLTP", "`", "`", 3),
+        oracle("oracle", "ORACLE", "OLTP", "\"", "\"", 1),
+        pg("pg", "PostgreSQL", "OLTP", "\"", "\"", 9),
+        redshift("redshift", "AWS Redshift", "OLTP", "\"", "\"", 13),
+        db2("db2", "Db2", "OLTP", "", "", 12),
+        ck("ck", "Clickhouse", "OLAP", "`", "`", 11),
+        h2("h2", "H2", "OLAP", "\"", "\"", null),
+        sqlServer("sqlServer", "Sqlserver", "DL", "[", "]", 2),
+        mongo("mongo", "MongoDB", "DL", "`", "`", 10);
 
         private String type;
         private String name;
-
+        private Integer flag;
         private String catalog;
         private String prefix;
         private String suffix;
 
-        DatasourceType(String type, String name, String catalog, String prefix, String suffix) {
+        DatasourceType(String type, String name, String catalog, String prefix, String suffix, Integer flag) {
             this.type = type;
             this.name = name;
             this.catalog = catalog;
             this.prefix = prefix;
             this.suffix = suffix;
+            this.flag = flag;
         }
 
         public String getType() {
@@ -64,6 +65,10 @@ public class DatasourceConfiguration extends Configuration {
 
         public String getSuffix() {
             return suffix;
+        }
+
+        public Integer getFlag() {
+            return flag;
         }
     }
 }

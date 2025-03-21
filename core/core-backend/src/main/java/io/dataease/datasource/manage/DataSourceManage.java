@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.commons.constants.TaskStatus;
-import io.dataease.constant.DataSourceType;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.ext.mapper.CoreDatasourceExtMapper;
@@ -13,7 +12,10 @@ import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
 import io.dataease.datasource.dao.ext.po.DsItem;
 import io.dataease.datasource.dto.DatasourceNodeBO;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
@@ -28,6 +30,7 @@ import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -52,18 +55,57 @@ public class DataSourceManage {
     @Resource
     private EngineManage engineManage;
 
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
+
     private DatasourceNodeBO rootNode() {
         return new DatasourceNodeBO(0L, "root", false, 7, -1L, 0, "mysql");
     }
 
-    private DatasourceNodeBO convert(DataSourceNodePO po) {
-        DataSourceType dataSourceType = DataSourceType.valueOf(po.getType());
-        if (ObjectUtils.isEmpty(dataSourceType)) {
-            dataSourceType = DataSourceType.mysql;
+    private Integer getFlag(String type) {
+        Integer flag = null;
+        for (DatasourceConfiguration.DatasourceType datasourceType : DatasourceConfiguration.DatasourceType.values()) {
+            if (datasourceType.getType().equals(type)) {
+                flag = datasourceType.getFlag();
+            }
         }
-        Integer flag = dataSourceType.getFlag();
+        if (ObjectUtils.isEmpty(flag)) {
+            List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
+            List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), type)).toList();
+            if (ObjectUtils.isNotEmpty(list)) {
+                XpackPluginsDatasourceVO first = list.getFirst();
+                flag = first.getFlag();
+            }
+        }
+        if (ObjectUtils.isEmpty(flag)) {
+            flag = 27;
+        }
+        return flag;
+    }
+
+    private String getName(String type) {
+        String name = null;
+        for (DatasourceConfiguration.DatasourceType datasourceType : DatasourceConfiguration.DatasourceType.values()) {
+            if (datasourceType.getType().equals(type)) {
+                name = datasourceType.getName();
+            }
+
+        }
+        if (StringUtils.isEmpty(name)) {
+            List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
+            List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), type)).toList();
+            if (ObjectUtils.isNotEmpty(list)) {
+                XpackPluginsDatasourceVO first = list.getFirst();
+                name = first.getName();
+            }
+        }
+        return name;
+    }
+
+    private DatasourceNodeBO convert(DataSourceNodePO po) {
+        Integer flag = getFlag(po.getType());
         int extraFlag = StringUtils.equalsIgnoreCase("error", po.getStatus()) ? Math.negateExact(flag) : flag;
-        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 9, po.getPid(), extraFlag, dataSourceType.name());
+        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 9, po.getPid(), extraFlag, getName(po.getType()));
     }
 
     @XpackInteract(value = "datasourceResourceTree", replace = true, invalid = true)
