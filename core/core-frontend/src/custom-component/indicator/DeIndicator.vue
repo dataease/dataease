@@ -392,18 +392,21 @@ const calcData = (view, callback) => {
 
 const trackClick = trackAction => {
   const param = state.pointParam
-  if (!param?.data?.dimensionList) {
+  if (!param?.data?.dimensionList && !param?.data?.quotaList) {
     return
   }
   const linkageParam = {
     option: 'linkage',
+    innerType: 'indicator',
     name: state.pointParam.data.name,
     viewId: view.value.id,
     dimensionList: state.pointParam.data.dimensionList,
-    quotaList: state.pointParam.data.quotaList
+    quotaList: state.pointParam.data.quotaList,
+    customFilter: state.pointParam.data.customFilter
   }
   const jumpParam = {
     option: 'jump',
+    innerType: 'indicator',
     name: state.pointParam.data.name,
     viewId: view.value.id,
     dimensionList: state.pointParam.data.dimensionList,
@@ -413,10 +416,12 @@ const trackClick = trackAction => {
 
   const clickParams = {
     option: 'pointClick',
+    innerType: 'indicator',
     name: state.pointParam.data.name,
     viewId: view.value.id,
     dimensionList: state.pointParam.data.dimensionList,
-    quotaList: state.pointParam.data.quotaList
+    quotaList: state.pointParam.data.quotaList,
+    customFilter: state.pointParam.data.customFilter
   }
 
   switch (trackAction) {
@@ -477,6 +482,10 @@ const trackMenu = computed(() => {
   return trackMenuInfo
 })
 
+const showCursor = computed(() => {
+  return trackMenu.value.length || embeddedCallBack.value === 'yes'
+})
+
 const pointClickTrans = () => {
   if (embeddedCallBack.value === 'yes') {
     trackClick('pointClick')
@@ -516,11 +525,10 @@ const onPointClick = () => {
     // 模拟点击
     const params = {
       data: {
-        data: {
-          name: axis.name,
-          dimensionList: [],
-          quotaList: view.value.yAxis
-        }
+        name: axis.name,
+        dimensionList: view.value.xAxis,
+        quotaList: view.value.yAxis,
+        customFilter: view.value.customFilter
       }
     }
     action(params)
@@ -534,7 +542,7 @@ defineExpose({
 </script>
 
 <template>
-  <div :style="contentStyle" @click="onPointClick">
+  <div :class="{ 'menu-point': showCursor }" :style="contentStyle" @click="onPointClick">
     <view-track-bar
       ref="viewTrack"
       :track-menu="trackMenu"
@@ -554,4 +562,8 @@ defineExpose({
   </div>
 </template>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.menu-point {
+  cursor: pointer;
+}
+</style>

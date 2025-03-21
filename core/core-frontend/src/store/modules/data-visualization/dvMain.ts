@@ -1005,11 +1005,19 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       const preActiveComponentIds = []
       const checkQDList = [...data.dimensionList, ...data.quotaList]
+      const customFilterInfo = data.customFilter
       for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
         const element = this.componentData[indexOuter]
         if (element.id !== viewId) {
           if (['UserView', 'VQuery'].includes(element.component)) {
-            this.trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId)
+            this.trackFilterCursor(
+              element,
+              checkQDList,
+              trackInfo,
+              preActiveComponentIds,
+              viewId,
+              customFilterInfo
+            )
             this.componentData[indexOuter] = element
           } else if (element.component === 'Group') {
             element.propValue?.forEach((groupItem, index) => {
@@ -1018,7 +1026,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                 checkQDList,
                 trackInfo,
                 preActiveComponentIds,
-                viewId
+                viewId,
+                customFilterInfo
               )
               element.propValue[index] = groupItem
             })
@@ -1030,7 +1039,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                   checkQDList,
                   trackInfo,
                   preActiveComponentIds,
-                  viewId
+                  viewId,
+                  customFilterInfo
                 )
                 tabItem.componentData[index] = tabComponent
               })
@@ -1314,10 +1324,24 @@ export const dvMainStore = defineStore('dataVisualization', {
         })
       }
     },
-    trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
+    trackFilterCursor(
+      element,
+      checkQDList,
+      trackInfo,
+      preActiveComponentIds,
+      viewId,
+      customFilter?
+    ) {
       let currentFilters = element.linkageFilters || [] // 当前联动filter
       if (['table-info', 'table-normal'].includes(element.innerType)) {
         currentFilters = []
+      }
+      if (currentFilters.length) {
+        for (let i = currentFilters.length - 1; i >= 0; i--) {
+          if (currentFilters[i].filterType === 3) {
+            currentFilters.splice(i, 1)
+          }
+        }
       }
       // 联动的图表情况历史条件
       // const currentFilters = []
@@ -1330,38 +1354,46 @@ export const dvMainStore = defineStore('dataVisualization', {
           const targetInfoArray = targetInfo.split('#')
           const targetViewId = targetInfoArray[0] // 目标图表
           if (element.component === 'UserView' && element.id === targetViewId) {
-            // 如果目标图表 和 当前循环组件id相等 则进行条件增减
-            const targetFieldId = targetInfoArray[1] // 目标图表列ID
-            let condition
-            if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
-              // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
-              condition = {
-                fieldId: targetFieldId,
-                operator: 'between',
-                value: QDItem.timeValue,
-                viewIds: [targetViewId],
-                sourceViewId: viewId
-              }
+            // 如果含有customFilter 仅加入customFilter
+            if (customFilter) {
+              currentFilters.push({
+                filterType: 3,
+                customFilter: customFilter
+              })
             } else {
-              condition = {
-                fieldId: targetFieldId,
-                operator: 'eq',
-                value: [QDItem.value],
-                viewIds: [targetViewId],
-                sourceViewId: viewId
+              // 如果目标图表 和 当前循环组件id相等 则进行条件增减
+              const targetFieldId = targetInfoArray[1] // 目标图表列ID
+              let condition
+              if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
+                // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
+                condition = {
+                  fieldId: targetFieldId,
+                  operator: 'between',
+                  value: QDItem.timeValue,
+                  viewIds: [targetViewId],
+                  sourceViewId: viewId
+                }
+              } else {
+                condition = {
+                  fieldId: targetFieldId,
+                  operator: 'eq',
+                  value: [QDItem.value],
+                  viewIds: [targetViewId],
+                  sourceViewId: viewId
+                }
               }
-            }
-            let j = currentFilters.length
-            while (j--) {
-              const filter = currentFilters[j]
-              // 兼容性准备 viewIds 只会存放一个值
-              if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
-                currentFilters.splice(j, 1)
+              let j = currentFilters.length
+              while (j--) {
+                const filter = currentFilters[j]
+                // 兼容性准备 viewIds 只会存放一个值
+                if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                  currentFilters.splice(j, 1)
+                }
               }
+              // 不存在该条件 且 条件有效 直接保存该条件
+              // !filterExist && vValid && currentFilters.push(condition)
+              currentFilters.push(condition)
             }
-            // 不存在该条件 且 条件有效 直接保存该条件
-            // !filterExist && vValid && currentFilters.push(condition)
-            currentFilters.push(condition)
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery') {
