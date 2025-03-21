@@ -125,6 +125,7 @@ const state = reactive({
   imgEnlarge: false,
   imgSrc: ''
 })
+const PAGE_CHARTS = ['table-info', 'table-normal']
 // 图表数据不用全响应式
 let chartData = shallowRef<Partial<Chart['data']>>({
   fields: []
@@ -248,7 +249,7 @@ const debounceRender = debounce(resetPageInfo => {
 
 const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   const customAttr = chart.customAttr
-  if (chart.type !== 'table-info' || customAttr.basicStyle.tablePageMode !== 'page') {
+  if (!PAGE_CHARTS.includes(chart.type) || customAttr.basicStyle.tablePageMode !== 'page') {
     state.showPage = false
     return
   }
@@ -293,7 +294,8 @@ const initScroll = () => {
       myChart &&
       senior?.scrollCfg?.open &&
       chartData.value.tableRow?.length &&
-      (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
+      PAGE_CHARTS.includes(chart.type) &&
+      !state.showPage
     ) {
       // 防止多次渲染
       myChart.facet.timer?.stop()
@@ -337,7 +339,7 @@ const initScroll = () => {
 }
 
 const showPage = computed(() => {
-  if (view.value.type !== 'table-info') {
+  if (!PAGE_CHARTS.includes(view.value.type)) {
     return false
   }
   return state.showPage

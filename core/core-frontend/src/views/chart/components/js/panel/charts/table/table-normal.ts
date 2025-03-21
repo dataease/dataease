@@ -38,6 +38,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     ],
     'basic-style-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['basic-style-selector'],
+      'tablePageMode',
       'showSummary',
       'summaryLabel',
       'showHoverStyle'
@@ -67,7 +68,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
   }
 
   drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
-    const { container, chart, action, resizeAction } = drawOption
+    const { container, chart, action, pageInfo, resizeAction } = drawOption
     const containerDom = document.getElementById(container)
     if (!containerDom) return
 
@@ -173,8 +174,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
           col.value = indexLabel
         }
       }
-      s2Options.dataCell = meta => {
-        return new TableDataCell(meta, meta.spreadsheet)
+      s2Options.dataCell = viewMeta => {
+        if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
+          viewMeta.fieldValue =
+            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        }
+        return new TableDataCell(viewMeta, viewMeta.spreadsheet)
       }
     }
     // tooltip
