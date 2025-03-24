@@ -28,7 +28,13 @@ import CustomSortFilter from './CustomSortFilter.vue'
 import { addQueryCriteriaConfig } from './options'
 import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { getThisStart, getLastStart, getAround, getCustomRange } from './time-format-dayjs'
+import {
+  getThisStart,
+  getThisEnd,
+  getLastStart,
+  getAround,
+  getCustomRange
+} from './time-format-dayjs'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
@@ -1066,6 +1072,9 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
         break
       case 'monthBeginning':
         startTime = getThisStart('month')
+        break
+      case 'monthEnd':
+        startTime = getThisEnd('month')
         break
       case 'yearBeginning':
         startTime = getThisStart('year')

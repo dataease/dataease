@@ -579,3 +579,11 @@ span {
   }
 }
 </style>
+
+<style>
+.senior-dark {
+  .label-dark {
+    color: #a6a6a6 !important;
+  }
+}
+</style>
