@@ -12,7 +12,7 @@ import Board from '@/components/de-board/Board.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { isMobile } from '@/utils/utils'
-import { isDashboard } from '@/utils/canvasUtils'
+import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
@@ -124,6 +124,11 @@ const props = defineProps({
   optType: {
     type: String,
     required: false
+  },
+  // 画布滚动距离
+  scrollMain: {
+    type: Number,
+    default: 0
   }
 })
 const {
@@ -135,7 +140,8 @@ const {
   dvInfo,
   searchCount,
   scale,
-  suffixId
+  suffixId,
+  scrollMain
 } = toRefs(props)
 let currentInstance
 const component = ref(null)
@@ -359,12 +365,25 @@ const initOpenHandler = newWindow => {
 }
 const deepScale = computed(() => scale.value / 100)
 const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && props.active))
+
+const freezeFlag = computed(() => {
+  return (
+    isMainCanvas(props.canvasId) &&
+    config.value.freeze &&
+    scrollMain.value - config.value.style?.top > 0
+  )
+})
 </script>
 
 <template>
   <div
     class="wrapper-outer"
-    :class="showPosition + '-' + config.component"
+    :class="[
+      showPosition + '-' + config.component,
+      {
+        'freeze-component': freezeFlag
+      }
+    ]"
     :id="wrapperId"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
@@ -500,5 +519,12 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
 }
 .event-active {
   cursor: pointer;
+}
+
+.freeze-component {
+  position: fixed;
+  z-index: 1;
+  top: var(--top-show-offset) px !important;
+  left: var(--left-show-offset) px !important;
 }
 </style>

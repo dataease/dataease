@@ -34,7 +34,10 @@ const state = reactive({
   curPreviewGap: 0,
   initState: true,
   showPosition: null,
-  scrollMain: 0
+  showOffset: {
+    top: 3,
+    left: 3
+  }
 })
 
 const props = defineProps({
@@ -206,9 +209,10 @@ const dataVKeepSize = computed(() => {
   return state.canvasStylePreview?.screenAdaptor === 'keep'
 })
 
-const scrollPreview = () => {
-  dvMainStore.mainScrollTop = previewCanvasContainer.value.scrollTop
-}
+const freezeStyle = computed(() => [
+  { '--top-show-offset': state.showOffset.top },
+  { '--left-show-offset': state.showOffset.left }
+])
 
 defineExpose({
   loadCanvasDataAsync
@@ -221,7 +225,7 @@ defineExpose({
     v-loading="!state.initState"
     :class="{ 'canvas_keep-size': dataVKeepSize }"
     ref="previewCanvasContainer"
-    @scroll="scrollPreview"
+    :style="freezeStyle"
   >
     <canvas-opt-bar
       canvas-id="canvas-main"

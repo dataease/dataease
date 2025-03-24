@@ -38,7 +38,11 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0
+  curPreviewGap: 0,
+  showOffset: {
+    top: 110,
+    left: 280
+  }
 })
 
 const { fullscreenFlag, canvasViewDataInfo } = storeToRefs(dvMainStore)
@@ -222,13 +226,18 @@ const downLoadApp = appAttachInfo => {
   fileDownload('app', appAttachInfo)
 }
 
+const freezeStyle = computed(() => [
+  { '--top-show-offset': state.showOffset.top },
+  { '--left-show-offset': state.showOffset.left }
+])
+
 defineExpose({
   getPreviewStateInfo
 })
 </script>
 
 <template>
-  <div class="dv-preview dv-teleport-query">
+  <div class="dv-preview dv-teleport-query" :style="freezeStyle">
     <ArrowSide
       v-if="!noClose"
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"

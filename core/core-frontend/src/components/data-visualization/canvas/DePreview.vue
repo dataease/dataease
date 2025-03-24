@@ -130,7 +130,8 @@ const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
 const state = reactive({
-  initState: true
+  initState: true,
+  scrollMain: 0
 })
 
 const curSearchCount = computed(() => {
@@ -476,6 +477,11 @@ const downloadAsPDF = () => {
   // test
 }
 
+const scrollPreview = () => {
+  state.scrollMain = previewCanvas.value.scrollTop
+  console.log('===test1===' + state.scrollMain)
+}
+
 defineExpose({
   restore
 })
@@ -489,6 +495,7 @@ defineExpose({
     :class="{ 'de-download-custom': downloadStatus, 'datav-preview': dataVPreview }"
     ref="previewCanvas"
     @mousedown="handleMouseDown"
+    @scroll="scrollPreview"
     v-if="state.initState"
   >
     <!--弹框触发区域-->
@@ -513,7 +520,7 @@ defineExpose({
       :is-fixed="isOverSize"
     ></canvas-opt-bar>
     <template v-if="renderReady">
-      <ComponentWrapper
+      <component-wrapper
         v-for="(item, index) in baseComponentData"
         v-show="item.isShow"
         :active="item.id === (curComponent || {})['id']"
@@ -530,9 +537,11 @@ defineExpose({
         :scale="mobileInPc && isDashboard() ? 100 : scaleMin"
         :is-selector="props.isSelector"
         :font-family="canvasStyleData.fontFamily || fontFamily"
+        :scroll-main="state.scrollMain"
         @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
         @datasetParamsInit="datasetParamsInit(item)"
         @onPointClick="onPointClick"
+        :index="index"
       />
     </template>
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
