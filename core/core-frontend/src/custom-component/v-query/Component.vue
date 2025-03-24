@@ -149,7 +149,7 @@ const btnPrimaryActiveColor = computed(() => {
 })
 
 const tagColor = computed(() => {
-  if (customStyle.background) {
+  if (customStyle.background && !customStyle.background.toLowerCase().includes('#ffffff')) {
     return colorFunctions
       .mix(new colorTree('ffffff'), new colorTree(customStyle.background.substr(1)), {
         value: 15
@@ -317,6 +317,44 @@ const getKeyList = next => {
   }
   return checkedFieldsMapArr.filter(ele => !!ele[1]).map(ele => ele[0])
 }
+
+const fillRequireVal = arr => {
+  element.value.propValue.forEach(next => {
+    if (arr.some(itx => next.checkedFields.includes(itx)) && next.required) {
+      if (next.displayType === '8') {
+        const { conditionValueF, conditionValueS, conditionType } = next
+        if (conditionType === 0 && conditionValueF === '') {
+          next.conditionValueF = next.defaultConditionValueF
+        } else if (conditionValueF === '' || conditionValueS === '') {
+          next.conditionValueF = next.defaultConditionValueF
+          next.conditionValueS = next.defaultConditionValueS
+        }
+      } else if (next.displayType === '22') {
+        if (
+          (next.numValueStart !== 0 && !next.numValueStart) ||
+          (next.numValueEnd !== 0 && !next.numValueEnd)
+        ) {
+          next.numValueStart = next.defaultNumValueStart
+          next.numValueEnd = next.defaultNumValueEnd
+        }
+      } else if (
+        (Array.isArray(next.selectValue) && !next.selectValue.length) ||
+        (next.selectValue !== 0 && !next.selectValue)
+      ) {
+        if (
+          next.optionValueSource === 1 &&
+          (next.defaultMapValue?.length || next.displayId) &&
+          ![1, 7].includes(+next.displayType)
+        ) {
+          next.mapValue = next.defaultMapValue
+          next.selectValue = next.multiple ? next.defaultMapValue : next.defaultMapValue[0]
+        } else {
+          next.selectValue = next.defaultValue
+        }
+      }
+    }
+  })
+}
 const queryDataForId = id => {
   let requiredName = ''
   let numName = ''
@@ -382,6 +420,7 @@ const queryDataForId = id => {
     return
   }
   if (!emitterList.length) return
+  fillRequireVal(emitterList)
   emitterList.forEach(ele => {
     emitter.emit(`query-data-${ele}`)
   })
