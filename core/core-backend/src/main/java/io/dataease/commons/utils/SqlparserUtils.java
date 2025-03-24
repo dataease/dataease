@@ -47,6 +47,7 @@ public class SqlparserUtils {
     private static final String SysParamsSubstitutedParams = "DeSysParams_";
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
     private boolean removeSysParams;
+    boolean hasVariables = false;
     private UserFormVO userEntity;
     private final List<Map<String, String>> sysParams = new ArrayList<>();
 
@@ -62,6 +63,7 @@ public class SqlparserUtils {
         } catch (Exception e) {
             DEException.throwException(e);
         }
+        hasVariables = false;
         sql = sql.trim();
         if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
@@ -149,6 +151,9 @@ public class SqlparserUtils {
     }
 
     private static boolean isParams(String paramId){
+        if(Arrays.asList("userId", "userEmail", "userName").contains(paramId)){
+            return true;
+        }
         boolean isLong = false;
         try {
             Long.valueOf(paramId);
@@ -165,14 +170,13 @@ public class SqlparserUtils {
         String tmpSql = sql.replaceAll("(?m)^\\s*$[\n\r]{0,}", "");
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tmpSql);
-        boolean hasVariables = false;
         while (matcher.find()) {
             hasVariables = true;
             tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
         }
         if (removeSysParams) {
             for (Map<String, String> sysParam : sysParams) {
-                tmpSql = tmpSql.replaceAll(sysParam.get("replace"), sysParam.get("origin"));
+                tmpSql = tmpSql.replace(sysParam.get("replace"), sysParam.get("origin"));
             }
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
