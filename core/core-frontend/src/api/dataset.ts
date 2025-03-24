@@ -71,7 +71,7 @@ export interface Table {
   unableCheck?: boolean
 }
 
-const originNameHandle = arr => {
+const originNameHandle = (arr = []) => {
   arr.forEach(ele => {
     if (ele.extField === 2) {
       ele.originName = Base64.encodeURI(ele.originName)
@@ -79,7 +79,7 @@ const originNameHandle = arr => {
   })
 }
 
-const originNameHandleBack = arr => {
+const originNameHandleBack = (arr = []) => {
   arr.forEach(ele => {
     if (ele.extField === 2) {
       ele.originName = Base64.decode(ele.originName)
