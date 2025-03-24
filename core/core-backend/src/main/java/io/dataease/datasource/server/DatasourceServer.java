@@ -644,7 +644,7 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void delete(Long datasourceId) throws DEException {
-        Objects.requireNonNull(CommonBeanFactory.getBean(DatasourceServer.class)).recursionDel(datasourceId);
+        Objects.requireNonNull(io.dataease.utils.CommonBeanFactory.getBean(DatasourceServer.class)).recursionDel(datasourceId);
     }
 
     public void recursionDel(Long datasourceId) throws DEException {
@@ -1445,11 +1445,6 @@ public class DatasourceServer implements DatasourceApi {
         Object resObj = null;
         try {
             Method method = getMethod(dsType, methodName, classes);
-            if (object instanceof DatasourceRequest && dsType.equals("APILark")) {
-                Class<?> clazz = Class.forName(DatasourceRequest.class.getName());
-                Method setToken = clazz.getMethod("setToken", String.class);
-                setToken.invoke(object, dataSourceManage.getTenantAccessToken());
-            }
             resObj = method.invoke(null, object);
         } catch (Exception e) {
             DEException.throwException(msg(e));
