@@ -307,12 +307,6 @@ const afterTreeInit = () => {
   }
   nextTick(() => {
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
-    nextTick(() => {
-      if (selectedNodeKey.value) {
-        const nodeDom = document.querySelector('.is-current')
-        nodeDom && nodeDom.click()
-      }
-    })
     resourceListTree.value.filter(filterText.value)
   })
 }
