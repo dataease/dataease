@@ -14,6 +14,7 @@ import {
   onBeforeUnmount,
   nextTick
 } from 'vue'
+import { fieldType as fieldTypeLowercase } from '@/utils/attr'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { save, update } from '@/api/datasource'
 import type { Action } from 'element-plus-secondary'
@@ -44,6 +45,7 @@ export interface Field {
   fieldSize: number
   fieldType: string
   name: string
+  deExtractType: number
   checked: boolean
   primaryKey: boolean
   length: number
@@ -119,10 +121,17 @@ const fieldType = {
   DOUBLE: 'value'
 }
 
+const fieldTypeToStr = {
+  0: 'TEXT',
+  2: 'LONG',
+  3: 'DOUBLE'
+}
+
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
     key: ele.originName,
     fieldType: ele.fieldType,
+    deExtractType: ele.deExtractType,
     dataKey: ele.originName,
     title: ele.name,
     checked: ele.checked,
@@ -462,6 +471,18 @@ const refreshData = () => {
   currentMode.value = 'preview'
 }
 
+const deExtractTypeChange = item => {
+  item.deType = item.deExtractType
+  const sheet = state.excelData[0]?.sheets.find(ele => ele.sheetId === activeTab.value)
+  sheet.fields.forEach(row => {
+    if (row.originName === item.dataKey) {
+      row.deExtractType = item.deExtractType
+      row.deType = item.deExtractType
+      row.fieldType = fieldTypeToStr[item.deExtractType]
+    }
+  })
+}
+
 const lengthChange = val => {
   const sheet = state.excelData[0]?.sheets.find(ele => ele.sheetId === activeTab.value)
   sheet.fields.forEach(row => {
@@ -478,6 +499,15 @@ const primaryKeyChange = val => {
     }
   })
 }
+
+const fieldOptions = [
+  { label: t('dataset.text'), value: 0 },
+  { label: t('dataset.value'), value: 2 },
+  {
+    label: t('dataset.value') + '(' + t('dataset.float') + ')',
+    value: 3
+  }
+]
 
 const handleSelectionChange = val => {
   if (!initMultipleTable.value) {
@@ -520,7 +550,7 @@ const disabledFieldLength = item => {
   if (!item.checked) {
     return true
   }
-  if (item.fieldType !== 'TEXT') {
+  if (item.deExtractType !== 0) {
     return true
   }
 }
@@ -537,6 +567,9 @@ const changeCurrentMode = val => {
       }
       initMultipleTable.value = false
     })
+  } else {
+    const sheet = state.excelData[0]?.sheets.find(ele => ele.sheetId === activeTab.value)
+    handleNodeClick(sheet)
   }
 }
 
@@ -726,20 +759,48 @@ defineExpose({
             <el-table-column :label="t('data_set.field_name')">
               <template #default="scope">{{ scope.row.title }}</template>
             </el-table-column>
-            <el-table-column :label="t('data_set.field_type')">
-              <template #default="scope">
-                <div class="flex-align-center">
-                  <el-icon>
-                    <Icon>
-                      <component
-                        :class="`svg-icon field-icon-${fieldType[scope.row.fieldType]}`"
-                        :is="iconFieldMap[fieldType[scope.row.fieldType]]"
-                      ></component>
-                    </Icon>
-                  </el-icon>
 
-                  {{ t(`dataset.${fieldType[scope.row.fieldType]}`) }}
-                </div>
+            <el-table-column prop="deExtractType" :label="t('datasource.field_type')">
+              <template #default="scope">
+                <el-select
+                  v-model="scope.row.deExtractType"
+                  class="select-type"
+                  style="display: inline-block; width: 120px"
+                  @change="deExtractTypeChange(scope.row)"
+                >
+                  <template #prefix>
+                    <el-icon>
+                      <Icon :className="`field-icon-${fieldTypeLowercase[scope.row.deExtractType]}`"
+                        ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldTypeLowercase[scope.row.deExtractType]}`"
+                          :is="iconFieldMap[fieldTypeLowercase[scope.row.deExtractType]]"
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                  </template>
+                  <el-option
+                    v-for="item in fieldOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                    <span style="float: left">
+                      <el-icon>
+                        <Icon :className="`field-icon-${fieldTypeLowercase[item.value]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldTypeLowercase[item.value]}`"
+                            :is="iconFieldMap[fieldTypeLowercase[item.value]]"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                    </span>
+                    <span style="float: left; font-size: 12px; color: #8492a6">{{
+                      item.label
+                    }}</span>
+                  </el-option>
+                </el-select>
               </template>
             </el-table-column>
             <el-table-column
