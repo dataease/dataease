@@ -1242,6 +1242,29 @@ public class CalciteProvider extends Provider {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
                 tableSqls.add("SELECT  \n" + "    relname AS TableName,  \n" + "    obj_description(relfilenode::regclass, 'pg_class') AS TableDescription  \n" + "FROM  \n" + "    pg_class  \n" + "WHERE  \n" + "   relkind in  ('r','p', 'f')  \n" + "    AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'SCHEMA') ".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" +
+                        "    c.relname AS view_name,\n" +
+                        "    COALESCE(d.description, 'No description provided') AS view_description\n" +
+                        "FROM \n" +
+                        "    pg_class c\n" +
+                        "JOIN \n" +
+                        "    pg_namespace n ON c.relnamespace = n.oid\n" +
+                        "LEFT JOIN \n" +
+                        "    pg_description d ON c.oid = d.objoid\n" +
+                        "WHERE \n" +
+                        "    c.relkind = 'v'  \n" +
+                        "    AND n.nspname = 'SCHEMA'".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" +
+                        "    c.relname AS materialized_view_name,\n" +
+                        "    COALESCE(d.description, '') AS view_description\n" +
+                        "FROM \n" +
+                        "    pg_class c\n" +
+                        "JOIN \n" +
+                        "    pg_namespace n ON c.relnamespace = n.oid\n" +
+                        "LEFT JOIN \n" +
+                        "    pg_description d ON c.oid = d.objoid\n" +
+                        "WHERE \n" +
+                        "    c.relkind = 'm' and n.nspname ='SCHEMA';  ".replace("SCHEMA", configuration.getSchema()));
                 break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
