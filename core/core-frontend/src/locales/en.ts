@@ -2060,7 +2060,11 @@ export default {
     expand_all: 'Expand all',
     level_label: 'Level {num}',
     default_expand_level: 'Default expand level',
-    no_data_or_not_positive: 'No data available, or all data are not positive, unable to plot'
+    no_data_or_not_positive: 'No data available, or all data are not positive, unable to plot',
+    map_type: 'Map Provider',
+    map_type_gaode: 'Gaode Map',
+    map_type_tianditu: 'Tianditu',
+    map_type_baidu: 'Baidu Map'
   },
   dataset: {
     field_value: 'Field Value',

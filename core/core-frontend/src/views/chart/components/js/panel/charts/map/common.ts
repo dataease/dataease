@@ -1,3 +1,7 @@
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
+
 export const MAP_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
   'border-style',
@@ -49,6 +53,23 @@ export const MAP_AXIS_TYPE: AxisType[] = [
   'filter',
   'extLabel',
   'extTooltip'
+]
+
+export const gaodeMapStyleOptions = [
+  { name: t('chart.map_style_normal'), value: 'normal' },
+  { name: t('chart.map_style_darkblue'), value: 'darkblue' },
+  { name: t('chart.map_style_light'), value: 'light' },
+  { name: t('chart.map_style_dark'), value: 'dark' },
+  { name: t('chart.map_style_fresh'), value: 'fresh' },
+  { name: t('chart.map_style_grey'), value: 'grey' },
+  { name: t('chart.map_style_blue'), value: 'blue' },
+  { name: t('commons.custom'), value: 'custom' }
+]
+
+export const tdtMapStyleOptions = [
+  { name: t('chart.map_style_normal'), value: 'normal' },
+  { name: t('chart.map_style_dark'), value: 'black' },
+  { name: t('chart.map_style_darkblue'), value: 'indigo' }
 ]
 
 export declare type MapMouseEvent = MouseEvent & {

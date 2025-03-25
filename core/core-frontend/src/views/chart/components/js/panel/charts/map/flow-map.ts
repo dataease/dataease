@@ -8,12 +8,15 @@ import {
 import { MAP_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/map/common'
 import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { deepCopy } from '@/utils/utils'
-import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
 import { LineLayer } from '@antv/l7-layers'
 import { PointLayer } from '@antv/l7-layers'
-import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
-import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import {
+  getMapCenter,
+  getMapScene,
+  getMapStyle,
+  mapRendered
+} from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 
 /**
@@ -88,53 +91,16 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     const xAxisExt = deepCopy(chart.xAxisExt)
     const { basicStyle, misc } = deepCopy(parseJson(chart.customAttr))
 
-    let center: [number, number] = [
-      DEFAULT_BASIC_STYLE.mapCenter.longitude,
-      DEFAULT_BASIC_STYLE.mapCenter.latitude
-    ]
-    if (basicStyle.autoFit === false) {
-      center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-    }
-    let mapStyle = basicStyle.mapStyleUrl
-    if (basicStyle.mapStyle !== 'custom') {
-      mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
-    }
     const mapKey = await this.getMapKey()
+    const mapStyle = getMapStyle(mapKey, basicStyle)
     // 底层
     const chartObj = drawOption.chartObj as unknown as L7Wrapper<L7Config, Scene>
     let scene = chartObj?.getScene()
-    if (!scene) {
-      scene = new Scene({
-        id: container,
-        logoVisible: false,
-        map: new GaodeMap({
-          token: mapKey?.key ?? undefined,
-          style: mapStyle,
-          pitch: misc.mapPitch,
-          center: basicStyle.autoFit === false ? center : undefined,
-          zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
-          showLabel: !(basicStyle.showLabel === false),
-          WebGLParams: {
-            preserveDrawingBuffer: true
-          }
-        })
-      })
-    } else {
-      if (scene.getLayers()?.length) {
-        await scene.removeAllLayer()
-        scene.setPitch(misc.mapPitch)
-        scene.setMapStyle(mapStyle)
-        scene.map.showLabel = !(basicStyle.showLabel === false)
-      }
-      if (basicStyle.autoFit === false) {
-        scene.setZoomAndCenter(basicStyle.zoomLevel, center)
-      }
-    }
-    mapRendering(container)
-    scene.once('loaded', () => {
-      mapRendered(container)
-    })
-    this.configZoomButton(chart, scene)
+
+    const center = getMapCenter(basicStyle)
+    scene = await getMapScene(chart, scene, container, mapKey, basicStyle, misc, mapStyle, center)
+
+    this.configZoomButton(chart, scene, mapKey)
     if (xAxis?.length < 2 || xAxisExt?.length < 2) {
       return new L7Wrapper(scene, undefined)
     }

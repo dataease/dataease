@@ -33,10 +33,15 @@ import { PositionType } from '@antv/l7-core'
 import { centroid } from '@turf/centroid'
 import type { Plot } from '@antv/g2plot'
 import type { PickOptions } from '@antv/g2plot/lib/core/plot'
-import { defaults } from 'lodash-es'
+import { defaults, find } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t: tI18n } = useI18n()
 import { isMobile } from '@/utils/utils'
+import { GaodeMap, Map, TMap } from '@antv/l7-maps'
+import {
+  gaodeMapStyleOptions,
+  tdtMapStyleOptions
+} from '@/views/chart/components/js/panel/charts/map/common'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -1221,7 +1226,11 @@ export class CustomZoom extends Zoom {
     } as IZoomControlOption
   }
 }
-export function configL7Zoom(chart: Chart, scene: Scene) {
+export function configL7Zoom(
+  chart: Chart,
+  scene: Scene,
+  mapKey?: { key: string; securityCode: string; mapType: string }
+) {
   const { basicStyle } = parseJson(chart.customAttr)
   const zoomOption = scene?.getControlByName('zoom')
   if (zoomOption) {
@@ -1233,12 +1242,16 @@ export function configL7Zoom(chart: Chart, scene: Scene) {
   if (!scene?.getControlByName('zoom')) {
     if (!scene.map) {
       scene.once('loaded', () => {
-        scene.map.on('complete', () => {
+        if (
+          mapKey?.mapType === 'tianditu' &&
+          scene.map?.defaultMapType?.name === 'TMAP_NORMAL_MAP'
+        ) {
+          //天地图
           const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
           const center =
             basicStyle.autoFit === false
               ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-              : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+              : [scene.map.getCenter().getLng(), scene.map.getCenter().getLat()]
           const newZoomOptions = {
             initZoom: initZoom,
             center: center,
@@ -1246,7 +1259,22 @@ export function configL7Zoom(chart: Chart, scene: Scene) {
             buttonBackground: basicStyle.zoomBackground
           } as any
           scene.addControl(new CustomZoom(newZoomOptions))
-        })
+        } else {
+          scene.map.on('complete', () => {
+            const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+            const center =
+              basicStyle.autoFit === false
+                ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+            const newZoomOptions = {
+              initZoom: initZoom,
+              center: center,
+              buttonColor: basicStyle.zoomButtonColor,
+              buttonBackground: basicStyle.zoomBackground
+            } as any
+            scene.addControl(new CustomZoom(newZoomOptions))
+          })
+        }
       })
     } else {
       const newZoomOptions = {
@@ -1355,6 +1383,160 @@ export function mapRendered(dom: HTMLElement | string) {
   dom.classList.add('de-map-rendered')
 }
 
+export function getMapCenter(basicStyle: ChartBasicStyle) {
+  let center: [number, number]
+  if (basicStyle.autoFit === false) {
+    const longitude = basicStyle?.mapCenter?.longitude ?? DEFAULT_BASIC_STYLE.mapCenter.longitude
+    const latitude = basicStyle?.mapCenter?.latitude ?? DEFAULT_BASIC_STYLE.mapCenter.latitude
+    center = [longitude, latitude]
+  } else {
+    center = undefined
+  }
+  return center
+}
+
+export function getMapStyle(
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle
+) {
+  let mapStyle: string
+  switch (mapKey.mapType) {
+    case 'tianditu':
+      if (!find(tdtMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
+        mapStyle = 'normal'
+      } else {
+        mapStyle = basicStyle.mapStyle
+      }
+      break
+    default:
+      if (!find(gaodeMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
+        basicStyle.mapStyle = 'normal'
+      }
+      mapStyle = basicStyle.mapStyleUrl
+      if (basicStyle.mapStyle !== 'custom') {
+        mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
+      }
+      break
+  }
+  return mapStyle
+}
+
+export async function getMapScene(
+  chart: Chart,
+  scene: Scene,
+  container: string,
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle,
+  miscStyle: ChartMiscAttr,
+  mapStyle: string,
+  center?: [number, number]
+) {
+  if (!scene) {
+    scene = new Scene({
+      id: container,
+      logoVisible: false,
+      map: getMapObject(mapKey, basicStyle, miscStyle, mapStyle, center)
+    })
+  } else {
+    if (scene.getLayers()?.length) {
+      await scene.removeAllLayer()
+      try {
+        scene.setPitch(miscStyle.mapPitch)
+      } catch (e) {}
+      if (mapKey.mapType === 'tianditu') {
+        if (mapStyle === 'normal') {
+          scene.map?.removeStyle()
+        } else {
+          scene.setMapStyle(mapStyle)
+        }
+      } else {
+        scene.setMapStyle(mapStyle)
+      }
+
+      scene.map.showLabel = !(basicStyle.showLabel === false)
+    }
+    if (basicStyle.autoFit === false) {
+      scene.setZoomAndCenter(basicStyle.zoomLevel, center)
+    }
+  }
+  mapRendering(container)
+  scene.once('loaded', () => {
+    mapRendered(container)
+    // 去除天地图自己的缩放按钮
+    if (mapKey.mapType === 'tianditu') {
+      if (mapStyle === 'normal') {
+        scene.map?.removeStyle()
+      } else {
+        scene.setMapStyle(mapStyle)
+      }
+
+      const tdtControl = document.querySelector(
+        `#component${chart.id} .tdt-control-zoom.tdt-bar.tdt-control`
+      )
+      if (tdtControl) {
+        tdtControl.style.display = 'none'
+      }
+      const tdtControlOuter = document.querySelectorAll(
+        `#wrapper-outer-id-${chart.id} .tdt-control-zoom.tdt-bar.tdt-control`
+      )
+      if (tdtControlOuter && tdtControlOuter.length > 0) {
+        for (let i = 0; i < tdtControlOuter.length; i++) {
+          tdtControlOuter[i].style.display = 'none'
+        }
+      }
+      const tdtCopyrightControl = document.querySelector(
+        `#component${chart.id} .tdt-control-copyright.tdt-control`
+      )
+      if (tdtCopyrightControl) {
+        tdtCopyrightControl.style.display = 'none'
+      }
+      const tdtCopyrightControlOuter = document.querySelectorAll(
+        `#wrapper-outer-id-${chart.id} .tdt-control-copyright.tdt-control`
+      )
+      if (tdtCopyrightControlOuter && tdtCopyrightControlOuter.length > 0) {
+        for (let i = 0; i < tdtCopyrightControlOuter.length; i++) {
+          tdtCopyrightControlOuter[i].style.display = 'none'
+        }
+      }
+    }
+  })
+  return scene
+}
+
+export function getMapObject(
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle,
+  miscStyle: ChartMiscAttr,
+  mapStyle: string,
+  center?: [number, number]
+) {
+  switch (mapKey.mapType) {
+    case 'tianditu':
+      return new TMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle, //不生效
+        pitch: undefined, //不支持
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
+        showLabel: !(basicStyle.showLabel === false), //不支持
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+    default:
+      return new GaodeMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle,
+        pitch: miscStyle.mapPitch,
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
+        showLabel: !(basicStyle.showLabel === false),
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+  }
+}
 /**
  * 隐藏缩放控件
  * @param basicStyle

@@ -9,6 +9,18 @@
           <div class="online-form-item">
             <div class="map-item">
               <div class="map-item-label">
+                <span class="form-label">{{ t('chart.map_type') }}</span>
+              </div>
+            </div>
+            <div class="map-item">
+              <el-select v-model="mapEditor.mapType">
+                <el-option value="gaode" :label="t('chart.map_type_gaode')" />
+                <el-option value="tianditu" :label="t('chart.map_type_tianditu')" />
+                <!--                <el-option value="baidu" :label="t('chart.map_type_baidu')" />-->
+              </el-select>
+            </div>
+            <div class="map-item">
+              <div class="map-item-label">
                 <span class="form-label">Key</span>
               </div>
             </div>
@@ -33,7 +45,16 @@
       </el-row>
     </el-aside>
     <el-main>
-      <div v-show="mapLoaded" v-if="!mapReloading" class="de-map-container" :id="domId" />
+      <div
+        v-show="mapLoaded && mapEditor.mapType === 'gaode'"
+        class="de-map-container"
+        :id="domId"
+      />
+      <div
+        v-show="mapLoaded && mapEditor.mapType === 'tianditu'"
+        class="de-map-container"
+        :id="domId + '-tianditu'"
+      />
       <EmptyBackground
         v-if="!mapLoaded"
         img-type="noneWhite"
@@ -44,62 +65,97 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { queryMapKeyApi, saveMapKeyApi } from '@/api/setting/sysParameter'
 import { ElMessage } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import { Scene } from '@antv/l7-scene'
+import { GaodeMap, TMap } from '@antv/l7-maps'
 const { t } = useI18n()
 const mapEditor = reactive({
   key: '',
-  securityCode: ''
+  securityCode: '',
+  mapType: ''
 })
 const mapInstance = ref(null)
-const mapReloading = ref(false)
 const domId = ref('de-map-container')
 const mapLoaded = ref(false)
 
-const loadMap = () => {
+let scene: Scene = undefined
+
+const loadMap = (callback?: any) => {
   if (!mapEditor.key) {
     return
   }
-  const mykey = mapEditor.key
-  const url = `https://webapi.amap.com/maps?v=2.0&key=${mykey}`
-
-  loadScript(url)
-    .then(() => {
-      if (mapInstance.value) {
-        mapInstance.value?.destroy()
-        mapInstance.value = null
-        mapReloading.value = true
-        setTimeout(() => {
-          domId.value = domId.value + '-de-'
-          mapReloading.value = false
-          nextTick(() => {
-            createMapInstance()
-          })
-        }, 1500)
-
-        return
-      }
-      createMapInstance()
-    })
-    .catch(e => {
-      if (mapInstance.value) {
-        mapInstance.value.destroy()
-        mapInstance.value = null
-      }
-      console.error(e)
-    })
-}
-const createMapInstance = () => {
-  mapInstance.value = new window.AMap.Map(domId.value, {
-    viewMode: '2D',
-    zoom: 11,
-    center: [116.397428, 39.90923]
-  })
+  const center: [number, number] = [116.397428, 39.90923]
   mapLoaded.value = true
+  if (scene) {
+    scene.destroy()
+    destroyTdt()
+    loadMapScene(mapEditor, center)
+  } else {
+    loadMapScene(mapEditor, center)
+  }
+  if (callback) {
+    callback()
+  }
 }
+
+function destroyTdt() {
+  const tdt = document.querySelector(`#${domId.value}-tianditu`)
+  if (tdt && tdt.firstChild) {
+    tdt.removeChild(tdt.firstChild)
+  }
+}
+
+function loadMapScene(mapEditor, center) {
+  const mykey = mapEditor.key
+  switch (mapEditor.mapType) {
+    case 'tianditu':
+      scene = new Scene({
+        id: domId.value + '-tianditu',
+        logoVisible: false,
+        map: new TMap({
+          token: mykey,
+          center,
+          zoom: 11
+        })
+      })
+
+      scene.on('loaded', () => {
+        const tdtControl = document.querySelector(
+          `#${domId.value}-tianditu .tdt-control-zoom.tdt-bar.tdt-control`
+        )
+        if (tdtControl) {
+          tdtControl.style.display = 'none'
+        }
+        const tdtCopyrightControl = document.querySelector(
+          `#${domId.value}-tianditu .tdt-control-copyright.tdt-control`
+        )
+        if (tdtCopyrightControl) {
+          tdtCopyrightControl.style.display = 'none'
+        }
+      })
+
+      return
+    default:
+      scene = new Scene({
+        id: domId.value,
+        logoVisible: false,
+        map: new GaodeMap({
+          token: mykey,
+          pitch: 0,
+          center,
+          zoom: 11,
+          showLabel: true
+        })
+      })
+
+      return
+  }
+}
+
 const saveHandler = () => {
   saveMapKeyApi(mapEditor)
     .then(() => {
@@ -110,43 +166,35 @@ const saveHandler = () => {
       console.error(e)
     })
 }
-const initLoad = () => {
+const initLoad = (callback?: any) => {
   queryMapKeyApi()
     .then(res => {
       mapEditor.key = res.data.key
+      mapEditor.mapType = res.data.mapType
       mapEditor.securityCode = res.data.securityCode
-      loadMap()
+      loadMap(callback)
     })
     .catch(e => {
       console.error(e)
     })
 }
-const loadScript = (url: string) => {
-  return new Promise(function (resolve, reject) {
-    const scriptId = 'de-gaode-script-id'
-    let dom = document.getElementById(scriptId)
-    if (dom) {
-      dom.parentElement?.removeChild(dom)
-      dom = null
-      window.AMap = null
-    }
-    var script = document.createElement('script')
-
-    script.id = scriptId
-    script.onload = function () {
-      return resolve(null)
-    }
-    script.onerror = function () {
-      return reject(new Error('Load script from '.concat(url, ' failed')))
-    }
-    script.src = url
-    var head = document.head || document.getElementsByTagName('head')[0]
-    ;(document.body || head).appendChild(script)
-  })
-}
-
 onMounted(() => {
-  initLoad()
+  initLoad(() => {
+    if (mapEditor.mapType === 'tianditu') {
+      //针对天地图初次加载会错位，重新加载一遍
+      scene.once('loaded', () => {
+        setTimeout(() => {
+          loadMap()
+        }, 1000)
+      })
+    }
+  })
+})
+onUnmounted(() => {
+  scene.destroy()
+  destroyTdt()
+  scene = undefined
+  mapLoaded.value = false
 })
 </script>
 
@@ -154,6 +202,7 @@ onMounted(() => {
 .de-map-container {
   height: 100%;
   width: 100%;
+  position: relative;
 }
 .online-map-container {
   height: 100%;

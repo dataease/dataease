@@ -63,6 +63,9 @@ public class SysParameterManage {
                 BeanUtils.setFieldValueByName(editor, field, val, String.class);
             }
         });
+        if (StringUtils.isBlank(editor.getMapType())) {
+            editor.setMapType("gaode");
+        }
         return editor;
     }
 

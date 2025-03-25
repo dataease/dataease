@@ -2009,7 +2009,11 @@ export default {
     expand_all: '全展开',
     level_label: '第{num}层级',
     default_expand_level: '默认展开层级',
-    no_data_or_not_positive: '暂无数据，或数据均不是正数，无法绘制'
+    no_data_or_not_positive: '暂无数据，或数据均不是正数，无法绘制',
+    map_type: '地图提供商',
+    map_type_gaode: '高德地图',
+    map_type_tianditu: '天地图',
+    map_type_baidu: '百度地图'
   },
   dataset: {
     field_value: '字段值',

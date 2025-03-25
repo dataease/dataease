@@ -17,6 +17,12 @@ import { ElFormItem, ElInputNumber, ElMessage } from 'element-plus-secondary'
 import { svgStrToUrl } from '../../../js/util'
 import { numberToChineseUnderHundred } from '../../../js/panel/common/common_antv'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
+import { useMapStoreWithOut } from '@/store/modules/map'
+import { queryMapKeyApi } from '@/api/setting/sysParameter'
+import {
+  gaodeMapStyleOptions,
+  tdtMapStyleOptions
+} from '@/views/chart/components/js/panel/charts/map/common'
 
 const dvMainStore = dvMainStoreWithOut()
 const localeStore = useLocaleStoreWithOut()
@@ -35,7 +41,16 @@ const props = defineProps({
     type: Array<string>
   }
 })
-const showProperty = prop => props.propertyInner?.includes(prop)
+const showProperty = prop => {
+  const has = props.propertyInner?.includes(prop)
+  if (!has) {
+    return false
+  }
+  if (props.chart.type.includes('map') && mapType.value === 'tianditu' && prop === 'showLabel') {
+    return false
+  }
+  return has
+}
 const tableExpandLevelOptions = reactive([{ name: t('chart.expand_all'), value: 'all' }])
 const predefineColors = COLOR_PANEL
 const state = reactive({
@@ -256,16 +271,32 @@ const symbolOptions = [
   { name: t('chart.line_symbol_triangle'), value: 'triangle' },
   { name: t('chart.line_symbol_diamond'), value: 'diamond' }
 ]
-const mapStyleOptions = [
-  { name: t('chart.map_style_normal'), value: 'normal' },
-  { name: t('chart.map_style_darkblue'), value: 'darkblue' },
-  { name: t('chart.map_style_light'), value: 'light' },
-  { name: t('chart.map_style_dark'), value: 'dark' },
-  { name: t('chart.map_style_fresh'), value: 'fresh' },
-  { name: t('chart.map_style_grey'), value: 'grey' },
-  { name: t('chart.map_style_blue'), value: 'blue' },
-  { name: t('commons.custom'), value: 'custom' }
-]
+
+const mapStore = useMapStoreWithOut()
+
+const getMapKey = async () => {
+  if (!mapStore.mapKey.key) {
+    await queryMapKeyApi().then(res => mapStore.setKey(res.data))
+  }
+  if (mapStore.mapKey.securityCode) {
+    window._AMapSecurityConfig = {
+      securityJsCode: mapStore.mapKey.securityCode
+    }
+  }
+  return mapStore.mapKey
+}
+
+const mapType = ref<string>(undefined)
+
+const mapStyleOptions = computed(() => {
+  switch (mapType.value) {
+    case 'tianditu':
+      return tdtMapStyleOptions
+    default:
+      return gaodeMapStyleOptions
+  }
+})
+
 const heatMapTypeOptions = [
   { name: t('chart.heatmap_classics'), value: 'heatmap' },
   { name: t('chart.heatmap3D'), value: 'heatmap3D' }
@@ -284,6 +315,11 @@ const mergeCell = computed(() => {
 })
 onMounted(() => {
   init()
+  getMapKey().then(res => {
+    if (res) {
+      mapType.value = res.mapType
+    }
+  })
 })
 </script>
 <template>
@@ -470,7 +506,7 @@ onMounted(() => {
           </el-form-item>
         </el-col>
       </el-row>
-      <div class="alpha-setting">
+      <div class="alpha-setting" v-if="mapType !== 'tianditu'">
         <label class="alpha-label" :class="{ dark: 'dark' === themes }">
           {{ t('chart.chart_map') + ' ' + t('chart.map_pitch') }}
         </label>
