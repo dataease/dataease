@@ -83,29 +83,10 @@ public class DataSourceManage {
         return flag;
     }
 
-    private String getName(String type) {
-        String name = null;
-        for (DatasourceConfiguration.DatasourceType datasourceType : DatasourceConfiguration.DatasourceType.values()) {
-            if (datasourceType.getType().equals(type)) {
-                name = datasourceType.getName();
-            }
-
-        }
-        if (StringUtils.isEmpty(name)) {
-            List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
-            List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), type)).toList();
-            if (ObjectUtils.isNotEmpty(list)) {
-                XpackPluginsDatasourceVO first = list.getFirst();
-                name = first.getName();
-            }
-        }
-        return name;
-    }
-
     private DatasourceNodeBO convert(DataSourceNodePO po) {
         Integer flag = getFlag(po.getType());
         int extraFlag = StringUtils.equalsIgnoreCase("error", po.getStatus()) ? Math.negateExact(flag) : flag;
-        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 9, po.getPid(), extraFlag, getName(po.getType()));
+        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 9, po.getPid(), extraFlag, po.getType());
     }
 
     @XpackInteract(value = "datasourceResourceTree", replace = true, invalid = true)
