@@ -64,21 +64,23 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
     </el-button>
     <template #dropdown>
       <el-dropdown-menu class="list-columns-select">
-        <p class="title">{{ $t('component.selectInfo') }}</p>
-        <el-checkbox
-          v-model="checkAll"
-          :indeterminate="isIndeterminate"
-          @change="handleCheckAllChange"
-          >{{ $t('component.allSelect') }}</el-checkbox
-        >
-        <el-checkbox-group
-          v-model="state.checkedColumnNames"
-          @change="handleCheckedColumnNamesChange"
-        >
-          <el-checkbox v-for="column in columnNames" :key="column.props" :label="column.props">{{
-            $t(column.label)
-          }}</el-checkbox>
-        </el-checkbox-group>
+        <el-main style="padding: 0; max-height: 320px">
+          <p class="title">{{ $t('component.selectInfo') }}</p>
+          <el-checkbox
+            v-model="checkAll"
+            :indeterminate="isIndeterminate"
+            @change="handleCheckAllChange"
+            >{{ $t('component.allSelect') }}</el-checkbox
+          >
+          <el-checkbox-group
+            v-model="state.checkedColumnNames"
+            @change="handleCheckedColumnNamesChange"
+          >
+            <el-checkbox v-for="column in columnNames" :key="column.props" :label="column.props">{{
+              $t(column.label)
+            }}</el-checkbox>
+          </el-checkbox-group>
+        </el-main>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
