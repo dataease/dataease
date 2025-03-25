@@ -94,7 +94,7 @@ public class DatasetDataManage {
         return rowPermissionsApi;
     }
 
-    public static final List<String> notFullDs = List.of("mysql", "mariadb", "Excel", "API", "H2");
+    public static final List<String> notFullDs = List.of("mysql", "mariadb", "Excel", "API", "H2", "h2");
 
     public List<DatasetTableFieldDTO> getTableFields(DatasetTableDTO datasetTableDTO) throws Exception {
         List<DatasetTableFieldDTO> list = null;
