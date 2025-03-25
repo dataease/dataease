@@ -58,9 +58,7 @@ function getAxisList() {
 }
 
 const computedAxis = computed(() => {
-  const l = getAxisList()
-  console.log(l)
-  return l
+  return getAxisList()
 })
 const summaryTypes = [
   { key: 'sum', name: t('chart.sum') },
