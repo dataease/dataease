@@ -938,7 +938,7 @@ const mousedownDrag = () => {
                   ></component
                 ></Icon>
               </el-icon>
-              <span :title="fieldForm.name">{{ fieldForm.name }}</span>
+              <span :title="fieldForm.name" class="ellipsis">{{ fieldForm.name }}</span>
             </div>
           </div>
         </div>
