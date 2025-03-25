@@ -132,6 +132,46 @@
             pop.visualization_id = #{visualizationId}
 	</delete>
 
+
+    <delete id="deleteOuterParamsTargetWithVisualizationIdSnapshot" >
+        DELETE FROM
+            snapshot_visualization_outer_params_target_view_info poptvi
+        WHERE
+            poptvi.params_info_id IN (
+               SELECT params_info_id FROM
+                (
+                    SELECT poptvi.params_info_id FROM
+                        snapshot_visualization_outer_params_target_view_info poptvi
+                            INNER JOIN snapshot_visualization_outer_params_info popi ON poptvi.params_info_id = popi.params_info_id
+                            INNER JOIN snapshot_visualization_outer_params pop ON popi.params_id = pop.params_id
+                    WHERE pop.visualization_id = #{visualizationId}
+                ) tmp
+            )
+    </delete>
+
+    <delete id="deleteOuterParamsInfoWithVisualizationIdSnapshot" >
+        DELETE FROM
+            snapshot_visualization_outer_params_info popi
+        WHERE
+            popi.params_id IN (
+                SELECT params_id FROM
+                    (
+                        SELECT popi.params_id FROM
+                            snapshot_visualization_outer_params_info popi
+                                INNER JOIN snapshot_visualization_outer_params pop ON popi.params_id = pop.params_id
+                        WHERE pop.visualization_id = #{visualizationId}
+                    ) tmp
+            )
+    </delete>
+
+    <delete id="deleteOuterParamsWithVisualizationIdSnapshot" >
+        DELETE pop
+        FROM
+            snapshot_visualization_outer_params pop
+        WHERE
+            pop.visualization_id = #{visualizationId}
+	</delete>
+
     <select id="getVisualizationOuterParamsInfo" resultMap="AllOuterParamsMap">
         SELECT DISTINCT
             popi.param_name AS sourceInfo,

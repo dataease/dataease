@@ -52,15 +52,15 @@ public class CoreVisualizationExportManage {
     private DatasetFieldServer datasetFieldServer;
 
     public String getResourceName(Long dvId, String busiFlag) {
-        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
+        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag,"core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
         return visualization.getName();
     }
 
     public File exportExcel(Long dvId, String busiFlag, List<Long> viewIdList, boolean onlyDisplay) throws Exception {
-        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
+        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag,"core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
-        List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
+        List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId,CommonConstants.RESOURCE_TABLE.CORE);
 
         String componentsJson = visualization.getComponentData();
         List<Map<String, Object>> components = JsonUtil.parseList(componentsJson, tokenType);

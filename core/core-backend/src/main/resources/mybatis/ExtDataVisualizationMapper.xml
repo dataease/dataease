@@ -169,11 +169,17 @@
                `version`,
                `content_id`,
                `check_version`
-        FROM data_visualization_info
-        where data_visualization_info.delete_flag = 0
-          and data_visualization_info.id = #{dvId}
+        FROM
+        <if test="resourceTable == 'snapshot'">
+             snapshot_data_visualization_info dvi
+        </if>
+        <if test="resourceTable == 'core'">
+             data_visualization_info dvi
+        </if>
+        where dvi.delete_flag = 0
+          and dvi.id = #{dvId}
           <if test="dvType">
-            and data_visualization_info.type = #{dvType}
+            and dvi.type = #{dvType}
           </if>
     </select>
 
@@ -459,7 +465,188 @@
             </foreach>
     </delete>
 
-        <select id="queryInnerUserInfo" resultType="io.dataease.api.permissions.user.vo.UserFormVO">
+     <select id="queryInnerUserInfo" resultType="io.dataease.api.permissions.user.vo.UserFormVO">
             select id,account,name from per_user where id =  #{id}
-        </select>
+     </select>
+
+     <insert id="snapshotDataV">
+       INSERT snapshot_data_visualization_info SELECT
+       *
+       FROM
+       	data_visualization_info
+       WHERE
+       	id = #{dvId}
+     </insert>
+
+     <insert id="snapshotViews">
+       INSERT snapshot_core_chart_view SELECT
+       *
+       FROM
+       	core_chart_view
+       WHERE
+       	scene_id = #{dvId}
+     </insert>
+
+     <insert id="snapshotLinkJumpTargetViewInfo">
+         INSERT snapshot_visualization_link_jump_target_view_info SELECT
+         vljtvi.*
+         FROM
+            visualization_link_jump_target_view_info vljtvi
+            LEFT JOIN visualization_link_jump_info vlji ON vljtvi.link_jump_info_id = vlji.id
+            LEFT JOIN visualization_link_jump vlj ON vlji.link_jump_id = vlj.id
+         WHERE
+            vlj.source_dv_id = #{dvId}
+     </insert>
+
+     <insert id="snapshotLinkJumpInfo">
+         INSERT snapshot_visualization_link_jump_info SELECT
+         vlji.*
+         FROM
+            visualization_link_jump_info vlji
+            LEFT JOIN visualization_link_jump vlj ON vlji.link_jump_id = vlj.id
+         WHERE
+            vlj.source_dv_id = #{dvId}
+     </insert>
+     <insert id="snapshotLinkJump">
+         INSERT snapshot_visualization_link_jump SELECT
+         vlj.*
+         FROM visualization_link_jump vlj
+         WHERE
+            vlj.source_dv_id = #{dvId}
+     </insert>
+
+     <insert id="snapshotLinkageField">
+         INSERT snapshot_visualization_linkage_field SELECT
+         vlf.*
+         FROM
+            visualization_linkage_field vlf
+            LEFT JOIN visualization_linkage vl ON vlf.linkage_id = vl.id
+         WHERE
+            vl.dv_id = #{dvId}
+     </insert>
+     <insert id="snapshotLinkage">
+         INSERT snapshot_visualization_linkage SELECT
+         vl.*
+         FROM
+            visualization_linkage vl
+         WHERE
+            vl.dv_id = #{dvId}
+     </insert>
+     <insert id="snapshotOuterParamsTargetViewInfo">
+         INSERT snapshot_visualization_outer_params_target_view_info SELECT
+         voptvi.*
+         FROM
+            visualization_outer_params_target_view_info voptvi
+            LEFT JOIN visualization_outer_params_info vopi ON vopi.params_info_id = voptvi.params_info_id
+            LEFT JOIN visualization_outer_params vop ON vop.params_id = vopi.params_id
+         WHERE
+            vop.visualization_id = #{dvId}
+     </insert>
+     <insert id="snapshotOuterParamsInfo">
+         INSERT snapshot_visualization_outer_params_info SELECT
+         vopi.*
+         FROM
+            visualization_outer_params_info vopi
+            LEFT JOIN visualization_outer_params vop ON vop.params_id = vopi.params_id
+         WHERE
+            vop.visualization_id = #{dvId}
+    </insert>
+    <insert id="snapshotOuterParams">
+       INSERT snapshot_visualization_outer_params SELECT
+       vop.*
+       FROM visualization_outer_params vop
+       WHERE
+       	vop.visualization_id = #{dvId}
+    </insert>
+
+
+    <insert id="restoreDataV">
+       INSERT data_visualization_info SELECT
+       *
+       FROM
+       	snapshot_data_visualization_info
+       WHERE
+       	id = #{dvId}
+     </insert>
+
+     <insert id="restoreViews">
+       INSERT core_chart_view SELECT
+       *
+       FROM
+       	snapshot_core_chart_view
+       WHERE
+       	scene_id = #{dvId}
+     </insert>
+
+     <insert id="restoreLinkJumpTargetViewInfo">
+         INSERT visualization_link_jump_target_view_info SELECT
+         vljtvi.*
+         FROM
+            snapshot_visualization_link_jump_target_view_info vljtvi
+            LEFT JOIN snapshot_visualization_link_jump_info vlji ON vljtvi.link_jump_info_id = vlji.id
+            LEFT JOIN snapshot_visualization_link_jump vlj ON vlji.link_jump_id = vlj.id
+         WHERE
+            vlj.source_dv_id = #{dvId}
+     </insert>
+
+     <insert id="restoreLinkJumpInfo">
+         INSERT visualization_link_jump_info SELECT
+         vlji.*
+         FROM
+            snapshot_visualization_link_jump_info vlji
+            LEFT JOIN snapshot_visualization_link_jump vlj ON vlji.link_jump_id = vlj.id
+         WHERE
+            vlj.source_dv_id = #{dvId}
+     </insert>
+     <insert id="restoreLinkJump">
+         INSERT visualization_link_jump SELECT
+         vlj.*
+         FROM snapshot_visualization_link_jump vlj
+         WHERE
+            vlj.source_dv_id = #{dvId}
+     </insert>
+
+     <insert id="restoreLinkageField">
+         INSERT visualization_linkage_field SELECT
+         vlf.*
+         FROM
+            snapshot_visualization_linkage_field vlf
+            LEFT JOIN snapshot_visualization_linkage vl ON vlf.linkage_id = vl.id
+         WHERE
+            vl.dv_id = #{dvId}
+     </insert>
+     <insert id="restoreLinkage">
+         INSERT visualization_linkage SELECT
+         vl.*
+         FROM
+            snapshot_visualization_linkage vl
+         WHERE
+            vl.dv_id = #{dvId}
+     </insert>
+     <insert id="restoreOuterParamsTargetViewInfo">
+         INSERT visualization_outer_params_target_view_info SELECT
+         voptvi.*
+         FROM
+            snapshot_visualization_outer_params_target_view_info voptvi
+            LEFT JOIN snapshot_visualization_outer_params_info vopi ON vopi.params_info_id = voptvi.params_info_id
+            LEFT JOIN snapshot_visualization_outer_params vop ON vop.params_id = vopi.params_id
+         WHERE
+            vop.visualization_id = #{dvId}
+     </insert>
+     <insert id="restoreOuterParamsInfo">
+         INSERT visualization_outer_params_info SELECT
+         vopi.*
+         FROM
+            snapshot_visualization_outer_params_info vopi
+            LEFT JOIN snapshot_visualization_outer_params vop ON vop.params_id = vopi.params_id
+         WHERE
+            vop.visualization_id = #{dvId}
+    </insert>
+    <insert id="restoreOuterParams">
+       INSERT visualization_outer_params SELECT
+       vop.*
+       FROM snapshot_visualization_outer_params vop
+       WHERE
+       	vop.visualization_id = #{dvId}
+    </insert>
 </mapper>

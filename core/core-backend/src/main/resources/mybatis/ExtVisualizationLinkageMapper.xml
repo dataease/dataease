@@ -80,7 +80,16 @@
 
     <delete id="deleteViewLinkage">
         delete from visualization_linkage where   visualization_linkage.dv_id = #{dvId}
-        AND visualization_linkage.source_view_id = #{sourceViewId}
+        <if test="sourceViewId != null">
+          AND visualization_linkage.source_view_id = #{sourceViewId}
+        </if>
+    </delete>
+
+    <delete id="deleteViewLinkageSnapshot">
+        delete from snapshot_visualization_linkage where   snapshot_visualization_linkage.dv_id = #{dvId}
+        <if test="sourceViewId != null">
+          AND snapshot_visualization_linkage.source_view_id = #{sourceViewId}
+        </if>
     </delete>
 
 
@@ -92,8 +101,26 @@
                 FROM visualization_linkage pvl
                 JOIN visualization_linkage_field pvlf
                     ON pvl.id = pvlf.linkage_id
-                WHERE pvl.source_view_id = #{sourceViewId}
-                  AND pvl.dv_id = #{dvId}
+                WHERE pvl.dv_id = #{dvId}
+                <if test="sourceViewId != null">
+                  AND pvl.source_view_id = #{sourceViewId}
+                </if>
+            ) AS temp_table
+        )
+    </delete>
+
+    <delete id="deleteViewLinkageFieldSnapshot">
+        DELETE FROM snapshot_visualization_linkage
+        WHERE id IN (
+            SELECT id FROM (
+                SELECT pvl.id
+                FROM snapshot_visualization_linkage pvl
+                JOIN snapshot_visualization_linkage_field pvlf
+                    ON pvl.id = pvlf.linkage_id
+                WHERE pvl.dv_id = #{dvId}
+                <if test="sourceViewId != null">
+                  AND pvl.source_view_id = #{sourceViewId}
+                </if>
             ) AS temp_table
         )
     </delete>

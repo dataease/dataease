@@ -28,6 +28,12 @@ public interface ExtVisualizationLinkJumpMapper {
 
     void deleteJumpWithVisualization(@Param("dvId") Long dvId);
 
+    void deleteJumpTargetViewInfoWithVisualizationSnapshot(@Param("dvId") Long dvId);
+
+    void deleteJumpInfoWithVisualizationSnapshot(@Param("dvId") Long dvId);
+
+    void deleteJumpWithVisualizationSnapshot(@Param("dvId") Long dvId);
+
     List<VisualizationLinkJumpDTO> getTargetVisualizationJumpInfo(@Param("request") VisualizationLinkJumpBaseRequest request);
 
     void copyLinkJump(@Param("copyId")Long copyId);

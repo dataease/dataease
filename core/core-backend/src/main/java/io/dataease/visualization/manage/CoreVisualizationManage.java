@@ -9,6 +9,7 @@ import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
+import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
@@ -16,9 +17,10 @@ import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
-import io.dataease.visualization.dao.ext.mapper.CoreVisualiationExtMapper;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
+import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoMapper;
+import io.dataease.visualization.dao.ext.mapper.*;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
@@ -41,6 +43,18 @@ public class CoreVisualizationManage {
 
     @Resource
     private DataVisualizationInfoMapper mapper;
+
+    @Resource
+    private SnapshotDataVisualizationInfoMapper snapshotMapper;
+
+    @Resource
+    private ExtVisualizationLinkageMapper linkageMapper;
+
+    @Resource
+    private ExtVisualizationLinkJumpMapper linkJumpMapper;
+
+    @Resource
+    private ExtVisualizationOuterParamsMapper outerParamsMapper;
 
     @Resource
     private ExtDataVisualizationMapper extDataVisualizationMapper;
@@ -133,16 +147,29 @@ public class CoreVisualizationManage {
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
         mapper.insert(visualizationInfo);
+        // 镜像文件插入
+        SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
+        BeanUtils.copyBean(snapshotVisualizationInfo,visualizationInfo);
+        snapshotMapper.insert(snapshotVisualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.NEW);
         return visualizationInfo.getId();
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void innerEdit(DataVisualizationInfo visualizationInfo) {
+        // 镜像和主表保持名称一致
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setVersion(3);
-        mapper.updateById(visualizationInfo);
+        // 更新镜像
+        SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
+        BeanUtils.copyBean(snapshotVisualizationInfo,visualizationInfo);
+        snapshotMapper.updateById(snapshotVisualizationInfo);
+        // 更新主表名称
+        DataVisualizationInfo coreVisualizationInfo = new DataVisualizationInfo();
+        coreVisualizationInfo.setId(visualizationInfo.getId());
+        coreVisualizationInfo.setName(visualizationInfo.getName());
+        mapper.updateById(coreVisualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
     }
 
@@ -207,4 +234,57 @@ public class CoreVisualizationManage {
         Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
         return extDataVisualizationMapper.findRecent(page, uid, request.getKeyword(), params);
     }
+
+    public void removeSnapshot(Long dvId){
+        if(dvId != null){
+            // 清理历史数据
+            linkageMapper.deleteViewLinkageFieldSnapshot(dvId,null);
+            linkageMapper.deleteViewLinkageSnapshot(dvId,null);
+            linkJumpMapper.deleteJumpTargetViewInfoWithVisualizationSnapshot(dvId);
+            linkJumpMapper.deleteJumpInfoWithVisualizationSnapshot(dvId);
+            linkJumpMapper.deleteJumpWithVisualizationSnapshot(dvId);
+            outerParamsMapper.deleteOuterParamsTargetWithVisualizationIdSnapshot(dvId);
+            outerParamsMapper.deleteOuterParamsInfoWithVisualizationIdSnapshot(dvId);
+            outerParamsMapper.deleteOuterParamsWithVisualizationIdSnapshot(dvId);
+        }
+    }
+
+    public void dvSnapshotCheck(Long dvId){
+        /**
+         * 1.检查当前仪表板（大屏）是否存在镜像
+         * 2.如果已经存在 不做处理
+         * 3.如果不存在则将主表所有信息拷贝到镜像中
+         * */
+        QueryWrapper<SnapshotDataVisualizationInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", dvId);
+        if(!snapshotMapper.exists(queryWrapper)){
+            // 清理历史数据
+            this.removeSnapshot(dvId);
+            // 导入新数据
+            extDataVisualizationMapper.snapshotDataV(dvId);
+            extDataVisualizationMapper.snapshotViews(dvId);
+            extDataVisualizationMapper.snapshotLinkJumpTargetViewInfo(dvId);
+            extDataVisualizationMapper.snapshotLinkJumpInfo(dvId);
+            extDataVisualizationMapper.snapshotLinkJump(dvId);
+            extDataVisualizationMapper.snapshotLinkageField(dvId);
+            extDataVisualizationMapper.snapshotLinkage(dvId);
+            extDataVisualizationMapper.snapshotOuterParamsTargetViewInfo(dvId);
+            extDataVisualizationMapper.snapshotOuterParamsInfo(dvId);
+            extDataVisualizationMapper.snapshotOuterParams(dvId);
+        }
+    }
+
+    public void dvRemove(Long dvId){
+        extDataVisualizationMapper.restoreDataV(dvId);
+        extDataVisualizationMapper.restoreViews(dvId);
+        extDataVisualizationMapper.restoreLinkJumpTargetViewInfo(dvId);
+        extDataVisualizationMapper.restoreLinkJumpInfo(dvId);
+        extDataVisualizationMapper.restoreLinkJump(dvId);
+        extDataVisualizationMapper.restoreLinkageField(dvId);
+        extDataVisualizationMapper.restoreLinkage(dvId);
+        extDataVisualizationMapper.restoreOuterParamsTargetViewInfo(dvId);
+        extDataVisualizationMapper.restoreOuterParamsInfo(dvId);
+        extDataVisualizationMapper.restoreOuterParams(dvId);
+    }
+
 }

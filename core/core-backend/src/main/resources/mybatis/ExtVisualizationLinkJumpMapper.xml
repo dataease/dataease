@@ -226,13 +226,32 @@
         )
     </delete>
 
+    <delete id="deleteJumpTargetViewInfoWithVisualizationSnapshot">
+        DELETE FROM snapshot_visualization_link_jump_target_view_info
+        WHERE link_jump_info_id IN (
+            SELECT lji.id
+            FROM snapshot_visualization_link_jump_info lji
+            JOIN snapshot_visualization_link_jump lj ON lji.link_jump_id = lj.id
+            WHERE lj.source_dv_id = #{dvId}
+               OR lji.target_dv_id = #{dvId}
+        )
+    </delete>
+
     <delete id="deleteJumpInfoWithVisualization">
         DELETE FROM visualization_link_jump_info
         WHERE link_jump_id IN (
             SELECT lj.id
             FROM visualization_link_jump lj
             WHERE lj.source_dv_id = #{dvId}
-               OR lj.target_dv_id = #{dvId}
+        )
+    </delete>
+
+    <delete id="deleteJumpInfoWithVisualizationSnapshot">
+        DELETE FROM snapshot_visualization_link_jump_info
+        WHERE link_jump_id IN (
+            SELECT lj.id
+            FROM snapshot_visualization_link_jump lj
+            WHERE lj.source_dv_id = #{dvId}
         )
     </delete>
 
@@ -240,6 +259,11 @@
        DELETE FROM visualization_link_jump
        WHERE source_dv_id = #{dvId}
    </delete>
+
+      <delete id="deleteJumpWithVisualizationSnapshot">
+          DELETE FROM snapshot_visualization_link_jump
+          WHERE source_dv_id = #{dvId}
+      </delete>
 
     <select id="getTargetVisualizationJumpInfo" resultMap="AllJumpMap">
         SELECT DISTINCT

@@ -33,7 +33,9 @@ import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.entity.SnapshotCoreChartView;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
+import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +58,8 @@ import java.util.stream.Collectors;
 public class ChartViewManege {
     @Resource
     private CoreChartViewMapper coreChartViewMapper;
+    @Resource
+    private SnapshotCoreChartViewMapper snapshotCoreChartViewMapper;
     @Resource
     private ChartDataManage chartDataManage;
     @Resource
@@ -85,18 +89,18 @@ public class ChartViewManege {
         if (id == null) {
             DEException.throwException(Translator.get("i18n_no_id"));
         }
-        CoreChartView coreChartView = coreChartViewMapper.selectById(id);
-        CoreChartView record = transDTO2Record(chartViewDTO);
+        SnapshotCoreChartView coreChartView = snapshotCoreChartViewMapper.selectById(id);
+        SnapshotCoreChartView record = transDTO2Record(chartViewDTO);
         if (ObjectUtils.isEmpty(coreChartView)) {
-            coreChartViewMapper.insert(record);
+            snapshotCoreChartViewMapper.insert(record);
         } else {
-            UpdateWrapper<CoreChartView> updateWrapper = new UpdateWrapper<>();
+            UpdateWrapper<SnapshotCoreChartView> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", record.getId());
             //富文本允许设置空的tableId 这里额外更新一下
             if (record.getTableId() == null) {
                 updateWrapper.set("table_id", null);
             }
-            coreChartViewMapper.update(record, updateWrapper);
+            snapshotCoreChartViewMapper.update(record, updateWrapper);
         }
         return chartViewDTO;
     }
@@ -129,10 +133,10 @@ public class ChartViewManege {
     /**
      * sceneId 为仪表板或者数据大屏id
      */
-    public List<ChartViewDTO> listBySceneId(Long sceneId) {
+    public List<ChartViewDTO> listBySceneId(Long sceneId,String resourceTable) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
         wrapper.eq("scene_id", sceneId);
-        List<ChartViewDTO> chartViewDTOS = transChart(coreChartViewMapper.selectList(wrapper));
+        List<ChartViewDTO> chartViewDTOS = transChart(extChartViewMapper.selectListCustom(sceneId,resourceTable));
         if (!CollectionUtils.isEmpty(chartViewDTOS)) {
             List<Long> tableIds = chartViewDTOS.stream()
                     .map(ChartViewDTO::getTableId)
@@ -377,8 +381,8 @@ public class ChartViewManege {
         }).collect(Collectors.toList());
     }
 
-    public CoreChartView transDTO2Record(ChartViewDTO dto) throws Exception {
-        CoreChartView record = new CoreChartView();
+    public SnapshotCoreChartView transDTO2Record(ChartViewDTO dto) throws Exception {
+        SnapshotCoreChartView record = new SnapshotCoreChartView();
         BeanUtils.copyBean(record, dto);
 
         record.setxAxis(objectMapper.writeValueAsString(dto.getXAxis()));

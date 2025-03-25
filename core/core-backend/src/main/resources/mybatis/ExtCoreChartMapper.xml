@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.chart.dao.ext.mapper.ExtChartViewMapper">
+
+  <select id="selectListCustom" resultType="io.dataease.chart.dao.auto.entity.CoreChartView">
+        select * from
+        <if test="resourceTable = 'snapshot'">
+          snapshot_core_chart_view
+        </if>
+        <if test="resourceTable = 'snapshot'">
+           core_chart_view
+        </if>
+        where scene_id = #{sceneId}
+    </select>
+</mapper>

@@ -322,7 +322,8 @@ export function refreshOtherComponent(dvId, busiFlag) {
   }
 }
 
-export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
+export function initCanvasDataPrepare(dvId, params, callBack) {
+  const busiFlag = params.busiFlag
   const copyFlag = busiFlag != null && busiFlag.includes('-copy')
   const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
   const method = copyFlag ? findCopyResource : findById
@@ -338,7 +339,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       attachInfo['showWatermark'] = enable
     }
   }
-
+  attachInfo['resourceTable'] = params.resourceTable ? params.resourceTable : 'core'
   method(dvId, busiFlagCustom, attachInfo).then(res => {
     const canvasInfo = res.data
     const watermarkInfo = {
@@ -382,10 +383,10 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   })
 }
 
-export async function initCanvasData(dvId, busiFlag, callBack) {
+export async function initCanvasData(dvId, params, callBack) {
   initCanvasDataPrepare(
     dvId,
-    busiFlag,
+    params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       dvMainStore.setComponentData(canvasDataResult)
       dvMainStore.setCanvasStyle(canvasStyleResult)
@@ -407,7 +408,7 @@ export async function initCanvasData(dvId, busiFlag, callBack) {
 export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
   initCanvasDataPrepare(
     dvId,
-    busiFlag,
+    { busiFlag },
     function ({ canvasDataResult, canvasStyleResult, canvasViewInfoPreview }) {
       const componentDataCopy = canvasDataResult.filter(ele => !!ele.inMobile)
       const componentDataId = componentDataCopy.map(ele => ele.id)
@@ -454,10 +455,10 @@ export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
   )
 }
 
-export function initCanvasDataMobile(dvId, busiFlag, callBack) {
+export function initCanvasDataMobile(dvId, params, callBack) {
   initCanvasDataPrepare(
     dvId,
-    busiFlag,
+    params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       const componentData = canvasDataResult.filter(ele => !!ele.inMobile)
       canvasDataResult.forEach(ele => {

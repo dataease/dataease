@@ -96,7 +96,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   const req = dvType === 'dashboard' ? initCanvasDataMobile : initCanvasData
   req(
     dvId,
-    dvType,
+    { busiFlag: dvType },
     async function ({
       canvasDataResult,
       canvasStyleResult,

@@ -2797,6 +2797,8 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    re_publish: '重新发布',
+    publish: '发布',
     freeze_top: '位置冻结在顶部',
     indicator_linkage: '指标卡联动仅携带图表过滤参数',
     gap_size: '间隙大小',

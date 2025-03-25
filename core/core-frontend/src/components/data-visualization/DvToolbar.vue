@@ -179,7 +179,7 @@ const saveResource = () => {
           )
         }
         if (appData.value) {
-          initCanvasData(dvInfo.value.id, 'dataV', () => {
+          initCanvasData(dvInfo.value.id, { busiFlag: 'dataV' }, () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
             resourceAppOpt.value.close()
             dvMainStore.setAppDataInfo(null)

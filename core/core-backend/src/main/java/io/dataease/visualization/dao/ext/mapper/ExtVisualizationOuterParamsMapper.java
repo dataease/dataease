@@ -21,6 +21,12 @@ public interface ExtVisualizationOuterParamsMapper {
 
     void deleteOuterParamsWithVisualizationId(@Param("visualizationId") String visualizationId);
 
+    void deleteOuterParamsTargetWithVisualizationIdSnapshot(@Param("visualizationId") Long visualizationId);
+
+    void deleteOuterParamsInfoWithVisualizationIdSnapshot(@Param("visualizationId") Long visualizationId);
+
+    void deleteOuterParamsWithVisualizationIdSnapshot(@Param("visualizationId") Long visualizationId);
+
     List<VisualizationOuterParamsInfoDTO> getVisualizationOuterParamsInfo(@Param("visualizationId") String visualizationId);
 
     List<VisualizationOuterParamsInfo> getVisualizationOuterParamsInfoBase(@Param("visualizationId") String visualizationId);

@@ -179,6 +179,10 @@ const resourceOptFinish = param => {
   }
 }
 
+const publishStatusChange = status => {
+
+}
+
 const saveCanvasWithCheck = () => {
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
     ElMessageBox.confirm(t('components.from_other_organizations'), {
@@ -243,7 +247,7 @@ const saveResource = () => {
         }
 
         if (appData.value) {
-          initCanvasData(dvInfo.value.id, 'dashboard', () => {
+          initCanvasData(dvInfo.value.id, { busiFlag: 'dashboard' }, () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
             useEmitt().emitter.emit('calcData-all')
             resourceAppOpt.value.close()
@@ -689,16 +693,25 @@ const initOpenHandler = newWindow => {
         >
           {{ t('data_set.edit') }}
         </el-button>
-
-        <el-button
-          v-if="editMode === 'edit' || editMode === 'preview'"
-          :disabled="styleChangeTimes < 1"
-          @click="saveCanvasWithCheck()"
-          style="float: right; margin-right: 12px"
-          type="primary"
-        >
-          {{ t('data_set.save') }}
-        </el-button>
+        <template v-if="editMode === 'edit' || editMode === 'preview'">
+          <el-button
+            v-if="editMode === 'edit' || editMode === 'preview'"
+            :disabled="styleChangeTimes < 1"
+            @click="saveCanvasWithCheck()"
+            style="float: right; margin-right: 12px"
+            type="primary"
+          >
+            {{ t('data_set.save') }}
+          </el-button>
+          <el-button
+            v-if="dvInfo.status === 2"
+            @click="saveCanvasWithCheck()"
+            style="float: right; margin-right: 12px"
+            type="primary"
+          >
+            {{ t('visualization.re_publish') }}
+          </el-button>
+        </template>
       </div>
 
       <div class="right-area full-area" v-if="batchOptStatus">

@@ -299,8 +299,8 @@ const doUseCache = flag => {
 
 const initLocalCanvasData = async () => {
   const { opt, sourcePid, resourceId } = state
-  const busiFlg = opt === 'copy' ? 'dataV-copy' : 'dataV'
-  await initCanvasData(resourceId, busiFlg, function () {
+  const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
+  await initCanvasData(resourceId, { busiFlag, resourceTable: 'snapshot' }, function () {
     state.canvasInitStatus = true
     // afterInit
     nextTick(() => {

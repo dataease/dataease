@@ -98,7 +98,7 @@ const loadCanvasData = (dvId, weight?) => {
   dataInitState.value = false
   initMethod(
     dvId,
-    'dashboard',
+    { busiFlag: 'dashboard' },
     function ({
       canvasDataResult,
       canvasStyleResult,

@@ -25,7 +25,7 @@ public class MybatisPlusGenerator {
     /**
      * 这是要生成代码的表名称
      */
-    private static final String TABLE_NAME = "data_visualization_info";
+    private static final String TABLE_NAME = "snapshot_core_chart_view";
 
     /**
      * 下面两个配置基本上不用动

@@ -1,6 +1,7 @@
 package io.dataease.chart.dao.ext.mapper;
 
 import io.dataease.api.chart.vo.ViewSelectorVO;
+import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -41,4 +42,6 @@ public interface ExtChartViewMapper {
                 where ccv.id = #{id}
             """)
     ChartBasePO queryChart(@Param("id") Long id);
+
+    List<CoreChartView> selectListCustom(@Param("sceneId") Long sceneId, @Param("resourceTable") String resourceTable);
 }

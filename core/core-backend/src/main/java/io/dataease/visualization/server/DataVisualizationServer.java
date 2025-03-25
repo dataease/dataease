@@ -161,7 +161,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public DataVisualizationVO findById(DataVisualizationBaseRequest request) {
         Long dvId = request.getId();
         String busiFlag = request.getBusiFlag();
-        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
+        String resourceTable = request.getResourceTable();
+        // 如果是编辑查询 则进行镜像检查
+        if(CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)){
+            coreVisualizationManage.dvSnapshotCheck(dvId);
+        }
+        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag,resourceTable);
         if (result != null) {
             // get creator
             String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
@@ -169,7 +174,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 result.setCreatorName(userName);
             }
             //获取图表信息
-            List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
+            List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId,resourceTable);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
                 Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
@@ -210,6 +215,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public String saveCanvas(DataVisualizationBaseRequest request) throws Exception {
+        /*
+         * 发布兼容逻辑
+         * saveCanvas 为初次保存 包括 模板 应用 普通创建 所有变更操作都走snapshot表
+         * 1.如果是文件夹直接保存在主表中，如果是仪表板（数据大屏），主表和镜像表各保存一份 主表仅作为权限和预览控制此时主表状态为‘未发布’
+         * 2.编辑检查：如果存在未发布的仪表板snapshot，则默认加载snapshot进行编辑所有操作均为snapshot操作
+         * 3.发布（重新发布）：将snapshot表中的所有数据复制到主表中，同时变更主表状态为‘已发布’
+         * 4.如果对已发布的仪表板编辑并存在已保存的镜像，此时仪表板状态为‘已保存未发布’
+         */
         boolean isAppSave = false;
         Long time = System.currentTimeMillis();
         // 如果是应用 则新进行应用校验 数据集名称和 数据源名称校验
@@ -491,10 +504,19 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 coreVisualizationManage.move(request);
             }
         }
+        visualizationInfo.setStatus(CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
         coreVisualizationManage.innerEdit(visualizationInfo);
-
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
+    }
+
+    @Override
+    public void updatePublishStatus(DataVisualizationBaseRequest request) {
+        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+        visualizationInfo.setStatus(request.getStatus());
+        visualizationInfo.setId(request.getId());
+        visualizationInfo.setStatus(CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
+        coreVisualizationManage.innerEdit(visualizationInfo);
     }
 
     /**

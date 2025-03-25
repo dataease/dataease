@@ -91,7 +91,7 @@ onBeforeMount(async () => {
 
   initCanvasData(
     embeddedParams.dvId,
-    embeddedParams.busiFlag,
+    { busiFlag: embeddedParams.busiFlag },
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
