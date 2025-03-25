@@ -337,68 +337,21 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
   } else {
     method = update
   }
-  if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !props.param.id) {
-    ElMessageBox.confirm(t('dataset.merge_title'), {
-      confirmButtonText: t('dataset.merge'),
-      tip: t('dataset.task.excel_replace_msg'),
-      cancelButtonText: t('dataset.no_merge'),
-      confirmButtonType: 'primary',
-      type: 'warning',
-      autofocus: false,
-      callback: (action: Action) => {
-        if (action === 'close') return
-        loading.value = true
-        table.mergeSheet = action === 'confirm'
-        if (action === 'confirm') {
-          method(table)
-            .then(res => {
-              emitter.emit('showFinishPage', res)
-              successCb?.()
-              ElMessage({
-                message: t('commons.save_success'),
-                type: 'success'
-              })
-            })
-            .finally(() => {
-              finallyCb?.()
-              loading.value = false
-            })
-        }
-
-        if (action === 'cancel') {
-          method(table)
-            .then(res => {
-              emitter.emit('showFinishPage', res)
-              successCb?.()
-              ElMessage({
-                message: t('commons.save_success'),
-                type: 'success'
-              })
-            })
-            .finally(() => {
-              finallyCb?.()
-              loading.value = false
-            })
-        }
-      }
+  if (loading.value) return
+  loading.value = true
+  method(table)
+    .then(res => {
+      emitter.emit('showFinishPage', res)
+      successCb?.()
+      ElMessage({
+        message: t('commons.save_success'),
+        type: 'success'
+      })
     })
-  } else {
-    if (loading.value) return
-    loading.value = true
-    method(table)
-      .then(res => {
-        emitter.emit('showFinishPage', res)
-        successCb?.()
-        ElMessage({
-          message: t('commons.save_success'),
-          type: 'success'
-        })
-      })
-      .finally(() => {
-        finallyCb?.()
-        loading.value = false
-      })
-  }
+    .finally(() => {
+      finallyCb?.()
+      loading.value = false
+    })
 }
 
 const onChange = file => {
