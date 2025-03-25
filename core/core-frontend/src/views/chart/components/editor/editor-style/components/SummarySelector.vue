@@ -58,7 +58,9 @@ function getAxisList() {
 }
 
 const computedAxis = computed(() => {
-  return getAxisList()
+  const l = getAxisList()
+  console.log(l)
+  return l
 })
 const summaryTypes = [
   { key: 'sum', name: t('chart.sum') },
@@ -151,7 +153,7 @@ onMounted(() => {
             v-for="c in computedAxis"
             :key="c.dataeaseName"
             :value="c.dataeaseName"
-            :label="c.chartShowName ?? c.description"
+            :label="c.chartShowName ?? c.name"
           />
         </el-select>
       </el-form-item>
