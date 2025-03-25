@@ -64,7 +64,7 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
     </el-button>
     <template #dropdown>
       <el-dropdown-menu class="list-columns-select">
-        <el-main style="padding: 0; max-height: 320px">
+        <el-main class="main-div-select">
           <p class="title">{{ $t('component.selectInfo') }}</p>
           <el-checkbox
             v-model="checkAll"
@@ -103,6 +103,10 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
 
   .ed-checkbox {
     width: 100%;
+  }
+  .main-div-select {
+    max-height: 320px;
+    padding: 0;
   }
 }
 </style>
