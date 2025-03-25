@@ -62,9 +62,8 @@ export const checkCanvasChange = data =>
 export const saveCanvas = data =>
   request.post({ url: '/dataVisualization/saveCanvas', data, loading: true })
 
-
-export const saveCanvas = data =>
-  request.post({ url: '/dataVisualization/saveCanvas', data, loading: true })
+export const updatePublishStatus = data =>
+  request.post({ url: '/dataVisualization/updatePublishStatus', data, loading: true })
 
 export const appCanvasNameCheck = async data =>
   request.post({ url: '/dataVisualization/appCanvasNameCheck', data, loading: false })

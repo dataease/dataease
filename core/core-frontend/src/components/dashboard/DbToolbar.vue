@@ -49,6 +49,7 @@ import { useCache } from '@/hooks/web/useCache'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -180,7 +181,7 @@ const resourceOptFinish = param => {
 }
 
 const publishStatusChange = status => {
-
+  // do update
 }
 
 const saveCanvasWithCheck = () => {
