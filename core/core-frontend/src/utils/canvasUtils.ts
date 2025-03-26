@@ -610,7 +610,7 @@ export async function canvasSave(callBack) {
     })
   }
   method(canvasInfo).then(res => {
-    dvMainStore.updateDvInfoId(res.data, newContentId)
+    dvMainStore.updateDvInfoCall(method === updateCanvas ? 2 : 1, res.data, newContentId)
     snapshotStore.resetStyleChangeTimes()
     callBack(res)
   })

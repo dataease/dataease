@@ -4,12 +4,26 @@
 
   <select id="selectListCustom" resultType="io.dataease.chart.dao.auto.entity.CoreChartView">
         select * from
-        <if test="resourceTable = 'snapshot'">
-          snapshot_core_chart_view
-        </if>
-        <if test="resourceTable = 'snapshot'">
-           core_chart_view
-        </if>
+    <choose>
+            <when test="resourceTable == 'snapshot'">
+                snapshot_core_chart_view
+            </when>
+            <otherwise>
+                core_chart_view
+            </otherwise>
+    </choose>
         where scene_id = #{sceneId}
     </select>
+    <delete id="deleteViewsBySceneId">
+          delete from
+    <choose>
+            <when test="resourceTable == 'snapshot'">
+                snapshot_core_chart_view
+            </when>
+            <otherwise>
+                core_chart_view
+            </otherwise>
+    </choose>
+          where scene_id = #{sceneId}
+      </delete>
 </mapper>

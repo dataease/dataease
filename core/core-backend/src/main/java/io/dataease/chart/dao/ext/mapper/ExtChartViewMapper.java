@@ -44,4 +44,6 @@ public interface ExtChartViewMapper {
     ChartBasePO queryChart(@Param("id") Long id);
 
     List<CoreChartView> selectListCustom(@Param("sceneId") Long sceneId, @Param("resourceTable") String resourceTable);
+
+    void deleteViewsBySceneId(@Param("sceneId") Long sceneId, @Param("resourceTable") String resourceTable);
 }

@@ -511,12 +511,24 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
+    @Transactional
     public void updatePublishStatus(DataVisualizationBaseRequest request) {
+        /**
+         * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
+         * 统一处理为1.删除主表数据，2.将镜像表数据统一copy到主表 3.删除镜像表数据
+         * 其他状态仅更新主表和镜像表状态
+         * */
+        Long dvId = request.getId();
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         visualizationInfo.setStatus(request.getStatus());
-        visualizationInfo.setId(request.getId());
-        visualizationInfo.setStatus(CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
+        visualizationInfo.setId(dvId);
+        visualizationInfo.setStatus(request.getStatus());
         coreVisualizationManage.innerEdit(visualizationInfo);
+        if(CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()){
+            coreVisualizationManage.removeDvCore(dvId);
+            coreVisualizationManage.dvRestore(dvId);
+            coreVisualizationManage.removeSnapshot(dvId);
+        }
     }
 
     /**

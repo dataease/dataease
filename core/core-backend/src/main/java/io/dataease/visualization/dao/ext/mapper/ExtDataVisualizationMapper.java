@@ -53,9 +53,9 @@ public interface ExtDataVisualizationMapper {
 
     List<VisualizationReportFilterVO> queryReportFilter(@Param("dvId") Long dvId,@Param("taskId") Long taskId);
 
-    void deleteDataVBatch(@Param("ids") Set<Long> ids);
+    void deleteDataVBatch(@Param("ids") Set<Long> ids,@Param("resourceTable") String resourceTable);
 
-    void deleteViewsBatch(@Param("ids") Set<Long> ids);
+    void deleteViewsBatch(@Param("ids") Set<Long> ids,@Param("resourceTable") String resourceTable);
 
     UserFormVO queryInnerUserInfo(@Param("id") Long id);
 

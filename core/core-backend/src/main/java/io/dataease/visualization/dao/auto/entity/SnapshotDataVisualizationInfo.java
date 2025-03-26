@@ -19,7 +19,7 @@ public class SnapshotDataVisualizationInfo implements Serializable {
     /**
      * 主键
      */
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -29,12 +29,12 @@ public class SnapshotDataVisualizationInfo implements Serializable {
     /**
      * 父id
      */
-    private String pid;
+    private Long pid;
 
     /**
      * 所属组织id
      */
-    private String orgId;
+    private Long orgId;
 
     /**
      * 层级
@@ -141,11 +141,11 @@ public class SnapshotDataVisualizationInfo implements Serializable {
      */
     private String checkVersion;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -157,19 +157,19 @@ public class SnapshotDataVisualizationInfo implements Serializable {
         this.name = name;
     }
 
-    public String getPid() {
+    public Long getPid() {
         return pid;
     }
 
-    public void setPid(String pid) {
+    public void setPid(Long pid) {
         this.pid = pid;
     }
 
-    public String getOrgId() {
+    public Long getOrgId() {
         return orgId;
     }
 
-    public void setOrgId(String orgId) {
+    public void setOrgId(Long orgId) {
         this.orgId = orgId;
     }
 

@@ -2802,6 +2802,8 @@ export default {
   },
   visualization: {
     re_publish: '重新发布',
+    published_success: '发布成功',
+    cancel_publish: '取消发布',
     publish: '发布',
     freeze_top: '位置冻结在顶部',
     indicator_linkage: '指标卡联动仅携带图表过滤参数',

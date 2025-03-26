@@ -182,6 +182,10 @@ const resourceOptFinish = param => {
 
 const publishStatusChange = status => {
   // do update
+  updatePublishStatus({ id: dvInfo.value.id, pid: dvInfo.value.id, status }).then(() => {
+    dvMainStore.updateDvInfoCall(status)
+    ElMessage.success(t('visualization.published_success'))
+  })
 }
 
 const saveCanvasWithCheck = () => {
@@ -706,7 +710,7 @@ const initOpenHandler = newWindow => {
           </el-button>
           <el-button
             v-if="dvInfo.status === 2"
-            @click="saveCanvasWithCheck()"
+            @click="publishStatusChange(1)"
             style="float: right; margin-right: 12px"
             type="primary"
           >

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
+import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
@@ -62,6 +63,9 @@ public class CoreVisualizationManage {
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
 
+    @Resource
+    private ExtChartViewMapper extCoreChartMapper;
+
     @XpackInteract(value = "visualizationResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
         List<VisualizationNodeBO> nodes = new ArrayList<>();
@@ -108,9 +112,11 @@ public class CoreVisualizationManage {
             }
         }
         // 删除可视化资源
-        extDataVisualizationMapper.deleteDataVBatch(delIds);
+        extDataVisualizationMapper.deleteDataVBatch(delIds,CommonConstants.RESOURCE_TABLE.CORE);
+        extDataVisualizationMapper.deleteDataVBatch(delIds,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
         // 删除图表信息
-        extDataVisualizationMapper.deleteViewsBatch(delIds);
+        extDataVisualizationMapper.deleteViewsBatch(delIds,CommonConstants.RESOURCE_TABLE.CORE);
+        extDataVisualizationMapper.deleteViewsBatch(delIds,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
 
         coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.DELETE);
     }
@@ -168,7 +174,13 @@ public class CoreVisualizationManage {
         // 更新主表名称
         DataVisualizationInfo coreVisualizationInfo = new DataVisualizationInfo();
         coreVisualizationInfo.setId(visualizationInfo.getId());
+        coreVisualizationInfo.setStatus(visualizationInfo.getStatus());
+        coreVisualizationInfo.setPid(visualizationInfo.getPid());
+        coreVisualizationInfo.setContentId(visualizationInfo.getContentId());
         coreVisualizationInfo.setName(visualizationInfo.getName());
+        visualizationInfo.setUpdateTime(System.currentTimeMillis());
+        visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
+        visualizationInfo.setVersion(3);
         mapper.updateById(coreVisualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
     }
@@ -235,9 +247,14 @@ public class CoreVisualizationManage {
         return extDataVisualizationMapper.findRecent(page, uid, request.getKeyword(), params);
     }
 
+    @Transactional
     public void removeSnapshot(Long dvId){
         if(dvId != null){
             // 清理历史数据
+            Set<Long> dvIds = new HashSet<>();
+            dvIds.add(dvId);
+            extDataVisualizationMapper.deleteDataVBatch(dvIds,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+            extCoreChartMapper.deleteViewsBySceneId(dvId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
             linkageMapper.deleteViewLinkageFieldSnapshot(dvId,null);
             linkageMapper.deleteViewLinkageSnapshot(dvId,null);
             linkJumpMapper.deleteJumpTargetViewInfoWithVisualizationSnapshot(dvId);
@@ -248,7 +265,25 @@ public class CoreVisualizationManage {
             outerParamsMapper.deleteOuterParamsWithVisualizationIdSnapshot(dvId);
         }
     }
-
+    @Transactional
+    public void removeDvCore(Long dvId){
+        if(dvId != null){
+            // 清理历史数据
+            Set<Long> dvIds = new HashSet<>();
+            dvIds.add(dvId);
+            extDataVisualizationMapper.deleteDataVBatch(dvIds,CommonConstants.RESOURCE_TABLE.CORE);
+            extCoreChartMapper.deleteViewsBySceneId(dvId,CommonConstants.RESOURCE_TABLE.CORE);
+            linkageMapper.deleteViewLinkageField(dvId,null);
+            linkageMapper.deleteViewLinkage(dvId,null);
+            linkJumpMapper.deleteJumpTargetViewInfoWithVisualization(dvId);
+            linkJumpMapper.deleteJumpInfoWithVisualization(dvId);
+            linkJumpMapper.deleteJumpWithVisualization(dvId);
+            outerParamsMapper.deleteOuterParamsTargetWithVisualizationId(dvId.toString());
+            outerParamsMapper.deleteOuterParamsInfoWithVisualizationId(dvId.toString());
+            outerParamsMapper.deleteOuterParamsWithVisualizationId(dvId.toString());
+        }
+    }
+    @Transactional
     public void dvSnapshotCheck(Long dvId){
         /**
          * 1.检查当前仪表板（大屏）是否存在镜像
@@ -273,8 +308,8 @@ public class CoreVisualizationManage {
             extDataVisualizationMapper.snapshotOuterParams(dvId);
         }
     }
-
-    public void dvRemove(Long dvId){
+    @Transactional
+    public void dvRestore(Long dvId){
         extDataVisualizationMapper.restoreDataV(dvId);
         extDataVisualizationMapper.restoreViews(dvId);
         extDataVisualizationMapper.restoreLinkJumpTargetViewInfo(dvId);

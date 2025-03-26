@@ -170,12 +170,14 @@
                `content_id`,
                `check_version`
         FROM
-        <if test="resourceTable == 'snapshot'">
-             snapshot_data_visualization_info dvi
-        </if>
-        <if test="resourceTable == 'core'">
-             data_visualization_info dvi
-        </if>
+           <choose>
+               <when test="resourceTable == 'snapshot'">
+                  snapshot_data_visualization_info dvi
+               </when>
+                <otherwise>
+                  data_visualization_info dvi
+                </otherwise>
+           </choose>
         where dvi.delete_flag = 0
           and dvi.id = #{dvId}
           <if test="dvType">
@@ -447,7 +449,12 @@
     <delete id="deleteDataVBatch">
         DELETE
         FROM
+        <if test="resourceTable = 'snapshot'">
+            snapshot_data_visualization_info dvi
+        </if>
+        <if test="resourceTable != 'snapshot'">
             data_visualization_info dvi
+        </if>
         WHERE
             dvi.id IN
             <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
@@ -457,7 +464,12 @@
     <delete id="deleteViewsBatch">
         DELETE
         FROM
+        <if test="resourceTable = 'snapshot'">
+            snapshot_core_chart_view ccv
+        </if>
+        <if test="resourceTable != 'snapshot'">
             core_chart_view ccv
+        </if>
         WHERE
             ccv.scene_id IN
             <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">

@@ -1553,7 +1553,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     getViewDetails(viewId) {
       return this.canvasViewInfo[viewId]
     },
-    updateDvInfoId(newId, contentId?) {
+    updateDvInfoCall(status = 1, newId?, contentId?) {
       if (this.dvInfo) {
         this.dvInfo.dataState = 'ready'
         this.dvInfo.optType = null
@@ -1563,6 +1563,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         if (contentId) {
           this.dvInfo.contentId = contentId
         }
+        this.dvInfo.status = status
       }
     },
     popAreaActiveSwitch() {
