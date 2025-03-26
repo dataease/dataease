@@ -1190,6 +1190,7 @@ const clearG2Tooltip = () => {
         :element="element"
         :suffixId="suffixId"
         :font-family="fontFamily"
+        :active="active"
         v-else-if="
           showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT, ChartLibraryType.L7)
         "

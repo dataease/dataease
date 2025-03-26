@@ -76,6 +76,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  active: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 
@@ -779,6 +784,15 @@ onMounted(() => {
   useEmitt({ name: 'l7-prepare-picture', callback: preparePicture })
   useEmitt({ name: 'l7-unprepare-picture', callback: unPreparePicture })
 })
+const MAP_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 'symbolic-map']
+const onWheel = (e: WheelEvent) => {
+  if (!MAP_CHARTS.includes(view.value.type)) {
+    return
+  }
+  if (!props.active) {
+    e.stopPropagation()
+  }
+}
 onBeforeUnmount(() => {
   try {
     myChart?.destroy()
@@ -801,7 +815,13 @@ onBeforeUnmount(() => {
       :style="state.trackBarStyle"
       @trackClick="trackClick"
     />
-    <div v-if="!isError" ref="chartContainer" class="canvas-content" :id="containerId"></div>
+    <div
+      @wheel.capture="onWheel"
+      v-if="!isError"
+      ref="chartContainer"
+      class="canvas-content"
+      :id="containerId"
+    ></div>
     <chart-error v-else :err-msg="errMsg" />
   </div>
 </template>
