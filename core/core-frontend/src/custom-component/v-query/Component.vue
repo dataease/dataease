@@ -750,15 +750,19 @@ const labelStyle = computed(() => {
   return style
 })
 
+const comLayout = computed(() => {
+  return customStyle.labelShow ? customStyle.layout : 'horizontal'
+})
+
 const paddingTop = computed<CSSProperties>(() => {
   return {
-    paddingTop: customStyle.layout !== 'horizontal' ? customStyle.nameboxSpacing + 22 + 'px' : '0'
+    paddingTop: comLayout.value !== 'horizontal' ? customStyle.nameboxSpacing + 22 + 'px' : '0'
   }
 })
 
 const marginRight = computed<CSSProperties>(() => {
   return {
-    marginRight: customStyle.layout === 'horizontal' ? customStyle.nameboxSpacing + 'px' : '8px'
+    marginRight: comLayout.value === 'horizontal' ? customStyle.nameboxSpacing + 'px' : '8px'
   }
 })
 
@@ -784,11 +788,7 @@ const autoStyle = computed(() => {
       {{ customStyle.title }}
     </p>
     <div
-      :class="[
-        'v-query',
-        customStyle.layout,
-        customStyle.titleShow && !!customStyle.title && 'title-show'
-      ]"
+      :class="['v-query', comLayout, customStyle.titleShow && !!customStyle.title && 'title-show']"
       @dragover.prevent.stop="dragover"
       @drop.prevent.stop="drop"
     >
