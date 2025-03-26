@@ -442,6 +442,8 @@ public class ChartViewManege {
         dto.setFlowMapStartName(JsonUtil.parseList(record.getFlowMapStartName(), tokenType));
         dto.setFlowMapEndName(JsonUtil.parseList(record.getFlowMapEndName(), tokenType));
         dto.setExtColor(JsonUtil.parseList(record.getExtColor(), tokenType));
+        dto.setSortPriority(JsonUtil.parseList(record.getSortPriority(), new TypeReference<List<SortAxis>>() {
+        }));
 
         return dto;
 
