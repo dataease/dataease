@@ -1590,6 +1590,7 @@ const closeSortPriority = () => {
 }
 const saveSortPriority = () => {
   view.value.sortPriority = state.sortPriority as ChartViewField[]
+  recordSnapshotInfo('render')
   closeSortPriority()
 }
 const onPriorityChange = val => {

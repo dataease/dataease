@@ -790,14 +790,14 @@ onMounted(() => {
             </el-dropdown>
           </el-dropdown-item>
 
-          <!-- <el-dropdown-item
+          <el-dropdown-item
             v-if="showSort"
             class="menu-item-padding"
             :command="beforeClickItem('sortPriority')"
           >
             <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
-          </el-dropdown-item> -->
+          </el-dropdown-item>
 
           <el-dropdown-item
             class="menu-item-padding"

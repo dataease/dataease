@@ -399,14 +399,14 @@ onMounted(() => {
               </template>
             </el-dropdown>
           </el-dropdown-item>
-          <!-- <el-dropdown-item
+          <el-dropdown-item
             v-if="showSort()"
             :command="beforeClickItem('sortPriority')"
             class="menu-item-padding"
           >
             <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
-          </el-dropdown-item> -->
+          </el-dropdown-item>
           <el-dropdown-item
             @click.prevent
             v-if="item.deType === 1"

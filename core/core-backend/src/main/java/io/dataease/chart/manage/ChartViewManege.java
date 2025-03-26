@@ -408,7 +408,7 @@ public class ChartViewManege {
         record.setFlowMapStartName(objectMapper.writeValueAsString(dto.getFlowMapStartName()));
         record.setFlowMapEndName(objectMapper.writeValueAsString(dto.getFlowMapEndName()));
         record.setExtColor(objectMapper.writeValueAsString(dto.getExtColor()));
-
+        record.setSortPriority(objectMapper.writeValueAsString(dto.getSortPriority()));
         return record;
     }
 
