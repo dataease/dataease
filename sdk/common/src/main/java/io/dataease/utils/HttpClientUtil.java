@@ -370,10 +370,13 @@ public class HttpClientUtil {
     }
 
     public static Map<String, String> downloadFile(String url, HttpClientConfig config, String path) {
-        String[] http = url.split("://");
-        String[] server = http[1].split("/");
+        String encodeUIl = url;
         Map<String, String> name = new HashMap<>();
-        String encodeUIl = http[0] + "://" + server[0] + "/" + URLEncoder.encode(server[1]);
+        if (!url.contains("%")) {
+            String[] http = url.split("://");
+            String[] server = http[1].split("/");
+            encodeUIl = http[0] + "://" + server[0] + "/" + URLEncoder.encode(http[1].substring(server[0].length() + 1, http[1].length()));
+        }
         try (CloseableHttpClient httpClient = buildHttpClient(encodeUIl.replace("+", "%20"))) {
             HttpGet httpGet = new HttpGet(encodeUIl.replace("+", "%20"));
             // 设置请求配置
