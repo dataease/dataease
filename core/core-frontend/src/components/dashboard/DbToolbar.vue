@@ -711,10 +711,19 @@ const initOpenHandler = newWindow => {
           <el-button
             v-if="dvInfo.status === 2"
             @click="publishStatusChange(1)"
-            style="float: right; margin-right: 12px"
+            style="float: right; margin: 0 12px 0 0"
             type="primary"
           >
             {{ t('visualization.re_publish') }}
+          </el-button>
+          <!--保存未发布状态-->
+          <el-button
+            v-if="dvInfo.status === 0"
+            @click="publishStatusChange(1)"
+            style="float: right; margin: 0 12px 0 0"
+            type="primary"
+          >
+            {{ t('visualization.publish') }}
           </el-button>
         </template>
       </div>

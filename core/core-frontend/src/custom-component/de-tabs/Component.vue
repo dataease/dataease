@@ -402,7 +402,10 @@ function handleCommand(command) {
 const reloadLinkage = () => {
   // 刷新联动信息
   if (dvInfo.value.id) {
-    getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
+    const resourceTable = ['canvas', 'canvasDataV', 'edit'].includes(showPosition.value)
+      ? 'snapshot'
+      : 'core'
+    getPanelAllLinkageInfo(dvInfo.value.id, resourceTable).then(rsp => {
       dvMainStore.setNowPanelTrackInfo(rsp.data)
     })
   }

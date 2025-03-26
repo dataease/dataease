@@ -2795,6 +2795,11 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    resource_not_published: '資源未發佈',
+    re_publish: '重新發佈',
+    published_success: '發佈成功',
+    cancel_publish: '取消發佈',
+    publish: '發佈',
     freeze_top: '位置凍結在頂部',
     indicator_linkage: '指標卡聯動僅攜帶圖表過濾參數',
     gap_size: '間隙大小',

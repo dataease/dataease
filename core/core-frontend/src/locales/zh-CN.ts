@@ -2801,6 +2801,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    resource_not_published: '资源未发布',
     re_publish: '重新发布',
     published_success: '发布成功',
     cancel_publish: '取消发布',

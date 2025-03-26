@@ -14,6 +14,8 @@ import java.util.List;
 public interface ExtVisualizationLinkJumpMapper {
     List<VisualizationLinkJumpDTO> queryWithDvId(@Param("dvId") Long dvId,@Param("uid") Long uid,@Param("isDesktop") Boolean isDesktop);
 
+    List<VisualizationLinkJumpDTO> queryWithDvIdSnapshot(@Param("dvId") Long dvId,@Param("uid") Long uid,@Param("isDesktop") Boolean isDesktop);
+
     VisualizationLinkJumpDTO queryWithViewId(@Param("dvId") Long dvId,@Param("viewId") Long viewId,@Param("uid") Long uid,@Param("isDesktop") Boolean isDesktop);
 
     void deleteJumpTargetViewInfo(@Param("dvId") Long dvId,@Param("viewId") Long viewId);

@@ -393,11 +393,11 @@ export async function initCanvasData(dvId, params, callBack) {
       dvMainStore.updateCurDvInfo(dvInfo)
       dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
       // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
+      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
         dvMainStore.setNowPanelTrackInfo(rsp.data)
       })
       // 刷新跳转信息
-      queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
+      queryVisualizationJumpInfo(dvInfo.id, params.resourceTable).then(rsp => {
         dvMainStore.setNowPanelJumpInfo(rsp.data)
       })
       callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
@@ -509,7 +509,7 @@ export function initCanvasDataMobile(dvId, params, callBack) {
       dvMainStore.updateCurDvInfo(dvInfo)
       dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
       // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
+      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
         dvMainStore.setNowPanelTrackInfo(rsp.data)
       })
       // 刷新跳转信息
@@ -610,7 +610,8 @@ export async function canvasSave(callBack) {
     })
   }
   method(canvasInfo).then(res => {
-    dvMainStore.updateDvInfoCall(method === updateCanvas ? 2 : 1, res.data, newContentId)
+    // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2
+    dvMainStore.updateDvInfoCall(method === updateCanvas ? 2 : 0, res.data, newContentId)
     snapshotStore.resetStyleChangeTimes()
     callBack(res)
   })

@@ -94,13 +94,11 @@
 
 
     <delete id="deleteViewLinkageField">
-        DELETE FROM visualization_linkage
-        WHERE id IN (
+        DELETE FROM visualization_linkage_field
+        WHERE linkage_id IN (
             SELECT id FROM (
                 SELECT pvl.id
                 FROM visualization_linkage pvl
-                JOIN visualization_linkage_field pvlf
-                    ON pvl.id = pvlf.linkage_id
                 WHERE pvl.dv_id = #{dvId}
                 <if test="sourceViewId != null">
                   AND pvl.source_view_id = #{sourceViewId}
@@ -110,34 +108,47 @@
     </delete>
 
     <delete id="deleteViewLinkageFieldSnapshot">
-        DELETE FROM snapshot_visualization_linkage
-        WHERE id IN (
-            SELECT id FROM (
-                SELECT pvl.id
-                FROM snapshot_visualization_linkage pvl
-                JOIN snapshot_visualization_linkage_field pvlf
-                    ON pvl.id = pvlf.linkage_id
-                WHERE pvl.dv_id = #{dvId}
-                <if test="sourceViewId != null">
-                  AND pvl.source_view_id = #{sourceViewId}
-                </if>
-            ) AS temp_table
-        )
+        DELETE FROM snapshot_visualization_linkage_field
+        WHERE linkage_id IN (
+                    SELECT id FROM (
+                        SELECT pvl.id
+                        FROM snapshot_visualization_linkage pvl
+                        WHERE pvl.dv_id = #{dvId}
+                        <if test="sourceViewId != null">
+                          AND pvl.source_view_id = #{sourceViewId}
+                        </if>
+                    ) AS temp_table
+                )
     </delete>
 
     <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
         SELECT DISTINCT
-            CONCAT( visualization_linkage.source_view_id, '#', visualization_linkage_field.source_field ) AS sourceInfo,
-                CONCAT( visualization_linkage.target_view_id, '#', visualization_linkage_field.target_field ) AS targetInfo
+            CONCAT( vl.source_view_id, '#', vlf.source_field ) AS sourceInfo,
+                CONCAT( vl.target_view_id, '#', vlf.target_field ) AS targetInfo
         FROM
-            visualization_linkage
-                LEFT JOIN core_chart_view ON visualization_linkage.source_view_id = core_chart_view.id
-                LEFT JOIN visualization_linkage_field ON visualization_linkage.id = visualization_linkage_field.linkage_id
+            visualization_linkage vl
+                LEFT JOIN core_chart_view ccv ON vl.source_view_id = ccv.id
+                LEFT JOIN visualization_linkage_field vlf ON vl.id = vlf.linkage_id
         WHERE
-            visualization_linkage.dv_id = #{dvId}
-          AND core_chart_view.linkage_active = 1
-          AND visualization_linkage.linkage_active = 1
-          AND visualization_linkage_field.id IS NOT NULL
+            vl.dv_id = #{dvId}
+          AND ccv.linkage_active = 1
+          AND vl.linkage_active = 1
+          AND vlf.id IS NOT NULL
+    </select>
+
+    <select id="getPanelAllLinkageInfoSnapshot" resultMap="AllLinkageMap">
+        SELECT DISTINCT
+            CONCAT( vl.source_view_id, '#', vlf.source_field ) AS sourceInfo,
+                CONCAT( vl.target_view_id, '#', vlf.target_field ) AS targetInfo
+        FROM
+            snapshot_visualization_linkage vl
+                LEFT JOIN snapshot_core_chart_view ccv ON vl.source_view_id = ccv.id
+                LEFT JOIN snapshot_visualization_linkage_field vlf ON vl.id = vlf.linkage_id
+        WHERE
+            vl.dv_id = #{dvId}
+          AND ccv.linkage_active = 1
+          AND vl.linkage_active = 1
+          AND vlf.id IS NOT NULL
     </select>
 
     <insert id="copyViewLinkage">

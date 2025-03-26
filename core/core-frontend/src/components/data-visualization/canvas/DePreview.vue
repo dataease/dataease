@@ -22,6 +22,7 @@ import EmptyBackground from '../../empty-background/src/EmptyBackground.vue'
 import LinkOptBar from '@/components/data-visualization/canvas/LinkOptBar.vue'
 import { isDesktop } from '@/utils/ModelUtil'
 import { isMobile } from '@/utils/utils'
+import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState, inMobile } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
@@ -30,6 +31,7 @@ const emits = defineEmits(['onResetLayout'])
 const fullScreeRef = ref(null)
 const isOverSize = ref(false)
 const isDesktopFlag = isDesktop()
+const { t } = useI18n()
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -479,7 +481,6 @@ const downloadAsPDF = () => {
 
 const scrollPreview = () => {
   state.scrollMain = previewCanvas.value.scrollTop
-  console.log('===test1===' + state.scrollMain)
 }
 
 defineExpose({
@@ -519,7 +520,7 @@ defineExpose({
       :component-data="baseComponentData"
       :is-fixed="isOverSize"
     ></canvas-opt-bar>
-    <template v-if="renderReady">
+    <template v-if="renderReady && dvInfo?.status !== 0">
       <component-wrapper
         v-for="(item, index) in baseComponentData"
         v-show="item.isShow"
@@ -544,6 +545,12 @@ defineExpose({
         :index="index"
       />
     </template>
+    <empty-background
+      v-if="dvInfo?.status === 0"
+      :description="t('visualization.resource_not_published')"
+      img-type="none"
+    >
+    </empty-background>
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
   <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />

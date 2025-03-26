@@ -42,6 +42,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -299,6 +300,14 @@ const multiplexingCanvasOpen = () => {
   multiplexingRef.value.dialogInit('dataV')
 }
 
+const publishStatusChange = status => {
+  // do update
+  updatePublishStatus({ id: dvInfo.value.id, pid: dvInfo.value.id, status }).then(() => {
+    dvMainStore.updateDvInfoCall(status)
+    ElMessage.success(t('visualization.published_success'))
+  })
+}
+
 const isIframe = computed(() => appStore.getIsIframe)
 const fullScreenPreview = () => {
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
@@ -452,6 +461,23 @@ const fullScreenPreview = () => {
           type="primary"
         >
           {{ t('visualization.save') }}
+        </el-button>
+        <el-button
+          v-if="dvInfo.status === 2"
+          @click="publishStatusChange(1)"
+          style="float: right; margin: 0 12px 0 0"
+          type="primary"
+        >
+          {{ t('visualization.re_publish') }}
+        </el-button>
+        <!--保存未发布状态-->
+        <el-button
+          v-if="dvInfo.status === 0"
+          @click="publishStatusChange(1)"
+          style="float: right; margin: 0 12px 0 0"
+          type="primary"
+        >
+          {{ t('visualization.publish') }}
         </el-button>
       </div>
     </div>

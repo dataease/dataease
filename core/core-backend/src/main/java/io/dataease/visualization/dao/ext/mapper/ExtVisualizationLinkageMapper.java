@@ -17,6 +17,10 @@ public interface ExtVisualizationLinkageMapper {
 
     List<LinkageInfoDTO> getPanelAllLinkageInfo(@Param("dvId") Long dvId);
 
+    List<VisualizationLinkageDTO> getViewLinkageGatherSnapshot(@Param("dvId") Long dvId, @Param("sourceViewId") Long sourceViewId, @Param("targetViewIds") List<String> targetViewIds);
+
+    List<LinkageInfoDTO> getPanelAllLinkageInfoSnapshot(@Param("dvId") Long dvId);
+
     List<DatasetTableFieldDTO> queryTableField(@Param("table_id") Long tableId);
 
     List<DatasetTableFieldDTO> queryTableFieldWithViewId(@Param("viewId") Long viewId);

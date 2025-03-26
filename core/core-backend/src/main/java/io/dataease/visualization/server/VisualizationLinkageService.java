@@ -9,13 +9,11 @@ import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.constant.CommonConstants;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
-import io.dataease.visualization.dao.auto.entity.VisualizationLinkage;
-import io.dataease.visualization.dao.auto.entity.VisualizationLinkageField;
-import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
-import io.dataease.visualization.dao.auto.mapper.VisualizationLinkageFieldMapper;
-import io.dataease.visualization.dao.auto.mapper.VisualizationLinkageMapper;
+import io.dataease.visualization.dao.auto.entity.*;
+import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkageMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -42,7 +40,13 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     private VisualizationLinkageFieldMapper visualizationLinkageFieldMapper;
 
     @Resource
+    private SnapshotVisualizationLinkageFieldMapper snapshotVisualizationLinkageFieldMapper;
+
+    @Resource
     private VisualizationLinkageMapper visualizationLinkageMapper;
+
+    @Resource
+    private SnapshotVisualizationLinkageMapper snapshotVisualizationLinkageMapper;
 
     @Resource
     private DataVisualizationInfoMapper dataVisualizationInfoMapper;
@@ -50,25 +54,38 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     @Resource
     private CoreChartViewMapper coreChartViewMapper;
 
+    @Resource
+    private SnapshotCoreChartViewMapper snapshotCoreChartViewMapper;
+
     @Override
     public Map<String, VisualizationLinkageDTO> getViewLinkageGather(VisualizationLinkageRequest request) {
         if (CollectionUtils.isNotEmpty(request.getTargetViewIds())) {
-            List<VisualizationLinkageDTO> linkageDTOList = extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
-            return linkageDTOList.stream().collect(Collectors.toMap(targetViewId ->String.valueOf(targetViewId), PanelViewLinkageDTO -> PanelViewLinkageDTO));
+            List<VisualizationLinkageDTO> linkageDTOList = null;
+            if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
+                extVisualizationLinkageMapper.getViewLinkageGatherSnapshot(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
+            } else {
+                extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
+            }
+            return linkageDTOList.stream().collect(Collectors.toMap(targetViewId -> String.valueOf(targetViewId), PanelViewLinkageDTO -> PanelViewLinkageDTO));
         }
         return new HashMap<>();
     }
 
     @Override
     public List<VisualizationLinkageDTO> getViewLinkageGatherArray(VisualizationLinkageRequest request) {
-        return extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
+        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
+            return extVisualizationLinkageMapper.getViewLinkageGatherSnapshot(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
+        } else {
+            return extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
+        }
     }
 
     @Override
     @Transactional
     public BaseRspModel saveLinkage(VisualizationLinkageRequest request) {
+        // 向镜像中保存
         Long updateTime = System.currentTimeMillis();
-        List<VisualizationLinkageDTO> linkageInfo =  request.getLinkageInfo();
+        List<VisualizationLinkageDTO> linkageInfo = request.getLinkageInfo();
         Long sourceViewId = request.getSourceViewId();
         Long dvId = request.getDvId();
 
@@ -76,18 +93,18 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
         Assert.notNull(dvId, "dvId can not be null");
 
         // 清理原有关系
-        extVisualizationLinkageMapper.deleteViewLinkageField(dvId, sourceViewId);
-        extVisualizationLinkageMapper.deleteViewLinkage(dvId, sourceViewId);
+        extVisualizationLinkageMapper.deleteViewLinkageFieldSnapshot(dvId, sourceViewId);
+        extVisualizationLinkageMapper.deleteViewLinkageSnapshot(dvId, sourceViewId);
 
         //重新建立关系
-        for (VisualizationLinkageDTO linkageDTO:linkageInfo) {
+        for (VisualizationLinkageDTO linkageDTO : linkageInfo) {
             //去掉source view 的信息
-            if(sourceViewId.equals(linkageDTO.getTargetViewId())){
+            if (sourceViewId.equals(linkageDTO.getTargetViewId())) {
                 continue;
             }
             List<VisualizationLinkageFieldVO> linkageFields = linkageDTO.getLinkageFields();
             Long linkageId = IDUtils.snowID();
-            VisualizationLinkage linkage = new VisualizationLinkage();
+            SnapshotVisualizationLinkage linkage = new SnapshotVisualizationLinkage();
             linkage.setId(linkageId);
             linkage.setDvId(dvId);
             linkage.setSourceViewId(sourceViewId);
@@ -95,14 +112,14 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
             linkage.setUpdatePeople("");
             linkage.setUpdateTime(updateTime);
             linkage.setLinkageActive(linkageDTO.getLinkageActive());
-            visualizationLinkageMapper.insert(linkage);
+            snapshotVisualizationLinkageMapper.insert(linkage);
             if (CollectionUtils.isNotEmpty(linkageFields) && linkageDTO.getLinkageActive()) {
                 linkageFields.forEach(linkageField -> {
                     linkageField.setId(IDUtils.snowID());
                     linkageField.setLinkageId(linkageId);
                     linkageField.setUpdateTime(updateTime);
-                    VisualizationLinkageField fieldInsert = new VisualizationLinkageField();
-                    visualizationLinkageFieldMapper.insert(BeanUtils.copyBean(fieldInsert,linkageField));
+                    SnapshotVisualizationLinkageField fieldInsert = new SnapshotVisualizationLinkageField();
+                    snapshotVisualizationLinkageFieldMapper.insert(BeanUtils.copyBean(fieldInsert, linkageField));
                 });
             }
         }
@@ -111,24 +128,29 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
 
     @DeLinkPermit
     @Override
-    public Map<String, List<String>> getVisualizationAllLinkageInfo(Long dvId) {
-        List<LinkageInfoDTO> info = extVisualizationLinkageMapper.getPanelAllLinkageInfo(dvId);
+    public Map<String, List<String>> getVisualizationAllLinkageInfo(Long dvId, String resourceTable) {
+        List<LinkageInfoDTO> info = null;
+        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
+            extVisualizationLinkageMapper.getPanelAllLinkageInfoSnapshot(dvId);
+        }else{
+            extVisualizationLinkageMapper.getPanelAllLinkageInfo(dvId);
+        }
         return Optional.ofNullable(info).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(LinkageInfoDTO::getSourceInfo, LinkageInfoDTO::getTargetInfoList));
     }
 
     @Override
     public Map updateLinkageActive(VisualizationLinkageRequest request) {
-        CoreChartView coreChartView = new CoreChartView();
+        SnapshotCoreChartView coreChartView = new SnapshotCoreChartView();
         coreChartView.setId(request.getSourceViewId());
         coreChartView.setLinkageActive(request.getActiveStatus());
-        coreChartViewMapper.updateById(coreChartView);
-        return getVisualizationAllLinkageInfo(request.getDvId());
+        snapshotCoreChartViewMapper.updateById(coreChartView);
+        return getVisualizationAllLinkageInfo(request.getDvId(),CommonConstants.RESOURCE_TABLE.SNAPSHOT);
     }
 
     @Override
     public void removeLinkage(VisualizationLinkageRequest request) {
         // 清理原有关系
-        extVisualizationLinkageMapper.deleteViewLinkageField(request.getDvId(), request.getSourceViewId());
-        extVisualizationLinkageMapper.deleteViewLinkage(request.getDvId(), request.getSourceViewId());
+        extVisualizationLinkageMapper.deleteViewLinkageFieldSnapshot(request.getDvId(), request.getSourceViewId());
+        extVisualizationLinkageMapper.deleteViewLinkageSnapshot(request.getDvId(), request.getSourceViewId());
     }
 }

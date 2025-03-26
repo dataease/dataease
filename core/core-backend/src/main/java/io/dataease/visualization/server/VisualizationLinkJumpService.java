@@ -11,6 +11,7 @@ import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.constant.CommonConstants;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
@@ -73,7 +74,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @DeLinkPermit
     //获取仪表板的跳转信息
     @Override
-    public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId) {
+    public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId,String resourceTable) {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
         List<VisualizationLinkJumpDTO> resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
         Optional.ofNullable(resultLinkJumpList).orElse(new ArrayList<>()).forEach(resultLinkJump -> {
@@ -171,7 +172,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         coreChartView.setId(Long.valueOf(request.getSourceViewId()));
         coreChartView.setJumpActive(request.getActiveStatus());
         coreChartViewMapper.updateById(coreChartView);
-        return queryVisualizationJumpInfo(request.getSourceDvId());
+        return queryVisualizationJumpInfo(request.getSourceDvId(), CommonConstants.RESOURCE_TABLE.SNAPSHOT);
     }
 
     @Override

@@ -147,6 +147,7 @@ public class CoreVisualizationManage {
             visualizationInfo.setId(id);
         }
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
+        visualizationInfo.setStatus(CommonConstants.DV_STATUS.UNPUBLISHED);
         visualizationInfo.setCreateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setCreateTime(System.currentTimeMillis());
@@ -178,9 +179,9 @@ public class CoreVisualizationManage {
         coreVisualizationInfo.setPid(visualizationInfo.getPid());
         coreVisualizationInfo.setContentId(visualizationInfo.getContentId());
         coreVisualizationInfo.setName(visualizationInfo.getName());
-        visualizationInfo.setUpdateTime(System.currentTimeMillis());
-        visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
-        visualizationInfo.setVersion(3);
+        coreVisualizationInfo.setUpdateTime(System.currentTimeMillis());
+        coreVisualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
+        coreVisualizationInfo.setVersion(3);
         mapper.updateById(coreVisualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
     }
@@ -246,7 +247,6 @@ public class CoreVisualizationManage {
         Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
         return extDataVisualizationMapper.findRecent(page, uid, request.getKeyword(), params);
     }
-
     @Transactional
     public void removeSnapshot(Long dvId){
         if(dvId != null){

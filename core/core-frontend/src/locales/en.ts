@@ -2874,6 +2874,11 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    resource_not_published: 'Resource not published',
+    re_publish: 'Republish',
+    published_success: 'Published successfully',
+    cancel_publish: 'Cancel publication',
+    publish: 'Publish',
     freeze_top: 'Position frozen at the top',
     indicator_linkage: 'Indicator card linkage only carries chart filtering parameters',
     gap_size: 'Gap Size',
