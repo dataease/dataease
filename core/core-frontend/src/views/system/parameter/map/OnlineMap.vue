@@ -17,6 +17,7 @@
                 <el-option value="gaode" :label="t('chart.map_type_gaode')" />
                 <el-option value="tianditu" :label="t('chart.map_type_tianditu')" />
                 <!--                <el-option value="baidu" :label="t('chart.map_type_baidu')" />-->
+                <el-option value="qq" :label="t('chart.map_type_tencent')" />
               </el-select>
             </div>
             <div class="map-item">
@@ -54,6 +55,11 @@
         v-if="!mapLoading && mapLoaded && mapEditor.key && mapEditor.mapType === 'tianditu'"
         :map-key="mapEditor.key"
       />
+      <OnlineMapQQ
+        v-if="!mapLoading && mapLoaded && mapEditor.key && mapEditor.mapType === 'qq'"
+        :map-key="mapEditor.key"
+        :security-code="mapEditor.securityCode"
+      />
       <EmptyBackground
         v-if="!mapLoaded"
         img-type="noneWhite"
@@ -71,6 +77,7 @@ import { ElMessage } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import OnlineMapTdt from './OnlineMapTdt.vue'
 import OnlineMapGaode from './OnlineMapGaode.vue'
+import OnlineMapQQ from './OnlineMapQQ.vue'
 
 const { t } = useI18n()
 const mapEditor = reactive({

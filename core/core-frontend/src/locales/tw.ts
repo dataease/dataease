@@ -2007,7 +2007,8 @@ export default {
     map_type: '地圖提供商',
     map_type_gaode: '高德地圖',
     map_type_tianditu: '天地圖',
-    map_type_baidu: '百度地圖'
+    map_type_baidu: '百度地圖',
+    map_type_tencent: '騰訊地圖'
   },
   dataset: {
     field_value: '欄位值',

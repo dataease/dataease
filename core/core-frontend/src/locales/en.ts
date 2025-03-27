@@ -2064,7 +2064,8 @@ export default {
     map_type: 'Map Provider',
     map_type_gaode: 'Gaode Map',
     map_type_tianditu: 'Tianditu',
-    map_type_baidu: 'Baidu Map'
+    map_type_baidu: 'Baidu Map',
+    map_type_tencent: 'QQ Map'
   },
   dataset: {
     field_value: 'Field Value',

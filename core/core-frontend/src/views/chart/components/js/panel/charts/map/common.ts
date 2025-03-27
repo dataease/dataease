@@ -72,6 +72,11 @@ export const tdtMapStyleOptions = [
   { name: t('chart.map_style_darkblue'), value: 'indigo' }
 ]
 
+export const qqMapStyleOptions = [
+  { name: t('chart.map_style_normal'), value: 'normal' },
+  { name: t('commons.custom'), value: 'custom' }
+]
+
 export declare type MapMouseEvent = MouseEvent & {
   feature: GeoJSON.Feature
 }

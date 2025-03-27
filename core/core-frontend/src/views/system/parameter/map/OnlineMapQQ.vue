@@ -2,7 +2,6 @@
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 const domId = ref('de-map-container')
-const center: [number, number] = [116.397428, 39.90923]
 const mapInstance = ref(null)
 const mapReloading = ref(false)
 
@@ -11,25 +10,18 @@ const props = defineProps<{
   securityCode?: string
 }>()
 
-function destroyMap() {
-  const container = mapInstance.value?.getContainer()
-  while (container.hasChildNodes()) {
-    container.removeChild(container.firstChild)
-  }
-  mapInstance.value = null
-}
-
 const loadMap = () => {
   if (!props.mapKey) {
     return
   }
   const mykey = props.mapKey
-  const url = `https://api.tianditu.gov.cn/api?v=4.0&tk=${mykey}`
+  const url = `https://map.qq.com/api/gljs?v=1.exp&key=${mykey}`
 
   loadScript(url)
     .then(() => {
       if (mapInstance.value) {
-        destroyMap()
+        mapInstance.value?.destroy()
+        mapInstance.value = null
         mapReloading.value = true
         setTimeout(() => {
           domId.value = domId.value + '-de-'
@@ -46,24 +38,32 @@ const loadMap = () => {
     .catch(e => {
       console.error(e)
       if (mapInstance.value) {
-        destroyMap()
+        mapInstance.value.destroy()
+        mapInstance.value = null
       }
     })
 }
 const createMapInstance = () => {
-  if (window.T) {
-    mapInstance.value = new window.T.Map(domId.value)
-    mapInstance.value.centerAndZoom(new T.LngLat(center[0], center[1]), 11)
+  if (window.TMap) {
+    const center = new window.TMap.LatLng(39.90923, 116.397428)
+    mapInstance.value = new window.TMap.Map(document.getElementById(domId.value), {
+      viewMode: '2D',
+      zoom: 11,
+      center: center
+    })
+    mapInstance.value?.removeControl(window.TMap.constants.DEFAULT_CONTROL_ID.ZOOM)
+    mapInstance.value?.removeControl(window.TMap.constants.DEFAULT_CONTROL_ID.ROTATION)
+    mapInstance.value?.removeControl(window.TMap.constants.DEFAULT_CONTROL_ID.SCALE)
   }
 }
 const loadScript = (url: string) => {
   return new Promise(function (resolve, reject) {
-    const scriptId = 'de-tdt-script-id'
+    const scriptId = 'de-qq-script-id'
     let dom = document.getElementById(scriptId)
     if (dom) {
       dom.parentElement?.removeChild(dom)
       dom = null
-      window.AMap = null
+      window.TMap = null
     }
     const script = document.createElement('script')
 
@@ -84,12 +84,12 @@ onMounted(() => {
   loadMap()
 })
 onBeforeUnmount(() => {
-  const scriptId = 'de-tdt-script-id'
+  const scriptId = 'de-qq-script-id'
   let dom = document.getElementById(scriptId)
   if (dom) {
     dom.parentElement?.removeChild(dom)
     dom = null
-    window.T = null
+    window.TMap = null
   }
 })
 </script>

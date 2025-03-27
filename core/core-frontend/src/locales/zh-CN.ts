@@ -2013,7 +2013,8 @@ export default {
     map_type: '地图提供商',
     map_type_gaode: '高德地图',
     map_type_tianditu: '天地图',
-    map_type_baidu: '百度地图'
+    map_type_baidu: '百度地图',
+    map_type_tencent: '腾讯地图'
   },
   dataset: {
     field_value: '字段值',

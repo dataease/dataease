@@ -35,13 +35,15 @@ import type { Plot } from '@antv/g2plot'
 import type { PickOptions } from '@antv/g2plot/lib/core/plot'
 import { defaults, find } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
-const { t: tI18n } = useI18n()
 import { isMobile } from '@/utils/utils'
-import { GaodeMap, TMap } from '@antv/l7-maps'
+import { GaodeMap, TMap, TencentMap } from '@antv/l7-maps'
 import {
   gaodeMapStyleOptions,
+  qqMapStyleOptions,
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
+
+const { t: tI18n } = useI18n()
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -1242,38 +1244,55 @@ export function configL7Zoom(
   if (!scene?.getControlByName('zoom')) {
     if (!scene.map) {
       scene.once('loaded', () => {
-        if (
-          mapKey?.mapType === 'tianditu' &&
-          scene.map?.defaultMapType?.name === 'TMAP_NORMAL_MAP'
-        ) {
-          //天地图
-          const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
-          const center =
-            basicStyle.autoFit === false
-              ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-              : [scene.map.getCenter().getLng(), scene.map.getCenter().getLat()]
-          const newZoomOptions = {
-            initZoom: initZoom,
-            center: center,
-            buttonColor: basicStyle.zoomButtonColor,
-            buttonBackground: basicStyle.zoomBackground
-          } as any
-          scene.addControl(new CustomZoom(newZoomOptions))
-        } else {
-          scene.map.on('complete', () => {
-            const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
-            const center =
-              basicStyle.autoFit === false
-                ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-                : [scene.map.getCenter().lng, scene.map.getCenter().lat]
-            const newZoomOptions = {
-              initZoom: initZoom,
-              center: center,
-              buttonColor: basicStyle.zoomButtonColor,
-              buttonBackground: basicStyle.zoomBackground
-            } as any
-            scene.addControl(new CustomZoom(newZoomOptions))
-          })
+        switch (mapKey?.mapType) {
+          case 'tianditu':
+            //天地图
+            {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().getLng(), scene.map.getCenter().getLat()]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            }
+            break
+          case 'qq':
+            {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            }
+            break
+          default:
+            scene.map.on('complete', () => {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            })
         }
       })
     } else {
@@ -1408,6 +1427,16 @@ export function getMapStyle(
         mapStyle = basicStyle.mapStyle
       }
       break
+    case 'qq':
+      if (
+        !find(qqMapStyleOptions, s => s.value === basicStyle.mapStyle) ||
+        basicStyle.mapStyle === 'normal'
+      ) {
+        mapStyle = 'normal'
+      } else {
+        mapStyle = basicStyle.mapStyleUrl
+      }
+      break
     default:
       if (!find(gaodeMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
         basicStyle.mapStyle = 'normal'
@@ -1457,6 +1486,14 @@ export async function getMapScene(
       }
 
       scene.map.showLabel = !(basicStyle.showLabel === false)
+      if (mapKey.mapType === 'qq') {
+        scene.map.setBaseMap({
+          //底图设置（参数为：VectorBaseMap对象）
+          type: 'vector', //类型：失量底图
+          features: basicStyle.showLabel === false ? ['base', 'building2d'] : undefined
+          //仅渲染：道路及底面(base) + 2d建筑物(building2d)，以达到隐藏文字的效果
+        })
+      }
     }
     if (basicStyle.autoFit === false) {
       scene.setZoomAndCenter(basicStyle.zoomLevel, center)
@@ -1465,6 +1502,15 @@ export async function getMapScene(
   mapRendering(container)
   scene.once('loaded', () => {
     mapRendered(container)
+    if (mapKey.mapType === 'qq') {
+      scene.map.setBaseMap({
+        //底图设置（参数为：VectorBaseMap对象）
+        type: 'vector', //类型：失量底图
+        features: basicStyle.showLabel === false ? ['base', 'building2d'] : undefined
+        //仅渲染：道路及底面(base) + 2d建筑物(building2d)，以达到隐藏文字的效果
+      })
+      scene.setMapStyle(mapStyle)
+    }
     // 去除天地图自己的缩放按钮
     if (mapKey.mapType === 'tianditu') {
       if (mapStyle === 'normal') {
@@ -1522,6 +1568,18 @@ export function getMapObject(
         center,
         zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
         showLabel: !(basicStyle.showLabel === false), //不支持
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+    case 'qq':
+      return new TencentMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle,
+        pitch: miscStyle.mapPitch,
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 12,
+        showLabel: !(basicStyle.showLabel === false),
         WebGLParams: {
           preserveDrawingBuffer: true
         }
