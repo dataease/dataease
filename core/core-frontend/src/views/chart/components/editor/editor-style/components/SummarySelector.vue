@@ -168,19 +168,28 @@ onMounted(() => {
           </el-checkbox>
         </el-form-item>
 
-        <el-form-item class="form-item" :class="'form-item-' + themes">
-          <el-select
-            v-model="state.currentAxisSummary.summary"
-            :class="'form-item-' + themes"
-            class="form-item"
-            @change="changeBasicStyle('seriesSummary')"
-          >
-            <el-option v-for="c in summaryTypes" :key="c.key" :value="c.key" :label="c.name" />
-          </el-select>
-        </el-form-item>
+        <div class="indented-container">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-select
+              v-model="state.currentAxisSummary.summary"
+              :class="'form-item-' + themes"
+              class="form-item"
+              :disabled="!state.currentAxisSummary.show"
+              @change="changeBasicStyle('seriesSummary')"
+            >
+              <el-option v-for="c in summaryTypes" :key="c.key" :value="c.key" :label="c.name" />
+            </el-select>
+          </el-form-item>
+        </div>
       </template>
     </el-form>
   </div>
 </template>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.indented-container {
+  margin-top: 8px;
+  width: 100%;
+  padding-left: 22px;
+}
+</style>
