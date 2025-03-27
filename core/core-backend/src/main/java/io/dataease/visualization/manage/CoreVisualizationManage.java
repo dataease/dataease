@@ -130,8 +130,11 @@ public class CoreVisualizationManage {
                 DEException.throwException("resource not exist");
             }
             visualizationInfo.setUpdateTime(System.currentTimeMillis());
+            SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
+            BeanUtils.copyBean(snapshotVisualizationInfo, visualizationInfo);
             coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
             mapper.updateById(visualizationInfo);
+            snapshotMapper.updateById(snapshotVisualizationInfo);
         }
     }
 

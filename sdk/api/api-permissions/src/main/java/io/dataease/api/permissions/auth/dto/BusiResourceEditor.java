@@ -14,4 +14,5 @@ public class BusiResourceEditor implements Serializable {
     private String name;
     private String flag;
     private int extraFlag;
+    private int extraFlag1 = 0;
 }

@@ -2874,6 +2874,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    cancel_publish_tips: 'Successfully unpublished',
     resource_not_published: 'Resource not published',
     re_publish: 'Republish',
     published_success: 'Published successfully',

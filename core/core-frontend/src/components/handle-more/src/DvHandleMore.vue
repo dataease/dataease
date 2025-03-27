@@ -88,7 +88,7 @@ const emit = defineEmits(['handleCommand'])
           :command="ele.command"
           v-for="ele in menus"
           :key="ele.label"
-          :disabled="ele.disabled"
+          :disabled="ele.disabled || (ele.command === 'cancelPublish' && node.extraFlag1 === 0)"
           :class="{ 'de-hidden-drop-item': ele.hidden }"
         >
           <el-icon class="handle-icon" color="#646a73" size="16" v-if="ele.svgName">

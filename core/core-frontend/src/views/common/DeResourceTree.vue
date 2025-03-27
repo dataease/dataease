@@ -4,6 +4,7 @@ import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvCopyDark from '@/assets/svg/dv-copy-dark.svg'
 import dvDelete from '@/assets/svg/dv-delete.svg'
 import dvMove from '@/assets/svg/dv-move.svg'
+import dvCancelPublish from '@/assets/svg/dv-cancel-publish.svg'
 import { treeDraggbleChart } from '@/utils/treeDraggbleChart'
 import { debounce } from 'lodash-es'
 import dvRename from '@/assets/svg/dv-rename.svg'
@@ -23,7 +24,8 @@ import {
   copyResource,
   deleteLogic,
   ResourceOrFolder,
-  queryShareBaseApi
+  queryShareBaseApi,
+  updateBase
 } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -171,9 +173,15 @@ const menuListWeight = id => {
 }
 const menuListWithCopy = [
   {
+    label: t('visualization.cancel_publish'), //取消发布
+    command: 'cancelPublish',
+    svgName: dvCancelPublish
+  },
+  {
     label: t('visualization.copy'), //'复制',
     command: 'copy',
-    svgName: dvCopyDark
+    svgName: dvCopyDark,
+    divided: true
   },
   {
     label: t('visualization.move_to'), //'移动到',
@@ -194,9 +202,15 @@ const menuListWithCopy = [
 ]
 const menuList = [
   {
+    label: t('visualization.cancel_publish'), //取消发布
+    command: 'cancelPublish',
+    svgName: dvCancelPublish
+  },
+  {
     label: t('visualization.move_to'), //'移动到',
     command: 'move',
-    svgName: dvMove
+    svgName: dvMove,
+    divided: true
   },
   {
     label: t('visualization.rename'), //'重命名',
@@ -330,6 +344,22 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         ElMessage.success(t('visualization.delete_success'))
         getTree()
       })
+    })
+  } else if (cmd === 'cancelPublish') {
+    const params = {
+      id: data.id,
+      nodeType: 'leaf',
+      name: data.name,
+      type: curCanvasType.value,
+      mobileLayout: data?.extraFlag,
+      status: 0
+    }
+    updateBase(params).then(() => {
+      data['extraFlag1'] = 0
+      if (dvInfo.value.id === data.id) {
+        dvMainStore.updateDvInfoCall(0)
+      }
+      ElMessage.warning(t('visualization.cancel_publish_tips'))
     })
   } else if (cmd === 'edit') {
     resourceEdit(data.id)

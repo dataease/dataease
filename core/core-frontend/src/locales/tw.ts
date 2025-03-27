@@ -2795,6 +2795,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    cancel_publish_tips: '取消發佈成功',
     resource_not_published: '資源未發佈',
     re_publish: '重新發佈',
     published_success: '發佈成功',
