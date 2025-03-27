@@ -304,6 +304,7 @@ const publishStatusChange = status => {
   // do update
   updatePublishStatus({
     id: dvInfo.value.id,
+    name: dvInfo.value.name,
     status,
     type: 'dataV'
   }).then(() => {

@@ -182,7 +182,12 @@ const resourceOptFinish = param => {
 
 const publishStatusChange = status => {
   // do update
-  updatePublishStatus({ id: dvInfo.value.id, status, type: 'dashboard' }).then(() => {
+  updatePublishStatus({
+    id: dvInfo.value.id,
+    name: dvInfo.value.name,
+    status,
+    type: 'dashboard'
+  }).then(() => {
     dvMainStore.updateDvInfoCall(status)
     ElMessage.success(t('visualization.published_success'))
   })
