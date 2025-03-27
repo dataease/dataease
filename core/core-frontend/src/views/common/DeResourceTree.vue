@@ -4,11 +4,12 @@ import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvCopyDark from '@/assets/svg/dv-copy-dark.svg'
 import dvDelete from '@/assets/svg/dv-delete.svg'
 import dvMove from '@/assets/svg/dv-move.svg'
-import dvCancelPublish from '@/assets/svg/dv-cancel-publish.svg'
+import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { treeDraggbleChart } from '@/utils/treeDraggbleChart'
 import { debounce } from 'lodash-es'
 import dvRename from '@/assets/svg/dv-rename.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
+import dvDashboardSpineDisabled from '@/assets/svg/dv-dashboard-spine-disabled.svg'
 import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
 import dvNewFolder from '@/assets/svg/dv-new-folder.svg'
 import icon_fileAdd_outlined from '@/assets/svg/icon_file-add_outlined.svg'
@@ -73,7 +74,8 @@ const props = defineProps({
 })
 const defaultProps = {
   children: 'children',
-  label: 'name'
+  label: 'name',
+  disabled: 'leaf'
 }
 const mounted = ref(false)
 const rootManage = ref(false)
@@ -727,14 +729,19 @@ defineExpose({
         draggable
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node">
+          <span class="custom-tree-node" :class="{ 'node-disabled-custom': data.extraFlag1 === 0 }">
             <el-icon style="font-size: 18px" v-if="!data.leaf">
               <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
-              <Icon
+              <Icon v-if="data.extraFlag1"
                 ><component
                   :is="data.extraFlag ? dvDashboardSpineMobile : dvDashboardSpine"
+                ></component
+              ></Icon>
+              <Icon v-if="!data.extraFlag1"
+                ><component
+                  :is="data.extraFlag ? dvDashboardSpineDisabled : dvDashboardSpineDisabled"
                 ></component
               ></Icon>
             </el-icon>
@@ -743,7 +750,17 @@ defineExpose({
                 ><icon_operationAnalysis_outlined class="svg-icon"
               /></Icon>
             </el-icon>
-            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+            <span :title="node.label" class="label-tooltip">
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="t('visualization.publish_tips1')"
+                :disabled="data.extraFlag1"
+                placement="top-start"
+              >
+                {{ node.label }}
+              </el-tooltip>
+            </span>
             <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
               <el-icon
                 v-on:click.stop
@@ -945,5 +962,10 @@ defineExpose({
   i {
     display: block;
   }
+}
+
+.node-disabled-custom {
+  color: rgba(187, 191, 196, 1);
+  cursor: not-allowed;
 }
 </style>

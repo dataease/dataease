@@ -2795,6 +2795,8 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    publish_tips1: '發佈後可查看',
+    publish_tips2: '發佈後可{0}',
     cancel_publish_tips: '取消發佈成功',
     resource_not_published: '資源未發佈',
     re_publish: '重新發佈',

@@ -7,7 +7,9 @@ import { ref, PropType, computed } from 'vue'
 import ShareHandler from '@/views/share/share/ShareHandler.vue'
 import { useShareStoreWithOut } from '@/store/modules/share'
 import { isDesktop } from '@/utils/ModelUtil'
+import { useI18n } from '@/hooks/web/useI18n'
 const shareStore = useShareStoreWithOut()
+const { t } = useI18n()
 
 export interface Menu {
   svgName?: string
@@ -64,11 +66,15 @@ const callBack = param => {
     return
   }
   if (props.node.leaf && props.node?.weight >= 7) {
-    menus.value[0]['divided'] = true
     menus.value.splice(0, 0, param)
   }
 }
 const emit = defineEmits(['handleCommand'])
+
+const menuDisabledCheck = ele => {
+  // do return
+  return ele.disabled || (props.node.extraFlag1 === 0 && ['share', 'copy'].includes(ele.command))
+}
 </script>
 
 <template>
@@ -88,13 +94,30 @@ const emit = defineEmits(['handleCommand'])
           :command="ele.command"
           v-for="ele in menus"
           :key="ele.label"
-          :disabled="ele.disabled || (ele.command === 'cancelPublish' && node.extraFlag1 === 0)"
-          :class="{ 'de-hidden-drop-item': ele.hidden }"
+          :disabled="menuDisabledCheck(ele)"
+          :class="{
+            'de-hidden-drop-item':
+              ele.hidden || (ele.command === 'cancelPublish' && node.extraFlag1 === 0)
+          }"
         >
           <el-icon class="handle-icon" color="#646a73" size="16" v-if="ele.svgName">
-            <Icon><component class="svg-icon" :is="ele.svgName"></component></Icon>
+            <Icon
+              ><component
+                class="svg-icon"
+                :class="{ 'custom-disable': menuDisabledCheck(ele) }"
+                :is="ele.svgName"
+              ></component
+            ></Icon>
           </el-icon>
-          {{ ele.label }}
+          <el-tooltip
+            class="box-item"
+            effect="dark"
+            :content="t('visualization.publish_tips2', [ele.label])"
+            :disabled="!menuDisabledCheck(ele)"
+            placement="top-start"
+          >
+            {{ ele.label }}
+          </el-tooltip>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -110,6 +133,9 @@ const emit = defineEmits(['handleCommand'])
 </template>
 
 <style lang="less">
+.custom-disable {
+  color: var(--ed-text-color-disabled) !important;
+}
 .de-hidden-drop-item {
   display: none;
 }

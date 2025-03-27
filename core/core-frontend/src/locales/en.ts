@@ -2874,6 +2874,8 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    publish_tips1: 'Visible after publication',
+    publish_tips2: 'Available after publication {0}',
     cancel_publish_tips: 'Successfully unpublished',
     resource_not_published: 'Resource not published',
     re_publish: 'Republish',
