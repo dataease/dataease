@@ -1220,6 +1220,18 @@ public class CalciteProvider extends Provider {
                 }
                 tableSqls.add("select table_name, comments, owner  from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'TABLE'");
                 tableSqls.add("select table_name, comments, owner  from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'VIEW'");
+                tableSqls.add("SELECT \n" +
+                        "    m.mview_name,\n" +
+                        "    c.comments\n" +
+                        "FROM \n" +
+                        "    ALL_MVIEWS m\n" +
+                        "LEFT JOIN \n" +
+                        "    ALL_TAB_COMMENTS c \n" +
+                        "ON \n" +
+                        "    m.owner = c.owner \n" +
+                        "    AND m.mview_name = c.table_name\n" +
+                        "    AND c.table_type = 'MATERIALIZED VIEW'\n" +
+                        "WHERE m.OWNER ='DE_SCHEMA'".replace("DE_SCHEMA", configuration.getSchema()));
                 break;
             case db2:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
