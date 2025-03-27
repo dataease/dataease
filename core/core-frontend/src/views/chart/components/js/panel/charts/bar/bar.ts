@@ -452,10 +452,10 @@ export class GroupBar extends StackBar {
     if (!(xAxis.length && xAxisExt.length && yAxis.length)) {
       innerSort = false
     }
-    if (yAxis[0].sort === 'none') {
+    if (innerSort && yAxis[0].sort === 'none') {
       innerSort = false
     }
-    if (xAxisExt[0].sort !== 'none') {
+    if (innerSort && xAxisExt[0].sort !== 'none') {
       const sortPriority = chart.sortPriority ?? []
       const yAxisIndex = sortPriority?.findIndex(e => e.id === yAxis[0].id)
       const xAxisExtIndex = sortPriority?.findIndex(e => e.id === xAxisExt[0].id)
