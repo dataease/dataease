@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="tsx" setup>
 import icon_calendar_outlined from '@/assets/svg/icon_calendar_outlined.svg'
 import {
   ref,
@@ -25,6 +25,7 @@ import { loadRemoteFile, save, update } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { CustomPassword } from '@/components/custom-password'
+import { fieldType as fieldTypeLowercase } from '@/utils/attr'
 const { t } = useI18n()
 export interface Param {
   editType: number
@@ -43,6 +44,7 @@ export interface Field {
   fieldSize: number
   fieldType: string
   name: string
+  deExtractType: number
   checked: boolean
   primaryKey: boolean
   length: number
@@ -374,12 +376,27 @@ const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
     key: ele.originName,
     fieldType: ele.fieldType,
+    deExtractType: ele.deExtractType,
     dataKey: ele.originName,
     title: ele.name,
     checked: ele.checked,
     primaryKey: ele.primaryKey,
     length: ele.length,
-    width: 150
+    width: 150,
+    headerCellRenderer: ({ column }) => (
+      <div class="flex-align-center icon">
+        <ElIcon>
+          <Icon>
+            {h(iconFieldMap[fieldType[column.fieldType]], {
+              class: `svg-icon field-icon-${fieldType[column.fieldType]}`
+            })}
+          </Icon>
+        </ElIcon>
+        <span class="ellipsis" title={column.title} style={{ width: '100px' }}>
+          {column.title}
+        </span>
+      </div>
+    )
   }))
 
 const loadData = () => {
@@ -464,6 +481,9 @@ const changeCurrentMode = val => {
       }
       initMultipleTable.value = false
     })
+  } else {
+    const sheet = state.excelData[0]?.sheets.find(ele => ele.sheetId === activeTab.value)
+    handleNodeClick(sheet)
   }
 }
 
@@ -526,7 +546,7 @@ const disabledFieldLength = item => {
   if (!item.checked) {
     return true
   }
-  if (item.fieldType !== 'TEXT') {
+  if (item.deExtractType !== 0) {
     return true
   }
 }
@@ -633,6 +653,32 @@ const saveExcelDs = (params, successCb, finallyCb) => {
   }
 }
 
+const fieldOptions = [
+  { label: t('dataset.text'), value: 0 },
+  { label: t('dataset.value'), value: 2 },
+  {
+    label: t('dataset.value') + '(' + t('dataset.float') + ')',
+    value: 3
+  }
+]
+
+const deExtractTypeChange = item => {
+  item.deType = item.deExtractType
+  const sheet = state.excelData[0]?.sheets.find(ele => ele.sheetId === activeTab.value)
+  sheet.fields.forEach(row => {
+    if (row.originName === item.dataKey) {
+      row.deExtractType = item.deExtractType
+      row.deType = item.deExtractType
+      row.fieldType = fieldTypeToStr[item.deExtractType]
+    }
+  })
+}
+
+const fieldTypeToStr = {
+  0: 'TEXT',
+  2: 'LONG',
+  3: 'DOUBLE'
+}
 const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
   for (let i = 0; i < table.configuration.sheets.length; i++) {
     table.configuration.sheets[i].data = []
@@ -804,6 +850,51 @@ defineExpose({
             <el-table-column :label="t('data_set.field_name')">
               <template #default="scope">{{ scope.row.title }}</template>
             </el-table-column>
+
+            <el-table-column prop="deExtractType" :label="t('datasource.field_type')">
+              <template #default="scope">
+                <el-select
+                  v-model="scope.row.deExtractType"
+                  class="select-type"
+                  style="display: inline-block; width: 120px"
+                  @change="deExtractTypeChange(scope.row)"
+                >
+                  <template #prefix>
+                    <el-icon>
+                      <Icon :className="`field-icon-${fieldTypeLowercase[scope.row.deExtractType]}`"
+                        ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldTypeLowercase[scope.row.deExtractType]}`"
+                          :is="iconFieldMap[fieldTypeLowercase[scope.row.deExtractType]]"
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                  </template>
+                  <el-option
+                    v-for="item in fieldOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                    <span style="float: left">
+                      <el-icon>
+                        <Icon :className="`field-icon-${fieldTypeLowercase[item.value]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldTypeLowercase[item.value]}`"
+                            :is="iconFieldMap[fieldTypeLowercase[item.value]]"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                    </span>
+                    <span style="float: left; font-size: 12px; color: #8492a6">{{
+                      item.label
+                    }}</span>
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+
             <el-table-column :label="t('data_set.field_type')">
               <template #default="scope">
                 <div class="flex-align-center">
