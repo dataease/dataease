@@ -1438,6 +1438,9 @@ export async function getMapScene(
       map: getMapObject(mapKey, basicStyle, miscStyle, mapStyle, center)
     })
   } else {
+    if (mapKey.mapType === 'tianditu') {
+      scene.map?.checkResize()
+    }
     if (scene.getLayers()?.length) {
       await scene.removeAllLayer()
       try {
