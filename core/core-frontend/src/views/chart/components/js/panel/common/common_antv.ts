@@ -37,7 +37,7 @@ import { defaults, find } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t: tI18n } = useI18n()
 import { isMobile } from '@/utils/utils'
-import { GaodeMap, Map, TMap } from '@antv/l7-maps'
+import { GaodeMap, TMap } from '@antv/l7-maps'
 import {
   gaodeMapStyleOptions,
   tdtMapStyleOptions
