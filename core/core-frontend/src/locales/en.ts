@@ -2065,7 +2065,7 @@ export default {
     map_type_gaode: 'Gaode Map',
     map_type_tianditu: 'Tianditu',
     map_type_baidu: 'Baidu Map',
-    map_type_tencent: 'QQ Map'
+    map_type_tencent: 'Tencent Map'
   },
   dataset: {
     field_value: 'Field Value',
