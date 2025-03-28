@@ -294,7 +294,7 @@ const initScroll = () => {
       myChart &&
       senior?.scrollCfg?.open &&
       chartData.value.tableRow?.length &&
-      PAGE_CHARTS.includes(chart.type) &&
+      PAGE_CHARTS.includes(props.view.type) &&
       !state.showPage
     ) {
       // 防止多次渲染
