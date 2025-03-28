@@ -286,30 +286,22 @@ public class CoreVisualizationManage {
             outerParamsMapper.deleteOuterParamsWithVisualizationId(dvId.toString());
         }
     }
+
     @Transactional
-    public void dvSnapshotCheck(Long dvId){
-        /**
-         * 1.检查当前仪表板（大屏）是否存在镜像
-         * 2.如果已经存在 不做处理
-         * 3.如果不存在则将主表所有信息拷贝到镜像中
-         * */
-        QueryWrapper<SnapshotDataVisualizationInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", dvId);
-        if(!snapshotMapper.exists(queryWrapper)){
-            // 清理历史数据
-            this.removeSnapshot(dvId);
-            // 导入新数据
-            extDataVisualizationMapper.snapshotDataV(dvId);
-            extDataVisualizationMapper.snapshotViews(dvId);
-            extDataVisualizationMapper.snapshotLinkJumpTargetViewInfo(dvId);
-            extDataVisualizationMapper.snapshotLinkJumpInfo(dvId);
-            extDataVisualizationMapper.snapshotLinkJump(dvId);
-            extDataVisualizationMapper.snapshotLinkageField(dvId);
-            extDataVisualizationMapper.snapshotLinkage(dvId);
-            extDataVisualizationMapper.snapshotOuterParamsTargetViewInfo(dvId);
-            extDataVisualizationMapper.snapshotOuterParamsInfo(dvId);
-            extDataVisualizationMapper.snapshotOuterParams(dvId);
-        }
+    public void dvSnapshotRecover(Long dvId){
+        // 清理历史数据
+        this.removeSnapshot(dvId);
+        // 导入新数据
+        extDataVisualizationMapper.snapshotDataV(dvId);
+        extDataVisualizationMapper.snapshotViews(dvId);
+        extDataVisualizationMapper.snapshotLinkJumpTargetViewInfo(dvId);
+        extDataVisualizationMapper.snapshotLinkJumpInfo(dvId);
+        extDataVisualizationMapper.snapshotLinkJump(dvId);
+        extDataVisualizationMapper.snapshotLinkageField(dvId);
+        extDataVisualizationMapper.snapshotLinkage(dvId);
+        extDataVisualizationMapper.snapshotOuterParamsTargetViewInfo(dvId);
+        extDataVisualizationMapper.snapshotOuterParamsInfo(dvId);
+        extDataVisualizationMapper.snapshotOuterParams(dvId);
     }
     @Transactional
     public void dvRestore(Long dvId){

@@ -16,7 +16,9 @@ import icon_undo_outlined from '@/assets/svg/icon_undo_outlined.svg'
 import icon_redo_outlined from '@/assets/svg/icon_redo_outlined.svg'
 import icon_pc_fullscreen from '@/assets/svg/icon_pc_fullscreen.svg'
 import dvPreviewOuter from '@/assets/svg/dv-preview-outer.svg'
-import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import dvRecoverOutlined from '@/assets/svg/dv-recover_outlined.svg'
+import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { useEmbedded } from '@/store/modules/embedded'
 import { deepCopy } from '@/utils/utils'
@@ -85,6 +87,7 @@ const { wsCache } = useCache('localStorage')
 const userStore = useUserStoreWithOut()
 const isIframe = computed(() => appStore.getIsIframe)
 const desktop = wsCache.get('app.desktop')
+const emits = defineEmits(['recoverToPublished'])
 
 const props = defineProps({
   createType: {
@@ -180,6 +183,10 @@ const resourceOptFinish = param => {
   }
 }
 
+const recoverToPublished = () => {
+  emits('recoverToPublished')
+}
+
 const publishStatusChange = status => {
   // do update
   updatePublishStatus({
@@ -189,7 +196,9 @@ const publishStatusChange = status => {
     type: 'dashboard'
   }).then(() => {
     dvMainStore.updateDvInfoCall(status)
-    ElMessage.success(t('visualization.published_success'))
+    status
+      ? ElMessage.success(t('visualization.published_success'))
+      : ElMessage.success(t('visualization.cancel_publish_tips'))
   })
 }
 
@@ -713,23 +722,35 @@ const initOpenHandler = newWindow => {
           >
             {{ t('data_set.save') }}
           </el-button>
-          <el-button
-            v-if="dvInfo.status === 2"
-            @click="publishStatusChange(1)"
-            style="float: right; margin: 0 12px 0 0"
-            type="primary"
-          >
-            {{ t('visualization.re_publish') }}
-          </el-button>
-          <!--保存未发布状态-->
-          <el-button
-            v-if="dvInfo.status === 0"
-            @click="publishStatusChange(1)"
-            style="float: right; margin: 0 12px 0 0"
-            type="primary"
-          >
-            {{ t('visualization.publish') }}
-          </el-button>
+          <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
+            <el-button
+              @click="publishStatusChange(1)"
+              style="float: right; margin: 0 12px 0 0"
+              type="primary"
+            >
+              {{ t('visualization.publish') }}
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="recoverToPublished" :disabled="dvInfo.status !== 2">
+                  <el-icon class="handle-icon">
+                    <Icon name="icon_left_outlined"
+                      ><dv-recover-outlined class="svg-icon toolbar-icon"
+                    /></Icon>
+                  </el-icon>
+                  {{ t('visualization.publish_recover') }}
+                </el-dropdown-item>
+                <el-dropdown-item @click="publishStatusChange(0)" :disabled="dvInfo.status === 0">
+                  <el-icon class="handle-icon">
+                    <Icon name="icon_left_outlined"
+                      ><dv-cancel-publish class="svg-icon toolbar-icon"
+                    /></Icon>
+                  </el-icon>
+                  {{ t('visualization.cancel_publish') }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </div>
 

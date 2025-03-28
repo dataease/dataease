@@ -70,6 +70,11 @@ public interface DataVisualizationApi {
     @Operation(summary = "发布状态更新")
     void updatePublishStatus(@RequestBody DataVisualizationBaseRequest request);
 
+    @PostMapping("/recoverToPublished")
+    @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
+    @Operation(summary = "恢复到发布状态")
+    void recoverToPublished(@RequestBody DataVisualizationBaseRequest request);
+
     @PostMapping("/updateBase")
     @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
     @Operation(summary = "可视化资源基础信息更新")

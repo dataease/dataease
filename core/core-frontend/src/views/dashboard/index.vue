@@ -33,6 +33,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
 import DashboardHiddenComponent from '@/components/dashboard/DashboardHiddenComponent.vue'
+import { recoverToPublished } from '@/api/visualization/dataVisualization'
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
@@ -158,7 +159,7 @@ const doUseCache = flag => {
   }
 }
 
-const initLocalCanvasData = () => {
+const initLocalCanvasData = callBack => {
   const { resourceId, opt, sourcePid } = state
   const busiFlg = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
   initCanvasData(resourceId, { busiFlg, resourceTable: 'snapshot' }, function () {
@@ -172,6 +173,7 @@ const initLocalCanvasData = () => {
       }, 1500)
     }
     onInitReady({ resourceId: resourceId })
+    callBack && callBack()
   })
 }
 onMounted(async () => {
@@ -212,7 +214,9 @@ onMounted(async () => {
     if (canvasCache) {
       canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
     } else {
-      initLocalCanvasData()
+      initLocalCanvasData(() => {
+        // do init
+      })
     }
   } else if (opt && opt === 'create') {
     dataInitState.value = false
@@ -292,6 +296,19 @@ const cancelHidden = item => {
   }
 }
 
+const doRecoverToPublished = () => {
+  recoverToPublished({ id: dvInfo.value.id, type: 'dashboard', name: dvInfo.value.name }).then(
+    () => {
+      initLocalCanvasData(() => {
+        nextTick(() => {
+          deCanvasRef.value.canvasInit(false)
+          dvMainStore.updateDvInfoCall(1)
+        })
+      })
+    }
+  )
+}
+
 onUnmounted(() => {
   window.removeEventListener('storage', eventCheck)
   window.removeEventListener('message', winMsgHandle)
@@ -305,7 +322,7 @@ onUnmounted(() => {
     v-loading="requestStore.loadingMap[permissionStore.currentPath]"
     v-if="loadFinish && !mobileConfig"
   >
-    <DbToolbar />
+    <DbToolbar @recoverToPublished="doRecoverToPublished" />
     <el-container
       class="dv-layout-container"
       :class="{ 'preview-content': editMode === 'preview' }"

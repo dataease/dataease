@@ -63,8 +63,10 @@ export const saveCanvas = data =>
   request.post({ url: '/dataVisualization/saveCanvas', data, loading: true })
 
 export const updatePublishStatus = data =>
-  request.post({ url: '/dataVisualization/updatePublishStatus', data, loading: true })
+  request.post({ url: '/dataVisualization/updatePublishStatus', data, loading: false })
 
+export const recoverToPublished = data =>
+  request.post({ url: '/dataVisualization/recoverToPublished', data, loading: true })
 export const appCanvasNameCheck = async data =>
   request.post({ url: '/dataVisualization/appCanvasNameCheck', data, loading: false })
 

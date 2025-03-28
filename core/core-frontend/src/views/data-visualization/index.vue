@@ -47,6 +47,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { recoverToPublished } from '@/api/visualization/dataVisualization'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -292,12 +293,14 @@ const doUseCache = flag => {
       }, 2000)
     })
   } else {
-    initLocalCanvasData()
+    initLocalCanvasData(() => {
+      // do init
+    })
     wsCache.delete('DE-DV-CATCH-' + state.resourceId)
   }
 }
 
-const initLocalCanvasData = async () => {
+const initLocalCanvasData = async callback => {
   const { opt, sourcePid, resourceId } = state
   const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
   await initCanvasData(resourceId, { busiFlag, resourceTable: 'snapshot' }, function () {
@@ -315,6 +318,7 @@ const initLocalCanvasData = async () => {
         }, 1500)
       }
       onInitReady({ resourceId: resourceId })
+      callback && callback()
     })
   })
 }
@@ -401,7 +405,9 @@ onMounted(async () => {
     if (canvasCache) {
       canvasCacheOutRef.value?.dialogInit({ canvasType: 'dataV', resourceId: dvId })
     } else {
-      await initLocalCanvasData()
+      await initLocalCanvasData(() => {
+        // do init
+      })
     }
   } else if (opt && opt === 'create') {
     state.canvasInitStatus = false
@@ -498,6 +504,14 @@ const popComponentData = computed(() =>
   componentData.value.filter(ele => ele.category && ele.category === 'hidden')
 )
 
+const doRecoverToPublished = () => {
+  recoverToPublished({ id: dvInfo.value.id, type: 'dataV', name: dvInfo.value.name }).then(() => {
+    initLocalCanvasData(() => {
+      dvMainStore.updateDvInfoCall(1)
+    })
+  })
+}
+
 eventBus.on('handleNew', handleNew)
 
 eventBus.on('tabSort', tabSort)
@@ -509,7 +523,7 @@ eventBus.on('tabSort', tabSort)
     class="dv-common-layout"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
   >
-    <DvToolbar />
+    <DvToolbar @recover-to-published="doRecoverToPublished" />
     <div class="custom-dv-divider" />
     <el-container
       v-if="loadFinish"

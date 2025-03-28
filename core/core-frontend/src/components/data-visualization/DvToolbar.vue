@@ -11,7 +11,9 @@ import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import icon_undo_outlined from '@/assets/svg/icon_undo_outlined.svg'
 import icon_redo_outlined from '@/assets/svg/icon_redo_outlined.svg'
-import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import dvRecoverOutlined from '@/assets/svg/dv-recover_outlined.svg'
+import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { ref, nextTick, computed, toRefs, onBeforeUnmount, onMounted } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -61,6 +63,7 @@ const outerParamsSetRef = ref(null)
 const fullScreeRef = ref(null)
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
+const emits = defineEmits(['recoverToPublished'])
 
 const props = defineProps({
   createType: {
@@ -68,9 +71,6 @@ const props = defineProps({
     default: 'create'
   }
 })
-
-const { createType } = toRefs(props)
-
 const closeEditCanvasName = () => {
   nameEdit.value = false
   if (!inputName.value || !inputName.value.trim()) {
@@ -86,6 +86,10 @@ const closeEditCanvasName = () => {
   }
   dvInfo.value.name = inputName.value
   inputName.value = ''
+}
+
+const recoverToPublished = () => {
+  emits('recoverToPublished')
 }
 
 const undo = () => {
@@ -309,7 +313,9 @@ const publishStatusChange = status => {
     type: 'dataV'
   }).then(() => {
     dvMainStore.updateDvInfoCall(status)
-    ElMessage.success(t('visualization.published_success'))
+    status
+      ? ElMessage.success(t('visualization.published_success'))
+      : ElMessage.success(t('visualization.cancel_publish_tips'))
   })
 }
 
@@ -467,23 +473,38 @@ const fullScreenPreview = () => {
         >
           {{ t('visualization.save') }}
         </el-button>
-        <el-button
-          v-if="dvInfo.status === 2"
-          @click="publishStatusChange(1)"
-          style="float: right; margin: 0 12px 0 0"
-          type="primary"
-        >
-          {{ t('visualization.re_publish') }}
-        </el-button>
-        <!--保存未发布状态-->
-        <el-button
-          v-if="dvInfo.status === 0"
-          @click="publishStatusChange(1)"
-          style="float: right; margin: 0 12px 0 0"
-          type="primary"
-        >
-          {{ t('visualization.publish') }}
-        </el-button>
+        <el-dropdown effect="dark" popper-class="menu-outer-dv_popper" trigger="hover">
+          <el-button
+            @click="publishStatusChange(1)"
+            style="float: right; margin: 0 12px 0 0"
+            type="primary"
+          >
+            {{ t('visualization.publish') }}
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="recoverToPublished" :disabled="dvInfo.status !== 2">
+                <el-icon class="handle-icon">
+                  <Icon name="icon_left_outlined"
+                    ><dv-recover-outlined class="svg-icon toolbar-icon"
+                  /></Icon>
+                </el-icon>
+                {{ t('visualization.publish_recover') }}
+              </el-dropdown-item>
+              <el-dropdown-item
+                @click.stop="publishStatusChange(0)"
+                :disabled="dvInfo.status === 0"
+              >
+                <el-icon class="handle-icon">
+                  <Icon name="icon_left_outlined"
+                    ><dv-cancel-publish class="svg-icon toolbar-icon"
+                  /></Icon>
+                </el-icon>
+                {{ t('visualization.cancel_publish') }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">

@@ -51,8 +51,10 @@ import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
+import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreBusiManage;
@@ -144,6 +146,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private DatasourceServer datasourceServer;
 
+    @Resource
+    private SnapshotDataVisualizationInfoMapper snapshotMapper;
+
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
         DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, busiFlag));
@@ -164,7 +169,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         String resourceTable = request.getResourceTable();
         // 如果是编辑查询 则进行镜像检查
         if(CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)){
-            coreVisualizationManage.dvSnapshotCheck(dvId);
+            QueryWrapper<SnapshotDataVisualizationInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id", dvId);
+            if(!snapshotMapper.exists(queryWrapper)){
+                coreVisualizationManage.dvSnapshotRecover(dvId);
+            }
         }
         DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag,resourceTable);
         if (result != null) {
@@ -529,6 +538,16 @@ public class DataVisualizationServer implements DataVisualizationApi {
             coreVisualizationManage.removeDvCore(dvId);
             coreVisualizationManage.dvRestore(dvId);
         }
+    }
+
+    @Override
+    public void recoverToPublished(DataVisualizationBaseRequest request) {
+        coreVisualizationManage.dvSnapshotRecover(request.getId());
+        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+        visualizationInfo.setId(request.getId());
+        visualizationInfo.setName(request.getName());
+        visualizationInfo.setStatus(CommonConstants.DV_STATUS.PUBLISHED);
+        coreVisualizationManage.innerEdit(visualizationInfo);
     }
 
     /**
