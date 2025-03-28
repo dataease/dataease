@@ -1483,6 +1483,7 @@ const handleBeforeClose = () => {
   defaultConfigurationRef.value?.single()
   handleDialogClick()
   curComponent.value.id = ''
+  relationshipChartIndex.value = 0
   dialogVisible.value = false
 }
 const emits = defineEmits(['queryData'])
@@ -1596,6 +1597,7 @@ const setActiveSelectTab = (arr, id) => {
 
 const init = (queryId: string) => {
   initDataset()
+  relationshipChartIndex.value = 0
   renameInput.value = []
   handleCondition({ id: queryId })
   cascadeArr = cloneDeep(queryElement.value.cascade || [])
@@ -1887,7 +1889,34 @@ const startTreeDesign = () => {
 }
 const saveTree = arr => {
   curComponent.value.treeFieldList = arr
+  setSameField()
 }
+
+const setSameField = () => {
+  curComponent.value.treeFieldList.forEach((ele, index) => {
+    if (!curComponent.value.treeCheckedList[index]) {
+      curComponent.value.treeCheckedList = [
+        ...curComponent.value.treeCheckedList,
+        {
+          checkedFields: [...curComponent.value.checkedFields],
+          checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
+        }
+      ]
+    }
+    fields.value.forEach(item => {
+      const ids = item.fields.dimensionList.map(itx => itx.id)
+      if (ids.includes(ele.id)) {
+        curComponent.value.treeCheckedList[index].checkedFieldsMap[item.componentId] = ele.id
+      }
+    })
+  })
+
+  curComponent.value.checkedFields =
+    curComponent.value.treeCheckedList[relationshipChartIndex.value].checkedFields
+  curComponent.value.checkedFieldsMap =
+    curComponent.value.treeCheckedList[relationshipChartIndex.value].checkedFieldsMap
+}
+
 const showError = computed(() => {
   if (!curComponent.value) return false
   const {

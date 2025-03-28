@@ -79,7 +79,7 @@ const getDayEnd = timestamp => {
   ]
 }
 
-const getFieldId = (arr, result, relationshipChartIndex) => {
+const getFieldId = (arr, result, relationshipChartIndex, ids) => {
   const [obj] = [...result].reverse()
   const valArr = obj.split(',')
   const idArr = arr.map(ele => ele.id)
@@ -90,7 +90,10 @@ const getFieldId = (arr, result, relationshipChartIndex) => {
     for (const key in result) {
       result[key] = indexArr.map(ele => result[key].split(',')[ele]).join(',')
     }
-    return [indexArr.map(ele => idArr[ele]).join(','), result.filter(ele => !ele.endsWith(','))]
+    return [
+      indexArr.map(ele => ids[ele]).join(','),
+      result.filter(ele => !ele.endsWith(',') && !!ele)
+    ]
   }
 }
 
@@ -286,6 +289,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
       ele.propValue.forEach(item => {
         let shouldSearch = false
         const relationshipChartIndex = []
+        const ids = Array(5).fill(1)
         if (item.displayType === '9' && item.treeCheckedList?.length) {
           item.treeCheckedList.forEach((itx, idx) => {
             if (
@@ -294,6 +298,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               idx < item.treeFieldList.length
             ) {
               relationshipChartIndex.push(idx)
+              ids[idx] = itx.checkedFieldsMap[curComponentId]
             }
           })
         } else {
@@ -448,7 +453,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             if (result?.length) {
               let fieldId = item.checkedFieldsMap[curComponentId]
               if (isTree) {
-                const [i, r] = getFieldId(treeFieldList, result, relationshipChartIndex)
+                const [i, r] = getFieldId(treeFieldList, result, relationshipChartIndex, ids)
                 fieldId = i
                 result = r
               }
