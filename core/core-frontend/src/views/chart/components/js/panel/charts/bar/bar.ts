@@ -448,10 +448,7 @@ export class GroupBar extends StackBar {
     }
     const { chart } = drawOptions
     const { xAxis, xAxisExt, yAxis } = chart
-    let innerSort = true
-    if (!(xAxis.length && xAxisExt.length && yAxis.length)) {
-      innerSort = false
-    }
+    let innerSort = !!(xAxis.length && xAxisExt.length && yAxis.length)
     if (innerSort && yAxis[0].sort === 'none') {
       innerSort = false
     }
