@@ -123,6 +123,10 @@ declare interface ChartLegendStyle {
    */
   fontSize: number
   size: number
+  /**
+   * 子弹图显示区间背景
+   */
+  showRange: true
 }
 
 /**

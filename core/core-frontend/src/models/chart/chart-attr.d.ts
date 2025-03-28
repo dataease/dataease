@@ -889,6 +889,10 @@ declare interface ChartMiscAttr {
      */
     fieldId: string
   }
+  /**
+   * 子弹图
+   */
+  bullet: BulletAtt
 }
 /**
  * 动态极值配置
@@ -1319,3 +1323,47 @@ declare interface ColumnNode {
 }
 
 declare type Columns = Array<ColumnNode>
+
+declare interface BulletAtt {
+  bar: BulletAttr<BulletBarAtt>
+}
+declare interface BulletBarAtt {
+  /**
+   * 背景区间类型
+   */
+  showType?: 'dynamic' | 'fixed'
+  /**
+   * 自定义子弹背景区间
+   */
+  fixedRange?: BulletBarAtt[]
+  /**
+   * 自定义区间个数
+   */
+  fixedRangeNumber?: number
+  /**
+   * 自定义子弹背景区间分界值
+   */
+  fixedRangeValue?: number
+  /**
+   * 显示名称
+   */
+  name?: string
+  /**
+   * 当目标值为固定值时，显示目标值
+   */
+  value?: number
+  /**
+   * 子弹图形形状
+   */
+  symbol?: 'circle' | 'square' | 'line' | 'diamond' | 'triangle'
+  symbolSize?: number
+  fill?: string | string[]
+  fillOpacity?: number
+  radius?: number | number[]
+  size?: number
+}
+declare interface BulletAttr<T> {
+  measures?: T
+  target?: T
+  ranges?: T
+}

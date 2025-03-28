@@ -2008,7 +2008,13 @@ export default {
     map_type_gaode: '高德地圖',
     map_type_tianditu: '天地圖',
     map_type_baidu: '百度地圖',
-    map_type_tencent: '騰訊地圖'
+    map_type_tencent: '騰訊地圖',
+    bullet_chart: '子彈圖',
+    range_bg: '區間背景',
+    legend_name: '圖例名稱',
+    threshold_value: '分界值',
+    range_num: '區間背景個數',
+    show_range_bg: '顯示區間背景'
   },
   dataset: {
     field_value: '欄位值',

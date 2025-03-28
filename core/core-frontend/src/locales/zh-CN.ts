@@ -2014,7 +2014,13 @@ export default {
     map_type_gaode: '高德地图',
     map_type_tianditu: '天地图',
     map_type_baidu: '百度地图',
-    map_type_tencent: '腾讯地图'
+    map_type_tencent: '腾讯地图',
+    bullet_chart: '子弹图',
+    range_bg: '区间背景',
+    legend_name: '图例名称',
+    threshold_value: '分界值',
+    range_num: '区间背景个数',
+    show_range_bg: '显示区间背景'
   },
   dataset: {
     field_value: '字段值',

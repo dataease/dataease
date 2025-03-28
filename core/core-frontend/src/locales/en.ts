@@ -2065,7 +2065,13 @@ export default {
     map_type_gaode: 'Gaode Map',
     map_type_tianditu: 'Tianditu',
     map_type_baidu: 'Baidu Map',
-    map_type_tencent: 'Tencent Map'
+    map_type_tencent: 'Tencent Map',
+    bullet_chart: 'Bullet Chart',
+    range_bg: 'Range Background',
+    legend_name: 'Legend Name',
+    threshold_value: 'Threshold Value',
+    range_num: 'Number of Range',
+    show_range_bg: 'Show Range Background'
   },
   dataset: {
     field_value: 'Field Value',

@@ -30,6 +30,10 @@ import FlowMapLineSelector from '@/views/chart/components/editor/editor-style/co
 import FlowMapPointSelector from '@/views/chart/components/editor/editor-style/components/FlowMapPointSelector.vue'
 import CommonBorderSetting from '@/custom-component/common/CommonBorderSetting.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import BulletTargetSelector from '@/views/chart/components/editor/editor-style/components/bullet/BulletTargetSelector.vue'
+import BulletMeasureSelector from '@/views/chart/components/editor/editor-style/components/bullet/BulletMeasureSelector.vue'
+import BulletRangeSelector from '@/views/chart/components/editor/editor-style/components/bullet/BulletRangeSelector.vue'
+
 const snapshotStore = snapshotStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -289,6 +293,40 @@ watch(
               @onMiscChange="onMiscChange"
             />
           </el-collapse-item>
+          <div v-if="showProperties('bullet-graph-selector')">
+            <el-collapse-item :effect="themes" name="bullet" :title="t('chart.progress_target')">
+              <bullet-target-selector
+                :themes="themes"
+                :chart="chart"
+                :selector-type="'target'"
+                @onBasicStyleChange="onBasicStyleChange"
+                @onMiscChange="onMiscChange"
+              />
+            </el-collapse-item>
+            <el-collapse-item :effect="themes" name="measure" :title="t('chart.progress_current')">
+              <bullet-measure-selector
+                :themes="themes"
+                :chart="chart"
+                :selector-type="'measure'"
+                @onBasicStyleChange="onBasicStyleChange"
+                @onMiscChange="onMiscChange"
+              />
+            </el-collapse-item>
+            <el-collapse-item
+              style="margin-bottom: 0 !important"
+              :effect="themes"
+              name="range"
+              :title="t('chart.range_bg')"
+            >
+              <bullet-range-selector
+                :themes="themes"
+                :chart="chart"
+                :selector-type="'range'"
+                @onBasicStyleChange="onBasicStyleChange"
+                @onMiscChange="onMiscChange"
+              />
+            </el-collapse-item>
+          </div>
           <collapse-switch-item
             :themes="themes"
             v-model="chart.customStyle.text.show"

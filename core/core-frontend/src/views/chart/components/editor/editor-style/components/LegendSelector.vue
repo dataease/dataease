@@ -12,7 +12,7 @@ import {
   DEFAULT_LEGEND_STYLE,
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
-import { ElCol, ElRow, ElSpace } from 'element-plus-secondary'
+import { ElCol, ElFormItem, ElRow, ElSpace } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getDynamicColorScale } from '@/views/chart/components/js/util'
@@ -281,7 +281,48 @@ onMounted(() => {
         </el-form-item>
       </el-col>
     </el-row>
-
+    <el-form-item v-if="showProperty('showRange')" class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.legendForm.showRange"
+        @change="changeLegendStyle('showRange')"
+        :label="t('chart.show_range_bg')"
+      />
+    </el-form-item>
+    <div style="flex: 1; display: flex" v-if="state.legendForm.showRange">
+      <el-form-item :label="t('chart.icon')" class="form-item" :class="'form-item-' + themes">
+        <el-select
+          :effect="themes"
+          v-model="state.legendForm.miscForm.bullet.bar.ranges.symbol"
+          :placeholder="t('chart.icon')"
+          @change="changeMisc()"
+        >
+          <el-option
+            v-for="item in iconSymbolOptions"
+            :key="item.value"
+            :label="item.name"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 8px">
+        <template #label>&nbsp;</template>
+        <el-select
+          :effect="themes"
+          v-model="state.legendForm.miscForm.bullet.bar.ranges.symbolSize"
+          size="small"
+          @change="changeMisc()"
+        >
+          <el-option
+            v-for="option in sizeList"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
+          />
+        </el-select>
+      </el-form-item>
+    </div>
     <el-space>
       <el-form-item
         class="form-item"

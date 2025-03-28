@@ -613,7 +613,9 @@ onMounted(() => {
           <!--同比/环比等快速计算-->
           <el-dropdown-item
             @click.prevent
-            v-if="chart.type !== 'table-info' && props.type !== 'extBubble'"
+            v-if="
+              !['table-info', 'bullet-graph'].includes(chart.type) && props.type !== 'extBubble'
+            "
           >
             <el-dropdown
               placement="right-start"

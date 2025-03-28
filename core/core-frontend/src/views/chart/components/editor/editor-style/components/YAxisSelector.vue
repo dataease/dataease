@@ -92,6 +92,13 @@ const init = () => {
 }
 
 const showProperty = prop => props.propertyInner?.includes(prop)
+const isBulletGraph = computed(() => {
+  return ['bullet-graph'].includes(props.chart.type)
+})
+
+const isHorizontalLayout = computed(() => {
+  return props.chart.customAttr.basicStyle.layout === 'horizontal'
+})
 
 onMounted(() => {
   init()
@@ -117,8 +124,24 @@ onMounted(() => {
         size="small"
         @change="changeAxisStyle('position')"
       >
-        <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
-        <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_right') }}</el-radio>
+        <div v-if="isBulletGraph">
+          <div v-if="isHorizontalLayout">
+            <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_top') }}</el-radio>
+            <el-radio :effect="props.themes" label="left">{{
+              t('chart.text_pos_bottom')
+            }}</el-radio>
+          </div>
+          <div v-else>
+            <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+            <el-radio :effect="props.themes" label="right">{{
+              t('chart.text_pos_right')
+            }}</el-radio>
+          </div>
+        </div>
+        <div v-else>
+          <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+          <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_right') }}</el-radio>
+        </div>
       </el-radio-group>
     </el-form-item>
 

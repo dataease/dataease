@@ -318,6 +318,32 @@ export const DEFAULT_MISC: ChartMiscAttr = {
     min: 0,
     max: 0,
     fieldId: undefined
+  },
+  bullet: {
+    bar: {
+      ranges: {
+        fill: ['rgba(0,128,255,0.3)'],
+        size: 20,
+        showType: 'dynamic',
+        fixedRangeNumber: 3,
+        symbol: 'circle',
+        symbolSize: 4
+      },
+      measures: {
+        fill: ['rgba(0,128,255,1)'],
+        size: 15,
+        symbol: 'circle',
+        symbolSize: 4
+      },
+      target: {
+        fill: 'rgb(0,0,0)',
+        size: 20,
+        showType: 'dynamic',
+        value: 0,
+        symbol: 'line',
+        symbolSize: 4
+      }
+    }
   }
 }
 
@@ -560,7 +586,8 @@ export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
   icon: 'circle',
   color: '#333333',
   fontSize: 12,
-  size: 4
+  size: 4,
+  showRange: true
 }
 
 export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
@@ -571,7 +598,8 @@ export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
   icon: 'circle',
   color: '#333333',
   fontSize: 12,
-  size: 4
+  size: 4,
+  showRange: true
 }
 
 export const DEFAULT_LEGEND_STYLE_LIGHT: ChartLegendStyle = {
@@ -1395,6 +1423,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'stock-line',
         title: t('chart.chart_stock_line'),
         icon: 'stock-line'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bullet-graph',
+        title: t('chart.bullet_chart'),
+        icon: ''
       }
     ]
   },
