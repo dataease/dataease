@@ -46,6 +46,7 @@ import pictureGroup from '@/assets/svg/picture-group.svg'
 import filter from '@/assets/svg/filter.svg'
 import outerParams from '@/assets/svg/icon_params_setting.svg'
 import circlePacking from '@/assets/svg/circle-packing.svg'
+import bulletGraph from '@/assets/svg/bullet-graph.svg'
 
 const iconChartMap = {
   'area-stack': areaStack,
@@ -95,7 +96,8 @@ const iconChartMap = {
   'picture-group': pictureGroup,
   filter: filter,
   outerParams: outerParams,
-  'circle-packing': circlePacking
+  'circle-packing': circlePacking,
+  'bullet-graph': bulletGraph
 }
 
 export { iconChartMap }

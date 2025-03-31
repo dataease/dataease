@@ -1436,7 +1436,7 @@ export const CHART_TYPE_CONFIGS = [
         category: 'compare',
         value: 'bullet-graph',
         title: t('chart.bullet_chart'),
-        icon: ''
+        icon: 'bullet-graph'
       }
     ]
   },
