@@ -2024,7 +2024,8 @@ export default {
     threshold_value: '分界值',
     range_num: '区间背景个数',
     show_range_bg: '显示区间背景',
-    last_item: '最后一项'
+    last_item: '最后一项',
+    legend_sort: '图例排序'
   },
   dataset: {
     field_value: '字段值',
@@ -3324,7 +3325,6 @@ export default {
     template: '模板',
     category: '分类',
     all_org: '所有组织',
-    custom: '自定义',
     import_template: '导入模板',
     copy_template: '复用模板',
     upload_template: '上传模板',

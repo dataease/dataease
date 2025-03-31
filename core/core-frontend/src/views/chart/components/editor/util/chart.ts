@@ -578,18 +578,6 @@ export const DEFAULT_TITLE_STYLE_DARK = {
   remarkBackgroundColor: '#5A5C62'
 }
 
-export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
-  show: true,
-  hPosition: 'center',
-  vPosition: 'bottom',
-  orient: 'horizontal',
-  icon: 'circle',
-  color: '#333333',
-  fontSize: 12,
-  size: 4,
-  showRange: true
-}
-
 export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
   show: true,
   hPosition: 'center',
@@ -599,7 +587,23 @@ export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
   color: '#333333',
   fontSize: 12,
   size: 4,
-  showRange: true
+  showRange: true,
+  sort: 'none',
+  customSort: []
+}
+
+export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
+  show: true,
+  hPosition: 'center',
+  vPosition: 'bottom',
+  orient: 'horizontal',
+  icon: 'circle',
+  color: '#333333',
+  fontSize: 12,
+  size: 4,
+  showRange: true,
+  sort: 'none',
+  customSort: []
 }
 
 export const DEFAULT_LEGEND_STYLE_LIGHT: ChartLegendStyle = {

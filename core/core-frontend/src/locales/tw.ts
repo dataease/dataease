@@ -2018,7 +2018,8 @@ export default {
     threshold_value: '分界值',
     range_num: '區間背景個數',
     show_range_bg: '顯示區間背景',
-    last_item: '最後一項'
+    last_item: '最後一項',
+    legend_sort: '圖例排序'
   },
   dataset: {
     field_value: '欄位值',

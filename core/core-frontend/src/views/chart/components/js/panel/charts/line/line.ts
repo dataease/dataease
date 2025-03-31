@@ -10,10 +10,12 @@ import {
   TOOLTIP_TPL
 } from '../../common/common_antv'
 import {
+  convertToAlphaColor,
   flow,
   getLineConditions,
   getLineLabelColorByCondition,
   hexColorToRGBA,
+  isAlphaColor,
   parseJson,
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
@@ -44,7 +46,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     'tooltip-selector': [
       ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
       'seriesTooltipFormatter'
-    ]
+    ],
+    'legend-selector': [...LINE_EDITOR_PROPERTY_INNER['legend-selector'], 'legendSort']
   }
   axis: AxisType[] = [...LINE_AXIS_TYPE, 'xAxisExt']
   axisConfig = {
@@ -349,6 +352,56 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       return {
         r: size,
         fill: style.stroke
+      }
+    }
+    const { sort, customSort, icon } = customStyle.legend
+    if (sort && sort !== 'none' && chart.xAxisExt.length) {
+      const customAttr = parseJson(chart.customAttr)
+      const { basicStyle } = customAttr
+      const seriesMap =
+        basicStyle.seriesColor?.reduce((p, n) => {
+          p[n.id] = n
+          return p
+        }, {}) || {}
+      const dupCheck = new Set()
+      const items = optionTmp.data?.reduce((arr, item) => {
+        if (!dupCheck.has(item.category)) {
+          const fill =
+            seriesMap[item.category]?.color ??
+            optionTmp.color[dupCheck.size % optionTmp.color.length]
+          dupCheck.add(item.category)
+          arr.push({
+            name: item.category,
+            value: item.category,
+            marker: {
+              symbol: icon,
+              style: {
+                r: size,
+                fill: isAlphaColor(fill) ? fill : convertToAlphaColor(fill, basicStyle.alpha)
+              }
+            }
+          })
+        }
+        return arr
+      }, [])
+      if (sort !== 'custom') {
+        items.sort((a, b) => {
+          return sort !== 'desc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+        })
+      } else {
+        const tmp = []
+        ;(customSort || []).forEach(item => {
+          const index = items.findIndex(i => i.name === item)
+          if (index !== -1) {
+            tmp.push(items[index])
+            items.splice(index, 1)
+          }
+        })
+        items.unshift(...tmp)
+      }
+      optionTmp.legend.items = items
+      if (xAxisExt?.customSort?.length > 0) {
+        delete optionTmp.meta?.category.values
       }
     }
     return optionTmp

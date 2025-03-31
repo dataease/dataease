@@ -2075,7 +2075,8 @@ export default {
     threshold_value: 'Threshold Value',
     range_num: 'Number of Range',
     show_range_bg: 'Show Range Background',
-    last_item: 'Last item'
+    last_item: 'Last item',
+    legend_sort: 'Legend sort'
   },
   dataset: {
     field_value: 'Field Value',
