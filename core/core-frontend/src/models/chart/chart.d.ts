@@ -100,6 +100,7 @@ declare interface BaseFormatter {
   /**
    * 单位换算
    */
+  unitLanguage: 'ch' | 'en'
   unit: number
   /**
    * 单位后缀

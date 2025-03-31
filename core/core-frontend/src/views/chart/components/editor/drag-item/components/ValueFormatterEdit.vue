@@ -1,7 +1,14 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, toRefs } from 'vue'
-import { formatterType, unitType, valueFormatter } from '@/views/chart/components/js/formatter'
+import {
+  isEnLocal,
+  formatterType,
+  getUnitTypeList,
+  onChangeFormatCfgUnitLanguage,
+  valueFormatter,
+  initFormatCfgUnit
+} from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
 
@@ -20,13 +27,18 @@ const { formatterItem } = toRefs(props)
 
 const state = reactive({
   typeList: formatterType,
-  unitList: unitType,
   exampleResult: '20000000'
 })
+
+function changeUnitLanguage(cfg: BaseFormatter, lang) {
+  onChangeFormatCfgUnitLanguage(cfg, lang)
+}
 
 const init = () => {
   if (!formatterItem.value.formatterCfg) {
     formatterItem.value.formatterCfg = formatterItem
+
+    initFormatCfgUnit(formatterItem.value.formatterCfg)
   }
 }
 const getExampleValue = () => {
@@ -66,24 +78,39 @@ getExampleValue()
         />
       </el-form-item>
 
-      <el-form-item
-        v-if="formatterItem.formatterCfg.type !== 'percent'"
-        :label="t('chart.value_formatter_unit')"
-      >
-        <el-select
-          v-model="formatterItem.formatterCfg.unit"
-          :placeholder="t('chart.pls_select_field')"
-          @change="getExampleValue"
-          style="width: 100%"
-        >
-          <el-option
-            v-for="item in state.unitList"
-            :key="item.value"
-            :label="t('chart.' + item.name)"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
+      <template v-if="formatterItem.formatterCfg.type !== 'percent'">
+        <el-row :gutter="8">
+          <el-col :span="12" v-if="!isEnLocal">
+            <el-form-item :label="t('chart.value_formatter_unit_language')">
+              <el-select
+                v-model="formatterItem.formatterCfg.unitLanguage"
+                :placeholder="t('chart.pls_select_field')"
+                @change="v => changeUnitLanguage(formatterItem.formatterCfg, v)"
+              >
+                <el-option :label="t('chart.value_formatter_unit_language_ch')" value="ch" />
+                <el-option :label="t('chart.value_formatter_unit_language_en')" value="en" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="isEnLocal ? 24 : 12">
+            <el-form-item :label="t('chart.value_formatter_unit')">
+              <el-select
+                v-model="formatterItem.formatterCfg.unit"
+                :placeholder="t('chart.pls_select_field')"
+                @change="getExampleValue"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in getUnitTypeList(formatterItem.formatterCfg.unitLanguage)"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </template>
 
       <el-form-item :label="t('chart.value_formatter_suffix')">
         <el-input

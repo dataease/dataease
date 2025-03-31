@@ -1,7 +1,13 @@
-import { Datum } from '@antv/g2plot'
+import { find } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
+import { getLocale } from '@/utils/utils'
+const { t } = useI18n()
+
+export const isEnLocal = getLocale() === 'en'
 
 export const formatterItem = {
   type: 'auto', // auto,value,percent
+  unitLanguage: 'ch',
   unit: 1, // 换算单位
   suffix: '', // 单位后缀
   decimalCount: 2, // 小数位数
@@ -10,12 +16,51 @@ export const formatterItem = {
 
 // 单位list
 export const unitType = [
-  { name: 'unit_none', value: 1 },
-  { name: 'unit_thousand', value: 1000 },
-  { name: 'unit_ten_thousand', value: 10000 },
-  { name: 'unit_million', value: 1000000 },
-  { name: 'unit_hundred_million', value: 100000000 }
+  { name: t('chart.unit_none'), value: 1 },
+  { name: t('chart.unit_thousand'), value: 1000 },
+  { name: t('chart.unit_ten_thousand'), value: 10000 },
+  { name: t('chart.unit_million'), value: 1000000 },
+  { name: t('chart.unit_hundred_million'), value: 100000000 }
 ]
+export const unitEnType = [
+  { name: 'None', value: 1 },
+  { name: 'Thousand (K)', value: 1000 },
+  { name: 'Million (M)', value: 1000000 },
+  { name: 'Billion (B)', value: 1000000000 }
+]
+
+export function getUnitTypeList(lang) {
+  if (isEnLocal) {
+    return unitEnType
+  }
+  if (lang === 'ch') {
+    return unitType
+  }
+  return unitEnType
+}
+
+export function getUnitTypeValue(lang, value) {
+  const list = getUnitTypeList(lang)
+  const item = find(list, l => l.value === value)
+  if (item) {
+    return value
+  }
+  return 1
+}
+
+export function initFormatCfgUnit(cfg) {
+  if (cfg.unitLanguage === undefined) {
+    cfg.unitLanguage = 'ch'
+  }
+  if (cfg && isEnLocal && cfg.unitLanguage === 'ch') {
+    cfg.unitLanguage = 'en'
+  }
+  onChangeFormatCfgUnitLanguage(cfg, cfg.unitLanguage)
+}
+
+export function onChangeFormatCfgUnitLanguage(cfg, lang) {
+  cfg.unit = getUnitTypeValue(lang, cfg.unit)
+}
 
 // 格式化方式
 export const formatterType = [
@@ -47,6 +92,7 @@ export function valueFormatter(value, formatter) {
 }
 
 function transUnit(value, formatter) {
+  initFormatCfgUnit(formatter)
   return value / formatter.unit
 }
 
@@ -88,34 +134,27 @@ function transSeparatorAndSuffix(value, formatter) {
     //百分比没有后缀，直接返回
     return str
   } else {
-    if (formatter.unit === 1000) {
-      str += '千'
-    } else if (formatter.unit === 10000) {
-      str += '万'
-    } else if (formatter.unit === 1000000) {
-      str += '百万'
-    } else if (formatter.unit === 100000000) {
-      str += '亿'
+    const unit = formatter.unit
+
+    if (formatter.unitLanguage === 'ch') {
+      if (unit === 1000) {
+        str += t('chart.unit_thousand')
+      } else if (unit === 10000) {
+        str += t('chart.unit_ten_thousand')
+      } else if (unit === 1000000) {
+        str += t('chart.unit_million')
+      } else if (unit === 100000000) {
+        str += t('chart.unit_hundred_million')
+      }
+    } else {
+      if (unit === 1000) {
+        str += 'K'
+      } else if (unit === 1000000) {
+        str += 'M'
+      } else if (unit === 1000000000) {
+        str += 'B'
+      }
     }
   }
   return str + formatter.suffix.replace(/(^\s*)|(\s*$)/g, '')
-}
-
-export function singleDimensionTooltipFormatter(param: Datum, chart: Chart, prop = 'category') {
-  let res
-  const yAxis = chart.yAxis
-  const obj = { name: param[prop], value: param.value }
-  for (let i = 0; i < yAxis.length; i++) {
-    const f = yAxis[i]
-    if (f.name === param[prop]) {
-      if (f.formatterCfg) {
-        res = valueFormatter(param.value, f.formatterCfg)
-      } else {
-        res = valueFormatter(param.value, formatterItem)
-      }
-      break
-    }
-  }
-  obj.value = res ?? ''
-  return obj
 }

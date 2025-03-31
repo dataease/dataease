@@ -662,6 +662,7 @@ export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -708,6 +709,7 @@ export const DEFAULT_YAXIS_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -752,6 +754,7 @@ export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,

@@ -3,8 +3,14 @@ import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
-import { formatterType, unitType } from '@/views/chart/components/js/formatter'
-import { ElMessage } from 'element-plus-secondary'
+import {
+  isEnLocal,
+  formatterType,
+  getUnitTypeList,
+  initFormatCfgUnit,
+  onChangeFormatCfgUnitLanguage
+} from '@/views/chart/components/js/formatter'
+import { ElFormItem, ElMessage } from 'element-plus-secondary'
 
 const { t } = useI18n()
 
@@ -24,7 +30,6 @@ const props = defineProps({
 
 const predefineColors = COLOR_PANEL
 const typeList = formatterType
-const unitList = unitType
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
@@ -76,6 +81,11 @@ const changeAxisStyle = prop => {
   emit('onChangeYAxisForm', state.axisForm, prop)
 }
 
+function changeUnitLanguage(cfg: BaseFormatter, lang, prop: string) {
+  onChangeFormatCfgUnitLanguage(cfg, lang)
+  changeAxisStyle(prop)
+}
+
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customStyle) {
@@ -87,6 +97,7 @@ const init = () => {
     }
     if (customStyle.yAxis) {
       state.axisForm = customStyle.yAxis
+      initFormatCfgUnit(state.axisForm.axisLabelFormatter)
     }
   }
 }
@@ -551,52 +562,82 @@ onMounted(() => {
             />
           </el-form-item>
 
-          <el-row
-            :gutter="8"
+          <template
             v-if="
               state.axisForm.axisLabel.show && state.axisForm.axisLabelFormatter.type !== 'percent'
             "
           >
-            <el-col :span="12">
-              <el-form-item
-                class="form-item"
-                :class="'form-item-' + themes"
-                :label="t('chart.value_formatter_unit')"
-              >
-                <el-select
-                  :effect="props.themes"
-                  v-model="state.axisForm.axisLabelFormatter.unit"
-                  :placeholder="t('chart.pls_select_field')"
-                  size="small"
-                  @change="changeAxisStyle('axisLabelFormatter.unit')"
+            <el-row :gutter="8">
+              <el-col :span="12" v-if="!isEnLocal">
+                <el-form-item
+                  :label="t('chart.value_formatter_unit_language')"
+                  class="form-item"
+                  :class="'form-item-' + themes"
                 >
-                  <el-option
-                    v-for="item in unitList"
-                    :key="item.value"
-                    :label="t('chart.' + item.name)"
-                    :value="item.value"
+                  <el-select
+                    size="small"
+                    :effect="themes"
+                    v-model="state.axisForm.axisLabelFormatter.unitLanguage"
+                    :placeholder="t('chart.pls_select_field')"
+                    @change="
+                      v =>
+                        changeUnitLanguage(
+                          state.axisForm.axisLabelFormatter,
+                          v,
+                          'axisLabelFormatter'
+                        )
+                    "
+                  >
+                    <el-option :label="t('chart.value_formatter_unit_language_ch')" value="ch" />
+                    <el-option :label="t('chart.value_formatter_unit_language_en')" value="en" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="isEnLocal ? 24 : 12">
+                <el-form-item
+                  class="form-item"
+                  :class="'form-item-' + themes"
+                  :label="t('chart.value_formatter_unit')"
+                >
+                  <el-select
+                    :effect="props.themes"
+                    v-model="state.axisForm.axisLabelFormatter.unit"
+                    :placeholder="t('chart.pls_select_field')"
+                    size="small"
+                    @change="changeAxisStyle('axisLabelFormatter.unit')"
+                  >
+                    <el-option
+                      v-for="item in getUnitTypeList(
+                        state.axisForm.axisLabelFormatter.unitLanguage
+                      )"
+                      :key="item.value"
+                      :label="item.name"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="8">
+              <el-col :span="24">
+                <el-form-item
+                  class="form-item"
+                  :class="'form-item-' + themes"
+                  :label="t('chart.value_formatter_suffix')"
+                >
+                  <el-input
+                    :disabled="!state.axisForm.axisLabel.show"
+                    :effect="props.themes"
+                    v-model="state.axisForm.axisLabelFormatter.suffix"
+                    size="small"
+                    clearable
+                    :placeholder="t('commons.input_content')"
+                    @change="changeAxisStyle('axisLabelFormatter.suffix')"
                   />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item
-                class="form-item"
-                :class="'form-item-' + themes"
-                :label="t('chart.value_formatter_suffix')"
-              >
-                <el-input
-                  :disabled="!state.axisForm.axisLabel.show"
-                  :effect="props.themes"
-                  v-model="state.axisForm.axisLabelFormatter.suffix"
-                  size="small"
-                  clearable
-                  :placeholder="t('commons.input_content')"
-                  @change="changeAxisStyle('axisLabelFormatter.suffix')"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </template>
 
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-checkbox
