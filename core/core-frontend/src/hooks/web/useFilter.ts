@@ -1,4 +1,5 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import type { ManipulateType } from 'dayjs'
 import { storeToRefs } from 'pinia'
 import dayjs from 'dayjs'
 import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
@@ -9,23 +10,22 @@ const { componentData, canvasStyleData } = storeToRefs(dvMainStore)
 const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMultiple: string) => {
   const timeType = (timeGranularityMultiple || '').split('range')[0]
 
-  if (['datetimerange', 'yearrange'].includes(timeGranularityMultiple) || type === 1 || !timeType) {
+  if (timeGranularityMultiple.includes('range') || type === 1 || !timeType) {
     return selectValue.map(ele => +new Date(ele))
   }
 
-  const [start, end] = selectValue
+  const [start] = selectValue
 
   return [
     +new Date(start),
     +getCustomTime(
       1,
-      timeType,
+      timeType as ManipulateType,
       timeType,
       'b',
       null,
       timeGranularityMultiple,
-      'start-config',
-      new Date(end)
+      'start-config'
     ) - 1000
   ]
 }

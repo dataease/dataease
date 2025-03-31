@@ -54,95 +54,46 @@ function getYearBeginning() {
   return new Date(`${date.getFullYear()}/1/1`)
 }
 
-function getYearMonthRange(result, flag, sort) {
+function getYearMonthRange(result, sort) {
   const [direction, scene] = (sort || '').split('-')
-  const [dateTimeType] = (flag || '').split('range')
   if (direction === 'start') {
-    return result
+    return new Date(result.startOf('day').format('YYYY/MM/DD HH:mm:ss'))
   } else if (direction === 'end') {
     if (scene === 'config') {
-      return result
+      return new Date(result.format('YYYY/MM/DD HH:mm:ss'))
     } else if (scene === 'panel') {
-      return new Date(
-        +getCustomTime(1, dateTimeType, dateTimeType, 'b', null, flag, 'start-config', result) -
-          1000
-      )
+      return new Date(dayjs(result).endOf('day').format('YYYY/MM/DD HH:mm:ss'))
     }
   }
 }
 
 function getCustomTime(
   timeNum: number,
-  timeType: string,
+  timeType: ManipulateType | 'date',
   timeGranularity: string,
   around: string,
   arbitraryTime?: Date,
   timeGranularityMultiple?: string,
-  sort?: string,
-  withDate?: Date
+  sort?: string
 ) {
-  const date = withDate ? new Date(withDate) : new Date()
-  const num = around === 'f' ? -timeNum : timeNum
-  const year = date.getFullYear()
-  const month = date.getMonth() + 1
-  const day = date.getDate()
+  const type = around === 'f' ? 'subtract' : 'add'
 
-  let resultYear = timeType === 'year' ? year + num : year
-  let resultMonth = timeType === 'month' ? month + num : month
-  if (resultMonth > 12) {
-    resultYear += parseInt(`${resultMonth / 12}`)
-    resultMonth = resultMonth % 12
-  } else if (resultMonth < 0) {
-    resultYear += parseInt(`${resultMonth / 12}`) - 1
-    resultMonth = (resultMonth % 12) + 12
-  } else if (resultMonth === 0) {
-    resultYear += parseInt(`${resultMonth / 12}`) - 1
-    resultMonth = 12
-  }
-  const resultDate =
-    timeType === 'date' ? new Date(date.getTime() + 24 * 60 * 60 * 1000 * num).getDate() : day
-  if (timeType === 'date') {
-    resultMonth = new Date(date.getTime() + 24 * 60 * 60 * 1000 * num).getMonth() + 1
-    resultYear = new Date(date.getTime() + 24 * 60 * 60 * 1000 * num).getFullYear()
-  }
+  const result = dayjs()[type](timeNum, timeType === 'date' ? 'day' : timeType)
 
-  switch (timeGranularityMultiple) {
-    case 'monthrange':
-      return getYearMonthRange(new Date(`${resultYear}/${resultMonth}/1`), 'monthrange', sort)
-    case 'yearrange':
-      return getYearMonthRange(new Date(`${resultYear}/1`), 'yearrange', sort)
-    case 'daterange':
-      return getYearMonthRange(
-        new Date(`${resultYear}/${resultMonth}/${resultDate}`),
-        'daterange',
-        sort
-      )
-    default:
-      break
+  if (['monthrange', 'yearrange', 'daterange'].includes(timeGranularityMultiple)) {
+    return getYearMonthRange(result, sort)
   }
 
   if (!!arbitraryTime) {
-    const time = new Date(arbitraryTime)
-    time.setFullYear(resultYear)
-    time.setMonth(resultMonth - 1)
-    time.setDate(resultDate)
-    return time
+    const time = dayjs(arbitraryTime).format('YYYY/MM/DD HH:mm:ss')
+    const [_, q] = time.split(' ')
+    const [s] = result.format('YYYY/MM/DD HH:mm:ss').split(' ')
+
+    return new Date(`${s} ${q}`)
   }
 
-  switch (timeGranularity) {
-    case 'year':
-      return new Date(`${resultYear}/1`)
-    case 'month':
-      return new Date(`${resultYear}/${resultMonth}/1`)
-    case 'date':
-      return new Date(`${resultYear}/${resultMonth}/${resultDate}`)
-    case 'monthrange':
-      return new Date(`${resultYear}/${resultMonth}/1`)
-    case 'yearrange':
-      return new Date(`${resultYear}/1`)
-    default:
-      break
-  }
+  const [k] = timeGranularity.split('range')
+  return new Date(result.startOf(k as ManipulateType).format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getDynamicRange({

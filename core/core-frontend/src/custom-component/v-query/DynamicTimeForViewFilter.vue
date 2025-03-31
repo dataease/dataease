@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { ManipulateType } from 'dayjs'
 import { toRefs, PropType, ref, onBeforeMount, watch, computed } from 'vue'
 import { type DatePickType } from 'element-plus-secondary'
 import {
@@ -15,7 +16,7 @@ import {
 interface SelectConfig {
   relativeToCurrent: string
   timeNum: number
-  relativeToCurrentType: string
+  relativeToCurrentType: ManipulateType
   around: string
   arbitraryTime: Date
   timeGranularity: DatePickType
