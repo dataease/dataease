@@ -1,12 +1,13 @@
 package io.dataease.chart.charts.impl;
 
+import com.beust.jcommander.Strings;
 import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.constant.SQLConstants;
+import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.Quota2SQLObj;
@@ -169,8 +170,8 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         dataMap.putAll(calcResult.getData());
         dataMap.putAll(mapTableNormal);
         dataMap.put("sourceFields", allFields);
-        mergeAssistField(calcResult.getDynamicAssistFields(), calcResult.getAssistData());
-        dataMap.put("dynamicAssistLines", calcResult.getDynamicAssistFields());
+        List<ChartSeniorAssistDTO> chartSeniorAssistDTOS = mergeAssistField(calcResult.getDynamicAssistFields(), calcResult.getAssistData(), calcResult.getDynamicAssistFieldsOriginList(), calcResult.getAssistDataOriginList());
+        dataMap.put("dynamicAssistLines", chartSeniorAssistDTOS);
         view.setData(dataMap);
         view.setSql(Base64.getEncoder().encodeToString(calcResult.getQuerySql().getBytes()));
         view.setDrill(isDrill);
@@ -178,18 +179,30 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         return view;
     }
 
-
-    protected void mergeAssistField(List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData) {
-        if (ObjectUtils.isEmpty(assistData)) {
-            return;
-        }
-        String[] strings = assistData.get(0);
-        for (int i = 0; i < dynamicAssistFields.size(); i++) {
-            if (i < strings.length) {
-                ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFields.get(i);
-                chartSeniorAssistDTO.setValue(strings[i]);
+    protected List<ChartSeniorAssistDTO> mergeAssistField(List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData, List<ChartSeniorAssistDTO> dynamicAssistFieldsOriginList, List<String[]> assistDataOriginList) {
+        List<ChartSeniorAssistDTO> list = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(assistData)) {
+            String[] strings = assistData.getFirst();
+            for (int i = 0; i < dynamicAssistFields.size(); i++) {
+                if (i < strings.length) {
+                    ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFields.get(i);
+                    chartSeniorAssistDTO.setValue(strings[i]);
+                    list.add(chartSeniorAssistDTO);
+                }
             }
         }
+
+        if (ObjectUtils.isNotEmpty(assistDataOriginList)) {
+            String[] stringsOriginList = assistDataOriginList.getLast();// 取最后一项，如果有其他运算逻辑需要取明细数据可增加逻辑
+            for (int i = 0; i < dynamicAssistFieldsOriginList.size(); i++) {
+                if (i < stringsOriginList.length) {
+                    ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFieldsOriginList.get(i);
+                    chartSeniorAssistDTO.setValue(stringsOriginList[i]);
+                    list.add(chartSeniorAssistDTO);
+                }
+            }
+        }
+        return list;
     }
 
     protected List<ChartSeniorAssistDTO> getDynamicAssistFields(ChartViewDTO view) {
@@ -395,24 +408,57 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         }
 
         boolean crossDs = Utils.isCrossDs(dsMap);
-        StringBuilder stringBuilder = new StringBuilder();
+        List<String> fieldList = new ArrayList<>();
         for (int i = 0; i < assistFields.size(); i++) {
             ChartViewFieldDTO dto = assistFields.get(i);
+            if (StringUtils.equalsIgnoreCase(dto.getSummary(), "last_item")) {
+                continue;
+            }
             if (crossDs) {
-                if (i == (assistFields.size() - 1)) {
-                    stringBuilder.append(dto.getSummary() + "(" + dto.getOriginName() + ")");
-                } else {
-                    stringBuilder.append(dto.getSummary() + "(" + dto.getOriginName() + "),");
-                }
+                fieldList.add(dto.getSummary() + "(" + dto.getOriginName() + ")");
             } else {
-                if (i == (assistFields.size() - 1)) {
-                    stringBuilder.append(dto.getSummary() + "(" + prefix + dto.getOriginName() + suffix + ")");
+                fieldList.add(dto.getSummary() + "(" + prefix + dto.getOriginName() + suffix + ")");
+            }
+        }
+        return "SELECT " + Strings.join(",", fieldList) + " FROM (" + sql + ") tmp";
+    }
+
+    protected String assistSQLOriginList(String sql, List<ChartViewFieldDTO> assistFields, Map<Long, DatasourceSchemaDTO> dsMap) {
+        // get datasource prefix and suffix
+        String dsType = dsMap.entrySet().iterator().next().getValue().getType();
+        String prefix = "";
+        String suffix = "";
+        if (Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList().contains(dsType)) {
+            DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(dsType);
+            prefix = datasourceType.getPrefix();
+            suffix = datasourceType.getSuffix();
+        } else {
+            if (LicenseUtil.licenseValid()) {
+                List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
+                List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), dsType)).toList();
+                if (ObjectUtils.isNotEmpty(list)) {
+                    XpackPluginsDatasourceVO first = list.getFirst();
+                    prefix = first.getPrefix();
+                    suffix = first.getSuffix();
                 } else {
-                    stringBuilder.append(dto.getSummary() + "(" + prefix + dto.getOriginName() + suffix + "),");
+                    DEException.throwException("当前数据源插件不存在");
                 }
             }
         }
-        return "SELECT " + stringBuilder + " FROM (" + sql + ") tmp";
+
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        List<String> fieldList = new ArrayList<>();
+        for (int i = 0; i < assistFields.size(); i++) {
+            ChartViewFieldDTO dto = assistFields.get(i);
+            if (StringUtils.equalsIgnoreCase(dto.getSummary(), "last_item")) {
+                if (crossDs) {
+                    fieldList.add(dto.getOriginName());
+                } else {
+                    fieldList.add(prefix + dto.getOriginName() + suffix);
+                }
+            }
+        }
+        return "SELECT " + Strings.join(",", fieldList) + " FROM (" + sql + ") tmp";
     }
 
     protected List<String> mergeIds(List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> extStack) {

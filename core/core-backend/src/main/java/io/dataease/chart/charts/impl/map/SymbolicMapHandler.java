@@ -64,18 +64,18 @@ public class SymbolicMapHandler extends GroupChartHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
-        List<ChartViewFieldDTO> countField =chartViewManege.transFieldDTO(Collections.singletonList(chartViewManege.createCountField(view.getTableId())));
+        List<ChartViewFieldDTO> countField = chartViewManege.transFieldDTO(Collections.singletonList(chartViewManege.createCountField(view.getTableId())));
         List<DatasetTableFieldDTO> datasetTableFieldDTOList = FieldUtil.transFields(allFields);
         SQLMeta sqlMeta1 = new SQLMeta();
         BeanUtils.copyBean(sqlMeta1, sqlMeta);
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, datasetTableFieldDTOList, crossDs, dsMap, Utils.getParams(datasetTableFieldDTOList), view.getCalParams(), pluginManage);
         List<ChartViewFieldDTO> yAxis = new ArrayList<>();
-        if(!extBubble.isEmpty() && !"*".equals(extBubble.get(0).getDataeaseName())){
+        if (!extBubble.isEmpty() && !"*".equals(extBubble.get(0).getDataeaseName())) {
             yAxis.addAll(extBubble);
         }
         yAxis.addAll(countField);
         datasetTableFieldDTOList.addAll(FieldUtil.transFields(countField));
-        formatResult.getAxisMap().put(ChartAxis.yAxis,countField);
+        formatResult.getAxisMap().put(ChartAxis.yAxis, countField);
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, datasetTableFieldDTOList, crossDs, dsMap, Utils.getParams(datasetTableFieldDTOList), view.getCalParams(), pluginManage);
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
@@ -115,7 +115,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
         calcResult.setContext(filterResult.getContext());
         calcResult.setQuerySql(querySql);
         calcResult.setOriginData(data);
-        formatResult.getAxisMap().put(ChartAxis.yAxis,new ArrayList<>());
+        formatResult.getAxisMap().put(ChartAxis.yAxis, new ArrayList<>());
         return calcResult;
     }
 
@@ -142,8 +142,8 @@ public class SymbolicMapHandler extends GroupChartHandler {
         dataMap.putAll(calcResult.getData());
         dataMap.putAll(mapTableNormal);
         dataMap.put("sourceFields", allFields);
-        mergeAssistField(calcResult.getDynamicAssistFields(), calcResult.getAssistData());
-        dataMap.put("dynamicAssistLines", calcResult.getDynamicAssistFields());
+        List<ChartSeniorAssistDTO> chartSeniorAssistDTOS = mergeAssistField(calcResult.getDynamicAssistFields(), calcResult.getAssistData(), calcResult.getDynamicAssistFieldsOriginList(), calcResult.getAssistDataOriginList());
+        dataMap.put("dynamicAssistLines", chartSeniorAssistDTOS);
         view.setData(dataMap);
         view.setSql(Base64.getEncoder().encodeToString(calcResult.getQuerySql().getBytes()));
         view.setDrill(isDrill);

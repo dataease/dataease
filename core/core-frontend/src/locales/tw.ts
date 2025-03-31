@@ -2014,7 +2014,8 @@ export default {
     legend_name: '圖例名稱',
     threshold_value: '分界值',
     range_num: '區間背景個數',
-    show_range_bg: '顯示區間背景'
+    show_range_bg: '顯示區間背景',
+    last_item: '最後一項'
   },
   dataset: {
     field_value: '欄位值',

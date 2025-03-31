@@ -2020,7 +2020,8 @@ export default {
     legend_name: '图例名称',
     threshold_value: '分界值',
     range_num: '区间背景个数',
-    show_range_bg: '显示区间背景'
+    show_range_bg: '显示区间背景',
+    last_item: '最后一项'
   },
   dataset: {
     field_value: '字段值',
