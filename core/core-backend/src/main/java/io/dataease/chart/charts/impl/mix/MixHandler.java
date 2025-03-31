@@ -96,7 +96,7 @@ public class MixHandler extends YoyChartHandler {
                 var req = new DatasourceRequest();
                 req.setDsList(dsMap);
 
-                List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                List<ChartSeniorAssistDTO> assists = leftAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
                     var assistSql = assistSQL(originSql, assistFields, dsMap);
                     req.setQuery(assistSql);
@@ -106,7 +106,7 @@ public class MixHandler extends YoyChartHandler {
                     leftResult.setDynamicAssistFields(assists);
                 }
 
-                List<ChartSeniorAssistDTO> assistsOriginList = dynamicAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                List<ChartSeniorAssistDTO> assistsOriginList = leftAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assistsOriginList)) {
                     var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
                     req.setQuery(assistSqlOriginList);
@@ -168,7 +168,7 @@ public class MixHandler extends YoyChartHandler {
                 var req = new DatasourceRequest();
                 req.setDsList(dsMap);
 
-                List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                List<ChartSeniorAssistDTO> assists = rightAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
                     var assistSql = assistSQL(originSql, assistFields, dsMap);
                     req.setQuery(assistSql);
@@ -178,7 +178,7 @@ public class MixHandler extends YoyChartHandler {
                     rightResult.setDynamicAssistFields(assists);
                 }
 
-                List<ChartSeniorAssistDTO> assistsOriginList = dynamicAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                List<ChartSeniorAssistDTO> assistsOriginList = rightAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assistsOriginList)) {
                     var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
                     req.setQuery(assistSqlOriginList);
