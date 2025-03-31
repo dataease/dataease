@@ -18,11 +18,11 @@ public interface ExtVisualizationLinkJumpMapper {
 
     VisualizationLinkJumpDTO queryWithViewId(@Param("dvId") Long dvId,@Param("viewId") Long viewId,@Param("uid") Long uid,@Param("isDesktop") Boolean isDesktop);
 
-    void deleteJumpTargetViewInfo(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
+    void deleteJumpTargetViewInfoSnapshot(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
 
-    void deleteJumpInfo(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
+    void deleteJumpInfoSnapshot(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
 
-    void deleteJump(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
+    void deleteJumpSnapshot(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
 
     void deleteJumpTargetViewInfoWithVisualization(@Param("dvId") Long dvId);
 

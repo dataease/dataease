@@ -23,11 +23,11 @@
         <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
     </resultMap>
 
-  <resultMap id="BaseResultMapDTO" type="io.dataease.api.visualization.dto.VisualizationOuterParamsDTO"
+  <resultMap id="BaseResultMapDTOSnapshot" type="io.dataease.api.visualization.dto.VisualizationOuterParamsDTO"
              extends="BaseResultMapParams">
     <collection property="outerParamsInfoArray" ofType="io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO"
                 column="{visualization_id=visualization_id}"
-                select="getOuterParamsInfo">
+                select="getOuterParamsInfoSnapshot">
     </collection>
   </resultMap>
 
@@ -60,7 +60,7 @@
         </collection>
     </resultMap>
 
-  <select id="getOuterParamsInfo" resultMap="OuterParamsInfoMap">
+  <select id="getOuterParamsInfoSnapshot" resultMap="OuterParamsInfoMap">
         SELECT
             pop.visualization_id,
             popi.params_info_id,
@@ -73,24 +73,24 @@
             poptvi.target_ds_id,
             poptvi.target_field_id
         FROM
-            visualization_outer_params pop
-            LEFT JOIN visualization_outer_params_info popi ON pop.params_id = popi.params_id
-            LEFT JOIN visualization_outer_params_target_view_info poptvi ON popi.params_info_id = poptvi.params_info_id
+            snapshot_visualization_outer_params pop
+            LEFT JOIN snapshot_visualization_outer_params_info popi ON pop.params_id = popi.params_id
+            LEFT JOIN snapshot_visualization_outer_params_target_view_info poptvi ON popi.params_info_id = poptvi.params_info_id
         WHERE
             pop.visualization_id = #{visualization_id}
         ORDER BY
             ifnull( popi.checked, 0 ) DESC
     </select>
 
-  <select id="queryWithVisualizationId"  resultMap="BaseResultMapDTO">
+  <select id="queryWithVisualizationIdSnapshot"  resultMap="BaseResultMapDTOSnapshot">
       SELECT
           #{visualizationId} as visualization_id,
-          ifnull( visualization_outer_params.checked, 0 ) AS checked
+          ifnull( vop.checked, 0 ) AS checked
       FROM
-          data_visualization_info
-              LEFT JOIN visualization_outer_params ON data_visualization_info.id = visualization_outer_params.visualization_id
+          snapshot_data_visualization_info dvi
+              LEFT JOIN snapshot_visualization_outer_params vop ON dvi.id = vop.visualization_id
       WHERE
-          data_visualization_info.id = #{visualizationId}
+          dvi.id = #{visualizationId}
   </select>
 
     <delete id="deleteOuterParamsTargetWithVisualizationId" >
@@ -188,13 +188,13 @@
             and popi.checked=1
     </select>
 
-        <select id="getVisualizationOuterParamsInfoBase" resultType="io.dataease.visualization.dao.auto.entity.VisualizationOuterParamsInfo">
+        <select id="getVisualizationOuterParamsInfoBase" resultType="io.dataease.visualization.dao.auto.entity.SnapshotVisualizationOuterParamsInfo">
            SELECT
            	vopi.param_name,
            	vopi.params_info_id
            FROM
-           	visualization_outer_params_info vopi
-           	INNER JOIN visualization_outer_params vop ON vop.params_id = vopi.params_id
+           	snapshot_visualization_outer_params_info vopi
+           	INNER JOIN snapshot_visualization_outer_params vop ON vop.params_id = vopi.params_id
            WHERE
            	vop.visualization_id = #{visualizationId}
         </select>
@@ -204,8 +204,8 @@
           	cdg.*,#{visualizationId} as visualizationId
           FROM
           	core_dataset_group cdg
-          	INNER JOIN core_chart_view ccv ON cdg.id = ccv.table_id and ccv.type != 'VQuery'
-          	INNER JOIN data_visualization_info dvi ON ccv.scene_id = dvi.id
+          	INNER JOIN snapshot_core_chart_view ccv ON cdg.id = ccv.table_id and ccv.type != 'VQuery'
+          	INNER JOIN snapshot_data_visualization_info dvi ON ccv.scene_id = dvi.id
           WHERE
           	ccv.scene_id = #{visualizationId}
           	AND dvi.id = #{visualizationId}

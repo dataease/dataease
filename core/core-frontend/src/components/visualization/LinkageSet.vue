@@ -406,7 +406,8 @@ const linkageSetting = curViewId => {
     dvId: dvInfo.value.id,
     sourceViewId: curViewId,
     targetViewIds: targetViewIds,
-    linkageInfo: null
+    linkageInfo: null,
+    resourceTable: 'snapshot'
   }
   getViewLinkageGatherArray(requestInfo).then(rsp => {
     // 获取当前仪表板的图表(去掉当前图表)

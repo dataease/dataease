@@ -62,9 +62,9 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
         if (CollectionUtils.isNotEmpty(request.getTargetViewIds())) {
             List<VisualizationLinkageDTO> linkageDTOList = null;
             if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
-                extVisualizationLinkageMapper.getViewLinkageGatherSnapshot(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
+                linkageDTOList = extVisualizationLinkageMapper.getViewLinkageGatherSnapshot(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
             } else {
-                extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
+                linkageDTOList =  extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
             }
             return linkageDTOList.stream().collect(Collectors.toMap(targetViewId -> String.valueOf(targetViewId), PanelViewLinkageDTO -> PanelViewLinkageDTO));
         }
@@ -131,9 +131,9 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     public Map<String, List<String>> getVisualizationAllLinkageInfo(Long dvId, String resourceTable) {
         List<LinkageInfoDTO> info = null;
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
-            extVisualizationLinkageMapper.getPanelAllLinkageInfoSnapshot(dvId);
+            info = extVisualizationLinkageMapper.getPanelAllLinkageInfoSnapshot(dvId);
         }else{
-            extVisualizationLinkageMapper.getPanelAllLinkageInfo(dvId);
+            info = extVisualizationLinkageMapper.getPanelAllLinkageInfo(dvId);
         }
         return Optional.ofNullable(info).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(LinkageInfoDTO::getSourceInfo, LinkageInfoDTO::getTargetInfoList));
     }

@@ -117,7 +117,7 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
 
   await initCanvasData(
     dvId,
-    { busiFlag: dvType },
+    { busiFlag: dvType, resourceTable: 'core' },
     async function ({
       canvasDataResult,
       canvasStyleResult,

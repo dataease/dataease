@@ -263,9 +263,9 @@ public class CoreVisualizationManage {
             linkJumpMapper.deleteJumpTargetViewInfoWithVisualizationSnapshot(dvId);
             linkJumpMapper.deleteJumpInfoWithVisualizationSnapshot(dvId);
             linkJumpMapper.deleteJumpWithVisualizationSnapshot(dvId);
-            outerParamsMapper.deleteOuterParamsTargetWithVisualizationIdSnapshot(dvId);
-            outerParamsMapper.deleteOuterParamsInfoWithVisualizationIdSnapshot(dvId);
-            outerParamsMapper.deleteOuterParamsWithVisualizationIdSnapshot(dvId);
+            outerParamsMapper.deleteOuterParamsTargetWithVisualizationIdSnapshot(dvId.toString());
+            outerParamsMapper.deleteOuterParamsInfoWithVisualizationIdSnapshot(dvId.toString());
+            outerParamsMapper.deleteOuterParamsWithVisualizationIdSnapshot(dvId.toString());
         }
     }
     @Transactional

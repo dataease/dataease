@@ -192,7 +192,7 @@
           and ccv.jump_active = 1
     </select>
 
-    <select id="queryWithDvIdSnapshot" resultMap="BaseResultMapDTO">
+    <select id="queryWithDvIdSnapshot" resultMap="BaseResultMapDTOSnapshot">
         SELECT ccv.id                     AS source_view_id,
                #{uid}                                 as queryUid,
                #{isDesktop}                                 as isDesktop,
@@ -230,17 +230,17 @@
         	dvi.component_data)
     </select>
 
-    <select id="queryWithViewId" resultMap="BaseResultMapDTO">
-        SELECT core_chart_view.id                         AS source_view_id,
+    <select id="queryWithViewId" resultMap="BaseResultMapDTOSnapshot">
+        SELECT ccv.id                         AS source_view_id,
                #{uid}                                     as queryUid,
                #{isDesktop}                                 as isDesktop,
-               visualization_link_jump.id,
-               #{dvId} as source_dv_id, visualization_link_jump.link_jump_info,
-               ifnull(visualization_link_jump.checked, 0) AS checked
-        FROM core_chart_view
-                 LEFT JOIN visualization_link_jump ON core_chart_view.id = visualization_link_jump.source_view_id
-            AND visualization_link_jump.source_dv_id = #{dvId}
-        WHERE core_chart_view.id = #{viewId}
+               vlj.id,
+               #{dvId} as source_dv_id, vlj.link_jump_info,
+               ifnull(vlj.checked, 0) AS checked
+        FROM snapshot_core_chart_view ccv
+                 LEFT JOIN snapshot_visualization_link_jump vlj ON ccv.id = vlj.source_view_id
+            AND vlj.source_dv_id = #{dvId}
+        WHERE ccv.id = #{viewId}
     </select>
 
         <select id="queryOutParamsTargetWithDvId" resultType="io.dataease.api.visualization.vo.VisualizationOutParamsJumpVO">
@@ -256,29 +256,29 @@
             	vop.visualization_id = #{dvId}
         </select>
 
-    <delete id="deleteJumpTargetViewInfo">
-        DELETE FROM visualization_link_jump_target_view_info
+    <delete id="deleteJumpTargetViewInfoSnapshot">
+        DELETE FROM snapshot_visualization_link_jump_target_view_info
         WHERE link_jump_info_id IN (
             SELECT lji.id
-            FROM visualization_link_jump_info lji
-            JOIN visualization_link_jump lj ON lji.link_jump_id = lj.id
+            FROM snapshot_visualization_link_jump_info lji
+            JOIN snapshot_visualization_link_jump lj ON lji.link_jump_id = lj.id
             WHERE lj.source_dv_id = #{dvId}
               AND lj.source_view_id = #{viewId}
         );
     </delete>
 
-    <delete id="deleteJumpInfo">
-        DELETE FROM visualization_link_jump_info
+    <delete id="deleteJumpInfoSnapshot">
+        DELETE FROM snapshot_visualization_link_jump_info
         WHERE link_jump_id IN (
             SELECT lj.id
-            FROM visualization_link_jump lj
+            FROM snapshot_visualization_link_jump lj
             WHERE lj.source_dv_id = #{dvId}
               AND lj.source_view_id = #{viewId}
         );
     </delete>
 
-    <delete id="deleteJump">
-        DELETE FROM visualization_link_jump
+    <delete id="deleteJumpSnapshot">
+        DELETE FROM snapshot_visualization_link_jump
         WHERE source_dv_id = #{dvId}
           AND source_view_id = #{viewId}
     </delete>

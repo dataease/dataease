@@ -36,25 +36,47 @@
 
     <select id="getViewLinkageGather" resultMap="LinkageGatherMap">
         SELECT
-        core_chart_view.`title` as targetViewName,
-        core_chart_view.id as target_view_id,
-        core_chart_view.type as target_view_type,
-        core_chart_view.table_id,
-        visualization_linkage.source_view_id as sourceViewId,
-        (case when visualization_linkage.target_view_id is null then 0 else visualization_linkage.linkage_active end) as linkageActive,
-        visualization_linkage_field.source_field,
-        visualization_linkage_field.target_field
+        ccv.`title` as targetViewName,
+        ccv.id as target_view_id,
+        ccv.type as target_view_type,
+        ccv.table_id,
+        vl.source_view_id as sourceViewId,
+        (case when vl.target_view_id is null then 0 else vl.linkage_active end) as linkageActive,
+        vlf.source_field,
+        vlf.target_field
         FROM
-        core_chart_view
-        LEFT JOIN visualization_linkage ON core_chart_view.id = visualization_linkage.target_view_id
-        AND visualization_linkage.dv_id = #{dvId}
-        AND visualization_linkage.source_view_id = #{sourceViewId}
-        LEFT JOIN visualization_linkage_field ON visualization_linkage.id = visualization_linkage_field.linkage_id
-        where core_chart_view.type != 'VQuery' and core_chart_view.id in
+        core_chart_view ccv
+        LEFT JOIN visualization_linkage vl ON ccv.id = vl.target_view_id
+        AND vl.dv_id = #{dvId}
+        AND vl.source_view_id = #{sourceViewId}
+        LEFT JOIN visualization_linkage_field vlf ON vl.id = vlf.linkage_id
+        where ccv.type != 'VQuery' and ccv.id in
         <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
             #{targetViewId}
         </foreach>
     </select>
+
+    <select id="getViewLinkageGatherSnapshot" resultMap="LinkageGatherMap">
+            SELECT
+            ccv.`title` as targetViewName,
+            ccv.id as target_view_id,
+            ccv.type as target_view_type,
+            ccv.table_id,
+            vl.source_view_id as sourceViewId,
+            (case when vl.target_view_id is null then 0 else vl.linkage_active end) as linkageActive,
+            vlf.source_field,
+            vlf.target_field
+            FROM
+            snapshot_core_chart_view ccv
+            LEFT JOIN snapshot_visualization_linkage vl ON ccv.id = vl.target_view_id
+            AND vl.dv_id = #{dvId}
+            AND vl.source_view_id = #{sourceViewId}
+            LEFT JOIN snapshot_visualization_linkage_field vlf ON vl.id = vlf.linkage_id
+            where ccv.type != 'VQuery' and ccv.id in
+            <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
+                #{targetViewId}
+            </foreach>
+        </select>
 
     <select id="queryTableField" resultMap="TableFieldMap">
        select
