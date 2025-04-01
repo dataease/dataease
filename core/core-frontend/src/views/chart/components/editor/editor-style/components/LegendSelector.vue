@@ -318,13 +318,16 @@ onMounted(() => {
         :label="t('chart.show_range_bg')"
       />
     </el-form-item>
-    <div style="flex: 1; display: flex" v-if="state.legendForm.showRange">
+    <div
+      style="flex: 1; display: flex"
+      v-if="showProperty('showRange') && state.legendForm.showRange"
+    >
       <el-form-item :label="t('chart.icon')" class="form-item" :class="'form-item-' + themes">
         <el-select
           :effect="themes"
           v-model="state.legendForm.miscForm.bullet.bar.ranges.symbol"
           :placeholder="t('chart.icon')"
-          @change="changeMisc()"
+          @change="changeMisc('bullet.bar.ranges.symbol')"
         >
           <el-option
             v-for="item in iconSymbolOptions"
@@ -340,7 +343,7 @@ onMounted(() => {
           :effect="themes"
           v-model="state.legendForm.miscForm.bullet.bar.ranges.symbolSize"
           size="small"
-          @change="changeMisc()"
+          @change="changeMisc('bullet.bar.ranges.symbolSize')"
         >
           <el-option
             v-for="option in sizeList"
