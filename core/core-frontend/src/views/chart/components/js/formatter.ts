@@ -3,7 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { getLocale } from '@/utils/utils'
 const { t } = useI18n()
 
-export const isEnLocal = getLocale() === 'en'
+export const isEnLocal = !['zh', 'zh-cn', 'zh-CN', 'tw'].includes(getLocale())
 
 export const formatterItem = {
   type: 'auto', // auto,value,percent
