@@ -4073,6 +4073,8 @@ export default {
     save_apply: '儲存並套用'
   },
   data_fill: {
+    commit_operate_type: '提交類型',
+    committer: '提交人',
     data_fill: '資料填報',
     fill_in_the_task: '填報任務',
     data_fill_name: '資料填報名稱',

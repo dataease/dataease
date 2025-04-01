@@ -169,6 +169,11 @@ public interface DataFillingApi {
     @PostMapping("/log/page/{goPage}/{pageSize}")
     IPage<DfCommitLog> logPager(@RequestBody DfCommitLogRequest request, @PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize);
 
+    @Operation(summary = "清理数据填报操作日志")
+    @DePermit({"#p0.formId+':manage'"})
+    @PostMapping("/log/clear")
+    void clearLog(@RequestBody DfClearCommitLogRequest request) throws Exception;
+
     @Operation(summary = "上传Excel")
     @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/uploadFile")

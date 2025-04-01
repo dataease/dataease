@@ -4271,6 +4271,8 @@ export default {
       data_not_found: ']的数据不存在'
     },
     task: {
+      commit_operate_type: '提交类型',
+      committer: '提交人',
       send_status: '任务下发状态',
       df_task_status: '任务填报状态',
       time_check_5_minute_later_than_current: '不能小于当前时间5分钟后',

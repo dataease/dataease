@@ -4389,6 +4389,8 @@ export default {
       data_not_found: '] does not exist'
     },
     task: {
+      commit_operate_type: 'Commit type',
+      committer: 'Committer',
       time_check_5_minute_later_than_current:
         'Cannot be less than 5 minutes after the current time',
       time_check_later_than_current: 'Cannot be less than the current time',
