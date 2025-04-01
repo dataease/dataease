@@ -341,9 +341,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       }, {})
       s2Options.layoutCoordinate = (_, __, col) => {
         if (col?.isGrandTotals) {
-          if (colTotalCfgMap[col.value]) {
+          if (colTotalCfgMap[col.value]?.label) {
             col.label = colTotalCfgMap[col.value].label
-            // col.value = colTotalCfgMap[col.value].label
           }
         }
       }
