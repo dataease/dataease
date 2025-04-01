@@ -518,12 +518,11 @@ public class ChartDataServer implements ChartDataApi {
                 cell.setCellStyle(cellStyle);
                 cell.setCellValue(getDeFieldName(xAxis, column.getKey()));
             } else {
-                Cell cell1 = rowMap.get("row" + depth).createCell(width);
-                cell1.setCellValue(getDeFieldName(xAxis, column.getKey()));
-                cell1.setCellStyle(cellStyle);
-                Cell cell2 = rowMap.get("row" + toDepth).createCell(width);
-                cell2.setCellValue(getDeFieldName(xAxis, column.getKey()));
-                cell2.setCellStyle(cellStyle);
+                for (int i = depth; i <= toDepth; i++) {
+                    Cell cell1 = rowMap.get("row" + i).createCell(width);
+                    cell1.setCellValue(getDeFieldName(xAxis, column.getKey()));
+                    cell1.setCellStyle(cellStyle);
+                }
                 CellRangeAddress region = new CellRangeAddress(depth, toDepth, width, width);
                 sheet.addMergedRegion(region);
 
