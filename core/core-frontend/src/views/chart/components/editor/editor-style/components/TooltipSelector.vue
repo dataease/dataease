@@ -69,6 +69,7 @@ const changeChartType = () => {
   formatter.splice(0, formatter.length)
   const axisIds = []
   quotaAxis.value.forEach(axis => {
+    initFormatCfgUnit(axis.formatterCfg)
     formatter.push({
       ...axis,
       show: true
@@ -77,6 +78,7 @@ const changeChartType = () => {
   })
   quotaData.value.forEach(quotaAxis => {
     if (!axisIds.includes(quotaAxis.id)) {
+      initFormatCfgUnit(quotaAxis.formatterCfg)
       formatter.push({
         ...quotaAxis,
         seriesId: quotaAxis.id,
@@ -248,9 +250,6 @@ const init = () => {
     const customAttr = JSON.parse(JSON.stringify(chart.customAttr))
     if (customAttr.tooltip) {
       state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
-      //初始化format单位语言
-      initFormatCfgUnit(state.tooltipForm.tooltipFormatter)
-
       formatterSelector.value?.blur()
       // 新增图表
       const formatter = state.tooltipForm.seriesTooltipFormatter
@@ -260,7 +259,7 @@ const init = () => {
         return
       }
       formatter.forEach(f => {
-        initFormatCfgUnit(f)
+        initFormatCfgUnit(f.formatterCfg)
       })
       const seriesAxisMap = formatter.reduce((pre, next) => {
         next.seriesId = next.seriesId ?? next.id
@@ -617,6 +616,7 @@ onMounted(() => {
               :class="'form-item-' + themes"
             >
               <el-select
+                :disabled="state.tooltipForm.tooltipFormatter.type === 'percent'"
                 size="small"
                 :effect="themes"
                 v-model="state.tooltipForm.tooltipFormatter.unitLanguage"
@@ -832,6 +832,9 @@ onMounted(() => {
                   :class="'form-item-' + themes"
                 >
                   <el-select
+                    :disabled="
+                      !curSeriesFormatter.show || curSeriesFormatter.formatterCfg.type == 'percent'
+                    "
                     size="small"
                     :effect="themes"
                     v-model="curSeriesFormatter.formatterCfg.unitLanguage"

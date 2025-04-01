@@ -1079,6 +1079,7 @@ const isProgressBar = computed(() => {
                 :class="'form-item-' + themes"
               >
                 <el-select
+                  :disabled="!state.labelForm.showQuota"
                   size="small"
                   :effect="themes"
                   v-model="state.labelForm.quotaLabelFormatter.unitLanguage"
@@ -1376,6 +1377,7 @@ const isProgressBar = computed(() => {
                   :class="'form-item-' + themes"
                 >
                   <el-select
+                    :disabled="!curSeriesFormatter.show"
                     size="small"
                     :effect="themes"
                     v-model="curSeriesFormatter.formatterCfg.unitLanguage"
@@ -1611,6 +1613,7 @@ const isProgressBar = computed(() => {
                 :class="'form-item-' + themes"
               >
                 <el-select
+                  :disabled="!state.labelForm.childrenShow"
                   size="small"
                   :effect="themes"
                   v-model="state.labelForm.labelFormatter.unitLanguage"
@@ -1868,6 +1871,7 @@ const isProgressBar = computed(() => {
                 :class="'form-item-' + themes"
               >
                 <el-select
+                  :disabled="!state.labelForm.childrenShow"
                   size="small"
                   :effect="themes"
                   v-model="state.labelForm.labelFormatter.unitLanguage"
