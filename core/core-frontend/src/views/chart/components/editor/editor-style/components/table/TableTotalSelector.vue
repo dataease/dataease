@@ -160,6 +160,7 @@ const init = () => {
       total.dataeaseName = totalCfg[0].dataeaseName
       total.aggregation = totalCfg[0].aggregation
       total.originName = totalCfg[0].originName
+      total.label = totalCfg[0].label
     }
   })
 
@@ -175,6 +176,7 @@ const changeTotal = (totalItem, totals) => {
     if (item.dataeaseName === totalItem.dataeaseName) {
       totalItem.aggregation = item.aggregation
       totalItem.originName = item.originName
+      totalItem.label = item.label
       return
     }
   }
@@ -184,6 +186,7 @@ const changeTotalAggr = (totalItem, totals, colOrNum) => {
     const item = totals[i]
     if (item.dataeaseName === totalItem.dataeaseName) {
       item.aggregation = totalItem.aggregation
+      item.label = totalItem.label
       break
     }
   }
@@ -197,7 +200,8 @@ const setupTotalCfg = (totalCfg, axis) => {
     axis.forEach(i => {
       totalCfg.push({
         dataeaseName: i.dataeaseName,
-        aggregation: 'SUM'
+        aggregation: 'SUM',
+        label: i.chartShowName ?? i.name
       })
     })
     return
@@ -215,7 +219,8 @@ const setupTotalCfg = (totalCfg, axis) => {
     totalCfg.push({
       dataeaseName: i.dataeaseName,
       aggregation: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].aggregation : 'SUM',
-      originName: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].originName : ''
+      originName: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].originName : '',
+      label: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].label : i.chartShowName ?? i.name
     })
   })
 }
@@ -656,6 +661,27 @@ onMounted(() => {
             />
           </el-icon>
         </el-col>
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :label="t('chart.total_label')"
+        :class="'form-item-' + themes"
+      >
+        <el-input
+          :effect="themes"
+          :placeholder="t('chart.total_label')"
+          size="small"
+          maxlength="20"
+          v-model="state.colTotalItem.label"
+          clearable
+          @change="
+            changeTotalAggr(
+              state.colTotalItem,
+              state.tableTotalForm.col.calcTotals.cfg,
+              'col.calcTotals.cfg'
+            )
+          "
+        />
       </el-form-item>
       <el-form-item
         v-if="chart.type === 'table-pivot'"

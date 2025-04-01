@@ -328,6 +328,26 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         s2Options.style.hierarchyCollapse = true
       }
     }
+    // 列汇总别名
+    if (
+      chart.xAxisExt?.length &&
+      chart.yAxis?.length > 1 &&
+      tableTotal.col.showGrandTotals &&
+      tableTotal.col.calcTotals?.cfg?.length
+    ) {
+      const colTotalCfgMap = tableTotal.col.calcTotals.cfg.reduce((p, n) => {
+        p[n.dataeaseName] = n
+        return p
+      }, {})
+      s2Options.layoutCoordinate = (_, __, col) => {
+        if (col?.isGrandTotals) {
+          if (colTotalCfgMap[col.value]) {
+            col.label = colTotalCfgMap[col.value].label
+            // col.value = colTotalCfgMap[col.value].label
+          }
+        }
+      }
+    }
     // tooltip
     this.configTooltip(chart, s2Options)
     // 开始渲染

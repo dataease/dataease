@@ -629,11 +629,18 @@ declare interface CalcTotals {
  */
 declare interface CalcTotalCfg extends Axis {
   dataeaseName: string
+  /**
+   * 聚合方式
+   */
   aggregation: 'MIN' | 'MAX' | 'AVG' | 'SUM' | 'CUSTOM' | ''
   /**
    * 自定义汇总表达式
    */
   originName: string
+  /**
+   * 别名
+   */
+  label: string
 }
 
 /**
