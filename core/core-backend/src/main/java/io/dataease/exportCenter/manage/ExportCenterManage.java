@@ -3,7 +3,6 @@ package io.dataease.exportCenter.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.gson.Gson;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;
@@ -489,7 +488,6 @@ public class ExportCenterManage implements BaseExportApi {
                     rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), user.getUserId());
                 }
                 if (StringUtils.isNotEmpty(request.getExpressionTree())) {
-                    Gson gson = new Gson();
                     DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj = JsonUtil.parseObject(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
                     permissionManage.getField(datasetRowPermissionsTreeObj);
                     DataSetRowPermissionsTreeDTO dataSetRowPermissionsTreeDTO = new DataSetRowPermissionsTreeDTO();
