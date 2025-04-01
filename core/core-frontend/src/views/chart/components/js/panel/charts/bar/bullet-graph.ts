@@ -130,14 +130,14 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
     // 处理自定义区间
     const { bullet } = parseJson(chart.customAttr).misc
     if (bullet.bar.ranges.showType === 'fixed') {
-      const customRange = bullet.bar.ranges.fixedRange?.map(item => item.fixedRangeValue) || []
+      const customRange = bullet.bar.ranges.fixedRange?.map(item => item.fixedRangeValue) || [0]
       result.forEach(item => (item.ranges = customRange))
     } else {
       result.forEach(item => (item.ranges = item.originalRanges))
     }
     // 处理自定义目标值
     if (bullet.bar.target.showType === 'fixed') {
-      const customTarget = bullet.bar.target.value
+      const customTarget = bullet.bar.target.value || 0
       result.forEach(item => (item.target = customTarget))
     } else {
       result.forEach(item => (item.target = item.originalTarget))
@@ -336,7 +336,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
           )
         }
       } else {
-        bullet.bar.ranges.fixedRange.forEach(item => {
+        bullet.bar.ranges.fixedRange?.forEach(item => {
           items.push(
             createLegendItem(
               item.name,

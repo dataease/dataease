@@ -58,6 +58,9 @@ const changeStyle = (prop?) => {
   emit('onMiscChange', { data: { bullet: { ...state.bulletForm } }, requestData: true }, prop)
 }
 const changeRangeNumber = () => {
+  if (state.bulletForm.bar.ranges.fixedRangeNumber === null) {
+    state.bulletForm.bar.ranges.fixedRangeNumber = 1
+  }
   if (state.rangeList.length > state.bulletForm.bar.ranges.fixedRangeNumber) {
     state.rangeList = state.rangeList.slice(0, state.bulletForm.bar.ranges.fixedRangeNumber)
   } else {

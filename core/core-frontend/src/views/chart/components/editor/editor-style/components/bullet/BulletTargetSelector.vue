@@ -46,6 +46,9 @@ watch(
   { deep: true }
 )
 const changeStyle = (prop?) => {
+  if (state.bulletForm.bar.target.value === null) {
+    state.bulletForm.bar.target.value = 1
+  }
   emit('onMiscChange', { data: { bullet: { ...state.bulletForm } }, requestData: true }, prop)
 }
 
@@ -142,7 +145,6 @@ onMounted(() => {
               :effect="props.themes"
               v-model="state.bulletForm.bar.target.value"
               :min="1"
-              :max="100"
               size="small"
               controls-position="right"
               @change="changeStyle('bar.target.value')"
