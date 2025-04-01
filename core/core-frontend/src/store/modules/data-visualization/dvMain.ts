@@ -1590,7 +1590,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         name: name,
         pid: pid,
         type: dvType,
-        status: 1,
+        status: 0,
         selfWatermarkStatus: true,
         watermarkInfo: watermarkInfo,
         mobileLayout: false,

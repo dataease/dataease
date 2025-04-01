@@ -64,7 +64,7 @@ public class SnapshotDataVisualizationInfo implements Serializable {
     /**
      * 移动端布局0-关闭 1-开启
      */
-    private Byte mobileLayout;
+    private Boolean mobileLayout;
 
     /**
      * 状态 0-未发布 1-已发布
@@ -213,11 +213,11 @@ public class SnapshotDataVisualizationInfo implements Serializable {
         this.componentData = componentData;
     }
 
-    public Byte getMobileLayout() {
+    public Boolean getMobileLayout() {
         return mobileLayout;
     }
 
-    public void setMobileLayout(Byte mobileLayout) {
+    public void setMobileLayout(Boolean mobileLayout) {
         this.mobileLayout = mobileLayout;
     }
 

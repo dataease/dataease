@@ -513,7 +513,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 coreVisualizationManage.move(request);
             }
         }
-        visualizationInfo.setStatus(CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
+        visualizationInfo.setStatus(request.getStatus()!=null?request.getStatus():CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());

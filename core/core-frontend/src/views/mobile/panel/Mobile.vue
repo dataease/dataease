@@ -15,6 +15,7 @@ import 'vant/es/nav-bar/style'
 import 'vant/es/sticky/style'
 import { downloadCanvas2 } from '@/utils/imgUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const dvMainStore = dvMainStoreWithOut()
 const state = reactive({
   canvasDataPreview: null,
@@ -138,6 +139,12 @@ const storeQuery = () => {
         ><icon_replace_outlined
       /></el-icon>
     </div>
+    <canvas-opt-bar
+      style="top: 48px"
+      canvas-id="canvas-main"
+      :canvas-style-data="state.canvasStylePreview || {}"
+      :component-data="state.canvasDataPreview || []"
+    ></canvas-opt-bar>
     <de-preview
       ref="dashboardPreview"
       v-if="state.canvasStylePreview && dataInitState"
@@ -147,6 +154,7 @@ const storeQuery = () => {
       :canvas-style-data="state.canvasStylePreview"
       :canvas-view-info="state.canvasViewInfoPreview"
       :download-status="downloadStatus"
+      :show-linkage-button="false"
     ></de-preview>
   </div>
 </template>
