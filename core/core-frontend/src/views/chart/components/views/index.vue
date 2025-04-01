@@ -54,7 +54,8 @@ import request from '@/config/axios'
 import { store } from '@/store'
 import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
-
+import { useRoute } from 'vue-router'
+const route = useRoute()
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
 const { t } = useI18n()
@@ -368,7 +369,7 @@ const chartClick = param => {
 // 仪表板和大屏所有额外过滤参数都在此处
 const filter = (firstLoad?: boolean) => {
   const { filter } = useFilter(view.value.id, firstLoad)
-  return {
+  const result = {
     user: wsCache.get('user.uid'),
     filter,
     linkageFilters: element.value.linkageFilters,
@@ -378,6 +379,18 @@ const filter = (firstLoad?: boolean) => {
     resultCount: resultCount.value,
     resultMode: resultMode.value
   }
+  // 定时报告相关勿动
+  if (route.path === '/preview' && route.query.taskId) {
+    const sceneId = view.value['sceneId']
+    const filterJson = window[`de-report-filter-${sceneId}`]
+    let filterObj = {}
+    if (filterJson) {
+      filterObj = JSON.parse(filterJson)
+    }
+    filterObj[view.value.id] = result
+    window[`de-report-filter-${sceneId}`] = JSON.stringify(filterObj)
+  }
+  return result
 }
 
 const onDrillFilters = param => {

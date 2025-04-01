@@ -6,8 +6,8 @@ import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.constant.CommonConstants;
-import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.constant.DeTypeConstants;
+import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
@@ -52,15 +52,15 @@ public class CoreVisualizationExportManage {
     private DatasetFieldServer datasetFieldServer;
 
     public String getResourceName(Long dvId, String busiFlag) {
-        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag,"core");
+        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag, "core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
         return visualization.getName();
     }
 
-    public File exportExcel(Long dvId, String busiFlag, List<Long> viewIdList, boolean onlyDisplay) throws Exception {
-        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag,"core");
+    public File exportExcel(Long dvId, String busiFlag, List<Long> viewIdList, boolean onlyDisplay, String filterJson) throws Exception {
+        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag, "core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
-        List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId,CommonConstants.RESOURCE_TABLE.CORE);
+        List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId, CommonConstants.RESOURCE_TABLE.CORE);
 
         String componentsJson = visualization.getComponentData();
         List<Map<String, Object>> components = JsonUtil.parseList(componentsJson, tokenType);
@@ -70,11 +70,11 @@ public class CoreVisualizationExportManage {
             chartViewDTOS = chartViewDTOS.stream().filter(item -> idList.contains(item.getId()) && viewIdList.contains(item.getId())).collect(Collectors.toList());
         }
         if (CollectionUtils.isEmpty(chartViewDTOS)) return null;
-        Map<String, ChartExtRequest> chartExtRequestMap = buildViewRequest(visualization, onlyDisplay);
+        Map<Long, ChartExtRequest> chartExtRequestMap = buildViewRequest(filterJson);
         List<ExcelSheetModel> sheets = new ArrayList<>();
         for (int i = 0; i < chartViewDTOS.size(); i++) {
             ChartViewDTO view = chartViewDTOS.get(i);
-            ChartExtRequest extRequest = chartExtRequestMap.get(view.getId().toString());
+            ChartExtRequest extRequest = chartExtRequestMap.get(view.getId());
             if (ObjectUtils.isNotEmpty(extRequest)) {
                 view.setChartExtRequest(extRequest);
             }
@@ -187,6 +187,13 @@ public class CoreVisualizationExportManage {
     private final TypeReference<List<Map<String, Object>>> tokenType = new TypeReference<List<Map<String, Object>>>() {
     };
 
+    private Map<Long, ChartExtRequest> buildViewRequest(String filterJson) {
+        if (StringUtils.isBlank(filterJson)) {
+            return new HashMap<>();
+        }
+        return JsonUtil.parseObject(filterJson, new TypeReference<Map<Long, ChartExtRequest>>() {
+        });
+    }
 
     private Map<String, ChartExtRequest> buildViewRequest(DataVisualizationVO panelDto, Boolean justView) {
         String componentsJson = panelDto.getComponentData();
