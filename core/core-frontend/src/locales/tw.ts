@@ -2807,6 +2807,10 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    filter_freeze_tips: '已存在置頂查詢組件，確定切換該組件？',
+    query_position: '查詢組件位置',
+    default: '預設',
+    to_top: '置頂',
     publish_recover: '恢復到發佈版本',
     publish_tips1: '發佈後可查看',
     publish_tips2: '發佈後可{0}',

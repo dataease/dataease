@@ -2886,6 +2886,11 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    filter_freeze_tips:
+      'A pinned query component already exists. Confirm switching to this component?',
+    query_position: 'Query Component Position',
+    default: 'Default',
+    to_top: 'Pin to Top',
     publish_recover: 'Revert to the published version',
     publish_tips1: 'Visible after publication',
     publish_tips2: 'Available after publication {0}',

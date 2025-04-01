@@ -2813,6 +2813,10 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    filter_freeze_tips: '已存在置顶查询组件,确定切换该组件？',
+    query_position: '查询组件位置',
+    default: '默认',
+    to_top: '置顶',
     publish_recover: '恢复到发布版本',
     publish_tips1: '发布后可查看',
     publish_tips2: '发布后可{0}',

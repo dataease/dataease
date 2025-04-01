@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
 import { uploadFileResult } from '@/api/staticResource'
 import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
@@ -117,13 +117,40 @@ const currentSearch = ref({
   queryConditionWidth: 227
 })
 
-const onFreezeChange = () => {
+const onFreezeChange = newVal => {
   if (element.value.freeze) {
+    let historyFreezeCount = 0
     dvMainStore.componentData.forEach(item => {
       if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
-        item.freeze = false
+        historyFreezeCount++
       }
     })
+    if (historyFreezeCount) {
+      ElMessageBox.confirm(t('visualization.filter_freeze_tips'), {
+        confirmButtonType: 'primary',
+        type: 'warning',
+        confirmButtonText: t('common.sure'),
+        cancelButtonText: t('common.cancel'),
+        autofocus: false,
+        showClose: false
+      })
+        .then(() => {
+          dvMainStore.componentData.forEach(item => {
+            if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+              item.freeze = false
+            }
+          })
+        })
+        .catch(() => {
+          element.value.freeze = false
+        })
+    } else {
+      dvMainStore.componentData.forEach(item => {
+        if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+          item.freeze = false
+        }
+      })
+    }
   }
 }
 
@@ -266,16 +293,6 @@ const onTitleChange = () => {
               <el-checkbox
                 :effect="themes"
                 size="small"
-                v-model="element.freeze"
-                @change="onFreezeChange"
-              >
-                {{ t('visualization.freeze_top') }}
-              </el-checkbox>
-            </el-form-item>
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                :effect="themes"
-                size="small"
                 v-model="chart.customStyle.component.titleShow"
               >
                 {{ t('chart.show') + t('chart.title') }}
@@ -308,6 +325,25 @@ const onTitleChange = () => {
                 is-custom
                 :predefine="COLOR_PANEL"
               />
+            </el-form-item>
+            <el-form-item
+              class="form-item margin-bottom-8"
+              :class="'form-item-' + themes"
+              :label="t('visualization.query_position')"
+            >
+              <el-radio-group
+                v-model="element.freeze"
+                :effect="themes"
+                size="small"
+                @change="onFreezeChange"
+              >
+                <el-radio :effect="themes" style="min-width: 80px" :label="true">{{
+                  t('visualization.to_top')
+                }}</el-radio>
+                <el-radio :effect="themes" style="min-width: 80px" :label="false">{{
+                  t('visualization.default')
+                }}</el-radio>
+              </el-radio-group>
             </el-form-item>
             <background-overall-common
               :common-background-pop="commonBackgroundPop"
