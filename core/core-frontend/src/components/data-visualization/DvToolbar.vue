@@ -309,6 +309,7 @@ const publishStatusChange = status => {
   updatePublishStatus({
     id: dvInfo.value.id,
     name: dvInfo.value.name,
+    mobileLayout: dvInfo.value.mobileLayout,
     status,
     type: 'dataV'
   }).then(() => {
@@ -476,7 +477,7 @@ const fullScreenPreview = () => {
         <el-dropdown effect="dark" popper-class="menu-outer-dv_popper" trigger="hover">
           <el-button
             @click="publishStatusChange(1)"
-            :disabled="dvInfo.status === 1"
+            :disabled="dvInfo.status === 1 || !dvInfo.id"
             style="float: right; margin: 0 12px 0 0"
             type="primary"
           >

@@ -140,6 +140,7 @@ const onFreezeChange = newVal => {
               item.freeze = false
             }
           })
+          snapshotStore.recordSnapshotCache('onFreezeChange')
         })
         .catch(() => {
           element.value.freeze = false
@@ -150,7 +151,10 @@ const onFreezeChange = newVal => {
           item.freeze = false
         }
       })
+      snapshotStore.recordSnapshotCache('onFreezeChange')
     }
+  } else {
+    snapshotStore.recordSnapshotCache('onFreezeChange')
   }
 }
 

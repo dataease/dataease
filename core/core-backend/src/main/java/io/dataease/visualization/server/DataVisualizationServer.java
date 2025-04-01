@@ -529,7 +529,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
          * */
         Long dvId = request.getId();
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
-        visualizationInfo.setStatus(request.getStatus());
+        visualizationInfo.setMobileLayout(request.getMobileLayout());
         visualizationInfo.setId(dvId);
         visualizationInfo.setName(request.getName());
         visualizationInfo.setStatus(request.getStatus());

@@ -673,7 +673,7 @@ eventBus.on('tabSort', tabSort)
     :canvas-data-preview="componentData"
     :canvas-style-preview="canvasStyleData"
     :canvas-view-info-preview="canvasViewInfo"
-    :dv-info="dvInfo"
+    :dv-info="{ ...dvInfo, status: 1 }"
   ></dv-preview>
   <custom-tabs-sort ref="customTabsSortRef"></custom-tabs-sort>
 </template>

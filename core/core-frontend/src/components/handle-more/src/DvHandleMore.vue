@@ -137,7 +137,7 @@ const menuDisabledCheck = ele => {
   color: var(--ed-text-color-disabled) !important;
 }
 .de-hidden-drop-item {
-  display: none;
+  display: none !important;
 }
 .menu-more-dv_popper {
   width: 120px;
