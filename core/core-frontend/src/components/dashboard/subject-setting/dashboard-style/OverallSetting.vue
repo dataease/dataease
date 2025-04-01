@@ -38,45 +38,46 @@
         />
       </el-select>
     </el-form-item>
-    <el-form-item
-      v-if="dvInfo.type === 'dashboard'"
-      class="form-item"
-      :class="'form-item-' + themes"
-      :label="t('visualization.component_gap')"
-    >
-      <el-radio-group v-model="canvasStyleData.dashboard.gap" @change="themeChange">
-        <el-radio :effect="themes" label="yes">{{ t('visualization.gap') }}</el-radio>
-        <el-radio :effect="themes" label="no">{{ t('visualization.no_gap') }}</el-radio>
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item
-      v-if="canvasStyleData.dashboard.gap === 'yes'"
-      class="form-item"
-      :class="'form-item-' + themes"
-      :label="t('visualization.gap_size')"
-    >
-      <el-radio-group v-model="canvasStyleData.dashboard.gapMode" @change="onGapModeChange">
-        <el-radio :effect="themes" label="small">{{ t('visualization.small') }}</el-radio>
-        <el-radio :effect="themes" label="middle">{{ t('visualization.middle') }}</el-radio>
-        <el-radio :effect="themes" label="large">{{ t('visualization.large') }}</el-radio>
-        <el-radio :effect="themes" label="custom">{{ t('visualization.custom') }}</el-radio>
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-show="canvasStyleData.dashboard.gapMode === 'custom'"
-    >
-      <el-input-number
-        v-model="canvasStyleData.dashboard.gapSize"
-        :effect="themes"
-        controls-position="right"
-        size="middle"
-        :min="0"
-        :max="50"
-        @change="themeChange"
-      />
-    </el-form-item>
+    <template v-if="dvInfo.type === 'dashboard'">
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        :label="t('visualization.component_gap')"
+      >
+        <el-radio-group v-model="canvasStyleData.dashboard.gap" @change="themeChange">
+          <el-radio :effect="themes" label="yes">{{ t('visualization.gap') }}</el-radio>
+          <el-radio :effect="themes" label="no">{{ t('visualization.no_gap') }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item
+        v-if="canvasStyleData.dashboard.gap === 'yes'"
+        class="form-item"
+        :class="'form-item-' + themes"
+        :label="t('visualization.gap_size')"
+      >
+        <el-radio-group v-model="canvasStyleData.dashboard.gapMode" @change="onGapModeChange">
+          <el-radio :effect="themes" label="small">{{ t('visualization.small') }}</el-radio>
+          <el-radio :effect="themes" label="middle">{{ t('visualization.middle') }}</el-radio>
+          <el-radio :effect="themes" label="large">{{ t('visualization.large') }}</el-radio>
+          <el-radio :effect="themes" label="custom">{{ t('visualization.custom') }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-show="canvasStyleData.dashboard.gapMode === 'custom'"
+      >
+        <el-input-number
+          v-model="canvasStyleData.dashboard.gapSize"
+          :effect="themes"
+          controls-position="right"
+          size="middle"
+          :min="0"
+          :max="10"
+          @change="themeChange"
+        />
+      </el-form-item>
+    </template>
     <el-form-item
       v-if="dvInfo.type === 'dashboard'"
       class="form-item"
