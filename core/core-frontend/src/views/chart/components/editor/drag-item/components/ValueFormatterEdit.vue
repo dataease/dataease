@@ -32,6 +32,7 @@ const state = reactive({
 
 function changeUnitLanguage(cfg: BaseFormatter, lang) {
   onChangeFormatCfgUnitLanguage(cfg, lang)
+  getExampleValue()
 }
 
 const init = () => {
