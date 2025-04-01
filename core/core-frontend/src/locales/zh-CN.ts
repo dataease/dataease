@@ -2025,7 +2025,12 @@ export default {
     range_num: '区间背景个数',
     show_range_bg: '显示区间背景',
     last_item: '最后一项',
-    legend_sort: '图例排序'
+    legend_sort: '图例排序',
+    quota_position: '指标展示',
+    quota_position_col: '列头展示',
+    quota_position_row: '行头展示',
+    table_grand_total_label: '总计别名',
+    table_field_total_label: '字段别名'
   },
   dataset: {
     field_value: '字段值',

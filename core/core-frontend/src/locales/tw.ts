@@ -2019,7 +2019,12 @@ export default {
     range_num: '區間背景個數',
     show_range_bg: '顯示區間背景',
     last_item: '最後一項',
-    legend_sort: '圖例排序'
+    legend_sort: '圖例排序',
+    quota_position: '指標展示',
+    quota_position_col: '列頭展示',
+    quota_position_row: '行頭展示',
+    table_grand_total_label: '總計別名',
+    table_field_total_label: '字段別名'
   },
   dataset: {
     field_value: '欄位值',

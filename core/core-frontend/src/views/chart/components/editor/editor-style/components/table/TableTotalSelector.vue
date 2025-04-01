@@ -220,7 +220,9 @@ const setupTotalCfg = (totalCfg, axis) => {
       dataeaseName: i.dataeaseName,
       aggregation: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].aggregation : 'SUM',
       originName: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].originName : '',
-      label: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].label : i.chartShowName ?? i.name
+      label: cfgMap[i.dataeaseName]?.label
+        ? cfgMap[i.dataeaseName].label
+        : i.chartShowName ?? i.name
     })
   })
 }
@@ -308,13 +310,13 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        :label="t('chart.total_label')"
+        :label="t('chart.table_grand_total_label')"
         class="form-item"
         :class="'form-item-' + themes"
       >
         <el-input
           :effect="themes"
-          :placeholder="t('chart.total_label')"
+          :placeholder="t('chart.table_grand_total_label')"
           size="small"
           maxlength="20"
           v-model="state.tableTotalForm.row.label"
@@ -593,13 +595,13 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        :label="t('chart.total_label')"
+        :label="t('chart.table_grand_total_label')"
         class="form-item"
         :class="'form-item-' + themes"
       >
         <el-input
           :effect="themes"
-          :placeholder="t('chart.total_label')"
+          :placeholder="t('chart.table_grand_total_label')"
           size="small"
           maxlength="20"
           v-model="state.tableTotalForm.col.label"
@@ -664,12 +666,12 @@ onMounted(() => {
       </el-form-item>
       <el-form-item
         class="form-item"
-        :label="t('chart.total_label')"
+        :label="t('chart.table_field_total_label')"
         :class="'form-item-' + themes"
       >
         <el-input
           :effect="themes"
-          :placeholder="t('chart.total_label')"
+          :placeholder="t('chart.table_field_total_label')"
           size="small"
           maxlength="20"
           v-model="state.colTotalItem.label"

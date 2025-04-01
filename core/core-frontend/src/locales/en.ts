@@ -2076,7 +2076,12 @@ export default {
     range_num: 'Number of Range',
     show_range_bg: 'Show Range Background',
     last_item: 'Last item',
-    legend_sort: 'Legend sort'
+    legend_sort: 'Legend Sort',
+    quota_position: 'Quota Position',
+    quota_position_col: 'Col',
+    quota_position_row: 'Row',
+    table_grand_total_label: 'Total Alias',
+    table_field_total_label: 'Field Alias'
   },
   dataset: {
     field_value: 'Field Value',
