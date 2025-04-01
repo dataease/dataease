@@ -75,7 +75,7 @@ const props = defineProps({
 const defaultProps = {
   children: 'children',
   label: 'name',
-  disabled: 'leaf'
+  disabled: (data: any) => data.extraFlag1 === 0
 }
 const mounted = ref(false)
 const rootManage = ref(false)
@@ -259,13 +259,24 @@ const cancelPreRequest = () => {
   cancelRequestBatch('/linkJump/queryVisualizationJumpInfo/**')
 }
 
-const nodeClick = (data: BusiTreeNode) => {
-  cancelPreRequest()
-  selectedNodeKey.value = data.id
-  if (data.leaf) {
-    emit('nodeClick', data)
+const nodeClick = (data: BusiTreeNode, node) => {
+  if (node.disabled) {
+    nextTick(() => {
+      // 找到当前高亮的节点，移除高亮样式
+      const currentNode = resourceListTree.value.$el.querySelector('.is-current')
+      if (currentNode) {
+        currentNode.classList.remove('is-current')
+      }
+      return // 阻止后续逻辑
+    })
   } else {
-    resourceListTree.value.setCurrentKey(null)
+    cancelPreRequest()
+    selectedNodeKey.value = data.id
+    if (data.leaf) {
+      emit('nodeClick', data)
+    } else {
+      resourceListTree.value.setCurrentKey(null)
+    }
   }
 }
 
@@ -745,7 +756,12 @@ defineExpose({
                 ></component
               ></Icon>
             </el-icon>
-            <el-icon class="icon-screen-new color-dataV" style="font-size: 18px" v-else>
+            <el-icon
+              class="icon-screen-new color-dataV"
+              :class="{ 'color-dataV': data.extraFlag1, 'color-dataV-disabled': !data.extraFlag1 }"
+              style="font-size: 18px"
+              v-else
+            >
               <Icon name="icon_operation-analysis_outlined"
                 ><icon_operationAnalysis_outlined class="svg-icon"
               /></Icon>
@@ -967,5 +983,9 @@ defineExpose({
 .node-disabled-custom {
   color: rgba(187, 191, 196, 1);
   cursor: not-allowed;
+}
+
+.color-dataV-disabled {
+  background: #bbbfc4 !important;
 }
 </style>

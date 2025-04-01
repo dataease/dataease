@@ -256,7 +256,8 @@ const saveResource = () => {
         nodeType: nodeType.value as 'folder' | 'leaf',
         name: resourceForm.name,
         type: curCanvasType.value,
-        mobileLayout: state.targetInfo?.extraFlag
+        mobileLayout: state.targetInfo?.extraFlag,
+        status: state.targetInfo?.extraFlag1
       }
 
       switch (cmd.value) {

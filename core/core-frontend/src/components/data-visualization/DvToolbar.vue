@@ -476,6 +476,7 @@ const fullScreenPreview = () => {
         <el-dropdown effect="dark" popper-class="menu-outer-dv_popper" trigger="hover">
           <el-button
             @click="publishStatusChange(1)"
+            :disabled="dvInfo.status === 1"
             style="float: right; margin: 0 12px 0 0"
             type="primary"
           >

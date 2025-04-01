@@ -7,6 +7,7 @@ export interface ResourceOrFolder {
   nodeType: 'folder' | 'leaf'
   type: string
   mobileLayout: boolean
+  status: boolean
 }
 
 export interface Panel {
