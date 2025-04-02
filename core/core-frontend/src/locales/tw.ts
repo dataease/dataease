@@ -4,6 +4,7 @@ export default {
     other_levels: '除層級一外,其他層級無須進行查詢條件配置',
     tree_structure: '下拉樹的結構不能為空',
     associated_chart: '關聯圖表',
+    changing_the_display: '更改展示類型將會清除下拉樹相關設定,是否確定?',
     associated_chart_first: '第一層級已關聯圖表',
     component: {
       input: '單行輸入',

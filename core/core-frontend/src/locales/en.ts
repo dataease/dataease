@@ -3,6 +3,8 @@ export default {
     empty: ' ',
     associated_chart: 'Associated chart',
     associated_chart_first: 'First level associated chart',
+    changing_the_display:
+      'Changing the display type will clear the drop-down tree related settings. Are you sure?',
     other_levels:
       'Except for level 1, no query condition configuration is required for other levels',
     tree_structure: 'The drop-down tree structure cannot be empty',
@@ -2911,7 +2913,6 @@ export default {
     small: 'Small',
     middle: 'Medium',
     large: 'Large',
-    custom: 'Custom',
     no_details: 'No Data',
     sync_pc_design: 'Synchronize PC Design',
     title_background: 'Title Background',

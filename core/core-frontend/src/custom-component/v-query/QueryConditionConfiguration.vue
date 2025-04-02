@@ -764,6 +764,27 @@ const setType = () => {
   }
 }
 
+let oldDisplayType
+
+const handleSetTypeChange = () => {
+  let displayType = curComponent.value.displayType
+  if (oldDisplayType === '9' && ['0', '8'].includes(displayType)) {
+    curComponent.value.displayType = '9'
+    ElMessageBox.confirm(t('common.changing_the_display'), {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      cancelButtonText: t('common.cancel'),
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      curComponent.value.displayType = displayType
+      setTypeChange()
+    })
+  } else {
+    setTypeChange()
+  }
+}
+
 const setTypeChange = () => {
   handleDialogClick()
   nextTick(() => {
@@ -779,6 +800,11 @@ const setTypeChange = () => {
     }
     setTreeDefault()
     setRelationBack()
+    if (curComponent.value.displayType === '0' && curComponent.value.treeFieldList?.length) {
+      curComponent.value.treeFieldList = []
+      curComponent.value.treeCheckedList = []
+    }
+    oldDisplayType = curComponent.value.displayType
   })
 }
 
@@ -1827,6 +1853,7 @@ const handleCondition = (item, idx = 0) => {
   }
   nextTick(() => {
     if (curComponent.value.displayType === '9') {
+      oldDisplayType = '9'
       handleRelationshipChart(idx)
       if (!curComponent.value.treeDatasetId && fields.value?.length) {
         nextTick(() => {
@@ -2808,7 +2835,7 @@ defineExpose({
               <div class="value">
                 <el-select
                   @focus="handleDialogClick"
-                  @change="setTypeChange"
+                  @change="handleSetTypeChange"
                   v-model="curComponent.displayType"
                 >
                   <el-option

@@ -11,6 +11,7 @@ export default {
     watermarkManagement: '水印管理',
     list_selection: '列表选择',
     date_setting: '日期设置',
+    changing_the_display: '更改展示类型将会清除下拉树相关设置,是否确定?',
     component: {
       input: '单行输入',
       textarea: '多行输入',

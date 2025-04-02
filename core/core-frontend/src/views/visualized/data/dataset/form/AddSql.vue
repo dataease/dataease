@@ -433,7 +433,9 @@ const getSQLPreview = () => {
 
 let tableList = []
 watch(searchTable, val => {
-  datasourceTableData.value = tableList.filter(ele => ele.tableName.includes(val))
+  datasourceTableData.value = tableList.filter(ele =>
+    ele.tableName.toLowerCase().includes(val.toLowerCase())
+  )
 })
 
 const getIconName = (type: string) => {
