@@ -127,7 +127,6 @@ watch(filterText, val => {
 })
 
 const dataClick = val => {
-  filterText.value = ''
   if (val.leaf) {
     emits('hiddenTabbar', true)
     handleCellClick(val)
