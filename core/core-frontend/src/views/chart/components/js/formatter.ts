@@ -7,7 +7,7 @@ export const isEnLocal = !['zh', 'zh-cn', 'zh-CN', 'tw'].includes(getLocale())
 
 export const formatterItem = {
   type: 'auto', // auto,value,percent
-  unitLanguage: 'ch',
+  unitLanguage: isEnLocal ? 'en' : 'ch',
   unit: 1, // 换算单位
   suffix: '', // 单位后缀
   decimalCount: 2, // 小数位数
@@ -49,10 +49,10 @@ export function getUnitTypeValue(lang, value) {
 }
 
 export function initFormatCfgUnit(cfg) {
-  if (cfg.unitLanguage === undefined) {
+  if (cfg && cfg.unitLanguage === undefined) {
     cfg.unitLanguage = 'ch'
   }
-  if (cfg && isEnLocal && cfg.unitLanguage === 'ch') {
+  if (cfg && isEnLocal) {
     cfg.unitLanguage = 'en'
   }
   onChangeFormatCfgUnitLanguage(cfg, cfg.unitLanguage)

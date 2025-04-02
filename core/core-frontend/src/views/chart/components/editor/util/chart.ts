@@ -1,6 +1,6 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
-import { formatterItem } from '@/views/chart/components/js/formatter'
+import { formatterItem, isEnLocal } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 
 export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
@@ -666,7 +666,7 @@ export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
-    unitLanguage: 'ch',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -713,7 +713,7 @@ export const DEFAULT_YAXIS_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
-    unitLanguage: 'ch',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -758,7 +758,7 @@ export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
-    unitLanguage: 'ch',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,

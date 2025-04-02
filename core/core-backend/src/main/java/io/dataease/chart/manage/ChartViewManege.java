@@ -26,6 +26,7 @@ import io.dataease.extensions.datasource.dto.FieldGroupDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.filter.FilterTreeObj;
+import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.utils.BeanUtils;
@@ -133,10 +134,10 @@ public class ChartViewManege {
     /**
      * sceneId 为仪表板或者数据大屏id
      */
-    public List<ChartViewDTO> listBySceneId(Long sceneId,String resourceTable) {
+    public List<ChartViewDTO> listBySceneId(Long sceneId, String resourceTable) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
         wrapper.eq("scene_id", sceneId);
-        List<ChartViewDTO> chartViewDTOS = transChart(extChartViewMapper.selectListCustom(sceneId,resourceTable));
+        List<ChartViewDTO> chartViewDTOS = transChart(extChartViewMapper.selectListCustom(sceneId, resourceTable));
         if (!CollectionUtils.isEmpty(chartViewDTOS)) {
             List<Long> tableIds = chartViewDTOS.stream()
                     .map(ChartViewDTO::getTableId)
@@ -373,7 +374,7 @@ public class ChartViewManege {
             chartFieldCompareDTO.setType("none");
             dto.setCompareCalc(chartFieldCompareDTO);
 
-            dto.setFormatterCfg(new FormatterCfgDTO());
+            dto.setFormatterCfg(new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en"));
 
             dto.setSort("none");
             dto.setFilter(Collections.emptyList());
