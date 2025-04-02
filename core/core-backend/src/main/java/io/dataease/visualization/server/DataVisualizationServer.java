@@ -420,6 +420,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
             // 复制更新 新建权限插入
             visualizationInfoMapper.deleteById(request.getId());
+            snapshotMapper.deleteById(request.getId());
             visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
         }
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
@@ -668,7 +669,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         newDv.setPid(request.getPid());
         newDv.setCreateTime(System.currentTimeMillis());
         // 复制图表 chart_view
-        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId);
+        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId,CommonConstants.RESOURCE_TABLE.CORE);
+        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
         List<CoreChartView> viewList = extDataVisualizationMapper.findViewInfoByCopyId(copyId);
         if (!CollectionUtils.isEmpty(viewList)) {
             String componentData = newDv.getComponentData();

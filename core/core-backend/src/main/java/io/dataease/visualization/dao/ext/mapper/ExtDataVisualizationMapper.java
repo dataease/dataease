@@ -32,7 +32,7 @@ public interface ExtDataVisualizationMapper {
     String findDvType(@Param("dvId") Long dvId);
 
     void dvCopy(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
-    void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
+    void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId,@Param("resourceTable") String resourceTable);
     List<CoreChartView> findViewInfoByCopyId(@Param("copyId") Long copyId);
 
     DataVisualizationVO findDvInfo(@Param("dvId") Long dvId,@Param("dvType") String dvType,@Param("resourceTable") String resourceTable);
