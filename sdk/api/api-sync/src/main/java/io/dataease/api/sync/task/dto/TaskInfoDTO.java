@@ -109,4 +109,13 @@ public class TaskInfoDTO {
      * 目标数据源信息
      */
     private Target target;
+
+    /**
+     * 编辑标识
+     */
+    private boolean editing;
+    /**
+     * 所有内容可编辑
+     */
+    private boolean editable;
 }

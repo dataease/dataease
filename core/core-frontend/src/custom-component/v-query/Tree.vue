@@ -88,14 +88,14 @@ const handleValueChange = () => {
   config.value.defaultValue = value
 }
 
+const changeFromId = ref(false)
 watch(
-  () => config.value.defaultValue,
-  val => {
-    if (config.value.multiple) {
-      treeValue.value = Array.isArray(val) ? [...val] : val
-    }
+  () => config.value.id,
+  () => {
+    changeFromId.value = true
+    init()
     nextTick(() => {
-      multiple.value = config.value.multiple
+      changeFromId.value = false
     })
   }
 )
@@ -103,13 +103,17 @@ watch(
 watch(
   () => config.value.treeFieldList,
   () => {
+    if (changeFromId.value) return
     treeValue.value = config.value.multiple ? [] : undefined
+    config.value.defaultValue = config.value.multiple ? [] : undefined
+    config.value.selectValue = config.value.multiple ? [] : undefined
     showOrHide.value = false
     getTreeOption()
   }
 )
 
 const init = () => {
+  loading.value = true
   const { defaultValueCheck, multiple: plus, defaultValue } = config.value
   if (defaultValueCheck) {
     config.value.selectValue = Array.isArray(defaultValue)
@@ -126,12 +130,6 @@ const init = () => {
   getTreeOption()
 }
 
-watch(
-  () => config.value.id,
-  () => {
-    init()
-  }
-)
 const showOrHide = ref(true)
 const queryConditionWidth = inject('com-width', Function, true)
 const isConfirmSearch = inject('is-confirm-search', Function, true)
@@ -147,28 +145,11 @@ onMounted(() => {
   }, 0)
 })
 
-watch(
-  () => config.value.selectValue,
-  val => {
-    if (props.isConfig) return
-    if (config.value.multiple) {
-      treeValue.value = Array.isArray(val) ? [...val] : val
-    }
-    nextTick(() => {
-      multiple.value = config.value.multiple
-      if (!config.value.multiple) {
-        treeValue.value = Array.isArray(config.value.selectValue)
-          ? [...config.value.selectValue]
-          : config.value.selectValue
-      }
-    })
-  }
-)
 const showWholePath = ref(false)
 watch(
   () => config.value.multiple,
   val => {
-    if (!props.isConfig) return
+    if (!props.isConfig || changeFromId.value) return
     showWholePath.value = false
     if (val) {
       treeValue.value = []
@@ -231,10 +212,10 @@ const fakeValue = ''
 const treeValue = ref()
 const getCustomWidth = () => {
   if (placeholder?.value?.placeholderShow) {
-    if (props.config.queryConditionWidth === undefined) {
-      return queryConditionWidth()
+    if (props.config.queryConditionWidth !== undefined) {
+      return props.config.queryConditionWidth
     }
-    return props.config.queryConditionWidth
+    return queryConditionWidth()
   }
   return 227
 }
@@ -253,12 +234,13 @@ const selectStyle = computed(() => {
     :render-after-expand="false"
     show-checkbox
     showBtn
+    @change="handleValueChange"
     :placeholder="placeholderText"
     collapse-tags
     :filter-node-method="filterMethod"
     :showWholePath="showWholePath"
     collapse-tags-tooltip
-    key="multipleTree"
+    :key="'multipleTree' + getCustomWidth()"
     filterable
     :style="selectStyle"
     multiple
@@ -273,7 +255,7 @@ const selectStyle = computed(() => {
     :placeholder="placeholderText"
     :render-after-expand="false"
     v-else-if="!multiple && !loading"
-    key="singleTree"
+    :key="'singleTree' + getCustomWidth()"
     :showWholePath="showWholePath"
     :style="selectStyle"
     filterable

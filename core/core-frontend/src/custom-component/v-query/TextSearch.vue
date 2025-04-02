@@ -82,7 +82,7 @@ onBeforeMount(() => {
   setParams()
 })
 const queryConditionWidth = inject('com-width', Function, true)
-const customStyle = inject<{ background: string }>('$custom-style-filter')
+const customStyle = inject<{ background: string; border: string }>('$custom-style-filter')
 const isConfirmSearch = inject('is-confirm-search', Function, true)
 
 const getCustomWidth = () => {
@@ -106,8 +106,12 @@ const handleValueChange = () => {
   }
 }
 const lineWidth = computed(() => {
-  return { width: getCustomWidth() - 15 + 'px' }
+  return { width: getCustomWidth() - 15 + 'px', background: customStyle.border }
 })
+
+const handleKeyEnter = () => {
+  handleValueChange()
+}
 
 const handleInnerMouseDown = e => {
   e.stopPropagation()
@@ -136,6 +140,7 @@ const handleInnerMouseDown = e => {
         :style="selectStyle"
         :placeholder="placeholderText"
         @blur="handleValueChange"
+        @keydown.enter="handleKeyEnter"
         class="condition-value-input"
         v-model="config.conditionValueF"
       />
@@ -160,6 +165,7 @@ const handleInnerMouseDown = e => {
         :style="selectStyle"
         @blur="handleValueChange"
         :placeholder="placeholderText"
+        @keydown.enter="handleKeyEnter"
         class="condition-value-input"
         v-model="config.conditionValueS"
       />
@@ -218,8 +224,7 @@ const handleInnerMouseDown = e => {
     .bottom-line {
       box-sizing: border-box;
       height: 1px;
-      background-color: #000;
-      opacity: 0.3;
+      background-color: #bbbfc4;
       position: absolute;
       right: 5px;
       bottom: 3px;

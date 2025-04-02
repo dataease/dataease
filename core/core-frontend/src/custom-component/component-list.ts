@@ -26,13 +26,13 @@ export const BASE_EVENTS = {
   showTips: false,
   type: 'jump', // openHidden  jump
   typeList: [
-    { key: 'jump', label: t('visualization.jump') },
-    { key: 'download', label: t('visualization.download') },
-    { key: 'share', label: t('visualization.share') },
-    { key: 'fullScreen', label: t('visualization.fullscreen') },
-    { key: 'showHidden', label: t('visualization.pop_area') },
-    { key: 'refreshDataV', label: t('visualization.refresh') },
-    { key: 'refreshView', label: t('visualization.refresh_view') }
+    { key: 'jump', label: 'jump' },
+    { key: 'download', label: 'download' },
+    { key: 'share', label: 'share' },
+    { key: 'fullScreen', label: 'fullScreen' },
+    { key: 'showHidden', label: 'showHidden' },
+    { key: 'refreshDataV', label: 'refreshDataV' },
+    { key: 'refreshView', label: 'refreshView' }
   ],
   jump: {
     value: 'https://',
@@ -213,6 +213,13 @@ export const COMMON_COMPONENT_BACKGROUND_MAP = {
   dark: COMMON_COMPONENT_BACKGROUND_DARK
 }
 
+export const COMMON_TAB_TITLE_BACKGROUND = {
+  enable: false, // 是否启用tab标题背景
+  multiply: true, // 激活状态与非激活状态背景是否复用
+  active: COMMON_COMPONENT_BACKGROUND_LIGHT,
+  inActive: COMMON_COMPONENT_BACKGROUND_LIGHT
+}
+
 export const commonAttr = {
   animations: [],
   canvasId: 'canvas-main',
@@ -224,6 +231,7 @@ export const commonAttr = {
   maintainRadio: false, // 布局时保持宽高比例
   aspectRatio: 1, // 锁定时的宽高比例
   isShow: true, // 是否显示组件
+  dashboardHidden: false, // 仪表板组件隐藏
   category: 'base', //组件类型 base 基础组件 hidden隐藏组件
   // 当前组件动作
   dragging: false,
@@ -282,12 +290,13 @@ const list = [
   },
   {
     component: 'VQuery',
-    name: t('visualization.query'),
-    label: t('visualization.query'),
+    name: t('visualization.query_component'),
+    label: t('visualization.query_component'),
     propValue: '',
     icon: 'icon_search',
     innerType: 'VQuery',
     isHang: false,
+    freeze: false, // 是否冻结再顶部 主画布生效
     x: 1,
     y: 1,
     sizeX: 72,
@@ -465,8 +474,8 @@ const list = [
   },
   {
     component: 'CanvasBoard',
-    name: t('visualization.border'),
-    label: t('visualization.border'),
+    name: t('visualization.board'),
+    label: t('visualization.board'),
     propValue: '',
     icon: 'other_material_board',
     innerType: '',
@@ -563,7 +572,7 @@ const list = [
       // #13540
       fontWeight: 'normal',
       fontStyle: 'normal',
-      textDecoration: 'normal'
+      textDecoration: 'none'
     }
   },
   {
@@ -616,6 +625,7 @@ export function findNewComponentFromList(
       newComponent.innerType = innerType
       if (comp.component === 'DeTabs') {
         newComponent.propValue[0].name = guid()
+        newComponent['titleBackground'] = deepCopy(COMMON_TAB_TITLE_BACKGROUND)
       }
     }
   })
@@ -639,7 +649,14 @@ export function findBaseDeFaultAttr(componentName) {
     if (comp.component === componentName) {
       const stylePropertyInner = []
       Object.keys(comp.style).forEach(styleKey => {
-        stylePropertyInner.push(styleKey)
+        if (
+          (!['width', 'height'].includes(styleKey) &&
+            componentName === 'VQuery' &&
+            !Object.keys(commonStyle).includes(styleKey)) ||
+          componentName !== 'VQuery'
+        ) {
+          stylePropertyInner.push(styleKey)
+        }
       })
       result = {
         properties: ['common-style', 'background-overall-component'],

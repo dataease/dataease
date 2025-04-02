@@ -235,7 +235,7 @@ watch(
         <template #default="scope">
           <el-tooltip effect="dark" :content="t('work_branch.new_page_preview')" placement="top">
             <el-icon class="hover-icon hover-icon-in-table" @click="preview(scope.row.resourceId)">
-              <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
+              <Icon><icon_pc_outlined class="svg-icon" /></Icon>
             </el-icon>
           </el-tooltip>
           <ShareHandler
@@ -251,7 +251,7 @@ watch(
 
 <style lang="less" scoped>
 .select-type-list {
-  width: 104px;
+  width: 120px;
   :deep(.ed-input__wrapper) {
     padding-left: 11px;
     padding-right: 11px;

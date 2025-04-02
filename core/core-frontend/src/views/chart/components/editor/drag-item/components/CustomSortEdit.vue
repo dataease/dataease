@@ -24,6 +24,11 @@ const props = defineProps({
   fieldType: {
     type: String,
     required: true
+  },
+  originSortList: {
+    type: Array,
+    default: () => [],
+    required: false
   }
 })
 
@@ -54,6 +59,17 @@ const init = () => {
   reqMethod(param)
     .then(response => {
       const strArr = response.data
+      if (props.originSortList?.length) {
+        const tmp = []
+        props.originSortList.forEach(ele => {
+          const index = strArr.findIndex(item => item === ele)
+          if (index !== -1) {
+            tmp.push(strArr[index])
+            strArr.splice(index, 1)
+          }
+        })
+        strArr.unshift(...tmp)
+      }
       state.sortList = strArr.map(ele => {
         return transStr2Obj(ele)
       })

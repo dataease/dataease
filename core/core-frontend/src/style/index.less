@@ -430,11 +430,11 @@ em {
 }
 
 .color-screen {
-  background: rgb(0, 214, 185);
+  background: rgba(51, 112, 255, 1);
 }
 
 .color-dataV {
-  background: rgb(0, 214, 185) !important;
+  background: rgba(51, 112, 255, 1);
 }
 
 .color-dataset {
@@ -561,7 +561,7 @@ strong {
 // 这里使用的方案为直接将body全屏 区间组件覆盖整个body
 .de-screen-full {
   position: fixed !important;
-  z-index: 200;
+  z-index: 1001 !important;
   top: 0;
   left: 0;
   right: 0;
@@ -649,4 +649,35 @@ strong {
 
 .de-el-dropdown-menu-fixed .de-panel .right-menu-foot .footer-right {
   line-height: 36px;
+}
+
+.ed-tabs__item {
+  padding-right: 14px !important;
+}
+
+.ed-tabs__item + .ed-tabs__item {
+  padding-left: 14px !important;
+}
+
+.ed-switch {
+  height: 22px !important;
+}
+
+.ed-radio {
+  height: 22px !important;
+  line-height: 22px !important;
+}
+
+.hidden-tooltip {
+  display: none !important;
+}
+
+.de-collapse-style {
+  .ed-form-item__label {
+    margin-bottom: 8px !important;
+  }
+}
+
+.ed-month-table td {
+  padding: 8px 0 !important;
 }

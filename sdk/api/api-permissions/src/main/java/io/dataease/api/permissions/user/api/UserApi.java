@@ -11,7 +11,6 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.KeywordRequest;
-import io.dataease.request.BaseGridRequest;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +39,7 @@ public interface UserApi {
     })
     @DePermit("m:read")
     @PostMapping("/pager/{goPage}/{pageSize}")
-    IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
+    IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
 
     @Operation(summary = "查询用户详情")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
@@ -61,6 +60,11 @@ public interface UserApi {
     @DePermit("m:read")
     @PostMapping("/create")
     void create(@RequestBody UserCreator creator);
+
+    @Operation(summary = "创建第三方用户")
+    @DePermit("m:read")
+    @PostMapping("/createPlatform")
+    void createPlatform(@RequestBody PlatformUserCreator creator);
 
     @Operation(summary = "编辑")
     @DePermit({"m:read", "#p0.id + ':manage'"})
@@ -164,9 +168,9 @@ public interface UserApi {
     @GetMapping("/firstEchelon/{limit}")
     List<Long> firstEchelon(@PathVariable("limit") Long limit);
 
-    @Hidden
-    @GetMapping("/queryByAccount")
-    CurUserVO queryByAccount(String account);
+    @Operation(summary = "根据账号查询用户")
+    @GetMapping("/queryByAccount/{account}")
+    CurUserVO queryByAccount(@PathVariable("account") String account);
 
     @Hidden
     @PostMapping("/all")
@@ -197,10 +201,6 @@ public interface UserApi {
     boolean defaultOrgAdmin();
 
     @Hidden
-    @GetMapping("/invalidPwd")
-    InvalidPwdVO invalidPwd();
-
-    @Hidden
     @PostMapping("/subOrgUser")
     List<UserItem> subOrgUser(@RequestBody List<Long> oidList);
 
@@ -212,19 +212,28 @@ public interface UserApi {
 
     List<Map<String, Object>> listUserInfosByIds(List<Long> ids);
 
+    @Operation(summary = "MFA二维码信息")
     @GetMapping("/mfaQr")
     MfaQrVO mfaQr();
 
+    @Operation(summary = "MFA绑定状态")
     @GetMapping("/mfabound")
     Boolean mfaBound();
 
+    @Operation(summary = "绑定MFA")
     @PostMapping("/mfaBind")
     void mfaBind(@RequestBody MfaLoginDTO dto);
 
+    @Operation(summary = "解绑MFA")
     @PostMapping("/mfaUnbind/{code}")
     String mfaUnbind(@PathVariable("code") String code);
 
+    @Operation(summary = "重置MFA绑定状态")
     @PostMapping("/mfaRest/{id}")
     void resetBind(@PathVariable("id") Long id);
+
+    @Hidden
+    @GetMapping("/lang")
+    String userLang();
 
 }

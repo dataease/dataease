@@ -1,15 +1,17 @@
 <template>
   <div
+    class="template-item-main"
     :class="[
       {
         ['template-item-main-active']: active
-      },
-      'template-item-main'
+      }
     ]"
     @click.stop="previewTemplate"
   >
-    <div class="template-item-img" :style="classBackground" />
-    <span class="demonstration">{{ template.title }}</span>
+    <div class="template-item-img">
+      <div class="template-item-img-inner" :style="classBackground" />
+    </div>
+    <div class="demonstration">{{ template.title }}</div>
   </div>
 </template>
 
@@ -63,8 +65,8 @@ const previewTemplate = () => {
   margin: 0 0 12px 0;
   position: relative;
   box-sizing: border-box;
-  width: 182px;
-  height: 116px;
+  width: 192px;
+  height: 145px;
   background-color: var(--ContentBG, #ffffff);
   border: 1px solid #dee0e3;
   border-radius: 4px;
@@ -73,33 +75,32 @@ const previewTemplate = () => {
   flex-grow: 0;
   cursor: pointer;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .template-item-main-active {
   border: 2px solid var(--ed-color-primary) !important;
 }
 .template-item-img {
-  position: absolute;
-  width: 182px;
-  height: 86px;
-  left: 0px;
-  top: 0px;
+  flex: 1;
+  display: flex;
+  padding: 4px 4px 0;
+}
+.template-item-img-inner {
+  flex: 1;
 }
 
 .demonstration {
-  position: absolute;
-  width: 166px;
-  height: 20px;
-  left: 8px;
-  top: 91px;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 20px;
-  display: block;
+  height: 38px;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  border-top: 1px solid #dee0e3;
 }
 
 .template-item-main:hover {

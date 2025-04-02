@@ -12,6 +12,8 @@ public class ModifyPwdRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -6583458043271002864L;
 
+    @Schema(description = "用户ID")
+    private Long uid;
     @Schema(description = "原始密码", requiredMode = Schema.RequiredMode.REQUIRED)
     private String pwd;
     @Schema(description = "新密码", requiredMode = Schema.RequiredMode.REQUIRED)

@@ -4,7 +4,7 @@ import topHelpDoc from '@/assets/svg/top-help-doc.svg'
 import topProductBbs from '@/assets/svg/top-product-bbs.svg'
 import topTechnology from '@/assets/svg/top-technology.svg'
 import { useI18n } from '@/hooks/web/useI18n'
-import docs from '@/assets/svg/docs.svg'
+import docs from '@/assets/svg/icon-maybe_outlined.svg'
 import { computed } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import TopDocCard from '@/layout/components/TopDocCard.vue'
@@ -74,6 +74,9 @@ const cardInfoList = [
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   &:hover {
     background-color: #1e2738;
   }

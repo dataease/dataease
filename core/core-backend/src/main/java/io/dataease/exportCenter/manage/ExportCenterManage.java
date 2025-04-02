@@ -3,7 +3,6 @@ package io.dataease.exportCenter.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.gson.Gson;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;
@@ -12,7 +11,6 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.export.BaseExportApi;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
-import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
 import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataRequest;
 import io.dataease.auth.bo.TokenUserBO;
@@ -23,7 +21,7 @@ import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.manage.*;
 import io.dataease.datasource.utils.DatasourceUtils;
-import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.constant.DeTypeConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
@@ -41,9 +39,7 @@ import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
-import io.dataease.extensions.view.dto.ChartViewDTO;
-import io.dataease.extensions.view.dto.ColumnPermissionItem;
-import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
+import io.dataease.extensions.view.dto.*;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
@@ -54,7 +50,6 @@ import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
-import io.dataease.visualization.dto.WatermarkContentDTO;
 import io.dataease.visualization.server.DataVisualizationServer;
 import io.dataease.websocket.WsMessage;
 import io.dataease.websocket.WsService;
@@ -66,12 +61,13 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import io.dataease.visualization.dto.WatermarkContentDTO;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -107,14 +103,15 @@ public class ExportCenterManage implements BaseExportApi {
     private int core;
     @Value("${dataease.export.max.size:10}")
     private int max;
+
+
+    private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
+    @Value("${dataease.path.exportData:/opt/dataease2.0/data/exportData/}")
+    private String exportData_path;
     @Resource
     private VisualizationWatermarkMapper watermarkMapper;
     @Resource
     private ExtDataVisualizationMapper visualizationMapper;
-
-
-    private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
-    private static final String exportData_path = "/opt/dataease2.0/data/exportData/";
 
     public Integer getExtractPageSize() {
         return extractPageSize;
@@ -410,11 +407,7 @@ public class ExportCenterManage implements BaseExportApi {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateById(exportTask);
 
-                getDataFillingApi().writeExcel(dataPath + "/" + exportTask.getId() + ".xlsx",
-                        new DataFillFormTableDataRequest()
-                                .setId(Long.parseLong(exportTask.getExportFrom()))
-                                .setWithoutLogs(true)
-                        , exportTask.getUserId(), Long.parseLong(request.get("org").toString()));
+                getDataFillingApi().writeExcel(dataPath + "/" + exportTask.getId() + ".xlsx", new DataFillFormTableDataRequest().setId(Long.parseLong(exportTask.getExportFrom())).setWithoutLogs(true), exportTask.getUserId(), Long.parseLong(request.get("org").toString()));
 
 
                 exportTask.setExportProgress("100");
@@ -495,7 +488,6 @@ public class ExportCenterManage implements BaseExportApi {
                     rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), user.getUserId());
                 }
                 if (StringUtils.isNotEmpty(request.getExpressionTree())) {
-                    Gson gson = new Gson();
                     DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj = JsonUtil.parseObject(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
                     permissionManage.getField(datasetRowPermissionsTreeObj);
                     DataSetRowPermissionsTreeDTO dataSetRowPermissionsTreeDTO = new DataSetRowPermissionsTreeDTO();
@@ -550,7 +542,7 @@ public class ExportCenterManage implements BaseExportApi {
                         DatasourceRequest datasourceRequest = new DatasourceRequest();
                         datasourceRequest.setQuery(querySQL);
                         datasourceRequest.setDsList(dsMap);
-                        Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList);
+                        Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList, false);
                         List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
                         if (p.equals(0L)) {
                             detailsSheet = wb.createSheet("数据" + s);
@@ -624,6 +616,7 @@ public class ExportCenterManage implements BaseExportApi {
                         exportTaskMapper.updateById(exportTask);
                     }
                 }
+                this.addWatermarkTools(wb);
                 FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx");
                 wb.write(fileOutputStream);
                 fileOutputStream.flush();
@@ -644,6 +637,7 @@ public class ExportCenterManage implements BaseExportApi {
         Running_Task.put(exportTask.getId(), future);
     }
 
+
     private void startViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
@@ -655,7 +649,7 @@ public class ExportCenterManage implements BaseExportApi {
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateById(exportTask);
-                XSSFWorkbook wb = new XSSFWorkbook();
+                Workbook wb = new SXSSFWorkbook();
                 CellStyle cellStyle = wb.createCellStyle();
                 Font font = wb.createFont();
                 font.setFontHeightInPoints((short) 12);
@@ -680,7 +674,7 @@ public class ExportCenterManage implements BaseExportApi {
                             details.add(0, request.getHeader());
                             ViewDetailField[] detailFields = request.getDetailFields();
                             Object[] header = request.getHeader();
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
                             exportTask.setExportStatus("IN_PROGRESS");
@@ -694,22 +688,13 @@ public class ExportCenterManage implements BaseExportApi {
                 } else {
                     downloadNotTableInfoData(request, wb);
                 }
-                VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
-                WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
-                if (watermarkContent.getExcelEnable()) {
-                    UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(AuthUtils.getUser().getUserId());
-                    // 在主逻辑中添加水印
-                    int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent,userInfo); // 生成水印图片并获取 ID
-                    for (Sheet sheet : wb) {
-                        ExcelWatermarkUtils.addWatermarkToSheet(sheet, wb, watermarkPictureIdx); // 为每个 Sheet 添加水印
-                    }
-                }
-                SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(wb);
+                this.addWatermarkTools(wb);
+
                 try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx")) {
-                    sxssfWorkbook.write(outputStream);
+                    wb.write(outputStream);
                     outputStream.flush();
                 }
-                sxssfWorkbook.close();
+                wb.close();
                 exportTask.setExportProgress("100");
                 exportTask.setExportStatus("SUCCESS");
                 setFileSize(dataPath + "/" + exportTask.getId() + ".xlsx", exportTask);
@@ -748,7 +733,11 @@ public class ExportCenterManage implements BaseExportApi {
                 ViewDetailField[] detailFields = request.getDetailFields();
                 Object[] header = request.getHeader();
                 Sheet detailsSheet = wb.createSheet("数据");
-                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                if (request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
+                    ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
+                } else {
+                    ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
+                }
             }
         } else {
             //多个sheet
@@ -762,7 +751,7 @@ public class ExportCenterManage implements BaseExportApi {
                 Object[] header = requestInner.getHeader();
                 //明细sheet
                 Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
-                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
+                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
             }
         }
     }
@@ -807,5 +796,17 @@ public class ExportCenterManage implements BaseExportApi {
 
     }
 
+    public void addWatermarkTools(Workbook wb) {
+        VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
+        WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
+        if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
+            UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(AuthUtils.getUser().getUserId());
+            // 在主逻辑中添加水印
+            int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
+            for (Sheet sheet : wb) {
+                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx); // 为每个 Sheet 添加水印
+            }
+        }
+    }
 }
 

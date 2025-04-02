@@ -148,7 +148,8 @@ const args2ArgList = () => {
       const row = { name: key, val: JSON.stringify(val) }
       state.argList.push(row)
     } else {
-      const row = { name: key, val: argObj[key] }
+      const tempArray = [val]
+      const row = { name: key, val: JSON.stringify(tempArray) }
       state.argList.push(row)
     }
   }
@@ -165,7 +166,7 @@ const argList2Args = () => {
   const argObj = {}
   state.argList.forEach(row => {
     if (row.name && row.val) {
-      argObj[row.name] = row.val
+      argObj[row.name] = JSON.parse(row.val)
     }
   })
   state.form.args = JSON.stringify(argObj)
@@ -273,7 +274,7 @@ defineExpose({
         />
       </el-form-item>
 
-      <el-form-item prop="args" :label="t('dataset.param')">
+      <el-form-item prop="args" :label="t('dataset.param')" class="last-form-item">
         <template v-slot:label>
           <div class="ticket-form-info-tips">
             <span class="custom-form-item__label">{{ t('dataset.param') }}</span>
@@ -287,8 +288,12 @@ defineExpose({
         <div class="args-line" v-for="(row, index) in state.argList" :key="index">
           <el-input v-model="row['name']" :placeholder="t('visualization.input_param_name')" />
           <el-input v-model="row['val']" :placeholder="t('link_ticket.arg_val_tips')" />
-          <div class="arg-del-btn" @click.stop="delArgRow(index)">
-            <Icon name="icon_delete-trash_outlined">
+          <div
+            :style="{ opacity: state.argList.length !== 1 ? 1 : 0 }"
+            class="arg-del-btn"
+            @click.stop="delArgRow(index)"
+          >
+            <Icon>
               <icon_deleteTrash_outlined class="svg-icon" />
             </Icon>
           </div>
@@ -360,7 +365,10 @@ defineExpose({
 </style>
 <style scoped lang="less">
 .ticket-param-drawer {
-  .ed-form-item {
+  .last-form-item {
+    margin-bottom: 8px;
+  }
+  .ed-form-item:not(.last-form-item) {
     margin-bottom: 16px;
   }
   .is-error {
@@ -376,6 +384,7 @@ defineExpose({
     line-height: 32px;
     column-gap: 8px;
     .arg-del-btn {
+      color: #646a73;
       padding: 4px;
       width: 24px;
       height: 24px;

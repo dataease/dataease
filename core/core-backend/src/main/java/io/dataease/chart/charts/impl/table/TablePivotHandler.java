@@ -1,7 +1,7 @@
 package io.dataease.chart.charts.impl.table;
 
 import io.dataease.chart.charts.impl.GroupChartHandler;
-import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
@@ -18,6 +18,7 @@ import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
@@ -45,12 +46,26 @@ public class TablePivotHandler extends GroupChartHandler {
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
                 req.setDsList(dsMap);
-                var assistSql = assistSQL(originSql, assistFields, dsMap);
-                req.setQuery(assistSql);
-                logger.debug("calcite assistSql sql: " + assistSql);
-                var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
-                result.setAssistData(assistData);
-                result.setDynamicAssistFields(dynamicAssistFields);
+
+                List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                if (ObjectUtils.isNotEmpty(assists)) {
+                    var assistSql = assistSQL(originSql, assistFields, dsMap);
+                    req.setQuery(assistSql);
+                    logger.debug("calcite assistSql sql: " + assistSql);
+                    var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
+                    result.setAssistData(assistData);
+                    result.setDynamicAssistFields(assists);
+                }
+
+                List<ChartSeniorAssistDTO> assistsOriginList = dynamicAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                if (ObjectUtils.isNotEmpty(assistsOriginList)) {
+                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
+                    req.setQuery(assistSqlOriginList);
+                    logger.debug("calcite assistSql sql origin list: " + assistSqlOriginList);
+                    var assistDataOriginList = (List<String[]>) provider.fetchResultField(req).get("data");
+                    result.setAssistDataOriginList(assistDataOriginList);
+                    result.setDynamicAssistFieldsOriginList(assistsOriginList);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,7 +97,9 @@ public class TablePivotHandler extends GroupChartHandler {
         if (row.isShowGrandTotals()) {
             var yAxis = getCustomFields(view, row.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
-                var result = getData(sqlMeta, colAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                var tmpList = new ArrayList<>(allFields);
+                tmpList.addAll(yAxis);
+                var result = getData(sqlMeta, colAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
                 var querySql = result.getT1();
                 var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
@@ -105,7 +122,9 @@ public class TablePivotHandler extends GroupChartHandler {
                     var subRowAxis = rowAxis.subList(0, i + 1);
                     xAxis.addAll(subRowAxis);
                     if (!yAxis.isEmpty()) {
-                        var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                        var tmpList = new ArrayList<>(allFields);
+                        tmpList.addAll(yAxis);
+                        var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
                         var querySql = result.getT1();
                         var data = result.getT2();
                         var tmp = new HashMap<String, Object>();
@@ -121,7 +140,9 @@ public class TablePivotHandler extends GroupChartHandler {
         if (col.isShowGrandTotals() && CollectionUtils.isNotEmpty(colAxis)) {
             var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
-                var result = getData(sqlMeta, rowAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                var tmpList = new ArrayList<>(allFields);
+                tmpList.addAll(yAxis);
+                var result = getData(sqlMeta, rowAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
                 var querySql = result.getT1();
                 var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
@@ -144,7 +165,9 @@ public class TablePivotHandler extends GroupChartHandler {
                     var subColAxis = colAxis.subList(0, i + 1);
                     xAxis.addAll(subColAxis);
                     if (!yAxis.isEmpty()) {
-                        var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                        var tmpList = new ArrayList<>(allFields);
+                        tmpList.addAll(yAxis);
+                        var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
                         var querySql = result.getT1();
                         var data = result.getT2();
                         var tmp = new HashMap<String, Object>();
@@ -160,7 +183,9 @@ public class TablePivotHandler extends GroupChartHandler {
             var yAxis = getCustomFields(view, col.getCalcTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 // 清掉聚合轴
-                var result = getData(sqlMeta, Collections.emptyList(), yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                var tmpList = new ArrayList<>(allFields);
+                tmpList.addAll(yAxis);
+                var result = getData(sqlMeta, Collections.emptyList(), yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
                 var querySql = result.getT1();
                 var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
@@ -184,8 +209,10 @@ public class TablePivotHandler extends GroupChartHandler {
                     if (i == colAxis.size() - 1) {
                         break;
                     }
+                    var tmpList = new ArrayList<>(allFields);
+                    tmpList.addAll(yAxis);
                     var xAxis = colAxis.subList(0, i + 1);
-                    var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                    var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
                     var querySql = result.getT1();
                     var data = result.getT2();
                     var tmp = new HashMap<String, Object>();
@@ -196,8 +223,8 @@ public class TablePivotHandler extends GroupChartHandler {
             }
         }
         // 列总计里面的行小计
-        if (col.isShowGrandTotals() && row.isShowGrandTotals() && rowAxis.size() >= 2) {
-            var yAxis = getCustomFields(view, row.getCalcTotals().getCfg());
+        if (col.isShowGrandTotals() && row.isShowSubTotals() && rowAxis.size() >= 2) {
+            var yAxis = getCustomFields(view, row.getCalcSubTotals().getCfg());
             if (!yAxis.isEmpty()) {
                 var tmpData = new ArrayList<Map<String, Object>>();
                 dataMap.put("rowSubInColTotal", tmpData);
@@ -205,8 +232,10 @@ public class TablePivotHandler extends GroupChartHandler {
                     if (i == rowAxis.size() - 1) {
                         break;
                     }
+                    var tmpList = new ArrayList<>(allFields);
+                    tmpList.addAll(yAxis);
                     var xAxis = rowAxis.subList(0, i + 1);
-                    var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                    var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
                     var querySql = result.getT1();
                     var data = result.getT2();
                     var tmp = new HashMap<String, Object>();
@@ -229,14 +258,16 @@ public class TablePivotHandler extends GroupChartHandler {
                     var tmpList = new ArrayList<Map<String, Object>>();
                     tmpData.add(tmpList);
                     var subRow = rowAxis.subList(0, i + 1);
-                    var xAxis = new ArrayList<>(subRow);
                     for (int j = 0; j < colAxis.size(); j++) {
                         if (j == colAxis.size() - 1) {
                             break;
                         }
+                        var xAxis = new ArrayList<>(subRow);
                         var subCol = colAxis.subList(0, j + 1);
                         xAxis.addAll(subCol);
-                        var result = getData(sqlMeta, xAxis, yAxis, allFields, crossDs, dsMap, view, provider, needOrder);
+                        var tmpAllList = new ArrayList<>(allFields);
+                        tmpAllList.addAll(yAxis);
+                        var result = getData(sqlMeta, xAxis, yAxis, tmpAllList, crossDs, dsMap, view, provider, needOrder);
                         var querySql = result.getT1();
                         var data = result.getT2();
                         var tmp = new HashMap<String, Object>();

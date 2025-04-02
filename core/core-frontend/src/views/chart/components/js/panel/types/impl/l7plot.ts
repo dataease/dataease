@@ -5,9 +5,9 @@ import type { Plot as L7Plot } from '@antv/l7plot/dist/esm/core/plot'
 import {
   configL7Label,
   configL7Legend,
+  configL7PlotZoom,
   configL7Style,
-  configL7Tooltip,
-  configL7Zoom
+  configL7Tooltip
 } from '@/views/chart/components/js/panel/common/common_antv'
 import {
   AntVAbstractChartView,
@@ -85,7 +85,7 @@ export abstract class L7PlotChartView<
   }
 
   protected configZoomButton(chart: Chart, plot: P) {
-    configL7Zoom(chart, plot)
+    configL7PlotZoom(chart, plot)
   }
   protected constructor(name: string, defaultData?: any[]) {
     super(ChartLibraryType.L7_PLOT, name)

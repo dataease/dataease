@@ -16,7 +16,7 @@ import {
   saveCanvas
 } from '@/api/visualization/dataVisualization'
 import { ElMessage } from 'element-plus-secondary'
-import { cutTargetTree } from '@/utils/utils'
+import { cutTargetTree, filterFreeFolder, nameTrim } from '@/utils/utils'
 const props = defineProps({
   curCanvasType: {
     type: String,
@@ -30,7 +30,9 @@ const { t } = useI18n()
 
 const state = reactive({
   tData: [],
-  nameList: []
+  nameList: [],
+  targetInfo: null,
+  attachParams: null
 })
 
 const showParentSelected = ref(false)
@@ -134,8 +136,10 @@ const getDialogTitle = exec => {
 }
 const placeholder = ref('')
 
-const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
+const optInit = (type, data: BusiTreeNode, exec, parentSelect = false, attachParams?) => {
   showParentSelected.value = parentSelect
+  state.targetInfo = data
+  state.attachParams = attachParams
   nodeType.value = type
   const optSource = data.leaf || type === 'leaf' ? sourceLabel.value : t('visualization.folder')
   const placeholderLabel =
@@ -157,6 +161,7 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
     resourceForm.name = data.name
   }
   queryTreeApi(request).then(res => {
+    filterFreeFolder(res, curCanvasType.value)
     const resultTree = res || []
     dfs(resultTree as unknown as BusiTreeNode[])
     state.tData = (resultTree as unknown as BusiTreeNode[]) || []
@@ -252,7 +257,9 @@ const saveResource = () => {
       const params: ResourceOrFolder = {
         nodeType: nodeType.value as 'folder' | 'leaf',
         name: resourceForm.name,
-        type: curCanvasType.value
+        type: curCanvasType.value,
+        mobileLayout: state.targetInfo?.extraFlag,
+        status: state.targetInfo?.extraFlag1
       }
 
       switch (cmd.value) {
@@ -272,6 +279,7 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
+      nameTrim(params, t('components.length_1_64_characters'))
       if (cmd.value === 'move' && !checkParent(params)) {
         return
       }
@@ -280,7 +288,7 @@ const saveResource = () => {
       }
       if (cmd.value === 'newLeaf') {
         resourceDialogShow.value = false
-        emits('finish', { opt: 'newLeaf', ...params })
+        emits('finish', { opt: 'newLeaf', ...params, ...state.attachParams })
       } else {
         loading.value = true
         const method = methodMap[cmd.value] ? methodMap[cmd.value] : updateBase
@@ -289,7 +297,7 @@ const saveResource = () => {
             loading.value = false
             resourceDialogShow.value = false
             emits('finish')
-            ElMessage.success('保存成功')
+            ElMessage.success(t('visualization.save_success'))
             if (cmd.value === 'copy') {
               const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
               const baseUrl =

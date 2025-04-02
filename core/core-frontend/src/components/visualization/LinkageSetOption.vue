@@ -8,8 +8,8 @@ const props = defineProps({
   title: propTypes.string,
   baseWidth: {
     required: false,
-    type: Number,
-    default: 300
+    type: String,
+    default: '100%'
   },
   actionSelection: {
     required: true,
@@ -31,7 +31,13 @@ const { title, themes, actionSelection } = toRefs(props)
 </script>
 
 <template>
-  <el-popover placement="right-start" :width="baseWidth" trigger="click" :show-arrow="false">
+  <el-popover
+    placement="right-start"
+    width="auto"
+    :popper-style="'max-width:' + baseWidth"
+    trigger="click"
+    :show-arrow="false"
+  >
     <template #reference>
       <span class="option-set ed-dialog__title"
         >{{ t('visualization.linkage_setting') }}
@@ -40,10 +46,13 @@ const { title, themes, actionSelection } = toRefs(props)
     </template>
     <el-row>
       {{ t('visualization.select_linkage_tips') }}
+    </el-row>
+    <el-row>
       <el-radio-group
         style="margin-top: 12px"
         v-model="actionSelection.linkageActive"
         @change="selectionChange"
+        class="radio_group"
       >
         <el-radio label="custom"
           ><span style="font-weight: normal">
@@ -65,5 +74,10 @@ const { title, themes, actionSelection } = toRefs(props)
   display: flex;
   left: 24px;
   top: 30px;
+}
+.radio_group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 </style>

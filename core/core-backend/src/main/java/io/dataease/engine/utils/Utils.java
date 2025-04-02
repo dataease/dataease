@@ -1,14 +1,11 @@
 package io.dataease.engine.utils;
 
+import io.dataease.constant.SQLConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
-import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
-import io.dataease.extensions.datasource.dto.CalParam;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.datasource.dto.DsTypeDTO;
+import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
@@ -30,7 +27,7 @@ public class Utils {
     }
 
     // 解析计算字段
-    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, Map<String, String> paramMap, PluginManageApi pluginManage) {
+    public static String calcFieldRegex(DatasetTableFieldDTO chartField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, Map<String, String> paramMap, PluginManageApi pluginManage) {
         try {
             int i = 0;
             DsTypeDTO datasourceType = null;
@@ -38,14 +35,14 @@ public class Utils {
                 Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
                 datasourceType = getDs(pluginManage, next.getValue().getType());
             }
-            return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType, paramMap);
+            return buildCalcField(chartField, tableObj, originFields, i, isCross, datasourceType, paramMap, true, chartField.getOriginName());
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
 
-    public static String calcSimpleFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, String> dsTypeMap, PluginManageApi pluginManage) {
+    public static String calcSimpleFieldRegex(DatasetTableFieldDTO chartField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, String> dsTypeMap, PluginManageApi pluginManage) {
         try {
             int i = 0;
             DsTypeDTO datasourceType = null;
@@ -53,19 +50,20 @@ public class Utils {
                 Map.Entry<Long, String> next = dsTypeMap.entrySet().iterator().next();
                 datasourceType = getDs(pluginManage, next.getValue());
             }
-            return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType, null);
+            return buildCalcField(chartField, tableObj, originFields, i, isCross, datasourceType, null, true, chartField.getOriginName());
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
 
-    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i, boolean isCross, DsTypeDTO datasourceType, Map<String, String> paramMap) throws Exception {
+    public static String buildCalcField(DatasetTableFieldDTO chartField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i, boolean isCross, DsTypeDTO datasourceType, Map<String, String> paramMap, boolean isFirst, String fieldExpression) throws Exception {
         try {
             i++;
             if (i > 100) {
                 DEException.throwException(Translator.get("i18n_field_circular_error"));
             }
+            String originField = getCalcField(chartField, originFields, isFirst, fieldExpression);
             originField = originField.replaceAll("[\\t\\n\\r]]", "");
             // 正则提取[xxx]
             String regex = "\\[(.*?)]";
@@ -98,7 +96,7 @@ public class Utils {
                         }
                     } else {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]", "(" + ele.getOriginName() + ")");
-                        originField = buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType, paramMap);
+                        originField = buildCalcField(chartField, tableObj, originFields, i, isCross, datasourceType, paramMap, false, originField);
                     }
                 }
             }
@@ -107,6 +105,19 @@ public class Utils {
             DEException.throwException(Translator.get("i18n_field_circular_error"));
         }
         return null;
+    }
+
+    public static String getCalcField(DatasetTableFieldDTO ele, List<DatasetTableFieldDTO> originFields, boolean isFirst, String fieldExpression) {
+        if (isFirst) {
+            for (DatasetTableFieldDTO field : originFields) {
+                if (Objects.equals(ele.getId(), field.getId())) {
+                    return field.getOriginName();
+                }
+            }
+            return "";
+        } else {
+            return fieldExpression;
+        }
     }
 
     public static String getLogic(String logic) {
@@ -150,6 +161,8 @@ public class Utils {
                 return "MM" + split + "dd";
             case "H_m_s":
                 return "HH:mm:ss";
+            case "y_M_d_H":
+                return "yyyy" + split + "MM" + split + "dd" + " HH";
             case "y_M_d_H_m":
                 return "yyyy" + split + "MM" + split + "dd" + " HH:mm";
             case "y_M_d_H_m_s":
@@ -483,5 +496,81 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    public static String transGroupFieldToSql(DatasetTableFieldDTO dto, List<DatasetTableFieldDTO> fields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage) {
+        // 从fields里取最新的dto
+        for (DatasetTableFieldDTO fieldDTO : fields) {
+            if (Objects.equals(dto.getId(), fieldDTO.getId())) {
+                dto.setGroupList(fieldDTO.getGroupList());
+                dto.setOtherGroup(fieldDTO.getOtherGroup());
+                break;
+            }
+        }
+        // get origin field
+        DatasetTableFieldDTO originField = null;
+        for (DatasetTableFieldDTO ele : fields) {
+            if (Objects.equals(ele.getId(), Long.valueOf(dto.getOriginName()))) {
+                originField = ele;
+                break;
+            }
+        }
+        if (originField == null) {
+            DEException.throwException("Field not exists");
+        }
+
+        DsTypeDTO datasourceType = null;
+        if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+            Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+            datasourceType = getDs(pluginManage, next.getValue().getType());
+        }
+        if (datasourceType == null) {
+            DEException.throwException("Datasource not exists");
+        }
+
+        String fieldName;
+        if (isCross) {
+            fieldName = originField.getDataeaseName();
+        } else {
+            fieldName = datasourceType.getPrefix() + originField.getDataeaseName() + datasourceType.getSuffix();
+        }
+
+        StringBuilder exp = new StringBuilder();
+        exp.append(" (CASE ");
+        if (originField.getDeType() == 0) {
+            for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
+                exp.append(" WHEN ");
+                for (int i = 0; i < fieldGroupDTO.getText().size(); i++) {
+                    String value = fieldGroupDTO.getText().get(i);
+                    exp.append(fieldName).append(" = ").append("'").append(transValue(value)).append("'");
+                    if (i < fieldGroupDTO.getText().size() - 1) {
+                        exp.append(" OR ");
+                    }
+                }
+                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+            }
+        } else if (originField.getDeType() == 1) {
+            for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
+                exp.append(" WHEN ");
+                exp.append(fieldName).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
+                exp.append(" AND ");
+                exp.append(fieldName).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
+                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+            }
+        } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
+            for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
+                exp.append(" WHEN ");
+                exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
+                exp.append(" AND ");
+                exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
+                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+            }
+        }
+        exp.append(" ELSE ").append("'").append(transValue(dto.getOtherGroup())).append("'").append(" END) ");
+        return exp.toString();
+    }
+
+    public static String transValue(String value) {
+        return value.replace("\\", "\\\\").replace("'", "''");
     }
 }

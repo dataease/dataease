@@ -16,9 +16,12 @@ const props = defineProps({
   domId: propTypes.string.def('editor'),
   height: propTypes.string.def('250px'),
   quotaMap: propTypes.arrayOf(String).def(() => []),
-  dimensionMap: propTypes.arrayOf(String).def(() => [])
+  dimensionMap: propTypes.arrayOf(String).def(() => []),
+  regexp: {
+    type: RegExp,
+    default: /\[(.*?)\]/g
+  }
 })
-
 const emits = defineEmits(['change'])
 
 const codeComInit = (doc: string, sqlMode?: boolean) => {
@@ -45,7 +48,7 @@ const codeComInit = (doc: string, sqlMode?: boolean) => {
   } //!placeholderMatcher
 
   const placeholderMatcher = new MatchDecorator({
-    regexp: /\[(.*?)\]/g,
+    regexp: new RegExp(props.regexp),
     decoration: match =>
       Decoration.replace({
         widget: new PlaceholderWidget(match[1])

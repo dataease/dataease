@@ -14,6 +14,8 @@ import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
 import { setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
+import { filterEnumMapSync } from '@/utils/componentUtils'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -72,7 +74,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   // 添加外部参数
   let attachParam
   await getOuterParamsInfo(dvId).then(rsp => {
-    dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
+    dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, dvId)
   })
 
   // 外部参数（iframe 或者 iframe嵌入）
@@ -95,8 +97,8 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   const req = dvType === 'dashboard' ? initCanvasDataMobile : initCanvasData
   req(
     dvId,
-    dvType,
-    function ({
+    { busiFlag: dvType },
+    async function ({
       canvasDataResult,
       canvasStyleResult,
       dvInfo,
@@ -104,17 +106,18 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       curPreviewGap
     }) {
       if (!dvInfo.mobileLayout && dvType === 'dashboard') {
-        router.push('/DashboardEmpty')
+        await router.push('/DashboardEmpty')
         return
+      }
+      if (jumpParam) {
+        await filterEnumMapSync(canvasDataResult)
+        dvMainStore.addViewTrackFilter(jumpParam)
       }
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      if (jumpParam) {
-        dvMainStore.addViewTrackFilter(jumpParam)
-      }
       state.initState = false
 
       dvMainStore.addOuterParamsFilter(attachParam)
@@ -163,6 +166,11 @@ defineExpose({
 
 <template>
   <div class="content" v-if="state.initState">
+    <canvas-opt-bar
+      canvas-id="canvas-main"
+      :canvas-style-data="state.canvasStylePreview || {}"
+      :component-data="state.canvasDataPreview || []"
+    ></canvas-opt-bar>
     <de-preview
       ref="dvPreview"
       v-if="state.canvasStylePreview"
@@ -171,6 +179,7 @@ defineExpose({
       :canvas-view-info="state.canvasViewInfoPreview"
       :dv-info="state.dvInfo"
       :cur-gap="state.curPreviewGap"
+      :show-linkage-button="false"
       :is-selector="props.isSelector"
     ></de-preview>
   </div>
@@ -194,6 +203,7 @@ defineExpose({
   align-items: center;
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
   ::-webkit-scrollbar {
     width: 0px !important;
     height: 0px !important;

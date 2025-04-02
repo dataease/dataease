@@ -64,6 +64,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  optType: {
+    type: String,
+    required: false
   }
 })
 
@@ -106,6 +110,7 @@ const onPointClick = param => {
       :suffixId="suffixId"
       :font-family="fontFamily"
       @onPointClick="onPointClick"
+      :opt-type="optType"
     ></chart>
   </div>
 </template>

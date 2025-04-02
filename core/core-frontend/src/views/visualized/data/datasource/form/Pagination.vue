@@ -92,15 +92,16 @@ const responseData = ref([
 ])
 
 onBeforeMount(() => {
-  if (page.value.requestData.length === 0) {
+  if (!page.value.requestData || page.value.requestData.length === 0) {
     page.value.requestData = requestData.value
   }
-  if (page.value.responseData.length === 0) {
+  if (!page.value.responseData || page.value.responseData.length === 0) {
     page.value.responseData = responseData.value
   }
-  if (page.value.pageType === '') {
-    // page.value.pageType = 'empty'
+  if (page.value.pageType === '' || !page.value.pageType) {
+    page.value.pageType = 'empty'
   }
+  handleNumberSizeChange()
 })
 
 const handleNumberSizeChange = () => {
@@ -124,7 +125,11 @@ const handleNumberSizeChange = () => {
 <template>
   <div class="api-pagination">
     <span class="type">{{ t('api_pagination.pagination_method') }}</span>
-    <el-select v-model="page.pageType" @change="handleNumberSizeChange" style="width: 100%">
+    <el-select
+      v-model="page.pageType"
+      @change="handleNumberSizeChange"
+      style="width: 100%; margin-top: 8px"
+    >
       <el-option
         v-for="item in options"
         :key="item.value"
@@ -140,21 +145,16 @@ const handleNumberSizeChange = () => {
           prop="builtInParameterName"
           :label="t('api_pagination.built_in_parameter_name')"
         />
-        <el-table-column :label="t('api_pagination.request_parameter_name')" width="220">
-          <template #default="scope">
-            <el-input
-              v-model="scope.row.requestParameterName"
-              style="width: 100%"
-              :placeholder="t('api_pagination.enter_parameter_name')"
-            />
-          </template>
-        </el-table-column>
         <el-table-column :label="t('api_pagination.parameter_default_value')" width="220">
           <template #default="scope">
             <el-input
               v-model="scope.row.parameterDefaultValue"
               style="width: 100%"
-              :placeholder="t('api_pagination.enter_default_value')"
+              :placeholder="
+                scope.row.builtInParameterName === '${pageNumber}'
+                  ? t('api_pagination.enter_first_page')
+                  : t('api_pagination.enter_default_value')
+              "
             />
           </template>
         </el-table-column>
@@ -196,12 +196,10 @@ const handleNumberSizeChange = () => {
 
 <style lang="less" scoped>
 .api-pagination {
-  margin-top: -8px;
   .type {
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
-    margin-bottom: 8px;
   }
 
   .table-title {

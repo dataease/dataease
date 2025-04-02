@@ -6,78 +6,94 @@
     v-model="dialogShow"
     width="70vw"
     trigger="click"
+    class="userViewEnlarge-class"
   >
-    <div class="export-button">
-      <el-select
-        v-if="optType === 'enlarge' && exportPermissions[0]"
-        v-model="pixel"
-        class="pixel-select"
-      >
-        <el-option-group v-for="group in pixelOptions" :key="group.label" :label="group.label">
-          <el-option
-            v-for="item in group.options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+    <template #header v-if="!isIframe">
+      <div class="header-title">
+        <div>{{ viewInfo?.title }}</div>
+        <div class="export-button">
+          <el-select
+            v-if="optType === 'enlarge' && exportPermissions[0]"
+            v-model="pixel"
+            class="pixel-select"
+            size="small"
+          >
+            <el-option-group v-for="group in pixelOptions" :key="group.label" :label="group.label">
+              <el-option
+                v-for="item in group.options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-option-group>
+          </el-select>
+          <el-button
+            class="m-button"
+            v-if="optType === 'enlarge' && exportPermissions[0]"
+            link
+            size="middle"
+            @click="downloadViewImage"
+          >
+            <el-icon color="#1F2329" size="16" style="margin-right: 3px"
+              ><icon_download_outlined
+            /></el-icon>
+            {{ t('chart.export_img') }}
+          </el-button>
+          <el-button
+            class="m-button"
+            v-if="optType === 'details' && exportPermissions[1]"
+            link
+            size="middle"
+            :loading="exportLoading"
+            :disabled="
+              requestStore.loadingMap[permissionStore.currentPath] > 0 ||
+              state.dataFrom === 'template'
+            "
+            @click="downloadViewDetails('view')"
+          >
+            <el-icon color="#1F2329" size="16" style="margin-right: 3px"
+              ><icon_download_outlined
+            /></el-icon>
+            {{ t('chart.export_excel') }}
+          </el-button>
+          <el-button
+            class="m-button"
+            v-if="optType === 'details' && exportPermissions[2]"
+            link
+            size="middle"
+            :loading="exportLoading"
+            @click="downloadViewDetails('dataset')"
+            :disabled="
+              requestStore.loadingMap[permissionStore.currentPath] > 0 ||
+              state.dataFrom === 'template'
+            "
+          >
+            <el-icon color="#1F2329" size="16" style="margin-right: 3px"
+              ><icon_download_outlined
+            /></el-icon>
+            {{ t('chart.export_raw_details') }}
+          </el-button>
+          <el-button
+            class="m-button"
+            v-if="optType === 'details' && exportPermissions[2] && viewInfo.type === 'table-pivot'"
+            link
+            size="middle"
+            :loading="exportLoading"
+            @click="exportAsFormattedExcel"
+          >
+            <el-icon color="#1F2329" size="16" style="margin-right: 3px"
+              ><icon_download_outlined
+            /></el-icon>
+            {{ t('chart.export_excel_formatter') }}
+          </el-button>
+          <el-divider
+            class="close-divider"
+            direction="vertical"
+            v-if="exportPermissions[0] || exportPermissions[1] || exportPermissions[2]"
           />
-        </el-option-group>
-      </el-select>
-
-      <el-button
-        class="m-button"
-        v-if="optType === 'enlarge' && exportPermissions[0]"
-        link
-        icon="Download"
-        size="middle"
-        @click="downloadViewImage"
-      >
-        {{ t('chart.export_img') }}
-      </el-button>
-      <el-button
-        class="m-button"
-        v-if="optType === 'details' && exportPermissions[1]"
-        link
-        icon="Download"
-        size="middle"
-        :loading="exportLoading"
-        :disabled="
-          requestStore.loadingMap[permissionStore.currentPath] > 0 || state.dataFrom === 'template'
-        "
-        @click="downloadViewDetails('view')"
-      >
-        {{ t('chart.export_excel') }}
-      </el-button>
-      <el-button
-        class="m-button"
-        v-if="optType === 'details' && exportPermissions[2]"
-        link
-        icon="Download"
-        size="middle"
-        :loading="exportLoading"
-        @click="downloadViewDetails('dataset')"
-        :disabled="
-          requestStore.loadingMap[permissionStore.currentPath] > 0 || state.dataFrom === 'template'
-        "
-      >
-        {{ t('chart.export_raw_details') }}
-      </el-button>
-      <el-button
-        class="m-button"
-        v-if="optType === 'details' && exportPermissions[2] && viewInfo.type === 'table-pivot'"
-        link
-        icon="Download"
-        size="middle"
-        :loading="exportLoading"
-        @click="exportAsFormattedExcel"
-      >
-        <span>{{ t('chart.export_excel_formatter') }}</span>
-      </el-button>
-      <el-divider
-        class="close-divider"
-        direction="vertical"
-        v-if="exportPermissions[0] || exportPermissions[1] || exportPermissions[2]"
-      />
-    </div>
+        </div>
+      </div>
+    </template>
     <div
       v-loading="downLoading"
       :element-loading-text="t('visualization.export_loading')"
@@ -98,17 +114,26 @@
         <component-wrapper
           v-if="optType === 'enlarge'"
           class="enlarge-wrapper"
+          :opt-type="optType"
           :view-info="viewInfo"
           :config="config"
           :dv-info="dvInfo"
+          :font-family="canvasStyleData?.fontFamily"
           show-position="viewDialog"
         />
-        <chart-component-s2
-          v-if="optType === 'details' && !sourceViewType.includes('chart-mix')"
-          :view="viewInfo"
-          show-position="viewDialog"
-          ref="chartComponentDetails"
-        />
+        <template v-if="optType === 'details' && !sourceViewType.includes('chart-mix')">
+          <chart-component-s2
+            v-if="!detailsError"
+            :view="viewInfo"
+            show-position="viewDialog"
+            ref="chartComponentDetails"
+          />
+          <empty-background
+            v-if="detailsError"
+            :description="t('visualization.no_details')"
+            img-type="noneWhite"
+          />
+        </template>
         <template v-else-if="optType === 'details' && sourceViewType.includes('chart-mix')">
           <el-tabs class="tab-header" v-model="activeName" @tab-change="handleClick">
             <el-tab-pane :label="t('chart.drag_block_value_axis_left')" name="left"></el-tab-pane>
@@ -140,6 +165,7 @@ import { computed, h, nextTick, reactive, ref } from 'vue'
 import { toPng } from 'html-to-image'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
+import icon_download_outlined from '@/assets/svg/icon_download_outlined.svg'
 import ChartComponentS2 from '@/views/chart/components/views/components/ChartComponentS2.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
@@ -154,6 +180,8 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import { getCanvasStyle } from '@/utils/style'
 import { exportPermission } from '@/utils/utils'
+import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
+import { supportExtremumChartType } from '@/views/chart/components/js/extremumUitl'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -161,16 +189,16 @@ const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 let viewInfo = ref<DeepPartial<ChartObj>>(null)
 const config = ref(null)
-const canvasStyleData = ref(null)
 const viewContainer = ref(null)
 const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
 const chartComponentDetails2 = ref(null)
-const { dvInfo, editMode } = storeToRefs(dvMainStore)
+const { dvInfo, editMode, isIframe, canvasStyleData } = storeToRefs(dvMainStore)
 const exportLoading = ref(false)
 const sourceViewType = ref()
 const activeName = ref('left')
+const detailsError = ref(false)
 const DETAIL_CHART_ATTR: DeepPartial<ChartObj> = {
   render: 'antv',
   type: 'table-info',
@@ -221,8 +249,7 @@ const exportPermissions = computed(() =>
 
 const customExport = computed(() => {
   const style =
-    canvasStyleData.value &&
-    (optType.value === 'enlarge' || state.componentSourceType?.includes('table'))
+    canvasStyleData.value && optType.value === 'enlarge'
       ? getCanvasStyle(canvasStyleData.value, 'canvas-main')
       : {}
   if (downLoading.value) {
@@ -276,6 +303,7 @@ const pixelOptions = [
 const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   state.scale = params.scale
   sourceViewType.value = view.type
+  detailsError.value = false
   optType.value = opt
   dialogShow.value = true
   state.componentSourceType = view.type
@@ -283,7 +311,6 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   viewInfo.value = deepCopy(view) as DeepPartial<ChartObj>
   viewInfo.value.customStyle.text.show = false
   config.value = deepCopy(item)
-  canvasStyleData.value = canvasStyle
   if (opt === 'details') {
     if (!viewInfo.value.type?.includes('table')) {
       assign(viewInfo.value, DETAIL_CHART_ATTR)
@@ -302,11 +329,15 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
 const dataDetailsOpt = () => {
   nextTick(() => {
     const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
-    if (sourceViewType.value.includes('chart-mix')) {
-      chartComponentDetails.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.left)
-      chartComponentDetails2.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.right)
+    if (viewDataInfo) {
+      if (sourceViewType.value.includes('chart-mix')) {
+        chartComponentDetails.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.left)
+        chartComponentDetails2.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.right)
+      } else {
+        chartComponentDetails.value.renderChartFromDialog(viewInfo.value, viewDataInfo)
+      }
     } else {
-      chartComponentDetails.value.renderChartFromDialog(viewInfo.value, viewDataInfo)
+      detailsError.value = true
     }
   })
 }
@@ -387,10 +418,18 @@ const openMessageLoading = cb => {
     customClass
   })
 }
+// 地图
+const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
 const htmlToImage = () => {
-  downLoading.value = true
+  downLoading.value = mapChartTypes.includes(viewInfo.value.type) ? false : true
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
-  const renderTime = viewInfo.value.type?.includes('table') ? 2000 : 500
+  useEmitt().emitter.emit('l7-prepare-picture', viewInfo.value.id)
+  // 表格和支持最值图表的渲染时间为2000毫秒，其他图表为500毫秒。
+  const renderTime =
+    viewInfo.value.type?.includes('table') ||
+    supportExtremumChartType({ type: viewInfo.value.type })
+      ? 2000
+      : 500
   setTimeout(() => {
     initWatermark()
     toPng(viewContainer.value)
@@ -400,12 +439,14 @@ const htmlToImage = () => {
         a.setAttribute('download', viewInfo.value.title)
         a.href = dataUrl
         a.click()
+        useEmitt().emitter.emit('l7-unprepare-picture', viewInfo.value.id)
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
         initWatermark()
       })
       .catch(error => {
         downLoading.value = false
         initWatermark()
+        useEmitt().emitter.emit('l7-unprepare-picture', viewInfo.value.id)
         useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
         console.error('oops, something went wrong!', error)
       })
@@ -421,17 +462,36 @@ defineExpose({
 })
 </script>
 
+<style lang="less">
+.userViewEnlarge-class {
+  .ed-dialog__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-right: unset;
+  }
+  .ed-dialog__headerbtn {
+    position: unset;
+  }
+  .header-title {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+}
+</style>
 <style lang="less" scoped>
 .export-button {
-  position: absolute;
-  right: 48px;
-  top: 26px;
-  z-index: 2;
-
   .pixel-select {
     width: 125px;
     margin-right: 8px;
-    margin-top: -1px;
   }
 
   .m-button {
@@ -442,7 +502,7 @@ defineExpose({
   }
 
   .ed-button.is-link {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
     padding: 4px;
 
@@ -470,6 +530,7 @@ defineExpose({
     position: relative;
     width: 100%;
     height: 100%;
+    background-size: 100% 100% !important;
   }
   .enlarge-inner-with-header {
     display: flex;

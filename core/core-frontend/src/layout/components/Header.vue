@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import logo from '@/assets/svg/logo.svg'
 import copilot from '@/assets/svg/copilot.svg'
-import msgNotice from '@/assets/svg/msg-notice.svg'
+import msgNotice from '@/assets/svg/icon_notification_outlined.svg'
 import dvAi from '@/assets/svg/dv-ai.svg'
-import dvPreviewDownload from '@/assets/svg/dv-preview-download.svg'
+import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import { computed, onMounted, ref } from 'vue'
 import { usePermissionStore } from '@/store/modules/permission'
 import { isExternal } from '@/utils/validate'
@@ -132,8 +132,8 @@ onMounted(() => {
 <template>
   <el-header class="header-flex" :class="{ 'header-light': navigateBg && navigateBg === 'light' }">
     <img class="logo" v-if="navigate" :src="navigate" alt="" />
-    <Icon v-else @click="handleIconClick" className="logo" name="logo"
-      ><logo class="svg-icon logo" style="cursor: pointer"
+    <Icon v-else
+      ><logo @click="handleIconClick" class="svg-icon logo" style="cursor: pointer"
     /></Icon>
     <el-menu
       :default-active="activeIndex"
@@ -203,9 +203,7 @@ onMounted(() => {
             class="preview-download_icon"
             :class="navigateBg === 'light' && 'is-light-setting'"
           >
-            <Icon name="dv-preview-download"
-              ><msgNotice @click="msgNoticePush" class="svg-icon"
-            /></Icon>
+            <Icon><msgNotice @click="msgNoticePush" class="svg-icon" /></Icon>
           </el-icon>
         </el-badge>
       </el-tooltip>
@@ -228,6 +226,7 @@ onMounted(() => {
 <style lang="less" scoped>
 :deep(.ed-badge_custom) {
   --ed-badge-size: 14px;
+  height: 28px;
   .ed-badge__content {
     right: 0;
     padding: 3px;
@@ -237,7 +236,6 @@ onMounted(() => {
   }
 }
 .preview-download_icon {
-  padding: 5px;
   height: 28px;
   width: 28px;
   border-radius: 4px;
@@ -248,7 +246,7 @@ onMounted(() => {
   }
   &.is-light-setting {
     &:hover {
-      background-color: var(--ed-menu-hover-bg-color) !important;
+      background-color: #1f23291a !important;
     }
   }
 }
@@ -328,9 +326,13 @@ onMounted(() => {
       color: var(--ed-color-black) !important;
     }
     .ed-menu-item:not(.is-disabled):hover,
-    :deep(.ed-sub-menu__title):not(.is-disabled):hover {
+    :deep(.ed-sub-menu):not(.is-active) .ed-sub-menu__title:not(.is-disabled):hover {
       color: #1f2329;
       background: #1f23291a;
+    }
+    :deep(.ed-sub-menu).is-active .ed-sub-menu__title:not(.is-disabled):hover {
+      color: #ffffff !important;
+      background-color: var(--ed-color-primary);
     }
   }
 
@@ -353,14 +355,14 @@ onMounted(() => {
     .ed-icon {
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
-      font-size: 18px;
+      font-size: 20px;
     }
   }
 }
 .header-light {
   .operate-setting {
     .ed-icon {
-      color: var(--ed-color-black) !important;
+      color: #646a73 !important;
     }
   }
 }

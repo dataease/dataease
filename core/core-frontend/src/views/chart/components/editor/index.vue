@@ -151,6 +151,13 @@ const closeEditComponentName = () => {
     return
   }
   view.value.title = inputComponentName.value.name
+  if (view.value.type === 'VQuery') {
+    view.value.customStyle.component.title = inputComponentName.value.name
+  }
+  if (curComponent.value) {
+    curComponent.value.label = inputComponentName.value.name
+    curComponent.value.name = inputComponentName.value.name
+  }
   inputComponentName.value.name = ''
   inputComponentName.value.id = ''
 }
@@ -168,7 +175,7 @@ const toolTip = computed(() => {
 })
 
 const templateStatusShow = computed(() => {
-  return view.value['dataFrom'] === 'template'
+  return view.value['dataFrom'] === 'template' && !mobileInPc.value
 })
 
 const { view } = toRefs(props)
@@ -186,7 +193,6 @@ onBeforeMount(() => {
 })
 
 onBeforeUnmount(() => {
-  view.value.tableId = ''
   cacheId = ''
 })
 
@@ -352,6 +358,12 @@ const treeProps = {
 const recordSnapshotInfo = type => {
   view.value['dataFrom'] = 'calc'
   snapshotStore.recordSnapshotCache(type, view.value.id)
+}
+
+const changeDataset = () => {
+  // change dataset, do clear field or other thing
+  view.value['calParams'] = []
+  recordSnapshotInfo('calcData')
 }
 
 const filterNode = (value, data) => {
@@ -667,6 +679,25 @@ const disableUpdate = computed(() => {
   return flag
 })
 
+const dragCheckMapType = list => {
+  if (list && list.length > 0) {
+    let valid = true
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].deType !== 5) {
+        list.splice(i, 1)
+        valid = false
+      }
+    }
+    if (!valid) {
+      ElMessage({
+        message: t('chart.error_d_not_coordinates'),
+        type: 'warning'
+      })
+    }
+    return valid
+  }
+}
+
 const addAxis = (e, axis: AxisType) => {
   recordSnapshotInfo('calcData')
   const axisSpec = chartViewInstance.value?.axisConfig[axis]
@@ -698,6 +729,11 @@ const addAxis = (e, axis: AxisType) => {
       }
       typeValid = valid
     }
+  } else if (
+    ((view.value.type === 'symbolic-map' || view.value.type === 'heat-map') && axis === 'xAxis') ||
+    (view.value.type === 'flow-map' && (axis === 'xAxis' || axis === 'xAxisExt'))
+  ) {
+    typeValid = dragCheckMapType(view.value[axis])
   } else if (type) {
     typeValid = dragCheckType(view.value[axis], type)
   }
@@ -738,10 +774,13 @@ const addAxis = (e, axis: AxisType) => {
     }
   } else {
     if (!dup && typeValid) {
+      const isGaugeOrLiquid = view.value.type === 'gauge' || view.value.type === 'liquid'
+      const quotaData = cloneDeep(state.quotaData)
       emitter.emit('addAxis', {
         axisType: axis,
         axis: [view.value[axis][e.newDraggableIndex]],
-        editType: 'add'
+        editType: 'add',
+        ...(isGaugeOrLiquid ? { quotaData: quotaData } : {})
       })
     }
   }
@@ -877,7 +916,16 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
   if (resetDrill) {
     useEmitt().emitter.emit('resetDrill-' + view.id, 0)
   } else {
-    useEmitt().emitter.emit('calcData-' + view.id, view)
+    if (mobileInPc.value) {
+      //移动端设计
+      useEmitt().emitter.emit('onMobileStatusChange', {
+        type: 'componentStyleChange',
+        value: { type: 'calcData', component: JSON.parse(JSON.stringify(view)) }
+      })
+    } else {
+      useEmitt().emitter.emit('calcData-' + view.id, view)
+      snapshotStore.recordSnapshotCache('renderChart', view.id)
+    }
   }
   snapshotStore.recordSnapshotCache('calcData', view.id)
   if (updateQuery === 'updateQuery') {
@@ -1108,6 +1156,10 @@ const onChangeMiscStyleForm = val => {
 
 const onTextChange = val => {
   view.value.customStyle.text = val
+  if (curComponent.value) {
+    curComponent.value.name = view.value.title
+    curComponent.value.title = view.value.title
+  }
   if (mobileInPc.value) {
     //移动端设计
     useEmitt().emitter.emit('onMobileStatusChange', {
@@ -1177,7 +1229,7 @@ const onThresholdChange = val => {
     }
     return false
   })
-  if (type) {
+  if (type || view.value.type === 'rich-text') {
     calcData(view.value)
   } else {
     renderChart(view.value)
@@ -1461,13 +1513,18 @@ const addDsWindow = () => {
 const editDs = () => {
   const path =
     embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded-form' : '/dataset-form'
+  const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
+  // 此处校验提前 防止router返回时找到错误的路径
+  if (openType === '_self' && !dvInfo.value.id) {
+    ElMessage.warning(t('visualization.save_page_tips'))
+    return
+  }
   let routeData = router.resolve({
     path: path,
     query: {
       id: view.value.tableId
     }
   })
-  const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
   // 检查是否保存
   if (openType === '_self') {
     if (!dvInfo.value.id) {
@@ -1475,6 +1532,7 @@ const editDs = () => {
       return
     }
     canvasSave(() => {
+      wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
       const newWindow = window.open(routeData.href, openType)
       initOpenHandler(newWindow)
     })
@@ -1532,6 +1590,7 @@ const closeSortPriority = () => {
 }
 const saveSortPriority = () => {
   view.value.sortPriority = state.sortPriority as ChartViewField[]
+  recordSnapshotInfo('render')
   closeSortPriority()
 }
 const onPriorityChange = val => {
@@ -1570,6 +1629,12 @@ const saveValueFormatter = () => {
   }
   closeValueFormatter()
 }
+
+const elRowStyle = computed(() => {
+  return {
+    height: embeddedStore.getToken ? 'calc(100% - 45px)' : 'calc(100vh - 110px)'
+  }
+})
 
 const addCalcField = groupType => {
   editCalcField.value = true
@@ -1657,7 +1722,7 @@ const setFieldDefaultValue = field => {
 const el = ref<HTMLElement | null>(null)
 const elDrag = ref<HTMLElement | null>(null)
 const { y, isDragging } = useDraggable(el, {
-  initialValue: { x: 0, y: 0 },
+  initialValue: { x: 0, y: 400 },
   draggingElement: elDrag
 })
 const previewHeight = ref(0)
@@ -2001,7 +2066,7 @@ const deleteChartFieldItem = id => {
               </div>
             </el-row>
 
-            <el-row style="height: calc(100vh - 110px)">
+            <el-row :style="elRowStyle">
               <el-scrollbar v-if="view.type === 'VQuery' && curComponent">
                 <div class="query-style-tab">
                   <div style="padding-top: 1px">
@@ -3072,12 +3137,14 @@ const deleteChartFieldItem = id => {
                               </el-icon>
                             </el-tooltip>
                           </div>
+
                           <div
                             class="tree-btn"
+                            v-if="isFilterActive || themes === 'dark'"
                             :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
                             @click="openTreeFilter"
                           >
-                            <el-icon>
+                            <el-icon style="margin-right: 2px; font-size: 12px">
                               <Icon class="svg-background" name="icon-filter"
                                 ><iconFilter class="svg-icon svg-background"
                               /></Icon>
@@ -3085,6 +3152,17 @@ const deleteChartFieldItem = id => {
 
                             <span>{{ $t('chart.filter') }}</span>
                           </div>
+                          <el-button
+                            v-else
+                            class="tree-btn_secondary"
+                            secondary
+                            @click="openTreeFilter"
+                          >
+                            <template #icon>
+                              <Icon><iconFilter class="svg-icon svg-background" /></Icon>
+                            </template>
+                            <span>{{ $t('chart.filter') }}</span>
+                          </el-button>
                         </el-row>
 
                         <el-row v-if="showAggregate" class="refresh-area">
@@ -3164,7 +3242,7 @@ const deleteChartFieldItem = id => {
                           <span v-if="view.type !== 'richTextView'">
                             {{ t('chart.result_count') }}
                           </span>
-                          <span v-if="view.type !== 'richTextView'">
+                          <span style="padding-left: 8px" v-if="view.type !== 'richTextView'">
                             <el-radio-group
                               v-model="view.resultMode"
                               :effect="themes"
@@ -3172,7 +3250,7 @@ const deleteChartFieldItem = id => {
                               size="small"
                               @change="recordSnapshotInfo('render')"
                             >
-                              <el-radio label="all" :effect="themes">
+                              <el-radio class="margin20-radio" label="all" :effect="themes">
                                 <span
                                   class="result-count-label"
                                   :class="{ dark: themes === 'dark' }"
@@ -3180,7 +3258,7 @@ const deleteChartFieldItem = id => {
                                   {{ t('chart.result_mode_all') }}
                                 </span>
                               </el-radio>
-                              <el-radio label="custom">
+                              <el-radio label="custom" :effect="themes">
                                 <el-input-number
                                   v-model="view.resultCount"
                                   :min="1"
@@ -3301,6 +3379,7 @@ const deleteChartFieldItem = id => {
                           :themes="themes"
                           :properties="chartViewInstance.properties"
                           :property-inner-all="chartViewInstance.propertyInner"
+                          :event-info="curComponent?.events"
                           @onFunctionCfgChange="onFunctionCfgChange"
                           @onAssistLineChange="onAssistLineChange"
                           @onScrollCfgChange="onScrollCfgChange"
@@ -3324,7 +3403,7 @@ const deleteChartFieldItem = id => {
           }"
         >
           <el-icon
-            :title="'数据集'"
+            :title="$t('visualization.dataset')"
             class="custom-icon"
             size="20px"
             @click="collapseChange('datasetAreaCollapse')"
@@ -3353,7 +3432,7 @@ const deleteChartFieldItem = id => {
                   :state-obj="state"
                   :themes="themes"
                   @add-ds-window="addDsWindow"
-                  @on-dataset-change="recordSnapshotInfo('calcData')"
+                  @on-dataset-change="changeDataset"
                 />
                 <el-tooltip
                   :effect="toolTip"
@@ -3377,7 +3456,11 @@ const deleteChartFieldItem = id => {
                 <div class="dataset-search-label" :class="{ dark: themes === 'dark' }">
                   <span>{{ t('chart.field') }}</span>
                   <span>
-                    <el-tooltip :effect="toolTip" content="刷新" placement="top">
+                    <el-tooltip
+                      :effect="toolTip"
+                      :content="$t('visualization.refresh')"
+                      placement="top"
+                    >
                       <el-icon
                         class="field-search-icon-btn"
                         :class="{ dark: themes === 'dark' }"
@@ -3407,7 +3490,7 @@ const deleteChartFieldItem = id => {
                   :effect="themes"
                   class="dataset-search-input"
                   :class="{ dark: themes === 'dark' }"
-                  :placeholder="t('chart.search') + t('chart.field')"
+                  :placeholder="t('chart.search') + ' ' + t('chart.field')"
                   clearable
                 >
                   <template #prefix>
@@ -3761,7 +3844,7 @@ const deleteChartFieldItem = id => {
         </div>
       </el-row>
     </template>
-    <chart-template-info v-if="templateStatusShow"></chart-template-info>
+    <chart-template-info v-if="templateStatusShow" :themes="themes"></chart-template-info>
     <!--显示名修改-->
     <el-dialog
       v-model="state.renameItem"
@@ -4613,7 +4696,7 @@ span {
       width: 100%;
       margin-top: 8px;
       background: #fff;
-      height: 32px;
+      height: 28px;
       border-radius: 4px;
       border: 1px solid #dcdfe6;
       display: flex;
@@ -4630,6 +4713,18 @@ span {
       &.active {
         color: #3370ff;
         border-color: #3370ff;
+      }
+    }
+
+    :deep(.tree-btn_secondary) {
+      width: 100%;
+      margin-top: 8px;
+      line-height: 28px;
+      height: 28px;
+      font-size: 12px;
+
+      & > [class*='ed-icon'] + span {
+        margin-left: 2px !important;
       }
     }
 
@@ -4707,6 +4802,10 @@ span {
     justify-content: space-between;
     height: 40px;
     padding: 0 6px;
+
+    .margin20-radio {
+      margin-right: 20px;
+    }
 
     .result-count-label {
       color: #1f2329;
@@ -4831,7 +4930,11 @@ span {
   width: 35px;
   text-align: center;
   padding: 5px;
-  margin-top: 30px;
+  margin-top: 35px;
+  span {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
 }
 
 .custom-icon {
@@ -4995,6 +5098,7 @@ span {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  z-index: 1000;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 .style-collapse {
@@ -5031,6 +5135,10 @@ span {
 .field-setting {
   position: absolute;
   right: 8px;
+  color: #646a73;
+  &.remove-icon--dark {
+    color: #a6a6a6;
+  }
 }
 .father .child {
   visibility: hidden;

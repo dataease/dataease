@@ -29,8 +29,7 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
         }
         //if true, need to translate
         if (methodParameter.hasMethodAnnotation(I18n.class)) {
-            I18n i18n = methodParameter.getMethodAnnotation(I18n.class);
-            o = translate(o, i18n.value());
+            o = translate(o);
         }
 
         if (!(o instanceof ResultMessage)) {
@@ -45,7 +44,7 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
 
     // i18n
-    private Object translate(Object obj, String type) {
+    private Object translate(Object obj) {
         return Translator.translateObject(obj);
     }
 

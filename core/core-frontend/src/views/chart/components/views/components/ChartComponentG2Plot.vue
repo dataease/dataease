@@ -28,6 +28,8 @@ import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
+import { ExportImage } from '@antv/l7'
+import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack, inMobile } =
@@ -74,6 +76,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  active: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 
@@ -88,6 +95,14 @@ const emit = defineEmits([
 const g2TypeSeries1 = ['bidirectional-bar']
 const g2TypeSeries0 = ['bar-range']
 const g2TypeTree = ['circle-packing']
+const g2TypeStack = [
+  'bar-stack',
+  'bar-group-stack',
+  'percentage-bar-stack',
+  'bar-stack-horizontal',
+  'percentage-bar-stack-horizontal'
+]
+const g2TypeGroup = ['bar-group']
 
 const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 
@@ -131,7 +146,10 @@ const clearLinkage = () => {
 }
 const reDrawView = () => {
   linkageActiveHistory.value = false
-  myChart?.render()
+  const slider = myChart?.chart?.getController('slider')
+  if (!slider) {
+    myChart?.render()
+  }
 }
 const linkageActivePre = () => {
   if (linkageActiveHistory.value) {
@@ -143,43 +161,100 @@ const linkageActivePre = () => {
 }
 const linkageActive = () => {
   linkageActiveHistory.value = true
+  myChart?.setState('active', () => true, false)
+  myChart?.setState('inactive', () => true, false)
+  myChart?.setState('selected', () => true, false)
   myChart?.setState('active', param => {
     if (Array.isArray(param)) {
       return false
     } else {
-      if (checkSelected(param)) {
-        return true
-      }
+      return checkSelected(param)
     }
   })
   myChart?.setState('inactive', param => {
     if (Array.isArray(param)) {
       return false
     } else {
-      if (!checkSelected(param)) {
-        return true
-      }
+      return !checkSelected(param)
+    }
+  })
+  myChart?.setState('selected', param => {
+    if (Array.isArray(param)) {
+      return false
+    } else {
+      return checkSelected(param)
     }
   })
 }
 const checkSelected = param => {
+  // 获取当前视图的所有联动字段ID
+  const mappingFieldIds = Array.from(
+    new Set(
+      chartData.value?.fields
+        .map(item => item.id)
+        .filter(id =>
+          Object.keys(nowPanelTrackInfo.value).some(
+            key => key.startsWith(view.value.id) && key.split('#')[1] === id
+          )
+        )
+    )
+  )
+  // 维度字段匹配
+  const [xAxis, xAxisExt, extStack] = ['xAxis', 'xAxisExt', 'extStack'].map(key =>
+    view.value[key].find(item => mappingFieldIds.includes(item.id))
+  )
+  // 选中字段数据
+  const { group, name, category } = state.linkageActiveParam
+  // 选中字段数据匹配
   if (g2TypeSeries1.includes(view.value.type)) {
-    return state.linkageActiveParam.name === param.field
+    return name === param.field
   } else if (g2TypeSeries0.includes(view.value.type)) {
-    return state.linkageActiveParam.category === param.category
+    return category === param.category
   } else if (g2TypeTree.includes(view.value.type)) {
-    if (
-      param.path?.startsWith(state.linkageActiveParam.name) ||
-      state.linkageActiveParam.name === t('commons.all')
-    ) {
+    if (param.path?.startsWith(name) || name === t('commons.all')) {
       return true
     }
-    return state.linkageActiveParam.name === param.name
+    return name === param.name
+  } else if (g2TypeGroup.includes(view.value.type)) {
+    const isNameMatch = name === param.name || (name === 'NO_DATA' && !param.name)
+    const isCategoryMatch = category === param.category
+    if (xAxis && xAxisExt) {
+      return isNameMatch && isCategoryMatch
+    }
+    if (xAxis && !xAxisExt) {
+      return isNameMatch
+    }
+    if (!xAxis && xAxisExt) {
+      return isCategoryMatch
+    }
+    return false
+  } else if (g2TypeStack.includes(view.value.type)) {
+    const isGroupMatch = group === param.group || (group === 'NO_DATA' && !param.group)
+    const isNameMatch = name === param.name || (name === 'NO_DATA' && !param.name)
+    const isCategoryMatch = category === param.category
+    // 全部匹配
+    if (xAxis && xAxisExt && extStack) {
+      return isNameMatch && isGroupMatch && isCategoryMatch
+    }
+    // 只匹配到维度
+    if (xAxis && !xAxisExt && !extStack) {
+      return isNameMatch
+    } else if (!xAxis && xAxisExt && !extStack) {
+      return isGroupMatch
+    } else if (!xAxis && !xAxisExt && extStack) {
+      return isCategoryMatch
+    } else if (xAxis && xAxisExt && !extStack) {
+      return isNameMatch && isGroupMatch
+    } else if (xAxis && !xAxisExt && extStack) {
+      return isNameMatch && isCategoryMatch
+    } else if (!xAxis && xAxisExt && extStack) {
+      return isGroupMatch && isCategoryMatch
+    } else {
+      return false
+    }
   } else {
     return (
-      (state.linkageActiveParam.name === param.name ||
-        (state.linkageActiveParam.name === 'NO_DATA' && !param.name)) &&
-      state.linkageActiveParam.category === param.category
+      (name === param.name || (name === 'NO_DATA' && !param.name)) && category === param.category
     )
   }
 }
@@ -205,6 +280,11 @@ const calcData = async (view, callback) => {
             dynamicAreaId.value = extra?.adcode + ''
             scope = extra?.scope
             // 地图
+            const map = parseJson(view.customAttr)?.map
+            if (map) {
+              let areaId = map.id
+              country.value = areaId.slice(0, 3)
+            }
             if (!dynamicAreaId.value?.startsWith(country.value)) {
               if (country.value === 'cus') {
                 dynamicAreaId.value = '156' + dynamicAreaId.value
@@ -268,6 +348,8 @@ const renderG2Plot = async (chart, chartView: G2PlotChartView<any, any>) => {
   g2Timer && clearTimeout(g2Timer)
   g2Timer = setTimeout(async () => {
     try {
+      // 在这里清理掉之前图表的空dom
+      configEmptyDataStyle([1], containerId)
       myChart?.destroy()
       myChart = await chartView.drawChart({
         chartObj: myChart,
@@ -367,13 +449,19 @@ const action = param => {
     actionDefault(param)
     return
   }
+  if (view.value.type === 'map') {
+    if (!(param?.data?.data?.quotaList && param?.data?.data?.quotaList.length > 0)) {
+      return
+    }
+  }
   state.pointParam = param.data
   // 点击
   pointClickTrans()
   // 下钻 联动 跳转
   state.linkageActiveParam = {
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
-    name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA'
+    name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA',
+    group: state.pointParam.data.group ? state.pointParam.data.group : 'NO_DATA'
   }
   if (trackMenu.value.length < 2) {
     // 只有一个事件直接调用
@@ -412,10 +500,28 @@ const trackClick = trackAction => {
   if (!param?.data?.dimensionList) {
     return
   }
-  let checkName = state.pointParam.data.name
-  // 对多维度的处理 取第一个
-  if (state.pointParam.data.dimensionList.length > 1) {
-    checkName = state.pointParam.data.dimensionList[0].id
+  let checkName = undefined
+  if (param.data.dimensionList.length > 1) {
+    // 分组堆叠处理 去能比较出来值的那个维度
+    if (view.value.type === 'bar-group-stack') {
+      const length = param.data.dimensionList.length
+      // 存在最后一个id
+      if (param.data.dimensionList[length - 1].id === param.data.dimensionList[length - 2].id) {
+        param.data.dimensionList.pop()
+      }
+      param.data.dimensionList.forEach(dimension => {
+        if (dimension.value === param.data.category) {
+          checkName = dimension.id
+        }
+      })
+    }
+    if (!checkName) {
+      // 对多维度的处理 取第一个
+      checkName = param.data.dimensionList[0].id
+    }
+  }
+  if (!checkName) {
+    checkName = param.data.name
   }
   // 跳转字段处理
   let jumpName = state.pointParam.data.name
@@ -454,7 +560,7 @@ const trackClick = trackAction => {
     }
   }
   let quotaList = state.pointParam.data.quotaList
-  if (['bar-range', 'circle-packing'].includes(curView.type)) {
+  if (['bar-range', 'bullet-graph'].includes(curView.type)) {
     quotaList = state.pointParam.data.dimensionList
   } else {
     quotaList[0]['value'] = state.pointParam.data.value
@@ -481,7 +587,6 @@ const trackClick = trackAction => {
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: quotaList
   }
-
   switch (trackAction) {
     case 'pointClick':
       emit('onPointClick', clickParams)
@@ -564,12 +669,85 @@ const trackMenu = computed(() => {
 const quadrantDefaultBaseline = defaultQuadrant => {
   emitter.emit('quadrant-default-baseline', defaultQuadrant)
 }
+
+const canvas2Picture = (pictureData, online) => {
+  const mapDom = document.getElementById(containerId)
+  const childNodeList = mapDom.querySelectorAll('.l7-scene')
+  if (childNodeList?.length) {
+    childNodeList.forEach(child => {
+      child['style'].display = 'none'
+    })
+  }
+  if (online) {
+    const canvasContainerList = mapDom.querySelectorAll('.amap-maps')
+    canvasContainerList?.forEach(canvasContainer => {
+      canvasContainer['style'].display = 'none'
+    })
+  }
+  const imgDom = document.createElement('img')
+  imgDom.style.width = '100%'
+  imgDom.style.height = '100%'
+  imgDom.style.position = 'absolute'
+  imgDom.style.objectFit = 'cover'
+  imgDom.style['z-index'] = '2'
+  imgDom.classList.add('prepare-picture-img')
+  imgDom.src = pictureData
+  mapDom.appendChild(imgDom)
+}
+const preparePicture = id => {
+  if (id !== curView.id) {
+    return
+  }
+  const chartView = chartViewManager.getChartView(curView.render, curView.type)
+  if (chartView.library === ChartLibraryType.L7_PLOT) {
+    myChart
+      .getScene()
+      .exportMap('png')
+      .then(res => canvas2Picture(res, false))
+  } else if (chartView.library === ChartLibraryType.L7) {
+    const scene = myChart.getScene()
+    const zoom = new ExportImage({
+      onExport: (base64: string) => {
+        canvas2Picture(base64, true)
+      }
+    })
+    scene.addControl(zoom)
+    zoom.hide()
+    zoom.getImage().then(res => {
+      canvas2Picture(res, true)
+    })
+  }
+}
+const unPreparePicture = id => {
+  if (id !== curView.id) {
+    return
+  }
+  const chartView = chartViewManager.getChartView(curView.render, curView.type)
+  if (chartView.library === ChartLibraryType.L7_PLOT || chartView.library === ChartLibraryType.L7) {
+    const mapDom = document.getElementById(containerId)
+    const childNodeList = mapDom.querySelectorAll('.l7-scene')
+    if (childNodeList?.length) {
+      childNodeList.forEach(child => {
+        child['style'].display = 'block'
+      })
+    }
+    const imgDomList = mapDom.querySelectorAll('.prepare-picture-img')
+    imgDomList?.forEach(child => {
+      child.remove()
+    })
+    const canvasContainerList = mapDom.querySelectorAll('.amap-maps')
+    canvasContainerList?.forEach(canvasContainer => {
+      canvasContainer['style'].display = 'block'
+    })
+  }
+}
 defineExpose({
   calcData,
   renderChart,
   trackMenu,
   clearLinkage
 })
+let intersectionObserver
 let resizeObserver
 const TOLERANCE = 0.01
 const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
@@ -594,11 +772,32 @@ onMounted(() => {
     preSize[1] = size.blockSize
   })
   resizeObserver.observe(containerDom)
+  intersectionObserver = new IntersectionObserver(([entry]) => {
+    if (RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
+      return
+    }
+    if (entry.intersectionRatio <= 0) {
+      myChart?.emit('tooltip:hidden')
+    }
+  })
+  intersectionObserver.observe(containerDom)
+  useEmitt({ name: 'l7-prepare-picture', callback: preparePicture })
+  useEmitt({ name: 'l7-unprepare-picture', callback: unPreparePicture })
 })
+const MAP_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 'symbolic-map']
+const onWheel = (e: WheelEvent) => {
+  if (!MAP_CHARTS.includes(view.value.type)) {
+    return
+  }
+  if (!props.active) {
+    e.stopPropagation()
+  }
+}
 onBeforeUnmount(() => {
   try {
     myChart?.destroy()
     resizeObserver?.disconnect()
+    intersectionObserver?.disconnect()
   } catch (e) {
     console.warn(e)
   }
@@ -616,7 +815,13 @@ onBeforeUnmount(() => {
       :style="state.trackBarStyle"
       @trackClick="trackClick"
     />
-    <div v-if="!isError" ref="chartContainer" class="canvas-content" :id="containerId"></div>
+    <div
+      @wheel.capture="onWheel"
+      v-if="!isError"
+      ref="chartContainer"
+      class="canvas-content"
+      :id="containerId"
+    ></div>
     <chart-error v-else :err-msg="errMsg" />
   </div>
 </template>

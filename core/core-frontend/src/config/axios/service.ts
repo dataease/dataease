@@ -171,7 +171,10 @@ service.interceptors.response.use(
     } else if (response.config.url.match(/^\/map|geo\/\d{3}\/\d+\.json$/)) {
       //   TODO 处理静态文件
       return response
-    } else if (response.config.url.includes('DEXPack.umd.js')) {
+    } else if (
+      response.config.url.includes('DEXPack.umd.js') ||
+      response.config.url.includes('/i18n/custom_')
+    ) {
       return response
     } else if (response.config.url.startsWith('/xpackComponent/pluginStaticInfo/extensions-')) {
       return response
@@ -214,6 +217,14 @@ service.interceptors.response.use(
 
     if (!error?.response) {
       return Promise.reject(error)
+    }
+    if (error?.response.status === 413) {
+      ElMessage({
+        type: 'error',
+        message: '文件大小超出限制, 请修改相关配置文件',
+        showClose: true
+      })
+      return
     }
     const header = error.response?.headers as AxiosHeaders
     if (
@@ -285,4 +296,23 @@ const executeVersionHandler = (response: AxiosResponse) => {
     showMsg('系统有升级，请点击刷新页面', '-sys-upgrade-')
   }
 }
-export { service, cancelMap }
+
+const cancelRequestBatch = cancelKey => {
+  if (cancelKey) {
+    if (cancelKey.indexOf('/**') > -1) {
+      const cancelKeyPre = cancelKey.split('/**')[0]
+      Object.keys(cancelMap).forEach(key => {
+        if (key.indexOf(cancelKeyPre) > -1) {
+          cancelMap[key]?.(() => {
+            console.warn('Operation canceled by the user,url:' + key)
+          })
+        }
+      })
+    } else {
+      cancelMap[cancelKey]?.(() => {
+        console.warn('Operation canceled by the user,url:' + cancelKey)
+      })
+    }
+  }
+}
+export { service, cancelMap, cancelRequestBatch }

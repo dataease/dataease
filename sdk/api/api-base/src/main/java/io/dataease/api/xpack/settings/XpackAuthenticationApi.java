@@ -25,44 +25,55 @@ public interface XpackAuthenticationApi {
     @PostMapping("/switchEnable")
     void switchEnable(@RequestBody XpackAuthenticationEditor editor);
 
+    @Operation(summary = "保存OIDC")
     @PostMapping("/save/oidc")
     String saveOidc(@RequestBody XpackOidcVO editor);
 
+    @Operation(summary = "保存CAS")
     @PostMapping("/save/cas")
     String saveCas(@RequestBody XpackCasVO editor);
 
+    @Operation(summary = "保存LDAP")
     @PostMapping("/save/ldap")
     String saveLdap(@RequestBody XpackLdapVO editor);
 
+    @Operation(summary = "保存OAuth2")
     @PostMapping("/save/oauth2")
     String saveOauth2(@RequestBody XpackOauth2VO editor);
 
-
+    @Operation(summary = "OIDC信息")
     @GetMapping("/info/oidc")
     XpackOidcVO oidcInfo();
 
+    @Operation(summary = "CAS信息")
     @GetMapping("/info/cas")
     XpackCasVO casInfo();
 
+    @Operation(summary = "LDAP信息")
     @GetMapping("/info/ldap")
     XpackLdapVO ldapInfo();
 
+    @Operation(summary = "OAuth2信息")
     @GetMapping("/info/oauth2")
     XpackOauth2VO oauth2Info();
 
-
+    @Operation(summary = "验证OIDC")
     @PostMapping("/validate/oidc")
     String validateOidc(@RequestBody XpackOidcVO editor);
 
+    @Operation(summary = "验证CAS")
     @PostMapping("/validate/cas")
     String validateCas(@RequestBody XpackCasVO editor);
 
+    @Operation(summary = "验证LDAP")
     @PostMapping("/validate/ldap")
     String validateLdap(@RequestBody XpackLdapVO editor);
 
+    @Operation(summary = "验证OAuth2")
     @PostMapping("/validate/oauth2")
     String validateOauth2(@RequestBody XpackOauth2VO editor);
 
+    @Operation(summary = "验证")
     @PostMapping("/validateId/{id}")
     String validate(@PathVariable("id") Long id);
 

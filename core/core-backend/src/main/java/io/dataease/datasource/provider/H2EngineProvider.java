@@ -15,7 +15,7 @@ import java.util.List;
 public class H2EngineProvider extends EngineProvider {
 
     private static final String creatTableSql =
-            "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
+            "CREATE TABLE IF NOT EXISTS \"TABLE_NAME\"" +
                     "Column_Fields;";
 
 
@@ -25,7 +25,7 @@ public class H2EngineProvider extends EngineProvider {
     }
 
     @Override
-    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber,List<TableField> tableFields) {
+    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields) {
         String engineTableName;
         switch (extractType) {
             case all_scope:
@@ -35,7 +35,7 @@ public class H2EngineProvider extends EngineProvider {
                 engineTableName = TableUtils.tableName(tableName);
                 break;
         }
-        String insertSql = "INSERT INTO `TABLE_NAME` VALUES ".replace("TABLE_NAME", engineTableName);
+        String insertSql = "INSERT INTO  \"TABLE_NAME\" VALUES ".replace("TABLE_NAME", engineTableName);
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
@@ -45,9 +45,15 @@ public class H2EngineProvider extends EngineProvider {
             for (int i = 0; i < strings.length; i++) {
                 if (tableFields.get(i).isChecked()) {
                     if (StringUtils.isEmpty(strings[i])) {
-                        strings1[length] = null;
+                        String type = tableFields.get(i).getType() == null ? tableFields.get(i).getFieldType() : tableFields.get(i).getType();
+                        if (type.equals("LONG") || type.equals("DOUBLE")) {
+                            strings1[length] = "0";
+                        } else {
+                            strings1[length] = null;
+                        }
+
                     } else {
-                        strings1[length] = strings[i].replace("\\", "\\\\").replace("'", "\\'");
+                        strings1[length] = strings[i].replace("\\", "\\\\").replace("'", "''");
                     }
                     length++;
                 }
@@ -55,7 +61,7 @@ public class H2EngineProvider extends EngineProvider {
             values.append("('").append(String.join("','", Arrays.asList(strings1)))
                     .append("'),");
         }
-        return (insertSql + values.substring(0, values.length() - 1)).replaceAll("'null'", "null");
+        return (insertSql + values.substring(0, values.length() - 1));
     }
 
 
@@ -93,7 +99,7 @@ public class H2EngineProvider extends EngineProvider {
             }
             columnFields.append(tableField.getName()).append("\" ");
             int size = tableField.getPrecision() * 4;
-            switch (tableField.getDeType()) {
+            switch (tableField.getDeExtractType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
                         columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",\"");

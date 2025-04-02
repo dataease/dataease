@@ -5,13 +5,14 @@ import zhCn from 'element-plus-secondary/es/locale/lang/zh-cn'
 import en from 'element-plus-secondary/es/locale/lang/en'
 import tw from 'element-plus-secondary/es/locale/lang/zh-tw'
 import { getLocale } from '@/utils/utils'
-
+import request from '@/config/axios'
 const elLocaleMap = {
   'zh-CN': zhCn,
   en: en,
   tw: tw
 }
 interface LocaleState {
+  customLoaded: boolean
   currentLocale: LocaleDropdownType
   localeMap: LocaleDropdownType[]
 }
@@ -19,6 +20,7 @@ interface LocaleState {
 export const useLocaleStore = defineStore('locales', {
   state: (): LocaleState => {
     return {
+      customLoaded: false,
       currentLocale: {
         lang: getLocale(),
         elLocale: elLocaleMap[getLocale()]
@@ -44,8 +46,27 @@ export const useLocaleStore = defineStore('locales', {
     getCurrentLocale(): LocaleDropdownType {
       return this.currentLocale
     },
-    getLocaleMap(): LocaleDropdownType[] {
-      return this.localeMap
+    async getLocaleMap(): Promise<LocaleDropdownType[]> {
+      if (this.customLoaded) {
+        return this.localeMap
+      }
+      try {
+        const res = await request.get({ url: '/sysParameter/i18nOptions' })
+        this.customLoaded = true
+        const customMap = res.data
+        for (const key in customMap) {
+          const item = {
+            lang: key,
+            name: customMap[key],
+            custom: true
+          }
+          this.localeMap.push(item)
+        }
+        return this.localeMap
+      } catch (error) {
+        this.customLoaded = true
+        return this.localeMap
+      }
     }
   },
   actions: {

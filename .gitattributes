@@ -1,6 +1,4 @@
 *.sql linguist-language=java
-*.java linguist-language=Java
-*.md linguist-language=Java
 *.yml linguist-language=Java
 *.html linguist-language=Java
 *.js linguist-language=Java

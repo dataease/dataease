@@ -121,7 +121,7 @@ onMounted(() => {
             </el-col>
           </el-row>
           <el-row v-if="canvasStyleData.screenAdaptor">
-            <el-form-item style="margin-top: 16px">
+            <el-form-item style="margin: 8px 0 16px">
               <span class="form-item-scroll"> {{ t('visualization.screen_adaptor') }} </span>
               <el-tooltip class="item" effect="dark" placement="top">
                 <template #content>
@@ -169,7 +169,7 @@ onMounted(() => {
         :title="t('visualization.refresh_config')"
         name="overallSetting"
       >
-        <overall-setting themes="dark" />
+        <overall-setting style="padding-bottom: 8px" themes="dark" />
       </el-collapse-item>
       <el-collapse-item
         effect="dark"

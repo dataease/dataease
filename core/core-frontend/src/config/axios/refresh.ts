@@ -60,11 +60,15 @@ export const configHandler = config => {
         setRefreshStatus(true)
         refreshApi()
           .then(res => {
-            userStore.setToken(res.data.token)
-            userStore.setExp(res.data.exp)
-            userStore.setTime(Date.now())
-            config.headers['X-DE-TOKEN'] = res.data.token
-            delayExecute(res.data.token)
+            if (res?.data?.token) {
+              userStore.setToken(res.data.token)
+              userStore.setExp(res.data.exp)
+              userStore.setTime(Date.now())
+              config.headers['X-DE-TOKEN'] = res.data.token
+              delayExecute(res.data.token)
+            } else {
+              delayExecute(null)
+            }
           })
           .catch(e => {
             console.error(e)

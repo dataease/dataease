@@ -1,7 +1,7 @@
 <template>
   <div
     class="shape"
-    :class="{ 'shape-group-area': isGroupArea }"
+    :class="{ 'shape-group-area': isGroupArea, 'freeze-component': freezeFlag }"
     ref="shapeInnerRef"
     :id="domId"
     v-loading="downLoading"
@@ -10,8 +10,8 @@
     @dblclick="handleDbClick"
   >
     <div
-      title="同步PC设计"
-      v-if="showCheck && ['VQuery'].includes(element.component)"
+      :title="t('visualization.sync_pc_design')"
+      v-if="showCheck"
       class="refresh-from-pc"
       @click="updateFromMobile($event, 'syncPcDesign')"
     >
@@ -28,6 +28,13 @@
         <Icon name="mobile-checkbox"><mobileCheckbox class="svg-icon" /></Icon>
       </el-icon>
     </div>
+    <div v-if="showHiddenIcon" class="del-from-mobile" @mousedown.stop="hiddenComponent">
+      <el-tooltip :content="$t('visualization.hidden')" placement="bottom">
+        <el-icon @click.stop>
+          <Icon @click.stop name="dvHidden"><dvHidden class="svg-icon" /></Icon>
+        </el-icon>
+      </el-tooltip>
+    </div>
     <div
       class="shape-outer"
       v-show="contentDisplay"
@@ -36,7 +43,8 @@
         'shape-lock': shapeLock,
         'shape-edit': isEditMode && !boardMoveActive,
         'linkage-setting': linkageActive,
-        'drag-on-tab-collision': dragCollision
+        'drag-on-tab-collision': dragCollision,
+        'shape-selected': curBatchOptComponents?.includes(element.id)
       }"
     >
       <component-edit-bar
@@ -131,6 +139,7 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
+import dvHidden from '@/assets/svg/dv-hidden.svg'
 import { groupSizeStyleAdaptor, groupStyleRevert, tabInnerStyleRevert } from '@/utils/style'
 import {
   checkJoinTab,
@@ -142,6 +151,8 @@ import {
 } from '@/utils/canvasUtils'
 import Board from '@/components/de-board/Board.vue'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -158,13 +169,15 @@ const {
   dvInfo,
   editMode,
   batchOptStatus,
+  curBatchOptComponents,
   linkageSettingStatus,
   curLinkageView,
   tabCollisionActiveId,
   tabMoveInActiveId,
   tabMoveOutComponentId,
   mobileInPc,
-  mainScrollTop
+  mainScrollTop,
+  hiddenListStatus
 } = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emit = defineEmits([
@@ -193,7 +206,17 @@ const state = reactive({
   tabMoveInXOffset: 40,
   collisionGap: 10 // 碰撞深度有效区域,
 })
-
+const hiddenComponent = event => {
+  event.preventDefault()
+  event.stopPropagation()
+  if (element.value) {
+    element.value.dashboardHidden = true
+    eventBus.emit('removeMatrixItemPosition-' + canvasId.value, element.value)
+    snapshotStore.recordSnapshotCache('hide')
+    dvMainStore.setLastHiddenComponent(element.value.id)
+  }
+}
+const showHiddenIcon = computed(() => hiddenListStatus.value && isMainCanvas(canvasId.value))
 const contentDisplay = ref(true)
 const shapeLock = computed(() => {
   return element.value['isLock'] && isEditMode.value
@@ -303,6 +326,14 @@ const initialAngle = {
 }
 const cursors = ref({})
 
+const freezeFlag = computed(() => {
+  return (
+    isMainCanvas(canvasId.value) &&
+    element.value.freeze &&
+    mainScrollTop.value - defaultStyle.value.top > 0
+  )
+})
+
 const showCheck = computed(() => {
   return mobileInPc.value && element.value.canvasId === 'canvas-main'
 })
@@ -363,7 +394,7 @@ const getPointList = () => {
 }
 
 const isActive = () => {
-  return active.value && !element.value['isLock'] && isEditMode.value
+  return active.value && !element.value['isLock'] && isEditMode.value && !freezeFlag.value
 }
 
 const userViewEnlargeOpen = opt => {
@@ -515,7 +546,8 @@ const handleMouseDownOnShape = e => {
   // }
 
   e.stopPropagation()
-  if (element.value['isLock'] || !isEditMode.value) return
+  // 锁定 非编辑状态 冻结状态 不进行移动
+  if (element.value['isLock'] || !isEditMode.value || freezeFlag.value) return
 
   cursors.value = getCursor() // 根据旋转角度获取光标位置
 
@@ -555,7 +587,6 @@ const handleMouseDownOnShape = e => {
     // 因为仪表板中组件向下移动可能只是为了挤占空间 不一定是为了移出 这里无法判断明确意图 暂时支不支持向下移出
     // 大屏和仪表板暂时做位置算法区分 仪表板暂时使用curX 因为缩放的影响 大屏使用 tab位置 + 组件位置（相对内部画布）+初始触发点
     // 如果组件在tab中且tab在Group中 不允许移入移出 pTabGroupFlag = true
-    // 如当前是分组且分组中含有Tab 不允许移入 pJoinTab = false
     if (
       !pTabGroupFlag &&
       pJoinTab &&
@@ -628,7 +659,8 @@ const handleMouseDownOnShape = e => {
   const up = () => {
     dashboardActive.value && emit('onMouseUp')
     element.value['dragging'] = false
-    hasMove && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnShape-up')
+    hasMove &&
+      snapshotStore.recordSnapshotCacheWithPositionChange('shape-handleMouseDownOnShape-up')
     // 触发元素停止移动事件，用于隐藏标线
     eventBus.emit('unMove')
     document.removeEventListener('mousemove', move)
@@ -812,7 +844,8 @@ const handleMouseDownOnPoint = (point, e) => {
     element.value['resizing'] = false
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
-    needSave && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnPoint-up')
+    needSave &&
+      snapshotStore.recordSnapshotCacheWithPositionChange('shape-handleMouseDownOnPoint-up')
     handleGroupComponent()
   }
 
@@ -919,28 +952,7 @@ const componentBackgroundStyle = computed(() => {
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor
     }
-
-    if (element.value.innerType === 'VQuery') {
-      if (backgroundColorSelect) {
-        style = {
-          padding: innerPadding * scale.value + 'px',
-          borderRadius: borderRadius + 'px'
-        }
-      } else {
-        style = {
-          padding: 12 * scale.value + 'px',
-          borderRadius: '0'
-        }
-      }
-    }
-
-    if (element.value.innerType === 'VQuery' && backgroundColorSelect) {
-      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
-        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat`
-      } else {
-        style['background-color'] = colorRGBA
-      }
-    } else if (backgroundImageEnable) {
+    if (backgroundImageEnable) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
         style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
       } else {
@@ -996,7 +1008,12 @@ const tabMoveInCheck = async () => {
   const left = curNode.offsetLeft
   const top = curNode.offsetTop
   // tab 移入检测开启 tab组件不能相互移入另一个tab组件
-  if (isTabMoveCheck.value && !state.ignoreTabMoveComponent.includes(element.value.component)) {
+  // 如当前是分组且分组中含有Tab 不允许移入 pJoinTab = false
+  if (
+    pJoinTab &&
+    isTabMoveCheck.value &&
+    !state.ignoreTabMoveComponent.includes(element.value.component)
+  ) {
     const nodes = Array.from(parentNode.value.childNodes) // 获取当前父节点下所有子节点
     for (const item of nodes) {
       if (
@@ -1099,12 +1116,14 @@ const dragCollision = computed(() => {
 
 const htmlToImage = () => {
   downLoading.value = true
+  useEmitt().emitter.emit('l7-prepare-picture', element.value.id)
   setTimeout(() => {
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value)
     downloadCanvas2('img', componentInnerRef.value, '图表', () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false
+      useEmitt().emitter.emit('l7-unprepare-picture', element.value.id)
     })
   }, 200)
 }
@@ -1129,12 +1148,12 @@ onMounted(() => {
     // do stopAnimation
   })
   settingAttribute()
-  useEmitt({
-    name: 'componentImageDownload-' + element.value.id,
-    callback: () => {
+  const methodName = 'componentImageDownload-' + element.value.id
+  if (!useEmitt().emitter.all.get(methodName)?.length) {
+    useEmitt().emitter.on(methodName, () => {
       htmlToImage()
-    }
-  })
+    })
+  }
 })
 </script>
 
@@ -1179,6 +1198,10 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+}
+
+.shape-selected {
+  outline: 1px solid #3370ff;
 }
 
 .shape-edit {
@@ -1303,5 +1326,11 @@ onMounted(() => {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
+}
+
+.freeze-component {
+  position: fixed;
+  z-index: 1;
+  top: 66px !important;
 }
 </style>

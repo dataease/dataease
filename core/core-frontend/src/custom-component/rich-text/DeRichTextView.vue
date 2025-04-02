@@ -70,7 +70,8 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo, mobileInPc } = storeToRefs(dvMainStore)
 const isError = ref(false)
 const appearanceStore = useAppearanceStoreWithOut()
-
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const props = defineProps({
   scale: {
     type: Number,
@@ -147,7 +148,7 @@ const curFontFamily = () => {
   })
   return result
 }
-
+const outerPlaceholder = t('visualization.component_input_tips')
 const init = ref({
   selector: '#' + tinymceId,
   toolbar_items_size: 'small',
@@ -168,14 +169,11 @@ const init = ref({
     '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 42px 48px 56px 72px 80px 90px 100px 110px 120px 140px 150px 170px 190px 210px', // 字体大小
   menubar: false,
   placeholder: '',
-  outer_placeholder: '双击输入文字',
+  outer_placeholder: outerPlaceholder,
   inline: true, // 开启内联模式
   branding: false,
   icons: 'vertical-content',
   vertical_align: element.value.propValue.verticalAlign,
-  table_default_attributes: {
-    width: '400' // 使用 table_default_attributes 设置表格的宽度
-  },
   table_default_styles: {
     width: '400px' // 或者使用 table_default_styles 设置宽度，单位为 px
   },
@@ -371,34 +369,38 @@ const jumpTargetAdaptor = () => {
 }
 
 const assignment = content => {
-  const on = content.match(/\[(.+?)\]/g)
-  if (on) {
-    const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
-    on.forEach(itm => {
-      if (dataRowFiledName.value.includes(itm)) {
-        const ele = itm.slice(1, -1)
-        let value = dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
-        let targetValue = !!value ? value : state.emptyValue
-        if (thresholdStyleInfo && thresholdStyleInfo[ele]) {
-          const thresholdStyle = thresholdStyleInfo[ele]
-          targetValue = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${targetValue}</span>`
+  if (content) {
+    const on = content?.match(/\[(.+?)\]/g)
+    if (on) {
+      const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
+      on.forEach(itm => {
+        if (dataRowFiledName.value.includes(itm)) {
+          const ele = itm.slice(1, -1)
+          let value =
+            dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
+          let targetValue = !!value ? value : state.emptyValue
+          if (thresholdStyleInfo && thresholdStyleInfo[ele]) {
+            const thresholdStyle = thresholdStyleInfo[ele]
+            targetValue = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${targetValue}</span>`
+          }
+          if (initReady.value) {
+            content = content.replace(itm, targetValue)
+          } else {
+            content = content.replace(itm, !!value ? targetValue : '[获取中...]')
+          }
         }
-        if (initReady.value) {
-          content = content.replace(itm, targetValue)
-        } else {
-          content = content.replace(itm, !!value ? targetValue : '[获取中...]')
-        }
-      }
-    })
+      })
+    }
+    content = content.replace('class="base-selected"', '')
+    //De 本地跳转失效问题
+    content = content.replace(/href="#\//g, 'href="/#/')
+    content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
+    content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
+    resetSelect()
+    initFontFamily(content)
+    jumpTargetAdaptor()
   }
-  content = content.replace('class="base-selected"', '')
-  //De 本地跳转失效问题
-  content = content.replace(/href="#\//g, 'href="/#/')
-  content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
-  content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
-  resetSelect()
-  initFontFamily(content)
-  jumpTargetAdaptor()
+
   return content
 }
 const initFontFamily = htmlText => {
@@ -534,13 +536,25 @@ const updateEmptyValue = view => {
       : '-'
 }
 
+const checkCompareCalc = view => {
+  let compareCount = 0
+  view.yAxis?.forEach(item => {
+    if (item?.compareCalc?.type !== 'none') {
+      compareCount++
+    }
+  })
+  return compareCount > 0
+}
+
 const calcData = (view: Chart, callback) => {
   isError.value = false
   updateEmptyValue(view)
   if (view.tableId || view['dataFrom'] === 'template') {
     const v = JSON.parse(JSON.stringify(view))
-    v.resultCount = 1
-    v.resultMode = 'custom'
+    if (!checkCompareCalc(view)) {
+      v.resultCount = 1
+      v.resultMode = 'custom'
+    }
     getData(v)
       .then(res => {
         if (res.code && res.code !== 0) {
@@ -551,7 +565,8 @@ const calcData = (view: Chart, callback) => {
           state.viewDataInfo = res
           state.totalItems = res?.totalItems
           const curViewInfo = canvasViewInfo.value[element.value.id]
-          if (res.data) {
+          // 此处是编辑时使用，多仪表板嵌入 canvasViewInfo 会被覆盖可能出现无法读取情况
+          if (res.data && curViewInfo) {
             curViewInfo['curFields'] = res.data.fields
           }
           dvMainStore.setViewDataDetails(element.value.id, res)
@@ -649,12 +664,10 @@ const initCurFields = chartDetails => {
   }
   element.value.propValue['innerType'] = chartDetails.type
   element.value.propValue['render'] = chartDetails.render
-  if (chartDetails.type === 'rich-text') {
-    nextTick(() => {
-      initCurFieldsChange()
-      eventBus.emit('initCurFields-' + element.value.id)
-    })
-  }
+  nextTick(() => {
+    initCurFieldsChange()
+    eventBus.emit('initCurFields-' + element.value.id)
+  })
 }
 
 // 初始化此处不必刷新

@@ -8,6 +8,8 @@ import org.springframework.core.env.Environment;
 import java.util.List;
 import java.util.Objects;
 
+import static io.dataease.result.ResultCode.INTERFACE_ADDRESS_INVALID;
+
 public class WhitelistUtils {
 
     private static String contextPath;
@@ -46,12 +48,12 @@ public class WhitelistUtils {
             "/sysParameter/ui",
             "/sysParameter/defaultLogin",
             "/embedded/initIframe",
+            "/sysParameter/i18nOptions",
+            "/login/modifyInvalidPwd",
             "/");
 
     public static boolean match(String requestURI) {
-        if (requestURI.contains(";") && !requestURI.contains("?")) {
-            DEException.throwException("Invalid uri: " + requestURI);
-        }
+        invalidUrl(requestURI);
         if (StringUtils.startsWith(requestURI, getContextPath())) {
             requestURI = requestURI.replaceFirst(getContextPath(), "");
         }
@@ -84,6 +86,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/typeface/defaultFont")
                 || StringUtils.startsWithAny(requestURI, "/typeface/listFont")
                 || StringUtils.startsWithAny(requestURI, "/exportCenter/download")
+                || StringUtils.startsWithAny(requestURI, "/i18n/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/image/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/down/");
     }
@@ -97,5 +100,11 @@ public class WhitelistUtils {
             redirect_uri += contextPath;
         }
         return redirect_uri + AuthConstant.DE_API_PREFIX + "/";
+    }
+
+    private static void invalidUrl(String requestURI) {
+        if (requestURI.contains("./") || requestURI.contains(".%") || requestURI.toLowerCase().contains("%2e") || (requestURI.contains(";") && !requestURI.contains("?"))) {
+            DEException.throwException(INTERFACE_ADDRESS_INVALID.code(), String.format("%s [%s]", INTERFACE_ADDRESS_INVALID.message(), requestURI));
+        }
     }
 }

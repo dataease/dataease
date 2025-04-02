@@ -73,10 +73,6 @@ const { curComponent, canvasViewInfo, mobileInPc, batchOptStatus } = storeToRefs
       margin: 0 6px 0 8px;
     }
   }
-
-  :deep(.ed-collapse-item__content) {
-    padding: 16px 8px 0;
-  }
   :deep(.ed-form-item) {
     display: block;
     margin-bottom: 8px;

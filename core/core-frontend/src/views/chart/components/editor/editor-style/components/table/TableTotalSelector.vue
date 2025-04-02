@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import { onMounted, PropType, reactive, watch, ref, inject, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { DEFAULT_TABLE_TOTAL } from '@/views/chart/components/editor/util/chart'
-import { cloneDeep, defaultsDeep } from 'lodash-es'
+import {
+  DEFAULT_BASIC_STYLE,
+  DEFAULT_TABLE_TOTAL
+} from '@/views/chart/components/editor/util/chart'
+import { cloneDeep, defaultsDeep, find, includes } from 'lodash-es'
 import CustomAggrEdit from './CustomAggrEdit.vue'
 
 const { t } = useI18n()
@@ -21,7 +24,7 @@ const props = defineProps({
   }
 })
 watch(
-  [() => props.chart.customAttr.tableTotal, () => props.chart.yAxis],
+  [() => props.chart.customAttr.tableTotal, () => props.chart.xAxis, () => props.chart.yAxis],
   () => {
     init()
   },
@@ -29,6 +32,7 @@ watch(
 )
 
 const aggregations = [
+  { name: t('chart.none'), value: 'NONE' },
   { name: t('chart.sum'), value: 'SUM' },
   { name: t('chart.avg'), value: 'AVG' },
   { name: t('chart.max'), value: 'MAX' },
@@ -43,8 +47,61 @@ const state = reactive({
   colTotalItem: {} as DeepPartial<CalcTotalCfg>,
   totalCfg: [] as CalcTotalCfg[],
   totalCfgAttr: '',
-  totalItem: {} as DeepPartial<CalcTotalCfg>
+  totalItem: {} as DeepPartial<CalcTotalCfg>,
+  selectedSubTotalDimensionName: '',
+  selectedSubTotalDimension: undefined as { name: string; checked: boolean },
+  subTotalDimensionList: [],
+  basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
 })
+
+function onSelectedSubTotalDimensionNameChange(name) {
+  state.selectedSubTotalDimension = find(state.subTotalDimensionList, d => d.name === name)
+}
+
+function changeRowSubTableTotal() {
+  const list = []
+  for (let i = 0; i < state.subTotalDimensionList.length; i++) {
+    if (state.subTotalDimensionList[i].checked) {
+      list.push(state.subTotalDimensionList[i].name)
+    }
+  }
+  state.tableTotalForm.row.subTotalsDimensions = list
+  changeTableTotal('row')
+}
+
+const initSubTotalDimensionList = () => {
+  const list = []
+  if (props.chart.xAxis.length >= 2) {
+    for (let i = 0; i < props.chart.xAxis.length - 1; i++) {
+      //排除最后一个
+      const old = includes(
+        state.tableTotalForm.row.subTotalsDimensions,
+        props.chart.xAxis[i].dataeaseName
+      )
+      list.push({
+        displayName: props.chart.xAxis[i].name,
+        name: props.chart.xAxis[i].dataeaseName,
+        checked: !!state.tableTotalForm.row.subTotalsDimensionsNew ? old : true
+      })
+    }
+  }
+  state.subTotalDimensionList = list
+
+  const existItem = find(
+    state.subTotalDimensionList,
+    s => s.name === state.selectedSubTotalDimensionName
+  )
+  if (existItem) {
+    state.selectedSubTotalDimension = existItem
+  } else {
+    state.selectedSubTotalDimensionName = list[0]?.name
+    state.selectedSubTotalDimension = list[0]
+  }
+  if (!state.tableTotalForm.row.subTotalsDimensionsNew) {
+    state.tableTotalForm.row.subTotalsDimensionsNew = true
+    changeRowSubTableTotal()
+  }
+}
 
 const emit = defineEmits(['onTableTotalChange'])
 
@@ -55,6 +112,9 @@ const changeTableTotal = prop => {
 const init = () => {
   const tableTotal = props.chart?.customAttr?.tableTotal
   if (tableTotal) {
+    if (tableTotal.row) {
+      tableTotal.row.subTotalsDimensionsNew = !!tableTotal.row?.subTotalsDimensionsNew
+    }
     state.tableTotalForm = defaultsDeep(cloneDeep(tableTotal), cloneDeep(DEFAULT_TABLE_TOTAL))
   }
   const yAxis = props.chart.yAxis
@@ -100,8 +160,14 @@ const init = () => {
       total.dataeaseName = totalCfg[0].dataeaseName
       total.aggregation = totalCfg[0].aggregation
       total.originName = totalCfg[0].originName
+      total.label = totalCfg[0].label
     }
   })
+
+  const basicStyle = cloneDeep(props.chart.customAttr.basicStyle)
+  state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
+
+  initSubTotalDimensionList()
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
 const changeTotal = (totalItem, totals) => {
@@ -110,6 +176,7 @@ const changeTotal = (totalItem, totals) => {
     if (item.dataeaseName === totalItem.dataeaseName) {
       totalItem.aggregation = item.aggregation
       totalItem.originName = item.originName
+      totalItem.label = item.label
       return
     }
   }
@@ -119,6 +186,7 @@ const changeTotalAggr = (totalItem, totals, colOrNum) => {
     const item = totals[i]
     if (item.dataeaseName === totalItem.dataeaseName) {
       item.aggregation = totalItem.aggregation
+      item.label = totalItem.label
       break
     }
   }
@@ -132,7 +200,8 @@ const setupTotalCfg = (totalCfg, axis) => {
     axis.forEach(i => {
       totalCfg.push({
         dataeaseName: i.dataeaseName,
-        aggregation: 'SUM'
+        aggregation: 'SUM',
+        label: i.chartShowName ?? i.name
       })
     })
     return
@@ -150,7 +219,10 @@ const setupTotalCfg = (totalCfg, axis) => {
     totalCfg.push({
       dataeaseName: i.dataeaseName,
       aggregation: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].aggregation : 'SUM',
-      originName: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].originName : ''
+      originName: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].originName : '',
+      label: cfgMap[i.dataeaseName]?.label
+        ? cfgMap[i.dataeaseName].label
+        : i.chartShowName ?? i.name
     })
   })
 }
@@ -238,13 +310,13 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        :label="t('chart.total_label')"
+        :label="t('chart.table_grand_total_label')"
         class="form-item"
         :class="'form-item-' + themes"
       >
         <el-input
           :effect="themes"
-          :placeholder="t('chart.total_label')"
+          :placeholder="t('chart.table_grand_total_label')"
           size="small"
           maxlength="20"
           v-model="state.tableTotalForm.row.label"
@@ -357,10 +429,46 @@ onMounted(() => {
         v-model="state.tableTotalForm.row.showSubTotals"
         :disabled="chart.xAxis.length < 2"
         @change="changeTableTotal('row')"
-        >{{ t('chart.show') }}</el-checkbox
       >
+        {{ t('chart.show') }}
+      </el-checkbox>
     </el-form-item>
-    <div v-show="showProperty('row') && state.tableTotalForm.row.showSubTotals">
+    <div v-if="showProperty('row') && state.tableTotalForm.row.showSubTotals">
+      <div style="display: flex">
+        <div style="width: 22px; flex-direction: row"></div>
+        <div style="flex: 1">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-select
+              :effect="themes"
+              v-model="state.selectedSubTotalDimensionName"
+              :disabled="chart.xAxis.length < 2 || state.basicStyleForm.tableLayoutMode === 'tree'"
+              @change="onSelectedSubTotalDimensionNameChange"
+            >
+              <el-option
+                v-for="option in state.subTotalDimensionList"
+                :key="option.name"
+                :label="option.displayName"
+                :value="option.name"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="state.selectedSubTotalDimension"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-checkbox
+              :effect="themes"
+              v-model="state.selectedSubTotalDimension.checked"
+              :disabled="chart.xAxis.length < 2 || state.basicStyleForm.tableLayoutMode === 'tree'"
+              @change="changeRowSubTableTotal"
+            >
+              {{ t('chart.show') }}
+            </el-checkbox>
+          </el-form-item>
+        </div>
+      </div>
+
       <el-form-item
         :label="t('chart.total_position')"
         class="form-item"
@@ -369,7 +477,7 @@ onMounted(() => {
         <el-radio-group
           :effect="themes"
           v-model="state.tableTotalForm.row.reverseSubLayout"
-          :disabled="chart.xAxis.length < 2"
+          :disabled="chart.xAxis.length < 2 || state.basicStyleForm.tableLayoutMode === 'tree'"
           @change="changeTableTotal('row')"
         >
           <el-radio :effect="themes" :label="true">{{ t('chart.total_pos_top') }}</el-radio>
@@ -487,13 +595,13 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        :label="t('chart.total_label')"
+        :label="t('chart.table_grand_total_label')"
         class="form-item"
         :class="'form-item-' + themes"
       >
         <el-input
           :effect="themes"
-          :placeholder="t('chart.total_label')"
+          :placeholder="t('chart.table_grand_total_label')"
           size="small"
           maxlength="20"
           v-model="state.tableTotalForm.col.label"
@@ -555,6 +663,27 @@ onMounted(() => {
             />
           </el-icon>
         </el-col>
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :label="t('chart.table_field_total_label')"
+        :class="'form-item-' + themes"
+      >
+        <el-input
+          :effect="themes"
+          :placeholder="t('chart.table_field_total_label')"
+          size="small"
+          maxlength="20"
+          v-model="state.colTotalItem.label"
+          clearable
+          @change="
+            changeTotalAggr(
+              state.colTotalItem,
+              state.tableTotalForm.col.calcTotals.cfg,
+              'col.calcTotals.cfg'
+            )
+          "
+        />
       </el-form-item>
       <el-form-item
         v-if="chart.type === 'table-pivot'"

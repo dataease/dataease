@@ -19,7 +19,4 @@ public interface StaticResourceApi {
     @Operation(summary = "查找静态文件并转为Base64")
     Map<String,String> findResourceAsBase64(@RequestBody StaticResourceRequest resourceRequest);
 
-    @GetMapping("urlTest")
-    Map<String,String> urlTest();
-
 }

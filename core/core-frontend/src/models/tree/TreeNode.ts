@@ -6,6 +6,7 @@ export interface BusiTreeNode {
   weight: number
   ext?: number
   extraFlag: number
+  extraFlag1: number
   children?: BusiTreeNode[]
 }
 

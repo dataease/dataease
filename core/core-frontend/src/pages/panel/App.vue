@@ -24,6 +24,7 @@ const DashboardPanel = defineAsyncComponent(
 )
 
 const Copilot = defineAsyncComponent(() => import('@/views/copilot/index.vue'))
+const TemplateManage = defineAsyncComponent(() => import('@/views/template/indexInject.vue'))
 
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const DashboardEmpty = defineAsyncComponent(() => import('@/views/mobile/panel/DashboardEmpty.vue'))
@@ -48,14 +49,17 @@ const componentMap = {
   DashboardPanel,
   DatasetEditor,
   DashboardEmpty,
-  Copilot
+  Copilot,
+  TemplateManage
 }
 
 const isDataFilling = ref(false)
 const dataFillingPath = ref('')
+const showComponent = ref(false)
 
 const changeCurrentComponent = val => {
   isDataFilling.value = false
+  showComponent.value = true
   currentComponent.value = undefined
   if (val && val.includes('DataFilling')) {
     if (val === 'DataFilling') {
@@ -70,7 +74,10 @@ const changeCurrentComponent = val => {
       isDataFilling.value = true
     })
   } else {
-    currentComponent.value = componentMap[val]
+    nextTick(() => {
+      currentComponent.value = componentMap[val]
+      showComponent.value = false
+    })
   }
 }
 
@@ -79,13 +86,12 @@ useEmitt({
   callback: changeCurrentComponent
 })
 
-//currentComponent.value = componentMap[props.componentName]
 onMounted(() => {
   changeCurrentComponent(props.componentName)
 })
 </script>
 <template>
-  <component :is="currentComponent" v-if="!isDataFilling"></component>
+  <component :is="currentComponent" v-if="!isDataFilling && !showComponent"></component>
   <template v-else>
     <component :is="currentComponent" :jsname="dataFillingPath"></component>
   </template>

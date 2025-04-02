@@ -21,7 +21,7 @@
           v-model="dvInfo.selfWatermarkStatus"
           @change="onBackgroundChange"
         >
-          {{ t('visualization.watermark') }}}
+          {{ t('visualization.watermark') }}
         </el-checkbox>
       </el-form-item>
       <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">

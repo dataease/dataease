@@ -205,13 +205,13 @@ onMounted(() => {
   }
 }
 .cases-list {
-  margin: 6px 0;
+  margin: 8px 0;
 
   .select-color-item {
     width: 100%;
 
     font-size: var(--ed-font-size-base);
-    padding: 0 32px 0 20px;
+    padding: 0 20px 0 20px;
     position: relative;
     white-space: nowrap;
     overflow: hidden;
@@ -249,7 +249,7 @@ onMounted(() => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 30px;
+    width: 40px;
   }
 }
 .tab-header {

@@ -97,7 +97,7 @@ const storeCacheProxy = byteArray => {
 }
 const pluginProxy = ref(null)
 const invokeMethod = param => {
-  if (pluginProxy.value['invokeMethod']) {
+  if (pluginProxy.value && pluginProxy.value['invokeMethod']) {
     pluginProxy.value['invokeMethod'](param)
   } else if (param.methodName && pluginProxy.value[param.methodName]) {
     pluginProxy.value[param.methodName](param.args)

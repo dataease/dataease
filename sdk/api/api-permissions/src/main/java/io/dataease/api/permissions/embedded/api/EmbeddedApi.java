@@ -68,9 +68,12 @@ public interface EmbeddedApi {
     @PostMapping("/initIframe")
     void initIframe(@RequestBody EmbeddedOrigin origin);
 
+    @ApiOperationSupport(order = 7)
+    @Operation(summary = "获取Token参数")
     @GetMapping("/getTokenArgs")
     Map<String, Object> getTokenArgs();
 
+    @Hidden
     @GetMapping("/limitCount")
     int getLimitCount();
 }

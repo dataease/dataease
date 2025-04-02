@@ -9,7 +9,6 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { storeToRefs } from 'pinia'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { initCanvasData, initCanvasDataPrepare, onInitReady } from '@/utils/canvasUtils'
-import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
@@ -32,7 +31,6 @@ const { dvInfo, canvasViewDataInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
 const dvPreviewRef = ref(null)
 const slideShow = ref(true)
-const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
 const downloadStatus = ref(false)
@@ -77,7 +75,7 @@ const loadCanvasData = (dvId, weight?, ext?) => {
   dataInitState.value = false
   initMethod(
     dvId,
-    'dataV',
+    { busiFlag: 'dataV' },
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -258,7 +256,7 @@ onBeforeMount(() => {
     <el-container
       class="preview-area"
       :class="{ 'no-data': !hasTreeData }"
-      v-loading="requestStore.loadingMap[permissionStore.currentPath]"
+      v-loading="!dataInitState"
     >
       <div @click="slideOpenChange" class="flexible-button-area" v-if="false">
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>

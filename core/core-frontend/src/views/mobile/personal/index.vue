@@ -162,7 +162,7 @@ const activeTableData = computed(() => {
 <template>
   <div class="de-mobile-user">
     <template v-if="showNavBar">
-      <div class="logout flex-center">我的</div>
+      <div class="logout flex-center" style="padding-top: 8px; margin: 0">我的</div>
       <div class="mobile-user-top">
         <van-image round width="48" height="48" :src="userImg" />
         <div class="user-name">
@@ -185,42 +185,49 @@ const activeTableData = computed(() => {
         left-arrow
         @click-left="onClickLeft"
       />
-      <div class="grey">
-        <div @click="clearOrg" class="flex-align-center">
-          <span class="ellipsis" :class="!!directName.length && 'active'">组织</span>
-          <el-icon v-if="!!directName.length">
-            <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
-          </el-icon>
+      <div class="cell-org_scroll">
+        <div class="grey">
+          <div @click="clearOrg" class="flex-align-center">
+            <span class="ellipsis" :class="!!directName.length && 'active'">组织</span>
+            <el-icon v-if="!!directName.length">
+              <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </div>
+          <div
+            @click="handleDir(index)"
+            class="flex-align-center"
+            v-for="(ele, index) in directName"
+            :key="ele"
+          >
+            <span class="ellipsis" :class="ele !== activeDirectName && 'active'">{{ ele }}</span>
+            <el-icon v-if="directName.length > 1 && index !== directName.length - 1">
+              <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </div>
         </div>
-        <div
-          @click="handleDir(index)"
-          class="flex-align-center"
-          v-for="(ele, index) in directName"
-          :key="ele"
-        >
-          <span class="ellipsis" :class="ele !== activeDirectName && 'active'">{{ ele }}</span>
-          <el-icon v-if="directName.length > 1 && index !== directName.length - 1">
-            <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
-          </el-icon>
-        </div>
+        <OrgCell
+          @click="type => orgCellClick(type, ele)"
+          v-for="ele in activeTableData"
+          :key="ele.id"
+          :label="ele.name"
+          :nextlevel="ele.children"
+          :active="name === ele.name"
+        ></OrgCell>
       </div>
-      <OrgCell
-        @click="type => orgCellClick(type, ele)"
-        v-for="ele in activeTableData"
-        :key="ele.id"
-        :label="ele.name"
-        :nextlevel="ele.children"
-        :active="name === ele.name"
-      ></OrgCell>
     </template>
   </div>
 </template>
 
 <style lang="less" scoped>
 .de-mobile-user {
-  height: 100vh;
+  height: calc(100% - 50px);
   width: 100vw;
   background: #f5f6f7;
+
+  .cell-org_scroll {
+    height: calc(100% - 144px);
+    overflow-y: auto;
+  }
 
   .mobile-user-top {
     padding: 16px;

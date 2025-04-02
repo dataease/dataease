@@ -100,6 +100,7 @@ declare interface BaseFormatter {
   /**
    * 单位换算
    */
+  unitLanguage: 'ch' | 'en'
   unit: number
   /**
    * 单位后缀
@@ -208,4 +209,10 @@ declare interface ChartViewField {
 declare interface Filter {
   datasetTableField: ChartViewField
   fieldId: string
+}
+
+declare interface PageInfo {
+  currentPage: number
+  pageSize: number
+  total: number
 }

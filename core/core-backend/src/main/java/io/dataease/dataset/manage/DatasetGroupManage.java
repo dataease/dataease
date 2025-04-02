@@ -14,6 +14,7 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
 import io.dataease.dataset.dto.DataSetNodeBO;
+import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -86,7 +87,7 @@ public class DatasetGroupManage {
 
 
     @Transactional
-    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO, boolean rename) throws Exception {
+    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO, boolean rename, boolean encode) throws Exception {
         lock.lock();
         try {
             boolean isCreate;
@@ -129,6 +130,9 @@ public class DatasetGroupManage {
             }
             // node_type=dataset需要创建dataset_table和field
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
+                if (encode) {
+                    DatasetUtils.dsDecode(datasetGroupInfoDTO);
+                }
                 List<Long> tableIds = new ArrayList<>();
                 List<Long> fieldIds = new ArrayList<>();
                 // 解析tree，保存
@@ -137,6 +141,9 @@ public class DatasetGroupManage {
                 // 删除不要的table和field
                 datasetTableManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), tableIds);
                 datasetTableFieldManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), fieldIds);
+                if (encode) {
+                    DatasetUtils.dsEncode(datasetGroupInfoDTO);
+                }
             }
             return datasetGroupInfoDTO;
         } catch (Exception e) {
@@ -266,7 +273,7 @@ public class DatasetGroupManage {
         Set<Long> ids = new LinkedHashSet();
         coreDatasetTables.forEach(ele -> ids.add(ele.getDatasourceId()));
         if (CollectionUtils.isEmpty(ids)) {
-            DEException.throwException("数据集因异常导致无法使用，请重新创建");
+            DEException.throwException(Translator.get("i18n_dataset_create_error"));
         }
 
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper<>();
@@ -278,7 +285,7 @@ public class DatasetGroupManage {
             return dto;
         }).collect(Collectors.toList());
         if (ids.size() != datasourceDTOList.size()) {
-            DEException.throwException("由于数据集所用的数据源已被删除,无法显示数据集");
+            DEException.throwException(Translator.get("i18n_dataset_ds_delete"));
         }
         return datasourceDTOList;
     }
@@ -339,7 +346,7 @@ public class DatasetGroupManage {
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getUnion())) {
             return;
         }
-        datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 1, false);
+        datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 1, false, false);
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
         List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
@@ -365,6 +372,14 @@ public class DatasetGroupManage {
                         datasetTableFieldDTO.setDataeaseName(dataeaseName);
                         datasetTableFieldDTO.setFieldShortName(dataeaseName);
                         datasetTableFieldDTO.setDeExtractType(datasetTableFieldDTO.getDeType());
+                    }
+                    if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_GROUP)) {
+                        String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
+                        datasetTableFieldDTO.setDataeaseName(dataeaseName);
+                        datasetTableFieldDTO.setFieldShortName(dataeaseName);
+                        datasetTableFieldDTO.setDeExtractType(0);
+                        datasetTableFieldDTO.setDeType(0);
+                        datasetTableFieldDTO.setGroupType("d");
                     }
                     datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
                 } else {
@@ -432,6 +447,8 @@ public class DatasetGroupManage {
                 return datasetTableFieldDTO;
             }).collect(Collectors.toList());
 
+            DatasetUtils.listEncode(allFields);
+
             dto.setAllFields(allFields);
         }
         return dto;
@@ -472,7 +489,7 @@ public class DatasetGroupManage {
 
             if ("preview".equalsIgnoreCase(type)) {
                 // 请求数据
-                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100, true);
+                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100, true, false);
                 // 获取data,sql
                 Map<String, List> data = (Map<String, List>) map.get("data");
                 String sql = (String) map.get("sql");

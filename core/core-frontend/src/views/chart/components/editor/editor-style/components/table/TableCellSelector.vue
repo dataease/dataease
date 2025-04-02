@@ -75,12 +75,14 @@ const init = () => {
     tableCell.mergeCells = tableCell.mergeCells === undefined ? false : tableCell.mergeCells
     state.tableCellForm = defaultsDeep(cloneDeep(tableCell), cloneDeep(DEFAULT_TABLE_CELL))
     const alpha = props.chart.customAttr.basicStyle.alpha
+
     if (!isAlphaColor(state.tableCellForm.tableItemBgColor)) {
       state.tableCellForm.tableItemBgColor = convertToAlphaColor(
         state.tableCellForm.tableItemBgColor,
         alpha
       )
     }
+
     if (!isAlphaColor(state.tableCellForm.tableItemSubBgColor)) {
       state.tableCellForm.tableItemSubBgColor = convertToAlphaColor(
         state.tableCellForm.tableItemSubBgColor,
@@ -102,7 +104,7 @@ onMounted(() => {
       :label="t('chart.backgroundColor')"
       class="form-item"
       :class="'form-item-' + themes"
-      v-if="showProperty('tableItemBgColor')"
+      v-if="showProperty('tableItemBgColor') && state.tableCellForm.tableItemBgColor"
     >
       <el-color-picker
         :effect="themes"
@@ -122,16 +124,33 @@ onMounted(() => {
     >
       <el-checkbox
         v-model="state.tableCellForm.enableTableCrossBG"
-        :label="t('chart.stripe')"
         :effect="themes"
+        :disabled="showProperty('mergeCells') && state.tableCellForm.mergeCells"
         @change="changeTableCell('enableTableCrossBG')"
-      />
+      >
+        <span class="data-area-label">
+          <span style="margin-right: 4px">{{ t('chart.stripe') }}</span>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+            v-if="state.tableCellForm.mergeCells"
+          >
+            <template #content>
+              <div>{{ t('chart.table_cross_bg_tip') }}</div>
+            </template>
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </span>
+      </el-checkbox>
     </el-form-item>
     <el-form-item
       :class="'form-item-' + themes"
       class="form-item"
       label=""
-      v-if="showProperty('tableItemSubBgColor')"
+      v-if="showProperty('tableItemSubBgColor') && state.tableCellForm.tableItemSubBgColor"
     >
       <el-color-picker
         v-model="state.tableCellForm.tableItemSubBgColor"

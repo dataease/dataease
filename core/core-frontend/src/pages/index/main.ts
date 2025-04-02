@@ -16,8 +16,8 @@ import WebSocketPlugin from '../../websocket'
 const setupAll = async () => {
   const app = createApp(App)
   installDirective(app)
-  await setupI18n(app)
   setupStore(app)
+  await setupI18n(app)
   setupRouter(app)
   setupElementPlus(app)
   setupCustomComponent(app)

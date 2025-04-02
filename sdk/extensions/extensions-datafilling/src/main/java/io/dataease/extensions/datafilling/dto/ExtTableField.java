@@ -71,6 +71,12 @@ public class ExtTableField implements Serializable {
         private boolean updateRuleCheck;
 
         private List<Option> options;
+
+        private List<ExtraColumnItem> extraColumns;
+
+        private boolean enableDefaultTime;
+        private boolean enableCurrentTime;
+        private Long defaultTime;
     }
 
     @Data
@@ -112,6 +118,8 @@ public class ExtTableField implements Serializable {
         private Integer size;
         //精度
         private Integer accuracy;
+
+        private boolean useExistsTable;
 
     }
 

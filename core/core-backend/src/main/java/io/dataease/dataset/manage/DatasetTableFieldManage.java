@@ -14,6 +14,7 @@ import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.FieldGroupDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.i18n.Translator;
@@ -188,9 +189,7 @@ public class DatasetTableFieldManage {
     public DatasetTableFieldDTO selectById(Long id) {
         CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(id);
         if (coreDatasetTableField == null) return null;
-        DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-        BeanUtils.copyBean(dto, coreDatasetTableField);
-        return dto;
+        return transObj(coreDatasetTableField);
     }
 
     /**
@@ -217,7 +216,10 @@ public class DatasetTableFieldManage {
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         boolean crossDs = Utils.isCrossDs(dsMap);
         if (crossDs) {
-            DEException.throwException("跨源数据集不支持该功能");
+            DEException.throwException(Translator.get("i18n_dataset_cross_error"));
+        }
+        if (!isCopilotSupport(dsMap)) {
+            DEException.throwException(Translator.get("i18n_copilot_ds"));
         }
 
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
@@ -262,7 +264,7 @@ public class DatasetTableFieldManage {
                 .filter(ele -> {
                     boolean flag = true;
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                        String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, fields, true, null, Utils.mergeParam(Utils.getParams(fields), null), pluginManage);
+                        String originField = Utils.calcFieldRegex(ele, tableObj, fields, true, null, Utils.mergeParam(Utils.getParams(fields), null), pluginManage);
                         for (String func : FunctionConstant.AGG_FUNC) {
                             if (Utils.matchFunction(func, originField)) {
                                 flag = false;
@@ -278,24 +280,31 @@ public class DatasetTableFieldManage {
         return tmp;
     }
 
+    public DatasetTableFieldDTO transObj(CoreDatasetTableField ele) {
+        DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+        if (ele == null) return null;
+        BeanUtils.copyBean(dto, ele);
+        if (StringUtils.isNotEmpty(ele.getParams())) {
+            TypeReference<List<CalParam>> tokenType = new TypeReference<>() {
+            };
+            List<CalParam> calParams = JsonUtil.parseList(ele.getParams(), tokenType);
+            dto.setParams(calParams);
+        }
+        if (StringUtils.isNotEmpty(ele.getGroupList())) {
+            TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
+            };
+            List<FieldGroupDTO> fieldGroups = JsonUtil.parseList(ele.getGroupList(), groupTokenType);
+            dto.setGroupList(fieldGroups);
+        }
+        return dto;
+    }
+
     public List<DatasetTableFieldDTO> transDTO(List<CoreDatasetTableField> list) {
-        if(!CollectionUtils.isEmpty(list)){
-            return list.stream().map(ele -> {
-                DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-                if (ele == null) return null;
-                BeanUtils.copyBean(dto, ele);
-                if (StringUtils.isNotEmpty(ele.getParams())) {
-                    TypeReference<List<CalParam>> tokenType = new TypeReference<>() {
-                    };
-                    List<CalParam> calParams = JsonUtil.parseList(ele.getParams(), tokenType);
-                    dto.setParams(calParams);
-                }
-                return dto;
-            }).collect(Collectors.toList());
-        }else{
+        if (!CollectionUtils.isEmpty(list)) {
+            return list.stream().map(this::transObj).collect(Collectors.toList());
+        } else {
             return new ArrayList<>();
         }
-
     }
 
     private CoreDatasetTableField transDTO2Record(DatasetTableFieldDTO dto) {
@@ -304,6 +313,9 @@ public class DatasetTableFieldManage {
         if (ObjectUtils.isNotEmpty(dto.getParams())) {
             record.setParams(JsonUtil.toJSONString(dto.getParams()).toString());
         }
+        if (ObjectUtils.isNotEmpty(dto.getGroupList())) {
+            record.setGroupList(JsonUtil.toJSONString(dto.getGroupList()).toString());
+        }
         return record;
     }
 
@@ -311,5 +323,10 @@ public class DatasetTableFieldManage {
         if (name != null && name.length() > 100) {
             DEException.throwException(Translator.get("i18n_name_limit_100"));
         }
+    }
+
+    public boolean isCopilotSupport(Map<Long, DatasourceSchemaDTO> dsMap) {
+        DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
+        return StringUtils.equalsIgnoreCase(value.getType(), "mysql");
     }
 }

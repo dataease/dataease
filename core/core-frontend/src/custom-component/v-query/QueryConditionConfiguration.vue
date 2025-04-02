@@ -28,7 +28,13 @@ import CustomSortFilter from './CustomSortFilter.vue'
 import { addQueryCriteriaConfig } from './options'
 import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { getThisStart, getLastStart, getAround, getCustomRange } from './time-format-dayjs'
+import {
+  getThisStart,
+  getThisEnd,
+  getLastStart,
+  getAround,
+  getCustomRange
+} from './time-format-dayjs'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
@@ -85,7 +91,6 @@ const activeConditionForRename = reactive({
 })
 const datasetMap = {}
 const snapshotStore = snapshotStoreWithOut()
-
 const dfsComponentData = () => {
   let arr = componentData.value.filter(
     com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
@@ -99,6 +104,17 @@ const dfsComponentData = () => {
             com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
           )
         ]
+
+        itx.componentData.forEach(j => {
+          if (j.component === 'Group') {
+            arr = [
+              ...arr,
+              j.propValue.filter(
+                com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
+              )
+            ]
+          }
+        })
       })
     } else if (ele.component === 'Group') {
       arr = [
@@ -197,7 +213,6 @@ const showTypeError = computed(() => {
     }
   }
   let displayTypeField = null
-  let hasParameterTimeArrType = 0
   let hasParameterNumArrType = 0
   let allNum =
     curComponent.value.checkedFields.every(id => {
@@ -236,32 +251,6 @@ const showTypeError = computed(() => {
       }
     }
 
-    if (
-      curComponent.value.checkedFieldsMapArr?.[id]?.length &&
-      ['7', '1'].includes(curComponent.value.displayType)
-    ) {
-      if (hasParameterTimeArrType === 0) {
-        hasParameterTimeArrType = 1
-      }
-
-      if (hasParameterTimeArrType === 2) {
-        return true
-      }
-    }
-
-    if (
-      !curComponent.value.checkedFieldsMapArr?.[id]?.length &&
-      ['7', '1'].includes(curComponent.value.displayType) &&
-      !!curComponent.value.parameters.length
-    ) {
-      if (hasParameterTimeArrType === 0) {
-        hasParameterTimeArrType = 2
-      }
-
-      if (hasParameterTimeArrType === 1) {
-        return true
-      }
-    }
     const arr = fields.value.find(ele => ele.componentId === id)
     const checkId = curComponent.value.checkedFieldsMap?.[id]
     const field = duplicateRemoval(Object.values(arr?.fields || {}).flat()).find(
@@ -282,11 +271,6 @@ const showTypeError = computed(() => {
       if (displayTypeField.type?.length !== field.type?.length) {
         return true
       }
-      for (let index = 0; index < displayTypeField.type.length; index++) {
-        if (displayTypeField.type[index] !== field.type[index]) {
-          return true
-        }
-      }
     }
     return [2, 3].includes(field?.deType) && [2, 3].includes(displayTypeField.deType)
       ? false
@@ -294,22 +278,6 @@ const showTypeError = computed(() => {
   })
 })
 
-const showDatasetError = computed(() => {
-  if (!curComponent.value || curComponent.value.displayType !== '9') return false
-  if (!curComponent.value.checkedFields?.length) return false
-  if (!fields.value?.length) return false
-  let displayField = null
-  return curComponent.value.checkedFields.some(id => {
-    const arr = fields.value.find(itx => itx.componentId === id)
-    const field = arr.id
-    if (!field) return false
-    if (displayField === null) {
-      displayField = field
-      return false
-    }
-    return displayField !== field
-  })
-})
 const typeList = [
   {
     label: t('data_fill.rename'),
@@ -327,52 +295,6 @@ const handleCheckAllChange = (val: boolean) => {
   val && setSameId()
 }
 
-const setTreeDefault = () => {
-  if (!!curComponent.value.checkedFields.length) {
-    let checkId = ''
-    let tableId = ''
-    let comId = ''
-    fields.value.forEach(ele => {
-      if (
-        curComponent.value.checkedFields.includes(ele.componentId) &&
-        curComponent.value.checkedFieldsMap[ele.componentId] &&
-        !checkId
-      ) {
-        checkId = curComponent.value.checkedFieldsMap[ele.componentId]
-        comId = ele.componentId
-        tableId = datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId
-      }
-    })
-    if (checkId && tableId) {
-      const componentObj = fields.value.find(ele => ele.componentId === comId)
-      const fieldArr =
-        curComponent.value.optionValueSource === 0
-          ? componentObj?.fields?.dimensionList
-          : (fields.value.find(itx => itx.id === tableId) || {}).fields?.dimensionList
-      fields.value.forEach(ele => {
-        if (curComponent.value.checkedFields.includes(ele.componentId)) {
-          if (datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId === tableId) {
-            curComponent.value.checkedFieldsMap[ele.componentId] = checkId
-          }
-        }
-      })
-      const fieldObj = fieldArr.find(element => element.id === checkId)
-      if (!!curComponent.value.treeFieldList.length) {
-        const [fir] = curComponent.value.treeFieldList
-        if (fir && fir.field !== checkId) {
-          const [top] = curComponent.value.treeFieldList || []
-          if (top?.id === fieldObj.id) return
-
-          curComponent.value.treeFieldList = [fieldObj]
-        }
-      } else if (fieldObj) {
-        const [top] = curComponent.value.treeFieldList || []
-        if (top?.id === fieldObj.id) return
-        curComponent.value.treeFieldList = [fieldObj]
-      }
-    }
-  }
-}
 const handleCheckedFieldsChange = (value: string[]) => {
   handleDialogClick()
   const checkedCount = value.length
@@ -391,6 +313,7 @@ const setSameId = () => {
           curComponent.value.checkedFields?.includes(itx.componentId)
         ) {
           comIdMap[itx.id] = curComponent.value.checkedFieldsMap[itx.componentId]
+          comIdMap[`active-${itx.id}`] = itx.activelist
         }
       })
     }
@@ -405,6 +328,7 @@ const setSameId = () => {
           comIdMap[itx.id]
         ) {
           curComponent.value.checkedFieldsMap[itx.componentId] = comIdMap[itx.id]
+          itx.activelist = comIdMap[`active-${itx.id}`]
         }
       })
     }
@@ -417,21 +341,14 @@ const handleCheckedFieldsChangeTree = (value: string[]) => {
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
   setSameId()
   if (curComponent.value.displayType === '8') return
-  if (curComponent.value.displayType === '9') {
-    setTreeDefault()
-    return
-  }
+  setTreeDefault()
+  setRelationBack()
   setType()
 }
 
 const isParametersDisable = item => {
   let isDisabled = false
-  if (!isNumParameter.value) {
-    for (let index = 0; index < notTimeRangeType.value.length; index++) {
-      if (notTimeRangeType.value[index] !== item.type?.[index]) {
-        isDisabled = true
-      }
-    }
+  if (!isNumParameter.value && isTimeParameter.value) {
     if (notTimeRangeType.value.length && item.deType !== 1) {
       isDisabled = true
     }
@@ -571,6 +488,26 @@ const timeTypeChange = () => {
   setParametersTimeType(currentComponentId)
   setTypeChange()
   timeDialogShow.value = false
+}
+
+const setTreeDefault = () => {
+  if (curComponent.value.displayType !== '9' || relationshipChartIndex.value !== 0) return
+  if (!!curComponent.value.checkedFields.length) {
+    let tableId = ''
+    fields.value.forEach(ele => {
+      if (
+        curComponent.value.checkedFields.includes(ele.componentId) &&
+        curComponent.value.checkedFieldsMap[ele.componentId] &&
+        !tableId
+      ) {
+        tableId = datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId
+      }
+    })
+    if (tableId && !curComponent.value.treeDatasetId) {
+      curComponent.value.treeDatasetId = tableId
+      getOptions(curComponent.value.treeDatasetId, curComponent.value)
+    }
+  }
 }
 
 const numTypeChange = () => {
@@ -737,8 +674,15 @@ const setParameters = field => {
         curComponent.value.checkedFieldsMap[field.componentId]
     }
   })
+
+  const notChangeType =
+    curComponent.value.checkedFields.some(ele => {
+      return (
+        curComponent.value.checkedFieldsMapStart[ele] || curComponent.value.checkedFieldsMapEnd[ele]
+      )
+    }) && +curComponent.value.displayType === 7
   nextTick(() => {
-    if (isTimeParameter.value) {
+    if (isTimeParameter.value && !notChangeType) {
       const timeParameter = curComponent.value.parameters.find(ele => ele.deType === 1)
       curComponent.value.timeGranularity =
         typeTimeMap[timeParameter.type[1] || timeParameter.type[0]]
@@ -768,11 +712,11 @@ const setParameters = field => {
     }
     setTypeChange()
   })
-  setType()
 
-  if (curComponent.value.displayType === '9') {
-    setTreeDefault()
-  }
+  if (notChangeType) return
+  setType()
+  setTreeDefault()
+  setRelationBack()
 }
 
 const setType = () => {
@@ -786,7 +730,10 @@ const setType = () => {
 
     if (field?.deType !== undefined) {
       let displayType = curComponent.value.displayType
-      if (['9', '22'].includes(curComponent.value.displayType)) {
+      if (['22'].includes(curComponent.value.displayType) && [2, 3].includes(field?.deType)) {
+        return
+      }
+      if (['9'].includes(curComponent.value.displayType)) {
         return
       }
       if (!(field?.deType === 1 && curComponent.value.displayType === '7')) {
@@ -804,6 +751,38 @@ const setType = () => {
       }
     }
   }
+
+  if (
+    curComponent.value.checkedFields.some(ele => {
+      return (
+        curComponent.value.checkedFieldsMapStart[ele] || curComponent.value.checkedFieldsMapEnd[ele]
+      )
+    }) &&
+    +curComponent.value.displayType === 1
+  ) {
+    curComponent.value.displayType = '7'
+  }
+}
+
+let oldDisplayType
+
+const handleSetTypeChange = () => {
+  let displayType = curComponent.value.displayType
+  if (oldDisplayType === '9' && ['0', '8'].includes(displayType)) {
+    curComponent.value.displayType = '9'
+    ElMessageBox.confirm(t('common.changing_the_display'), {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      cancelButtonText: t('common.cancel'),
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      curComponent.value.displayType = displayType
+      setTypeChange()
+    })
+  } else {
+    setTypeChange()
+  }
 }
 
 const setTypeChange = () => {
@@ -819,10 +798,13 @@ const setTypeChange = () => {
     ) {
       curComponent.value.timeGranularityMultiple = curComponent.value.timeGranularity
     }
-
-    if (curComponent.value.displayType === '9') {
-      setTreeDefault()
+    setTreeDefault()
+    setRelationBack()
+    if (curComponent.value.displayType === '0' && curComponent.value.treeFieldList?.length) {
+      curComponent.value.treeFieldList = []
+      curComponent.value.treeCheckedList = []
     }
+    oldDisplayType = curComponent.value.displayType
   })
 }
 
@@ -993,6 +975,14 @@ const handleDatasetChange = () => {
   getOptions(curComponent.value.dataset.id, curComponent.value)
 }
 
+const handleDatasetTreeChange = () => {
+  curComponent.value.treeFieldList = []
+  curComponent.value.treeCheckedList = []
+  relationshipChartIndex.value = 0
+  curComponent.value.oldTreeLoad = true
+  getOptions(curComponent.value.treeDatasetId, curComponent.value)
+}
+
 const handleFieldChange = () => {
   if (!curComponent.value.defaultValueCheck) return
   curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
@@ -1004,6 +994,25 @@ const handleFieldChange = () => {
 const handleValueSourceChange = () => {
   curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
   multipleChange(curComponent.value.multiple)
+  if (curComponent.value.optionValueSource === 1 && !curComponent.value.dataset.id) {
+    let id = ''
+    let comId = ''
+    Object.keys(curComponent.value.checkedFieldsMap).forEach(ele => {
+      if (curComponent.value.checkedFieldsMap[ele]) {
+        comId = ele
+        id = curComponent.value.checkedFieldsMap[ele]
+      }
+    })
+    fields.value.forEach(ele => {
+      if (ele.componentId === comId) {
+        curComponent.value.dataset.id = ele.id
+      }
+    })
+    curComponent.value.displayId = id
+    curComponent.value.sortId = id
+    curComponent.value.field.id = id
+    getOptions(curComponent.value.dataset.id, curComponent.value)
+  }
 }
 
 const multipleChange = (val: boolean, isMultipleChange = false) => {
@@ -1073,6 +1082,14 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
       case 'lastMonth':
         startTime = getLastStart('month')
         break
+      case 'thisQuarter':
+        startTime = getThisStart('quarter')
+        break
+      case 'thisWeek':
+        startTime = new Date(
+          dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')
+        )
+        break
       case 'today':
         startTime = getThisStart('day')
         break
@@ -1081,6 +1098,9 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
         break
       case 'monthBeginning':
         startTime = getThisStart('month')
+        break
+      case 'monthEnd':
+        startTime = getThisEnd('month')
         break
       case 'yearBeginning':
         startTime = getThisStart('year')
@@ -1163,13 +1183,12 @@ const clearCascadeArrDataset = id => {
   cascadeArr = cascadeArr.filter(ele => !!ele.length)
 }
 
-const indexCascade = [
-  ' ',
-  t('report.week_mon'),
-  t('report.week_tue'),
-  t('report.week_wed'),
-  t('report.week_thu'),
-  t('report.week_fri')
+const indexNumCascade = [
+  t('visualization.number1'),
+  t('visualization.number2'),
+  t('visualization.number3'),
+  t('visualization.number4'),
+  t('visualization.number5')
 ]
 
 const validateConditionType = ({
@@ -1205,6 +1224,46 @@ const validate = () => {
       return true
     }
 
+    if (
+      ele.displayType === '0' &&
+      ele.defaultValueCheck &&
+      ((Array.isArray(ele.defaultValue) && !ele.defaultValue.length) || !ele.defaultValue)
+    ) {
+      ElMessage.error(t('report.filter.title'))
+      return true
+    }
+
+    if (ele.displayType === '9') {
+      if (
+        ele.defaultValueCheck &&
+        ((Array.isArray(ele.defaultValue) && !ele.defaultValue.length) || !ele.defaultValue)
+      ) {
+        ElMessage.error(t('report.filter.title'))
+        return true
+      }
+      if (!ele.treeDatasetId) {
+        ElMessage.error(t('data_set.dataset_cannot_be'))
+        return true
+      }
+
+      if (!ele.treeFieldList?.length) {
+        ElMessage.error(t('common.tree_structure'))
+        return true
+      }
+      if (
+        ele.treeCheckedList
+          ?.slice(0, ele.treeFieldList.length)
+          .some(
+            item =>
+              !item.checkedFields?.length ||
+              item.checkedFields.some(itx => !item.checkedFieldsMap[itx])
+          )
+      ) {
+        ElMessage.error(t('v_query.be_linked_first'))
+        return true
+      }
+    }
+
     if (ele.displayType === '22' && ele.defaultValueCheck) {
       ele.numValueEnd = ele.defaultNumValueEnd
       ele.numValueStart = ele.defaultNumValueStart
@@ -1226,7 +1285,6 @@ const validate = () => {
     }
     let displayTypeField = null
     let errorTips = t('v_query.cannot_be_performed')
-    let hasParameterTimeArrType = 0
     let hasParameterNumArrType = 0
     if (
       ele.checkedFields.some(id => {
@@ -1257,30 +1315,6 @@ const validate = () => {
         if (ele.checkedFieldsMapArrNum?.[id]?.length === 1 && ele.displayType === '22') {
           errorTips = t('v_query.numerical_parameter_configuration')
           return true
-        }
-
-        if (ele.checkedFieldsMapArr?.[id]?.length && ['7', '1'].includes(ele.displayType)) {
-          if (hasParameterTimeArrType === 0) {
-            hasParameterTimeArrType = 1
-          }
-
-          if (hasParameterTimeArrType === 2) {
-            return true
-          }
-        }
-
-        if (
-          !ele.checkedFieldsMapArr?.[id]?.length &&
-          ['7', '1'].includes(ele.displayType) &&
-          !!ele.parameters.length
-        ) {
-          if (hasParameterTimeArrType === 0) {
-            hasParameterTimeArrType = 2
-          }
-
-          if (hasParameterTimeArrType === 1) {
-            return true
-          }
         }
 
         if (ele.checkedFieldsMapArr?.[id]?.length === 1 && ele.displayType === '7') {
@@ -1452,10 +1486,6 @@ const validate = () => {
       return false
     }
 
-    if ([1].includes(+ele.displayType)) {
-      return false
-    }
-
     if (
       ele.displayType !== '9' &&
       ele.optionValueSource === 2 &&
@@ -1478,6 +1508,8 @@ const handleBeforeClose = () => {
   defaultConfigurationRef.value?.mult()
   defaultConfigurationRef.value?.single()
   handleDialogClick()
+  curComponent.value.id = ''
+  relationshipChartIndex.value = 0
   dialogVisible.value = false
 }
 const emits = defineEmits(['queryData'])
@@ -1518,6 +1550,16 @@ const confirmClick = () => {
   })
 }
 
+const fieldsComputed = computed(() => {
+  return curComponent.value.dataset.fields.filter(ele => {
+    return (
+      ele.deType === +curComponent.value.displayType ||
+      ([0, 2, 3, 4].includes(ele.deType) && [0, 2].includes(+curComponent.value.displayType)) ||
+      (ele.deType === 7 && +curComponent.value.displayType === 0)
+    )
+  })
+})
+
 const cancelValueSource = () => {
   valueSource.value = cloneDeep(curComponent.value.valueSource)
   if (!valueSource.value.length) {
@@ -1552,12 +1594,16 @@ const confirmValueSource = () => {
 }
 
 const setCondition = (queryId: string) => {
-  conditions.value = cloneDeep(props.queryElement.propValue) || []
+  conditions.value = (cloneDeep(props.queryElement.propValue) || []).map(ele =>
+    parameterCompletion(ele)
+  )
   init(queryId)
 }
 
 const setConditionOut = () => {
-  conditions.value = cloneDeep(props.queryElement.propValue) || []
+  conditions.value = (cloneDeep(props.queryElement.propValue) || []).map(ele =>
+    parameterCompletion(ele)
+  )
   addQueryCriteria()
   init(conditions.value[conditions.value.length - 1].id)
 }
@@ -1577,6 +1623,7 @@ const setActiveSelectTab = (arr, id) => {
 
 const init = (queryId: string) => {
   initDataset()
+  relationshipChartIndex.value = 0
   renameInput.value = []
   handleCondition({ id: queryId })
   cascadeArr = cloneDeep(queryElement.value.cascade || [])
@@ -1627,6 +1674,11 @@ const init = (queryId: string) => {
         .filter(ele => !!ele)
     })
     .finally(() => {
+      if (!curComponent.value.treeDatasetId) {
+        nextTick(() => {
+          setTreeDefault()
+        })
+      }
       handleCheckedFieldsChange(curComponent.value.checkedFields)
     })
 }
@@ -1635,7 +1687,7 @@ const weightlessness = () => {
   valueSource.value = Array.from(new Set(valueSource.value))
 }
 
-const parameterCompletion = () => {
+const parameterCompletion = ele => {
   const attributes = {
     timeType: 'fixed',
     hideConditionSwitching: false,
@@ -1663,6 +1715,7 @@ const parameterCompletion = () => {
     timeNumRange: 0,
     relativeToCurrentTypeRange: 'year',
     aroundRange: 'f',
+    treeDatasetId: '',
     displayId: '',
     sortId: '',
     sort: 'asc',
@@ -1687,18 +1740,26 @@ const parameterCompletion = () => {
       relativeToCurrentTypeRange: 'year',
       aroundRange: 'f'
     },
+    oldTreeLoad: false,
+    treeCheckedList: [],
     treeFieldList: []
   }
   Object.entries(attributes).forEach(([key, val]) => {
-    curComponent.value[key] ?? (curComponent.value[key] = val)
+    ele[key] ?? (ele[key] = val)
   })
 
-  if (!curComponent.value.timeRange.relativeToCurrentRange) {
-    curComponent.value.timeRange.relativeToCurrentRange = 'custom'
+  if (!ele.treeDatasetId) {
+    ele.treeDatasetId = ele.dataset.id
   }
+
+  if (!ele.timeRange.relativeToCurrentRange) {
+    ele.timeRange.relativeToCurrentRange = 'custom'
+  }
+
+  return ele
 }
 
-const handleCondition = item => {
+const handleCondition = (item, idx = 0) => {
   handleDialogClick()
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
@@ -1790,8 +1851,18 @@ const handleCondition = item => {
   if (!valueSource.value.length) {
     valueSource.value.push('')
   }
-  parameterCompletion()
   nextTick(() => {
+    if (curComponent.value.displayType === '9') {
+      oldDisplayType = '9'
+      handleRelationshipChart(idx)
+      if (!curComponent.value.treeDatasetId && fields.value?.length) {
+        nextTick(() => {
+          setTreeDefault()
+        })
+      } else if (curComponent.value.treeDatasetId) {
+        getOptions(curComponent.value.treeDatasetId, curComponent.value)
+      }
+    }
     curComponent.value.showError = showError.value
     curComponent.value.auto && (document.querySelector('.chart-field').scrollTop = 0)
   })
@@ -1838,42 +1909,72 @@ const sortComputed = computed(() => {
 
 const treeDialog = ref()
 const startTreeDesign = () => {
-  const [comId] = curComponent.value.checkedFields
-  const componentObj = fields.value.find(ele => ele.componentId === comId)
   treeDialog.value.init(
-    componentObj?.fields?.dimensionList.filter(
-      ele => ele.deType === +curComponent.value.field.deType
-    ),
+    curComponent.value.dataset.fields.filter(ele => ele.groupType === 'd'),
     curComponent.value.treeFieldList
   )
 }
 const saveTree = arr => {
   curComponent.value.treeFieldList = arr
+  setSameField()
 }
+
+const setSameField = () => {
+  curComponent.value.treeFieldList.forEach((ele, index) => {
+    if (!curComponent.value.treeCheckedList[index]) {
+      curComponent.value.treeCheckedList = [
+        ...curComponent.value.treeCheckedList,
+        {
+          checkedFields: [...curComponent.value.checkedFields],
+          checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
+        }
+      ]
+    }
+    fields.value.forEach(item => {
+      const ids = item.fields.dimensionList.map(itx => itx.id)
+      if (ids.includes(ele.id)) {
+        curComponent.value.treeCheckedList[index].checkedFieldsMap[item.componentId] = ele.id
+      }
+    })
+  })
+
+  curComponent.value.checkedFields =
+    curComponent.value.treeCheckedList[relationshipChartIndex.value].checkedFields
+  curComponent.value.checkedFieldsMap =
+    curComponent.value.treeCheckedList[relationshipChartIndex.value].checkedFieldsMap
+}
+
 const showError = computed(() => {
   if (!curComponent.value) return false
-  const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource, displayType } =
-    curComponent.value
+  const {
+    optionValueSource,
+    checkedFieldsMap,
+    checkedFields,
+    field,
+    valueSource,
+    displayType,
+    treeCheckedList,
+    treeFieldList
+  } = curComponent.value
   const arr = checkedFields.filter(ele => !!checkedFieldsMap[ele])
   if (!checkedFields.length || !arr.length) {
     return true
   }
-  if ([1, 7, 8, 22].includes(+displayType)) {
-    return false
+
+  if (9 === +displayType) {
+    for (const key in treeCheckedList) {
+      if (key > treeFieldList.length) continue
+      const treeArr = treeCheckedList[key].checkedFields.filter(
+        ele => !!treeCheckedList[key].checkedFieldsMap[ele]
+      )
+      if (!treeCheckedList[key].checkedFields.length || !treeArr.length) {
+        return true
+      }
+    }
   }
 
-  if (displayType === '9') {
-    let displayField = null
-    return checkedFields.some(id => {
-      const arr = (fields.value || []).find(itx => itx.componentId === id)
-      const field = arr?.id
-      if (!field) return false
-      if (displayField === null) {
-        displayField = field
-        return false
-      }
-      return displayField !== field
-    })
+  if ([1, 7, 8, 22, 9].includes(+displayType)) {
+    return false
   }
   return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
 })
@@ -2058,8 +2159,11 @@ const timeGranularityChange = (val: string) => {
 }
 
 const handleTimeTypeChange = () => {
-  timeGranularityChange(curComponent.value.timeGranularity)
-  timeGranularityMultipleChange(curComponent.value.timeGranularityMultiple)
+  if (curComponent.value.displayType === '1') {
+    timeGranularityChange(curComponent.value.timeGranularity)
+  } else {
+    timeGranularityMultipleChange(curComponent.value.timeGranularityMultiple)
+  }
 }
 
 const timeGranularityMultipleChange = (val: string) => {
@@ -2097,6 +2201,55 @@ watch(
 
 const setRenameInput = val => {
   renameInput.value.push(val)
+}
+const relationshipChartIndex = ref(0)
+const notCurrentEle = (ele, index) => {
+  if (activeCondition.value !== ele.id) {
+    handleCondition(ele, index)
+  } else {
+    handleRelationshipChart(index)
+  }
+}
+
+const setRelationBack = () => {
+  curComponent.value.treeCheckedList[relationshipChartIndex.value] = {
+    checkedFields: [...curComponent.value.checkedFields],
+    checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
+  }
+}
+const handleRelationshipChart = index => {
+  if (curComponent.value.treeCheckedList?.length) {
+    curComponent.value.treeCheckedList[relationshipChartIndex.value] = {
+      checkedFields: [...curComponent.value.checkedFields],
+      checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
+    }
+  }
+  relationshipChartIndex.value = index
+  if (!curComponent.value?.treeCheckedList?.length && !curComponent.value.oldTreeLoad) {
+    curComponent.value.treeCheckedList = curComponent.value.treeFieldList.map(ele => {
+      return {
+        checkedFields: [...curComponent.value.checkedFields],
+        checkedFieldsMap: curComponent.value.checkedFields.reduce((pre, next) => {
+          pre[next] = ele.id
+          return pre
+        }, {})
+      }
+    })
+  } else if (!curComponent.value?.treeCheckedList?.length && curComponent.value.oldTreeLoad) {
+    curComponent.value.treeCheckedList = curComponent.value.treeFieldList.map(() => {
+      return {
+        checkedFields: [...curComponent.value.checkedFields],
+        checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
+      }
+    })
+  }
+  if (!curComponent.value?.treeCheckedList[index]) return
+  const { checkedFields, checkedFieldsMap } = curComponent.value?.treeCheckedList[index]
+  curComponent.value.checkedFields = checkedFields
+  curComponent.value.checkedFieldsMap = checkedFieldsMap
+  const checkedCount = checkedFields?.length
+  checkAll.value = checkedCount === fields.value?.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value?.length
 }
 
 const addOperation = (cmd, condition, index) => {
@@ -2153,7 +2306,8 @@ const renameInputBlur = () => {
 }
 
 const addQueryCriteria = () => {
-  conditions.value.push(addQueryCriteriaConfig())
+  relationshipChartIndex.value = 0
+  conditions.value.push(parameterCompletion(addQueryCriteriaConfig()))
 }
 
 const addQueryCriteriaAndSelect = () => {
@@ -2198,416 +2352,458 @@ defineExpose({
               :key="element.id"
               @dblclick.stop="addOperation('rename', element, index)"
               @click.stop="handleCondition(element)"
-              class="list-item_primary"
-              :class="element.id === activeCondition && 'active'"
+              class="list-item_box"
+              :style="{
+                marginBottom: element.treeFieldList
+                  ? element.treeFieldList.slice(1).length * 40 + 'px'
+                  : 0
+              }"
             >
-              <el-icon class="handle">
-                <Icon name="icon_drag_outlined"><icon_drag_outlined class="svg-icon" /></Icon>
-              </el-icon>
-              <div class="label flex-align-center icon" :title="element.name">
-                <el-icon
-                  v-if="!element.auto && element.showError"
-                  style="font-size: 16px; color: #f54a45"
+              <div
+                class="list-item_primary"
+                :class="element.id === activeCondition && relationshipChartIndex === 0 && 'active'"
+              >
+                <el-icon class="handle">
+                  <Icon name="icon_drag_outlined"><icon_drag_outlined class="svg-icon" /></Icon>
+                </el-icon>
+                <div class="label flex-align-center icon" :title="element.name">
+                  <el-icon
+                    v-if="!element.auto && element.showError"
+                    style="font-size: 16px; color: #f54a45"
+                  >
+                    <icon name="icon_warning_filled"><icon_warning_filled class="svg-icon" /></icon>
+                  </el-icon>
+                  {{ element.name }}
+                </div>
+                <div class="condition-icon flex-align-center">
+                  <handle-more
+                    @handle-command="cmd => addOperation(cmd, element, index)"
+                    :menu-list="typeList"
+                    :icon-name="more_v"
+                    placement="bottom-end"
+                  ></handle-more>
+                  <el-icon
+                    class="hover-icon"
+                    @click.stop="element.visible = !element.visible"
+                    v-if="element.visible"
+                  >
+                    <Icon name="icon_visible_outlined"
+                      ><icon_visible_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                  <el-icon
+                    class="hover-icon"
+                    @click.stop="element.visible = !element.visible"
+                    v-else
+                  >
+                    <Icon name="de_pwd_invisible"><de_pwd_invisible class="svg-icon" /></Icon>
+                  </el-icon>
+                </div>
+                <div @click.stop v-if="activeConditionForRename.id === element.id" class="rename">
+                  <el-input
+                    @blur="renameInputBlur"
+                    :ref="setRenameInput"
+                    v-model="activeConditionForRename.name"
+                  ></el-input>
+                </div>
+              </div>
+              <template v-if="element.treeFieldList">
+                <div
+                  :class="
+                    element.id === activeCondition &&
+                    relationshipChartIndex === index + 1 &&
+                    'active'
+                  "
+                  class="list-item_primary list-tree_primary"
+                  :style="{
+                    top: 40 * (index + 1) + 'px',
+                    paddingLeft: 32 + 16 * (index + 1) + 'px'
+                  }"
+                  v-for="(itx, index) in element.treeFieldList.slice(1)"
+                  :key="itx.field"
+                  @click.stop="notCurrentEle(element, index + 1)"
                 >
-                  <icon name="icon_warning_filled"><icon_warning_filled class="svg-icon" /></icon>
-                </el-icon>
-                {{ element.name }}
-              </div>
-              <div class="condition-icon flex-align-center">
-                <handle-more
-                  @handle-command="cmd => addOperation(cmd, element, index)"
-                  :menu-list="typeList"
-                  :icon-name="more_v"
-                  placement="bottom-end"
-                ></handle-more>
-                <el-icon
-                  class="hover-icon"
-                  @click.stop="element.visible = !element.visible"
-                  v-if="element.visible"
-                >
-                  <Icon name="icon_visible_outlined"
-                    ><icon_visible_outlined class="svg-icon"
-                  /></Icon>
-                </el-icon>
-                <el-icon class="hover-icon" @click.stop="element.visible = !element.visible" v-else>
-                  <Icon name="de_pwd_invisible"><de_pwd_invisible class="svg-icon" /></Icon>
-                </el-icon>
-              </div>
-              <div @click.stop v-if="activeConditionForRename.id === element.id" class="rename">
-                <el-input
-                  @blur="renameInputBlur"
-                  :ref="setRenameInput"
-                  v-model="activeConditionForRename.name"
-                ></el-input>
-              </div>
+                  {{ itx.name }}
+                </div>
+              </template>
             </div>
           </template>
         </draggable>
       </div>
       <div v-if="!!curComponent" class="chart-field" :class="curComponent.auto && 'hidden'">
-        <div class="mask" v-if="curComponent.auto"></div>
-        <div class="title flex-align-center">
-          {{ t('v_query.chart_and_field') }}
-          <el-radio-group class="ml-4 larger-radio" v-model="curComponent.auto">
-            <el-radio :disabled="!curComponent.auto" :label="true">
-              <div class="flex-align-center">
-                {{ t('chart.margin_model_auto') }}
-                <el-tooltip effect="dark" placement="top">
-                  <template #content>
-                    <div>
-                      {{ t('v_query.be_switched_to') }}
-                      <br />
-                      {{ t('v_query.to_automatic_again') }}
-                    </div>
-                  </template>
-                  <el-icon style="margin-left: 4px; color: #646a73">
-                    <icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></icon>
-                  </el-icon>
-                </el-tooltip>
-              </div>
-            </el-radio>
-            <el-radio :label="false">{{ t('commons.custom') }}</el-radio>
-          </el-radio-group>
-        </div>
-        <div class="select-all">
-          <el-checkbox
-            v-model="checkAll"
-            :indeterminate="isIndeterminate"
-            @change="handleCheckAllChange"
-            >{{ t('dataset.check_all') }}</el-checkbox
-          >
-        </div>
-        <div class="field-list">
-          <el-checkbox-group
-            v-model="curComponent.checkedFields"
-            @change="handleCheckedFieldsChangeTree"
-          >
-            <div v-for="field in fields" :key="field.componentId" class="list-item_field_de">
-              <el-checkbox :label="field.componentId"
-                ><el-icon class="component-type">
-                  <Icon
-                    ><component
-                      :is="iconChartMap[canvasViewInfo[field.componentId].type]"
-                    ></component
-                  ></Icon> </el-icon
-                ><span
-                  :title="canvasViewInfo[field.componentId].title"
-                  class="checkbox-name ellipsis"
-                  >{{ canvasViewInfo[field.componentId].title }}</span
-                ></el-checkbox
-              >
-              <span :title="field.name" class="dataset ellipsis">{{ field.name }}</span>
-              <el-select
-                @change="val => setParametersArr(val, field.componentId)"
-                @focus="handleDialogClick"
-                multiple
-                filterable
-                collapse-tags
-                collapse-tags-tooltip
-                key="checkedFieldsMapArrTime"
-                :multiple-limit="2"
-                class="field-select--input"
-                style="margin-left: 12px"
-                popper-class="field-select--dqp"
-                v-if="
-                  curComponent.checkedFields.includes(field.componentId) &&
-                  curComponent.checkedFieldsMapArr &&
-                  curComponent.checkedFieldsMapArr[field.componentId] &&
-                  curComponent.checkedFieldsMapArr[field.componentId].length
-                "
-                v-model="curComponent.checkedFieldsMapArr[field.componentId]"
-                clearable
-              >
-                <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
-                  <el-icon>
-                    <Icon
-                      ><component
-                        :class="`field-icon-${
-                          fieldType[
-                            getDetype(
-                              curComponent.checkedFieldsMap[field.componentId],
-                              Object.values(field.fields)
-                            )
-                          ]
-                        }`"
-                        :is="
-                          iconFieldMap[
-                            fieldType[
-                              getDetype(
-                                curComponent.checkedFieldsMap[field.componentId],
-                                Object.values(field.fields)
-                              )
-                            ]
-                          ]
-                        "
-                      ></component
-                    ></Icon>
-                  </el-icon>
-                </template>
-                <template #header>
-                  <el-tabs stretch class="params-select--header" v-model="field.activelist">
-                    <el-tab-pane
-                      disabled
-                      :label="t('chart.dimension')"
-                      name="dimensionList"
-                    ></el-tab-pane>
-                    <el-tab-pane disabled :label="t('chart.quota')" name="quotaList"></el-tab-pane>
-                    <el-tab-pane :label="t('dataset.param')" name="parameterList"></el-tab-pane>
-                  </el-tabs>
-                </template>
-                <el-option
-                  v-for="ele in field.fields[field.activelist]"
-                  :key="ele.id"
-                  :label="ele.name || ele.variableName"
-                  :value="ele.id"
-                  :disabled="isParametersDisable(ele)"
-                >
-                  <div class="flex-align-center icon">
-                    <el-icon>
-                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
-                        ><component
-                          class="svg-icon"
-                          :class="`field-icon-${fieldType[ele.deType]}`"
-                          :is="iconFieldMap[fieldType[ele.deType]]"
-                        ></component
-                      ></Icon>
+        <el-scrollbar>
+          <div class="mask" v-if="curComponent.auto"></div>
+          <div class="title flex-align-center">
+            {{ t('v_query.chart_and_field') }}
+            <el-radio-group class="ml-4 larger-radio" v-model="curComponent.auto">
+              <el-radio :disabled="!curComponent.auto" :label="true">
+                <div class="flex-align-center">
+                  {{ t('chart.margin_model_auto') }}
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      <div>
+                        {{ t('v_query.be_switched_to') }}
+                        <br />
+                        {{ t('v_query.to_automatic_again') }}
+                      </div>
+                    </template>
+                    <el-icon style="margin-left: 4px; color: #646a73">
+                      <icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></icon>
                     </el-icon>
-                    <span :title="ele.name || ele.variableName" class="ellipsis">
-                      {{ ele.name || ele.variableName }}
-                    </span>
-                    <span
-                      v-if="
-                        curComponent.checkedFieldsMapArr[field.componentId].includes(ele.id) &&
-                        field.activelist === 'parameterList'
-                      "
-                      @click.stop="timeClick(field.componentId, ele)"
-                      class="range-time_setting"
-                    >
-                      {{
-                        curComponent.checkedFieldsMapStart[field.componentId] === ele.id
-                          ? t('dataset.start_time')
-                          : curComponent.checkedFieldsMapEnd[field.componentId] === ele.id
-                          ? t('dataset.end_time')
-                          : ''
-                      }}
-                      <el-icon>
-                        <Icon>
-                          <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
-                        </Icon>
-                      </el-icon>
-                    </span>
-                  </div>
-                </el-option>
-              </el-select>
-              <el-select
-                @change="val => setParametersArrNum(val, field.componentId)"
-                @focus="handleDialogClick"
-                multiple
-                filterable
-                collapse-tags
-                collapse-tags-tooltip
-                key="checkedFieldsMapArr"
-                :multiple-limit="2"
-                class="field-select--input"
-                style="margin-left: 12px"
-                popper-class="field-select--dqp"
-                v-else-if="
-                  curComponent.checkedFields.includes(field.componentId) &&
-                  curComponent.checkedFieldsMapArrNum &&
-                  curComponent.checkedFieldsMapArrNum[field.componentId] &&
-                  curComponent.checkedFieldsMapArrNum[field.componentId].length
-                "
-                v-model="curComponent.checkedFieldsMapArrNum[field.componentId]"
-                clearable
-              >
-                <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
-                  <el-icon>
+                  </el-tooltip>
+                </div>
+              </el-radio>
+              <el-radio :label="false">{{ t('commons.custom') }}</el-radio>
+            </el-radio-group>
+          </div>
+          <div class="select-all">
+            <el-checkbox
+              v-model="checkAll"
+              :indeterminate="isIndeterminate"
+              @change="handleCheckAllChange"
+              >{{ t('dataset.check_all') }}</el-checkbox
+            >
+          </div>
+          <div class="field-list">
+            <el-checkbox-group
+              v-model="curComponent.checkedFields"
+              @change="handleCheckedFieldsChangeTree"
+            >
+              <div v-for="field in fields" :key="field.componentId" class="list-item_field_de">
+                <el-checkbox :label="field.componentId"
+                  ><el-icon class="component-type">
                     <Icon
                       ><component
-                        :class="`field-icon-${
-                          fieldType[
-                            getDetype(
-                              curComponent.checkedFieldsMap[field.componentId],
-                              Object.values(field.fields)
-                            )
-                          ]
-                        }`"
-                        :is="
-                          iconFieldMap[
-                            fieldType[
-                              getDetype(
-                                curComponent.checkedFieldsMap[field.componentId],
-                                Object.values(field.fields)
-                              )
-                            ]
-                          ]
-                        "
+                        :is="iconChartMap[canvasViewInfo[field.componentId].type]"
                       ></component
-                    ></Icon>
-                  </el-icon>
-                </template>
-                <template #header>
-                  <el-tabs stretch class="params-select--header" v-model="field.activelist">
-                    <el-tab-pane
-                      disabled
-                      :label="t('chart.dimension')"
-                      name="dimensionList"
-                    ></el-tab-pane>
-                    <el-tab-pane disabled :label="t('chart.quota')" name="quotaList"></el-tab-pane>
-                    <el-tab-pane :label="t('dataset.param')" name="parameterList"></el-tab-pane>
-                  </el-tabs>
-                </template>
-                <el-option
-                  v-for="ele in field.fields[field.activelist]"
-                  :key="ele.id"
-                  :label="ele.name || ele.variableName"
-                  :value="ele.id"
-                  :disabled="![2, 3].includes(ele.deType)"
+                    ></Icon> </el-icon
+                  ><span
+                    :title="canvasViewInfo[field.componentId].title"
+                    class="checkbox-name ellipsis"
+                    >{{ canvasViewInfo[field.componentId].title }}</span
+                  ></el-checkbox
                 >
-                  <div class="flex-align-center icon">
-                    <el-icon>
-                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
-                        ><component
-                          class="svg-icon"
-                          :class="`field-icon-${fieldType[ele.deType]}`"
-                          :is="iconFieldMap[fieldType[ele.deType]]"
-                        ></component
-                      ></Icon>
-                    </el-icon>
-                    <span :title="ele.name || ele.variableName" class="ellipsis">
-                      {{ ele.name || ele.variableName }}
-                    </span>
-                    <span
-                      v-if="
-                        curComponent.checkedFieldsMapArrNum[field.componentId].includes(ele.id) &&
-                        field.activelist === 'parameterList'
-                      "
-                      @click.stop="numClick(field.componentId, ele)"
-                      class="range-time_setting"
-                    >
-                      {{
-                        curComponent.checkedFieldsMapStartNum[field.componentId] === ele.id
-                          ? t('chart.min')
-                          : curComponent.checkedFieldsMapEndNum[field.componentId] === ele.id
-                          ? t('chart.max')
-                          : ''
-                      }}
-                      <el-icon>
-                        <Icon>
-                          <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
-                        </Icon>
-                      </el-icon>
-                    </span>
-                  </div>
-                </el-option>
-              </el-select>
-              <el-select
-                @change="setParameters(field)"
-                @focus="handleDialogClick"
-                filterable
-                style="margin-left: 12px"
-                popper-class="field-select--dqp"
-                v-else-if="curComponent.checkedFields.includes(field.componentId)"
-                v-model="curComponent.checkedFieldsMap[field.componentId]"
-                clearable
-              >
-                <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
-                  <el-icon>
-                    <Icon
-                      ><component
-                        :class="`field-icon-${
-                          fieldType[
-                            getDetype(
-                              curComponent.checkedFieldsMap[field.componentId],
-                              Object.values(field.fields)
-                            )
-                          ]
-                        }`"
-                        :is="
-                          iconFieldMap[
-                            fieldType[
-                              getDetype(
-                                curComponent.checkedFieldsMap[field.componentId],
-                                Object.values(field.fields)
-                              )
-                            ]
-                          ]
-                        "
-                      ></component
-                    ></Icon>
-                  </el-icon>
-                </template>
-                <template #header>
-                  <el-tabs stretch class="params-select--header" v-model="field.activelist">
-                    <el-tab-pane :label="t('chart.dimension')" name="dimensionList"></el-tab-pane>
-                    <el-tab-pane
-                      :disabled="curComponent.displayType === '9'"
-                      :label="t('chart.quota')"
-                      name="quotaList"
-                    ></el-tab-pane>
-                    <el-tab-pane
-                      v-if="field.hasParameter"
-                      :label="t('dataset.param')"
-                      :disabled="curComponent.displayType === '9'"
-                      name="parameterList"
-                    ></el-tab-pane>
-                  </el-tabs>
-                </template>
-                <el-option
-                  v-for="ele in field.fields[field.activelist]"
-                  :key="ele.id"
-                  :label="ele.name || ele.variableName"
-                  :value="ele.id"
-                  :disabled="
-                    ele.desensitized ||
-                    (curComponent.displayType === '9' && ele.deType === 1) ||
-                    isParametersDisable(ele)
+                <span :title="field.name" class="dataset ellipsis">{{ field.name }}</span>
+                <el-select
+                  @change="val => setParametersArr(val, field.componentId)"
+                  @focus="handleDialogClick"
+                  multiple
+                  filterable
+                  collapse-tags
+                  collapse-tags-tooltip
+                  key="checkedFieldsMapArrTime"
+                  :multiple-limit="2"
+                  class="field-select--input"
+                  style="margin-left: 12px"
+                  popper-class="field-select--dqp"
+                  v-if="
+                    curComponent.checkedFields.includes(field.componentId) &&
+                    curComponent.checkedFieldsMapArr &&
+                    curComponent.checkedFieldsMapArr[field.componentId] &&
+                    curComponent.checkedFieldsMapArr[field.componentId].length
                   "
+                  v-model="curComponent.checkedFieldsMapArr[field.componentId]"
+                  clearable
                 >
-                  <div
-                    class="flex-align-center icon"
-                    :title="ele.desensitized ? t('v_query.as_query_conditions') : ''"
-                  >
+                  <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
                     <el-icon>
-                      <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                      <Icon
                         ><component
-                          class="svg-icon"
-                          :class="`field-icon-${fieldType[ele.deType]}`"
-                          :is="iconFieldMap[fieldType[ele.deType]]"
+                          :class="`field-icon-${
+                            fieldType[
+                              getDetype(
+                                curComponent.checkedFieldsMap[field.componentId],
+                                Object.values(field.fields)
+                              )
+                            ]
+                          }`"
+                          :is="
+                            iconFieldMap[
+                              fieldType[
+                                getDetype(
+                                  curComponent.checkedFieldsMap[field.componentId],
+                                  Object.values(field.fields)
+                                )
+                              ]
+                            ]
+                          "
                         ></component
                       ></Icon>
                     </el-icon>
-                    <span :title="ele.name || ele.variableName" class="ellipsis">
-                      {{ ele.name || ele.variableName }}
-                    </span>
-                    <span
-                      @click.stop="
-                        () =>
-                          isNumParameter
-                            ? numClick(field.componentId, ele)
-                            : timeClick(field.componentId, ele)
-                      "
-                      v-if="
-                        curComponent.checkedFieldsMap[field.componentId] === ele.id &&
-                        field.activelist === 'parameterList' &&
-                        (isTimeParameter || isNumParameter)
-                      "
-                      class="range-time_setting"
-                    >
-                      {{ isNumParameter ? t('chart.value_formatter_value') : t('dataset.time') }}
+                  </template>
+                  <template #header>
+                    <el-tabs stretch class="params-select--header" v-model="field.activelist">
+                      <el-tab-pane
+                        disabled
+                        :label="t('chart.dimension')"
+                        name="dimensionList"
+                      ></el-tab-pane>
+                      <el-tab-pane
+                        disabled
+                        :label="t('chart.quota')"
+                        name="quotaList"
+                      ></el-tab-pane>
+                      <el-tab-pane :label="t('dataset.param')" name="parameterList"></el-tab-pane>
+                    </el-tabs>
+                  </template>
+                  <el-option
+                    v-for="ele in field.fields[field.activelist]"
+                    :key="ele.id"
+                    :label="ele.name || ele.variableName"
+                    :value="ele.id"
+                    :disabled="isParametersDisable(ele)"
+                  >
+                    <div class="flex-align-center icon">
                       <el-icon>
-                        <Icon>
-                          <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
-                        </Icon>
+                        <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[ele.deType]}`"
+                            :is="iconFieldMap[fieldType[ele.deType]]"
+                          ></component
+                        ></Icon>
                       </el-icon>
-                    </span>
-                  </div>
-                </el-option>
-              </el-select>
-              <span style="width: 172px; margin-left: 12px" v-else></span>
-            </div>
-          </el-checkbox-group>
-        </div>
+                      <span :title="ele.name || ele.variableName" class="ellipsis">
+                        {{ ele.name || ele.variableName }}
+                      </span>
+                      <span
+                        v-if="
+                          curComponent.checkedFieldsMapArr[field.componentId].includes(ele.id) &&
+                          field.activelist === 'parameterList'
+                        "
+                        @click.stop="timeClick(field.componentId, ele)"
+                        class="range-time_setting"
+                      >
+                        {{
+                          curComponent.checkedFieldsMapStart[field.componentId] === ele.id
+                            ? t('dataset.start_time')
+                            : curComponent.checkedFieldsMapEnd[field.componentId] === ele.id
+                            ? t('dataset.end_time')
+                            : ''
+                        }}
+                        <el-icon>
+                          <Icon>
+                            <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
+                          </Icon>
+                        </el-icon>
+                      </span>
+                    </div>
+                  </el-option>
+                </el-select>
+                <el-select
+                  @change="val => setParametersArrNum(val, field.componentId)"
+                  @focus="handleDialogClick"
+                  multiple
+                  filterable
+                  collapse-tags
+                  collapse-tags-tooltip
+                  key="checkedFieldsMapArr"
+                  :multiple-limit="2"
+                  class="field-select--input"
+                  style="margin-left: 12px"
+                  popper-class="field-select--dqp"
+                  v-else-if="
+                    curComponent.checkedFields.includes(field.componentId) &&
+                    curComponent.checkedFieldsMapArrNum &&
+                    curComponent.checkedFieldsMapArrNum[field.componentId] &&
+                    curComponent.checkedFieldsMapArrNum[field.componentId].length
+                  "
+                  v-model="curComponent.checkedFieldsMapArrNum[field.componentId]"
+                  clearable
+                >
+                  <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
+                    <el-icon>
+                      <Icon
+                        ><component
+                          :class="`field-icon-${
+                            fieldType[
+                              getDetype(
+                                curComponent.checkedFieldsMap[field.componentId],
+                                Object.values(field.fields)
+                              )
+                            ]
+                          }`"
+                          :is="
+                            iconFieldMap[
+                              fieldType[
+                                getDetype(
+                                  curComponent.checkedFieldsMap[field.componentId],
+                                  Object.values(field.fields)
+                                )
+                              ]
+                            ]
+                          "
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                  </template>
+                  <template #header>
+                    <el-tabs stretch class="params-select--header" v-model="field.activelist">
+                      <el-tab-pane
+                        disabled
+                        :label="t('chart.dimension')"
+                        name="dimensionList"
+                      ></el-tab-pane>
+                      <el-tab-pane
+                        disabled
+                        :label="t('chart.quota')"
+                        name="quotaList"
+                      ></el-tab-pane>
+                      <el-tab-pane :label="t('dataset.param')" name="parameterList"></el-tab-pane>
+                    </el-tabs>
+                  </template>
+                  <el-option
+                    v-for="ele in field.fields[field.activelist]"
+                    :key="ele.id"
+                    :label="ele.name || ele.variableName"
+                    :value="ele.id"
+                    :disabled="![2, 3].includes(ele.deType)"
+                  >
+                    <div class="flex-align-center icon">
+                      <el-icon>
+                        <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[ele.deType]}`"
+                            :is="iconFieldMap[fieldType[ele.deType]]"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                      <span :title="ele.name || ele.variableName" class="ellipsis">
+                        {{ ele.name || ele.variableName }}
+                      </span>
+                      <span
+                        v-if="
+                          curComponent.checkedFieldsMapArrNum[field.componentId].includes(ele.id) &&
+                          field.activelist === 'parameterList'
+                        "
+                        @click.stop="numClick(field.componentId, ele)"
+                        class="range-time_setting"
+                      >
+                        {{
+                          curComponent.checkedFieldsMapStartNum[field.componentId] === ele.id
+                            ? t('chart.min')
+                            : curComponent.checkedFieldsMapEndNum[field.componentId] === ele.id
+                            ? t('chart.max')
+                            : ''
+                        }}
+                        <el-icon>
+                          <Icon>
+                            <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
+                          </Icon>
+                        </el-icon>
+                      </span>
+                    </div>
+                  </el-option>
+                </el-select>
+                <el-select
+                  @change="setParameters(field)"
+                  @focus="handleDialogClick"
+                  filterable
+                  style="margin-left: 12px"
+                  popper-class="field-select--dqp"
+                  v-else-if="curComponent.checkedFields.includes(field.componentId)"
+                  v-model="curComponent.checkedFieldsMap[field.componentId]"
+                  clearable
+                >
+                  <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
+                    <el-icon>
+                      <Icon
+                        ><component
+                          :class="`field-icon-${
+                            fieldType[
+                              getDetype(
+                                curComponent.checkedFieldsMap[field.componentId],
+                                Object.values(field.fields)
+                              )
+                            ]
+                          }`"
+                          :is="
+                            iconFieldMap[
+                              fieldType[
+                                getDetype(
+                                  curComponent.checkedFieldsMap[field.componentId],
+                                  Object.values(field.fields)
+                                )
+                              ]
+                            ]
+                          "
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                  </template>
+                  <template #header>
+                    <el-tabs stretch class="params-select--header" v-model="field.activelist">
+                      <el-tab-pane :label="t('chart.dimension')" name="dimensionList"></el-tab-pane>
+                      <el-tab-pane
+                        :disabled="curComponent.displayType === '9'"
+                        :label="t('chart.quota')"
+                        name="quotaList"
+                      ></el-tab-pane>
+                      <el-tab-pane
+                        v-if="field.hasParameter"
+                        :label="t('dataset.param')"
+                        :disabled="curComponent.displayType === '9'"
+                        name="parameterList"
+                      ></el-tab-pane>
+                    </el-tabs>
+                  </template>
+                  <el-option
+                    v-for="ele in field.fields[field.activelist]"
+                    :key="ele.id"
+                    :label="ele.name || ele.variableName"
+                    :value="ele.id"
+                    :disabled="
+                      ele.desensitized ||
+                      (curComponent.displayType === '9' && ele.deType === 1) ||
+                      isParametersDisable(ele)
+                    "
+                  >
+                    <div
+                      class="flex-align-center icon"
+                      :title="ele.desensitized ? t('v_query.as_query_conditions') : ''"
+                    >
+                      <el-icon>
+                        <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[ele.deType]}`"
+                            :is="iconFieldMap[fieldType[ele.deType]]"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                      <span :title="ele.name || ele.variableName" class="ellipsis">
+                        {{ ele.name || ele.variableName }}
+                      </span>
+                      <span
+                        @click.stop="
+                          () =>
+                            isNumParameter
+                              ? numClick(field.componentId, ele)
+                              : timeClick(field.componentId, ele)
+                        "
+                        v-if="
+                          curComponent.checkedFieldsMap[field.componentId] === ele.id &&
+                          field.activelist === 'parameterList' &&
+                          (isTimeParameter || isNumParameter)
+                        "
+                        class="range-time_setting"
+                      >
+                        {{ isNumParameter ? t('chart.value_formatter_value') : t('dataset.time') }}
+                        <el-icon>
+                          <Icon>
+                            <icon_edit_outlined class="svg-icon"></icon_edit_outlined>
+                          </Icon>
+                        </el-icon>
+                      </span>
+                    </div>
+                  </el-option>
+                </el-select>
+                <span style="width: 172px; margin-left: 12px" v-else></span>
+              </div>
+            </el-checkbox-group>
+          </div>
+        </el-scrollbar>
       </div>
       <div
         v-if="!!curComponent"
@@ -2619,13 +2815,19 @@ defineExpose({
           <div class="title flex-align-center">
             {{ t('v_query.query_condition_configuration') }}
             <el-checkbox
-              :disabled="curComponent.auto"
+              :disabled="
+                curComponent.auto ||
+                (curComponent.displayType === '9' && relationshipChartIndex !== 0)
+              "
               v-model="curComponent.required"
               :label="t('v_query.required_items')"
             />
           </div>
           <div
-            v-show="showConfiguration && !showTypeError && !showDatasetError"
+            v-show="
+              (curComponent.displayType !== '9' && showConfiguration && !showTypeError) ||
+              (curComponent.displayType === '9' && relationshipChartIndex == 0)
+            "
             class="configuration-list"
           >
             <div class="list-item">
@@ -2633,7 +2835,7 @@ defineExpose({
               <div class="value">
                 <el-select
                   @focus="handleDialogClick"
-                  @change="setTypeChange"
+                  @change="handleSetTypeChange"
                   v-model="curComponent.displayType"
                 >
                   <el-option
@@ -2693,12 +2895,50 @@ defineExpose({
               </div>
             </div>
             <div class="list-item" v-if="curComponent.displayType === '9'">
-              <div class="label">{{ t('v_query.of_option_values') }}</div>
+              <div :title="t('v_query.of_option_values')" class="label ellipsis">
+                {{ t('v_query.of_option_values') }}
+              </div>
               <div class="value">
                 <el-radio-group class="larger-radio" v-model="curComponent.resultMode">
                   <el-radio :label="0">{{ t('login.default_login') }}</el-radio>
                   <el-radio :label="1">{{ t('chart.result_mode_all') }}</el-radio>
                 </el-radio-group>
+              </div>
+            </div>
+            <div class="list-item" v-if="curComponent.displayType === '9'">
+              <div :title="t('copilot.pls_choose_dataset')" class="label ellipsis">
+                {{ t('copilot.pls_choose_dataset') }}
+              </div>
+              <div class="value">
+                <el-tree-select
+                  :teleported="false"
+                  v-model="curComponent.treeDatasetId"
+                  :data="datasetTree"
+                  :placeholder="t('copilot.pls_choose_dataset')"
+                  @change="handleDatasetTreeChange"
+                  :props="dsSelectProps"
+                  placement="bottom"
+                  :render-after-expand="false"
+                  filterable
+                  popper-class="dataset-tree"
+                >
+                  <template #default="{ node, data }">
+                    <div class="content">
+                      <el-icon size="18px" v-if="!data.leaf">
+                        <Icon><dvFolder class="svg-icon" /></Icon>
+                      </el-icon>
+                      <el-icon size="18px" v-if="data.leaf">
+                        <Icon><icon_dataset class="svg-icon" /></Icon>
+                      </el-icon>
+                      <span
+                        class="label-tree ellipsis"
+                        style="margin-left: 8px"
+                        :title="node.label"
+                        >{{ node.label }}</span
+                      >
+                    </div>
+                  </template>
+                </el-tree-select>
               </div>
             </div>
             <div class="list-item" v-if="curComponent.displayType === '9'">
@@ -2710,7 +2950,7 @@ defineExpose({
                   @click="startTreeDesign"
                 >
                   <template #icon>
-                    <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
+                    <icon><icon_edit_outlined class="svg-icon" /></icon>
                   </template>
                 </el-button>
               </div>
@@ -2722,11 +2962,11 @@ defineExpose({
                     class="tree-field"
                   >
                     <span class="level-index"
-                      >{{ t('visualization.level') }}{{ indexCascade[index + 1] }}</span
+                      >{{ t('visualization.level') }}{{ indexNumCascade[index] }}</span
                     >
                     <span class="field-type"
                       ><el-icon>
-                        <Icon :className="`field-icon-${fieldType[ele.deType]}`"
+                        <Icon
                           ><component
                             :class="`field-icon-${fieldType[ele.deType]}`"
                             class="svg-icon"
@@ -2734,10 +2974,18 @@ defineExpose({
                           ></component
                         ></Icon> </el-icon
                     ></span>
-                    <span class="field-tree_name">{{ ele.name }}</span>
+                    <span class="field-tree_name ellipsis" :title="ele.name">{{ ele.name }}</span>
+                    <span class="field-relationship_chart" v-if="index === 0">{{
+                      t('common.associated_chart_first')
+                    }}</span>
+                    <span class="field-relationship_chart" v-else>
+                      <el-button text @click="handleRelationshipChart(index)">
+                        {{ t('common.associated_chart') }}
+                      </el-button>
+                    </span>
                   </div>
                 </template>
-                <el-button @click="startTreeDesign" v-else text>
+                <el-button class="start-tree_design" @click="startTreeDesign" v-else text>
                   <template #icon>
                     <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
                   </template>
@@ -2747,7 +2995,9 @@ defineExpose({
               <TreeFieldDialog ref="treeDialog" @save-tree="saveTree"></TreeFieldDialog>
             </div>
             <div class="list-item" v-if="['1', '7'].includes(curComponent.displayType)">
-              <div class="label">{{ t('v_query.time_granularity') }}</div>
+              <div :title="t('v_query.time_granularity')" class="label ellipsis">
+                {{ t('v_query.time_granularity') }}
+              </div>
               <div class="value">
                 <template v-if="curComponent.displayType === '7' && !isTimeParameter">
                   <el-select
@@ -2782,7 +3032,9 @@ defineExpose({
               class="list-item top-item"
               v-if="!['1', '7', '8', '9', '22'].includes(curComponent.displayType)"
             >
-              <div class="label">{{ t('v_query.option_value_source') }}</div>
+              <div :title="t('v_query.option_value_source')" class="label ellipsis">
+                {{ t('v_query.option_value_source') }}
+              </div>
               <div class="value">
                 <div class="value">
                   <el-radio-group
@@ -2830,8 +3082,10 @@ defineExpose({
                       </template>
                     </el-tree-select>
                   </div>
-                  <div class="value">
-                    <span class="label">{{ t('v_query.query_field') }}</span>
+                  <div style="display: flex; align-items: center" class="value ellipsis">
+                    <span :title="t('v_query.query_field')" class="label">{{
+                      t('v_query.query_field')
+                    }}</span>
                     <el-select
                       @change="handleFieldChange"
                       :placeholder="t('v_query.query_field')"
@@ -2891,8 +3145,10 @@ defineExpose({
                       </el-option>
                     </el-select>
                   </div>
-                  <div class="value">
-                    <span class="label">{{ t('v_query.display_field') }}</span>
+                  <div style="display: flex; align-items: center" class="value">
+                    <span :title="t('v_query.display_field')" class="label ellipsis">{{
+                      t('v_query.display_field')
+                    }}</span>
                     <el-select
                       :placeholder="t('v_query.display_field')"
                       class="search-field"
@@ -2921,12 +3177,7 @@ defineExpose({
                         </el-icon>
                       </template>
                       <el-option
-                        v-for="ele in curComponent.dataset.fields.filter(
-                          ele =>
-                            ele.deType === +curComponent.displayType ||
-                            ([3, 4].includes(ele.deType) && +curComponent.displayType === 2) ||
-                            (ele.deType === 7 && +curComponent.displayType === 0)
-                        )"
+                        v-for="ele in fieldsComputed"
                         :key="ele.id"
                         :label="ele.name"
                         :value="ele.id"
@@ -2954,75 +3205,78 @@ defineExpose({
                   </div>
                   <div class="value">
                     <span class="label">{{ t('chart.total_sort_field') }}</span>
-                    <el-select
-                      clearable
-                      :placeholder="t('v_query.the_sorting_field')"
-                      v-model="curComponent.sortId"
-                      class="sort-field"
-                      @change="handleSortChange"
-                    >
-                      <template v-if="curComponent.sortId" #prefix>
-                        <el-icon>
-                          <Icon
-                            ><component
-                              class="svg-icon"
-                              :class="`field-icon-${
-                                fieldType[
-                                  getDetype(curComponent.sortId, curComponent.dataset.fields)
-                                ]
-                              }`"
-                              :is="
-                                iconFieldMap[
-                                  fieldType[
-                                    getDetype(curComponent.sortId, curComponent.dataset.fields)
-                                  ]
-                                ]
-                              "
-                            ></component
-                          ></Icon>
-                        </el-icon>
-                      </template>
-                      <el-option
-                        v-for="ele in curComponent.dataset.fields"
-                        :key="ele.id"
-                        :label="ele.name"
-                        :value="ele.id"
-                        :disabled="ele.desensitized"
+                    <div>
+                      <el-select
+                        clearable
+                        :placeholder="t('v_query.the_sorting_field')"
+                        v-model="curComponent.sortId"
+                        class="sort-field"
+                        style="width: 240px"
+                        @change="handleSortChange"
                       >
-                        <div
-                          class="flex-align-center icon"
-                          :title="ele.desensitized ? t('v_query.as_query_conditions') : ''"
-                        >
+                        <template v-if="curComponent.sortId" #prefix>
                           <el-icon>
                             <Icon
                               ><component
-                                :class="`field-icon-${fieldType[ele.deType]}`"
                                 class="svg-icon"
-                                :is="iconFieldMap[fieldType[ele.deType]]"
+                                :class="`field-icon-${
+                                  fieldType[
+                                    getDetype(curComponent.sortId, curComponent.dataset.fields)
+                                  ]
+                                }`"
+                                :is="
+                                  iconFieldMap[
+                                    fieldType[
+                                      getDetype(curComponent.sortId, curComponent.dataset.fields)
+                                    ]
+                                  ]
+                                "
                               ></component
                             ></Icon>
                           </el-icon>
-                          <span>
-                            {{ ele.name }}
-                          </span>
-                        </div>
-                      </el-option>
-                    </el-select>
-                    <el-select
-                      class="sort-type"
-                      v-model="curComponent.sort"
-                      @change="handleFieldChange"
-                    >
-                      <el-option :label="t('chart.asc')" value="asc" />
-                      <el-option :label="t('chart.desc')" value="desc" />
-                      <el-option
-                        @click="handleCustomClick"
-                        :title="sortComputed ? $t('v_query.display_sort') : ''"
-                        :disabled="sortComputed"
-                        :label="t('v_query.custom_sort')"
-                        value="customSort"
-                      />
-                    </el-select>
+                        </template>
+                        <el-option
+                          v-for="ele in curComponent.dataset.fields"
+                          :key="ele.id"
+                          :label="ele.name"
+                          :value="ele.id"
+                          :disabled="ele.desensitized"
+                        >
+                          <div
+                            class="flex-align-center icon"
+                            :title="ele.desensitized ? t('v_query.as_query_conditions') : ''"
+                          >
+                            <el-icon>
+                              <Icon
+                                ><component
+                                  :class="`field-icon-${fieldType[ele.deType]}`"
+                                  class="svg-icon"
+                                  :is="iconFieldMap[fieldType[ele.deType]]"
+                                ></component
+                              ></Icon>
+                            </el-icon>
+                            <span>
+                              {{ ele.name }}
+                            </span>
+                          </div>
+                        </el-option>
+                      </el-select>
+                      <el-select
+                        class="sort-type"
+                        v-model="curComponent.sort"
+                        @change="handleFieldChange"
+                      >
+                        <el-option :label="t('chart.asc')" value="asc" />
+                        <el-option :label="t('chart.desc')" value="desc" />
+                        <el-option
+                          @click="handleCustomClick"
+                          :title="sortComputed ? $t('v_query.display_sort') : ''"
+                          :disabled="sortComputed"
+                          :label="t('v_query.custom_sort')"
+                          value="customSort"
+                        />
+                      </el-select>
+                    </div>
                   </div>
                 </template>
                 <div v-if="curComponent.optionValueSource === 2" class="value flex-align-center">
@@ -3100,7 +3354,11 @@ defineExpose({
                   </div>
                 </div>
               </div>
-              <div class="label" style="margin-top: 10.5px">
+              <div
+                class="label ellipsis"
+                :title="t('v_query.of_option_values')"
+                style="margin-top: 10.5px"
+              >
                 {{ t('v_query.of_option_values') }}
               </div>
               <div class="value" style="margin-top: 10.5px">
@@ -3111,7 +3369,9 @@ defineExpose({
               </div>
             </div>
             <div class="list-item top-item" v-if="curComponent.displayType === '8'">
-              <div class="label">{{ t('v_query.condition_type') }}</div>
+              <div :title="t('v_query.condition_type')" class="label ellipsis">
+                {{ t('v_query.condition_type') }}
+              </div>
               <div class="value">
                 <div class="value">
                   <el-radio-group class="larger-radio" v-model="curComponent.conditionType">
@@ -3141,8 +3401,11 @@ defineExpose({
           <div v-if="showTypeError && showConfiguration" class="empty">
             <empty-background :description="t('v_query.cannot_be_performed')" img-type="error" />
           </div>
-          <div v-else-if="showDatasetError && showConfiguration" class="empty">
-            <empty-background :description="t('v_query.cannot_be_displayed')" img-type="error" />
+          <div
+            v-else-if="curComponent.displayType === '9' && relationshipChartIndex !== 0"
+            class="empty"
+          >
+            <empty-background :description="t('common.other_levels')" img-type="error" />
           </div>
           <div v-else-if="!showConfiguration" class="empty">
             <empty-background :description="t('v_query.be_linked_first')" img-type="noneWhite" />
@@ -3313,6 +3576,17 @@ defineExpose({
           color: var(--ed-color-primary);
         }
       }
+
+      .list-item_box {
+        width: 100%;
+        position: relative;
+        .list-tree_primary {
+          position: absolute;
+          left: 0;
+          padding: 8px 32px;
+          width: 100%;
+        }
+      }
       .list-item_primary {
         border-radius: 0;
         position: relative;
@@ -3396,8 +3670,17 @@ defineExpose({
             .ed-select-tags-wrapper.has-prefix {
               margin-left: 25px;
             }
-            .ed-select__tags-text {
-              max-width: 30px !important;
+            .ed-select__input {
+              margin-left: 6px !important;
+            }
+            .ed-tag {
+              max-width: 52px;
+              .ed-tag__close {
+                margin-left: 2px;
+              }
+              .ed-select__tags-text {
+                max-width: 30px !important;
+              }
             }
           }
 
@@ -3512,7 +3795,7 @@ defineExpose({
             padding: 16px;
             box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
 
-            .ed-button {
+            .start-tree_design {
               position: absolute;
               left: 50%;
               top: 50%;
@@ -3536,6 +3819,11 @@ defineExpose({
 
               .field-tree_name {
                 margin-left: 8px;
+                width: 100px;
+              }
+
+              .field-relationship_chart {
+                margin-left: 8px;
               }
             }
           }
@@ -3552,7 +3840,7 @@ defineExpose({
             }
           }
           .label {
-            width: 80px;
+            width: 85px;
             color: #1f2329;
           }
 

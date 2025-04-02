@@ -1,8 +1,7 @@
 <script lang="tsx" setup>
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
-import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+import { uploadFileResult } from '@/api/staticResource'
 import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
@@ -15,6 +14,7 @@ import { cloneDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 const { t } = useI18n()
 const styleActiveNames = ref(['basicStyle'])
 const dvMainStore = dvMainStoreWithOut()
@@ -38,7 +38,7 @@ const props = defineProps({
     default: 'dark'
   }
 })
-const { chart, commonBackgroundPop } = toRefs(props)
+const { chart, commonBackgroundPop, element } = toRefs(props)
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
@@ -117,6 +117,47 @@ const currentSearch = ref({
   queryConditionWidth: 227
 })
 
+const onFreezeChange = newVal => {
+  if (element.value.freeze) {
+    let historyFreezeCount = 0
+    dvMainStore.componentData.forEach(item => {
+      if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+        historyFreezeCount++
+      }
+    })
+    if (historyFreezeCount) {
+      ElMessageBox.confirm(t('visualization.filter_freeze_tips'), {
+        confirmButtonType: 'primary',
+        type: 'warning',
+        confirmButtonText: t('common.sure'),
+        cancelButtonText: t('common.cancel'),
+        autofocus: false,
+        showClose: false
+      })
+        .then(() => {
+          dvMainStore.componentData.forEach(item => {
+            if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+              item.freeze = false
+            }
+          })
+          snapshotStore.recordSnapshotCache('onFreezeChange')
+        })
+        .catch(() => {
+          element.value.freeze = false
+        })
+    } else {
+      dvMainStore.componentData.forEach(item => {
+        if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+          item.freeze = false
+        }
+      })
+      snapshotStore.recordSnapshotCache('onFreezeChange')
+    }
+  } else {
+    snapshotStore.recordSnapshotCache('onFreezeChange')
+  }
+}
+
 const handleCurrentPlaceholder = val => {
   const obj = props.element.propValue.find(ele => {
     return ele.id === val
@@ -142,24 +183,9 @@ const init = () => {
     state.fileList = []
   }
 }
-const handleRemove = () => {
-  state.commonBackground['outerImage'] = null
-  state.fileList = []
-  onBackgroundChange()
-}
-const handlePictureCardPreview = file => {
-  state.dialogImageUrl = file.url
-  state.dialogVisible = true
-}
-const upload = file => {
-  return uploadFileResult(file.file, fileUrl => {
-    state.commonBackground['outerImage'] = fileUrl
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
-    onBackgroundChange()
-  })
-}
-const goFile = () => {
-  files.value.click()
+const onBackgroundChangeV2 = val => {
+  snapshotStore.recordSnapshotCache('onBackgroundChange')
+  element.value.commonBackground = val
 }
 
 const onBackgroundChange = () => {
@@ -173,7 +199,7 @@ onMounted(() => {
 const reUpload = e => {
   const file = e.target.files[0]
   if (file.size > 15000000) {
-    ElMessage.success('图片大小不符合')
+    ElMessage.success('图片大小不能超过15M')
     return
   }
   uploadFileResult(file, fileUrl => {
@@ -241,6 +267,11 @@ const initParams = () => {
   }
 }
 initParams()
+const onTitleChange = () => {
+  element.value.label = chart.value.customStyle.component.title
+  element.value.name = chart.value.customStyle.component.title
+  chart.value.title = chart.value.customStyle.component.title
+}
 </script>
 
 <template>
@@ -280,6 +311,7 @@ initParams()
                 :effect="themes"
                 :disabled="!chart.customStyle.component.titleShow"
                 v-model.lazy="chart.customStyle.component.title"
+                @change="onTitleChange"
               />
             </el-form-item>
             <el-form-item
@@ -292,206 +324,86 @@ initParams()
                 :effect="themes"
                 v-model="chart.customStyle.component.titleColor"
                 :trigger-width="204"
+                show-alpha
                 :disabled="!chart.customStyle.component.titleShow"
                 is-custom
                 :predefine="COLOR_PANEL"
               />
             </el-form-item>
-
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                size="small"
-                :effect="themes"
-                v-model="commonBackgroundPop.backdropFilterEnable"
-              >
-                {{ $t('chart.backdrop_blur') }}
-              </el-checkbox>
-            </el-form-item>
             <el-form-item
-              style="padding-left: 20px"
               class="form-item margin-bottom-8"
               :class="'form-item-' + themes"
+              :label="t('visualization.query_position')"
             >
-              <el-input-number
-                style="width: 100%"
-                :effect="themes"
-                controls-position="right"
-                size="middle"
-                :min="0"
-                :max="30"
-                :disabled="!commonBackgroundPop.backdropFilterEnable"
-                v-model="commonBackgroundPop.backdropFilter"
-              />
-            </el-form-item>
-
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
+              <el-radio-group
+                v-model="element.freeze"
                 :effect="themes"
                 size="small"
-                v-model="commonBackgroundPop.backgroundColorSelect"
+                @change="onFreezeChange"
               >
-                {{ t('visualization.custom_bg_color') }}
-              </el-checkbox>
+                <el-radio :effect="themes" style="min-width: 80px" :label="true">{{
+                  t('visualization.to_top')
+                }}</el-radio>
+                <el-radio :effect="themes" style="min-width: 80px" :label="false">{{
+                  t('visualization.default')
+                }}</el-radio>
+              </el-radio-group>
             </el-form-item>
-            <el-row style="padding-left: 20px" :gutter="8">
+            <background-overall-common
+              :common-background-pop="commonBackgroundPop"
+              :themes="themes"
+              @onBackgroundChange="onBackgroundChangeV2"
+              component-position="component"
+            />
+          </el-form>
+        </el-collapse-item>
+        <el-collapse-item :effect="themes" name="addition" :title="t('v_query.query_condition')">
+          <el-form @keydown.stop.prevent.enter label-position="top" style="padding-bottom: 8px">
+            <el-row :gutter="8">
               <el-col :span="12">
                 <el-form-item
-                  :label="t('visualization.inner_padding')"
+                  :label="t('visualization.board')"
                   class="form-item w100"
                   :class="'form-item-' + themes"
                 >
-                  <el-input-number
-                    style="width: 100%"
-                    :disabled="!commonBackgroundPop.backgroundColorSelect"
+                  <el-color-picker
                     :effect="themes"
-                    controls-position="right"
-                    size="middle"
-                    :min="0"
-                    :max="100"
-                    v-model="commonBackgroundPop.innerPadding"
-                    @change="onBackgroundChange"
+                    :trigger-width="106"
+                    is-custom
+                    show-alpha
+                    v-model="chart.customStyle.component.borderColor"
+                    :predefine="predefineColors"
                   />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item
-                  :label="t('visualization.board_radio')"
+                  :label="t('chart.background')"
                   class="form-item w100"
                   :class="'form-item-' + themes"
                 >
-                  <el-input-number
-                    style="width: 100%"
+                  <el-color-picker
                     :effect="themes"
-                    :disabled="!commonBackgroundPop.backgroundColorSelect"
-                    controls-position="right"
-                    size="middle"
-                    :min="0"
-                    :max="100"
-                    v-model="commonBackgroundPop.borderRadius"
-                    @change="onBackgroundChange"
+                    :trigger-width="106"
+                    is-custom
+                    show-alpha
+                    v-model="chart.customStyle.component.bgColor"
+                    :predefine="predefineColors"
                   />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-form-item
-              style="padding-left: 20px"
-              class="form-item margin-bottom-8"
-              :class="'form-item-' + themes"
-            >
-              <el-radio-group
-                :disabled="!commonBackgroundPop.backgroundColorSelect"
-                :effect="themes"
-                v-model="commonBackgroundPop.backgroundType"
-              >
-                <el-radio
-                  key="innerImage"
-                  v-if="commonBackgroundPop.backgroundType === 'innerImage'"
-                  label="innerImage"
-                  :effect="themes"
-                >
-                  {{ t('visualization.background_color') }}
-                </el-radio>
-                <el-radio key="color" v-else label="color" :effect="themes">
-                  {{ t('visualization.background_color') }}
-                </el-radio>
-                <el-radio label="outerImage" :effect="themes">
-                  {{ t('visualization.background_img') }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item
-              v-if="commonBackgroundPop.backgroundType === 'outerImage'"
-              style="padding-left: 20px"
-              class="form-item margin-bottom-8"
-              :class="'form-item-' + themes"
-            >
-              <div
-                class="indented-item"
-                :class="{
-                  disabled: !commonBackgroundPop.backgroundColorSelect
-                }"
-              >
-                <div class="avatar-uploader-container" :class="`img-area_${themes}`">
-                  <el-upload
-                    action=""
-                    :effect="themes"
-                    accept=".jpeg,.jpg,.png,.gif,.svg"
-                    class="avatar-uploader"
-                    list-type="picture-card"
-                    :on-preview="handlePictureCardPreview"
-                    :on-remove="handleRemove"
-                    :before-upload="beforeUploadCheck"
-                    :http-request="upload"
-                    :file-list="state.fileList"
-                    :disabled="!commonBackgroundPop.backgroundColorSelect"
-                  >
-                    <el-icon><Plus /></el-icon>
-                  </el-upload>
-                  <el-row>
-                    <span
-                      style="margin-top: 2px"
-                      v-if="!state.commonBackground['outerImage']"
-                      class="image-hint"
-                      :class="`image-hint_${themes}`"
-                    >
-                      {{ t('visualization.pic_import_tips') }}
-                    </span>
-
-                    <el-button
-                      size="small"
-                      style="margin: 8px 0 0 -4px"
-                      v-if="state.commonBackground['outerImage']"
-                      text
-                      :disabled="!commonBackgroundPop.backgroundColorSelect"
-                      @click="goFile"
-                    >
-                      重新上传
-                    </el-button>
-                  </el-row>
-                </div>
-                <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
-              </div>
-            </el-form-item>
-            <el-form-item
-              v-else
+              :effect="themes"
               class="form-item"
-              style="padding-left: 20px"
+              :label="t('visualization.query_condition_space')"
               :class="'form-item-' + themes"
             >
-              <el-color-picker
+              <el-input-number
+                v-model="chart.customStyle.component.queryConditionSpacing"
+                :min="0"
                 :effect="themes"
-                :trigger-width="108"
-                is-custom
-                v-model="commonBackgroundPop.backgroundColor"
-                :disabled="!commonBackgroundPop.backgroundColorSelect"
-                :predefine="predefineColors"
-              />
-            </el-form-item>
-          </el-form>
-        </el-collapse-item>
-        <el-collapse-item :effect="themes" name="addition" :title="t('v_query.query_condition')">
-          <el-form @keydown.stop.prevent.enter label-position="top">
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                :effect="themes"
-                size="small"
-                v-model="chart.customStyle.component.borderShow"
-              >
-                {{ t('visualization.board') }}
-              </el-checkbox>
-            </el-form-item>
-            <el-form-item
-              class="form-item"
-              style="padding-left: 20px"
-              :class="'form-item-' + themes"
-            >
-              <el-color-picker
-                :effect="themes"
-                :trigger-width="108"
-                is-custom
-                v-model="chart.customStyle.component.borderColor"
-                :disabled="!chart.customStyle.component.borderShow"
-                :predefine="predefineColors"
+                controls-position="right"
               />
             </el-form-item>
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
@@ -515,6 +427,7 @@ initParams()
                   :effect="themes"
                   :trigger-width="56"
                   is-custom
+                  show-alpha
                   v-model="chart.customStyle.component.text"
                   :disabled="!chart.customStyle.component.placeholderShow"
                   @change="handleCurrentPlaceholderCustomChange"
@@ -525,6 +438,7 @@ initParams()
                   @change="handleCurrentPlaceholderCustomChange"
                   :min="10"
                   :max="20"
+                  :disabled="!chart.customStyle.component.placeholderShow"
                   style="margin-left: 8px"
                   step-strictly
                   :effect="themes"
@@ -534,6 +448,7 @@ initParams()
               <div style="display: flex; align-items: center; width: 100%; margin-top: 8px">
                 <el-select
                   v-model="currentPlaceholder"
+                  :disabled="!chart.customStyle.component.placeholderShow"
                   @change="handleCurrentPlaceholder"
                   :effect="themes"
                   style="width: 100%"
@@ -568,46 +483,11 @@ initParams()
             >
               <el-input-number
                 :effect="themes"
+                :min="100"
                 controls-position="right"
                 @change="handleCurrentPlaceholderChange"
                 :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
                 v-model.lazy="currentSearch.queryConditionWidth"
-              />
-            </el-form-item>
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                :effect="themes"
-                size="small"
-                v-model="chart.customStyle.component.bgColorShow"
-              >
-                {{ t('visualization.custom_query_bg_color') }}
-              </el-checkbox>
-            </el-form-item>
-            <el-form-item
-              class="form-item"
-              style="padding-left: 20px"
-              :class="'form-item-' + themes"
-            >
-              <el-color-picker
-                :effect="themes"
-                :trigger-width="108"
-                is-custom
-                v-model="chart.customStyle.component.bgColor"
-                :disabled="!chart.customStyle.component.bgColorShow"
-                :predefine="predefineColors"
-              />
-            </el-form-item>
-            <el-form-item
-              :effect="themes"
-              class="form-item"
-              :label="t('visualization.query_condition_space')"
-              :class="'form-item-' + themes"
-            >
-              <el-input-number
-                v-model="chart.customStyle.component.queryConditionSpacing"
-                :min="0"
-                :effect="themes"
-                controls-position="right"
               />
             </el-form-item>
           </el-form>
@@ -622,6 +502,7 @@ initParams()
             :class="!chart.customStyle.component.labelShow && 'is-disabled'"
             :disabled="!chart.customStyle.component.labelShow"
             label-position="top"
+            style="padding-bottom: 8px"
           >
             <el-form-item
               :effect="themes"
@@ -646,6 +527,7 @@ initParams()
               <el-color-picker
                 :effect="themes"
                 is-custom
+                show-alpha
                 v-model="chart.customStyle.component.labelColor"
                 :predefine="predefineColors"
               /><el-tooltip
@@ -724,7 +606,7 @@ initParams()
           </el-form>
         </collapse-switch-item>
         <el-collapse-item :effect="themes" name="button" :title="t('commons.button')">
-          <el-form @keydown.stop.prevent.enter label-position="top">
+          <el-form @keydown.stop.prevent.enter label-position="top" style="padding-bottom: 8px">
             <el-form-item
               :effect="themes"
               class="form-item"
@@ -744,11 +626,12 @@ initParams()
                     </el-icon>
                   </el-tooltip>
                 </el-checkbox>
-
-                <el-checkbox :effect="themes" size="small" label="clear">
+                <br />
+                <el-checkbox style="margin-top: 8px" :effect="themes" size="small" label="clear">
                   {{ t('commons.clear') }}
                 </el-checkbox>
-                <el-checkbox :effect="themes" size="small" label="reset">
+                <br />
+                <el-checkbox style="margin-top: 8px" :effect="themes" size="small" label="reset">
                   {{ t('commons.adv_search.reset') }}
                 </el-checkbox>
               </el-checkbox-group>
@@ -762,6 +645,7 @@ initParams()
                 :effect="themes"
                 :trigger-width="108"
                 is-custom
+                show-alpha
                 v-model="chart.customStyle.component.btnColor"
                 :predefine="predefineColors"
               />
@@ -774,6 +658,7 @@ initParams()
               <el-color-picker
                 :effect="themes"
                 is-custom
+                show-alpha
                 v-model="chart.customStyle.component.labelColorBtn"
                 :predefine="predefineColors"
               /><el-tooltip

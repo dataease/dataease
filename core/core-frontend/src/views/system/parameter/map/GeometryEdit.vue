@@ -69,7 +69,7 @@ const rule = reactive<FormRules>({
     {
       required: true,
       message: t('common.require'),
-      trigger: 'blur'
+      trigger: 'change'
     }
   ],
   code: [
@@ -146,7 +146,7 @@ const reset = () => {
 }
 
 const showLoading = () => {
-  loadingInstance.value = ElLoading.service({ target: '.basic-info-drawer' })
+  loadingInstance.value = ElLoading.service({ target: '.geometry-info-drawer' })
 }
 const closeLoading = () => {
   loadingInstance.value?.close()
@@ -191,7 +191,7 @@ defineExpose({
   <el-drawer
     :title="t('system.geographic_information')"
     v-model="dialogVisible"
-    custom-class="basic-info-drawer"
+    custom-class="geometry-info-drawer"
     size="600px"
     direction="rtl"
   >
@@ -290,7 +290,28 @@ defineExpose({
     </template>
   </el-drawer>
 </template>
-
+<style lang="less">
+.geometry-info-drawer {
+  .ed-drawer__footer {
+    height: 64px !important;
+    padding: 16px 24px !important;
+    .dialog-footer {
+      height: 32px;
+      line-height: 32px;
+    }
+  }
+  .ed-form-item__label {
+    line-height: 22px !important;
+    height: 22px !important;
+  }
+  .ed-form-item {
+    margin-bottom: 16px;
+  }
+  .is-error {
+    margin-bottom: 40px !important;
+  }
+}
+</style>
 <style scoped lang="less">
 .map-tree-selector {
   width: 100%;

@@ -47,6 +47,8 @@ public class ReportInfoVO implements Serializable {
 
     private List<String> larkGroupList;
 
+    private List<String> larksuiteGroupList;
+
     private Integer extWaitTime;
 
     private Integer rateType;

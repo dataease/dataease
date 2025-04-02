@@ -3,6 +3,7 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import referenceTable from '@/assets/svg/reference-table.svg'
+import icon_organization_outlined from '@/assets/svg/icon_organization_outlined.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import icon_sql_outlined_1 from '@/assets/svg/icon_sql_outlined_1.svg'
 import icon_warning_colorful from '@/assets/svg/icon_warning_colorful.svg'
@@ -13,6 +14,13 @@ import icon_switch_outlined from '@/assets/svg/icon_switch_outlined.svg'
 import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import dayjs from 'dayjs'
+import {
+  iconFieldCalculatedMap,
+  iconFieldCalculatedQMap
+} from '@/components/icon-group/field-calculated-list'
+import { enumValueDs } from '@/api/dataset'
 import {
   ref,
   toRaw,
@@ -391,7 +399,11 @@ const handleFieldMore = (ele, type) => {
   }
   switch (type) {
     case 'copy':
-      copyField(ele)
+      if (ele.extField === 3) {
+        copyGroupField(ele)
+      } else {
+        copyField(ele)
+      }
       break
     case 'delete':
       deleteField(ele)
@@ -400,7 +412,11 @@ const handleFieldMore = (ele, type) => {
       dqTrans(ele.id)
       break
     case 'editor':
-      editField(ele)
+      if (ele.extField === 3) {
+        initGroupField(ele)
+      } else {
+        editField(ele)
+      }
       break
     case 'rename':
       renameField(ele)
@@ -445,6 +461,16 @@ const copyField = item => {
   allfields.value.splice(index + 1, 0, param)
 }
 
+const selectable = row => ![3].includes(row.extField)
+
+const copyGroupField = item => {
+  const param = cloneDeep(item)
+  param.id = guid()
+  param.name = getFieldName(dimensions.value.concat(quota.value), item.name)
+  const index = allfields.value.findIndex(ele => ele.id === item.id)
+  allfields.value.splice(index + 1, 0, param)
+}
+
 const delFieldById = arr => {
   const delId = [...arr]
   while (delId.length) {
@@ -459,7 +485,7 @@ const delFieldById = arr => {
     }, [])
     const allfieldsId = allfields.value.map(ele => ele.id).concat(paramsId)
     allfields.value = allfields.value.filter(ele => {
-      if (ele.extField !== 2) return true
+      if (![2, 3].includes(ele.extField)) return true
       const idMap = ele.originName.match(/\[(.+?)\]/g)
       if (!idMap) return true
       const result = idMap.every(itm => {
@@ -471,6 +497,8 @@ const delFieldById = arr => {
       return false
     })
   }
+
+  delGroupIds()
 }
 
 const delFieldByIdFake = (arr, fakeAllfields) => {
@@ -482,7 +510,7 @@ const delFieldByIdFake = (arr, fakeAllfields) => {
     fakeAllfields = fakeAllfields.filter(ele => ele.id !== targetId)
     const allfieldsId = fakeAllfields.map(ele => ele.id)
     fakeAllfields = fakeAllfields.filter(ele => {
-      if (ele.extField !== 2) return true
+      if (![2, 3].includes(ele.extField)) return true
       const idMap = ele.originName.match(/\[(.+?)\]/g)
       if (
         !idMap ||
@@ -506,7 +534,7 @@ const delFieldByIdFake = (arr, fakeAllfields) => {
 const deleteField = item => {
   let tip = ''
   const idArr = allfields.value.reduce((pre, next) => {
-    if (next.extField !== 2) return pre
+    if (![2, 3].includes(next.extField)) return pre
     let idMap = next.originName.match(/\[(.+?)\]/g) || []
     idMap = idMap.filter(itx => !next.params?.map(element => element.id).includes(itx.slice(1, -1)))
     const result = idMap.map(itm => {
@@ -834,8 +862,10 @@ const dfsFields = (arr, list) => {
 const getDelIdArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
   return [
-    ...oldArr.filter(ele => ele.extField !== 2).filter(ele => !idMapNew.includes(ele.id)),
-    ...oldArr.filter(ele => ele.extField === 2)
+    ...oldArr
+      .filter(ele => ![2, 3].includes(ele.extField))
+      .filter(ele => !idMapNew.includes(ele.id)),
+    ...oldArr.filter(ele => [2, 3].includes(ele.extField))
   ]
 }
 
@@ -844,7 +874,7 @@ const diffArr = (newArr, oldArr) => {
   const idMapOld = oldArr.map(ele => ele.id)
   const arr = newArr.filter(ele => !idMapOld.includes(ele.id))
   return cloneDeep([
-    ...oldArr.filter(ele => ele.extField === 2),
+    ...oldArr.filter(ele => [2, 3].includes(ele.extField)),
     ...arr,
     ...oldArr.filter(ele => idMapNew.includes(ele.id))
   ])
@@ -865,6 +895,18 @@ const setFieldAll = () => {
   delFieldById(delIdArr)
   tabChange('manage')
   fieldUnion.value?.clearState()
+}
+
+const delGroupIds = () => {
+  const delIds = []
+  const fields = allfields.value.map(ele => ele.id)
+  const groupIds = allfields.value.filter(ele => ele.extField === 3)
+  groupIds.forEach(ele => {
+    if (!fields.includes(ele.originName)) {
+      delIds.push(ele.id)
+    }
+  })
+  allfields.value = allfields.value.filter(ele => !delIds.includes(ele.id))
 }
 
 const dfsNode = (arr, id) => {
@@ -934,7 +976,7 @@ const confirmEditUnion = () => {
       cancelButtonText: t('common.cancel'),
       showCancelButton: true,
       tip: `${t('data_set.field')}: ${allfields.value
-        .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
+        .filter(ele => [...new Set(idArr)].includes(ele.id) && ![2, 3].includes(ele.extField))
         .map(ele => ele.name)
         .join(',')}, ${t('data_set.confirm_the_deletion')}`,
       confirmButtonType: 'danger',
@@ -965,8 +1007,210 @@ const updateAllfields = () => {
   setFieldAll()
 }
 
+const equalMin = [
+  {
+    value: 'lt',
+    label: '<'
+  },
+  {
+    value: 'le',
+    label: '<='
+  }
+]
+
+const validatePass = (_: any, value: any, callback: any) => {
+  if (!value || !value.length) {
+    callback(new Error(t('chart.value_can_not_empty')))
+  } else {
+    callback()
+  }
+}
+const refsForm = ref([])
+
+const fieldGroupRules = {
+  name: [{ required: true, message: t('dataset.input_edit_name'), trigger: 'blur' }]
+}
+
+const defaultObj = {
+  name: '',
+  id: +new Date(),
+  datasourceId: '',
+  datasetTableId: '',
+  datasetGroupId: '',
+  originName: '',
+  otherGroup: '',
+  groupType: 'd',
+  deType: 0,
+  type: 'ANY',
+  deExtractType: 0,
+  extField: 3,
+  deTypeOrigin: null,
+  groupList: [
+    {
+      name: '',
+      text: [],
+      time: '',
+      minTerm: 'lt',
+      maxTerm: 'lt',
+      min: null,
+      max: null
+    }
+  ]
+}
+const currentGroupField = reactive(cloneDeep(defaultObj))
+const ruleGroupFieldRef = ref()
+const editGroupField = ref(false)
+const enumValueLoading = ref(false)
+const groupFields = shallowRef([])
+const enumValue = shallowRef([])
+const addGroupField = () => {
+  groupFields.value = allfields.value.filter(ele => ![2, 3].includes(ele.extField))
+  Object.assign(currentGroupField, cloneDeep(defaultObj))
+  currentGroupField.id = guid()
+  titleForGroup.value = t('dataset.create_grouping_field')
+  editGroupField.value = true
+}
+const handleFieldschange = val => {
+  const field = groupFields.value.find(ele => ele.id === val)
+  const { deType } = field
+  if (deType !== currentGroupField.deExtractType || deType === 0) {
+    refsForm.value = []
+    currentGroupField.groupList = [
+      {
+        name: '',
+        text: [],
+        time: '',
+        minTerm: 'lt',
+        maxTerm: 'lt',
+        min: null,
+        max: null
+      }
+    ]
+  }
+  currentGroupField.deTypeOrigin = deType
+  if (deType !== 0) return
+  enumValueLoading.value = true
+  const arr = []
+  const allfieldsCopy = cloneDeep(unref(allfields))
+  dfsNodeList(arr, datasetDrag.value.getNodeList())
+  enumValueDs({ dataset: { union: arr, allFields: allfieldsCopy }, field })
+    .then(res => {
+      enumValue.value = res || []
+    })
+    .finally(() => {
+      enumValueLoading.value = false
+    })
+}
+const closeGroupField = () => {
+  editGroupField.value = false
+}
+
+const disabledEnumArr = computed(() => {
+  return currentGroupField.groupList?.map(ele => ele.text).flat()
+})
+
+const disabledEnum = (item, arr) => {
+  return disabledEnumArr.value.includes(item) && !arr.includes(item)
+}
+
+const titleForGroup = ref(t('dataset.create_grouping_field'))
+
+const initGroupField = val => {
+  groupFields.value = allfields.value.filter(ele => ![2, 3].includes(ele.extField))
+  Object.assign(currentGroupField, val)
+  const groupList = []
+  val.groupList.forEach(ele => {
+    const { name, text = [], startTime, endTime, min, max, minTerm, maxTerm } = ele
+    const obj = {
+      name,
+      text,
+      min,
+      max,
+      minTerm,
+      maxTerm,
+      time: []
+    }
+    if (startTime && endTime) {
+      obj.time = [startTime, endTime]
+    }
+    groupList.push(obj)
+  })
+
+  handleFieldschange(currentGroupField.originName)
+
+  currentGroupField.groupList = groupList
+  titleForGroup.value = t('dataset.editing_grouping_field')
+  editGroupField.value = true
+}
+
+const confirmGroupField = () => {
+  ruleGroupFieldRef.value.validate(val => {
+    let count = 0
+    let flag = false
+    let time
+    refsForm.value.forEach(ele => {
+      ele?.validate(val => {
+        if (val) {
+          count++
+        }
+      })
+    })
+    time = setTimeout(() => {
+      clearTimeout(time)
+      flag = true
+      time = null
+      if (val && count === currentGroupField.groupList.length) {
+        const groupList = []
+        currentGroupField.groupList.forEach(ele => {
+          const { name, text = [], time, min, max, minTerm, maxTerm } = ele
+          const obj = {
+            name,
+            text,
+            min,
+            max,
+            minTerm,
+            maxTerm,
+            startTime: '',
+            endTime: ''
+          }
+          if (currentGroupField.deTypeOrigin === 1) {
+            const [startTime, endTime] = time
+            obj.startTime = dayjs(startTime).format('YYYY-MM-DD HH:mm:ss')
+            obj.endTime = dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
+          }
+          groupList.push(obj)
+        })
+        const index = allfields.value.findIndex(ele => ele.id === currentGroupField.id)
+        if (index !== -1) {
+          allfields.value.splice(index, 1, { ...currentGroupField, groupList })
+        } else {
+          allfields.value.push({ ...currentGroupField, groupList })
+        }
+        editGroupField.value = false
+      }
+    }, 1000)
+  })
+}
+
 const notConfirmEditUnion = () => {
   datasetDrag.value.notConfirm()
+}
+
+const addGroupFields = () => {
+  currentGroupField.groupList.push({
+    name: '',
+    text: [],
+    time: '',
+    minTerm: 'lt',
+    maxTerm: 'lt',
+    min: null,
+    max: null
+  })
+}
+
+const removeGroupFields = index => {
+  currentGroupField.groupList.splice(index, 1)
+  refsForm.value.splice(index, 1)
 }
 
 const dragstart = (e: DragEvent, ele) => {
@@ -978,6 +1222,41 @@ const dragstart = (e: DragEvent, ele) => {
 const setActiveName = (data: Table) => {
   if (data.unableCheck) return
   activeName.value = data.tableName
+}
+
+const verify = () => {
+  if (datasetPreviewLoading.value) return
+  calcEdit.value.formField.validate(val => {
+    if (val) {
+      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.fieldForm.originName.trim()) {
+        ElMessage.error(t('data_set.cannot_be_empty_de_'))
+        return
+      }
+      const obj = cloneDeep(calcEdit.value.fieldForm)
+      const { deType, dateFormat, deExtractType } = obj
+      obj.dateFormat = deType === 1 ? dateFormat : ''
+      obj.dateFormatType = deType === 1 ? dateFormat : ''
+      obj.deTypeArr = deType === 1 && deExtractType === 0 ? [deType, dateFormat] : [deType]
+      const result = allfields.value.findIndex(ele => obj.id === ele.id)
+      const allfieldsCopy = cloneDeep(unref(allfields))
+      if (result !== -1) {
+        allfieldsCopy.splice(result, 1, obj)
+      } else {
+        allfieldsCopy.push(obj)
+      }
+      const arr = []
+      dfsNodeList(arr, datasetDrag.value.getNodeList())
+      datasetPreviewLoading.value = true
+      getPreviewData({ union: arr, allFields: allfieldsCopy })
+        .then(() => {
+          ElMessage.success(t('data_set.validation_succeeded'))
+        })
+        .finally(() => {
+          datasetPreviewLoading.value = false
+        })
+    }
+  })
 }
 
 const isDragging = ref(false)
@@ -1277,6 +1556,7 @@ const cascaderChangeArr = val => {
   })
   recoverSelection()
 }
+
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name?.toLowerCase().includes(value.toLowerCase())
@@ -1372,7 +1652,7 @@ const treeProps = {
   children: 'children',
   label: 'name',
   disabled: data => {
-    return (!data.children?.length && !data.leaf) || data.extraFlag < 0
+    return (!data.children?.length && !data.leaf) || (data.extraFlag < 0 && data.type !== 'API')
   }
 }
 
@@ -1393,6 +1673,14 @@ const getDsIcon = data => {
 const getDsIconName = data => {
   if (!data.leaf) return dvFolder
   return iconDatasourceMap[data.type]
+}
+
+const getIconNameCalc = (deType, extField, dimension = false) => {
+  if (extField === 2) {
+    const iconFieldCalculated = dimension ? iconFieldCalculatedMap : iconFieldCalculatedQMap
+    return iconFieldCalculated[deType]
+  }
+  return iconFieldMap[fieldType[deType]]
 }
 </script>
 
@@ -1602,6 +1890,14 @@ const getDsIconName = data => {
                 </template>
                 {{ t('dataset.add_calc_field') }}
               </el-button>
+              <el-button :disabled="!allfields.length" @click="addGroupField" secondary>
+                <template #icon>
+                  <el-icon>
+                    <Icon><icon_organization_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                </template>
+                {{ t('dataset.create_grouping_field') }}
+              </el-button>
               <el-button
                 style="min-width: 70px"
                 :disabled="!allfields.length"
@@ -1643,7 +1939,7 @@ const getDsIconName = data => {
                           ><component
                             class="svg-icon"
                             :class="`field-icon-${fieldType[[2, 3].includes(data.deType) ? 2 : 0]}`"
-                            :is="iconFieldMap[fieldType[data.deType]]"
+                            :is="getIconNameCalc(data.deType, data.extField)"
                           ></component
                         ></Icon>
                       </el-icon>
@@ -1677,7 +1973,7 @@ const getDsIconName = data => {
                           ><component
                             class="svg-icon"
                             :class="`field-icon-${fieldType[[2, 3].includes(data.deType) ? 2 : 0]}`"
-                            :is="iconFieldMap[fieldType[data.deType]]"
+                            :is="getIconNameCalc(data.deType, data.extField, true)"
                           ></component
                         ></Icon>
                       </el-icon>
@@ -1754,7 +2050,7 @@ const getDsIconName = data => {
                     :height="quotaTableHeight"
                     style="width: 100%"
                   >
-                    <el-table-column type="selection" width="40" />
+                    <el-table-column :selectable="selectable" type="selection" width="40" />
                     <el-table-column prop="name" :label="t('dataset.field_name')" width="264">
                       <template #default="scope">
                         <div class="column-style">
@@ -1773,8 +2069,13 @@ const getDsIconName = data => {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span v-if="scope.row.extField === 0">{{ scope.row.originName }}</span>
-                          <span style="color: #8d9199" v-else>{{ t('dataset.calc_field') }}</span>
+                          <span style="color: #8d9199" v-if="scope.row.extField === 2">{{
+                            t('dataset.calc_field')
+                          }}</span>
+                          <span style="color: #8d9199" v-else-if="scope.row.extField === 3">{{
+                            t('dataset.grouping_field')
+                          }}</span>
+                          <span v-else>{{ scope.row.originName }}</span>
                         </div>
                       </template>
                     </el-table-column>
@@ -1873,7 +2174,11 @@ const getDsIconName = data => {
                           placement="top"
                         >
                           <template #default>
-                            <el-button text @click="handleFieldMore(scope.row, 'translate')">
+                            <el-button
+                              v-if="![3].includes(scope.row.extField)"
+                              text
+                              @click="handleFieldMore(scope.row, 'translate')"
+                            >
                               <template #icon>
                                 <Icon name="icon_switch_outlined"
                                   ><icon_switch_outlined class="svg-icon"
@@ -1914,7 +2219,7 @@ const getDsIconName = data => {
                         <el-tooltip effect="dark" :content="t('dataset.edit')" placement="top">
                           <template #default>
                             <el-button
-                              v-if="scope.row.extField === 2"
+                              v-if="[2, 3].includes(scope.row.extField)"
                               text
                               @click="handleFieldMore(scope.row, 'editor')"
                             >
@@ -2131,8 +2436,9 @@ const getDsIconName = data => {
                   t('commons.clear')
                 }}</el-button>
               </div>
-              <div class="cascader-batch" v-if="showCascaderBatch">
+              <div class="cascader-batch">
                 <el-cascader
+                  :disabled="!showCascaderBatch"
                   :class="!!deTypeArr.length && 'select-type'"
                   v-model="deTypeArr"
                   @change="cascaderChangeArr"
@@ -2165,6 +2471,16 @@ const getDsIconName = data => {
                     ></Icon>
                   </el-icon>
                 </span>
+                <el-tooltip class="item" effect="dark" placement="top">
+                  <template #content>
+                    <div>{{ t('dataset.field_diff') }}</div>
+                  </template>
+                  <el-icon size="16px" style="margin-left: 6px" v-show="!showCascaderBatch">
+                    <Icon name="icon_info_outlined"
+                      ><icon_info_outlined class="svg-icon tip-icon"
+                    /></Icon>
+                  </el-icon>
+                </el-tooltip>
               </div>
               <el-button
                 @click="dqTransArr('q')"
@@ -2216,6 +2532,7 @@ const getDsIconName = data => {
     <calc-field-edit ref="calcEdit" :crossDs="crossDatasources" />
     <template #footer>
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
+      <el-button secondary @click="verify">{{ t('datasource.validate') }} </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
@@ -2258,6 +2575,214 @@ const getDsIconName = data => {
       <el-button type="primary" @click="confirmNormalField()"
         >{{ t('dataset.confirm') }}
       </el-button>
+    </template>
+  </el-dialog>
+  <el-dialog
+    class="create-dialog group-fields_dialog"
+    :title="titleForGroup"
+    v-model="editGroupField"
+    width="1000px"
+  >
+    <el-form
+      ref="ruleGroupFieldRef"
+      :rules="fieldGroupRules"
+      :model="currentGroupField"
+      require-asterisk-position="right"
+      label-position="top"
+      label-width="120px"
+      v-loading="enumValueLoading"
+    >
+      <el-row :gutter="24">
+        <el-col :span="12">
+          <el-form-item prop="name" :label="t('dataset.field_name')">
+            <el-input
+              :placeholder="t('dataset.input_edit_name')"
+              v-model="currentGroupField.name"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item prop="originName" :label="t('dataset.grouping_field')">
+            <el-select
+              @change="handleFieldschange"
+              v-model="currentGroupField.originName"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in groupFields"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-form-item style="margin-top: 16px">
+        <template v-slot:label>
+          <div class="grouping_settings_label">
+            {{ t('dataset.grouping_settings') }}
+          </div>
+        </template>
+        <div style="width: 100%">
+          <el-scrollbar max-height="393px"
+            ><div
+              class="group-fields_item"
+              v-for="(domain, index) in currentGroupField.groupList"
+              :key="index"
+            >
+              <el-form
+                :ref="el => (refsForm[index] = el)"
+                :model="domain"
+                inline
+                :key="index"
+                label-width="auto"
+                class="form-dynamic"
+              >
+                <el-form-item
+                  :key="index + 'name'"
+                  prop="name"
+                  :rules="{
+                    required: true,
+                    message: t('chart.value_can_not_empty'),
+                    trigger: 'blur'
+                  }"
+                  ><el-input
+                    style="width: 278px"
+                    v-model="domain.name"
+                    :placeholder="t('common.inputText')"
+                /></el-form-item>
+                <el-form-item
+                  :key="index + 'text'"
+                  v-if="[0, null].includes(currentGroupField.deTypeOrigin)"
+                  prop="text"
+                  style="width: 100%; margin-left: 24px"
+                  :rules="{
+                    validator: validatePass,
+                    required: true,
+                    trigger: 'change'
+                  }"
+                  ><el-select
+                    style="width: 100%"
+                    multiple
+                    collapse-tags
+                    filterable
+                    collapse-tags-tooltip
+                    :max-collapse-tags="2"
+                    v-model="domain.text"
+                  >
+                    <el-option
+                      v-for="item in enumValue"
+                      :key="item"
+                      :label="item"
+                      :disabled="disabledEnum(item, domain.text)"
+                      :value="item"
+                    /> </el-select
+                ></el-form-item>
+
+                <div
+                  class="group-fields_num"
+                  v-else-if="[2, 3, 4].includes(currentGroupField.deTypeOrigin)"
+                >
+                  <el-form-item
+                    :key="index + 'min'"
+                    prop="min"
+                    :rules="{
+                      required: true,
+                      message: t('chart.value_can_not_empty'),
+                      trigger: 'blur'
+                    }"
+                    ><el-input-number
+                      :placeholder="t('dataset.please_enter_number')"
+                      v-model="domain.min"
+                      controls-position="right"
+                  /></el-form-item>
+                  <el-form-item :key="index + 'minTerm'"
+                    ><el-select v-model="domain.minTerm">
+                      <el-option
+                        v-for="item in equalMin"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      /> </el-select
+                  ></el-form-item>
+                  <div class="name">
+                    {{ t('dataset.field_value') }}
+                  </div>
+                  <el-form-item :key="index + 'maxTerm'"
+                    ><el-select v-model="domain.maxTerm">
+                      <el-option
+                        v-for="item in equalMin"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      /> </el-select
+                  ></el-form-item>
+                  <el-form-item
+                    :key="index + 'max'"
+                    prop="max"
+                    :rules="{
+                      required: true,
+                      message: t('chart.value_can_not_empty'),
+                      trigger: 'blur'
+                    }"
+                    ><el-input-number
+                      :placeholder="t('dataset.please_enter_number')"
+                      v-model="domain.max"
+                      :validate-even="false"
+                      controls-position="right"
+                  /></el-form-item>
+                </div>
+                <el-form-item
+                  :key="index + 'time'"
+                  prop="time"
+                  class="group-fields_num"
+                  v-else-if="[1].includes(currentGroupField.deTypeOrigin)"
+                  :rules="{
+                    required: true,
+                    validator: validatePass,
+                    trigger: 'change'
+                  }"
+                  ><el-date-picker
+                    :end-placeholder="t('commons.date.end_date')"
+                    :start-placeholder="t('commons.date.start_date')"
+                    v-model="domain.time"
+                    type="daterange" /></el-form-item
+              ></el-form>
+
+              <el-button
+                class="variable_del"
+                text
+                v-if="currentGroupField.groupList.length !== 1"
+                @click="removeGroupFields(index)"
+              >
+                <template #icon>
+                  <Icon><icon_deleteTrash_outlined class="svg-icon" /></Icon>
+                </template>
+              </el-button></div
+          ></el-scrollbar>
+        </div>
+      </el-form-item>
+      <el-button style="margin-top: -20px" @click="addGroupFields" text>
+        <template #icon>
+          <icon><icon_add_outlined class="svg-icon" /></icon>
+        </template>
+        {{ t('auth.add_condition') }}
+      </el-button>
+      <div class="line"></div>
+      <div class="group-fields_item" style="align-items: center">
+        <el-input
+          :placeholder="t('common.inputText')"
+          style="width: 278px; margin-right: 24px"
+          v-model="currentGroupField.otherGroup"
+        />
+        {{ t('dataset.ungrouped_value') }}
+      </div>
+    </el-form>
+    <template #footer>
+      <el-button secondary @click="closeGroupField">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmGroupField">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
   <XpackComponent
@@ -2784,6 +3309,12 @@ const getDsIconName = data => {
     position: relative;
     margin-left: 30%;
     width: 176px;
+    display: flex;
+    align-items: center;
+  }
+
+  .tip-icon {
+    color: #f54a45;
   }
 }
 
@@ -2855,6 +3386,80 @@ const getDsIconName = data => {
   .ed-dialog__footer {
     padding-top: 24px;
     border: 1px solid rgba(31, 35, 41, 0.15);
+  }
+}
+.group-fields_dialog {
+  .group-fields_item {
+    padding: 16px;
+    background: #f5f6f7;
+    border-radius: 4px;
+    display: flex;
+
+    & + .group-fields_item {
+      margin-top: 8px;
+    }
+
+    .form-dynamic {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      .ed-form-item {
+        margin: 0;
+      }
+      &:has(.is-error) {
+        .ed-form-item {
+          margin-bottom: 24px;
+        }
+      }
+    }
+
+    .variable_del {
+      color: #646a73;
+      margin-left: 4px;
+      margin-right: -4px;
+
+      .ed-icon {
+        font-size: 16px;
+      }
+
+      &:hover {
+        background: rgba(31, 35, 41, 0.1) !important;
+      }
+      &:focus {
+        background: rgba(31, 35, 41, 0.1) !important;
+      }
+      &:active {
+        background: rgba(31, 35, 41, 0.2) !important;
+      }
+    }
+
+    .group-fields_num {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      margin-left: 24px;
+      .name {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .line {
+    background: #1f232926;
+    height: 1px;
+    width: 100%;
+    margin-bottom: 16px;
+    margin-top: 8px;
+  }
+
+  .grouping_settings_label:after {
+    content: '*';
+    color: var(--ed-color-danger);
+    margin-left: 2px;
+    font-family: var(--de-custom_font, 'PingFang');
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
   }
 }
 </style>

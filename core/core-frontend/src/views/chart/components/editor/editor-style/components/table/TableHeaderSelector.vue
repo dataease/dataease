@@ -4,16 +4,20 @@ import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
 import icon_leftAlignment_outlined from '@/assets/svg/icon_left-alignment_outlined.svg'
 import icon_centerAlignment_outlined from '@/assets/svg/icon_center-alignment_outlined.svg'
 import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 import { ElDivider, ElSpace } from 'element-plus-secondary'
-import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep, isEqual } from 'lodash-es'
 import { convertToAlphaColor, isAlphaColor } from '@/views/chart/components/js/util'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import TableHeaderGroupConfig from './TableHeaderGroupConfig.vue'
+import { getLeafNodes } from '@/views/chart/components/js/panel/common/common_table'
+
 const dvMainStore = dvMainStoreWithOut()
-const { mobileInPc } = storeToRefs(dvMainStore)
+const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const props = defineProps({
@@ -58,7 +62,8 @@ const fontSizeList = computed(() => {
 })
 
 const state = reactive({
-  tableHeaderForm: {} as ChartTableHeaderAttr
+  tableHeaderForm: {} as ChartTableHeaderAttr,
+  showTableHeaderGroupConfig: false
 })
 
 const emit = defineEmits(['onTableHeaderChange'])
@@ -67,9 +72,62 @@ const changeTableHeader = prop => {
   emit('onTableHeaderChange', state.tableHeaderForm, prop)
 }
 
+const changeHeaderGroupConfig = (headerGroupConfig: ChartTableHeaderAttr['headerGroupConfig']) => {
+  state.tableHeaderForm.headerGroupConfig = headerGroupConfig
+  state.showTableHeaderGroupConfig = false
+  changeTableHeader('headerGroupConfig')
+}
+
+const enableGroupConfig = computed(() => {
+  return (
+    !batchOptStatus.value &&
+    showProperty('headerGroup') &&
+    state.tableHeaderForm.headerGroup &&
+    state.tableHeaderForm.showTableHeader !== false
+  )
+})
+
+const groupConfigValid = computed(() => {
+  const columns = props.chart?.customAttr?.tableHeader?.headerGroupConfig?.columns
+  if (!columns?.length) {
+    return false
+  }
+  const noGroup = columns.every(item => !item.children?.length)
+  if (noGroup) {
+    return false
+  }
+  const xAxis = props.chart.xAxis
+  const showColumns = []
+  xAxis?.forEach(axis => {
+    axis.hide !== true && showColumns.push({ key: axis.dataeaseName })
+  })
+  if (!showColumns.length) {
+    return false
+  }
+  const allAxis = showColumns.map(item => item.key)
+  const leafNodes = getLeafNodes(columns as Array<ColumnNode>)
+  const leafKeys = leafNodes.map(item => item.key)
+  return isEqual(allAxis, leafKeys)
+})
 const init = () => {
   const tableHeader = props.chart?.customAttr?.tableHeader
   if (tableHeader) {
+    // 存量透视表处理
+    if (!tableHeader.tableHeaderColBgColor) {
+      tableHeader.tableHeaderColBgColor = tableHeader.tableHeaderBgColor
+      tableHeader.tableHeaderColFontColor = tableHeader.tableHeaderFontColor
+      tableHeader.tableTitleColFontSize = tableHeader.tableTitleFontSize
+      tableHeader.tableHeaderColAlign = tableHeader.tableHeaderAlign
+      tableHeader.isColBolder = tableHeader.isBolder
+      tableHeader.isColItalic = tableHeader.isItalic
+
+      tableHeader.tableHeaderCornerBgColor = tableHeader.tableHeaderBgColor
+      tableHeader.tableHeaderCornerFontColor = tableHeader.tableHeaderFontColor
+      tableHeader.tableTitleCornerFontSize = tableHeader.tableTitleFontSize
+      tableHeader.tableHeaderCornerAlign = tableHeader.tableHeaderAlign
+      tableHeader.isCornerBolder = tableHeader.isBolder
+      tableHeader.isCornerItalic = tableHeader.isItalic
+    }
     state.tableHeaderForm = defaultsDeep(cloneDeep(tableHeader), cloneDeep(DEFAULT_TABLE_HEADER))
     if (!isAlphaColor(state.tableHeaderForm.tableHeaderBgColor)) {
       const alpha = props.chart.customAttr.basicStyle.alpha
@@ -100,7 +158,7 @@ onMounted(() => {
       "
       class="form-item"
       :class="'form-item-' + themes"
-      v-if="showProperty('tableHeaderBgColor')"
+      v-if="showProperty('tableHeaderBgColor') && state.tableHeaderForm.tableHeaderBgColor"
     >
       <el-color-picker
         :effect="themes"
@@ -707,7 +765,64 @@ onMounted(() => {
         {{ t('chart.table_header_show_vertical_border') }}
       </el-checkbox>
     </el-form-item>
+    <el-form-item
+      v-if="!batchOptStatus && showProperty('headerGroup')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      :disabled="!state.tableHeaderForm.showTableHeader"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableHeaderForm.headerGroup"
+        @change="changeTableHeader('headerGroup')"
+      >
+        {{ t('chart.table_header_group') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item v-if="enableGroupConfig" class="form-item" :class="'form-item-' + themes">
+      <div class="header-group-config">
+        <span>{{ t('chart.table_header_group_config') }}</span>
+        <div class="group-icon">
+          <span v-if="groupConfigValid">
+            {{ t('visualization.already_setting') }}
+          </span>
+          <div
+            class="icon-btn"
+            :class="{
+              dark: themes === 'dark'
+            }"
+          >
+            <el-icon @click="state.showTableHeaderGroupConfig = true">
+              <Icon>
+                <icon_edit_outlined class="svg-icon" />
+              </Icon>
+            </el-icon>
+          </div>
+        </div>
+      </div>
+    </el-form-item>
   </el-form>
+  <el-dialog
+    v-model="state.showTableHeaderGroupConfig"
+    :effect="themes"
+    destroy-on-close
+    append-to-body
+    :show-close="false"
+    :class="themes === 'dark' ? 'table-header-group-config-dialog' : ''"
+  >
+    <template #header>
+      {{ t('chart.table_header_group_config') }}
+      <span style="font-size: 12px">({{ t('chart.table_header_group_config_tip') }})</span>
+    </template>
+    <table-header-group-config
+      :chart="chart"
+      :themes="themes"
+      :tableHeaderForm="state.tableHeaderForm"
+      @onConfigChange="changeHeaderGroupConfig"
+      @onCancelConfig="() => (state.showTableHeaderGroupConfig = false)"
+    />
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -786,6 +901,30 @@ onMounted(() => {
 
   &.divider-dark {
     border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+.header-group-config {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 22px;
+  font-size: 12px;
+  .group-icon {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+  }
+}
+</style>
+<style lang="less">
+.table-header-group-config-dialog {
+  .ed-dialog__header,
+  .ed-dialog__body {
+    color: #a6a6a6;
+    background-color: #1a1a1a;
+    margin-right: 0;
   }
 }
 </style>

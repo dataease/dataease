@@ -4,7 +4,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { initCanvasData, onInitReady } from '@/utils/canvasUtils'
+import { initCanvasData, isMainCanvas, onInitReady } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
 import { getOuterParamsInfo } from '@/api/visualization/outerParams'
@@ -14,9 +14,11 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
 import { downloadCanvas2 } from '@/utils/imgUtils'
-import { setTitle } from '@/utils/utils'
+import { isLink, setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { useRoute } from 'vue-router'
+import { filterEnumMapSync } from '@/utils/componentUtils'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const routeWatch = useRoute()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -30,7 +32,12 @@ const state = reactive({
   canvasViewInfoPreview: null,
   dvInfo: null,
   curPreviewGap: 0,
-  initState: true
+  initState: true,
+  showPosition: null,
+  showOffset: {
+    top: 3,
+    left: 3
+  }
 })
 
 const props = defineProps({
@@ -79,7 +86,7 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
   // 添加外部参数
   let attachParam
   await getOuterParamsInfo(dvId).then(rsp => {
-    dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
+    dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, dvId)
   })
 
   // 外部参数（iframe 或者 iframe嵌入）
@@ -99,7 +106,7 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
   }
 
   const initBrowserTimer = () => {
-    if (state.canvasStylePreview.refreshBrowserEnable) {
+    if (state.canvasStylePreview.refreshBrowserEnable && isLink()) {
       const gap = state.canvasStylePreview.refreshBrowserUnit === 'minute' ? 60 : 1
       const browserRefreshTime = state.canvasStylePreview.refreshBrowserTime * gap * 1000
       setTimeout(() => {
@@ -110,22 +117,23 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
 
   await initCanvasData(
     dvId,
-    dvType,
-    function ({
+    { busiFlag: dvType, resourceTable: 'core' },
+    async function ({
       canvasDataResult,
       canvasStyleResult,
       dvInfo,
       canvasViewInfoPreview,
       curPreviewGap
     }) {
+      if (jumpParam) {
+        await filterEnumMapSync(canvasDataResult)
+        dvMainStore.addViewTrackFilter(jumpParam)
+      }
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      if (jumpParam) {
-        dvMainStore.addViewTrackFilter(jumpParam)
-      }
       if (!ignoreParams) {
         state.initState = false
         dvMainStore.addOuterParamsFilter(attachParam)
@@ -137,7 +145,7 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
         setTitle(dvInfo.name)
       }
       initBrowserTimer()
-      nextTick(() => {
+      await nextTick(() => {
         onInitReady({ resourceId: dvId })
       })
     }
@@ -164,7 +172,9 @@ watch(
 )
 
 let p = null
+let p1 = null
 const XpackLoaded = () => p(true)
+const initIframe = () => p1(true)
 onMounted(async () => {
   useEmitt({
     name: 'canvasDownload',
@@ -172,10 +182,17 @@ onMounted(async () => {
       downloadH2(type)
     }
   })
-  await new Promise(r => (p = r))
-  const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+  await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
+  let dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+  if (router.currentRoute.value.query.jumpInfoParam && router.currentRoute.value.query.dvId) {
+    dvId = router.currentRoute.value.query.dvId
+  }
   // 检查外部参数
   const ignoreParams = router.currentRoute.value.query.ignoreParams === 'true'
+  const isPopWindow = router.currentRoute.value.query.popWindow === 'true'
+  const isFrameFlag = window.self !== window.top
+  dvMainStore.setIframeFlag(isFrameFlag)
+  dvMainStore.setIsPopWindow(isPopWindow)
   const { dvType, callBackFlag, taskId, showWatermark } = router.currentRoute.value.query
   if (!!taskId) {
     dvMainStore.setCanvasAttachInfo({ taskId, showWatermark })
@@ -192,13 +209,29 @@ const dataVKeepSize = computed(() => {
   return state.canvasStylePreview?.screenAdaptor === 'keep'
 })
 
+const freezeStyle = computed(() => [
+  { '--top-show-offset': state.showOffset.top },
+  { '--left-show-offset': state.showOffset.left }
+])
+
 defineExpose({
   loadCanvasDataAsync
 })
 </script>
 
 <template>
-  <div class="content" :class="{ 'canvas_keep-size': dataVKeepSize }" ref="previewCanvasContainer">
+  <div
+    class="content"
+    v-loading="!state.initState"
+    :class="{ 'canvas_keep-size': dataVKeepSize }"
+    ref="previewCanvasContainer"
+    :style="freezeStyle"
+  >
+    <canvas-opt-bar
+      canvas-id="canvas-main"
+      :canvas-style-data="state.canvasStylePreview || {}"
+      :component-data="state.canvasDataPreview || []"
+    ></canvas-opt-bar>
     <de-preview
       ref="dvPreview"
       v-if="state.canvasStylePreview && state.initState"
@@ -210,6 +243,7 @@ defineExpose({
       :is-selector="props.isSelector"
       :download-status="downloadStatus"
       :show-pop-bar="true"
+      :show-linkage-button="false"
     ></de-preview>
     <empty-background
       v-if="!state.initState"
@@ -222,6 +256,12 @@ defineExpose({
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   />
+
+  <XpackComponent
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvRW50cmFuY2Vz"
+    @init-iframe="initIframe"
+    @load-fail="initIframe"
+  />
 </template>
 
 <style lang="less" scoped>
@@ -229,6 +269,7 @@ defineExpose({
   display: none;
 }
 .content {
+  position: relative;
   background-color: #ffffff;
   width: 100%;
   height: 100vh;

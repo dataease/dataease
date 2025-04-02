@@ -34,6 +34,10 @@ public interface SysParameterApi {
     @GetMapping("/queryOnlineMap")
     OnlineMapEditor queryOnlineMap();
 
+    @Operation(summary = "查询在线地图")
+    @GetMapping("/queryOnlineMap/{type}")
+    OnlineMapEditor queryOnlineMapByMapType(@PathVariable("type") String type);
+
     @Operation(summary = "查询基础设置(非xpack)")
     @GetMapping("basic/query")
     List<SettingItemVO> queryBasicSetting();
@@ -62,4 +66,7 @@ public interface SysParameterApi {
     @Operation(summary = "查询分享设置")
     ShareBaseVO shareBase();
 
+    @GetMapping("/i18nOptions")
+    @Operation(summary = "查询自定义国际化选项")
+    Map<String, String> i18nOptions();
 }

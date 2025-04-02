@@ -75,9 +75,11 @@ public interface ReportApi {
     @PostMapping("/deleteLog")
     void deleteInstance(@RequestBody ReportInstanceDelRequest request);
 
+    @Operation(summary = "日志错误信息")
     @PostMapping("/logMsg")
     String logMsg(@RequestBody ReportInstanceMsgRequest request);
 
+    @Operation(summary = "导出")
     @PostMapping("/export")
     ResponseEntity<ByteArrayResource> export(@RequestBody ReportExportRequest request);
 }

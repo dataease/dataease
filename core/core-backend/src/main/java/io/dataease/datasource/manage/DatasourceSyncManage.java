@@ -20,6 +20,7 @@ import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.job.schedule.ExtractDataJob;
 import io.dataease.job.schedule.ScheduleManager;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
@@ -29,9 +30,7 @@ import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.CRON;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
@@ -49,6 +48,9 @@ public class DatasourceSyncManage {
     private ScheduleManager scheduleManager;
     @Resource
     private CalciteProvider calciteProvider;
+    @Resource
+    private DatasourceServer datasourceServer;
+
 
     public void extractExcelData(CoreDatasource coreDatasource, String type) {
         if (coreDatasource == null) {
@@ -98,6 +100,7 @@ public class DatasourceSyncManage {
 
 
     public void extractData(Long datasourceId, Long taskId, JobExecutionContext context) {
+        LicenseUtil.validate();
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (coreDatasource == null) {
             LogUtil.error("Can not find datasource: " + datasourceId);
@@ -126,7 +129,11 @@ public class DatasourceSyncManage {
                 record.setQrtzInstance(context.getFireInstanceId());
                 datasourceMapper.update(record, updateWrapper);
             }
-            extractedData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
+            if (coreDatasource.getType().equalsIgnoreCase("ExcelRemote")) {
+                extractedExcelData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
+            } else {
+                extractedData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
+            }
         } catch (Exception e) {
             LogUtil.error(e);
         } finally {
@@ -138,11 +145,11 @@ public class DatasourceSyncManage {
     public void extractedData(Long taskId, CoreDatasource coreDatasource, DatasourceServer.UpdateType updateType, String scheduleType) {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
-        List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+        List<DatasetTableDTO> tables = (List<DatasetTableDTO>) datasourceServer.invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
         for (DatasetTableDTO api : tables) {
             CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), taskId, api.getTableName(), scheduleType);
             datasourceRequest.setTable(api.getTableName());
-            List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
+            List<TableField> tableFields = (List<TableField>) datasourceServer.invokeMethod(coreDatasource.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
             try {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                 createEngineTable(datasourceRequest.getTable(), tableFields);
@@ -172,6 +179,46 @@ public class DatasourceSyncManage {
         }
     }
 
+    public void extractedExcelData(Long taskId, CoreDatasource coreDatasource, DatasourceServer.UpdateType updateType, String scheduleType) {
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(transDTO(coreDatasource));
+        List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
+        for (DatasetTableDTO tableDTO : tables) {
+            CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), taskId, tableDTO.getTableName(), scheduleType);
+            datasourceRequest.setTable(tableDTO.getTableName());
+            ExcelUtils.getTableFields(datasourceRequest);
+            List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
+            try {
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
+                createEngineTable(datasourceRequest.getTable(), tableFields);
+                if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                    createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
+                }
+                extractExcelData(datasourceRequest, updateType, tableFields);
+                if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                    replaceTable(datasourceRequest.getTable());
+                }
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
+                datasetTableTaskLog.setTaskStatus(TaskStatus.Completed.toString());
+                datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+            } catch (Exception e) {
+                try {
+                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                        dropEngineTable(TableUtils.tmpName(datasourceRequest.getTable()));
+                    }
+                } catch (Exception ignore) {
+                }
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
+                datasetTableTaskLog.setTaskStatus(TaskStatus.Error.toString());
+                datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+
+                e.printStackTrace();
+            } finally {
+                datasourceTaskServer.saveLog(datasetTableTaskLog);
+            }
+        }
+    }
+
     private void updateDsTaskStatus(Long datasourceId) {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", datasourceId);
@@ -191,11 +238,11 @@ public class DatasourceSyncManage {
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
-        List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+        List<DatasetTableDTO> tables = (List<DatasetTableDTO>) datasourceServer.invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
         for (DatasetTableDTO api : tables) {
             if (api.getTableName().equalsIgnoreCase(tableName)) {
                 datasourceRequest.setTable(api.getTableName());
-                List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
+                List<TableField> tableFields = (List<TableField>) datasourceServer.invokeMethod(coreDatasource.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
                 try {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                     createEngineTable(datasourceRequest.getTable(), tableFields);
@@ -227,7 +274,7 @@ public class DatasourceSyncManage {
     }
 
     private void extractApiData(DatasourceRequest datasourceRequest, DatasourceServer.UpdateType extractType, List<TableField> tableFields) throws Exception {
-        Map<String, Object> result = ApiUtils.fetchResultField(datasourceRequest);
+        Map<String, Object> result = (Map<String, Object>) datasourceServer.invokeMethod(datasourceRequest.getDatasource().getType(), "fetchApiResultField", DatasourceRequest.class, datasourceRequest);
         List<String[]> dataList = (List<String[]>) result.get("dataList");
         CoreDeEngine engine = engineManage.info();
         EngineRequest engineRequest = new EngineRequest();
@@ -300,11 +347,7 @@ public class DatasourceSyncManage {
 
     public void addSchedule(CoreDatasourceTask datasourceTask) throws DEException {
         if (StringUtils.equalsIgnoreCase(datasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
-            scheduleManager.addOrUpdateSingleJob(new JobKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
-                    new TriggerKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
-                    ExtractDataJob.class,
-                    new Date(datasourceTask.getStartTime()),
-                    scheduleManager.getDefaultJobDataMap(datasourceTask.getDsId().toString(), datasourceTask.getCron(), datasourceTask.getId().toString(), datasourceTask.getUpdateType()));
+            scheduleManager.addOrUpdateSingleJob(new JobKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()), new TriggerKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()), ExtractDataJob.class, new Date(datasourceTask.getStartTime()), scheduleManager.getDefaultJobDataMap(datasourceTask.getDsId().toString(), datasourceTask.getCron(), datasourceTask.getId().toString(), datasourceTask.getUpdateType()));
         } else {
             Date endTime;
             if (datasourceTask.getEndTime() == null || datasourceTask.getEndTime() == 0) {
@@ -317,11 +360,7 @@ public class DatasourceSyncManage {
                 }
             }
 
-            scheduleManager.addOrUpdateCronJob(new JobKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
-                    new TriggerKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
-                    ExtractDataJob.class,
-                    datasourceTask.getCron(), new Date(datasourceTask.getStartTime()), endTime,
-                    scheduleManager.getDefaultJobDataMap(datasourceTask.getDsId().toString(), datasourceTask.getCron(), datasourceTask.getId().toString(), datasourceTask.getUpdateType()));
+            scheduleManager.addOrUpdateCronJob(new JobKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()), new TriggerKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()), ExtractDataJob.class, datasourceTask.getCron(), new Date(datasourceTask.getStartTime()), endTime, scheduleManager.getDefaultJobDataMap(datasourceTask.getDsId().toString(), datasourceTask.getCron(), datasourceTask.getId().toString(), datasourceTask.getUpdateType()));
         }
     }
 

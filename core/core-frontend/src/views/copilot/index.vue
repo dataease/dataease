@@ -312,9 +312,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
             <div :class="['field-d', { open: expandedD }]">
               <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
                 <ElIcon class="expand">
-                  <Icon name="icon_expand-right_filled"
-                    ><icon_expandRight_filled class="svg-icon"
-                  /></Icon>
+                  <Icon><icon_expandRight_filled class="svg-icon" /></Icon>
                 </ElIcon>
                 &nbsp;{{ $t('chart.dimension') }}
               </div>
@@ -337,6 +335,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
                 </template>
               </el-tree>
             </div>
+            <div class="line-bottom"></div>
             <div :class="['field-q', { open: expandedQ }]">
               <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
                 <ElIcon class="expand">
@@ -402,8 +401,8 @@ const queryAnswer = (event?: KeyboardEvent) => {
         padding-top: 24px;
         position: relative;
         overflow-y: auto;
-        padding-bottom: 25px;
-        max-height: 100%;
+        padding-bottom: 60px;
+        max-height: calc(100% - 75px);
       }
       .question-input {
         min-height: 47px;
@@ -589,6 +588,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
         .field-q {
           position: relative;
           height: 49px;
+          padding: 0 8px;
 
           &.open {
             max-height: 50%;
@@ -612,6 +612,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
 
             .expand {
               font-size: 10px;
+              color: #646a73;
             }
 
             &.expanded {
@@ -624,8 +625,14 @@ const queryAnswer = (event?: KeyboardEvent) => {
         }
 
         .field-d {
-          max-height: calc(100% - 50px);
-          border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+          max-height: calc(100% - 52px);
+        }
+
+        .line-bottom {
+          background: rgba(31, 35, 41, 0.15);
+          height: 1px;
+          width: calc(100% - 16px);
+          margin-left: 8px;
         }
       }
     }

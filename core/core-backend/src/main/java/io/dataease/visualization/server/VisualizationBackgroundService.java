@@ -3,6 +3,7 @@ package io.dataease.visualization.server;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.visualization.VisualizationBackgroundApi;
 import io.dataease.api.visualization.vo.VisualizationBackgroundVO;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.visualization.dao.auto.entity.VisualizationBackground;
 import io.dataease.visualization.dao.auto.mapper.VisualizationBackgroundMapper;
@@ -30,6 +31,7 @@ public class VisualizationBackgroundService implements VisualizationBackgroundAp
         return result.stream().map(vb ->{
             VisualizationBackgroundVO vbVO = new VisualizationBackgroundVO();
             BeanUtils.copyBean(vbVO,vb);
+            vbVO.setName(Translator.get("i18n_board")+vbVO.getName());
             return vbVO;
         }).collect(Collectors.groupingBy(VisualizationBackgroundVO::getClassification));
     }

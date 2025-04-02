@@ -203,7 +203,10 @@
   <geometry-edit ref="editor" @saved="loadTreeData(false)" />
   <el-dialog
     v-model="customAreaDialog"
-    :title="`${editedCustomArea.id ? t('common.edit') : t('common.add') + t('system.custom_area')}`"
+    class="create-dialog"
+    :title="`${editedCustomArea.id ? t('common.edit') : t('common.add')} ${t(
+      'system.custom_area'
+    )}`"
     width="500"
     destroy-on-close
   >
@@ -227,7 +230,7 @@
   </el-dialog>
   <el-dialog
     v-model="customSubAreaDialog"
-    :title="`${(customSubArea.id ? t('common.edit') : t('common.add')) + t('system.custom_area')}`"
+    :title="`${customSubArea.id ? t('common.edit') : t('common.add')} ${t('system.custom_area')}`"
     width="500"
     destroy-on-close
   >
@@ -396,7 +399,11 @@ const areaFormRef = ref()
 const saveGeoArea = async () => {
   areaFormRef.value?.validate(async valid => {
     if (valid) {
-      await saveCustomGeoArea(editedCustomArea)
+      const res = await saveCustomGeoArea(editedCustomArea)
+      if (res.code) {
+        ElMessage.error(res.msg)
+        return
+      }
       await loadCustomGeoArea()
       customAreaDialog.value = false
     }
@@ -436,7 +443,8 @@ const deleteCustomArea = data => {
     confirmButtonType: 'danger',
     customClass: 'area-delete-dialog',
     autofocus: false,
-    confirmButtonText: t('common.delete')
+    confirmButtonText: t('common.delete'),
+    showClose: false
   })
     .then(async () => {
       await deleteCustomGeoArea(data.id)
@@ -543,7 +551,11 @@ const saveGeoSubArea = async () => {
       return
     }
     customSubArea.scope = customSubArea.scopeArr.join(',')
-    await saveCustomGeoSubArea(customSubArea)
+    const res = await saveCustomGeoSubArea(customSubArea)
+    if (res.code) {
+      ElMessage.error(res.msg)
+      return
+    }
     await loadCustomSubArea({ id: curCustomGeoArea.id }, true)
     customSubAreaDialog.value = false
   })
@@ -554,7 +566,8 @@ const deleteCustomSubArea = async data => {
     confirmButtonType: 'danger',
     customClass: 'area-delete-dialog',
     autofocus: false,
-    confirmButtonText: t('common.delete')
+    confirmButtonText: t('common.delete'),
+    showClose: false
   })
     .then(async () => {
       await deleteCustomGeoSubArea(data.id)
@@ -920,7 +933,7 @@ onBeforeMount(() => {
 }
 
 .area-delete-dialog {
-  padding: 10px;
+  padding: 24px;
   .ed-message-box__header {
     display: flex;
     justify-content: space-between;

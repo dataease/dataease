@@ -7,5 +7,6 @@ Wheres = "Wheres"
 ws = "ws"
 guid = "guid"
 yoy = "yoy"
+Ein = "Ein"
 [files]
-extend-exclude = ["mapFiles/**"]
+extend-exclude = ["mapFiles/**", "docs"]

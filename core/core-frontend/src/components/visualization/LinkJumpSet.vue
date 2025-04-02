@@ -63,7 +63,7 @@
                       </span>
                     </div>
                   </span>
-                  <span>
+                  <span :title="data.sourceFieldName">
                     <span class="tree-select-field">
                       <el-icon style="margin-right: 4px">
                         <Icon
@@ -187,8 +187,12 @@
                                     v-if="data.leaf"
                                   >
                                     <Icon name="dv-dashboard-spine"
-                                      ><dvDashboardSpine class="svg-icon"
-                                    /></Icon>
+                                      ><dvDashboardSpine
+                                        v-if="data.type === 'dashboard'"
+                                        class="svg-icon"
+                                      />
+                                      <dvScreenSpine v-else class="svg-icon"> </dvScreenSpine>
+                                    </Icon>
                                   </el-icon>
                                   <el-icon size="18px" style="display: inline-block" v-else>
                                     <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
@@ -225,7 +229,13 @@
                             </el-col>
                             <el-col :span="8"></el-col>
                           </el-row>
-                          <div class="main-scrollbar-container">
+                          <div
+                            class="main-scrollbar-container"
+                            :class="{
+                              'main-scrollbar-container-min':
+                                state.linkJumpInfo?.jumpType === 'newPop'
+                            }"
+                          >
                             <el-scrollbar height="fit-content" max-height="178px">
                               <div
                                 style="display: flex; margin-bottom: 6px"
@@ -374,7 +384,7 @@
                             >
                           </template>
                           <template v-else-if="state.linkJumpCurFilterFieldArray.length === 0">
-                            <span>当前图表无绑定的查询条件</span>
+                            <span>{{ t('visualization.jump_no_banding_tips') }}</span>
                           </template>
                           <template v-else-if="state.currentOutParams.length > 0">
                             <el-row style="margin-bottom: 8px" :gutter="8">
@@ -384,7 +394,13 @@
                                 {{ t('visualization.link_outer_params') }}
                               </el-col>
                             </el-row>
-                            <div class="main-scrollbar-container">
+                            <div
+                              class="main-scrollbar-container"
+                              :class="{
+                                'main-scrollbar-container-min':
+                                  state.linkJumpInfo?.jumpType === 'newPop'
+                              }"
+                            >
                               <el-scrollbar height="fit-content" max-height="178px">
                                 <div
                                   style="display: flex; margin-bottom: 6px"
@@ -606,6 +622,7 @@ import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
 import {
   queryVisualizationJumpInfo,
   queryWithViewId,
@@ -729,6 +746,28 @@ const dialogInit = viewItem => {
   init(viewItem)
 }
 
+const initCurFilterFieldArray = componentDataCheck => {
+  componentDataCheck.forEach(componentItem => {
+    if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
+      componentItem.propValue.forEach(filterItem => {
+        if (filterItem.checkedFields.includes(state.viewId)) {
+          state.linkJumpCurFilterFieldArray.push({
+            id: filterItem.id,
+            name: filterItem.name,
+            deType: 'filter'
+          })
+        }
+      })
+    } else if (componentItem.component === 'Group') {
+      initCurFilterFieldArray(componentItem.propValue)
+    } else if (componentItem.component === 'DeTabs') {
+      componentItem.propValue.forEach(tabItem => {
+        initCurFilterFieldArray(tabItem.componentData)
+      })
+    }
+  })
+}
+
 const init = viewItem => {
   state.initState = false
   state.viewId = viewItem.id
@@ -775,19 +814,7 @@ const init = viewItem => {
 
   // 获取当前过滤条件明细 过滤原则：1.在当前仪表板或者大屏 2.作用于当前图表
   state.linkJumpCurFilterFieldArray = []
-  componentData.value.forEach(componentItem => {
-    if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
-      componentItem.propValue.forEach(filterItem => {
-        if (filterItem.checkedFields.includes(state.viewId)) {
-          state.linkJumpCurFilterFieldArray.push({
-            id: filterItem.id,
-            name: filterItem.name,
-            deType: 'filter'
-          })
-        }
-      })
-    }
-  })
+  initCurFilterFieldArray(componentData.value)
 
   if (chartDetails.tableId) {
     // 获取当前数据集信息
@@ -855,7 +882,7 @@ const save = () => {
         }
       }
       if (subCheckCount > 0) {
-        ElMessage.error('字段【' + linkJumpInfo.sourceFieldName + '】存在空配置，请先完善配置！')
+        ElMessage.error(t('visualization.jump_null_tips', [linkJumpInfo.sourceFieldName]))
       }
     }
   })
@@ -866,7 +893,7 @@ const save = () => {
   updateJumpSet(state.linkJump)
     .then(() => {
       snapshotStore.recordSnapshotCache('updateJumpSet')
-      ElMessage.success('保存成功')
+      ElMessage.success(t('common.save_success'))
       // 刷新跳转信息
       queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
         dvMainStore.setNowPanelJumpInfo(rsp.data)
@@ -880,6 +907,9 @@ const save = () => {
 }
 const nodeClick = data => {
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
+  if (!state.linkJumpInfo.windowSize) {
+    state.linkJumpInfo.windowSize = 'middle'
+  }
   if (!state.linkJumpInfo.linkType) {
     state.linkJumpInfo.linkType = 'outer'
   }
@@ -1377,6 +1407,13 @@ span {
   }
 }
 
+.main-scrollbar-container-min {
+  :deep(.ed-scrollbar) {
+    height: fit-content;
+    max-height: 138px !important;
+  }
+}
+
 .top-area-value {
   font-weight: 400;
   font-size: 14px;
@@ -1481,6 +1518,7 @@ span {
   font-size: 14px;
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
 .label-content-details {

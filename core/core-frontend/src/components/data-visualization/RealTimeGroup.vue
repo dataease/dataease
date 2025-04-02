@@ -77,6 +77,8 @@ import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
+import bulletGraphOrigin from '@/assets/svg/bullet-graph-origin.svg'
+import { syncViewTitle } from '@/utils/canvasUtils'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -140,6 +142,7 @@ const closeEditComponentName = () => {
     return
   }
   curEditComponent.name = inputName.value
+  syncViewTitle(curEditComponent)
   inputName.value = ''
   curEditComponent = null
 }
@@ -243,7 +246,8 @@ const iconMap = {
   'word-cloud-origin': wordCloudOrigin,
   't-heatmap-origin': tHeatmapOrigin,
   group: group,
-  'circle-packing-origin': circlePackingOrigin
+  'circle-packing-origin': circlePackingOrigin,
+  'bullet-graph-origin': bulletGraphOrigin
 }
 const getIconName = item => {
   if (item.component === 'UserView') {
@@ -312,6 +316,7 @@ const expandClick = component => {
                 :class="{
                   'container-item-not-show': !getComponent(index)?.isShow,
                   'component-item-group-tab': tabPosition === 'groupTab',
+                  'component-item-tab-group': tabPosition === 'tabGroup',
                   activated:
                     (curComponent && curComponent?.id === getComponent(index)?.id) ||
                     areaData.components.includes(getComponent(index))
@@ -319,8 +324,8 @@ const expandClick = component => {
                 @click="onClick(transformIndex(index))"
               >
                 <div
-                  v-show="['DeTabs'].includes(getComponent(index)?.component)"
-                  style="width: 22px"
+                  v-if="['DeTabs', 'Group'].includes(getComponent(index)?.component)"
+                  style="width: 12px; margin-right: 10px"
                 >
                   <el-icon class="component-expand" @click="expandClick(getComponent(index))">
                     <Icon
@@ -433,6 +438,12 @@ const expandClick = component => {
                   :component-data="getComponent(index).propValue"
                 ></real-time-tab>
               </div>
+              <div v-if="getComponent(index)?.component === 'Group' && getComponent(index)?.expand">
+                <real-time-group
+                  tab-position="tabGroup"
+                  :component-data="getComponent(index).propValue"
+                ></real-time-group>
+              </div>
             </div>
           </template>
         </draggable>
@@ -470,7 +481,7 @@ const expandClick = component => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 2px 0 20px;
+        padding: 0 2px 0 28px;
         user-select: none;
 
         .component-icon {
@@ -513,7 +524,7 @@ const expandClick = component => {
             .component-base {
               opacity: 1;
             }
-            width: 70px !important;
+            width: 55px !important;
           }
         }
 
@@ -521,7 +532,7 @@ const expandClick = component => {
           .component-base {
             opacity: 0;
           }
-          width: 0px;
+          width: 0;
           display: flex;
           justify-content: flex-end;
           align-items: center;
@@ -575,7 +586,7 @@ const expandClick = component => {
 }
 
 .icon-container-show {
-  width: 70px !important;
+  width: 55px !important;
 }
 
 .icon-container-lock {
@@ -595,7 +606,11 @@ const expandClick = component => {
   background: #1a1a1a !important;
 }
 .component-item-group-tab {
-  padding-left: 60px !important;
+  padding-left: 70px !important;
+}
+
+.component-item-tab-group {
+  padding-left: 38px !important;
 }
 
 .component-expand {

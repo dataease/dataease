@@ -6,6 +6,7 @@ import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.ApiDefinition;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.TableField;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -125,13 +127,18 @@ public interface DatasourceApi {
     @Operation(summary = "获取表")
     List<DatasetTableDTO> getTables(@RequestBody DatasetTableDTO datasetTableDTO) throws DEException;
 
+    @DePermit({"#p0.datasourceId+':read'"})
+    @PostMapping("getTableStatus")
+    @Operation(summary = "获取数据表更新状态")
+    List<DatasetTableDTO> getTableStatus(@RequestBody DatasetTableDTO datasetTableDTO) throws DEException;
+
     @PostMapping("/checkApiDatasource")
     @Operation(summary = "校验API数据源")
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;
 
     @PostMapping("/uploadFile")
     @Operation(summary = "上传文件")
-    ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException;
+    ExcelFileData uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException;
 
     @PostMapping("/previewData")
     @Operation(summary = "预览数据")
@@ -162,4 +169,11 @@ public interface DatasourceApi {
     @GetMapping("/simple/{id}")
     DsSimpleVO simple(@PathVariable("id") Long id);
 
+    @PostMapping("/multidimensionalTables")
+    @Operation(summary = "获取多维表格列表")
+    List<Map<String, String>> multidimensionalTables(@RequestBody Map<String, String> data) throws DEException;
+
+    @PostMapping("/loadRemoteFile")
+    @Operation(summary = "加载文件")
+    ExcelFileData loadRemoteFile(@RequestBody RemoteExcelRequest remoteExcelRequeste) throws DEException, IOException;
 }

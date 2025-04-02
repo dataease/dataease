@@ -2,6 +2,8 @@ package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
 import io.dataease.dataset.constant.DatasetTableType;
@@ -13,7 +15,7 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
-import io.dataease.engine.constant.SQLConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -31,6 +33,7 @@ import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.system.manage.CorePermissionManage;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -62,9 +65,14 @@ public class DatasetSQLManage {
 
     @Autowired(required = false)
     private PluginManageApi pluginManage;
-
+    @Autowired(required = false)
+    private RowPermissionsApi rowPermissionsApi;
     @Resource
     private DataSourceManage dataSourceManage;
+
+    private RowPermissionsApi getRowPermissionsApi() {
+        return rowPermissionsApi;
+    }
 
     private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
@@ -419,7 +427,7 @@ public class DatasetSQLManage {
                     dto.setSuffix(first.getSuffix());
                     return dto;
                 } else {
-                    DEException.throwException("当前数据源插件不存在");
+                    DEException.throwException(Translator.get("i18n_dataset_plugin_error"));
                 }
             }
             return null;
@@ -455,6 +463,13 @@ public class DatasetSQLManage {
         }
     }
 
+    private UserFormVO getUserEntity() {
+        if (getRowPermissionsApi() == null) {
+            return null;
+        }
+        return getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
+    }
+
     private SQLObj getUnionTable(DatasetTableDTO currentDs, DatasetTableInfoDTO infoDTO, String tableSchema, int index, List<SqlVariableDetails> parameters, boolean isFromDataSet, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj;
         String tableAlias = String.format(SQLConstants.TABLE_ALIAS_PREFIX, index);
@@ -464,7 +479,7 @@ public class DatasetSQLManage {
             Provider provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
             // parser sql params and replace default value
             String s = new String(Base64.getDecoder().decode(infoDTO.getSql()));
-            String sql = SqlparserUtils.handleVariableDefaultValue(s, currentDs.getSqlVariableDetails(), false, isFromDataSet, parameters, isCross, dsMap, pluginManage);
+            String sql = new SqlparserUtils().handleVariableDefaultValue(s, currentDs.getSqlVariableDetails(), false, isFromDataSet, parameters, isCross, dsMap, pluginManage, getUserEntity());
             sql = provider.replaceComment(sql);
             // add table schema
             if (isCross) {
@@ -495,7 +510,7 @@ public class DatasetSQLManage {
             if (coreDatasource == null) {
                 DEException.throwException(Translator.get("i18n_dataset_ds_error") + ",ID:" + ds.getDatasourceId());
             }
-            if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
+            if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                 coreDatasource = engineManage.getDeEngine();
             }
 

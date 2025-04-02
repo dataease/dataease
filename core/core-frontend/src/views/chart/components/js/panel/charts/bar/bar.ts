@@ -7,6 +7,7 @@ import {
 import {
   flow,
   hexColorToRGBA,
+  hexToRgba,
   parseJson,
   setUpGroupSeriesColor,
   setUpStackSeriesColor
@@ -42,7 +43,14 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     ...BAR_EDITOR_PROPERTY_INNER,
     'basic-style-selector': [...BAR_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
     'label-selector': ['vPosition', 'seriesLabelFormatter', 'showExtremum'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
+    'tooltip-selector': [
+      'fontSize',
+      'color',
+      'backgroundColor',
+      'seriesTooltipFormatter',
+      'show',
+      'carousel'
+    ],
     'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'axisLabelFormatter']
   }
   protected baseOptions: ColumnOptions = {
@@ -68,8 +76,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<Column>): Promise<Column> {
     const { chart, container, action } = drawOptions
+    chart.container = container
     if (!chart?.data?.data?.length) {
-      chart.container = container
       clearExtremum(chart)
       return
     }
@@ -226,13 +234,17 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
           tickCount: axisValue.splitCount
         }
       }
-      return { ...tmpOptions, ...axis }
+      // 根据axis的最小值，过滤options中的data数据，过滤掉小于最小值的数据
+      const { data } = options
+      const newData = data.filter(item => item.value >= axisValue.min)
+      return { ...tmpOptions, data: newData, ...axis }
     }
     return tmpOptions
   }
 
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configColor,
@@ -243,7 +255,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse
+      this.configAnalyse,
+      this.configBarConditions
     )(chart, options, {}, this)
   }
 
@@ -261,6 +274,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
  * 堆叠柱状图
  */
 export class StackBar extends Bar {
+  properties = BAR_EDITOR_PROPERTY.filter(ele => ele !== 'threshold')
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': [
@@ -420,6 +434,7 @@ export class StackBar extends Bar {
  * 分组柱状图
  */
 export class GroupBar extends StackBar {
+  properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition', 'showExtremum']
@@ -431,6 +446,74 @@ export class GroupBar extends StackBar {
       type: 'q',
       limit: 1
     }
+  }
+
+  async drawChart(drawOptions: G2PlotDrawOptions<Column>): Promise<Column> {
+    const plot = await super.drawChart(drawOptions)
+    if (!plot) {
+      return plot
+    }
+    const { chart } = drawOptions
+    const { xAxis, xAxisExt, yAxis } = chart
+    let innerSort = !!(xAxis.length && xAxisExt.length && yAxis.length)
+    if (innerSort && yAxis[0].sort === 'none') {
+      innerSort = false
+    }
+    if (innerSort && xAxisExt[0].sort !== 'none') {
+      const sortPriority = chart.sortPriority ?? []
+      const yAxisIndex = sortPriority?.findIndex(e => e.id === yAxis[0].id)
+      const xAxisExtIndex = sortPriority?.findIndex(e => e.id === xAxisExt[0].id)
+      if (xAxisExtIndex <= yAxisIndex) {
+        innerSort = false
+      }
+    }
+    if (!innerSort) {
+      return plot
+    }
+    plot.chart.once('beforepaint', () => {
+      const geo = plot.chart.geometries[0]
+      const originMapping = geo.beforeMapping.bind(geo)
+      geo.beforeMapping = originData => {
+        const values = geo.getXScale().values
+        const valueMap = values.reduce((p, n) => {
+          if (!p?.[n]) {
+            p[n] = {
+              fieldArr: [],
+              indexArr: [],
+              dataArr: []
+            }
+          }
+          originData.forEach((arr, arrIndex) => {
+            arr.forEach((item, index) => {
+              if (item._origin.field === n) {
+                p[n].fieldArr.push(item.field)
+                p[n].indexArr.push([arrIndex, index])
+                p[n].dataArr.push(item)
+              }
+            })
+          })
+          return p
+        }, {})
+        values.forEach(v => {
+          const item = valueMap[v]
+          item.dataArr.sort((a, b) => {
+            if (yAxis[0].sort === 'asc') {
+              return a.value - b.value
+            }
+            if (yAxis[0].sort === 'desc') {
+              return b.value - a.value
+            }
+            return 0
+          })
+          item.indexArr.forEach((index, i) => {
+            item.dataArr[i].field = item.fieldArr[i]
+            originData[index[0]][index[1]] = item.dataArr[i]
+          })
+        })
+        return originMapping(originData)
+      }
+    })
+    return plot
   }
 
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
@@ -467,6 +550,7 @@ export class GroupBar extends StackBar {
 
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configColor,
@@ -477,7 +561,8 @@ export class GroupBar extends StackBar {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse
+      this.configAnalyse,
+      this.configBarConditions
     )(chart, options, {}, this)
   }
 

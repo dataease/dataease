@@ -32,6 +32,7 @@
         :table-data="state.tableData"
         :pagination="state.paginationConfig"
         class="popper-max-width"
+        :class="{ 'popper-max-height': state.tableData?.length >= 10 }"
         @current-change="pageChange"
         @size-change="sizeChange"
       >
@@ -64,7 +65,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="exp" :label="$t('visualization.over_time')" width="117">
+        <el-table-column prop="exp" :label="$t('visualization.over_time')">
           <template v-slot:header>
             <div class="ticket-exp-head">
               <span>{{ t('visualization.over_time') }}</span>
@@ -107,13 +108,14 @@
               </el-tooltip>
 
               <el-tooltip class="item" effect="dark" :content="t('commons.delete')" placement="top">
-                <el-button text @click.stop="deleteTicket(scope.row, scope.$index)">
-                  <template #icon>
-                    <Icon name="icon_delete-trash_outlined"
-                      ><icon_deleteTrash_outlined class="svg-icon"
-                    /></Icon>
-                  </template>
-                </el-button>
+                <el-icon
+                  style="margin-left: 8px; color: #646a73; cursor: pointer"
+                  @click.stop="deleteTicket(scope.row)"
+                >
+                  <Icon name="icon_delete-trash_outlined"
+                    ><icon_deleteTrash_outlined class="svg-icon"
+                  /></Icon>
+                </el-icon>
               </el-tooltip>
             </div>
           </template>
@@ -222,8 +224,7 @@ const formatLinkBase = () => {
   if (embeddedStore.baseUrl) {
     prefix = embeddedStore.baseUrl + '#'
   } else {
-    const href = window.location.href
-    prefix = href.substring(0, href.indexOf('#') + 1)
+    prefix = window.location.origin + window.location.pathname + '#'
   }
   if (prefix.includes('oidcbi/') || prefix.includes('casbi/')) {
     prefix = prefix.replace('oidcbi/', '')
@@ -249,11 +250,11 @@ const refreshTicket = row => {
   })
 }
 
-const deleteTicket = (row, index) => {
+const deleteTicket = row => {
   const param = { ticket: row.ticket }
   const url = '/ticket/delTicket'
   request.post({ url, data: param }).then(() => {
-    state.tableData.splice(index, 1)
+    loadTicketData()
   })
 }
 
@@ -281,6 +282,7 @@ const pageChange = index => {
 }
 const sizeChange = size => {
   state.paginationConfig.pageSize = size
+  state.paginationConfig.currentPage = 1
   loadTicketData()
 }
 
@@ -376,13 +378,13 @@ onMounted(() => {
     }
   }
   .ticket-table {
-    border-top: 1px solid #d5d7d8;
     min-height: 156px;
     padding: 0 0;
     height: 50px;
     overflow-y: overlay;
     position: relative;
     height: calc(100% - 124px);
+
     :deep(.ticket-exp-head) {
       display: flex;
       line-height: 22px;
@@ -448,6 +450,17 @@ onMounted(() => {
         }
       }
     }
+    .popper-max-height {
+      :deep(.ed-table--fit) {
+        height: 438px !important;
+      }
+    }
+  }
+  :deep(.pagination-cont) {
+    margin-top: 16px !important;
+  }
+  :deep(.is-last) {
+    display: none;
   }
 }
 </style>

@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { Icon } from '@/components/icon-custom'
 import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
-import { propTypes } from '@/utils/propTypes'
 import type { Placement } from 'element-plus-secondary'
-import { PropType } from 'vue'
 
 export interface Menu {
   svgName?: string
@@ -13,18 +11,21 @@ export interface Menu {
   disabled?: boolean
 }
 
-defineProps({
-  menuList: {
-    type: Array as PropType<Menu[]>
-  },
-  placement: {
-    type: String as () => Placement,
-    default: 'bottom-end'
-  },
-  iconName: propTypes.string.def(''),
-  iconSize: propTypes.string.def('16px'),
-  inTable: propTypes.bool.def(false)
-})
+withDefaults(
+  defineProps<{
+    menuList: Array<Menu[]>
+    placement?: Placement
+    iconName?: any
+    iconSize?: string
+    inTable?: boolean
+  }>(),
+  {
+    placement: 'bottom-end',
+    iconSize: '16px',
+    inTable: false
+  }
+)
+
 const handleCommand = (command: string | number | object) => {
   emit('handleCommand', command)
 }

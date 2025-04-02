@@ -4,9 +4,12 @@ import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvCopyDark from '@/assets/svg/dv-copy-dark.svg'
 import dvDelete from '@/assets/svg/dv-delete.svg'
 import dvMove from '@/assets/svg/dv-move.svg'
+import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { treeDraggbleChart } from '@/utils/treeDraggbleChart'
+import { debounce } from 'lodash-es'
 import dvRename from '@/assets/svg/dv-rename.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
+import dvDashboardSpineDisabled from '@/assets/svg/dv-dashboard-spine-disabled.svg'
 import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
 import dvNewFolder from '@/assets/svg/dv-new-folder.svg'
 import icon_fileAdd_outlined from '@/assets/svg/icon_file-add_outlined.svg'
@@ -22,7 +25,8 @@ import {
   copyResource,
   deleteLogic,
   ResourceOrFolder,
-  queryShareBaseApi
+  queryShareBaseApi,
+  updateBase
 } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -47,6 +51,8 @@ import { findParentIdByChildIdRecursive } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
 import treeSort, { treeParentWeight } from '@/utils/treeSortUtils'
 import router from '@/router'
+import { cancelRequestBatch } from '@/config/axios/service'
+import { isFreeFolder } from '@/utils/utils'
 const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -68,7 +74,8 @@ const props = defineProps({
 })
 const defaultProps = {
   children: 'children',
-  label: 'name'
+  label: 'name',
+  disabled: (data: any) => data.extraFlag1 === 0
 }
 const mounted = ref(false)
 const rootManage = ref(false)
@@ -168,9 +175,15 @@ const menuListWeight = id => {
 }
 const menuListWithCopy = [
   {
+    label: t('visualization.cancel_publish'), //取消发布
+    command: 'cancelPublish',
+    svgName: dvCancelPublish
+  },
+  {
     label: t('visualization.copy'), //'复制',
     command: 'copy',
-    svgName: dvCopyDark
+    svgName: dvCopyDark,
+    divided: true
   },
   {
     label: t('visualization.move_to'), //'移动到',
@@ -191,9 +204,15 @@ const menuListWithCopy = [
 ]
 const menuList = [
   {
+    label: t('visualization.cancel_publish'), //取消发布
+    command: 'cancelPublish',
+    svgName: dvCancelPublish
+  },
+  {
     label: t('visualization.move_to'), //'移动到',
     command: 'move',
-    svgName: dvMove
+    svgName: dvMove,
+    divided: true
   },
   {
     label: t('visualization.rename'), //'重命名',
@@ -232,13 +251,32 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
 }
+//取消之前请求
+const cancelPreRequest = () => {
+  cancelRequestBatch('/dataVisualization/findById')
+  cancelRequestBatch('/chartData/getData')
+  cancelRequestBatch('/linkage/getVisualizationAllLinkageInfo/**')
+  cancelRequestBatch('/linkJump/queryVisualizationJumpInfo/**')
+}
 
-const nodeClick = (data: BusiTreeNode) => {
-  selectedNodeKey.value = data.id
-  if (data.leaf) {
-    emit('nodeClick', data)
+const nodeClick = (data: BusiTreeNode, node) => {
+  if (node.disabled) {
+    nextTick(() => {
+      // 找到当前高亮的节点，移除高亮样式
+      const currentNode = resourceListTree.value.$el.querySelector('.is-current')
+      if (currentNode) {
+        currentNode.classList.remove('is-current')
+      }
+      return // 阻止后续逻辑
+    })
   } else {
-    resourceListTree.value.setCurrentKey(null)
+    cancelPreRequest()
+    selectedNodeKey.value = data.id
+    if (data.leaf) {
+      emit('nodeClick', data)
+    } else {
+      resourceListTree.value.setCurrentKey(null)
+    }
   }
 }
 
@@ -296,12 +334,6 @@ const afterTreeInit = () => {
   }
   nextTick(() => {
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
-    nextTick(() => {
-      if (selectedNodeKey.value) {
-        const nodeDom = document.querySelector('.is-current')
-        nodeDom && nodeDom.click()
-      }
-    })
     resourceListTree.value.filter(filterText.value)
   })
 }
@@ -325,6 +357,22 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         ElMessage.success(t('visualization.delete_success'))
         getTree()
       })
+    })
+  } else if (cmd === 'cancelPublish') {
+    const params = {
+      id: data.id,
+      nodeType: 'leaf',
+      name: data.name,
+      type: curCanvasType.value,
+      mobileLayout: data?.extraFlag,
+      status: 0
+    }
+    updateBase(params).then(() => {
+      data['extraFlag1'] = 0
+      if (dvInfo.value.id === data.id) {
+        dvMainStore.updateDvInfoCall(0)
+      }
+      ElMessage.warning(t('visualization.cancel_publish_tips'))
     })
   } else if (cmd === 'edit') {
     resourceEdit(data.id)
@@ -531,6 +579,16 @@ const sortTypeChange = sortType => {
   state.curSortType = sortType
 }
 
+const proxyAllowDrop = debounce((arg1, arg2) => {
+  const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource']
+  const flag = flagArray.findIndex(item => item === curCanvasType.value)
+  if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
+    return allowDrop(arg1, arg2)
+  }
+  ElMessage.warning(t('free.save_error'))
+  return false
+}, 300)
+
 watch(filterText, val => {
   resourceListTree.value.filter(val)
 })
@@ -677,28 +735,48 @@ defineExpose({
         @node-collapse="nodeCollapse"
         @node-click="nodeClick"
         @node-drag-start="handleDragStart"
-        :allow-drop="allowDrop"
+        :allow-drop="proxyAllowDrop"
         @node-drop="handleDrop"
         draggable
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node">
+          <span class="custom-tree-node" :class="{ 'node-disabled-custom': data.extraFlag1 === 0 }">
             <el-icon style="font-size: 18px" v-if="!data.leaf">
               <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
-              <Icon
+              <Icon v-if="data.extraFlag1"
                 ><component
                   :is="data.extraFlag ? dvDashboardSpineMobile : dvDashboardSpine"
                 ></component
               ></Icon>
+              <Icon v-if="!data.extraFlag1"
+                ><component
+                  :is="data.extraFlag ? dvDashboardSpineDisabled : dvDashboardSpineDisabled"
+                ></component
+              ></Icon>
             </el-icon>
-            <el-icon class="icon-screen-new color-dataV" style="font-size: 18px" v-else>
+            <el-icon
+              class="icon-screen-new color-dataV"
+              :class="{ 'color-dataV': data.extraFlag1, 'color-dataV-disabled': !data.extraFlag1 }"
+              style="font-size: 18px"
+              v-else
+            >
               <Icon name="icon_operation-analysis_outlined"
                 ><icon_operationAnalysis_outlined class="svg-icon"
               /></Icon>
             </el-icon>
-            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+            <span :title="node.label" class="label-tooltip">
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="t('visualization.publish_tips1')"
+                :disabled="data.extraFlag1"
+                placement="top-start"
+              >
+                {{ node.label }}
+              </el-tooltip>
+            </span>
             <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
               <el-icon
                 v-on:click.stop
@@ -900,5 +978,14 @@ defineExpose({
   i {
     display: block;
   }
+}
+
+.node-disabled-custom {
+  color: rgba(187, 191, 196, 1);
+  cursor: not-allowed;
+}
+
+.color-dataV-disabled {
+  background: #bbbfc4 !important;
 }
 </style>

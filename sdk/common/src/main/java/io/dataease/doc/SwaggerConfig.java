@@ -87,5 +87,10 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder().group("7-xpackpermission").displayName("权限相关xpack").packagesToScan("io.dataease.xpack.permissions").build();
     }
 
+    @Bean
+    public GroupedOpenApi syncApi() {
+        return GroupedOpenApi.builder().group("8-xpacksync").displayName("同步管理").packagesToScan("io.dataease.xpack.sync.task").build();
+    }
+
 
 }

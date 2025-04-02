@@ -109,12 +109,17 @@
             highlight-current
             :current-node-key="state.marketActiveTab"
             @node-click="nodeClick"
-          />
+          >
+            <template #default="{ data }">
+              <span :title="data.label" class="ed-tree-node__label">{{ data.label }}</span>
+            </template>
+          </el-tree>
         </div>
         <div
           v-show="state.networkStatus && state.hasResult"
           id="template-show-area"
           class="template-right"
+          style="padding-top: 16px"
         >
           <el-row v-if="state.marketActiveTab === null"
             ><TemplateSkeleton :width="state.templateCurWidth"
@@ -136,7 +141,10 @@
             </el-row>
             <el-row v-show="state.marketActiveTab === t('work_branch.recommend')">
               <el-row
-                style="display: inline; width: 100%; margin-bottom: 16px"
+                style="display: inline; width: 100%; margin-bottom: 32px"
+                :style="{
+                  marginBottom: categoryItem.label !== t('work_branch.recent') ? '32px' : 0
+                }"
                 v-for="(categoryItem, index) in categoriesComputed"
                 :key="index"
               >
@@ -193,6 +201,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { Base64 } from 'js-base64'
+import { getActiveCategories } from '@/utils/utils'
 const { t } = useI18n()
 const { wsCache } = useCache()
 const embeddedStore = useEmbedded()
@@ -411,10 +420,13 @@ const initMarketTemplate = async () => {
     .then(rsp => {
       state.baseUrl = rsp.data.baseUrl
       state.currentMarketTemplateShowList = rsp.data.contents
-      state.marketTabs = rsp.data.categories
-      state.marketActiveTab = state.marketTabs[1].label
       initStyle()
       initTemplateShow()
+      const activeCategories = getActiveCategories(state.currentMarketTemplateShowList)
+      state.marketTabs = rsp.data.categories.filter(category =>
+        activeCategories.has(category.label)
+      )
+      state.marketActiveTab = state.marketTabs[1].label
     })
     .catch(() => {
       state.networkStatus = false
@@ -743,6 +755,7 @@ defineExpose({
   font-size: 20px;
   cursor: pointer;
   margin-right: 8px;
+  color: rgba(31, 35, 41, 1);
 }
 
 .img-main-create {

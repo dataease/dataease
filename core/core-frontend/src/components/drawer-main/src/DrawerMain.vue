@@ -157,7 +157,7 @@ defineExpose({
 
     <template #footer>
       <el-button secondary @click="reset">{{ t('commons.reset') }}</el-button>
-      <el-button @click="trigger" type="primary">{{ t('common.sure') }}</el-button>
+      <el-button @click="trigger" type="primary">{{ t('commons.adv_search.search') }}</el-button>
     </template>
   </el-drawer>
 </template>

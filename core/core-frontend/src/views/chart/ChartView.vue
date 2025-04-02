@@ -12,7 +12,7 @@ import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const currentComponent = shallowRef()
-
+const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const VisualizationEditor = defineAsyncComponent(
   () => import('@/views/data-visualization/index.vue')
 )
@@ -29,6 +29,7 @@ const DashboardPanel = defineAsyncComponent(
   () => import('@/views/dashboard/DashboardPreviewShow.vue')
 )
 const Copilot = defineAsyncComponent(() => import('@/views/copilot/index.vue'))
+const TemplateManage = defineAsyncComponent(() => import('@/views/template/indexInject.vue'))
 
 const AsyncXpackComponent = defineAsyncComponent(() => import('@/components/plugin/src/index.vue'))
 
@@ -36,12 +37,14 @@ const componentMap = {
   DashboardEditor,
   VisualizationEditor,
   ViewWrapper,
+  Preview,
   Dashboard,
   Dataset,
   Datasource,
   ScreenPanel,
   DashboardPanel,
-  Copilot
+  Copilot,
+  TemplateManage
 }
 const iframeStyle = ref(null)
 const setStyle = debounce(() => {
@@ -77,8 +80,10 @@ const initIframe = (name: string) => {
       showComponent.value = true
     })
   } else {
-    currentComponent.value = componentMap[name || 'ViewWrapper']
-    showComponent.value = true
+    nextTick(() => {
+      currentComponent.value = componentMap[name || 'ViewWrapper']
+      showComponent.value = true
+    })
   }
 }
 

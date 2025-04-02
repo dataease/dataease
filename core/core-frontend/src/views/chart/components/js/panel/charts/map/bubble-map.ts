@@ -158,10 +158,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     if (!areaId.startsWith('custom_')) {
       dotLayer.options = { ...dotLayer.options, tooltip }
     }
-    // 完成地图渲染后配置缩放按钮，为了能够获取到默认的缩放比例
-    view.on('loaded', () => {
-      this.configZoomButton(chart, view)
-    })
+    this.configZoomButton(chart, view)
     mapRendering(container)
     view.once('loaded', () => {
       // 修改地图鼠标样式为默认
@@ -405,7 +402,8 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           content.push(name)
         }
         if (label.showQuota) {
-          areaMap[name] && content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
+          ;(areaMap[name] || areaMap[name] === 0) &&
+            content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
         }
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }
@@ -430,7 +428,9 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       return obj
     }, {})
     //处理label
-    options.label = false
+    options.label = {
+      visible: false
+    }
     if (label.show) {
       const geoJsonMap = geoJson.features.reduce((p, n) => {
         if (n.properties['adcode']) {

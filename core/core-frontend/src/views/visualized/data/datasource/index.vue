@@ -5,6 +5,7 @@ import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
+import { debounce } from 'lodash-es'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
 import icon_warning_colorful_red from '@/assets/svg/icon_warning_colorful_red.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
@@ -48,7 +49,8 @@ import {
   uploadFile,
   perDeleteDatasource,
   getSimpleDs,
-  supportSetKey
+  supportSetKey,
+  getTableStatus
 } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
@@ -71,10 +73,9 @@ import {
   syncApiDs,
   syncApiTable
 } from '@/api/datasource'
-import { Base64 } from 'js-base64'
 import type { SyncSetting, Node } from './form/option'
 import EditorDatasource from './form/index.vue'
-import ExcelInfo from './ExcelInfo.vue'
+import ExcelInfoBase from './ExcelInfoBase.vue'
 import SheetTabs from './SheetTabs.vue'
 import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
@@ -90,6 +91,7 @@ import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { querySymmetricKey } from '@/api/login'
 import { symmetricDecrypt } from '@/utils/encryption'
+import { isFreeFolder } from '@/utils/utils'
 const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
@@ -291,7 +293,7 @@ const validateDS = () => {
   Object.assign(nodeTmpInfo, cloneDeep(nodeInfo))
   validateById(nodeTmpInfo.id as number)
     .then(res => {
-      if (res.data.type === 'API') {
+      if (res.data.type.startsWith('API')) {
         let error = 0
         const dsStatus = JSON.parse(res.data.status)
         for (let i = 0; i < dsStatus.length; i++) {
@@ -506,6 +508,9 @@ const listDs = () => {
         Object.assign(nodeInfo, cloneDeep(defaultInfo))
         dfsDatasourceTree(state.datasourceTree, id)
         setTimeout(() => {
+          if (dsName.value) {
+            dsListTree.value.filter(dsName.value)
+          }
           dsListTree.value.setCurrentKey(nodeInfo.id, true)
         }, 100)
       }
@@ -703,7 +708,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 }
 
 const editDatasource = (editType?: number) => {
-  if (nodeInfo.type === 'Excel') {
+  if (nodeInfo.type.startsWith('Excel')) {
     nodeInfo.editType = editType
   }
   return getById(nodeInfo.id).then(res => {
@@ -824,7 +829,7 @@ const handleCopy = async data => {
     datasource.id = ''
     datasource.copy = true
     datasource.name = t('datasource.copy')
-    if (datasource.type === 'API') {
+    if (datasource.type.startsWith('API')) {
       for (let i = 0; i < datasource.apiConfiguration.length; i++) {
         datasource.apiConfiguration[i].deTableName = ''
       }
@@ -936,7 +941,7 @@ const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
     case 'config':
       tableData.value = []
-      if (nodeInfo.type === 'Excel') {
+      if (nodeInfo.type.startsWith('Excel')) {
         listDatasourceTables({ datasourceId: nodeInfo.id }).then(res => {
           tabList.value = res.data.map(ele => {
             const { name, tableName } = ele
@@ -958,6 +963,26 @@ const handleClick = (tabName: TabPaneName) => {
       listDatasourceTables({ datasourceId: nodeInfo.id }).then(res => {
         tableData.value = res.data
         initSearch()
+        if (nodeInfo.type.startsWith('API') || nodeInfo.type === 'ExcelRemote') {
+          getTableStatus({ datasourceId: nodeInfo.id }).then(res => {
+            for (let i = 0; i < state.filterTable.length; i++) {
+              for (let j = 0; j < res.data.length; j++) {
+                if (state.filterTable[i].tableName === res.data[j].tableName) {
+                  state.filterTable[i].lastUpdateTime = res.data[j].lastUpdateTime
+                  state.filterTable[i].status = res.data[j].status
+                }
+              }
+            }
+            for (let i = 0; i < tableData.value.length; i++) {
+              for (let j = 0; j < res.data.length; j++) {
+                if (tableData.value[i].tableName === res.data[j].tableName) {
+                  tableData.value[i].lastUpdateTime = res.data[j].lastUpdateTime
+                  tableData.value[i].status = res.data[j].status
+                }
+              }
+            }
+          })
+        }
       })
       break
     default:
@@ -1010,6 +1035,15 @@ const loadInit = () => {
   }
 }
 
+const proxyAllowDrop = debounce((arg1, arg2) => {
+  const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource']
+  const flag = flagArray.findIndex(item => item === 'datasource')
+  if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
+    return allowDrop(arg1, arg2)
+  }
+  ElMessage.warning(t('free.save_error'))
+  return false
+}, 300)
 onMounted(() => {
   const dsId = wsCache.get('ds-info-id') || route.params.id
   nodeInfo.id = (dsId as string) || (route.query.id as string) || ''
@@ -1152,7 +1186,7 @@ const getMenuList = (val: boolean) => {
             :data="state.datasourceTree"
             :props="defaultProps"
             @node-drag-start="handleDragStart"
-            :allow-drop="allowDrop"
+            :allow-drop="proxyAllowDrop"
             @node-drop="handleDrop"
             draggable
             @node-click="handleNodeClick"
@@ -1377,7 +1411,7 @@ const getMenuList = (val: boolean) => {
               <el-table-column
                 key="status"
                 prop="status"
-                v-if="['api'].includes(nodeInfo.type.toLowerCase())"
+                v-if="nodeInfo.type.startsWith('API')"
                 :label="t('data_source.latest_update_status')"
               >
                 <template #default="scope">
@@ -1407,7 +1441,10 @@ const getMenuList = (val: boolean) => {
               <el-table-column
                 key="lastUpdateTime"
                 prop="lastUpdateTime"
-                v-if="['excel', 'api'].includes(nodeInfo.type.toLowerCase())"
+                v-if="
+                  ['excel', 'api'].includes(nodeInfo.type.toLowerCase()) ||
+                  nodeInfo.type.startsWith('API')
+                "
                 :label="t('data_source.latest_update_time')"
               >
                 <template v-slot:default="scope">
@@ -1453,7 +1490,7 @@ const getMenuList = (val: boolean) => {
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <BaseInfoItem :label="t('auth.datasource') + t('common.name')">{{
+                  <BaseInfoItem :label="t('data_source.data_source_name')">{{
                     nodeInfo.name
                   }}</BaseInfoItem>
                 </el-col>
@@ -1466,17 +1503,32 @@ const getMenuList = (val: boolean) => {
               <el-row :gutter="24">
                 <el-col v-if="nodeInfo.type === 'Excel'" :span="12">
                   <BaseInfoItem :label="t('data_source.document')">
-                    <ExcelInfo :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfo>
+                    <ExcelInfoBase :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfoBase>
                   </BaseInfoItem>
                 </el-col>
-                <el-col v-else :span="24">
+                <el-col v-if="nodeInfo.type === 'ExcelRemote'" :span="12">
+                  <BaseInfoItem :label="t('datasource.remote_excel_url')">
+                    {{ nodeInfo.configuration.url }}
+                  </BaseInfoItem>
+                </el-col>
+                <el-col v-if="nodeInfo.type === 'ExcelRemote'" :span="12">
+                  <BaseInfoItem :label="t('data_source.document')">
+                    <ExcelInfoBase :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfoBase>
+                  </BaseInfoItem>
+                </el-col>
+                <el-col v-if="!nodeInfo.type.startsWith('Excel')" :span="24">
                   <BaseInfoItem :label="t('common.description')">{{
                     nodeInfo.description
                   }}</BaseInfoItem>
                 </el-col>
               </el-row>
               <template
-                v-if="!['Excel', 'API', 'es'].includes(nodeInfo.type) && nodeInfo.weight >= 7"
+                v-if="
+                  !['Excel', 'es'].includes(nodeInfo.type) &&
+                  !nodeInfo.type.startsWith('API') &&
+                  !nodeInfo.type.startsWith('Excel') &&
+                  nodeInfo.weight >= 7
+                "
               >
                 <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
                   <el-col :span="12">
@@ -1626,7 +1678,7 @@ const getMenuList = (val: boolean) => {
             </template>
           </BaseInfoContent>
           <BaseInfoContent
-            v-if="nodeInfo.type === 'API' && nodeInfo.weight >= 7"
+            v-if="nodeInfo.type.startsWith('API') && nodeInfo.weight >= 7"
             v-slot="slotProps"
             :name="t('datasource.data_table')"
           >
@@ -1654,14 +1706,9 @@ const getMenuList = (val: boolean) => {
                     </el-button>
                   </el-col>
                 </el-row>
-                <el-row>
-                  <el-col :span="19">
-                    <span
-                      >{{ t('data_source.data_time') }}
-                      {{ timestampFormatDate(api['updateTime']) }}</span
-                    >
-                  </el-col>
-                </el-row>
+                <div>
+                  {{ t('data_source.data_time') }} {{ timestampFormatDate(api['updateTime']) }}
+                </div>
 
                 <div class="req-title">
                   <span>{{ t('datasource.method') }}</span>
@@ -1669,7 +1716,7 @@ const getMenuList = (val: boolean) => {
                 </div>
                 <div class="req-value">
                   <span>{{ api.method }}</span>
-                  <el-tooltip w effect="dark" :content="api.url" placement="top">
+                  <el-tooltip effect="dark" :content="api.url" placement="top">
                     <span>{{ api.url }}</span>
                   </el-tooltip>
                 </div>
@@ -1683,7 +1730,47 @@ const getMenuList = (val: boolean) => {
             </el-button>
           </BaseInfoContent>
           <BaseInfoContent
-            v-if="nodeInfo.type === 'API' && nodeInfo.weight >= 7"
+            v-if="nodeInfo.type.startsWith('Excel')"
+            v-slot="slotProps"
+            :name="t('dataset.data_preview')"
+            :time="nodeInfo.lastSyncTime"
+            :showTime="nodeInfo.type === 'ExcelRemote'"
+          >
+            <template v-if="slotProps.active">
+              <div class="excel-table">
+                <SheetTabs
+                  :active-tab="activeTab"
+                  @tab-click="handleTabClick"
+                  :tab-list="tabList"
+                ></SheetTabs>
+                <div class="sheet-table-content">
+                  <el-auto-resizer>
+                    <template #default="{ height, width }">
+                      <el-table-v2
+                        :columns="columns"
+                        v-loading="dataPreviewLoading"
+                        header-class="excel-header-cell"
+                        :data="tabData"
+                        :width="width"
+                        :height="height"
+                        fixed
+                        ><template #empty>
+                          <empty-background
+                            :description="t('data_set.no_data')"
+                            img-type="noneWhite"
+                          /> </template
+                      ></el-table-v2>
+                    </template>
+                  </el-auto-resizer>
+                </div>
+              </div>
+            </template>
+          </BaseInfoContent>
+          <BaseInfoContent
+            v-if="
+              (nodeInfo.type.startsWith('API') || nodeInfo.type === 'ExcelRemote') &&
+              nodeInfo.weight >= 7
+            "
             v-slot="slotProps"
             :name="t('dataset.update_setting')"
             :time="(nodeInfo.lastSyncTime as string)"
@@ -1716,41 +1803,6 @@ const getMenuList = (val: boolean) => {
               </template>
               {{ t('dataset.update_records') }}
             </el-button>
-          </BaseInfoContent>
-          <BaseInfoContent
-            v-if="nodeInfo.type === 'Excel'"
-            v-slot="slotProps"
-            :name="t('dataset.data_preview')"
-          >
-            <template v-if="slotProps.active">
-              <div class="excel-table">
-                <SheetTabs
-                  :active-tab="activeTab"
-                  @tab-click="handleTabClick"
-                  :tab-list="tabList"
-                ></SheetTabs>
-                <div class="sheet-table-content">
-                  <el-auto-resizer>
-                    <template #default="{ height, width }">
-                      <el-table-v2
-                        :columns="columns"
-                        v-loading="dataPreviewLoading"
-                        header-class="excel-header-cell"
-                        :data="tabData"
-                        :width="width"
-                        :height="height"
-                        fixed
-                        ><template #empty>
-                          <empty-background
-                            :description="t('data_set.no_data')"
-                            img-type="noneWhite"
-                          /> </template
-                      ></el-table-v2>
-                    </template>
-                  </el-auto-resizer>
-                </div>
-              </div>
-            </template>
           </BaseInfoContent>
         </template>
       </template>
@@ -2073,7 +2125,7 @@ const getMenuList = (val: boolean) => {
       font-size: 16px;
       font-weight: 500;
       margin-right: 8px;
-      max-width: 80%;
+      max-width: 70%;
       display: inline-flex;
     }
     .req-title,
@@ -2082,7 +2134,7 @@ const getMenuList = (val: boolean) => {
       font-size: 14px;
       font-weight: 400;
       :nth-child(1) {
-        width: 100px;
+        width: 110px;
       }
 
       :nth-child(2) {

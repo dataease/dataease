@@ -1,6 +1,6 @@
 package io.dataease.engine.trans;
 
-import io.dataease.engine.constant.SQLConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
@@ -60,7 +60,7 @@ public class ExtWhere2Str {
                     String originName;
                     if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
                         // 解析origin name中有关联的字段生成sql表达式
-                        String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
+                        String calcFieldExp = Utils.calcFieldRegex(field, tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
                         // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                         originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
                         fieldsDialect.put(originName, calcFieldExp);
@@ -72,6 +72,14 @@ public class ExtWhere2Str {
                             originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
                         } else {
                             originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+                        }
+                    } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 3) {
+                        String groupFieldExp = Utils.transGroupFieldToSql(field, originFields, isCross, dsMap, pluginManage);
+                        // 给计算字段处加一个占位符，后续SQL方言转换后再替换
+                        originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
+                        fieldsDialect.put(originName, groupFieldExp);
+                        if (isCross) {
+                            originName = groupFieldExp;
                         }
                     } else {
                         if (StringUtils.equalsIgnoreCase(dsType, "es")) {
@@ -158,14 +166,14 @@ public class ExtWhere2Str {
                                     break;
                                 }
                             }
-                            if (hasN) {
+                            if (hasN && !isCross) {
                                 whereValue = "(" + value.stream().map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + ")";
                             } else {
                                 whereValue = "('" + StringUtils.join(value, "','") + "')";
                             }
                         } else {
-                            if (StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
-                                    || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) {
+                            if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
+                                    || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) && !isCross) {
                                 whereValue = "(" + value.stream().map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + ")";
                             } else {
                                 if (request.getDatasetTableField().getDeType() == 2 || request.getDatasetTableField().getDeType() == 3) {
@@ -188,14 +196,14 @@ public class ExtWhere2Str {
                                 break;
                             }
                         }
-                        if (hasN) {
+                        if (hasN && !isCross) {
                             whereValue = "'" + SQLConstants.MSSQL_N_PREFIX + "%" + value.get(0) + "%'";
                         } else {
                             whereValue = "'%" + value.get(0) + "%'";
                         }
                     } else {
-                        if (StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
-                                || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) {
+                        if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
+                                || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) && !isCross) {
                             whereValue = "'" + SQLConstants.MSSQL_N_PREFIX + "%" + value.get(0) + "%'";
                         } else {
                             whereValue = "'%" + value.get(0) + "%'";
@@ -246,14 +254,14 @@ public class ExtWhere2Str {
                                     break;
                                 }
                             }
-                            if (hasN) {
+                            if (hasN && !isCross) {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                             } else {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value.get(0));
                             }
                         } else {
-                            if (StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
-                                    || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) {
+                            if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
+                                    || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR")) && !isCross) {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                             } else {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value.get(0));

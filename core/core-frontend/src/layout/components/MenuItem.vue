@@ -20,6 +20,9 @@ import icon_font from '@/assets/svg/icon_font.svg'
 import icon_msg_fill from '@/assets/svg/icon_msg_fill.svg'
 import icon_free from '@/assets/svg/icon_free.svg'
 import icon_security from '@/assets/svg/icon_security.svg'
+import icon_webhook from '@/assets/svg/icon_webhook.svg'
+import icon_template from '@/assets/svg/icon_template.svg'
+import log from '@/assets/svg/log.svg'
 
 const iconMap = {
   appearance: appearance,
@@ -34,13 +37,16 @@ const iconMap = {
   icon_msg_fill: icon_msg_fill,
   icon_free: icon_free,
   icon_security,
+  icon_webhook,
   auth: auth,
   association: association,
   threshold: threshold,
   org: org,
   peoples: peoples,
   report: report,
-  sync: sync
+  sync: sync,
+  icon_template,
+  log
 }
 
 const titleWithIcon = props => {

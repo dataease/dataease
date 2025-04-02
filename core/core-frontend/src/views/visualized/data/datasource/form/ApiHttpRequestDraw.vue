@@ -15,6 +15,7 @@ import { fieldType } from '@/utils/attr'
 import type { ApiConfiguration } from '@/views/visualized/data/datasource/form/option'
 import { cancelMap } from '@/config/axios/service'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { PluginComponent } from '@/components/plugin'
 
 export interface Field {
   name: string
@@ -29,6 +30,9 @@ export interface ApiItem {
   status: string
   name: string
   type: string
+  appToken: string
+  tableId: string
+  viewId: string
   deTableName?: string
   url: string
   copy: boolean
@@ -109,6 +113,7 @@ const columns = shallowRef([])
 const valueList = shallowRef([])
 const tableData = shallowRef([])
 const apiItemBasicInfo = ref<FormInstance>()
+const xpackApiItemBasicInfo = ref<FormInstance>()
 const isSupportSetKey = ref(false)
 const isNumber = (rule, value, callback) => {
   if (!value) {
@@ -166,11 +171,39 @@ const rule = reactive<FormRules>({
 const activeName = ref('table')
 const editItem = ref(false)
 const copyItem = ref(false)
+const dsType = ref('API')
+const jsName = ref('')
+const isPlugin = ref(false)
+const pluginDs = ref([])
+const pluginIndex = ref('')
 const copyDs = ref(false)
 provide('api-active-name', activeName)
-const initApiItem = (val: ApiItem, from, name, edit, supportSetKey) => {
+const initApiItem = (
+  val: ApiItem,
+  from,
+  name,
+  edit,
+  supportSetKey,
+  pluginDsList,
+  indexPlugin,
+  isPluginDs
+) => {
+  pluginDs.value = pluginDsList
+  pluginIndex.value = indexPlugin
+  if (!isPluginDs) {
+    const arr = pluginDs.value.filter(ele => {
+      return ele.type === from.type
+    })
+    if (arr && arr.length > 0) {
+      isPlugin.value = true
+    }
+  } else {
+    isPlugin.value = isPluginDs
+  }
+
   copyItem.value = val.copy
   copyDs.value = from.copy
+  dsType.value = from.type
   isSupportSetKey.value = supportSetKey
   activeName.value = name
   editItem.value = edit
@@ -178,6 +211,9 @@ const initApiItem = (val: ApiItem, from, name, edit, supportSetKey) => {
   fields = val.fields
   if (from.paramsConfiguration) {
     paramsList = from.paramsConfiguration
+  }
+  if (isPlugin.value) {
+    jsName.value = getPluginStatic()
   }
   valueList.value = []
   if (val.type !== 'params' && paramsList) {
@@ -189,7 +225,18 @@ const initApiItem = (val: ApiItem, from, name, edit, supportSetKey) => {
   edit_api_item.value = true
   active.value = 0
   nextTick(() => {
-    apiItemBasicInfo.value.clearValidate()
+    if (isPlugin.value) {
+      xpackApiItemBasicInfo?.value?.invokeMethod({
+        methodName: 'clearForm',
+        args: []
+      })
+      xpackApiItemBasicInfo?.value?.invokeMethod({
+        methodName: 'initForm',
+        args: []
+      })
+    } else {
+      apiItemBasicInfo.value.clearValidate()
+    }
   })
 }
 
@@ -200,7 +247,7 @@ const showApiData = () => {
       const params = Base64.encode(JSON.stringify(paramsList))
       loading.value = true
       cancelMap['/datasource/checkApiDatasource']?.()
-      checkApiItem({ data: data, type: 'apiStructure', paramsList: params })
+      checkApiItem({ dsType: dsType.value, data: data, type: 'apiStructure', paramsList: params })
         .then(response => {
           originFieldItem.jsonFields = response.data.jsonFields
         })
@@ -317,89 +364,150 @@ const saveItem = () => {
     }
   }
   returnAPIItem('returnItem', cloneDeep(apiItem))
+  if (isPlugin.value) {
+    xpackApiItemBasicInfo?.value?.invokeMethod({
+      methodName: 'resetForm',
+      args: []
+    })
+  }
   edit_api_item.value = false
 }
 const before = () => {
   active.value -= 1
 }
+
 const next = () => {
-  apiItemBasicInfo.value.validate(val => {
-    if (val) {
-      if (apiItem.useJsonPath && !apiItem.jsonPath) {
-        ElMessage.error(t('datasource.please_input_dataPath'))
-        return
+  if (isPlugin.value) {
+    xpackApiItemBasicInfo?.value?.invokeMethod({
+      methodName: 'submitForm',
+      args: [{ eventName: 'stepNext', args: apiItem }]
+    })
+  } else {
+    apiItemBasicInfo.value.validate(val => {
+      if (val) {
+        stepNext()
       }
-      if (apiItem.type === 'params') {
-        for (let i = 0; i < paramsList.length; i++) {
-          if (
-            paramsList[i].name === apiItem.name &&
-            apiItem.serialNumber !== paramsList[i].serialNumber
-          ) {
-            ElMessage.error(t('data_source.name_already_exists_de'))
-            return
-          }
-        }
-      } else {
-        for (let i = 0; i < apiItemList.length; i++) {
-          if (
-            apiItemList[i].name === apiItem.name &&
-            apiItem.serialNumber !== apiItemList[i].serialNumber
-          ) {
-            ElMessage.error(t('datasource.has_repeat_name'))
-            return
-          }
-        }
-      }
-
-      cancelMap['/datasource/checkApiDatasource']?.()
-
-      const params = Base64.encode(JSON.stringify(paramsList))
-      disabledNext.value = true
-      formLoading.value = true
-      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)), paramsList: params })
-        .then(response => {
-          disabledNext.value = false
-          formLoading.value = false
-          apiItem.jsonFields = response.data.jsonFields
-          apiItem.fields = []
-          handleFiledChange(apiItem)
-          previewData()
-          active.value += 1
-        })
-        .catch(error => {
-          disabledNext.value = false
-          formLoading.value = false
-          console.warn(error?.message)
-        })
-    }
-  })
+    })
+  }
 }
 
+const stepNext = () => {
+  if (apiItem.useJsonPath && !apiItem.jsonPath) {
+    ElMessage.error(t('datasource.please_input_dataPath'))
+    return
+  }
+  if (apiItem.type === 'params') {
+    for (let i = 0; i < paramsList.length; i++) {
+      if (
+        paramsList[i].name === apiItem.name &&
+        apiItem.serialNumber !== paramsList[i].serialNumber
+      ) {
+        ElMessage.error(t('data_source.name_already_exists_de'))
+        return
+      }
+    }
+  } else {
+    for (let i = 0; i < apiItemList.length; i++) {
+      if (
+        apiItemList[i].name === apiItem.name &&
+        apiItem.serialNumber !== apiItemList[i].serialNumber
+      ) {
+        ElMessage.error(t('datasource.has_repeat_name'))
+        return
+      }
+    }
+  }
+  cancelMap['/datasource/checkApiDatasource']?.()
+  const params = Base64.encode(JSON.stringify(paramsList))
+  disabledNext.value = true
+  formLoading.value = true
+  checkApiItem({
+    dsType: dsType.value,
+    data: Base64.encode(JSON.stringify(apiItem)),
+    paramsList: params
+  })
+    .then(response => {
+      disabledNext.value = false
+      formLoading.value = false
+      apiItem.jsonFields = response.data.jsonFields
+      apiItem.fields = []
+      apiItem.name = response.data.name
+      handleFiledChange(apiItem)
+      previewData()
+      active.value += 1
+    })
+    .catch(error => {
+      disabledNext.value = false
+      formLoading.value = false
+      console.warn(error?.message)
+    })
+}
 const validate = () => {
-  apiItemBasicInfo.value.validate(val => {
-    if (val) {
-      if (apiItem.useJsonPath && !apiItem.jsonPath) {
-        ElMessage.error(t('datasource.please_input_dataPath'))
+  if (isPlugin.value) {
+    xpackApiItemBasicInfo?.value?.invokeMethod({
+      methodName: 'submitForm',
+      args: [{ eventName: 'validateItem', args: apiItem }]
+    })
+  } else {
+    apiItemBasicInfo.value.validate(val => {
+      if (!val) {
         return
+      } else {
+        validateItem()
       }
-      cancelMap['/datasource/checkApiDatasource']?.()
-      const params = Base64.encode(JSON.stringify(paramsList))
-      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)), paramsList: params })
-        .then(response => {
-          apiItem.jsonFields = response.data.jsonFields
-          apiItem.fields = []
-          handleFiledChange(apiItem)
-          previewData()
-          ElMessage.success(t('datasource.validate_success'))
-        })
-        .catch(() => {
-          ElMessage.error(t('data_source.verification_failed'))
-        })
+    })
+  }
+}
+
+const validateItem = () => {
+  if (apiItem.useJsonPath && !apiItem.jsonPath) {
+    ElMessage.error(t('datasource.please_input_dataPath'))
+    return
+  }
+  cancelMap['/datasource/checkApiDatasource']?.()
+  const params = Base64.encode(JSON.stringify(paramsList))
+  formLoading.value = true
+  checkApiItem({
+    dsType: dsType.value,
+    data: Base64.encode(JSON.stringify(apiItem)),
+    paramsList: params
+  })
+    .then(response => {
+      formLoading.value = false
+      apiItem.jsonFields = response.data.jsonFields
+      apiItem.fields = []
+      apiItem.name = response.data.name
+      handleFiledChange(apiItem)
+      previewData()
+      ElMessage.success(t('datasource.validate_success'))
+    })
+    .catch(() => {
+      formLoading.value = false
+      ElMessage.error(t('data_source.verification_failed'))
+    })
+}
+
+const handleSubmit = param => {
+  const validateFrom = param.validate
+  validateFrom(val => {
+    if (val) {
+      if (param.eventName === 'validateItem') {
+        validateItem()
+      } else {
+        stepNext()
+      }
     }
   })
 }
+
 const closeEditItem = () => {
   cancelMap['/datasource/checkApiDatasource']?.()
+  if (isPlugin.value) {
+    xpackApiItemBasicInfo?.value?.invokeMethod({
+      methodName: 'resetForm',
+      args: []
+    })
+  }
   edit_api_item.value = false
 }
 
@@ -537,6 +645,18 @@ const changeId = (val: string) => {
 
 const activeColumnInfo = ref(true)
 const activeDataPreview = ref(true)
+
+const getPluginStatic = () => {
+  const arr = pluginDs.value.filter(ele => {
+    return ele.type === dsType.value
+  })
+  return pluginIndex.value
+    ? pluginIndex.value
+    : arr && arr.length > 0
+    ? arr[0].staticMap?.index
+    : null
+}
+
 const returnAPIItem = defineEmits(['returnItem'])
 
 defineExpose({
@@ -584,7 +704,7 @@ defineExpose({
       </el-steps>
     </div>
 
-    <el-row v-show="active === 0">
+    <el-row v-show="active === 0 && dsType === 'API'">
       <el-form
         ref="apiItemBasicInfo"
         :model="apiItem"
@@ -629,7 +749,7 @@ defineExpose({
             <span>{{ t('datasource.req_param') }}</span>
           </div>
           <!-- HTTP 请求参数 -->
-          <el-form-item>
+          <el-form-item class="line-height_18">
             <api-http-request-form
               v-if="edit_api_item"
               :request="apiItem.request"
@@ -689,6 +809,16 @@ defineExpose({
         </div>
       </el-form>
     </el-row>
+    <el-row v-show="active === 0 && dsType !== 'API'">
+      <plugin-component
+        :jsname="jsName"
+        :api-item="apiItem"
+        ref="xpackApiItemBasicInfo"
+        @submitForm="handleSubmit"
+        v-if="dsType !== 'API'"
+      >
+      </plugin-component>
+    </el-row>
     <el-row v-show="active === 1">
       <el-form
         style="width: 100%"
@@ -720,17 +850,22 @@ defineExpose({
               class-name="checkbox-table"
               prop="originName"
               :label="t('datasource.parse_filed')"
-              :show-overflow-tooltip="true"
               width="200"
             >
               <template #default="scope">
                 <el-checkbox
+                  style="display: inline-block; max-width: 80px; white-space: nowrap"
                   :key="scope.row.jsonPath"
                   v-model="scope.row.checked"
                   :disabled="apiItem.useJsonPath"
                   @change="handleCheckAllChange(scope.row)"
                 >
-                  {{ scope.row.originName }}
+                  <span
+                    :title="scope.row.originName"
+                    class="ellipsis"
+                    style="display: inline-block; max-width: 80px"
+                    >{{ scope.row.originName }}</span
+                  >
                 </el-checkbox>
               </template>
             </el-table-column>
@@ -793,7 +928,6 @@ defineExpose({
                 </el-select>
               </template>
             </el-table-column>
-
             <el-table-column
               prop="length"
               :label="t('datasource.length')"
@@ -814,7 +948,6 @@ defineExpose({
                 />
               </template>
             </el-table-column>
-
             <el-table-column
               prop="primaryKey"
               class-name="checkbox-table"
@@ -871,7 +1004,7 @@ defineExpose({
     </el-row>
     <template #footer>
       <el-button secondary @click="closeEditItem">{{ t('common.cancel') }}</el-button>
-      <el-button v-show="active === 0" secondary @click="validate"
+      <el-button v-show="active === 0" :disabled="formLoading" secondary @click="validate"
         >{{ t('commons.validate') }}
       </el-button>
       <el-button type="primary" v-show="active === 0" :disabled="disabledNext" @click="next"
@@ -977,6 +1110,12 @@ defineExpose({
 
   .base-info {
     margin: 24px 0 16px 0;
+  }
+
+  .line-height_18 {
+    .ed-form-item__content {
+      line-height: 18px;
+    }
   }
 
   .request-info {

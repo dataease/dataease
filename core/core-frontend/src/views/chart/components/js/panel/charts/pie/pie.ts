@@ -27,19 +27,24 @@ import type { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
 import { cloneDeep } from 'lodash-es'
-
+import { Chart } from '@antv/g2'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   axis: AxisType[] = PIE_AXIS_TYPE
   properties = PIE_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = {
     ...PIE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'alpha', 'radius', 'topN', 'seriesColor']
+    'basic-style-selector': ['colors', 'alpha', 'radius', 'topN', 'seriesColor'],
+    'tooltip-selector': [...PIE_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel']
   }
   axisConfig = PIE_AXIS_CONFIG
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): Promise<G2Pie> {
     const { chart, container, action } = drawOptions
+    this.configEmptyDataStyle(chart.data?.data, container, null, t('chart.no_data_or_not_positive'))
+    chart.container = container
     if (!chart.data?.data?.length) {
       return
     }
@@ -244,6 +249,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
       },
       container: getTooltipContainer(`tooltip-${chart.id}`),
       itemTpl: TOOLTIP_TPL,
+      shared: true,
       enterable: true
     }
     return {
@@ -338,7 +344,8 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 export class PieDonut extends Pie {
   propertyInner: EditorPropertyInner = {
     ...PIE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius', 'topN', 'seriesColor']
+    'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius', 'topN', 'seriesColor'],
+    'tooltip-selector': [...PIE_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel']
   }
   protected configBasicStyle(chart: Chart, options: PieOptions): PieOptions {
     const tmp = super.configBasicStyle(chart, options)

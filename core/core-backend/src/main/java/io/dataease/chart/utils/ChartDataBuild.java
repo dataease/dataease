@@ -1383,10 +1383,7 @@ public class ChartDataBuild {
                     chartDimensionDTO.setValue(row[j]);
                     dimensionList.add(chartDimensionDTO);
                 }
-                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
-                chartDimensionDTO.setId(extStack.get(0).getId());
-                chartDimensionDTO.setValue(row[xAxis.size()]);
-                dimensionList.add(chartDimensionDTO);
+
                 axisChartDataDTO.setDimensionList(dimensionList);
 
                 if (ObjectUtils.isNotEmpty(yAxis)) {

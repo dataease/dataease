@@ -31,6 +31,8 @@ declare type EditorProperty =
   | 'flow-map-line-selector'
   | 'flow-map-point-selector'
   | 'bubble-animate'
+  | 'summary-selector'
+  | 'bullet-graph-selector'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }

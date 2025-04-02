@@ -25,6 +25,7 @@ import { viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { filterEnumParams } from '@/utils/componentUtils'
 const { t } = useI18n()
 
 export const dvMainStore = defineStore('dataVisualization', {
@@ -115,10 +116,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       nowPanelJumpInfo: {},
       // 当前仪表板的跳转信息(只包括仪表板)
       nowPanelJumpInfoTargetPanel: {},
-      // 当前仪表板的外部参数信息
-      nowPanelOuterParamsInfo: {},
-      // 当前仪表板的外部参数基础信息
-      nowPanelOuterParamsBaseInfo: null,
+      // 当前仪表板的外部参数信息 兼容多仪表板嵌入式div
+      nowPanelOuterParamsInfoV2: {},
+      // 当前仪表板的外部参数基础信息 兼容多仪表板嵌入式div
+      nowPanelOuterParamsBaseInfoV2: {},
       // 拖拽的组件信息
       dragComponentInfo: null,
       // 移动端布局状态
@@ -157,6 +158,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       batchOptComponentType: null,
       // panel edit batch operation status
       batchOptStatus: false,
+      // 隐藏组件打开状态
+      hiddenListStatus: false,
+      // 最后隐藏组件
+      lastHiddenComponent: [],
       // Currently selected components
       curBatchOptComponents: [],
       // Currently selected Multiplexing components
@@ -192,10 +197,25 @@ export const dvMainStore = defineStore('dataVisualization', {
       baseCellInfo: {},
       dataPrepareState: false, //数据准备状态
       multiplexingStyleAdapt: true, //复用样式跟随主题
-      mainScrollTop: 0 //主画布运动量
+      mainScrollTop: 0, //主画布运动量
+      isIframe: false, // 当前是否在iframe中
+      isPopWindow: false // 当前是否在iframe弹框中
     }
   },
   actions: {
+    setLastHiddenComponent(value?) {
+      if (value) {
+        this.lastHiddenComponent = [value]
+      } else if (this.lastHiddenComponent.length > 0) {
+        this.lastHiddenComponent = []
+      }
+    },
+    setIframeFlag(value) {
+      this.isIframe = value
+    },
+    setIsPopWindow(value) {
+      this.isPopWindow = value
+    },
     setCanvasAttachInfo(value) {
       this.canvasAttachInfo = value
     },
@@ -271,6 +291,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setCurComponent({ component, index }) {
       this.setCurTabName(null)
+      this.setHiddenListStatus(false)
       if (!component && this.curComponent) {
         this.curComponent['editing'] = false
         this.curComponent['resizing'] = false
@@ -480,14 +501,12 @@ export const dvMainStore = defineStore('dataVisualization', {
               show: true,
               color,
               titleShow: false,
-              borderShow: false,
               text,
               textColorShow: false,
               labelColor,
               borderColor,
               title: '',
               borderWidth: 1,
-              bgColorShow: false,
               bgColor,
               titleColor,
               titleLayout,
@@ -900,6 +919,14 @@ export const dvMainStore = defineStore('dataVisualization', {
         customAttr: {}
       }
     },
+    setHiddenListStatus(status?) {
+      if (status != undefined) {
+        this.hiddenListStatus = !!status
+      } else {
+        this.hiddenListStatus = !this.hiddenListStatus
+      }
+      this.setBatchOptStatus(false)
+    },
     removeCurBatchComponentWithId(id) {
       for (let index = 0; index < this.curBatchOptComponents.length; index++) {
         const element = this.curBatchOptComponents[index]
@@ -961,9 +988,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     setNowTargetPanelJumpInfo(jumpInfo) {
       this.nowPanelJumpInfoTargetPanel = jumpInfo.baseJumpInfoVisualizationMap
     },
-    setNowPanelOuterParamsInfo(outerParamsInfo) {
-      this.nowPanelOuterParamsInfo = outerParamsInfo.outerParamsInfoMap
-      this.nowPanelOuterParamsBaseInfo = outerParamsInfo.outerParamsInfoBaseMap
+    setNowPanelOuterParamsInfoV2(outerParamsInfo, dvId = this.dvInfo.id) {
+      this.nowPanelOuterParamsInfoV2[dvId] = outerParamsInfo.outerParamsInfoMap
+      this.nowPanelOuterParamsBaseInfoV2[dvId] = outerParamsInfo.outerParamsInfoBaseMap
     },
     // 添加联动 下钻 等查询组件
     addViewTrackFilter(data) {
@@ -978,32 +1005,42 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       const preActiveComponentIds = []
       const checkQDList = [...data.dimensionList, ...data.quotaList]
+      const customFilterInfo = data.customFilter
       for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
         const element = this.componentData[indexOuter]
         if (element.id !== viewId) {
           if (['UserView', 'VQuery'].includes(element.component)) {
-            this.trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId)
+            this.trackFilterCursor(
+              element,
+              checkQDList,
+              trackInfo,
+              preActiveComponentIds,
+              viewId,
+              customFilterInfo
+            )
             this.componentData[indexOuter] = element
           } else if (element.component === 'Group') {
-            element.propValue.forEach((groupItem, index) => {
+            element.propValue?.forEach((groupItem, index) => {
               this.trackFilterCursor(
                 groupItem,
                 checkQDList,
                 trackInfo,
                 preActiveComponentIds,
-                viewId
+                viewId,
+                customFilterInfo
               )
               element.propValue[index] = groupItem
             })
           } else if (element.component === 'DeTabs') {
-            element.propValue.forEach(tabItem => {
+            element.propValue?.forEach(tabItem => {
               tabItem.componentData.forEach((tabComponent, index) => {
                 this.trackFilterCursor(
                   tabComponent,
                   checkQDList,
                   trackInfo,
                   preActiveComponentIds,
-                  viewId
+                  viewId,
+                  customFilterInfo
                 )
                 tabItem.componentData[index] = tabComponent
               })
@@ -1023,12 +1060,12 @@ export const dvMainStore = defineStore('dataVisualization', {
             this.trackWebFilterCursor(element, params)
             this.componentData[index] = element
           } else if (element.component === 'Group') {
-            element.propValue.forEach((groupItem, index) => {
+            element.propValue?.forEach((groupItem, index) => {
               this.trackWebFilterCursor(groupItem, params)
               element.propValue[index] = groupItem
             })
           } else if (element.component === 'DeTabs') {
-            element.propValue.forEach(tabItem => {
+            element.propValue?.forEach(tabItem => {
               tabItem.componentData.forEach((tabComponent, index) => {
                 this.trackWebFilterCursor(tabComponent, params)
                 tabItem.componentData[index] = tabComponent
@@ -1039,14 +1076,20 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
     // 添加外部参数的过滤条件
-    addOuterParamsFilter(paramsPre, curComponentData = this.componentData, source = 'inner') {
+    addOuterParamsFilter(
+      paramsPre,
+      curComponentData = this.componentData,
+      source = 'inner',
+      dvId = this.dvInfo.id
+    ) {
       // params 结构 {key1:value1,key2:value2}
       const params = {}
-      if (this.nowPanelOuterParamsBaseInfo) {
+      const paramsVersion = (paramsPre && paramsPre['outerParamsVersion']) || 'v1'
+      if (this.nowPanelOuterParamsBaseInfoV2[dvId]) {
         let errorCount = 0
         let errorMes = ''
-        Object.keys(this.nowPanelOuterParamsBaseInfo).forEach(key => {
-          const targetInfo = this.nowPanelOuterParamsBaseInfo[key]
+        Object.keys(this.nowPanelOuterParamsBaseInfoV2[dvId]).forEach(key => {
+          const targetInfo = this.nowPanelOuterParamsBaseInfoV2[dvId][key]
           const userParams = paramsPre ? paramsPre[key] : null
           const userParamsIsNull = !userParams || userParams.length === 0
           if (targetInfo.required && userParamsIsNull) {
@@ -1075,32 +1118,41 @@ export const dvMainStore = defineStore('dataVisualization', {
 
       if (params) {
         const preActiveComponentIds = []
-        const trackInfo = this.nowPanelOuterParamsInfo
+        const trackInfo = this.nowPanelOuterParamsInfoV2[dvId]
         for (let index = 0; index < curComponentData.length; index++) {
           const element = curComponentData[index]
           if (['UserView', 'VQuery'].includes(element.component)) {
-            this.trackOuterFilterCursor(element, params, preActiveComponentIds, trackInfo, source)
+            this.trackOuterFilterCursor(
+              element,
+              params,
+              preActiveComponentIds,
+              trackInfo,
+              source,
+              paramsVersion
+            )
             this.componentData[index] = element
           } else if (element.component === 'Group') {
-            element.propValue.forEach((groupItem, index) => {
+            element.propValue?.forEach((groupItem, index) => {
               this.trackOuterFilterCursor(
                 groupItem,
                 params,
                 preActiveComponentIds,
                 trackInfo,
-                source
+                source,
+                paramsVersion
               )
               element.propValue[index] = groupItem
             })
           } else if (element.component === 'DeTabs') {
-            element.propValue.forEach(tabItem => {
+            element.propValue?.forEach(tabItem => {
               tabItem.componentData.forEach((tabComponent, index) => {
                 this.trackOuterFilterCursor(
                   tabComponent,
                   params,
                   preActiveComponentIds,
                   trackInfo,
-                  source
+                  source,
+                  paramsVersion
                 )
                 tabItem.componentData[index] = tabComponent
               })
@@ -1111,12 +1163,18 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     trackWebFilterCursor(element, params) {
       if (params[element.id]) {
-        const currentFilters = []
-        currentFilters.push(params[element.id])
-        element['webParamsFilters'] = currentFilters
+        element['webParamsFilters'] = params[element.id]
+        useEmitt().emitter.emit('query-data-' + element.id)
       }
     },
-    trackOuterFilterCursor(element, params, preActiveComponentIds, trackInfo, source) {
+    trackOuterFilterCursor(
+      element,
+      params,
+      preActiveComponentIds,
+      trackInfo,
+      source,
+      outerParamsVersion = 'v1'
+    ) {
       // 弹窗区域禁用时 在弹窗区域的组件不生效
       if (
         !['UserView', 'VQuery'].includes(element.component) ||
@@ -1128,9 +1186,17 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 外部参数 可能会包含多个参数
       Object.keys(params).forEach(function (sourceInfo) {
         // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
-        let paramValue = params[sourceInfo]
-        let paramValueStr = params[sourceInfo]
-        const parmaValueSource = params[sourceInfo]
+        let operatorV2, paramValue, paramValueStr, parmaValueSource
+        if (outerParamsVersion === 'v2') {
+          operatorV2 = params[sourceInfo].operator
+          paramValue = params[sourceInfo].value
+          paramValueStr = params[sourceInfo].value
+          parmaValueSource = params[sourceInfo].value
+        } else {
+          paramValue = params[sourceInfo]
+          paramValueStr = params[sourceInfo]
+          parmaValueSource = params[sourceInfo]
+        }
         let operator = 'in'
         if (paramValue && !Array.isArray(paramValue)) {
           paramValue = [paramValue]
@@ -1158,7 +1224,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               const targetFieldId = targetInfoArray[1] // 目标图表列ID
               const condition = {
                 fieldId: targetFieldId,
-                operator: operator,
+                operator: operatorV2 || operator,
                 value: paramValue,
                 viewIds: [targetViewId]
               }
@@ -1178,7 +1244,8 @@ export const dvMainStore = defineStore('dataVisualization', {
             preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery') {
-            element.propValue.forEach(filterItem => {
+            const defaultValueMap = {}
+            element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
                 if (!['1', '7'].includes(filterItem.displayType)) {
@@ -1221,8 +1288,30 @@ export const dvMainStore = defineStore('dataVisualization', {
                   filterItem['conditionValueF'] = null
                   filterItem['defaultConditionValueF'] = null
                 }
+                if (filterItem['defaultValue']) {
+                  defaultValueMap[filterItem.id] = filterItem['defaultValue']
+                }
               }
             })
+            // 级联条件处理
+            if (element.cascade?.length && Object.keys(defaultValueMap).length) {
+              element.cascade.forEach(cascadeItem => {
+                Object.keys(defaultValueMap).forEach(key => {
+                  const curDefaultValue = defaultValueMap[key]
+                  if (cascadeItem.length) {
+                    cascadeItem.forEach(itemInner => {
+                      if (itemInner.datasetId.includes(key) && curDefaultValue) {
+                        itemInner['currentSelectValue'] = Array.isArray(curDefaultValue)
+                          ? curDefaultValue
+                          : [curDefaultValue]
+                      } else {
+                        itemInner['currentSelectValue'] = []
+                      }
+                    })
+                  }
+                })
+              })
+            }
           }
         })
       })
@@ -1235,10 +1324,24 @@ export const dvMainStore = defineStore('dataVisualization', {
         })
       }
     },
-    trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
+    trackFilterCursor(
+      element,
+      checkQDList,
+      trackInfo,
+      preActiveComponentIds,
+      viewId,
+      customFilter?
+    ) {
       let currentFilters = element.linkageFilters || [] // 当前联动filter
       if (['table-info', 'table-normal'].includes(element.innerType)) {
         currentFilters = []
+      }
+      if (currentFilters.length) {
+        for (let i = currentFilters.length - 1; i >= 0; i--) {
+          if (currentFilters[i].filterType === 3) {
+            currentFilters.splice(i, 1)
+          }
+        }
       }
       // 联动的图表情况历史条件
       // const currentFilters = []
@@ -1251,42 +1354,50 @@ export const dvMainStore = defineStore('dataVisualization', {
           const targetInfoArray = targetInfo.split('#')
           const targetViewId = targetInfoArray[0] // 目标图表
           if (element.component === 'UserView' && element.id === targetViewId) {
-            // 如果目标图表 和 当前循环组件id相等 则进行条件增减
-            const targetFieldId = targetInfoArray[1] // 目标图表列ID
-            let condition
-            if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
-              // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
-              condition = {
-                fieldId: targetFieldId,
-                operator: 'between',
-                value: QDItem.timeValue,
-                viewIds: [targetViewId],
-                sourceViewId: viewId
-              }
+            // 如果含有customFilter 仅加入customFilter
+            if (customFilter) {
+              currentFilters.push({
+                filterType: 3,
+                customFilter: customFilter
+              })
             } else {
-              condition = {
-                fieldId: targetFieldId,
-                operator: 'eq',
-                value: [QDItem.value],
-                viewIds: [targetViewId],
-                sourceViewId: viewId
+              // 如果目标图表 和 当前循环组件id相等 则进行条件增减
+              const targetFieldId = targetInfoArray[1] // 目标图表列ID
+              let condition
+              if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
+                // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
+                condition = {
+                  fieldId: targetFieldId,
+                  operator: 'between',
+                  value: QDItem.timeValue,
+                  viewIds: [targetViewId],
+                  sourceViewId: viewId
+                }
+              } else {
+                condition = {
+                  fieldId: targetFieldId,
+                  operator: 'eq',
+                  value: [QDItem.value],
+                  viewIds: [targetViewId],
+                  sourceViewId: viewId
+                }
               }
-            }
-            let j = currentFilters.length
-            while (j--) {
-              const filter = currentFilters[j]
-              // 兼容性准备 viewIds 只会存放一个值
-              if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
-                currentFilters.splice(j, 1)
+              let j = currentFilters.length
+              while (j--) {
+                const filter = currentFilters[j]
+                // 兼容性准备 viewIds 只会存放一个值
+                if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                  currentFilters.splice(j, 1)
+                }
               }
+              // 不存在该条件 且 条件有效 直接保存该条件
+              // !filterExist && vValid && currentFilters.push(condition)
+              currentFilters.push(condition)
             }
-            // 不存在该条件 且 条件有效 直接保存该条件
-            // !filterExist && vValid && currentFilters.push(condition)
-            currentFilters.push(condition)
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery') {
-            element.propValue.forEach(filterItem => {
+            element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
                 if (!['1', '7'].includes(filterItem.displayType)) {
@@ -1296,6 +1407,12 @@ export const dvMainStore = defineStore('dataVisualization', {
                 filterItem.defaultValueCheck = true
                 filterItem.timeType = 'fixed'
                 if (['0', '2'].includes(filterItem.displayType)) {
+                  const { optionValueSource, field, displayId } = filterItem
+                  const queryMapFlag = optionValueSource === 1 && field.id !== displayId
+                  let queryMapParams = queryParams
+                  if (queryMapFlag) {
+                    queryMapParams = filterEnumParams(queryParams, field.id)
+                  }
                   // 0 文本类型 1 数字类型
                   if (filterItem.multiple) {
                     // multiple === true 多选
@@ -1306,8 +1423,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                     filterItem['selectValue'] = queryParams[0]
                     filterItem['defaultValue'] = queryParams[0]
                   }
-                  filterItem['defaultMapValue'] = queryParams
-                  filterItem['mapValue'] = queryParams
+                  filterItem['defaultMapValue'] = queryMapParams
+                  filterItem['mapValue'] = queryMapParams
                 } else if (filterItem.displayType === '1') {
                   // 1 时间类型
                   filterItem['selectValue'] = queryParams[0]
@@ -1436,7 +1553,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     getViewDetails(viewId) {
       return this.canvasViewInfo[viewId]
     },
-    updateDvInfoId(newId, contentId?) {
+    updateDvInfoCall(status = 1, newId?, contentId?) {
       if (this.dvInfo) {
         this.dvInfo.dataState = 'ready'
         this.dvInfo.optType = null
@@ -1446,6 +1563,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         if (contentId) {
           this.dvInfo.contentId = contentId
         }
+        this.dvInfo.status = status
       }
     },
     popAreaActiveSwitch() {
@@ -1464,6 +1582,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       const optName =
         dvType === 'dashboard' ? t('visualization.new_dashboard') : t('visualization.new_screen')
       const name = preName ? preName : optName
+      this.hiddenListStatus = false
       this.dvInfo = {
         dataState: 'prepare',
         optType: null,
@@ -1471,11 +1590,12 @@ export const dvMainStore = defineStore('dataVisualization', {
         name: name,
         pid: pid,
         type: dvType,
-        status: 1,
+        status: 0,
         selfWatermarkStatus: true,
         watermarkInfo: watermarkInfo,
         mobileLayout: false,
-        contentId: '0'
+        contentId: '0',
+        weight: 9
       }
       const canvasStyleDataNew =
         dvType === 'dashboard'

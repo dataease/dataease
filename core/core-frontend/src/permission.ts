@@ -48,13 +48,24 @@ router.beforeEach(async (to, from, next) => {
           linkQuery = '?' + tempQuery
         }
       }
-      window.location.href = window.origin + '/mobile.html#' + to.path + linkQuery
+      let pathname = window.location.pathname
+      pathname = pathname.replace('casbi/', '')
+      pathname = pathname.replace('oidc/', '')
+      pathname = pathname.substring(0, pathname.length - 1)
+      const prefix = window.origin + pathname
+      window.location.href = prefix + '/mobile.html#' + to.path + linkQuery
     } else if (
       wsCache.get('user.token') ||
       isDesktop ||
       (!isPlatformClient() && !isLarkPlatform())
     ) {
-      window.location.href = window.origin + '/mobile.html#/index'
+      let pathname = window.location.pathname
+      pathname = pathname.substring(0, pathname.length - 1)
+      let url = window.origin + pathname + '/mobile.html#/index'
+      if (window.location.search) {
+        url += window.location.search
+      }
+      window.location.href = url
     }
   }
   await appearanceStore.setAppearance()
@@ -74,6 +85,9 @@ router.beforeEach(async (to, from, next) => {
         let str = ''
         if (((from.query.redirect as string) || '?').split('?')[0] === to.path) {
           str = ((window.location.hash as string) || '?').split('?').reverse()[0]
+          if (str.includes('redirect=')) {
+            str = ''
+          }
         }
         if (str) {
           to.fullPath += '?' + str

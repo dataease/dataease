@@ -111,7 +111,13 @@ export const dsTypes = [
   },
   {
     type: 'Excel',
-    name: 'Excel',
+    name: t('common.local_excel'),
+    catalog: 'LOCAL',
+    extraParams: ''
+  },
+  {
+    type: 'ExcelRemote',
+    name: t('common.remote_excel'),
     catalog: 'LOCAL',
     extraParams: ''
   }

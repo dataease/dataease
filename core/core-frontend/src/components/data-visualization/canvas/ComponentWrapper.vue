@@ -12,7 +12,11 @@ import Board from '@/components/de-board/Board.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { isMobile } from '@/utils/utils'
-import { isDashboard } from '@/utils/canvasUtils'
+import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
+import { XpackComponent } from '@/components/plugin'
+import { useAppStoreWithOut } from '@/store/modules/app'
+import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
+const appStore = useAppStoreWithOut()
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -20,6 +24,7 @@ const dvMainStore = dvMainStoreWithOut()
 const downLoading = ref(false)
 const { wsCache } = useCache('localStorage')
 const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+const dePreviewPopDialogRef = ref(null)
 const commonFilterAttrsFilterBorder = [
   'width',
   'height',
@@ -115,6 +120,15 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  optType: {
+    type: String,
+    required: false
+  },
+  // 画布滚动距离
+  scrollMain: {
+    type: Number,
+    default: 0
   }
 })
 const {
@@ -126,7 +140,8 @@ const {
   dvInfo,
   searchCount,
   scale,
-  suffixId
+  suffixId,
+  scrollMain
 } = toRefs(props)
 let currentInstance
 const component = ref(null)
@@ -135,6 +150,7 @@ const wrapperId = 'wrapper-outer-id-' + config.value.id
 
 const viewDemoInnerId = computed(() => 'enlarge-inner-content-' + config.value.id)
 const htmlToImage = () => {
+  useEmitt().emitter.emit('l7-prepare-picture', config.value.id)
   downLoading.value = true
   setTimeout(() => {
     const vueDom = componentWrapperInnerRef.value
@@ -143,8 +159,9 @@ const htmlToImage = () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false
+      useEmitt().emitter.emit('l7-unprepare-picture', config.value.id)
     })
-  }, 200)
+  }, 1000)
 }
 
 const handleInnerMouseDown = e => {
@@ -154,24 +171,24 @@ const handleInnerMouseDown = e => {
     e.stopPropagation()
     e.preventDefault()
   }
-  if (showPosition.value.includes('popEdit') || dvMainStore.mobileInPc) {
+  if (['popEdit', 'preview'].includes(showPosition.value) || dvMainStore.mobileInPc) {
     onClick(e)
+    e.stopPropagation()
+    e.preventDefault()
   }
 }
 
 onMounted(() => {
   currentInstance = getCurrentInstance()
-  useEmitt({
-    name: 'componentImageDownload-' + config.value.id,
-    callback: () => {
+  const methodName = 'componentImageDownload-' + config.value.id
+  if (!useEmitt().emitter.all.get(methodName)?.length) {
+    useEmitt().emitter.on(methodName, () => {
       htmlToImage()
-    }
-  })
+    })
+  }
 })
 
 const onClick = e => {
-  e.preventDefault()
-  e.stopPropagation()
   // 将当前点击组件的事件传播出去
   eventBus.emit('componentClick')
   dvMainStore.setInEditorStatus(true)
@@ -222,26 +239,7 @@ const componentBackgroundStyle = computed(() => {
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor
     }
-    if (config.value.innerType === 'VQuery') {
-      if (backgroundColorSelect) {
-        style = {
-          padding: innerPadding * deepScale.value + 'px',
-          borderRadius: borderRadius + 'px'
-        }
-      } else {
-        style = {
-          padding: 12 * deepScale.value + 'px',
-          borderRadius: '0'
-        }
-      }
-    }
-    if (config.value.innerType === 'VQuery' && backgroundColorSelect) {
-      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
-        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat`
-      } else {
-        style['background-color'] = colorRGBA
-      }
-    } else if (backgroundImageEnable) {
+    if (backgroundImageEnable) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
         style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
       } else {
@@ -329,17 +327,17 @@ const onWrapperClick = e => {
       const url = config.value.events.jump.value
       const jumpType = config.value.events.jump.type
       try {
-        let newWindow
         if ('newPop' === jumpType) {
-          window.open(
-            url,
-            '_blank',
-            'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
-          )
+          dePreviewPopDialogRef.value.previewInit({ url, size: 'middle' })
+        } else if ('_blank' === jumpType) {
+          if (window['originOpen']) {
+            window['originOpen'](url, '_blank')
+          } else {
+            window.open(url, '_blank')
+          }
         } else {
-          newWindow = window.open(url, jumpType)
+          initOpenHandler(window.open(url, jumpType))
         }
-        initOpenHandler(newWindow)
       } catch (e) {
         console.warn('url 格式错误:' + url)
       }
@@ -367,12 +365,25 @@ const initOpenHandler = newWindow => {
 }
 const deepScale = computed(() => scale.value / 100)
 const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && props.active))
+
+const freezeFlag = computed(() => {
+  return (
+    isMainCanvas(props.canvasId) &&
+    config.value.freeze &&
+    scrollMain.value - config.value.style?.top > 0
+  )
+})
 </script>
 
 <template>
   <div
     class="wrapper-outer"
-    :class="showPosition + '-' + config.component"
+    :class="[
+      showPosition + '-' + config.component,
+      {
+        'freeze-component': freezeFlag
+      }
+    ]"
     :id="wrapperId"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
@@ -418,6 +429,7 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
           ref="component"
           class="component"
           :canvas-style-data="canvasStyleData"
+          :opt-type="optType"
           :dv-info="dvInfo"
           :dv-type="dvInfo.type"
           :canvas-view-info="canvasViewInfo"
@@ -433,6 +445,7 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
           :is-edit="false"
           :suffix-id="suffixId"
           :font-family="fontFamily"
+          :active="active"
           @onPointClick="onPointClick"
         />
       </div>
@@ -443,6 +456,11 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
         :name="commonBackgroundSvgInner"
       ></Board>
     </div>
+    <XpackComponent
+      ref="openHandler"
+      jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
+    />
+    <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>
 
@@ -501,5 +519,12 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
 }
 .event-active {
   cursor: pointer;
+}
+
+.freeze-component {
+  position: fixed;
+  z-index: 1;
+  top: var(--top-show-offset) px !important;
+  left: var(--left-show-offset) px !important;
 }
 </style>

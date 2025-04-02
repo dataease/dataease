@@ -47,6 +47,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { recoverToPublished } from '@/api/visualization/dataVisualization'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -100,6 +101,8 @@ let createType = null
 let isDragging = false // 标记是否在拖动
 let startX, startY, scrollLeft, scrollTop
 const state = reactive({
+  sideShow: true,
+  countTime: 0,
   datasetTree: [],
   scaleHistory: null,
   canvasId: 'canvas-main',
@@ -160,14 +163,15 @@ const contentStyle = computed(() => {
   } else {
     return {
       minWidth: '1600px',
-      width: width * 1.5 + 'px',
-      height: height * 1.5 + 'px'
+      width: width * scrollOffset.value + 'px',
+      height: height * scrollOffset.value + 'px'
     }
   }
 })
 
 // 通过实时监听的方式直接添加组件
 const handleNew = newComponentInfo => {
+  state.countTime++
   const { componentName, innerType, staticMap } = newComponentInfo
   if (componentName) {
     const { width, height, scale } = canvasStyleData.value
@@ -191,6 +195,14 @@ const handleNew = newComponentInfo => {
     dvMainStore.addComponent({ component: component, index: undefined })
     adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshotCache('renderChart', component.id)
+    if (state.countTime > 10) {
+      state.sideShow = false
+      nextTick(() => {
+        state.countTime = 0
+        state.sideShow = true
+      })
+    }
+    useEmitt().emitter.emit('initScroll')
   }
 }
 
@@ -248,6 +260,8 @@ const initDataset = () => {
   })
 }
 
+const scrollOffset = computed(() => (canvasStyleData.value.scale < 150 ? 1.5 : 2))
+
 // 全局监听按键事件
 listenGlobalKeyDown()
 
@@ -257,8 +271,8 @@ const initScroll = () => {
       const { width, height } = canvasStyleData.value
       const mainWidth = canvasCenterRef.value.clientWidth
       mainHeight.value = canvasCenterRef.value.clientHeight
-      const scrollX = (1.5 * width - mainWidth) / 2
-      const scrollY = (1.5 * height - mainHeight.value) / 2 + 20
+      const scrollX = (scrollOffset.value * width - mainWidth) / 2
+      const scrollY = (scrollOffset.value * height - mainHeight.value) / 2 + 20
       // 设置画布初始滚动条位置
       canvasOut.value.scrollTo(scrollX, scrollY)
     }
@@ -279,15 +293,17 @@ const doUseCache = flag => {
       }, 2000)
     })
   } else {
-    initLocalCanvasData()
+    initLocalCanvasData(() => {
+      // do init
+    })
     wsCache.delete('DE-DV-CATCH-' + state.resourceId)
   }
 }
 
-const initLocalCanvasData = async () => {
+const initLocalCanvasData = async callback => {
   const { opt, sourcePid, resourceId } = state
-  const busiFlg = opt === 'copy' ? 'dataV-copy' : 'dataV'
-  await initCanvasData(resourceId, busiFlg, function () {
+  const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
+  await initCanvasData(resourceId, { busiFlag, resourceTable: 'snapshot' }, function () {
     state.canvasInitStatus = true
     // afterInit
     nextTick(() => {
@@ -302,6 +318,7 @@ const initLocalCanvasData = async () => {
         }, 1500)
       }
       onInitReady({ resourceId: resourceId })
+      callback && callback()
     })
   })
 }
@@ -356,6 +373,7 @@ const newWindowFromDiv = ref(false)
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
+  dvMainStore.setCurComponent({ component: null, index: null })
   snapshotStore.initSnapShot()
   if (window.location.hash.includes('#/dvCanvas')) {
     newWindowFromDiv.value = true
@@ -387,7 +405,9 @@ onMounted(async () => {
     if (canvasCache) {
       canvasCacheOutRef.value?.dialogInit({ canvasType: 'dataV', resourceId: dvId })
     } else {
-      await initLocalCanvasData()
+      await initLocalCanvasData(() => {
+        // do init
+      })
     }
   } else if (opt && opt === 'create') {
     state.canvasInitStatus = false
@@ -484,6 +504,14 @@ const popComponentData = computed(() =>
   componentData.value.filter(ele => ele.category && ele.category === 'hidden')
 )
 
+const doRecoverToPublished = () => {
+  recoverToPublished({ id: dvInfo.value.id, type: 'dataV', name: dvInfo.value.name }).then(() => {
+    initLocalCanvasData(() => {
+      dvMainStore.updateDvInfoCall(1)
+    })
+  })
+}
+
 eventBus.on('handleNew', handleNew)
 
 eventBus.on('tabSort', tabSort)
@@ -495,7 +523,7 @@ eventBus.on('tabSort', tabSort)
     class="dv-common-layout"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
   >
-    <DvToolbar />
+    <DvToolbar @recover-to-published="doRecoverToPublished" />
     <div class="custom-dv-divider" />
     <el-container
       v-if="loadFinish"
@@ -578,7 +606,7 @@ eventBus.on('tabSort', tabSort)
       </main>
       <!-- 右侧侧组件列表 -->
       <div style="width: auto; height: 100%" ref="leftSidebarRef">
-        <template v-if="!batchOptStatus">
+        <template v-if="!batchOptStatus && state.sideShow">
           <dv-sidebar
             v-if="otherEditorShow"
             :title="curComponent['name']"
@@ -645,7 +673,7 @@ eventBus.on('tabSort', tabSort)
     :canvas-data-preview="componentData"
     :canvas-style-preview="canvasStyleData"
     :canvas-view-info-preview="canvasViewInfo"
-    :dv-info="dvInfo"
+    :dv-info="{ ...dvInfo, status: 1 }"
   ></dv-preview>
   <custom-tabs-sort ref="customTabsSortRef"></custom-tabs-sort>
 </template>
@@ -659,7 +687,7 @@ eventBus.on('tabSort', tabSort)
 }
 
 .dv-common-layout {
-  height: calc(100vh - 1px);
+  height: 100vh;
   width: 100vw;
   overflow: hidden;
   color: @dv-canvas-main-font-color;

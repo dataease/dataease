@@ -58,7 +58,6 @@ import '@/style/index.less'
 import 'normalize.css/normalize.css'
 import '@antv/s2/dist/style.min.css'
 import AppElement from './App.vue'
-import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
@@ -90,11 +89,7 @@ const setupAll = async (
     outerParams,
     suffixId
   })
-  await setupI18n(app)
   setupStore(app)
-  setupRouter(app)
-  setupElementPlus(app)
-  setupElementPlusIcons(app)
   const embeddedStore = useEmbedded()
   embeddedStore.setType(type)
   embeddedStore.setBusiFlag(busiFlag)
@@ -106,6 +101,11 @@ const setupAll = async (
   embeddedStore.setPid(pid)
   embeddedStore.setResourceId(resourceId)
   embeddedStore.setDfId(dfId)
+  const i18 = await import('@/plugins/vue-i18n')
+  await i18.setupI18n(app)
+  setupRouter(app)
+  setupElementPlus(app)
+  setupElementPlusIcons(app)
   const directive = await import('@/directive')
   directive.installDirective(app)
   const res = await import('@/store/modules/user')

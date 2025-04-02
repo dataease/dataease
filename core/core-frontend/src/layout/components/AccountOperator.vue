@@ -279,7 +279,7 @@ if (uid.value === '1') {
   padding-bottom: 0 !important;
 }
 .language-popover {
-  max-height: 112px;
+  // max-height: 112px;
   .ed-popper__arrow {
     display: none;
   }

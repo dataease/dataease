@@ -56,9 +56,11 @@
                   :content="t('commons.edit') + t('chart.indicator_suffix')"
                   placement="top"
                 >
-                  <Icon name="icon_edit_outlined" class="edit-uuid-icon">
-                    <icon_edit_outlined class="svg-icon edit-uuid-icon" />
-                  </Icon>
+                  <el-icon class="edit-uuid-icon" style="cursor: pointer">
+                    <Icon class="edit-uuid-icon">
+                      <icon_edit_outlined class="svg-icon edit-uuid-icon" />
+                    </Icon>
+                  </el-icon>
                 </el-tooltip>
               </div>
               <div class="input-suffix-btn" v-if="linkCustom" @click.stop="resetUuid">
@@ -68,12 +70,20 @@
                   :content="t('commons.cancel')"
                   placement="top"
                 >
-                  <Icon name="icon_close_outlined"><icon_close_outlined class="svg-icon" /></Icon>
+                  <el-icon style="cursor: pointer">
+                    <Icon><icon_close_outlined class="svg-icon" /></Icon>
+                  </el-icon>
                 </el-tooltip>
               </div>
-              <div class="input-suffix-btn done" v-if="linkCustom" @click.stop="finishEditUuid">
+              <div
+                class="input-suffix-btn done-finish"
+                v-if="linkCustom"
+                @click.stop="finishEditUuid"
+              >
                 <el-tooltip class="item" effect="dark" :content="t('commons.save')" placement="top">
-                  <Icon name="icon_done_outlined"><icon_done_outlined class="svg-icon" /></Icon>
+                  <el-icon style="cursor: pointer">
+                    <Icon><icon_done_outlined class="svg-icon" /></Icon>
+                  </el-icon>
                 </el-tooltip>
               </div>
             </div>
@@ -127,6 +137,7 @@
         </el-checkbox>
         <div class="auto-pwd-container" v-if="passwdEnable">
           <el-checkbox
+            v-show="false"
             :disabled="!shareEnable"
             v-model="state.detailInfo.autoPwd"
             @change="autoEnableSwitcher"
@@ -136,6 +147,7 @@
         <div class="inline-share-item" v-if="passwdEnable">
           <el-input
             ref="pwdRef"
+            style="flex: 1"
             class="link-input-readlonly"
             v-model="state.detailInfo.pwd"
             :readonly="state.detailInfo.autoPwd"
@@ -150,7 +162,9 @@
                     :content="t('commons.copy')"
                     placement="top"
                   >
-                    <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
+                    <el-icon style="cursor: pointer">
+                      <Icon><deCopy class="svg-icon" /></Icon>
+                    </el-icon>
                   </el-tooltip>
                 </div>
                 <div class="input-suffix-btn" @click="resetPwd">
@@ -160,9 +174,9 @@
                     :content="t('commons.reset')"
                     placement="top"
                   >
-                    <Icon name="icon_refresh_outlined"
-                      ><icon_refresh_outlined class="svg-icon"
-                    /></Icon>
+                    <el-icon style="cursor: pointer">
+                      <Icon><icon_refresh_outlined class="svg-icon" /></Icon>
+                    </el-icon>
                   </el-tooltip>
                 </div>
               </div>
@@ -364,7 +378,9 @@ const loadShareInfo = cb => {
     .get({ url })
     .then(res => {
       state.detailInfo = { ...res.data }
-      originUuid.value = res.data.uuid
+      if (res.data?.uuid) {
+        originUuid.value = res.data.uuid
+      }
       setPageInfo()
     })
     .finally(() => {
@@ -402,8 +418,7 @@ const formatLinkBase = () => {
   if (embeddedStore.baseUrl) {
     prefix = embeddedStore.baseUrl + '#'
   } else {
-    const href = window.location.href
-    prefix = href.substring(0, href.indexOf('#') + 1)
+    prefix = window.location.origin + window.location.pathname + '#'
   }
   if (prefix.includes('oidcbi/') || prefix.includes('casbi/')) {
     prefix = prefix.replace('oidcbi/', '')
@@ -805,7 +820,7 @@ defineExpose({
     background-color: #bbbfc4;
     margin-right: 4px;
   }
-  .done {
+  .done-finish {
     color: #3370ff;
     &:hover {
       background-color: #3370ff1a !important;

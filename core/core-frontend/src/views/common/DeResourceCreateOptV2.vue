@@ -2,7 +2,7 @@
   <el-dialog
     class="market-create-dialog"
     v-model="state.dialogShow"
-    width="90vw"
+    width="80vw"
     height="90vh"
     :before-close="close"
     @submit.prevent
@@ -36,6 +36,9 @@ defineExpose({
 
 <style lang="less">
 .market-create-dialog {
+  border-radius: 4px !important;
+
+  overflow: hidden;
   .ed-dialog__body {
     padding: 0 !important;
   }

@@ -46,7 +46,8 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     'label-selector': ['seriesLabelVPosition', 'seriesLabelFormatter', 'showExtremum'],
     'tooltip-selector': [
       ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axis: AxisType[] = [...LINE_AXIS_TYPE]
@@ -103,8 +104,8 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Area>): Promise<G2Area> {
     const { chart, container, action } = drawOptions
+    chart.container = container
     if (!chart.data?.data?.length) {
-      chart.container = container
       clearExtremum(chart)
       return
     }

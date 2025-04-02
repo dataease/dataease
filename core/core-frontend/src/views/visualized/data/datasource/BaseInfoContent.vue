@@ -2,10 +2,15 @@
 import icon_expandRight_filled from '@/assets/svg/icon_expand-right_filled.svg'
 import { ref } from 'vue'
 import { propTypes } from '@/utils/propTypes'
+import { timestampFormatDate } from '../dataset/form/util'
+import { useI18n } from '@/hooks/web/useI18n'
 defineProps({
-  name: propTypes.string.def('')
+  name: propTypes.string.def(''),
+  time: propTypes.number.def(0),
+  showTime: propTypes.bool.def(false)
 })
 const active = ref(true)
+const { t } = useI18n()
 defineExpose({
   active
 })
@@ -18,6 +23,9 @@ defineExpose({
         <Icon name="icon_expand-right_filled"><icon_expandRight_filled class="svg-icon" /></Icon>
       </el-icon>
       <span class="name">{{ name }}</span>
+      <span v-show="showTime" class="time">
+        {{ t('data_source.data_time') }}{{ timestampFormatDate(time) }}</span
+      >
     </p>
     <slot :active="active"></slot>
   </div>
@@ -60,7 +68,12 @@ defineExpose({
     line-height: 24px;
     margin-left: 8px;
   }
-
+  .time {
+    color: #8f959e;
+    font-size: 14px;
+    line-height: 22px;
+    padding: 0 0 0 8px;
+  }
   &.active {
     .title {
       .ed-icon {

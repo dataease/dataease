@@ -34,9 +34,9 @@ public class RsaUtils {
     }
 
 
-    private static final int MAX_ENCRYPT_BLOCK = 117;
+    private static final int MAX_ENCRYPT_BLOCK = 245;
 
-    private static final int MAX_DECRYPT_BLOCK = 128;
+    private static final int MAX_DECRYPT_BLOCK = 256;
 
     private static final String PK_SEPARATOR = "-pk_separator-";
 
@@ -55,7 +55,7 @@ public class RsaUtils {
             LogUtil.error(e.getMessage(), e);
             DEException.throwException(e);
         }
-        generator.initialize(1024);
+        generator.initialize(2048);
         return generator.generateKeyPair();
     }
 

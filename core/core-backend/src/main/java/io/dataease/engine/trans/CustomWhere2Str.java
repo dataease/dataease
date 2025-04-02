@@ -1,6 +1,6 @@
 package io.dataease.engine.trans;
 
-import io.dataease.engine.constant.SQLConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
@@ -90,7 +90,7 @@ public class CustomWhere2Str {
         String originName;
         if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
             // 解析origin name中有关联的字段生成sql表达式
-            String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
+            String calcFieldExp = Utils.calcFieldRegex(field, tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
             // 给计算字段处加一个占位符，后续SQL方言转换后再替换
             originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
             fieldsDialect.put(originName, calcFieldExp);
@@ -102,6 +102,14 @@ public class CustomWhere2Str {
                 originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
             } else {
                 originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+            }
+        } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 3) {
+            String groupFieldExp = Utils.transGroupFieldToSql(field, originFields, isCross, dsMap, pluginManage);
+            // 给计算字段处加一个占位符，后续SQL方言转换后再替换
+            originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
+            fieldsDialect.put(originName, groupFieldExp);
+            if (isCross) {
+                originName = groupFieldExp;
             }
         } else {
             if (StringUtils.equalsIgnoreCase(dsType, "es")) {
@@ -158,8 +166,8 @@ public class CustomWhere2Str {
 
         if (StringUtils.equalsIgnoreCase(item.getFilterType(), "enum")) {
             if (ObjectUtils.isNotEmpty(item.getEnumValue())) {
-                if (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
-                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) {
+                if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) && !isCross) {
                     res = "(" + whereName + " IN (" + item.getEnumValue().stream().map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + "))";
                 } else {
                     res = "(" + whereName + " IN ('" + String.join("','", item.getEnumValue()) + "'))";
@@ -184,15 +192,15 @@ public class CustomWhere2Str {
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
-                if (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
-                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) {
+                if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) && !isCross) {
                     whereValue = "(" + Arrays.stream(value.split(",")).map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + ")";
                 } else {
                     whereValue = "('" + String.join("','", value.split(",")) + "')";
                 }
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
-                if (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
-                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) {
+                if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) && !isCross) {
                     whereValue = "'" + SQLConstants.MSSQL_N_PREFIX + "%" + value + "%'";
                 } else {
                     whereValue = "'%" + value + "%'";
@@ -237,8 +245,8 @@ public class CustomWhere2Str {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                     }
                 } else {
-                    if (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
-                            || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) {
+                    if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                            || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) && !isCross) {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value);
                     } else {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);

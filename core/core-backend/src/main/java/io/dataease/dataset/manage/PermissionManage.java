@@ -246,6 +246,7 @@ public class PermissionManage {
                     for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {
                         if (sysVariableValueDto.getId().equals(variable.getVariableValueId())) {
                             value = sysVariableValueDto.getValue();
+                            break;
                         }
                     }
                 }

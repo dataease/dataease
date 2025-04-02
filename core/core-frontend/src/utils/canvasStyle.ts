@@ -116,7 +116,14 @@ export function colorRgb(color, opacity) {
 }
 
 export const customAttrTrans = {
-  basicStyle: ['barWidth', 'lineWidth', 'lineSymbolSize', 'tableColumnWidth'],
+  basicStyle: [
+    'barWidth',
+    'lineWidth',
+    'lineSymbolSize',
+    'leftLineWidth',
+    'leftLineSymbolSize',
+    'tableColumnWidth'
+  ],
   tableHeader: [
     'tableTitleFontSize',
     'tableTitleColFontSize',
@@ -153,6 +160,9 @@ export const customStyleTrans = {
     axisLabel: ['fontSize'],
     splitLine: {
       lineStyle: ['width']
+    },
+    axisLine: {
+      lineStyle: ['width']
     }
   },
   yAxis: {
@@ -160,12 +170,18 @@ export const customStyleTrans = {
     axisLabel: ['fontSize'],
     splitLine: {
       lineStyle: ['width']
+    },
+    axisLine: {
+      lineStyle: ['width']
     }
   },
   yAxisExt: {
     fontSize: 'fontSize',
     axisLabel: ['fontSize'],
     splitLine: {
+      lineStyle: ['width']
+    },
+    axisLine: {
       lineStyle: ['width']
     }
   },
@@ -279,8 +295,7 @@ export const THEME_ATTR_TRANS_MAIN = {
     color: 'color',
     proportionSeriesFormatter: ['color']
   },
-  tooltip: ['color'],
-  indicatorName: ['color']
+  tooltip: ['color']
 }
 
 export const THEME_ATTR_TRANS_MAIN_SYMBOL = {

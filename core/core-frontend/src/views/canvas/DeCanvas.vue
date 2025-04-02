@@ -45,9 +45,15 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  // 画布位置
+  canvasPosition: {
+    type: String,
+    required: false,
+    default: 'main'
   }
 })
-const { canvasStyleData, componentData, canvasViewInfo, canvasId, canvasActive, outerScale } =
+const { canvasStyleData, componentData, canvasViewInfo, canvasId, canvasActive, canvasPosition } =
   toRefs(props)
 const domId = ref('de-canvas-' + canvasId.value)
 // change-end
@@ -98,8 +104,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
     component.x = cyGridster.value.findPositionX(component)
     dvMainStore.addComponent({
       component: component,
-      index: undefined,
-      componentData: componentData.value
+      index: undefined
     })
     adaptCurThemeCommonStyle(component)
     nextTick(() => {
@@ -108,7 +113,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
         scrollTo(component.y)
       })
     })
-    snapshotStore.recordSnapshotCache('renderChart', component.id)
+    snapshotStore.recordSnapshotCacheWithPositionChange('renderChart', component.id)
   }
 }
 
@@ -121,7 +126,7 @@ const handleDrop = e => {
     addComponent.isShow = true
     syncShapeItemStyle(addComponent, baseWidth.value, baseHeight.value)
     cyGridster.value.handleMouseUp(e, addComponent, componentData.value.length - 1)
-    snapshotStore.recordSnapshotCache('renderChart', addComponent.id)
+    snapshotStore.recordSnapshotCacheWithPositionChange('renderChart', addComponent.id)
   }
 }
 
@@ -147,7 +152,7 @@ const canvasInitImmediately = () => {
 }
 
 const canvasInit = (isFistLoad = true) => {
-  if (canvasActive.value) {
+  if (canvasActive.value || canvasPosition.value === 'tab') {
     renderState.value = true
     setTimeout(function () {
       if (canvasOut.value) {
@@ -227,8 +232,7 @@ const moveOutFromTab = component => {
     dvMainStore.addComponent({
       component,
       index: undefined,
-      isFromGroup: true,
-      componentData: componentData.value
+      isFromGroup: true
     })
     addItemBox(component)
     canvasInit()
@@ -245,6 +249,7 @@ onMounted(() => {
   canvasInit()
   if (isMainCanvas(canvasId.value)) {
     eventBus.on('handleNew', handleNewFromCanvasMain)
+    eventBus.on('event-canvas-size-init', canvasSizeInit)
   }
   eventBus.on('moveOutFromTab-' + canvasId.value, moveOutFromTab)
   eventBus.on('matrix-canvasInit', canvasInit)
@@ -253,6 +258,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (isMainCanvas(canvasId.value)) {
     eventBus.off('handleNew', handleNewFromCanvasMain)
+    eventBus.off('event-canvas-size-init', canvasSizeInit)
   }
   eventBus.off('moveOutFromTab-' + canvasId.value, moveOutFromTab)
   eventBus.off('matrix-canvasInit', canvasInit)
@@ -265,7 +271,7 @@ const getBaseMatrixSize = () => {
   }
 }
 
-const scrollTo = y => {
+const scrollTo = (y = 1) => {
   setTimeout(() => {
     canvasInner.value.scrollTo({
       top: (y - 1) * baseHeight.value,
@@ -328,7 +334,7 @@ defineExpose({
         :base-width="baseWidth"
         :base-height="baseHeight"
         :font-family="fontFamily"
-        @scrollCanvasToTop="scrollTo(1)"
+        @scrollCanvasAdjust="scrollTo"
       ></canvas-core>
     </div>
   </div>

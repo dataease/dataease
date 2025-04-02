@@ -12,12 +12,22 @@ import { cloneDeep, debounce, defaultsDeep } from 'lodash-es'
 import { SERIES_NUMBER_FIELD } from '@antv/s2'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { isNumber } from 'mathjs'
-import { ElFormItem, ElInputNumber, ElMessage, UploadProps } from 'element-plus-secondary'
+import { isNumber } from 'lodash-es'
+import { ElFormItem, ElInputNumber, ElMessage } from 'element-plus-secondary'
 import { svgStrToUrl } from '../../../js/util'
+import { numberToChineseUnderHundred } from '../../../js/panel/common/common_antv'
+import { useLocaleStoreWithOut } from '@/store/modules/locale'
+import { useMapStoreWithOut } from '@/store/modules/map'
+import { queryMapKeyApi } from '@/api/setting/sysParameter'
+import {
+  gaodeMapStyleOptions,
+  qqMapStyleOptions,
+  tdtMapStyleOptions
+} from '@/views/chart/components/js/panel/charts/map/common'
 
 const dvMainStore = dvMainStoreWithOut()
-const { batchOptStatus } = storeToRefs(dvMainStore)
+const localeStore = useLocaleStoreWithOut()
+const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const props = defineProps({
   chart: {
@@ -32,7 +42,17 @@ const props = defineProps({
     type: Array<string>
   }
 })
-const showProperty = prop => props.propertyInner?.includes(prop)
+const showProperty = prop => {
+  const has = props.propertyInner?.includes(prop)
+  if (!has) {
+    return false
+  }
+  if (props.chart.type.includes('map') && mapType.value === 'tianditu' && prop === 'showLabel') {
+    return false
+  }
+  return has
+}
+const tableExpandLevelOptions = reactive([{ name: t('chart.expand_all'), value: 'all' }])
 const predefineColors = COLOR_PANEL
 const state = reactive({
   basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle,
@@ -105,6 +125,20 @@ const init = () => {
   if (!state.customColor) {
     state.customColor = state.basicStyleForm.colors[0]
     state.colorIndex = 0
+  }
+  if (basicStyle.tableLayoutMode === 'tree') {
+    tableExpandLevelOptions.splice(1)
+    let maxLevel = props.chart.xAxis?.length
+    if (isNumber(basicStyle.defaultExpandLevel)) {
+      maxLevel = Math.max(maxLevel, basicStyle.defaultExpandLevel)
+    }
+    for (let i = 1; i <= maxLevel; i++) {
+      let name = t('chart.level_label', { num: i })
+      if (localeStore.getCurrentLocale.lang !== 'en') {
+        name = t('chart.level_label', { num: numberToChineseUnderHundred(i) })
+      }
+      tableExpandLevelOptions.push({ name, value: i })
+    }
   }
   initTableColumnWidth()
 }
@@ -238,16 +272,34 @@ const symbolOptions = [
   { name: t('chart.line_symbol_triangle'), value: 'triangle' },
   { name: t('chart.line_symbol_diamond'), value: 'diamond' }
 ]
-const mapStyleOptions = [
-  { name: t('chart.map_style_normal'), value: 'normal' },
-  { name: t('chart.map_style_darkblue'), value: 'darkblue' },
-  { name: t('chart.map_style_light'), value: 'light' },
-  { name: t('chart.map_style_dark'), value: 'dark' },
-  { name: t('chart.map_style_fresh'), value: 'fresh' },
-  { name: t('chart.map_style_grey'), value: 'grey' },
-  { name: t('chart.map_style_blue'), value: 'blue' },
-  { name: t('commons.custom'), value: 'custom' }
-]
+
+const mapStore = useMapStoreWithOut()
+
+const getMapKey = async () => {
+  if (!mapStore.mapKey.key) {
+    await queryMapKeyApi().then(res => mapStore.setKey(res.data))
+  }
+  if (mapStore.mapKey.securityCode) {
+    window._AMapSecurityConfig = {
+      securityJsCode: mapStore.mapKey.securityCode
+    }
+  }
+  return mapStore.mapKey
+}
+
+const mapType = ref<string>(undefined)
+
+const mapStyleOptions = computed(() => {
+  switch (mapType.value) {
+    case 'tianditu':
+      return tdtMapStyleOptions
+    case 'qq':
+      return qqMapStyleOptions
+    default:
+      return gaodeMapStyleOptions
+  }
+})
+
 const heatMapTypeOptions = [
   { name: t('chart.heatmap_classics'), value: 'heatmap' },
   { name: t('chart.heatmap3D'), value: 'heatmap3D' }
@@ -266,6 +318,11 @@ const mergeCell = computed(() => {
 })
 onMounted(() => {
   init()
+  getMapKey().then(res => {
+    if (res) {
+      mapType.value = res.mapType
+    }
+  })
 })
 </script>
 <template>
@@ -306,6 +363,25 @@ onMounted(() => {
         <el-radio label="grid" :effect="themes">{{ t('chart.table_layout_grid') }}</el-radio>
         <el-radio label="tree" :effect="themes">{{ t('chart.table_layout_tree') }}</el-radio>
       </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      class="form-item"
+      v-if="showProperty('tableLayoutMode') && state.basicStyleForm.tableLayoutMode === 'tree'"
+      :label="t('chart.default_expand_level')"
+      :class="'form-item-' + themes"
+    >
+      <el-select
+        :effect="themes"
+        v-model="state.basicStyleForm.defaultExpandLevel"
+        @change="changeBasicStyle('defaultExpandLevel')"
+      >
+        <el-option
+          v-for="item in tableExpandLevelOptions"
+          :key="item.value"
+          :label="item.name"
+          :value="item.value"
+        />
+      </el-select>
     </el-form-item>
 
     <div class="alpha-setting" v-if="showProperty('alpha')">
@@ -433,7 +509,7 @@ onMounted(() => {
           </el-form-item>
         </el-col>
       </el-row>
-      <div class="alpha-setting">
+      <div class="alpha-setting" v-if="mapType !== 'tianditu'">
         <label class="alpha-label" :class="{ dark: 'dark' === themes }">
           {{ t('chart.chart_map') + ' ' + t('chart.map_pitch') }}
         </label>
@@ -671,7 +747,7 @@ onMounted(() => {
             v-model="state.basicStyleForm.tableBorderColor"
             :effect="themes"
             is-custom
-            :trigger-width="108"
+            :trigger-width="mobileInPc ? 197 : 108"
             color-format="rgb"
             :predefine="predefineColors"
             show-alpha
@@ -692,7 +768,7 @@ onMounted(() => {
             :predefine="predefineColors"
             :effect="themes"
             is-custom
-            :trigger-width="108"
+            :trigger-width="mobileInPc ? 197 : 108"
             color-format="rgb"
             show-alpha
             @change="changeBasicStyle('tableScrollBarColor')"
@@ -823,34 +899,6 @@ onMounted(() => {
         <template #append>%</template>
       </el-input>
     </el-form-item>
-    <el-form-item
-      v-if="showProperty('showSummary')"
-      class="form-item"
-      :class="'form-item-' + themes"
-    >
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.basicStyleForm.showSummary"
-        @change="changeBasicStyle('showSummary')"
-      >
-        {{ t('chart.table_show_summary') }}
-      </el-checkbox>
-    </el-form-item>
-    <el-form-item
-      v-if="showProperty('summaryLabel') && state.basicStyleForm.showSummary"
-      :label="t('chart.table_summary_label')"
-      :class="'form-item-' + themes"
-      class="form-item"
-    >
-      <el-input
-        v-model="state.basicStyleForm.summaryLabel"
-        type="text"
-        :effect="themes"
-        :max-length="10"
-        @blur="changeBasicStyle('summaryLabel')"
-      />
-    </el-form-item>
     <el-form-item v-if="showProperty('autoWrap')" class="form-item" :class="'form-item-' + themes">
       <el-checkbox
         size="small"
@@ -881,7 +929,7 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
     <el-form-item
-      v-if="state.basicStyleForm.autoWrap"
+      v-if="showProperty('autoWrap') && state.basicStyleForm.autoWrap"
       :label="t('chart.table_break_line_max_lines')"
       class="form-item form-item-slider"
       :class="'form-item-' + themes"

@@ -15,6 +15,7 @@ import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.share.dao.auto.entity.XpackShare;
@@ -188,8 +189,8 @@ public class XpackShareManage {
         IPage<XpackSharePO> poiPage = proxy().querySharePage(pageNum, pageSize, request);
         List<XpackShareGridVO> vos = proxy().formatResult(poiPage.getRecords());
         if (!org.springframework.util.CollectionUtils.isEmpty(vos)) {
-            vos.stream().forEach(item -> {
-                item.setCreator(StringUtils.equals(item.getCreator(), "1") ? "管理员" : item.getCreator());
+            vos.forEach(item -> {
+                item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
             });
         }
         IPage<XpackShareGridVO> ipage = new Page<>();
@@ -239,6 +240,7 @@ public class XpackShareManage {
         if (!peRequireValid(sharedBase, xpackShare)) {
             XpackShareProxyVO vo = new XpackShareProxyVO();
             vo.setPeRequireValid(false);
+            vo.setInIframeError(false);
             return vo;
         }
         String linkToken = LinkTokenUtil.generate(xpackShare.getCreator(), xpackShare.getResourceId(), xpackShare.getExp(), xpackShare.getPwd(), xpackShare.getOid());

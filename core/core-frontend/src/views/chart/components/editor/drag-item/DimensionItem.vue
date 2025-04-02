@@ -7,7 +7,8 @@ import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
-import icon_sort_priority from '@/assets/svg/icon_sort_priority.svg'
+import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
+import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, ref, toRefs, watch } from 'vue'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
@@ -192,14 +193,15 @@ const showCustomSort = item => {
   return !item.chartId && (item.deType === 0 || item.deType === 5)
 }
 const showSort = () => {
-  const isExtColor = props.type === 'extColor'
-  const isChartMix = props.chart.type.includes('chart-mix')
-  const isDimensionOrDimensionStack =
-    props.type === 'dimension' || props.type === 'dimensionStack' || props.type === 'dimensionExt'
-  if (isExtColor) {
+  const { type: chartType } = props.chart
+  const { type: propType } = props
+  const notShowSort = ['word-cloud', 'stock-line'].includes(chartType)
+  if (notShowSort || propType === 'extColor') {
     return false
   }
-  return !isChartMix || isDimensionOrDimensionStack
+  const isChartMix = chartType.includes('chart-mix')
+  const isDimensionType = ['dimension', 'dimensionStack', 'dimensionExt'].includes(propType)
+  return !isChartMix || isDimensionType
 }
 const toggleHide = () => {
   item.value.index = props.index
@@ -210,6 +212,7 @@ const toggleHide = () => {
 const showHideIcon = computed(() => {
   return ['table-info', 'table-normal'].includes(props.chart.type) && item.value.hide
 })
+
 onMounted(() => {
   getItemTagType()
 })
@@ -224,17 +227,17 @@ onMounted(() => {
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
         <span v-if="type !== 'extColor'" style="display: flex; color: #646a73">
-          <el-icon v-if="'asc' === item.sort">
+          <el-icon v-if="'asc' === item.sort && showSort()">
             <Icon name="icon_sort-a-to-z_outlined"
               ><icon_sortAToZ_outlined class="svg-icon"
             /></Icon>
           </el-icon>
-          <el-icon v-if="'desc' === item.sort">
+          <el-icon v-if="'desc' === item.sort && showSort()">
             <Icon name="icon_sort-z-to-a_outlined"
               ><icon_sortZToA_outlined class="svg-icon"
             /></Icon>
           </el-icon>
-          <el-icon v-if="'custom_sort' === item.sort">
+          <el-icon v-if="'custom_sort' === item.sort && showSort()">
             <Icon name="icon_sort_outlined"><icon_sort_outlined class="svg-icon" /></Icon>
           </el-icon>
           <el-icon>
@@ -277,12 +280,18 @@ onMounted(() => {
               </tbody>
             </table>
           </template>
-          <span class="item-span-style">
+          <span
+            class="item-span-style"
+            :class="{
+              'hidden-status': showHideIcon,
+              'sort-status': showSort() && item.sort !== 'none'
+            }"
+          >
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
           </span>
         </el-tooltip>
-        <el-icon style="margin-left: 8px">
-          <Icon><Hide v-show="showHideIcon" class="svg-icon inner-class" /></Icon>
+        <el-icon v-if="showHideIcon" style="margin-left: 4px">
+          <Icon><icon_invisible_outlined class="svg-icon inner-class" /></Icon>
         </el-icon>
         <el-tooltip :effect="toolTip" placement="top">
           <template #content>
@@ -392,10 +401,10 @@ onMounted(() => {
           </el-dropdown-item>
           <el-dropdown-item
             v-if="showSort()"
-            :icon="icon_sort_priority"
             :command="beforeClickItem('sortPriority')"
             class="menu-item-padding"
           >
+            <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
           </el-dropdown-item>
           <el-dropdown-item
@@ -525,6 +534,25 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
+                    :command="beforeDateStyle('y_M_d_H')"
+                    :divided="
+                      chart.type.includes('bar-range') && ['quota', 'quotaExt'].includes(type)
+                    "
+                  >
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_M_d_H' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_M_d_H') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_M_d_H' === item.dateStyle"
+                          ><icon_done_outlined class="svg-icon"
+                        /></Icon>
+                      </el-icon>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="menu-item-padding"
                     :command="beforeDateStyle('y_M_d_H_m')"
                     :divided="
                       chart.type.includes('bar-range') && ['quota', 'quotaExt'].includes(type)
@@ -642,8 +670,10 @@ onMounted(() => {
             :command="beforeClickItem('toggleHide')"
           >
             <el-icon>
-              <icon v-if="item.hide === true" name="view"><View class="svg-icon" /></icon>
-              <icon v-else name="hide"><Hide class="svg-icon" /></icon>
+              <icon
+                ><icon_visible_outlined v-if="item.hide === true" class="svg-icon" />
+                <icon_invisible_outlined v-else class="svg-icon"
+              /></icon>
             </el-icon>
             <span>{{ item.hide === true ? t('chart.show') : t('chart.hide') }}</span>
           </el-dropdown-item>
@@ -685,6 +715,7 @@ onMounted(() => {
   position: relative;
   width: 100%;
   display: block;
+  overflow: hidden;
   .ed-dropdown {
     display: flex;
   }
@@ -697,7 +728,7 @@ onMounted(() => {
 
 .item-axis {
   padding: 1px 8px;
-  margin: 0 3px 2px 3px;
+  margin-bottom: 3px;
   height: 28px;
   line-height: 28px;
   display: flex;
@@ -761,9 +792,17 @@ span {
 
 .item-span-style {
   display: flex;
-  max-width: 180px;
+  max-width: 170px;
   color: #1f2329;
   margin-left: 4px;
+
+  &.hidden-status,
+  &.sort-status {
+    max-width: 150px;
+  }
+  &.hidden-status[class*='sort-status'] {
+    max-width: 135px !important;
+  }
 
   .item-name {
     flex: 1;
@@ -815,7 +854,7 @@ span {
 .remove-icon {
   position: absolute;
   top: 7px;
-  right: 26px;
+  right: 24px;
   cursor: pointer;
   .inner-class {
     font-size: 14px;
@@ -845,7 +884,14 @@ span {
 }
 
 .father:hover .item-span-style {
-  max-width: 150px;
+  max-width: 130px;
+  &.hidden-status,
+  &.sort-status {
+    max-width: 120px;
+  }
+  &.hidden-status[class*='sort-status'] {
+    max-width: 100px !important;
+  }
 }
 </style>
 <style lang="less">

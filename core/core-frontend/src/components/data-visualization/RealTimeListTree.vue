@@ -81,6 +81,9 @@ import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/cont
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
+import bulletGraphOrigin from '@/assets/svg/bullet-graph-origin.svg'
+import { checkJoinGroup, syncViewTitle } from '@/utils/canvasUtils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -136,16 +139,15 @@ const shiftDataPush = curClickIndex => {
     indexBegin = curClickIndex
     indexEnd = laterIndexTrans
   }
-  const shiftAreaComponents = componentData.value
-    .slice(indexBegin, indexEnd + 1)
-    .filter(
-      component =>
-        !areaDataIdArray.includes(component.id) &&
-        !component.isLock &&
-        component.isShow &&
-        component.category !== 'hidden' &&
-        !['GroupArea', 'DeTabs'].includes(component.component)
-    )
+  const shiftAreaComponents = componentData.value.slice(indexBegin, indexEnd + 1).filter(
+    component =>
+      !areaDataIdArray.includes(component.id) &&
+      !component.isLock &&
+      component.isShow &&
+      component.category !== 'hidden' &&
+      !['GroupArea'].includes(component.component) &&
+      checkJoinGroup(component) // 当前如果是Tab 则tab中不能包含Group
+  )
   areaData.value.components.push(...shiftAreaComponents)
   dvMainStore.setCurComponent({ component: null, index: null })
 }
@@ -219,6 +221,7 @@ const closeEditComponentName = () => {
     return
   }
   curEditComponent.name = inputName.value
+  syncViewTitle(curEditComponent)
   inputName.value = ''
   curEditComponent = null
 }
@@ -331,7 +334,8 @@ const iconMap = {
   't-heatmap-origin': tHeatmapOrigin,
   'picture-group-origin': pictureGroupOrigin,
   group: group,
-  'circle-packing-origin': circlePackingOrigin
+  'circle-packing-origin': circlePackingOrigin,
+  'bullet-graph-origin': bulletGraphOrigin
 }
 const getIconName = item => {
   if (item.component === 'UserView') {
@@ -392,6 +396,10 @@ const areaClick = area => {
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: area })
 }
 
+const popupAvailableChange = () => {
+  useEmitt().emitter.emit('calcData-all')
+  canvasChange()
+}
 const canvasChange = () => {
   snapshotStore.recordSnapshotCache('canvasChange')
 }
@@ -403,7 +411,11 @@ const canvasChange = () => {
     <button hidden="true" id="close-button"></button>
     <div class="layer-area" @click="areaClick('hidden')" :class="{ activated: hiddenAreaActive }">
       <span>{{ t('visualization.pop_area') }}({{ popComponentData.length }})</span>
-      <el-switch v-model="canvasStyleData.popupAvailable" @change="canvasChange" size="small" />
+      <el-switch
+        v-model="canvasStyleData.popupAvailable"
+        @change="popupAvailableChange"
+        size="small"
+      />
     </div>
     <el-row class="list-wrap">
       <div class="list-container" @contextmenu="handleContextMenu">
@@ -509,7 +521,7 @@ const canvasChange = () => {
               >
                 <div
                   v-show="['Group', 'DeTabs'].includes(getComponent(index)?.component)"
-                  style="width: 22px; padding-left: 3px"
+                  style="width: 22px"
                 >
                   <el-icon class="component-expand" @click="expandClick(getComponent(index))">
                     <Icon
@@ -662,7 +674,7 @@ const canvasChange = () => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 2px 0 0px;
+        padding: 0 2px 0 8px;
         user-select: none;
 
         .component-icon {
@@ -705,7 +717,7 @@ const canvasChange = () => {
             .component-base {
               opacity: 1;
             }
-            width: 66px !important;
+            max-width: 66px !important;
           }
         }
 

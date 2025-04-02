@@ -124,7 +124,10 @@
     </div>
     <template #footer>
       <div class="apply" style="width: 100%">
-        <el-button type="primary" @click="saveApp">保存</el-button>
+        <el-button v-if="isDesktop() || openType === '_self'" @click="goBack">{{
+          t('visualization.back')
+        }}</el-button>
+        <el-button type="primary" @click="saveApp">{{ t('visualization.save') }}</el-button>
       </div>
     </template>
   </el-drawer>
@@ -153,6 +156,9 @@ import { storeToRefs } from 'pinia'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useCache } from '@/hooks/web/useCache'
+import { isDesktop } from '@/utils/ModelUtil'
+import { filterFreeFolder } from '@/utils/utils'
+const desktop = isDesktop()
 
 const { wsCache } = useCache('localStorage')
 const { t } = useI18n()
@@ -181,6 +187,7 @@ const props = defineProps({
 })
 
 const { componentData, canvasViewInfo, curCanvasType, themes } = toRefs(props)
+const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
 
 const dvPreName = computed(() =>
   curCanvasType.value === 'dashboard'
@@ -189,7 +196,6 @@ const dvPreName = computed(() =>
 )
 const addDsWindow = () => {
   // do addDsWindow
-  const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
   const url = '#/data/datasource?opt=create'
   window.open(url, openType)
 }
@@ -248,9 +254,14 @@ const state = reactive({
   }
 })
 
+const goBack = () => {
+  window.history.back()
+}
+
 const initData = () => {
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 7 }
   queryTreeApi(request).then(res => {
+    filterFreeFolder(res, curCanvasType.value)
     const resultTree = res || []
     dfs(resultTree as unknown as BusiTreeNode[])
     state.dvTree = (resultTree as unknown as BusiTreeNode[]) || []
@@ -264,6 +275,7 @@ const initData = () => {
 
   const requestDs = { leaf: false, weight: 7 } as BusiTreeRequest
   getDatasetTree(requestDs).then(res => {
+    filterFreeFolder(res, 'dataset')
     dfs(res as unknown as BusiTreeNode[])
     state.dsTree = (res as unknown as BusiTreeNode[]) || []
     if (state.dsTree.length && state.dsTree[0].name === 'root' && state.dsTree[0].id === '0') {

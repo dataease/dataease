@@ -1,9 +1,10 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import dayjs from 'dayjs'
 import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
 import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
 const dvMainStore = dvMainStoreWithOut()
-const { componentData } = storeToRefs(dvMainStore)
+const { componentData, canvasStyleData } = storeToRefs(dvMainStore)
 
 const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMultiple: string) => {
   const timeType = (timeGranularityMultiple || '').split('range')[0]
@@ -58,32 +59,42 @@ export const getRange = (selectValue, timeGranularity) => {
   }
 }
 const getYearEnd = timestamp => {
-  const time = new Date(timestamp)
   return [
-    +new Date(time.getFullYear(), 0, 1),
-    +new Date(time.getFullYear(), 11, 31) + 60 * 1000 * 60 * 24 - 1000
+    +new Date(dayjs(timestamp).startOf('year').format('YYYY/MM/DD HH:mm:ss')),
+    +new Date(dayjs(timestamp).endOf('year').format('YYYY/MM/DD HH:mm:ss'))
   ]
 }
 
 const getMonthEnd = timestamp => {
-  const time = new Date(timestamp)
-  const date = new Date(time.getFullYear(), time.getMonth(), 1)
-  date.setDate(1)
-  date.setMonth(date.getMonth() + 1)
-  return [+new Date(time.getFullYear(), time.getMonth(), 1), +new Date(date.getTime() - 1000)]
+  return [
+    +new Date(dayjs(timestamp).startOf('month').format('YYYY/MM/DD HH:mm:ss')),
+    +new Date(dayjs(timestamp).endOf('month').format('YYYY/MM/DD HH:mm:ss'))
+  ]
 }
 
 const getDayEnd = timestamp => {
-  return [+new Date(timestamp), +new Date(timestamp) + 60 * 1000 * 60 * 24 - 1000]
+  return [
+    +new Date(dayjs(timestamp).startOf('day').format('YYYY/MM/DD HH:mm:ss')),
+    +new Date(dayjs(timestamp).endOf('day').format('YYYY/MM/DD HH:mm:ss'))
+  ]
 }
 
-const getFieldId = (arr, result) => {
-  const [obj] = result
-  const idArr = obj.split(',')
-  return arr
-    .map(ele => ele.id)
-    .slice(0, idArr.length)
-    .join(',')
+const getFieldId = (arr, result, relationshipChartIndex, ids) => {
+  const [obj] = [...result].reverse()
+  const valArr = obj.split(',')
+  const idArr = arr.map(ele => ele.id)
+  const indexArr = relationshipChartIndex.filter(ele => valArr[ele])
+  if (!relationshipChartIndex.length) {
+    return [idArr.slice(0, valArr.length).join(','), [...new Set(result)]]
+  } else {
+    for (const key in result) {
+      result[key] = indexArr.map(ele => result[key].split(',')[ele]).join(',')
+    }
+    return [
+      indexArr.map(ele => ids[ele]).join(','),
+      result.filter(ele => !ele.endsWith(',') && !!ele)
+    ]
+  }
 }
 
 const getValueByDefaultValueCheckOrFirstLoad = (
@@ -130,18 +141,32 @@ const getValueByDefaultValueCheckOrFirstLoad = (
 }
 
 export const useFilter = (curComponentId: string, firstLoad = false) => {
+  // 弹窗区域过滤组件是否生效
+  const popupAvailable = canvasStyleData.value.popupAvailable
   const filter = []
-  const queryComponentList = componentData.value.filter(ele => ele.component === 'VQuery')
+  const queryComponentList = componentData.value.filter(
+    ele =>
+      ele.component === 'VQuery' &&
+      (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
+  )
   searchQuery(queryComponentList, filter, curComponentId, firstLoad)
   componentData.value.forEach(ele => {
     if (ele.component === 'Group') {
-      const list = ele.propValue.filter(item => item.innerType === 'VQuery')
+      const list = ele.propValue.filter(
+        item =>
+          item.innerType === 'VQuery' &&
+          (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
+      )
       searchQuery(list, filter, curComponentId, firstLoad)
 
       list.forEach(element => {
         if (element.innerType === 'DeTabs') {
           element.propValue.forEach(itx => {
-            const elementArr = itx.componentData.filter(item => item.innerType === 'VQuery')
+            const elementArr = itx.componentData.filter(
+              item =>
+                item.innerType === 'VQuery' &&
+                (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
+            )
             searchQuery(elementArr, filter, curComponentId, firstLoad)
           })
         }
@@ -150,6 +175,17 @@ export const useFilter = (curComponentId: string, firstLoad = false) => {
 
     if (ele.innerType === 'DeTabs') {
       ele.propValue.forEach(itx => {
+        itx.componentData.forEach(v => {
+          if (v.component === 'Group') {
+            const listGroup = v.propValue.filter(
+              item =>
+                item.innerType === 'VQuery' &&
+                (popupAvailable || (!popupAvailable && v.category !== 'hidden'))
+            )
+            searchQuery(listGroup, filter, curComponentId, firstLoad)
+          }
+        })
+
         const arr = itx.componentData.filter(item => item.innerType === 'VQuery')
         searchQuery(arr, filter, curComponentId, firstLoad)
       })
@@ -251,7 +287,25 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
       ele.propValue.forEach(item => {
-        if (item.checkedFields.includes(curComponentId) && item.checkedFieldsMap[curComponentId]) {
+        let shouldSearch = false
+        const relationshipChartIndex = []
+        const ids = Array(5).fill(1)
+        if (item.displayType === '9' && item.treeCheckedList?.length) {
+          item.treeCheckedList.forEach((itx, idx) => {
+            if (
+              itx.checkedFields.includes(curComponentId) &&
+              itx.checkedFieldsMap[curComponentId] &&
+              idx < item.treeFieldList.length
+            ) {
+              relationshipChartIndex.push(idx)
+              ids[idx] = itx.checkedFieldsMap[curComponentId]
+            }
+          })
+        } else {
+          shouldSearch =
+            item.checkedFields.includes(curComponentId) && item.checkedFieldsMap[curComponentId]
+        }
+        if (shouldSearch || relationshipChartIndex.length) {
           let selectValue
           const {
             id,
@@ -397,9 +451,12 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               firstLoad
             )
             if (result?.length) {
-              const fieldId = isTree
-                ? getFieldId(treeFieldList, result)
-                : item.checkedFieldsMap[curComponentId]
+              let fieldId = item.checkedFieldsMap[curComponentId]
+              if (isTree) {
+                const [i, r] = getFieldId(treeFieldList, result, relationshipChartIndex, ids)
+                fieldId = i
+                result = r
+              }
               let parametersFilter = duplicateRemoval(
                 parameters.reduce((pre, next) => {
                   if (next.id === fieldId && !pre.length) {

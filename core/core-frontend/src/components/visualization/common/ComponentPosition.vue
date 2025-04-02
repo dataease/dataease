@@ -239,7 +239,7 @@ watch(
   display: flex !important;
   .ed-form-item__label {
     line-height: 24px;
-    margin-bottom: 0;
+    margin: 3px 0 !important;
   }
 }
 </style>

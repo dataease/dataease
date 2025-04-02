@@ -142,16 +142,21 @@ onMounted(() => {
       </div>
     </div>
     <div class="font-content_overflow">
-      <div class="font-content_list">
+      <div class="font-content_list" v-if="fontListComputed.length">
         <div class="font-content_item" v-for="ele in fontListComputed" :key="ele">
           <span v-if="ele.isDefault" class="font-default">{{ t('system.default_font') }}</span>
           <div class="font-name">
-            {{ ele.name }}
+            <span :title="ele.name" :class="!ele.isBuiltin && 'font-name_text'">{{
+              ele.name
+            }}</span>
             <span v-if="ele.isBuiltin" class="font-type"> {{ t('system.system_built_in') }} </span>
           </div>
           <div :title="ele.fileName" class="font-update_time">
             {{ t('system.update_time') }} {{ new Date(ele.updateTime).toLocaleString() }}
-            <span class="line"></span> {{ t('system.font_file') }} {{ ele.fileName }}
+            <span class="line"></span>
+            <span :title="ele.fileName" class="font-update_text"
+              >{{ t('system.font_file') }} {{ ele.fileName }}</span
+            >
           </div>
           <div class="font-upload_btn">
             <el-button
@@ -174,6 +179,9 @@ onMounted(() => {
             }}</el-button>
           </div>
         </div>
+      </div>
+      <div style="height: 178px; margin-top: 142px" v-else>
+        <empty-background :description="$t('work_branch.relevant_content_found')" img-type="tree" />
       </div>
     </div>
   </div>
@@ -216,8 +224,10 @@ onMounted(() => {
       width: calc(50% - 8px);
       position: relative;
       padding: 24px;
+      padding-bottom: 16px;
+
       .font-default {
-        width: 68px;
+        min-width: 68px;
         height: 24px;
         background: #34c72433;
         position: absolute;
@@ -227,7 +237,7 @@ onMounted(() => {
         font-weight: 400;
         line-height: 22px;
         color: #2ca91f;
-        padding-left: 6px;
+        padding: 0 6px;
         border-bottom-left-radius: 4px;
       }
 
@@ -239,8 +249,15 @@ onMounted(() => {
         align-items: center;
         margin-bottom: 4px;
 
+        .font-name_text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          min-width: 250px;
+        }
+
         .font-type {
-          width: 56px;
+          min-width: 56px;
           height: 20px;
           border-radius: 2px;
           background: #3370ff33;
@@ -249,7 +266,7 @@ onMounted(() => {
           line-height: 20px;
           color: #2b5fd9;
           margin-left: 8px;
-          padding-left: 4px;
+          padding: 0 4px;
         }
       }
 
@@ -262,19 +279,26 @@ onMounted(() => {
         display: flex;
         align-items: center;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+
         .line {
           width: 1px;
           height: 14px;
           background: #1f232926;
           margin: 0 8px;
         }
+
+        .font-update_text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          min-width: 30px;
+        }
       }
 
       .font-upload_btn {
         .ed-button {
           min-width: 0;
+          margin: 0 12px 8px 0;
           padding: 4px 8px;
           font-size: 12px;
           font-weight: 400;

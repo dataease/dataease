@@ -27,4 +27,6 @@ public class XpackOauth2VO implements Serializable {
     private String mapping;
 
     private String redirectUri;
+
+    private String authMethod = "0";
 }

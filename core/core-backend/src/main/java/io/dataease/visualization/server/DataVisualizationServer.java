@@ -30,8 +30,8 @@ import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.ExcelUtils;
+import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
@@ -51,8 +51,10 @@ import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
+import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreBusiManage;
@@ -141,6 +143,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private CoreUserManage coreUserManage;
+    @Resource
+    private DatasourceServer datasourceServer;
+
+    @Resource
+    private SnapshotDataVisualizationInfoMapper snapshotMapper;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -159,15 +166,24 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public DataVisualizationVO findById(DataVisualizationBaseRequest request) {
         Long dvId = request.getId();
         String busiFlag = request.getBusiFlag();
-        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
-        // get creator
-        String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
-        if (StringUtils.isNotBlank(userName)) {
-            result.setCreatorName(userName);
+        String resourceTable = request.getResourceTable();
+        // 如果是编辑查询 则进行镜像检查
+        if(CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)){
+            QueryWrapper<SnapshotDataVisualizationInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id", dvId);
+            if(!snapshotMapper.exists(queryWrapper)){
+                coreVisualizationManage.dvSnapshotRecover(dvId);
+            }
         }
+        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag,resourceTable);
         if (result != null) {
+            // get creator
+            String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
+            if (StringUtils.isNotBlank(userName)) {
+                result.setCreatorName(userName);
+            }
             //获取图表信息
-            List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
+            List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId,resourceTable);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
                 Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
@@ -208,6 +224,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public String saveCanvas(DataVisualizationBaseRequest request) throws Exception {
+        /*
+         * 发布兼容逻辑
+         * saveCanvas 为初次保存 包括 模板 应用 普通创建 所有变更操作都走snapshot表
+         * 1.如果是文件夹直接保存在主表中，如果是仪表板（数据大屏），主表和镜像表各保存一份 主表仅作为权限和预览控制此时主表状态为‘未发布’
+         * 2.编辑检查：如果存在未发布的仪表板snapshot，则默认加载snapshot进行编辑所有操作均为snapshot操作
+         * 3.发布（重新发布）：将snapshot表中的所有数据复制到主表中，同时变更主表状态为‘已发布’
+         * 4.如果对已发布的仪表板编辑并存在已保存的镜像，此时仪表板状态为‘已保存未发布’
+         */
         boolean isAppSave = false;
         Long time = System.currentTimeMillis();
         // 如果是应用 则新进行应用校验 数据集名称和 数据源名称校验
@@ -230,10 +254,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     newDatasourceId.add(datasourceOld.getSystemDatasourceId());
                     // Excel 数据表明映射
                     if (StringUtils.isNotEmpty(datasourceOld.getConfiguration())) {
-                        if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
-                            dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getConfiguration()));
-                        } else if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
-                            dsTableNamesMap.put(datasourceOld.getId(), ApiUtils.getTableNamesMap(datasourceOld.getConfiguration()));
+                        if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
+                            DEException.throwException(Translator.get("i18n_app_error_no_api"));
+                        } else if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+                            dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getType(), datasourceOld.getConfiguration()));
+                        } else if (datasourceOld.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
+                            dsTableNamesMap.put(datasourceOld.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceOld.getType(), "getTableNamesMap", String.class, datasourceOld.getConfiguration()));
                         }
                     }
                 });
@@ -243,9 +269,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     // Excel 数据表明映射
                     if (StringUtils.isNotEmpty(datasourceNew.getConfiguration())) {
                         if (datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
-                            dsTableNamesMap.put(datasourceNew.getId(), ExcelUtils.getTableNamesMap(datasourceNew.getConfiguration()));
-                        } else if (datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
-                            dsTableNamesMap.put(datasourceNew.getId(), ApiUtils.getTableNamesMap(datasourceNew.getConfiguration()));
+                            dsTableNamesMap.put(datasourceNew.getId(), ExcelUtils.getTableNamesMap(datasourceNew.getType(), datasourceNew.getConfiguration()));
+                        } else if (datasourceNew.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
+                            dsTableNamesMap.put(datasourceNew.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceNew.getType(), "getTableNamesMap", String.class, datasourceNew.getConfiguration()));
                         }
                     }
                 });
@@ -257,7 +283,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 datasetFolderNewRequest.setName(datasetFolderName);
                 datasetFolderNewRequest.setNodeType("folder");
                 datasetFolderNewRequest.setPid(datasetFolderPid);
-                DatasetGroupInfoDTO datasetFolderNew = datasetGroupManage.save(datasetFolderNewRequest, false);
+                DatasetGroupInfoDTO datasetFolderNew = datasetGroupManage.save(datasetFolderNewRequest, false, false);
                 Long datasetFolderNewId = datasetFolderNew.getId();
                 //新建数据集
                 appData.getDatasetGroupsInfo().forEach(appDatasetGroup -> {
@@ -332,10 +358,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         //表名映射更新
                         Map<String, String> appDsTableNamesMap = dsTableNamesMap.get(key);
                         Map<String, String> systemDsTableNamesMap = dsTableNamesMap.get(value);
-                        if (!CollectionUtils.isEmpty(appDsTableNamesMap) && !CollectionUtils.isEmpty(systemDsTableNamesMap)) {
+                        if (!CollectionUtils.isEmpty(appDsTableNamesMap)) {
                             appDsTableNamesMap.forEach((keyName, valueName) -> {
-                                if (StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
+                                if (!CollectionUtils.isEmpty(systemDsTableNamesMap) && StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
                                     dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, systemDsTableNamesMap.get(keyName)));
+                                } else {
+                                    dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, "excel_can_not_find"));
                                 }
                             });
                         }
@@ -392,6 +420,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
             // 复制更新 新建权限插入
             visualizationInfoMapper.deleteById(request.getId());
+            snapshotMapper.deleteById(request.getId());
             visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
         }
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
@@ -485,10 +514,41 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 coreVisualizationManage.move(request);
             }
         }
+        visualizationInfo.setStatus(CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
         coreVisualizationManage.innerEdit(visualizationInfo);
-
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
+    }
+
+    @Override
+    @Transactional
+    public void updatePublishStatus(DataVisualizationBaseRequest request) {
+        /**
+         * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
+         * 统一处理为1.删除主表数据，2.将镜像表数据统一copy到主表 不删除镜像数据（发布状态后镜像数据和主表数据是保持一致的）
+         * 其他状态仅更新主表和镜像表状态
+         * */
+        Long dvId = request.getId();
+        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+        visualizationInfo.setMobileLayout(request.getMobileLayout());
+        visualizationInfo.setId(dvId);
+        visualizationInfo.setName(request.getName());
+        visualizationInfo.setStatus(request.getStatus());
+        coreVisualizationManage.innerEdit(visualizationInfo);
+        if(CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()){
+            coreVisualizationManage.removeDvCore(dvId);
+            coreVisualizationManage.dvRestore(dvId);
+        }
+    }
+
+    @Override
+    public void recoverToPublished(DataVisualizationBaseRequest request) {
+        coreVisualizationManage.dvSnapshotRecover(request.getId());
+        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+        visualizationInfo.setId(request.getId());
+        visualizationInfo.setName(request.getName());
+        visualizationInfo.setStatus(CommonConstants.DV_STATUS.PUBLISHED);
+        coreVisualizationManage.innerEdit(visualizationInfo);
     }
 
     /**
@@ -516,6 +576,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
         coreVisualizationManage.delete(dvId);
     }
 
+    private void resourceTreeTypeAdaptor(List<BusiNodeVO> tree, String type) {
+        if (!CollectionUtils.isEmpty(tree)) {
+            tree.forEach(busiNodeVO -> {
+                busiNodeVO.setType(type);
+                resourceTreeTypeAdaptor(busiNodeVO.getChildren(), type);
+            });
+        }
+    }
 
     @Override
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -529,6 +597,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             List<BusiNodeVO> dataVResult = coreVisualizationManage.tree(requestDv);
             List<BusiNodeVO> result = new ArrayList<>();
             if (!CollectionUtils.isEmpty(dashboardResult)) {
+                resourceTreeTypeAdaptor(dashboardResult, "dashboard");
                 BusiNodeVO dashboardResultParent = new BusiNodeVO();
                 dashboardResultParent.setName(Translator.get("i18n_menu.panel"));
                 dashboardResultParent.setId(-101L);
@@ -540,6 +609,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 result.add(dashboardResultParent);
             }
             if (!CollectionUtils.isEmpty(dataVResult)) {
+                resourceTreeTypeAdaptor(dataVResult, "dataV");
                 BusiNodeVO dataVResultParent = new BusiNodeVO();
                 dataVResultParent.setName(Translator.get("i18n_menu.screen"));
                 dataVResultParent.setId(-102L);
@@ -574,9 +644,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         IPage<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
         List<VisualizationResourceVO> resourceVOS = result.getRecords();
         if (!CollectionUtils.isEmpty(resourceVOS)) {
-            resourceVOS.stream().forEach(item -> {
-                item.setCreator(StringUtils.equals(item.getCreator(), "1") ? "管理员" : item.getCreator());
-                item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? "管理员" : item.getLastEditor());
+            resourceVOS.forEach(item -> {
+                item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
+                item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? Translator.get("i18n_sys_admin") : item.getLastEditor());
             });
         }
         return result.getRecords();
@@ -599,7 +669,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         newDv.setPid(request.getPid());
         newDv.setCreateTime(System.currentTimeMillis());
         // 复制图表 chart_view
-        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId);
+        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId,CommonConstants.RESOURCE_TABLE.CORE);
+        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
         List<CoreChartView> viewList = extDataVisualizationMapper.findViewInfoByCopyId(copyId);
         if (!CollectionUtils.isEmpty(viewList)) {
             String componentData = newDv.getComponentData();
@@ -799,6 +870,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         if (CollectionUtils.isEmpty(datasourceVOInfo)) {
             DEException.throwException("当前不存在数据源无法导出");
+        } else if (datasourceVOInfo.stream()
+                .anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()))) {
+            DEException.throwException(Translator.get("i18n_app_error_no_api"));
         }
 
         List<VisualizationLinkageVO> linkageVOInfo = appTemplateMapper.findAppLinkageInfo(dvId);

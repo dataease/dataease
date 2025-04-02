@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
 import io.dataease.api.visualization.vo.VisualizationLinkageVO;
+import io.dataease.constant.CommonConstants;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class VisualizationLinkageRequest extends VisualizationLinkageVO {
 
     private List<String> targetViewIds;
 
+    private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
 
     private List<VisualizationLinkageDTO> linkageInfo = new ArrayList<>();
 

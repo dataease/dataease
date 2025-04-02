@@ -201,6 +201,10 @@ const relativeToCurrentListRange = computed(() => {
           value: 'lastMonth'
         },
         {
+          label: t('dynamic_time.tquarter'),
+          value: 'thisQuarter'
+        },
+        {
           label: t('v_query.last_3_months'),
           value: 'LastThreeMonths'
         },
@@ -224,6 +228,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('dynamic_time.yesterday'),
           value: 'yesterday'
+        },
+        {
+          label: t('dynamic_time.cweek'),
+          value: 'thisWeek'
         },
         {
           label: t('v_query.last_3_days'),
@@ -456,7 +464,8 @@ defineExpose({
       </el-popover>
       <span
         v-if="
-          curComponent.timeRange.intervalType !== 'none' || curComponent.timeRange.dynamicWindow
+          curComponent.timeRange &&
+          (curComponent.timeRange.intervalType !== 'none' || curComponent.timeRange.dynamicWindow)
         "
         class="config-flag range-filter-time-flag"
         >{{ t('v_query.configured') }}</span
@@ -501,7 +510,9 @@ defineExpose({
       </div>
       <template v-if="dynamicTime && curComponent.displayType === '1'">
         <div class="setting">
-          <div class="setting-label">{{ t('dynamic_time.relative') }}</div>
+          <div :title="t('dynamic_time.relative')" class="setting-label ellipsis">
+            {{ t('dynamic_time.relative') }}
+          </div>
           <div class="setting-value select">
             <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrent">
               <el-option
@@ -671,7 +682,7 @@ defineExpose({
     }
   }
   .label {
-    width: 100px;
+    width: 105px;
     color: #1f2329;
   }
 
@@ -746,6 +757,7 @@ defineExpose({
         color: #646a73;
         line-height: 26px;
         margin-right: 8px;
+        width: 35px;
       }
 
       .bottom-line {

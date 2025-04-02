@@ -62,7 +62,7 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
         }
     }
 
-    public TemplateMarketDTO(String id, String title, String themeRepo, String templateUrl, String categoryName, String templateType, Long recentUseTime, String suggest) {
+    public TemplateMarketDTO(String id, String title, String themeRepo, String templateUrl, String categoryName, String templateType, Long recentUseTime, String suggest, String classify) {
         this.id = id;
         this.title = title;
         this.metas = new MarketMetasVO(templateUrl);
@@ -70,6 +70,9 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
         this.templateType = templateType;
         this.categories = new ArrayList<>(Arrays.asList(new MarketCategoryVO(categoryName))) ;
         this.categoryNames = new ArrayList<>(Arrays.asList(categoryName)) ;
+        if("DATA".equals(classify)){
+            this.classify = "app";
+        }
         if (recentUseTime != null) {
             this.recentUseTime = recentUseTime;
             String name = Translator.get("i18n_template_recent");

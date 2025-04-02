@@ -11,7 +11,9 @@ import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import icon_undo_outlined from '@/assets/svg/icon_undo_outlined.svg'
 import icon_redo_outlined from '@/assets/svg/icon_redo_outlined.svg'
-import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import dvRecoverOutlined from '@/assets/svg/dv-recover_outlined.svg'
+import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { ref, nextTick, computed, toRefs, onBeforeUnmount, onMounted } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -42,6 +44,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -60,6 +63,7 @@ const outerParamsSetRef = ref(null)
 const fullScreeRef = ref(null)
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
+const emits = defineEmits(['recoverToPublished'])
 
 const props = defineProps({
   createType: {
@@ -67,9 +71,6 @@ const props = defineProps({
     default: 'create'
   }
 })
-
-const { createType } = toRefs(props)
-
 const closeEditCanvasName = () => {
   nameEdit.value = false
   if (!inputName.value || !inputName.value.trim()) {
@@ -85,6 +86,10 @@ const closeEditCanvasName = () => {
   }
   dvInfo.value.name = inputName.value
   inputName.value = ''
+}
+
+const recoverToPublished = () => {
+  emits('recoverToPublished')
 }
 
 const undo = () => {
@@ -115,11 +120,11 @@ const resourceOptFinish = param => {
     dvInfo.value.dataState = 'ready'
     dvInfo.value.pid = param.pid
     dvInfo.value.name = param.name
-    saveCanvasWithCheck()
+    saveCanvasWithCheck(param.withPublish, param.status)
   }
 }
 
-const saveCanvasWithCheck = () => {
+const saveCanvasWithCheck = (withPublish = false, status?) => {
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
     ElMessageBox.confirm('已切换至新组织，无权保存其他组织的资源', {
       confirmButtonType: 'primary',
@@ -149,24 +154,27 @@ const saveCanvasWithCheck = () => {
         resourceAppOpt.value.init(params)
       })
     } else {
-      const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid || '0' }
-      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+      const params = {
+        name: dvInfo.value.name,
+        leaf: true,
+        id: dvInfo.value.pid || '0'
+      }
+      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
     }
     return
   }
   checkCanvasChangePre(() => {
-    saveResource()
+    saveResource({ withPublish, status })
   })
 }
 
-const saveResource = () => {
-  if (styleChangeTimes.value > 0) {
+const saveResource = (checkParams?) => {
+  if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     eventBus.emit('hideArea-canvas-main')
     nextTick(() => {
       canvasSave(() => {
         snapshotStore.resetStyleChangeTimes()
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-        ElMessage.success(t('commons.save_success'))
         let url = window.location.href
         url = url.replace(/\?opt=create/, `?dvId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
@@ -179,13 +187,18 @@ const saveResource = () => {
           )
         }
         if (appData.value) {
-          initCanvasData(dvInfo.value.id, 'dataV', () => {
+          initCanvasData(dvInfo.value.id, { busiFlag: 'dataV' }, () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
             resourceAppOpt.value.close()
             dvMainStore.setAppDataInfo(null)
             useEmitt().emitter.emit('calcData-all')
             snapshotStore.resetSnapshot()
           })
+        }
+        if (checkParams.withPublish) {
+          publishStatusChange(checkParams.status)
+        } else {
+          ElMessage.success(t('commons.save_success'))
         }
       })
     })
@@ -297,6 +310,22 @@ const openOuterParamsSet = () => {
 
 const multiplexingCanvasOpen = () => {
   multiplexingRef.value.dialogInit('dataV')
+}
+
+const publishStatusChange = status => {
+  // do update
+  updatePublishStatus({
+    id: dvInfo.value.id,
+    name: dvInfo.value.name,
+    mobileLayout: dvInfo.value.mobileLayout,
+    status,
+    type: 'dataV'
+  }).then(() => {
+    dvMainStore.updateDvInfoCall(status)
+    status
+      ? ElMessage.success(t('visualization.published_success'))
+      : ElMessage.success(t('visualization.cancel_publish_tips'))
+  })
 }
 
 const isIframe = computed(() => appStore.getIsIframe)
@@ -453,6 +482,38 @@ const fullScreenPreview = () => {
         >
           {{ t('visualization.save') }}
         </el-button>
+        <el-dropdown effect="dark" popper-class="menu-outer-dv_popper" trigger="hover">
+          <el-button
+            @click="saveCanvasWithCheck(true, 1)"
+            style="float: right; margin: 0 12px 0 0"
+            type="primary"
+          >
+            {{ t('visualization.publish') }}
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="recoverToPublished" :disabled="dvInfo.status !== 2">
+                <el-icon class="handle-icon">
+                  <Icon name="icon_left_outlined"
+                    ><dv-recover-outlined class="svg-icon toolbar-icon"
+                  /></Icon>
+                </el-icon>
+                {{ t('visualization.publish_recover') }}
+              </el-dropdown-item>
+              <el-dropdown-item
+                @click.stop="publishStatusChange(0)"
+                :disabled="dvInfo.status === 0"
+              >
+                <el-icon class="handle-icon">
+                  <Icon name="icon_left_outlined"
+                    ><dv-cancel-publish class="svg-icon toolbar-icon"
+                  /></Icon>
+                </el-icon>
+                {{ t('visualization.cancel_publish') }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">

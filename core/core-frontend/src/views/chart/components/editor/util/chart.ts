@@ -1,6 +1,6 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
-import { formatterItem } from '@/views/chart/components/js/formatter'
+import { formatterItem, isEnLocal } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 
 export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
@@ -318,6 +318,32 @@ export const DEFAULT_MISC: ChartMiscAttr = {
     min: 0,
     max: 0,
     fieldId: undefined
+  },
+  bullet: {
+    bar: {
+      ranges: {
+        fill: ['rgba(0,128,255,0.3)'],
+        size: 20,
+        showType: 'dynamic',
+        fixedRangeNumber: 3,
+        symbol: 'circle',
+        symbolSize: 4
+      },
+      measures: {
+        fill: ['rgba(0,128,255,1)'],
+        size: 15,
+        symbol: 'circle',
+        symbolSize: 4
+      },
+      target: {
+        fill: 'rgb(0,0,0)',
+        size: 20,
+        showType: 'dynamic',
+        value: 0,
+        symbol: 'line',
+        symbolSize: 4
+      }
+    }
   }
 }
 
@@ -389,6 +415,7 @@ export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
     label: t('chart.total_show'),
     subLabel: t('chart.sub_total_show'),
     subTotalsDimensions: [],
+    subTotalsDimensionsNew: true,
     calcTotals: {
       aggregation: 'SUM',
       cfg: []
@@ -447,7 +474,12 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   isColItalic: false,
   isBolder: true,
   isCornerBolder: true,
-  isColBolder: true
+  isColBolder: true,
+  headerGroup: false,
+  headerGroupConfig: {
+    columns: [],
+    meta: []
+  }
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',
@@ -546,17 +578,6 @@ export const DEFAULT_TITLE_STYLE_DARK = {
   remarkBackgroundColor: '#5A5C62'
 }
 
-export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
-  show: true,
-  hPosition: 'center',
-  vPosition: 'bottom',
-  orient: 'horizontal',
-  icon: 'circle',
-  color: '#333333',
-  fontSize: 12,
-  size: 4
-}
-
 export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
   show: true,
   hPosition: 'center',
@@ -565,7 +586,24 @@ export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
   icon: 'circle',
   color: '#333333',
   fontSize: 12,
-  size: 4
+  size: 4,
+  showRange: true,
+  sort: 'none',
+  customSort: []
+}
+
+export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
+  show: true,
+  hPosition: 'center',
+  vPosition: 'bottom',
+  orient: 'horizontal',
+  icon: 'circle',
+  color: '#333333',
+  fontSize: 12,
+  size: 4,
+  showRange: true,
+  sort: 'none',
+  customSort: []
 }
 
 export const DEFAULT_LEGEND_STYLE_LIGHT: ChartLegendStyle = {
@@ -591,6 +629,7 @@ export const DEFAULT_MARGIN_STYLE = {
 export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
   show: true,
   position: 'bottom',
+  nameShow: false,
   name: '',
   color: '#333333',
   fontSize: 12,
@@ -627,6 +666,7 @@ export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -636,6 +676,7 @@ export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
 export const DEFAULT_YAXIS_STYLE: ChartAxisStyle = {
   show: true,
   position: 'left',
+  nameShow: false,
   name: '',
   color: '#333333',
   fontSize: 12,
@@ -672,6 +713,7 @@ export const DEFAULT_YAXIS_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -716,6 +758,7 @@ export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -1387,6 +1430,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'stock-line',
         title: t('chart.chart_stock_line'),
         icon: 'stock-line'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bullet-graph',
+        title: t('chart.bullet_chart'),
+        icon: 'bullet-graph'
       }
     ]
   },
@@ -1643,6 +1693,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   zoomButtonColor: '#aaa',
   zoomBackground: '#fff',
   tableLayoutMode: 'grid',
+  defaultExpandLevel: 1,
   calcTopN: false,
   topN: 5,
   topNLabel: t('datasource.other'),
@@ -1668,7 +1719,10 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   maxLines: 3,
   radarShowPoint: true,
   radarPointSize: 4,
-  radarAreaColor: true
+  radarAreaColor: true,
+  circleBorderColor: '#fff',
+  circleBorderWidth: 0,
+  circlePadding: 0
 }
 
 export const BASE_VIEW_CONFIG = {

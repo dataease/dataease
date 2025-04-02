@@ -47,16 +47,17 @@ import PopArea from '@/custom-component/pop-area/Component.vue'
 import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
 import DeGrid from '@/components/data-visualization/DeGrid.vue'
 import DeGridScreen from '@/components/data-visualization/DeGridScreen.vue'
+import GroupAreaShadow from '@/custom-component/group-area/ComponentShadow.vue'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState } =
+const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState, mainScrollTop } =
   storeToRefs(dvMainStore)
-const { editorMap, areaData } = storeToRefs(composeStore)
-const emits = defineEmits(['scrollCanvasToTop'])
+const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
+const emits = defineEmits(['scrollCanvasAdjust'])
 const props = defineProps({
   themes: {
     type: String,
@@ -342,7 +343,7 @@ const curGap = computed(() => {
 const baseCellInfo = computed(() => {
   return {
     baseWidth: baseWidth.value,
-    baseHeight: baseHeight.value,
+    baseHeight: dashboardScaleWithWidth.value ? baseWidth.value * 1.6 : baseHeight.value,
     curGap: curGap.value
   }
 })
@@ -529,32 +530,32 @@ const getSelectArea = () => {
   return result
 }
 
-const handleContextMenu = e => {
+const handleContextMenu = event => {
   // 仪表板和预览状态不显示菜单和组创建
   if (dashboardActive.value || editMode.value === 'preview') {
     return
   }
-  e.stopPropagation()
-  e.preventDefault()
+  event.stopPropagation()
+  event.preventDefault()
+  // 获取鼠标的全局坐标
+  const mouseX = event.clientX
+  const mouseY = event.clientY
 
-  // 计算菜单相对于编辑器的位移
-  let target = e.target
-  let top = e.offsetY
-  let left = e.offsetX
-  while (target instanceof SVGElement) {
-    target = target.parentNode
-  }
+  // 获取最外层 div 的偏移量
+  const rect = container.value.getBoundingClientRect()
+  const offsetX = rect.left
+  const offsetY = rect.top
 
-  while (!target.className.includes('editor-main')) {
-    left += target.offsetLeft
-    top += target.offsetTop
-    target = target.parentNode
-  }
-
+  // 计算鼠标相对于最外层 div 的坐标
+  const left = mouseX - offsetX
+  let top = mouseY - offsetY
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
-    if (curComponent.value && ['VQuery'].includes(curComponent.value.component)) {
-      left = left * curBaseScale.value + 150
+    if (
+      curComponent.value &&
+      ['VQuery'].includes(curComponent.value.component) &&
+      curComponent?.value['category'] === 'base'
+    ) {
       top = top * curBaseScale.value + curComponent.value.style.top * (1 - curBaseScale.value)
     }
     contextmenuStore.showContextMenu({ top, left, position: 'canvasCore' })
@@ -737,7 +738,7 @@ function addItemToPositionBox(item) {
           pb[j][i].el = item
         }
       } catch (e) {
-        console.warn(e)
+        console.warn('addItemToPositionBox-warn:', e)
       }
     }
   }
@@ -901,8 +902,7 @@ function removeItemById(componentId) {
   }
 }
 
-function removeItem(index) {
-  let item = componentData.value[index]
+function removeItemComponent(item) {
   if (item && isSameCanvas(item, canvasId.value)) {
     if (isDashboard()) {
       removeItemFromPositionBox(item)
@@ -920,14 +920,26 @@ function removeItem(index) {
         checkedFields = [...ele.checkedFields, ...checkedFields]
       })
     }
-    componentData.value.splice(index, 1)
-    dvMainStore.removeLinkageInfo(item['id'])
     if (!!checkedFields.length) {
       Array.from(new Set(checkedFields)).forEach(ele => {
         emitter.emit(`query-data-${ele}`)
       })
     }
     snapshotStore.recordSnapshotCache('removeItem')
+  }
+}
+
+function removeItem(index) {
+  let item = componentData.value[index]
+  if (item && isSameCanvas(item, canvasId.value)) {
+    removeItemComponent(item)
+    dvMainStore.removeLinkageInfo(item['id'])
+    if (isMainCanvas(canvasId.value)) {
+      // 主画布中存在隐藏组件 直接从原始componentData中进行删除
+      dvMainStore.deleteComponentById(item.id)
+    } else {
+      componentData.value.splice(index, 1)
+    }
   }
 }
 
@@ -1113,11 +1125,18 @@ const clearInfoBox = e => {
   infoBox.value = {}
 }
 
+const dashboardScaleWithWidth = computed(() => {
+  return isDashboard() && canvasStyleData.value?.dashboardAdaptor === 'withWidth'
+})
 const cellInit = () => {
   // 此处向下取整 保留1位小数,why: 矩阵模式计算 x,y时 会使用 style.left/cellWidth style.top/cellWidth
   // 当初始状态细微的差距(主要是减少)都会导致 x，y 减少一个矩阵大小造成偏移,
   cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 1000) / 1000
-  cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 1000) / 1000
+  if (dashboardScaleWithWidth.value) {
+    cellHeight.value = cellWidth.value * 1.6
+  } else {
+    cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 1000) / 1000
+  }
 }
 
 const canvasSizeInit = () => {
@@ -1358,7 +1377,8 @@ const handleDragStartMoveIn = componentInfo => {
     adaptCurThemeCommonStyle(moveInItemInfo)
   }
   addItemBox(moveInItemInfo)
-  emits('scrollCanvasToTop')
+  // 直接定位到当前画布位置
+  // emits('scrollCanvasAdjust', 1)
   if (!infoBox.value) {
     infoBox.value = {}
   }
@@ -1381,7 +1401,7 @@ const handleDragOver = e => {
     return
   }
   infoBox.value.moveItem.style.left = e.pageX
-  infoBox.value.moveItem.style.top = e.pageY
+  infoBox.value.moveItem.style.top = e.pageY + mainScrollTop.value
   onDragging(e, infoBox.value.moveItem, 0)
 }
 
@@ -1453,6 +1473,19 @@ const dataVBatchOptAdaptor = () => {
   })
 }
 
+const itemShow = item => {
+  return (
+    item.isShow &&
+    (item.component !== 'GroupArea' || (item.component === 'GroupArea' && !isCtrlOrCmdDown.value))
+  )
+}
+
+const groupAreaShadowShow = computed(
+  () =>
+    componentData.value.length > 0 &&
+    componentData.value[componentData.value.length - 1].component === 'GroupArea' &&
+    isCtrlOrCmdDown.value
+)
 // 点击事件导致选择区域变更
 const groupAreaClickChange = async () => {
   let groupAreaCom
@@ -1506,6 +1539,7 @@ onMounted(() => {
   eventBus.on('handleDragEnd-' + canvasId.value, handleDragEnd)
   eventBus.on('hideArea-' + canvasId.value, hideArea)
   eventBus.on('removeMatrixItem-' + canvasId.value, removeItem)
+  eventBus.on('removeMatrixItemPosition-' + canvasId.value, removeItemComponent)
   eventBus.on('removeMatrixItemById-' + canvasId.value, removeItemById)
   eventBus.on('addDashboardItem-' + canvasId.value, addItemBox)
   eventBus.on('snapshotChange-' + canvasId.value, canvasInit)
@@ -1521,6 +1555,7 @@ onBeforeUnmount(() => {
   eventBus.off('handleDragEnd-' + canvasId.value, handleDragEnd)
   eventBus.off('hideArea-' + canvasId.value, hideArea)
   eventBus.off('removeMatrixItem-' + canvasId.value, removeItem)
+  eventBus.off('removeMatrixItemPosition-' + canvasId.value, removeItemComponent)
   eventBus.off('removeMatrixItemById-' + canvasId.value, removeItemById)
   eventBus.off('addDashboardItem-' + canvasId.value, addItemBox)
   eventBus.off('snapshotChange-' + canvasId.value, canvasInit)
@@ -1583,7 +1618,7 @@ defineExpose({
     ></de-grid-screen>
     <drag-shadow
       v-if="infoBox && infoBox.moveItem && editMode !== 'preview'"
-      :base-height="baseHeight"
+      :base-height="dashboardScaleWithWidth ? baseWidth * 1.6 : baseHeight"
       :base-width="baseWidth"
       :cur-gap="curGap"
       :element="infoBox.moveItem"
@@ -1591,11 +1626,15 @@ defineExpose({
 
     <!--切换canvas 拖拽阴影部分-->
     <point-shadow v-if="pointShadowShow" :canvas-id="canvasId" />
+    <GroupAreaShadow
+      v-if="groupAreaShadowShow"
+      :style="getShapeItemShowStyle(componentData[componentData.length - 1])"
+    ></GroupAreaShadow>
 
     <!--页面组件列表展示-->
     <Shape
       v-for="(item, index) in componentData"
-      v-show="item.isShow"
+      v-show="itemShow(item)"
       :canvas-id="canvasId"
       :scale="curScale"
       :key="item.id"

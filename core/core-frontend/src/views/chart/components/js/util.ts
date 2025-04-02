@@ -241,6 +241,33 @@ export function getRemark(chart) {
 }
 
 export const quotaViews = ['label', 'richTextView', 'indicator', 'gauge', 'liquid']
+// 地图
+const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
+// 分布图
+const distributionChartTypes = [
+  'pie',
+  'pie-donut',
+  'pie-rose',
+  'pie-donut-rose',
+  'radar',
+  'treemap',
+  'word-cloud'
+]
+// 关系图
+const relationChartTypes = ['scatter', 'quadrant', 'funnel', 'sankey', 'circle-packing']
+// 不支持指标累加的图表
+export const notSupportAccumulateViews = [
+  ...quotaViews,
+  ...mapChartTypes,
+  ...distributionChartTypes,
+  ...relationChartTypes,
+  'table-info',
+  't-heatmap',
+  'percentage-bar-stack',
+  'percentage-bar-stack-horizontal',
+  'progress-bar',
+  'stock-line'
+]
 
 export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, options: O): O {
   const { data } = options as unknown as Options
@@ -562,18 +589,21 @@ export const exportExcelDownload = (chart, callBack?) => {
 }
 
 export const copyString = (content: string, notify = false) => {
-  const clipboard = navigator.clipboard || {
-    writeText: data => {
-      return new Promise(resolve => {
-        const textareaDom = document.createElement('textarea')
-        textareaDom.setAttribute('style', 'z-index: -1;position: fixed;opacity: 0;')
-        textareaDom.value = data
-        document.body.appendChild(textareaDom)
-        textareaDom.select()
-        document.execCommand('copy')
-        textareaDom.remove()
-        resolve()
-      })
+  let clipboard = navigator.clipboard as Pick<Clipboard, 'writeText'>
+  if (!clipboard || window.top !== window.self) {
+    clipboard = {
+      writeText: data => {
+        return new Promise<void>(resolve => {
+          const textareaDom = document.createElement('textarea')
+          textareaDom.setAttribute('style', 'z-index: -1;position: fixed;opacity: 0;')
+          textareaDom.value = data
+          document.body.appendChild(textareaDom)
+          textareaDom.select()
+          document.execCommand('copy')
+          textareaDom.remove()
+          resolve()
+        })
+      }
     }
   }
   clipboard.writeText(content).then(() => {
@@ -1169,12 +1199,17 @@ export const measureText = (chart, text, font, type) => {
  * @param alpha
  */
 export const hexToRgba = (hex, alpha = 1) => {
+  if (!hex.startsWith('#')) {
+    return hex
+  }
   // 去掉 # 号
   hex = hex.replace('#', '')
   // 转换为 RGB 分量
   const r = parseInt(hex.slice(0, 2), 16)
   const g = parseInt(hex.slice(2, 4), 16)
   const b = parseInt(hex.slice(4, 6), 16)
+  const hexAlpha = hex.slice(6, 8)
+  const a = hexAlpha ? parseInt(hex.slice(6, 8), 16) / 255 : alpha
   // 返回 RGBA 格式
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  return `rgba(${r}, ${g}, ${b}, ${a})`
 }

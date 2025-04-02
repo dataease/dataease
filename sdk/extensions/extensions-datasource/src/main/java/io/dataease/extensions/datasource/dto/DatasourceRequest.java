@@ -26,6 +26,7 @@ public class DatasourceRequest implements Serializable {
     private boolean totalPageFlag;
     private Map<Long, DatasourceSchemaDTO> dsList;
     private List<TableFieldWithValue> tableFieldWithValues;
+    private  String token;
 
     public DatasourceRequest() {
     }

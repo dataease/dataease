@@ -7,7 +7,7 @@ import TopDesktopCard from './TopDesktopCard.vue'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import dvAi from '@/assets/svg/dv-ai.svg'
 import AiComponent from '@/layout/components/AiComponent.vue'
-import dvPreviewDownload from '@/assets/svg/dv-preview-download.svg'
+import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import ToolboxCfg from './ToolboxCfg.vue'
 import { findBaseParams } from '@/api/aiComponent'
 import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
@@ -159,6 +159,9 @@ onMounted(() => {
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   &:hover {
     background-color: #1e2738;
   }
@@ -183,7 +186,7 @@ onMounted(() => {
   }
   &.is-light-setting {
     &:hover {
-      background-color: var(--ed-menu-hover-bg-color) !important;
+      background-color: #1f23291a !important;
     }
   }
 }

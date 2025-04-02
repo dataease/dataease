@@ -12,7 +12,7 @@ const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
 const { t } = useI18n()
 const desktop = isDesktop()
-const props = withDefaults(
+withDefaults(
   defineProps<{
     title: string
   }>(),
@@ -133,14 +133,14 @@ const navigate = computed(() => appearanceStore.getNavigate)
     .ed-icon {
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
-      font-size: 18px;
+      font-size: 20px;
     }
   }
 }
 .header-light {
   .operate-setting {
     .ed-icon {
-      color: var(--ed-color-black) !important;
+      color: #646a73 !important;
     }
   }
 }

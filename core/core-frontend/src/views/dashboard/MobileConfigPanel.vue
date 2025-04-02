@@ -289,7 +289,7 @@ const save = () => {
         {{ dvInfo.name }}
       </div>
       <div class="mobile-save">
-        <span class="open-mobile">开启移动端</span>
+        <span class="open-mobile">{{ t('common.openMobileTerminal') }}</span>
         <el-switch size="small" v-model="dvInfo.mobileLayout" />
         <span class="open-mobile-line"></span>
         <el-tooltip :offset="14" effect="dark" content="切换至PC端布局" placement="bottom">

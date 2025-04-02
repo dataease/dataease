@@ -8,7 +8,7 @@ defineProps({
 <template>
   <div class="base-info-item">
     <p class="label">{{ label }}</p>
-    <p class="value">
+    <p class="value ellipsis">
       <slot></slot>
     </p>
   </div>

@@ -17,9 +17,12 @@ function getThisMonth() {
   return new Date(`${date.getFullYear()}/${date.getMonth() + 1}`)
 }
 
+function getLastStart(val = 'month' as ManipulateType) {
+  return new Date(dayjs().subtract(1, val).startOf(val).format('YYYY/MM/DD HH:mm:ss'))
+}
+
 function getLastMonth() {
-  const date = new Date()
-  return new Date(`${date.getFullYear()}/${date.getMonth()}`)
+  return getLastStart()
 }
 
 function getNextMonth() {

@@ -382,7 +382,7 @@ loadShareBase()
       </div>
     </div>
     <div class="template-market-dashboard">
-      <div class="template-market">
+      <div class="template-market" :style="{ paddingBottom: expandFold !== 'fold' ? '24px' : 0 }">
         <div class="label">
           {{ t('work_branch.template_center') }}
           <div class="expand-all">
@@ -532,6 +532,7 @@ loadShareBase()
           color: #646a73;
           font-weight: 400;
           line-height: 22px;
+          font-size: 14px;
         }
         .num {
           margin-top: 4px;

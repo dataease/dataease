@@ -105,10 +105,15 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
         from: 'gauge',
         data: {
           type: 'gauge',
-          max: chart.data?.series[chart.data?.series.length - 1]?.data[0]
+          max: chart.data?.series[0]?.data[0]
         }
       })
     })
+    const hasNoneData = chart.data?.series.some(s => !s.data?.[0])
+    this.configEmptyDataStyle(hasNoneData ? [] : [1], container, newChart)
+    if (hasNoneData) {
+      return
+    }
     return newChart
   }
 

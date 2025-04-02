@@ -25,7 +25,7 @@ const props = defineProps({
 const emit = defineEmits(['onTableThresholdChange'])
 
 const thresholdCondition = {
-  term: 'eq',
+  term: '',
   field: '0',
   value: '0',
   color: '#ff0000ff',
@@ -461,7 +461,11 @@ init()
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="2" v-if="isNotEmptyAndNull(item)" style="padding-left: 0 !important">
+            <el-col
+              :span="2"
+              v-if="isNotEmptyAndNull(item) && chart.type !== 'rich-text'"
+              style="padding-left: 0 !important"
+            >
               <el-form-item class="form-item">
                 <el-select
                   v-model="item.type"

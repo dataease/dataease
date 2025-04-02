@@ -57,6 +57,7 @@ public interface ChartViewApi {
     @PostMapping("deleteFieldByChart/{chartId}")
     void deleteFieldByChart(@PathVariable Long chartId);
 
+    @Operation(summary = "视图头部信息")
     @GetMapping("/chartBaseInfo/{id}")
     ChartBaseVO chartBaseInfo(@PathVariable("id") Long id);
 }

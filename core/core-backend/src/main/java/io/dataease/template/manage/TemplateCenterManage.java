@@ -77,9 +77,15 @@ public class TemplateCenterManage {
             String sufUrl = sysParameterManage.groupVal("template.").get("template.url");
             String templateBaseInfo = HttpClientUtil.get(sufUrl + TEMPLATE_BASE_INFO_URL + templateName, null);
             MarketTemplateV2ItemResult baseItemInfo = JsonUtil.parseObject(templateBaseInfo, MarketTemplateV2ItemResult.class);
-            String templateUrl = sufUrl + "/store/apps/" + templateName +
-                    "/releases/download/" + baseItemInfo.getLatestRelease().getRelease().getMetadata().getName()
-                    + "/assets/" + baseItemInfo.getLatestRelease().getAssets().getFirst().getMetadata().getName();
+            String templateUrl = "";
+            if (baseItemInfo.getLatestRelease() != null) {
+                templateUrl = sufUrl + "/store/apps/" + templateName +
+                        "/releases/download/" + baseItemInfo.getLatestRelease().getRelease().getMetadata().getName()
+                        + "/assets/" + baseItemInfo.getLatestRelease().getAssets().getFirst().getMetadata().getName();
+            } else {
+                templateUrl = sufUrl + baseItemInfo.getApplication().getSpec().getLinks().get(0).getUrl();
+            }
+
             String templateInfo = HttpClientUtil.get(templateUrl, null);
             return JsonUtil.parseObject(templateInfo, TemplateManageFileDTO.class);
         } else {
@@ -206,7 +212,7 @@ public class TemplateCenterManage {
                 MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
                 MarketApplicationMetaDataVO metadata = marketTemplateV2ItemResult.getApplication().getMetadata();
                 if ("Y".equalsIgnoreCase(spec.getSuggest())) {
-                    contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), "Y"));
+                    contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), "Y", spec.getTemplateClassification()));
                 }
             });
         }
@@ -246,7 +252,7 @@ public class TemplateCenterManage {
             v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
                 MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
                 MarketApplicationMetaDataVO metadata = marketTemplateV2ItemResult.getApplication().getMetadata();
-                contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest()));
+                contents.add(new TemplateMarketDTO(metadata.getName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest(), spec.getTemplateClassification()));
                 if (categoriesMap.get(spec.getLabel()) != null) {
                     activeCategoriesName.add(categoriesMap.get(spec.getLabel()));
                 }

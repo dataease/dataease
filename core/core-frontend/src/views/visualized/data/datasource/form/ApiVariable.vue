@@ -110,6 +110,10 @@ const options = [
     value: 'params'
   },
   {
+    label: t('data_source.page_parameter'),
+    value: 'pageParams'
+  },
+  {
     label: t('data_source.fixed_value'),
     value: 'fixed'
   },
@@ -120,6 +124,20 @@ const options = [
   {
     label: t('data_source.customize'),
     value: 'custom'
+  }
+]
+const pageParams = [
+  {
+    label: '${pageNumber}',
+    value: '${pageNumber}'
+  },
+  {
+    label: '${pageSize}',
+    value: '${pageSize}'
+  },
+  {
+    label: '${pageToken}',
+    value: '${pageToken}'
   }
 ]
 const timeFunLists = [
@@ -202,6 +220,7 @@ const timeFunLists = [
               <el-select
                 v-model="element.value"
                 v-if="!needMock && activeName === 'table' && element.nameType === 'params'"
+                style="width: 100%"
               >
                 <el-option
                   v-for="item in valueList"
@@ -213,9 +232,22 @@ const timeFunLists = [
               <el-select
                 v-model="element.value"
                 v-if="!needMock && activeName === 'table' && element.nameType === 'timeFun'"
+                style="width: 100%"
               >
                 <el-option
                   v-for="item in timeFunLists"
+                  :key="item.originName"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+              <el-select
+                v-model="element.value"
+                v-if="!needMock && activeName === 'table' && element.nameType === 'pageParams'"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in pageParams"
                   :key="item.originName"
                   :label="item.label"
                   :value="item.value"
@@ -225,7 +257,8 @@ const timeFunLists = [
                 v-if="
                   activeName === 'table' &&
                   element.nameType !== 'params' &&
-                  element.nameType !== 'timeFun'
+                  element.nameType !== 'timeFun' &&
+                  element.nameType !== 'pageParams'
                 "
                 v-model="element.value"
                 :disabled="isReadOnly"
@@ -276,6 +309,7 @@ const timeFunLists = [
 
 <style lang="less" scoped>
 .api-variable {
+  padding-bottom: 14px;
   & > .ed-input,
   :deep(.ed-autocomplete) {
     width: 100%;
@@ -304,25 +338,8 @@ const timeFunLists = [
       background: rgba(31, 35, 41, 0.2) !important;
     }
   }
-}
-.kv-description {
-  font-size: 13px;
-}
-
-.kv-row {
-  margin-top: 10px;
-}
-
-.kv-checkbox {
-  width: 20px;
-  margin-right: 10px;
-}
-
-.kv-delete {
-  width: 60px;
-}
-
-.ed-autocomplete {
-  width: 100%;
+  .kv-description {
+    font-size: 13px;
+  }
 }
 </style>

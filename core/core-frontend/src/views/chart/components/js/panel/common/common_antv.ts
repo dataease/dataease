@@ -1,4 +1,4 @@
-import { hexColorToRGBA, isAlphaColor, isTransparent, measureText, parseJson } from '../../util'
+import { hexColorToRGBA, hexToRgba, measureText, parseJson } from '../../util'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_LEGEND_STYLE,
@@ -33,7 +33,18 @@ import { PositionType } from '@antv/l7-core'
 import { centroid } from '@turf/centroid'
 import type { Plot } from '@antv/g2plot'
 import type { PickOptions } from '@antv/g2plot/lib/core/plot'
-import { defaults } from 'lodash-es'
+import { defaults, find } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
+import { isMobile } from '@/utils/utils'
+import { GaodeMap, TMap, TencentMap } from '@antv/l7-maps'
+import {
+  gaodeMapStyleOptions,
+  qqMapStyleOptions,
+  tdtMapStyleOptions
+} from '@/views/chart/components/js/panel/charts/map/common'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+
+const { t: tI18n } = useI18n()
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -129,8 +140,27 @@ export function getTheme(chart: Chart) {
             fontSize: tooltipFontsize + 'px',
             background: tooltipBackgroundColor,
             boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)',
-            'z-index': 3000,
+            'z-index': 2000,
             position: 'fixed'
+          },
+          'g2-tooltip-list-item': {
+            display: 'flex',
+            'align-items': 'flex-start',
+            'line-height': tooltipFontsize + 'px'
+          },
+          'g2-tooltip-name': {
+            display: 'inline-block',
+            'line-height': tooltipFontsize + 'px',
+            flex: 1
+          },
+          'g2-tooltip-value': {
+            display: 'inline-block',
+            'line-height': tooltipFontsize + 'px'
+          },
+          'g2-tooltip-marker': {
+            'margin-top': (tooltipFontsize - 8) / 2 + 'px',
+            'min-width': '8px',
+            'min-height': '8px'
           }
         }
       },
@@ -264,7 +294,8 @@ export function getMultiSeriesTooltip(chart: Chart) {
           const formatter = formatterMap[item.data.quotaList[0].id]
           const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
           const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
-          result.push({ ...item, name, value })
+          const color = getTooltipItemConditionColor(item)
+          result.push({ ...item, name, value, ...(color ? { color } : {}) })
         })
       head.data.dynamicTooltipValue?.forEach(item => {
         const formatter = formatterMap[item.fieldId]
@@ -399,7 +430,7 @@ export function getXAxis(chart: Chart) {
       const a = JSON.parse(JSON.stringify(customStyle.xAxis))
       if (a.show) {
         const title =
-          a.name && a.name !== ''
+          a.nameShow && a.name && a.name !== ''
             ? {
                 text: a.name,
                 style: {
@@ -425,14 +456,16 @@ export function getXAxis(chart: Chart) {
           ? {
               style: {
                 stroke: axisCfg.lineStyle.color,
-                lineWidth: axisCfg.lineStyle.width
+                lineWidth: axisCfg.lineStyle.width,
+                lineDash: getLineDash(axisCfg.lineStyle.style)
               }
             }
           : null
         const tickLine = axisCfg.show
           ? {
               style: {
-                stroke: axisCfg.lineStyle.color
+                stroke: axisCfg.lineStyle.color,
+                lineWidth: axisCfg.lineStyle.width
               }
             }
           : null
@@ -483,7 +516,7 @@ export function getYAxis(chart: Chart) {
     return false
   }
   const title =
-    yAxis.name && yAxis.name !== ''
+    yAxis.nameShow && yAxis.name && yAxis.name !== ''
       ? {
           text: yAxis.name,
           style: {
@@ -509,14 +542,16 @@ export function getYAxis(chart: Chart) {
     ? {
         style: {
           stroke: axisCfg.lineStyle.color,
-          lineWidth: axisCfg.lineStyle.width
+          lineWidth: axisCfg.lineStyle.width,
+          lineDash: getLineDash(axisCfg.lineStyle.style)
         }
       }
     : null
   const tickLine = axisCfg.show
     ? {
         style: {
-          stroke: axisCfg.lineStyle.color
+          stroke: axisCfg.lineStyle.color,
+          lineWidth: axisCfg.lineStyle.width
         }
       }
     : null
@@ -582,7 +617,7 @@ export function getYAxisExt(chart: Chart) {
     return false
   }
   const title =
-    yAxis.name && yAxis.name !== ''
+    yAxis.nameShow && yAxis.name && yAxis.name !== ''
       ? {
           text: yAxis.name,
           style: {
@@ -608,14 +643,16 @@ export function getYAxisExt(chart: Chart) {
     ? {
         style: {
           stroke: axisCfg.lineStyle.color,
-          lineWidth: axisCfg.lineStyle.width
+          lineWidth: axisCfg.lineStyle.width,
+          lineDash: getLineDash(axisCfg.lineStyle.style)
         }
       }
     : null
   const tickLine = axisCfg.show
     ? {
         style: {
-          stroke: axisCfg.lineStyle.color
+          stroke: axisCfg.lineStyle.color,
+          lineWidth: axisCfg.lineStyle.width
         }
       }
     : null
@@ -873,7 +910,9 @@ export function getLineDash(type) {
  */
 export function setGradientColor(rawColor: string, show = false, angle = 0, start = 0) {
   const item = rawColor.split(',')
-  item.splice(3, 1, '0.3)')
+  const alpha = parseFloat(item[3].replace(')', ''))
+  const startAlpha = alpha * 0.3
+  item.splice(3, 1, `${startAlpha})`)
   let color: string
   if (start == 0) {
     color = `l(${angle}) 0:${item.join(',')} 1:${rawColor}`
@@ -972,6 +1011,9 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
         return result
       }
       const head = originalItem.properties
+      if (!head) {
+        return result
+      }
       const formatter = formatterMap[head.quotaList?.[0]?.id]
       if (!isEmpty(formatter)) {
         const originValue = parseFloat(head.value as string)
@@ -1131,10 +1173,14 @@ export class CustomZoom extends Zoom {
       'l7-button-control',
       container,
       () => {
-        this.mapsService.setZoomAndCenter(
-          this.controlOption['initZoom'],
-          this.controlOption['center']
-        )
+        if (this.controlOption['bounds']) {
+          this.mapsService.fitBounds(this.controlOption['bounds'], { animate: true })
+        } else {
+          this.mapsService.setZoomAndCenter(
+            this.controlOption['initZoom'],
+            this.controlOption['center']
+          )
+        }
       }
     )
     if (this.controlOption.showZoom) {
@@ -1183,31 +1229,158 @@ export class CustomZoom extends Zoom {
     } as IZoomControlOption
   }
 }
-export function configL7Zoom(chart: Chart, plot: L7Plot<PlotOptions> | Scene) {
+export function configL7Zoom(
+  chart: Chart,
+  scene: Scene,
+  mapKey?: { key: string; securityCode: string; mapType: string }
+) {
   const { basicStyle } = parseJson(chart.customAttr)
-  const plotScene = plot instanceof Scene ? plot : plot.scene
-  const zoomOption = plotScene?.getControlByName('zoom')
+  const zoomOption = scene?.getControlByName('zoom')
   if (zoomOption) {
-    plotScene.removeControl(zoomOption)
+    scene.removeControl(zoomOption)
   }
   if (shouldHideZoom(basicStyle)) {
     return
   }
-  if (!plotScene?.getControlByName('zoom')) {
-    let initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5
-    let center = getCenter(basicStyle)
-    if (['map', 'bubble-map'].includes(chart.type)) {
-      initZoom = plotScene.getZoom()
-      center = plotScene.getCenter()
+  if (!scene?.getControlByName('zoom')) {
+    if (!scene.map) {
+      scene.once('loaded', () => {
+        switch (mapKey?.mapType) {
+          case 'tianditu':
+            //天地图
+            {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().getLng(), scene.map.getCenter().getLat()]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            }
+            break
+          case 'qq':
+            {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            }
+            break
+          default:
+            scene.map.on('complete', () => {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            })
+        }
+      })
+    } else {
+      const newZoomOptions = {
+        buttonColor: basicStyle.zoomButtonColor,
+        buttonBackground: basicStyle.zoomBackground
+      } as any
+      if (basicStyle.autoFit === false) {
+        newZoomOptions.initZoom = basicStyle.zoomLevel
+        newZoomOptions.center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+      } else {
+        const coordinates: [][] = []
+        if (chart.type === 'flow-map') {
+          const startAxis = chart.xAxis
+          const endAxis = chart.xAxisExt
+          if (startAxis?.length === 2) {
+            chart.data?.tableRow?.forEach(row => {
+              coordinates.push([row[startAxis[0].dataeaseName], row[startAxis[1].dataeaseName]])
+            })
+          }
+          if (endAxis?.length === 2) {
+            chart.data?.tableRow?.forEach(row => {
+              coordinates.push([row[endAxis[0].dataeaseName], row[endAxis[1].dataeaseName]])
+            })
+          }
+        } else {
+          const axis = chart.xAxis
+          if (axis?.length === 2) {
+            chart.data?.tableRow?.forEach(row => {
+              coordinates.push([row[axis[0].dataeaseName], row[axis[1].dataeaseName]])
+            })
+          }
+        }
+        newZoomOptions.bounds = calculateBounds(coordinates)
+      }
+      scene.addControl(new CustomZoom(newZoomOptions))
     }
-    const newZoomOptions = {
-      initZoom: initZoom,
-      center: center,
+  }
+}
+/**
+ * 计算经纬度数据的边界点
+ * @param coordinates 经纬度数组 [[lng, lat], [lng, lat], ...]
+ * @returns {[[number, number], [number, number]]} 返回东北角和西南角的坐标
+ */
+export function calculateBounds(coordinates: number[][]): {
+  northEast: [number, number]
+  southWest: [number, number]
+} {
+  if (!coordinates || coordinates.length === 0) {
+    return {
+      northEast: [180, 90],
+      southWest: [-180, -90]
+    }
+  }
+
+  let maxLng = -180
+  let minLng = 180
+  let maxLat = -90
+  let minLat = 90
+
+  coordinates.forEach(([lng, lat]) => {
+    maxLng = Math.max(maxLng, lng)
+    minLng = Math.min(minLng, lng)
+    maxLat = Math.max(maxLat, lat)
+    minLat = Math.min(minLat, lat)
+  })
+
+  return [
+    [maxLng, maxLat], // 东北角坐标
+    [minLng, minLat] // 西南角坐标
+  ]
+}
+
+export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {
+  const { basicStyle } = parseJson(chart.customAttr)
+  if (shouldHideZoom(basicStyle)) {
+    return
+  }
+  plot.once('loaded', () => {
+    const zoomOptions = {
+      initZoom: plot.scene.getZoom(),
+      center: plot.scene.getCenter(),
       buttonColor: basicStyle.zoomButtonColor,
       buttonBackground: basicStyle.zoomBackground
     } as any
-    addCustomZoom(plotScene, newZoomOptions)
-  }
+    plot.scene.addControl(new CustomZoom(zoomOptions))
+  })
 }
 
 function setStyle(elements: HTMLElement[], styleProp: string, value) {
@@ -1230,6 +1403,202 @@ export function mapRendered(dom: HTMLElement | string) {
   dom.classList.add('de-map-rendered')
 }
 
+export function getMapCenter(basicStyle: ChartBasicStyle) {
+  let center: [number, number]
+  if (basicStyle.autoFit === false) {
+    const longitude = basicStyle?.mapCenter?.longitude ?? DEFAULT_BASIC_STYLE.mapCenter.longitude
+    const latitude = basicStyle?.mapCenter?.latitude ?? DEFAULT_BASIC_STYLE.mapCenter.latitude
+    center = [longitude, latitude]
+  } else {
+    center = undefined
+  }
+  return center
+}
+
+export function getMapStyle(
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle
+) {
+  let mapStyle: string
+  switch (mapKey.mapType) {
+    case 'tianditu':
+      if (!find(tdtMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
+        mapStyle = 'normal'
+      } else {
+        mapStyle = basicStyle.mapStyle
+      }
+      break
+    case 'qq':
+      if (
+        !find(qqMapStyleOptions, s => s.value === basicStyle.mapStyle) ||
+        basicStyle.mapStyle === 'normal'
+      ) {
+        mapStyle = 'normal'
+      } else {
+        mapStyle = basicStyle.mapStyleUrl
+      }
+      break
+    default:
+      if (!find(gaodeMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
+        basicStyle.mapStyle = 'normal'
+      }
+      mapStyle = basicStyle.mapStyleUrl
+      if (basicStyle.mapStyle !== 'custom') {
+        mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
+      }
+      break
+  }
+  return mapStyle
+}
+
+export async function getMapScene(
+  chart: Chart,
+  scene: Scene,
+  container: string,
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle,
+  miscStyle: ChartMiscAttr,
+  mapStyle: string,
+  center?: [number, number]
+) {
+  if (!scene) {
+    scene = new Scene({
+      id: container,
+      logoVisible: false,
+      map: getMapObject(mapKey, basicStyle, miscStyle, mapStyle, center)
+    })
+  } else {
+    if (mapKey.mapType === 'tianditu') {
+      scene.map?.checkResize()
+    }
+    if (scene.getLayers()?.length) {
+      await scene.removeAllLayer()
+      try {
+        scene.setPitch(miscStyle.mapPitch)
+      } catch (e) {}
+      if (mapKey.mapType === 'tianditu') {
+        if (mapStyle === 'normal') {
+          scene.map?.removeStyle()
+        } else {
+          scene.setMapStyle(mapStyle)
+        }
+      } else {
+        scene.setMapStyle(mapStyle)
+      }
+
+      scene.map.showLabel = !(basicStyle.showLabel === false)
+      if (mapKey.mapType === 'qq') {
+        scene.map.setBaseMap({
+          //底图设置（参数为：VectorBaseMap对象）
+          type: 'vector', //类型：失量底图
+          features: basicStyle.showLabel === false ? ['base', 'building2d'] : undefined
+          //仅渲染：道路及底面(base) + 2d建筑物(building2d)，以达到隐藏文字的效果
+        })
+      }
+    }
+    if (basicStyle.autoFit === false) {
+      scene.setZoomAndCenter(basicStyle.zoomLevel, center)
+    }
+  }
+  mapRendering(container)
+  scene.once('loaded', () => {
+    mapRendered(container)
+    if (mapKey.mapType === 'qq') {
+      scene.map.setBaseMap({
+        //底图设置（参数为：VectorBaseMap对象）
+        type: 'vector', //类型：失量底图
+        features: basicStyle.showLabel === false ? ['base', 'building2d'] : undefined
+        //仅渲染：道路及底面(base) + 2d建筑物(building2d)，以达到隐藏文字的效果
+      })
+      scene.setMapStyle(mapStyle)
+    }
+    // 去除天地图自己的缩放按钮
+    if (mapKey.mapType === 'tianditu') {
+      if (mapStyle === 'normal') {
+        scene.map?.removeStyle()
+      } else {
+        scene.setMapStyle(mapStyle)
+      }
+
+      const tdtControl = document.querySelector(
+        `#component${chart.id} .tdt-control-zoom.tdt-bar.tdt-control`
+      )
+      if (tdtControl) {
+        tdtControl.style.display = 'none'
+      }
+      const tdtControlOuter = document.querySelectorAll(
+        `#wrapper-outer-id-${chart.id} .tdt-control-zoom.tdt-bar.tdt-control`
+      )
+      if (tdtControlOuter && tdtControlOuter.length > 0) {
+        for (let i = 0; i < tdtControlOuter.length; i++) {
+          tdtControlOuter[i].style.display = 'none'
+        }
+      }
+      const tdtCopyrightControl = document.querySelector(
+        `#component${chart.id} .tdt-control-copyright.tdt-control`
+      )
+      if (tdtCopyrightControl) {
+        tdtCopyrightControl.style.display = 'none'
+      }
+      const tdtCopyrightControlOuter = document.querySelectorAll(
+        `#wrapper-outer-id-${chart.id} .tdt-control-copyright.tdt-control`
+      )
+      if (tdtCopyrightControlOuter && tdtCopyrightControlOuter.length > 0) {
+        for (let i = 0; i < tdtCopyrightControlOuter.length; i++) {
+          tdtCopyrightControlOuter[i].style.display = 'none'
+        }
+      }
+    }
+  })
+  return scene
+}
+
+export function getMapObject(
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle,
+  miscStyle: ChartMiscAttr,
+  mapStyle: string,
+  center?: [number, number]
+) {
+  switch (mapKey.mapType) {
+    case 'tianditu':
+      return new TMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle, //不生效
+        pitch: undefined, //不支持
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
+        showLabel: !(basicStyle.showLabel === false), //不支持
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+    case 'qq':
+      return new TencentMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle,
+        pitch: miscStyle.mapPitch,
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 12,
+        showLabel: !(basicStyle.showLabel === false),
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+    default:
+      return new GaodeMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle,
+        pitch: miscStyle.mapPitch,
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
+        showLabel: !(basicStyle.showLabel === false),
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+  }
+}
 /**
  * 隐藏缩放控件
  * @param basicStyle
@@ -1241,35 +1610,13 @@ function shouldHideZoom(basicStyle: any): boolean {
   )
 }
 
-/**
- * 获取地图中心点
- * @param basicStyle
- */
-function getCenter(basicStyle: any): [number, number] {
-  let center: [number, number] = [
-    DEFAULT_BASIC_STYLE.mapCenter.longitude,
-    DEFAULT_BASIC_STYLE.mapCenter.latitude
-  ]
-  if (basicStyle.autoFit === false) {
-    center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-  }
-  return center
-}
-
-/**
- * 添加自定义缩放控件
- * @param plotScene
- * @param newZoomOptions
- */
-function addCustomZoom(plotScene: Scene, newZoomOptions: any): void {
-  plotScene.addControl(new CustomZoom(newZoomOptions))
-}
-
 const G2_TOOLTIP_WRAPPER = 'g2-tooltip-wrapper'
 export function getTooltipContainer(id) {
   let wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
   if (!wrapperDom) {
     wrapperDom = document.createElement('div')
+    wrapperDom.style.position = 'absolute'
+    wrapperDom.style.zIndex = '9999'
     wrapperDom.id = G2_TOOLTIP_WRAPPER
     document.body.appendChild(wrapperDom)
   }
@@ -1282,6 +1629,7 @@ export function getTooltipContainer(id) {
   g2Tooltip.classList.add('g2-tooltip')
   // 最多半屏，鼠标移入可滚动
   g2Tooltip.style.maxHeight = '50%'
+  isMobile() ? (g2Tooltip.style.maxWidth = '50%') : (g2Tooltip.style.maxWidth = '25%')
   g2Tooltip.style.overflowY = 'auto'
   g2Tooltip.style.display = 'none'
   g2Tooltip.style.position = 'fixed'
@@ -1302,14 +1650,35 @@ export function getTooltipContainer(id) {
   }
   return g2Tooltip
 }
+
+/**
+ * 配置提示轮播
+ * @param plot
+ * @param chart
+ */
+function configCarouselTooltip(plot, chart) {
+  // 启用轮播
+  plot.once('afterrender', () => {
+    const carousel = chart.customAttr?.tooltip?.carousel
+    ChartCarouselTooltip.manage(plot, chart, {
+      xField: 'field',
+      duration: carousel.enable ? carousel?.stayTime * 1000 : 2000,
+      interval: carousel.enable ? carousel?.intervalTime * 1000 : 2000
+    })
+  })
+}
 export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>(
   chart: Chart,
   plot: P
 ) {
   const { tooltip } = parseJson(chart.customAttr)
   if (!tooltip.show) {
+    ChartCarouselTooltip.destroyByContainer(chart.container)
     return
   }
+  // 图表容器，用于计算 tooltip 的位置
+  const chartElement = document.getElementById('shape-id-' + chart.id)
+  configCarouselTooltip(plot, chart)
   // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
   plot.options.tooltip.container.addEventListener('mouseenter', e => {
     e.target.style.visibility = 'visible'
@@ -1321,7 +1690,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
   })
   // 手动处理 tooltip 的显示和隐藏事件，需配合源码理解
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#showTooltip
-  plot.on('tooltip:show', () => {
+  plot.on('tooltip:show', _d => {
     const tooltipCtl = plot.chart.getController('tooltip')
     if (!tooltipCtl) {
       return
@@ -1344,11 +1713,24 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     }
     plot.chart.getOptions().tooltip.follow = false
     tooltipCtl.title = Math.random().toString()
-    plot.chart.getTheme().components.tooltip.x = event.clientX
-    plot.chart.getTheme().components.tooltip.y = event.clientY
+    // 当显示提示为事件触发时，使用event的client坐标，否则使用tooltipCtl.point 数据点的位置，在图表中，需要加上图表在绘制区的位置
+    const { x, y } =
+      !event ||
+      event?.type === 'plot:leave' ||
+      ['pie', 'pie-rose', 'pie-donut'].includes(chart.type)
+        ? {
+            x: tooltipCtl.point.x + Number(chartElement.getBoundingClientRect().left),
+            y:
+              60 +
+              Number(chartElement.getBoundingClientRect().top) +
+              Number(chartElement.style.height.split('px')[0]) / 2
+          }
+        : { x: event.clientX, y: event.clientY }
+    plot.chart.getTheme().components.tooltip.x = x
+    plot.chart.getTheme().components.tooltip.y = y
   })
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#hideTooltip
-  plot.on('plot:mouseleave', () => {
+  plot.on('plot:leave', () => {
     const tooltipCtl = plot.chart.getController('tooltip')
     if (!tooltipCtl) {
       return
@@ -1359,6 +1741,30 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
       container.style.display = 'none'
     }
     tooltipCtl.hideTooltip()
+  })
+  // 移动端处理，关闭其他图表的提示
+  plot.on('plot:touchstart', () => {
+    const wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
+    if (wrapperDom) {
+      const tooltipCtl = plot.chart.getController('tooltip')
+      if (!tooltipCtl) {
+        return
+      }
+      const container = tooltipCtl.tooltip?.cfg.container
+      for (const ele of wrapperDom.children) {
+        if (!container || container.id !== ele.id) {
+          ele.style.display = 'none'
+        }
+      }
+    }
+  })
+  plot.on('tooltip:hidden', () => {
+    const tooltipCtl = plot.chart.getController('tooltip')
+    if (!tooltipCtl) {
+      return
+    }
+    const container = tooltipCtl.tooltip?.cfg.container
+    container && (container.style.display = 'none')
   })
 }
 
@@ -1599,4 +2005,286 @@ export function configYaxisTitleLengthLimit(chart, plot) {
     ev.view.options.axes.yAxisExt.title.originalText = yAxis.name
     ev.view.options.axes.yAxisExt.title.text = wrappedTitle
   })
+}
+
+/**
+ * 调整原始数据options.data
+ * 添加conditionColor字段，用于保存符合条件的颜色
+ * conditionColor 为数组，多个指标多个颜色，按照指标的顺序
+ * @param chart
+ * @param options
+ */
+export const addConditionsStyleColorToData = (chart: Chart, options) => {
+  const { threshold } = parseJson(chart.senior)
+  if (!threshold.enable) return options
+  options.data.forEach(item => {
+    item['conditionColor'] = []
+    // 条形图的值字段是xField，柱形图的值字段是yField
+    const valueField = chart.type === 'bar-horizontal' ? options.xField : options.yField
+    // 对称条形图区分左右值，value、 valueExt,quotaList只有一个
+    if (chart.type === 'bidirectional-bar') {
+      valueField.forEach(value => {
+        const quotaList = value === 'value' ? chart.yAxis : chart.yAxisExt
+        const conditionColor = getColorByConditions([quotaList[0]?.id], item[value], chart)
+        if (conditionColor) {
+          item[item[options.xField] + '-' + value] = conditionColor
+        }
+      })
+    } else if (item.quotaList?.length) {
+      const quotaList = item.quotaList.map(q => q.id) ?? []
+      quotaList.forEach((q, index) => {
+        // 定义后，在 handleConditionsStyle 函数中使用
+        let currentValue = item[valueField]
+        if (chart.type === 'progress-bar') {
+          currentValue = item['originalValue']
+        }
+        const cColor = getColorByConditions([q], currentValue, chart)
+        if (cColor) {
+          item.conditionColor.push(cColor)
+        } else {
+          item.conditionColor = undefined
+        }
+      })
+    }
+  })
+  return options
+}
+
+/**
+ * 辅助函数：获取颜色, 根据条件以及值计算
+ * @param quotaList 指标列表
+ * @param values 值
+ */
+const getColorByConditions = (quotaList: [], values: number | number[], chart) => {
+  const { threshold } = parseJson(chart.senior)
+  const { basicStyle } = parseJson(chart.customAttr)
+  const currentValue = Array.isArray(values) ? values[1] - values[0] : values
+  if (!currentValue) return undefined
+  // 同样的指标只取最后一个
+  const conditionMap = new Map()
+  for (const condition of threshold.lineThreshold ?? []) {
+    conditionMap.set(condition.fieldId, condition)
+  }
+  for (const condition of conditionMap.values()) {
+    if (chart.type === 'progress-bar' && chart.yAxisExt?.[0]?.id !== quotaList[0]) continue
+    if (!quotaList.includes(condition.fieldId) && chart.type !== 'waterfall') continue
+    for (const tc of condition.conditions) {
+      if (
+        (tc.term === 'between' && currentValue >= tc.min && currentValue <= tc.max) ||
+        (tc.term === 'lt' && currentValue < tc.value) ||
+        (tc.term === 'le' && currentValue <= tc.value) ||
+        (tc.term === 'gt' && currentValue > tc.value) ||
+        (tc.term === 'ge' && currentValue >= tc.value)
+      ) {
+        let tmpColor = hexToRgba(tc.color, basicStyle.alpha)
+        if (basicStyle.gradient) {
+          let vhAngle = ['bar-horizontal', 'progress-bar'].includes(chart.type) ? 0 : 270
+          if (chart.type === 'bidirectional-bar') {
+            const yAxis = chart.yAxis.find(item => item.id === condition.fieldId)
+            vhAngle = getBidirectionalAngle(basicStyle, yAxis ? 0 : 1)
+          }
+          tmpColor = setGradientColor(tmpColor, true, vhAngle)
+        }
+        return tmpColor
+      }
+    }
+  }
+}
+
+/**
+ * 处理柱条图的样式
+ * 柱条的颜色
+ * 提示marker的颜色
+ * 注: 原始options中tooltip已经配置了customItems,这里将会忽略
+ * @param chart
+ * @param options
+ */
+export function handleConditionsStyle(chart: Chart, options: O) {
+  const { threshold } = parseJson(chart.senior)
+  if (!threshold.enable) return options
+  const { basicStyle } = parseJson(chart.customAttr)
+  // 该字段出处 addConditionsStyleColorToData
+  const colorField = 'conditionColor'
+  // 配置条件样式的颜色字段
+  const rawFields = options.rawFields || []
+  rawFields.push(colorField)
+  // 辅助函数：配置柱条样式颜色，条形图为barStyle,柱形图为columnStyle
+  const columnStyle = data => {
+    return {
+      ...options.columnStyle,
+      ...options.barStyle,
+      ...(data[colorField]?.[0] ? { fill: data[colorField][0] } : {})
+    }
+  }
+  let newColor = undefined
+  if (chart.type === 'bidirectional-bar') {
+    rawFields.push(options.xField)
+    newColor = getBidirectionalBarColor(chart, basicStyle, options)
+  } else if (chart.type === 'waterfall') {
+    newColor = getWaterfallColor(basicStyle, chart)
+  }
+  const tmpOption = {
+    ...options,
+    rawFields,
+    columnStyle: columnStyle,
+    barStyle: columnStyle,
+    tooltip: {
+      ...options.tooltip,
+      ...(options.tooltip['customItems']
+        ? {}
+        : {
+            customItems: originalItems => {
+              originalItems.forEach(item => {
+                if (item.data?.[colorField]) {
+                  item.color = item.data[colorField][0]
+                }
+              })
+              return originalItems
+            }
+          })
+    },
+    ...(newColor ? { color: newColor } : {})
+  }
+  return tmpOption
+}
+
+/**
+ * 配置瀑布图的color
+ * 瀑布color,这个图表固定为基础样式中颜色的前三个颜色，第一个为增加，第二个为减少，第三个为总计
+ * @param basicStyle
+ * @param chart
+ */
+const getWaterfallColor = (basicStyle, chart) => {
+  const waterfallBasicColors = getBasicColors(chart, basicStyle, 270)
+  return data => {
+    if (data['$$isTotal$$']) return waterfallBasicColors[2]
+    const values = data['$$yField$$']
+    const newColor = getColorByConditions([], values, chart)
+    return newColor ?? (values[1] > values[0] ? waterfallBasicColors[0] : waterfallBasicColors[1])
+  }
+}
+
+/**
+ * 配置对称条形图的color
+ * @param basicStyle
+ * @param options
+ */
+const getBidirectionalBarColor = (chart, basicStyle, options) => {
+  const basicColors = getBasicColors(chart, basicStyle, 270)
+  return ref => {
+    const obj = options.data.find(item => item[ref[options.xField] + '-' + ref['series-field-key']])
+    if (obj) {
+      return obj[ref[options.xField] + '-' + ref['series-field-key']]
+    }
+    return ref['series-field-key'] === 'value' ? basicColors[0] : basicColors[1]
+  }
+}
+
+/**
+ * 获取基础颜色
+ * @param chart
+ * @param basicStyle
+ * @param angle
+ */
+const getBasicColors = (chart, basicStyle, angle) => {
+  const baseColors = []
+  basicStyle.colors?.forEach((color, index) => {
+    if (chart.type === 'bidirectional-bar') {
+      baseColors.push(
+        setGradientColor(
+          hexToRgba(color, basicStyle.alpha),
+          true,
+          getBidirectionalAngle(basicStyle, index)
+        )
+      )
+    } else {
+      baseColors.push(setGradientColor(hexToRgba(color, basicStyle.alpha), true, angle))
+    }
+  })
+  return basicStyle.gradient ? baseColors : basicStyle.colors
+}
+
+/**
+ * 获取对称条形图颜色的渐变角度
+ * @param basicStyle
+ * @param index
+ */
+const getBidirectionalAngle = (basicStyle, index) => {
+  let vhAngle = 180 - index * 180
+  if (basicStyle.layout === 'vertical') {
+    vhAngle = index === 0 ? 280 : 90
+  }
+  return vhAngle
+}
+
+/**
+ * tooltip验证条件样式中的颜色，有就使用，否则使用原始颜色
+ * @param item
+ */
+export const getTooltipItemConditionColor = item => {
+  let color = item.color
+  if (item.data?.['conditionColor']) {
+    color = item.data['conditionColor'][0]
+  }
+  return color
+}
+
+/**
+ * 配置空数据样式
+ * @param newChart
+ * @param newData
+ * @param container
+ */
+export const configEmptyDataStyle = (newData, container, newChart?, content?) => {
+  /**
+   * 辅助函数：移除空数据dom
+   */
+  const removeEmptyDom = () => {
+    const emptyElement = document.getElementById(container + '_empty')
+    if (emptyElement) {
+      emptyElement.parentElement.removeChild(emptyElement)
+    }
+  }
+  removeEmptyDom()
+  if (newData.length > 0) return
+  if (!newData.length) {
+    const emptyDom = document.createElement('div')
+    emptyDom.id = container + '_empty'
+    emptyDom.textContent = content || tI18n('data_set.no_data')
+    emptyDom.setAttribute(
+      'style',
+      `position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: darkgray;
+        textAlign: center;`
+    )
+    const parent = document.getElementById(container)
+    parent.insertBefore(emptyDom, parent.firstChild)
+    newChart?.destroy()
+  }
+}
+
+export const numberToChineseUnderHundred = (num: number): string => {
+  // 合法性检查
+  if (num <= 0 || num > 99 || !Number.isInteger(num)) {
+    throw new Error('请输入1-99之间的整数')
+  }
+
+  const digits = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九']
+
+  // 处理个位数
+  if (num < 10) return digits[num]
+
+  const tens = Math.floor(num / 10)
+  const ones = num % 10
+
+  // 处理整十
+  if (ones === 0) {
+    return tens === 1 ? '十' : digits[tens] + '十'
+  }
+
+  // 处理其他两位数
+  return tens === 1 ? '十' + digits[ones] : digits[tens] + '十' + digits[ones]
 }

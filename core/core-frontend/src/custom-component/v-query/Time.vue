@@ -7,7 +7,7 @@ import { type TimeRange } from './time-format'
 import dayjs from 'dayjs'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useShortcuts } from './shortcuts'
-import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
+import { getThisStart, getThisEnd, getLastStart, getAround } from './time-format-dayjs'
 import VanPopup from 'vant/es/popup'
 import VanDatePicker from 'vant/es/date-picker'
 import VanTimePicker from 'vant/es/time-picker'
@@ -297,6 +297,14 @@ const disabledDate = val => {
       case 'lastMonth':
         startTime = getLastStart('month')
         break
+      case 'thisQuarter':
+        startTime = getThisStart('quarter')
+        break
+      case 'thisWeek':
+        startTime = new Date(
+          dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')
+        )
+        break
       case 'today':
         startTime = getThisStart('day')
         break
@@ -305,6 +313,9 @@ const disabledDate = val => {
         break
       case 'monthBeginning':
         startTime = getThisStart('month')
+        break
+      case 'monthEnd':
+        startTime = getThisEnd('month')
         break
       case 'yearBeginning':
         startTime = getThisStart('year')
@@ -388,22 +399,33 @@ const selectSecond = ref(false)
 
 const setArrValue = () => {
   currentDate.value = currentDate.value.slice(0, getIndex() + 1)
+  const timeFormat =
+    currentDate.value.length === 2 ? currentDate.value.concat(['01']) : currentDate.value
   if (isRange.value) {
     const [start, end] = selectValue.value || []
     if (selectSecond.value) {
       selectValue.value = [
-        start ? start : new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`),
-        new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`)
+        start ? start : new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`),
+        new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`)
       ]
     } else {
       selectValue.value = [
-        new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`),
-        end ? end : new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`)
+        new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`),
+        end ? end : new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`)
       ]
     }
   } else {
-    selectValue.value = new Date(`${currentDate.value.join('/')} ${currentTime.value.join(':')}`)
+    selectValue.value = new Date(`${timeFormat.join('/')} ${currentTime.value.join(':')}`)
   }
+}
+
+const onClear = () => {
+  showDate.value = false
+  const { displayType } = config.value
+  const plus = displayType === '7'
+  config.value.selectValue = plus ? [] : undefined
+  selectValue.value = plus ? [] : undefined
+  handleValueChange()
 }
 
 const onConfirm = () => {
@@ -496,6 +518,15 @@ const formatDate = computed(() => {
       v-model="currentDate"
     />
   </van-popup>
+  <Teleport v-if="showDate" to=".van-picker__toolbar">
+    <button
+      style="position: absolute; top: 0; right: 60px"
+      @click="onClear"
+      class="van-picker__confirm van-haptics-feedback oooo"
+    >
+      {{ t('commons.clear') }}
+    </button></Teleport
+  >
 </template>
 
 <style lang="less">

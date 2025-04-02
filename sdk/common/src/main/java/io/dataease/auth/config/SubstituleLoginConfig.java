@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.LogUtil;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +21,8 @@ import java.util.Map;
 @Configuration
 public class SubstituleLoginConfig {
 
-
-    private static String jsonFilePath = "classpath:substitule.json";
+    @Value("${dataease.path.substitule:classpath:substitule.json}")
+    private String jsonFilePath;
 
     private static String pwd;
 
@@ -55,7 +56,7 @@ public class SubstituleLoginConfig {
         return pwd;
     }
 
-    public static void modifyPwd(String pwd) {
+    public void modifyPwd(String pwd) {
         File file = new File(jsonFilePath);
         Map<String, String> myObject = new HashMap<>();
         myObject.put("pwd", pwd);

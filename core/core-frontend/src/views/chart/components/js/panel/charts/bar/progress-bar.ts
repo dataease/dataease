@@ -4,6 +4,7 @@ import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
   getTooltipContainer,
+  getTooltipItemConditionColor,
   setGradientColor,
   TOOLTIP_TPL
 } from '../../common/common_antv'
@@ -48,7 +49,8 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     'title-selector',
     'function-cfg',
     'jump-set',
-    'linkage'
+    'linkage',
+    'threshold'
   ]
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
@@ -64,10 +66,11 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
       'fontSize',
       'axisForm',
       'axisLabel',
-      'position',
+      // 'position',
       'showLengthLimit'
     ],
-    'function-cfg': ['emptyDataStrategy']
+    'function-cfg': ['emptyDataStrategy'],
+    threshold: ['lineThreshold']
   }
   axis: AxisType[] = [...BAR_AXIS_TYPE, 'yAxisExt']
   protected baseOptions: BarOptions = {
@@ -106,7 +109,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
       // 目标与当前都为负 负向小于0为0
       if (target < 0 && current < 0) {
         const completionRate = (2 - current / target) * 100
-        return Math.max(completionRate, 0)
+        return Number(Math.max(completionRate, 0).toFixed(2))
       }
       return 0
     }
@@ -294,12 +297,31 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     if (!baseOption.yAxis) {
       return baseOption
     }
-    if (baseOption.yAxis.position === 'left') {
+    baseOption.yAxis.position = 'bottom'
+    const yAxis = parseJson(chart.customStyle).yAxis
+    if (yAxis.axisLabel.show) {
+      const rotate = yAxis.axisLabel.rotate
+      let textAlign = 'end'
+      let textBaseline = 'middle'
+      if (Math.abs(rotate) > 75) {
+        textAlign = 'center'
+      }
+      if (rotate > 75) {
+        textBaseline = 'top'
+      }
+      if (rotate < -75) {
+        textBaseline = 'bottom'
+      }
+      baseOption.yAxis.label.style.textBaseline = textBaseline
+      baseOption.yAxis.label.style.textAlign = textAlign
+    }
+
+    /*if (baseOption.yAxis.position === 'left') {
       baseOption.yAxis.position = 'bottom'
     }
     if (baseOption.yAxis.position === 'right') {
       baseOption.yAxis.position = 'top'
-    }
+    }*/
     return baseOption
   }
   setupDefaultOptions(chart: ChartObj): ChartObj {
@@ -368,13 +390,15 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
       this.configLegend,
       this.configYAxis,
-      this.configEmptyDataStrategy
+      this.configEmptyDataStrategy,
+      this.configBarConditions
     )(chart, options)
   }
 

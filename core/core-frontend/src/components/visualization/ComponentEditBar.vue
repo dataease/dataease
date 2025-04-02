@@ -101,7 +101,7 @@
         </el-tooltip>
       </el-icon>
       <template #dropdown>
-        <el-dropdown-menu style="width: 158px">
+        <el-dropdown-menu>
           <el-dropdown-item @click="copyComponent" v-if="barShowCheck('copy')">{{
             t('visualization.copy')
           }}</el-dropdown-item>
@@ -132,13 +132,20 @@
               <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
                 <div
                   class="flex-align-center"
-                  style="width: 100%; padding: 5px 6px 5px 16px; line-height: 24px"
+                  style="
+                    position: relative;
+                    width: 100%;
+                    padding: 5px 32px 5px 16px;
+                    line-height: 24px;
+                  "
                 >
                   {{ t('visualization.export_as') }}
-                  <el-icon size="16px" style="margin-left: auto"><ArrowRight /></el-icon>
+                  <el-icon size="16px" style="position: absolute; right: 8px; margin-right: 0"
+                    ><ArrowRight
+                  /></el-icon>
                 </div>
                 <template #dropdown>
-                  <el-dropdown-menu style="width: 120px">
+                  <el-dropdown-menu>
                     <el-dropdown-item v-if="exportPermissions[1]" @click="exportAsExcel"
                       >Excel</el-dropdown-item
                     >
@@ -156,6 +163,12 @@
               </el-dropdown>
             </el-dropdown-item>
           </template>
+          <el-dropdown-item
+            @click="hiddenComponent"
+            v-if="barShowCheck('hidden') && isMainCanvas(canvasId)"
+            >{{ t('visualization.hidden') }}</el-dropdown-item
+          >
+
           <xpack-component
             :chart="element"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
@@ -220,7 +233,7 @@ import icon_params_setting from '@/assets/svg/icon_params_setting.svg'
 import dvBarUnLinkage from '@/assets/svg/dv-bar-unLinkage.svg'
 import database from '@/assets/svg/database.svg'
 import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
-import dvPreviewDownload from '@/assets/svg/dv-preview-download.svg'
+import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import { computed, h, onBeforeUnmount, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -237,6 +250,9 @@ import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
 import { XpackComponent } from '@/components/plugin'
 import { exportPermission, isMobile } from '@/utils/utils'
+import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
+import { isMainCanvas } from '@/utils/canvasUtils'
+const layerStore = layerStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -260,6 +276,7 @@ const positionBarShow = {
   canvas: [
     'datasetParams',
     'enlarge',
+    'hidden',
     'details',
     'setting',
     'copy',
@@ -280,6 +297,7 @@ const componentTypeBarShow = {
   UserView: [
     'datasetParams',
     'enlarge',
+    'hidden',
     'details',
     'setting',
     'copy',
@@ -293,7 +311,7 @@ const componentTypeBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  default: ['setting', 'delete', 'copy', 'multiplexing', 'batchOpt']
+  default: ['setting', 'delete', 'copy', 'multiplexing', 'batchOpt', 'hidden']
 }
 
 const barShowCheck = barName => {
@@ -344,7 +362,9 @@ const {
   componentData,
   canvasViewInfo,
   mobileInPc,
-  dvInfo
+  dvInfo,
+  isPopWindow,
+  hiddenListStatus
 } = storeToRefs(dvMainStore)
 
 const state = reactive({
@@ -365,6 +385,7 @@ const state = reactive({
   viewXArray: [],
   batchOptCheckModel: false
 })
+const showHiddenIcon = computed(() => hiddenListStatus.value && isMainCanvas(canvasId.value))
 
 const tabSort = () => {
   customTabsSortRef.value.sortInit(element.value)
@@ -387,7 +408,11 @@ const showEditPosition = computed(() => {
     const baseLeft = element.value.x - 1
     const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
     if ((baseLeft === 0 && baseRight === 0) || baseRight < 0) {
-      return 'bar-main-right-inner'
+      if (showHiddenIcon.value) {
+        return 'bar-main-left-inner'
+      } else {
+        return 'bar-main-right-inner'
+      }
     } else if (baseRight === 0) {
       return 'bar-main-left-outer'
     } else {
@@ -482,6 +507,16 @@ const userViewEnlargeOpen = (e, opt) => {
   e.preventDefault()
   e.stopPropagation()
   emits('userViewEnlargeOpen', opt)
+}
+
+const hiddenComponent = () => {
+  if (curComponent.value) {
+    curComponent.value.dashboardHidden = true
+    eventBus.emit('removeMatrixItemPosition-' + canvasId.value, curComponent.value)
+    dvMainStore.setHiddenListStatus(true)
+    snapshotStore.recordSnapshotCache('hide')
+    dvMainStore.setLastHiddenComponent(curComponent.value.id)
+  }
 }
 
 // 复用-Begin
@@ -598,7 +633,9 @@ const initCurFields = () => {
   }
 }
 
-const showDownload = computed(() => canvasViewInfo.value[element.value.id]?.dataFrom !== 'template')
+const showDownload = computed(
+  () => canvasViewInfo.value[element.value.id]?.dataFrom !== 'template' && !isPopWindow.value
+)
 // 富文本-End
 
 const datasetParamsSetShow = computed(() => {
@@ -661,6 +698,11 @@ watch(
 .bar-main-right-inner {
   width: 24px;
   right: 0px;
+}
+
+.bar-main-left-inner {
+  width: 24px;
+  left: 0px;
 }
 
 .bar-main-left-outer {

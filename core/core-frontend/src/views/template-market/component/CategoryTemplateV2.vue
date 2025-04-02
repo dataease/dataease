@@ -90,9 +90,8 @@ const props = defineProps({
   width: 100%;
   float: left;
   height: 24px;
-  margin-top: 16px;
   display: inline;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   .custom-split-line {
     margin: 4px 8px 0 12px;
     width: 2px;

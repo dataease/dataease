@@ -14,7 +14,7 @@ import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
-import { isNumber, merge } from 'lodash-es'
+import { filter, isEqual, isNumber, merge } from 'lodash-es'
 import {
   copyContent,
   CustomDataCell,
@@ -22,35 +22,20 @@ import {
   getRowIndex,
   calculateHeaderHeight,
   SortTooltip,
-  configSummaryRow,
   summaryRowStyle,
-  configEmptyDataStyle
+  configEmptyDataStyle,
+  getLeafNodes,
+  getColumns,
+  drawImage,
+  getSummaryRow,
+  SummaryCell
 } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
+
 class ImageCell extends CustomDataCell {
   protected drawTextShape(): void {
-    const img = new Image()
-    const { x, y, width, height, fieldValue } = this.meta
-    img.src = fieldValue as string
-    img.setAttribute('crossOrigin', 'anonymous')
-    img.onload = () => {
-      !this.cfg.children && (this.cfg.children = [])
-      const { width: imgWidth, height: imgHeight } = img
-      const ratio = Math.max(imgWidth / width, imgHeight / height)
-      // 不铺满，部分留白
-      const imgShowWidth = (imgWidth / ratio) * 0.8
-      const imgShowHeight = (imgHeight / ratio) * 0.8
-      this.textShape = this.addShape('image', {
-        attrs: {
-          x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
-          y: y + (imgShowHeight < height ? (height - imgShowHeight) / 2 : 0),
-          width: imgShowWidth,
-          height: imgShowHeight,
-          img
-        }
-      })
-    }
+    drawImage.apply(this)
   }
 }
 /**
@@ -63,7 +48,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
     'table-header-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
       'tableHeaderSort',
-      'showTableHeader'
+      'showTableHeader',
+      'headerGroup'
     ],
     'basic-style-selector': [
       'tableColumnMode',
@@ -72,9 +58,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
       'alpha',
       'tablePageMode',
       'showHoverStyle',
-      'autoWrap',
-      'showSummary',
-      'summaryLabel'
+      'autoWrap'
     ],
     'table-cell-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-cell-selector'],
@@ -82,7 +66,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
       'tableColumnFreezeHead',
       'tableRowFreezeHead',
       'mergeCells'
-    ]
+    ],
+    'summary-selector': ['showSummary', 'summaryLabel']
   }
   axis: AxisType[] = ['xAxis', 'filter', 'drill']
   axisConfig: AxisConfig = {
@@ -103,6 +88,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
       pre[cur.dataeaseName] = cur
       return pre
     }, {})
+    const drillFieldMap = {}
     if (chart.drill) {
       // 下钻过滤字段
       const filterFields = chart.drillFilters.map(i => i.fieldId)
@@ -111,13 +97,14 @@ export class TableInfo extends S2ChartView<TableSheet> {
       const drillFieldIndex = chart.xAxis.findIndex(ele => ele.id === drillFieldId)
       // 当前下钻字段
       const curDrillFieldId = chart.drillFields[filterFields.length].id
-      const curDrillField = fields.filter(ele => ele.id === curDrillFieldId)
+      const curDrillField = fields.find(ele => ele.id === curDrillFieldId)
       filterFields.push(curDrillFieldId)
       // 移除下钻字段，把当前下钻字段插入到下钻入口位置
       fields = fields.filter(ele => {
         return !filterFields.includes(ele.id)
       })
-      fields.splice(drillFieldIndex, 0, ...curDrillField)
+      drillFieldMap[curDrillField.dataeaseName] = chart.drillFields[0].dataeaseName
+      fields.splice(drillFieldIndex, 0, curDrillField)
     }
     fields.forEach(ele => {
       const f = axisMap[ele.dataeaseName]
@@ -135,7 +122,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (![2, 3].includes(f.deType) || !isNumber(value)) {
+          if (![2, 3, 4].includes(f.deType) || !isNumber(value)) {
             return value
           }
           let formatCfg = f.formatterCfg
@@ -146,6 +133,27 @@ export class TableInfo extends S2ChartView<TableSheet> {
         }
       })
     })
+    const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
+    // 表头分组
+    const { headerGroup, showTableHeader } = tableHeader
+    if (headerGroup && showTableHeader !== false) {
+      const { headerGroupConfig } = tableHeader
+      if (headerGroupConfig?.columns?.length) {
+        const allKeys = columns.map(c => drillFieldMap[c] || c)
+        const leafNodes = getLeafNodes(headerGroupConfig.columns as ColumnNode[])
+        const leafKeys = leafNodes.map(c => c.key)
+        if (isEqual(leafKeys, allKeys)) {
+          if (Object.keys(drillFieldMap).length) {
+            const originField = Object.values(drillFieldMap)[0]
+            const drillField = Object.keys(drillFieldMap)[0]
+            const [drillCol] = getColumns([originField], headerGroupConfig.columns as ColumnNode[])
+            drillCol.key = drillField
+          }
+          columns.splice(0, columns.length, ...headerGroupConfig.columns)
+          meta.push(...headerGroupConfig.meta)
+        }
+      }
+    }
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
     // data config
@@ -157,7 +165,6 @@ export class TableInfo extends S2ChartView<TableSheet> {
       data: newData
     }
 
-    const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
       width: containerDom.getBoundingClientRect().width,
@@ -190,37 +197,6 @@ export class TableInfo extends S2ChartView<TableSheet> {
       s2Options.frozenColCount = tableCell.tableColumnFreezeHead ?? 0
       s2Options.frozenRowCount = tableCell.tableRowFreezeHead ?? 0
     }
-    // 开启序号之后，第一列就是序号列，修改 label 即可
-    if (s2Options.showSeriesNumber) {
-      let indexLabel = tableHeader.indexLabel
-      if (!indexLabel) {
-        indexLabel = ''
-      }
-      s2Options.layoutCoordinate = (_, __, col) => {
-        if (col.colIndex === 0 && col.rowIndex === 0) {
-          col.label = indexLabel
-          col.value = indexLabel
-        }
-      }
-    }
-    s2Options.dataCell = viewMeta => {
-      const field = fields.filter(f => f.dataeaseName === viewMeta.valueField)?.[0]
-      if (field?.deType === 7 && chart.showPosition !== 'dialog') {
-        return new ImageCell(viewMeta, viewMeta?.spreadsheet)
-      }
-      if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
-        if (tableCell.mergeCells) {
-          viewMeta.fieldValue = getRowIndex(s2Options.mergedCellsInfo, viewMeta)
-        } else {
-          viewMeta.fieldValue =
-            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
-        }
-      }
-      // 配置文本自动换行参数
-      viewMeta.autoWrap = tableCell.mergeCells ? false : basicStyle.autoWrap
-      viewMeta.maxLines = basicStyle.maxLines
-      return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
-    }
     // tooltip
     this.configTooltip(chart, s2Options)
     // 合并单元格
@@ -249,8 +225,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
         return new CustomTableColCell(node, sheet, config)
       }
     }
-    // 总计
-    configSummaryRow(chart, s2Options, newData, tableHeader, basicStyle, basicStyle.showSummary)
+    // 序列号和总计行
+    this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     // 总计紧贴在单元格后面
@@ -302,6 +278,13 @@ export class TableInfo extends S2ChartView<TableSheet> {
             n.x = p
             return p + n.width
           }, 0)
+          // 处理分组的单元格，宽度为所有叶子节点之和
+          ev.colNodes.forEach(n => {
+            if (n.colIndex === -1) {
+              n.width = calcTreeWidth(n)
+              n.x = getStartPosition(n)
+            }
+          })
           ev.colsHierarchy.width = totalWidth
           newChart.store.set('lastLayoutResult', undefined)
           return
@@ -334,6 +317,13 @@ export class TableInfo extends S2ChartView<TableSheet> {
           n.x = p
           return p + n.width
         }, 0)
+        // 处理分组的单元格，宽度为所有叶子节点之和
+        ev.colNodes.forEach(n => {
+          if (n.colIndex === -1) {
+            n.width = calcTreeWidth(n)
+            n.x = getStartPosition(n)
+          }
+        })
         if (totalWidth > containerWidth) {
           ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - containerWidth
         }
@@ -383,6 +373,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
     newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, ev => resizeAction(ev))
     // right click
     newChart.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(newChart, event, meta))
+    // touch
+    this.configTouchEvent(newChart, drawOption, meta)
     // theme
     const customTheme = this.configTheme(chart)
     newChart.setThemeCfg({ theme: customTheme })
@@ -403,6 +395,11 @@ export class TableInfo extends S2ChartView<TableSheet> {
       const fontStyle = tableCell.isItalic ? 'italic' : 'normal'
       const fontWeight = tableCell.isBolder === false ? 'normal' : 'bold'
       const mergeCellTheme: S2Theme = {
+        dataCell: {
+          cell: {
+            crossBackgroundColor: tableItemBgColor
+          }
+        },
         mergedCell: {
           cell: {
             backgroundColor: tableItemBgColor,
@@ -447,7 +444,92 @@ export class TableInfo extends S2ChartView<TableSheet> {
     return theme
   }
 
+  protected configSummaryRowAndIndex(
+    chart: Chart,
+    pageInfo: PageInfo,
+    s2Options: S2Options,
+    s2DataConfig: S2DataConfig
+  ) {
+    const { tableHeader, basicStyle, tableCell } = parseJson(chart.customAttr)
+    const fields = chart.data?.fields ?? []
+    // 开启序号之后，第一列就是序号列，修改 label 即可
+    if (s2Options.showSeriesNumber) {
+      let indexLabel = tableHeader.indexLabel
+      if (!indexLabel) {
+        indexLabel = ''
+      }
+      s2Options.layoutCoordinate = (_, __, col) => {
+        if (col.colIndex === 0 && col.rowIndex === 0) {
+          col.label = indexLabel
+          col.value = indexLabel
+        }
+      }
+    }
+    const { showSummary, summaryLabel } = basicStyle
+    const data = s2DataConfig.data
+    const xAxis = chart.xAxis
+    if (showSummary && data?.length) {
+      // 设置汇总行高度和表头一致
+      const heightByField = {}
+      heightByField[data.length] = tableHeader.tableTitleHeight
+      s2Options.style.rowCfg = { heightByField }
+      // 计算汇总加入到数据里，冻结最后一行
+      s2Options.frozenTrailingRowCount = 1
+      const axis = filter(xAxis, axis => [2, 3, 4].includes(axis.deType))
+      const summaryObj = getSummaryRow(data, axis, basicStyle.seriesSummary) as any
+      data.push(summaryObj)
+    }
+    s2Options.dataCell = viewMeta => {
+      // 总计行处理
+      if (showSummary && viewMeta.rowIndex === data.length - 1) {
+        if (viewMeta.colIndex === 0) {
+          if (tableHeader.showIndex) {
+            viewMeta.fieldValue = summaryLabel ?? t('chart.total_show')
+          } else {
+            // 第一列不是数值类型的，显示总计
+            if (![2, 3, 4].includes(xAxis?.[0]?.deType)) {
+              viewMeta.fieldValue = summaryLabel ?? t('chart.total_show')
+            }
+          }
+        }
+        return new SummaryCell(viewMeta, viewMeta?.spreadsheet)
+      }
+      const field = fields.find(f => f.dataeaseName === viewMeta.valueField)
+      if (field?.deType === 7 && chart.showPosition !== 'dialog') {
+        return new ImageCell(viewMeta, viewMeta?.spreadsheet)
+      }
+      if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
+        if (tableCell.mergeCells) {
+          viewMeta.fieldValue = getRowIndex(s2Options.mergedCellsInfo, viewMeta)
+        } else {
+          viewMeta.fieldValue =
+            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        }
+      }
+      // 配置文本自动换行参数
+      viewMeta.autoWrap = tableCell.mergeCells ? false : basicStyle.autoWrap
+      viewMeta.maxLines = basicStyle.maxLines
+      return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
+    }
+  }
+
   constructor() {
     super('table-info', [])
   }
+}
+
+function calcTreeWidth(node) {
+  if (!node.children?.length) {
+    return node.width
+  }
+  return node.children.reduce((pre, cur) => {
+    return pre + calcTreeWidth(cur)
+  }, 0)
+}
+
+function getStartPosition(node) {
+  if (!node.children?.length) {
+    return node.x
+  }
+  return getStartPosition(node.children[0])
 }

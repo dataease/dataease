@@ -1,5 +1,7 @@
 package io.dataease.i18n;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
@@ -13,7 +15,10 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 
 @Component
 public class Translator {
@@ -39,7 +44,7 @@ public class Translator {
     /**
      * 获取国际化消息并替换占位符
      *
-     * @param key        国际化键 如：确定删除名为{0}的{1}吗？
+     * @param key          国际化键 如：确定删除名为{0}的{1}吗？
      * @param placeholders 占位值
      * @return 替换后的消息
      */
@@ -112,6 +117,10 @@ public class Translator {
                     translateObject(item);
                 }
             }
+            if (javaObject instanceof IPage) {
+                IPage iPage = (IPage) javaObject;
+                translateObject(iPage.getRecords());
+            }
 
             if (javaObject.getClass().isArray()) {
                 for (int i = 0; i < Array.getLength(javaObject); ++i) {
@@ -141,7 +150,8 @@ public class Translator {
                         }
                     }
                 } catch (Exception e) {
-
+                    LogUtil.error(e.getMessage());
+                    DEException.throwException(e);
                 }
 
             }

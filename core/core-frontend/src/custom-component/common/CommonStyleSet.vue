@@ -584,10 +584,10 @@ const checkItalic = () => {
 }
 
 const checkTextDecoration = () => {
-  if (styleForm.value.textDecoration === 'normal') {
+  if (styleForm.value.textDecoration === 'none') {
     styleForm.value.textDecoration = 'underline'
   } else {
-    styleForm.value.textDecoration = 'normal'
+    styleForm.value.textDecoration = 'none'
   }
   changeStyle({ key: 'textDecoration', value: styleForm.value.textDecoration })
 }
@@ -775,6 +775,15 @@ watch(
 
   &:hover {
     background-color: rgba(31, 35, 41, 0.1);
+  }
+}
+
+.form-item-dark {
+  :deep(.ed-color-picker__trigger) {
+    border-color: #5f5f5f;
+  }
+  :deep(.ed-color-picker__custom-icon::after) {
+    background-color: #5f5f5f;
   }
 }
 </style>

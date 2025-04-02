@@ -18,9 +18,12 @@ export interface ProxyInfo {
   shareDisable: boolean
   peRequireValid: boolean
   ticketValidVO: TicketValidVO
+  pwd?: string
+  uuid: string
 }
 class ShareProxy {
   uuid: string
+  pwd?: string
   constructor() {
     this.uuid = ''
   }
@@ -48,7 +51,16 @@ class ShareProxy {
       curLocation.lastIndexOf('de-link/') + 8,
       pmIndex > 0 ? pmIndex : curLocation.length
     )
-    this.uuid = uuidObj
+
+    if (uuidObj?.includes(',')) {
+      const index = uuidObj.indexOf(',')
+      this.uuid = uuidObj.substring(0, index)
+      if (uuidObj.length > index + 1) {
+        this.pwd = uuidObj.substring(index + 1)
+      }
+    } else {
+      this.uuid = uuidObj
+    }
   }
   async loadProxy() {
     this.setUuid()
@@ -66,6 +78,10 @@ class ShareProxy {
     }
     const res = await request.post({ url, data: param })
     const proxyInfo: ProxyInfo = res.data as ProxyInfo
+    proxyInfo.uuid = uuid
+    if (this.pwd) {
+      proxyInfo.pwd = this.pwd
+    }
     return proxyInfo
   }
 }

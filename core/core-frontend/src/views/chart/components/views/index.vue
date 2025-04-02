@@ -8,7 +8,6 @@ import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import router from '@/router'
 import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
 import { PluginComponent } from '@/components/plugin'
@@ -36,7 +35,6 @@ import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
-import { parseUrl } from '@/utils/ParseUrl'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { cloneDeep } from 'lodash-es'
@@ -55,13 +53,15 @@ import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import request from '@/config/axios'
 import { store } from '@/store'
 import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
-
+import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
+import { useRoute } from 'vue-router'
+const route = useRoute()
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { emitter } = useEmitt()
-
+const dePreviewPopDialogRef = ref(null)
 let innerRefreshTimer = null
 const appStore = useAppStoreWithOut()
 const appearanceStore = useAppearanceStoreWithOut()
@@ -77,7 +77,9 @@ const {
   curComponent,
   canvasStyleData,
   mobileInPc,
-  inMobile
+  inMobile,
+  editMode,
+  hiddenListStatus
 } = storeToRefs(dvMainStore)
 
 const props = defineProps({
@@ -136,6 +138,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  optType: {
+    type: String,
+    required: false
   }
 })
 const dynamicAreaId = ref('')
@@ -239,14 +245,6 @@ const clearViewLinkage = () => {
   dvMainStore.clearViewLinkage(element.value.id)
   useEmitt().emitter.emit('clearPanelLinkage', { viewId: element.value.id })
 }
-
-watch(
-  [() => view.value],
-  () => {
-    initTitle()
-  },
-  { deep: true }
-)
 
 watch([() => scale.value], () => {
   initTitle()
@@ -352,10 +350,7 @@ const chartClick = param => {
     ElMessage.error(t('chart.drill_field_error'))
     return
   }
-  if (
-    view.value.type === 'circle-packing' &&
-    (param.data?.childNodeCount === 0 || param.data.name === t('commons.all'))
-  ) {
+  if (view.value.type === 'circle-packing' && param.data.name === t('commons.all')) {
     ElMessage.error(t('chart.last_layer'))
     return
   }
@@ -374,15 +369,28 @@ const chartClick = param => {
 // 仪表板和大屏所有额外过滤参数都在此处
 const filter = (firstLoad?: boolean) => {
   const { filter } = useFilter(view.value.id, firstLoad)
-  return {
+  const result = {
     user: wsCache.get('user.uid'),
     filter,
     linkageFilters: element.value.linkageFilters,
     outerParamsFilters: element.value.outerParamsFilters,
+    webParamsFilters: element.value.webParamsFilters,
     drill: state.drillClickDimensionList,
     resultCount: resultCount.value,
     resultMode: resultMode.value
   }
+  // 定时报告相关勿动
+  if (route.path === '/preview' && route.query.taskId) {
+    const sceneId = view.value['sceneId']
+    const filterJson = window[`de-report-filter-${sceneId}`]
+    let filterObj = {}
+    if (filterJson) {
+      filterObj = JSON.parse(filterJson)
+    }
+    filterObj[view.value.id] = result
+    window[`de-report-filter-${sceneId}`] = JSON.stringify(filterObj)
+  }
+  return result
 }
 
 const onDrillFilters = param => {
@@ -407,26 +415,7 @@ const windowsJump = (url, jumpType, size = 'middle') => {
   try {
     let newWindow
     if ('newPop' === jumpType) {
-      let sizeX, sizeY
-      if (size === 'large') {
-        sizeX = 0.95
-        sizeY = 0.9
-      } else if (size === 'middle') {
-        sizeX = 0.8
-        sizeY = 0.75
-      } else {
-        sizeX = 0.6
-        sizeY = 0.5
-      }
-      const height = screen.height * sizeY
-      const width = screen.width * sizeX
-      const left = screen.width * ((1 - sizeX) / 2)
-      const top = screen.height * ((1 - sizeY) / 2)
-      newWindow = window.open(
-        url,
-        '_blank',
-        `width=${width},height=${height},left=${left},top=${top},toolbar=no,scrollbars=yes,resizable=yes,location=no`
-      )
+      dePreviewPopDialogRef.value.previewInit({ url, size })
     } else if ('_self' === jumpType) {
       newWindow = window.open(url, jumpType)
       if (inMobile.value) {
@@ -474,6 +463,9 @@ const jumpClick = param => {
     if (isDataEaseBi.value) {
       embeddedBaseUrl = embeddedStore.baseUrl
     }
+    const jumpInfoParam = `&jumpInfoParam=${encodeURIComponent(
+      Base64.encode(JSON.stringify(param))
+    )}`
     // 内部仪表板跳转
     if (jumpInfo.linkType === 'inner') {
       if (jumpInfo.targetDvId) {
@@ -491,13 +483,17 @@ const jumpClick = param => {
           curFilter.filter.forEach(filterItem => {
             targetViewInfoList.forEach(targetViewInfo => {
               if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
-                filterOuterParams[targetViewInfo.outerParamsName] = filterItem.value
+                filterOuterParams[targetViewInfo.outerParamsName] = {
+                  operator: filterItem.operator,
+                  value: filterItem.value
+                }
               }
             })
           })
         }
         let attachParamsInfo
         if (Object.keys(filterOuterParams).length > 0) {
+          filterOuterParams['outerParamsVersion'] = 'v2'
           attachParamsInfo =
             '&attachParams=' + encodeURIComponent(Base64.encode(JSON.stringify(filterOuterParams)))
         }
@@ -505,13 +501,11 @@ const jumpClick = param => {
         if (publicLinkStatus.value) {
           // 判断是否有公共链接ID
           if (jumpInfo.publicJumpId) {
-            let url = `${embeddedBaseUrl}#/de-link/${
-              jumpInfo.publicJumpId
-            }?fromLink=true&jumpInfoParam=${encodeURIComponent(
-              Base64.encode(JSON.stringify(param))
-            )}`
+            let url = `${embeddedBaseUrl}#/de-link/${jumpInfo.publicJumpId}?fromLink=true&dvType=${dvInfo.value.type}`
             if (attachParamsInfo) {
-              url = url + attachParamsInfo
+              url = url + attachParamsInfo + jumpInfoParam
+            } else {
+              url = url + '&ignoreParams=true' + jumpInfoParam
             }
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
@@ -520,26 +514,18 @@ const jumpClick = param => {
             ElMessage.warning(t('visualization.public_link_tips'))
           }
         } else {
-          let url = `${embeddedBaseUrl}#/preview?dvId=${
-            jumpInfo.targetDvId
-          }&fromLink=true&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
+          let url = `${embeddedBaseUrl}#/preview?dvId=${jumpInfo.targetDvId}&fromLink=true&dvType=${dvInfo.value.type}`
           if (attachParamsInfo) {
-            url = url + attachParamsInfo
+            url = url + attachParamsInfo + jumpInfoParam
+          } else {
+            url = url + '&ignoreParams=true' + jumpInfoParam
           }
           const currentUrl = window.location.href
           localStorage.setItem('beforeJumpUrl', currentUrl)
-          if (isIframe.value || isDataEaseBi.value) {
-            embeddedStore.clearState()
-          }
-          if (divSelf) {
+          if (divSelf || iframeSelf) {
             embeddedStore.setDvId(jumpInfo.targetDvId)
             embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
             divEmbedded('Preview')
-            return
-          }
-
-          if (iframeSelf) {
-            router.push(parseUrl(url))
             return
           }
           windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
@@ -714,6 +700,7 @@ const changeDataset = () => {
 }
 onMounted(() => {
   if (!view.value.isPlugin) {
+    state.drillClickDimensionList = view.value?.chartExtRequest?.drill ?? []
     queryData(!showPosition.value.includes('viewDialog'))
   }
   if (!listenerEnable.value) {
@@ -795,6 +782,13 @@ onMounted(() => {
       initTitle()
       const viewInfo = val ? val : view.value
       nextTick(() => {
+        if (view.value?.plugin?.isPlugin) {
+          chartComponent?.value?.invokeMethod({
+            methodName: 'renderChart',
+            args: [viewInfo]
+          })
+          return
+        }
         chartComponent?.value?.renderChart?.(viewInfo)
       })
     }
@@ -910,6 +904,8 @@ const vClickOutside = {
 }
 
 function onTitleChange() {
+  element.value.name = view.value.title
+  element.value.label = view.value.title
   snapshotStore.recordSnapshotCache('onTitleChange')
 }
 
@@ -1044,6 +1040,14 @@ const titleTooltipWidth = computed(() => {
   }
   return '500px'
 })
+const clearG2Tooltip = () => {
+  const g2TooltipWrapper = document.getElementById('g2-tooltip-wrapper')
+  if (g2TooltipWrapper) {
+    for (const ele of g2TooltipWrapper.children) {
+      ele.style.display = 'none'
+    }
+  }
+}
 </script>
 
 <template>
@@ -1172,6 +1176,7 @@ const titleTooltipWidth = computed(() => {
         :disabled="!['canvas', 'canvasDataV'].includes(showPosition) || disabled"
         :active="active"
         :show-position="showPosition"
+        :edit-mode="editMode"
         :suffixId="suffixId"
       />
       <de-indicator
@@ -1180,9 +1185,15 @@ const titleTooltipWidth = computed(() => {
         :themes="canvasStyleData.dashboard.themeColor"
         ref="chartComponent"
         :view="view"
+        :element="element"
         :show-position="showPosition"
         :suffixId="suffixId"
         :font-family="fontFamily"
+        @touchstart="clearG2Tooltip"
+        @onChartClick="chartClick"
+        @onPointClick="onPointClick"
+        @onDrillFilters="onDrillFilters"
+        @onJumpClick="jumpClick"
       />
       <chart-component-g2-plot
         :scale="scale"
@@ -1192,6 +1203,7 @@ const titleTooltipWidth = computed(() => {
         :element="element"
         :suffixId="suffixId"
         :font-family="fontFamily"
+        :active="active"
         v-else-if="
           showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT, ChartLibraryType.L7)
         "
@@ -1222,8 +1234,13 @@ const titleTooltipWidth = computed(() => {
       v-if="(!chartAreaShow || showEmpty) && !allEmptyCheck"
       :themes="canvasStyleData.dashboard.themeColor"
       :view-icon="view.type"
+      @touchstart="clearG2Tooltip"
     ></chart-empty-info>
-    <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
+    <drill-path
+      :disabled="optType === 'enlarge'"
+      :drill-filters="state.drillFilters"
+      @onDrillJump="drillJump"
+    />
     <XpackComponent
       ref="openHandler"
       jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
@@ -1233,6 +1250,7 @@ const titleTooltipWidth = computed(() => {
       jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvVmlld0NhdGVnb3J5SGFuZGxlcg=="
       @load-plugin-category="loadPluginCategory"
     />
+    <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>
 
@@ -1245,6 +1263,7 @@ const titleTooltipWidth = computed(() => {
   overflow: hidden;
 }
 .title-container {
+  position: relative;
   margin: 0;
   width: 100%;
 

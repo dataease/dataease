@@ -43,6 +43,10 @@ import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { isDesktop } from '@/utils/ModelUtil'
+import field_text from '@/assets/svg/field_text.svg'
+import field_value from '@/assets/svg/field_value.svg'
+import field_time from '@/assets/svg/field_time.svg'
 export interface SqlNode {
   sql: string
   tableName: string
@@ -140,28 +144,54 @@ const fieldFormList = ref([])
 
 const builtInList = ref([
   {
-    id: 8,
+    id: 'sysParams.userId',
     name: t('system.account')
   },
   {
-    id: 17,
+    id: 'sysParams.userName',
     name: t('datasource.user_name')
   },
   {
-    id: 9,
+    id: 'sysParams.userEmail',
     name: t('commons.email')
   }
 ])
+
+const iconName = type => {
+  if (type === 'text') {
+    return field_text
+  }
+  if (type === 'num') {
+    return field_value
+  }
+  if (type === 'time') {
+    return field_time
+  }
+}
+
+const iconClassName = type => {
+  if (type === 'text') {
+    return 'field-icon-text'
+  }
+  if (type === 'num') {
+    return 'field-icon-value'
+  }
+  if (type === 'time') {
+    return 'field-icon-time'
+  }
+}
 
 const fieldFormListComputed = computed(() => {
   return fieldFormList.value.filter(ele =>
     ele.name.toLowerCase().includes(searchField.value.toLowerCase())
   )
 })
+const desktop = isDesktop()
 const showSysParams = ref(false)
 const searchField = ref('')
 const sysParams = () => {
   showSysParams.value = true
+  handleSearchVariableApi()
 }
 
 const insertFieldToCodeMirror = (value: string) => {
@@ -173,18 +203,25 @@ const insertFieldToCodeMirror = (value: string) => {
 
 const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   let name2Id = originName
+  const ids = [...builtInList.value, ...fieldFormList.value].map(item => item.id)
+  const names = [...builtInList.value, ...fieldFormList.value].map(item => item.name)
   const nameIdMap = [...builtInList.value, ...fieldFormList.value].reduce((pre, next) => {
     pre[next[from]] = next[to]
     return pre
   }, {})
-  const on = originName.match(/\[(.+?)\]/g)
+  const on = originName.match(/\$f2cde\[(.+?)\]/g)
   if (on) {
     on.forEach(itm => {
-      const ele = itm.slice(1, -1)
+      const ele = itm.slice(7, -1)
       if (name2Auto) {
         name2Auto.push(nameIdMap[ele])
       }
-      name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
+      if (from === 'id' && ids.includes(ele)) {
+        name2Id = name2Id.replace(`$f2cde[${ele}]`, `$f2cde[${nameIdMap[ele]}]`)
+      }
+      if (from === 'name' && names.includes(ele)) {
+        name2Id = name2Id.replace(`$f2cde[${ele}]`, `$f2cde[${nameIdMap[ele]}]`)
+      }
     })
   }
   return name2Id
@@ -194,10 +231,20 @@ const handleSearchVariableApi = async () => {
     fieldFormList.value = res?.data || []
   })
 }
+const showSystemParams = ref(true)
 onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
-  await handleSearchVariableApi()
-  codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql), true)
+  if (!desktop) {
+    try {
+      await handleSearchVariableApi()
+    } catch (e) {
+      if (e) {
+        showSystemParams.value = false
+      }
+    }
+  }
+  sql = Base64.decode(sqlNode.value.sql)
+  codeCom.value = myCm.value.codeComInit(setNameIdTrans('id', 'name', sql), true)
 })
 
 onBeforeUnmount(() => {
@@ -284,7 +331,7 @@ watch(
   () => {
     state.variables = sqlNode.value.variables
     if (codeCom.value) {
-      insertParamToCodeMirror(Base64.decode(sqlNode.value.sql))
+      insertParamToCodeMirror(setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)))
     }
   },
   {
@@ -316,8 +363,7 @@ const save = (cb?: () => void) => {
   }
 
   parseVariable()
-  sql = codeCom.value.state.doc.toString()
-  sql = setNameIdTrans('name', 'id', sql)
+  sql = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString())
   sqlNode.value.changeFlag = true
   if (!sql.trim()) {
     ElMessage.error(t('data_set.cannot_be_empty_de'))
@@ -342,13 +388,13 @@ const close = () => {
   state.plxTableData = []
   state.fields = []
   if (codeCom.value) {
-    insertParamToCodeMirror(Base64.decode(sqlNode.value.sql))
+    insertParamToCodeMirror(setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)))
   }
   emits('close')
 }
 
 const handleClose = () => {
-  let sqlNew = codeCom.value.state.doc.toString()
+  let sqlNew = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString())
   if (changeFlag || sql !== sqlNew || !sqlNew.trim()) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
@@ -372,7 +418,7 @@ const getSQLPreview = () => {
   parseVariable()
   dataPreviewLoading.value = true
   getPreviewSql({
-    sql: Base64.encode(codeCom.value.state.doc.toString()),
+    sql: Base64.encode((sql = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString()))),
     datasourceId: sqlNode.value.datasourceId,
     sqlVariableDetails: JSON.stringify(state.variables)
   })
@@ -387,7 +433,9 @@ const getSQLPreview = () => {
 
 let tableList = []
 watch(searchTable, val => {
-  datasourceTableData.value = tableList.filter(ele => ele.tableName.includes(val))
+  datasourceTableData.value = tableList.filter(ele =>
+    ele.tableName.toLowerCase().includes(val.toLowerCase())
+  )
 })
 
 const getIconName = (type: string) => {
@@ -517,7 +565,7 @@ const mousedownDrag = () => {
         </template>
         {{ t('data_set.parameter_settings') }}
       </el-button>
-      <el-button @click="sysParams" class="system-text_bg" text>
+      <el-button v-if="!desktop && showSystemParams" @click="sysParams" class="system-text_bg" text>
         <template #icon>
           <el-icon>
             <Icon><icon_preferences_outlined class="svg-icon" /></Icon>
@@ -739,11 +787,12 @@ const mousedownDrag = () => {
         @change="changeFlagCode = true"
         :height="`${dragHeight}px`"
         dom-id="sql-editor"
+        :regexp="/\$f2cde\[(.*?)\]/g"
         ref="myCm"
-        :quotaMap="fieldFormList.filter(ele => [2, 3].includes(ele.deType)).map(ele => ele.name)"
+        :quotaMap="fieldFormList.filter(ele => ['num'].includes(ele.type)).map(ele => ele.name)"
         :dimensionMap="
           builtInList
-            .concat(fieldFormList.filter(ele => ![2, 3].includes(ele.deType)))
+            .concat(fieldFormList.filter(ele => !['num'].includes(ele.type)))
             .map(ele => ele.name)
         "
       ></code-mirror>
@@ -865,8 +914,8 @@ const mousedownDrag = () => {
               {{ t('system.system_built_in_variable') }}
             </div>
             <div
-              class="variable-item"
-              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
+              class="variable-item flex-align-center"
+              @click="insertFieldToCodeMirror(`$f2cde[${fieldForm.name}]`)"
               v-for="fieldForm in builtInList"
               :key="fieldForm.id"
             >
@@ -879,19 +928,19 @@ const mousedownDrag = () => {
               class="variable-item flex-align-center"
               v-for="fieldForm in fieldFormListComputed"
               :key="fieldForm.id"
-              @click="insertFieldToCodeMirror(`[${fieldForm.name}]`)"
-              :class="[2, 3].includes(fieldForm.deType) && 'with-type'"
+              @click="insertFieldToCodeMirror(`$f2cde[${fieldForm.name}]`)"
+              :class="['num'].includes(fieldForm.type) && 'with-type'"
             >
               <el-icon>
                 <Icon
                   ><component
                     class="svg-icon"
-                    :class="`field-icon-${fieldType[fieldForm.deType]}`"
-                    :is="iconFieldMap[fieldType[fieldForm.deType]]"
+                    :class="iconClassName(fieldForm.type)"
+                    :is="iconName(fieldForm.type)"
                   ></component
                 ></Icon>
               </el-icon>
-              <span :title="fieldForm.name">{{ fieldForm.name }}</span>
+              <span :title="fieldForm.name" class="ellipsis">{{ fieldForm.name }}</span>
             </div>
           </div>
         </div>
@@ -1366,6 +1415,7 @@ const mousedownDrag = () => {
             margin-bottom: 8px;
             background-color: white;
             color: #1f2329;
+            font-size: 14px;
 
             .ed-icon {
               font-size: 16px;
@@ -1448,7 +1498,21 @@ const mousedownDrag = () => {
     .system-text_bg {
       color: #1f2329;
       &:hover {
+        background: #1f23291a;
+      }
+
+      &:active {
+        background: #1f232933;
+      }
+
+      &:focus {
+        background: #3370ff1a;
         color: #3370ff;
+      }
+
+      &:focus:hover {
+        color: #3370ff;
+        background: #3370ff33;
       }
     }
   }

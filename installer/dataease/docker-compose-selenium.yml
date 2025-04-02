@@ -11,7 +11,6 @@ services:
           cpus: ${DE_SELENIUM_CPU_LIMIT}
           memory: ${DE_SELENIUM_MEM_LIMIT}
     environment:
-      - SE_START_XVFB=false
       - SE_ENABLE_BROWSER_LEFTOVERS_CLEANUP=true
       - SE_NODE_OVERRIDE_MAX_SESSIONS=true
       - SE_NODE_MAX_SESSIONS=5

@@ -73,7 +73,7 @@ const reUpload = e => {
 }
 
 const sizeMessage = () => {
-  ElMessage.success('图片大小不符合')
+  ElMessage.success('图片大小不能超过15M')
 }
 const init = () => {
   if (curComponent.value.propValue.url) {

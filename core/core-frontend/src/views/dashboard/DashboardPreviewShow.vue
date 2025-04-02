@@ -9,7 +9,6 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { initCanvasData, initCanvasDataPrepare, onInitReady } from '@/utils/canvasUtils'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
@@ -20,6 +19,7 @@ import AppExportForm from '@/components/de-app/AppExportForm.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useI18n } from '@/hooks/web/useI18n'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const userStore = useUserStoreWithOut()
 
 const userName = computed(() => userStore.getName)
@@ -29,7 +29,6 @@ const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
 const dashboardPreview = ref(null)
 const slideShow = ref(true)
-const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const appStore = useAppStoreWithOut()
 const dataInitState = ref(true)
@@ -39,7 +38,11 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0
+  curPreviewGap: 0,
+  showOffset: {
+    top: 110,
+    left: 280
+  }
 })
 
 const { fullscreenFlag, canvasViewDataInfo } = storeToRefs(dvMainStore)
@@ -95,7 +98,7 @@ const loadCanvasData = (dvId, weight?) => {
   dataInitState.value = false
   initMethod(
     dvId,
-    'dashboard',
+    { busiFlag: 'dashboard' },
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -117,13 +120,20 @@ const loadCanvasData = (dvId, weight?) => {
     }
   )
 }
-
+// 地图类图表，需要预先准备图片
+const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
 const downloadH2 = type => {
   downloadStatus.value = true
+  const mapElementIds =
+    state.canvasDataPreview
+      ?.filter(ele => mapChartTypes.includes(ele.innerType))
+      .map(ele => ele.id) || []
+  mapElementIds.forEach(id => useEmitt().emitter.emit('l7-prepare-picture', id))
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
     downloadCanvas2(type, vueDom, state.dvInfo.name, () => {
       downloadStatus.value = false
+      mapElementIds.forEach(id => useEmitt().emitter.emit('l7-unprepare-picture', id))
     })
   })
 }
@@ -216,13 +226,18 @@ const downLoadApp = appAttachInfo => {
   fileDownload('app', appAttachInfo)
 }
 
+const freezeStyle = computed(() => [
+  { '--top-show-offset': state.showOffset.top },
+  { '--left-show-offset': state.showOffset.left }
+])
+
 defineExpose({
   getPreviewStateInfo
 })
 </script>
 
 <template>
-  <div class="dv-preview dv-teleport-query">
+  <div class="dv-preview dv-teleport-query" :style="freezeStyle">
     <ArrowSide
       v-if="!noClose"
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
@@ -254,7 +269,7 @@ defineExpose({
     <el-container
       class="preview-area"
       :class="{ 'no-data': !hasTreeData }"
-      v-loading="requestStore.loadingMap && requestStore.loadingMap[permissionStore.currentPath]"
+      v-loading="!dataInitState"
     >
       <div
         @click="slideOpenChange"
@@ -278,6 +293,11 @@ defineExpose({
           id="de-preview-content"
           :class="{ 'de-screen-full': fullscreenFlag }"
         >
+          <canvas-opt-bar
+            canvas-id="canvas-main"
+            :canvas-style-data="state.canvasStylePreview || {}"
+            :component-data="state.canvasDataPreview || []"
+          ></canvas-opt-bar>
           <de-preview
             ref="dashboardPreview"
             v-if="state.canvasStylePreview && dataInitState"
@@ -288,6 +308,7 @@ defineExpose({
             :canvas-view-info="state.canvasViewInfoPreview"
             :show-position="showPosition"
             :download-status="downloadStatus"
+            :show-linkage-button="false"
           ></de-preview>
         </div>
       </template>
@@ -349,6 +370,7 @@ defineExpose({
     }
 
     .content {
+      position: relative;
       display: flex;
       width: 100%;
       height: 100%;

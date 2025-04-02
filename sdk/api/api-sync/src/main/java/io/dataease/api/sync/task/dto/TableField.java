@@ -1,5 +1,6 @@
 package io.dataease.api.sync.task.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@EqualsAndHashCode(callSuper = false)
 public class TableField {
     private String fieldSource;
     private String fieldName;

@@ -7,6 +7,7 @@ import {
   configPlotTooltipEvent,
   getPadding,
   getTooltipContainer,
+  getTooltipItemConditionColor,
   getTooltipSeriesTotalMap,
   setGradientColor,
   TOOLTIP_TPL
@@ -29,7 +30,8 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     'title-selector',
     'legend-selector',
     'x-axis-selector',
-    'y-axis-selector'
+    'y-axis-selector',
+    'threshold'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
@@ -70,8 +72,10 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       'axisForm',
       'axisLabel',
       'axisLabelFormatter',
-      'showLengthLimit'
-    ]
+      'showLengthLimit',
+      'axisLine'
+    ],
+    threshold: ['lineThreshold']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
   axisConfig = {
@@ -155,7 +159,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     return {
       ...options,
       total: {
-        label: '合计',
+        label: t('chart.waterfall_total'),
         style: {
           fill: setGradientColor(hexColorToRGBA(totalColorRgba, alpha), gradient, 270)
         }
@@ -237,17 +241,24 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
           .filter(item => formatterMap[item.data.quotaList[0].id])
           .forEach(item => {
             const formatter = formatterMap[item.data.quotaList[0].id]
-            const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+            const itemValue = (item.value + '').replace(/,/g, '')
+            formatter.formatterCfg.type = 'value'
+            const value = valueFormatter(parseFloat(itemValue), formatter.formatterCfg)
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ ...item, name, value })
           })
         head.data.dynamicTooltipValue?.forEach(item => {
           const formatter = formatterMap[item.fieldId]
           if (formatter) {
-            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const itemValue = (item.value + '').replace(/,/g, '')
+            const value = valueFormatter(parseFloat(itemValue), formatter.formatterCfg)
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ color: 'grey', name, value })
           }
+        })
+        result.forEach(item => {
+          const color = getTooltipItemConditionColor(item)
+          item.color = color
         })
         return result
       },
@@ -275,7 +286,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
         ...tmp.legend,
         items: [
           {
-            name: '增加',
+            name: t('chart.increase'),
             value: '',
             marker: {
               style: {
@@ -284,7 +295,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
             }
           },
           {
-            name: '减少',
+            name: t('chart.decrease'),
             value: '',
             marker: {
               style: {
@@ -293,7 +304,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
             }
           },
           {
-            name: '合计',
+            name: t('chart.waterfall_total'),
             value: '',
             marker: {
               style: {
@@ -308,6 +319,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
 
   protected setupOptions(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configLegend,
       this.configBasicStyle,
@@ -315,7 +327,8 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       this.configTooltip,
       this.configXAxis,
       this.configYAxis,
-      this.configMeta
+      this.configMeta,
+      this.configBarConditions
     )(chart, options)
   }
 

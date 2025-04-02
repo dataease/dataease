@@ -135,7 +135,10 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
           tickCount: axisValue.splitCount
         }
       }
-      return { ...tmpOptions, ...axis }
+      // 根据axis的最小值，过滤options中的data数据，过滤掉小于最小值的数据
+      const { data } = options
+      const newData = data.filter(item => item.value >= axisValue.min)
+      return { ...tmpOptions, data: newData, ...axis }
     }
     return tmpOptions
   }
@@ -267,6 +270,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
+      this.addConditionsStyleColorToData,
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configColor,
@@ -277,7 +281,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyseHorizontal
+      this.configAnalyseHorizontal,
+      this.configBarConditions
     )(chart, options, {}, this)
   }
 
@@ -290,6 +295,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
  * 堆叠条形图
  */
 export class HorizontalStackBar extends HorizontalBar {
+  properties = BAR_EDITOR_PROPERTY.filter(ele => ele !== 'threshold')
   axisConfig = {
     ...this['axisConfig'],
     extStack: {

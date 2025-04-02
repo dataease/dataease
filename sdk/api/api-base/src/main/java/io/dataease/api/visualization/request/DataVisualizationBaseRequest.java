@@ -57,6 +57,8 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
     // 是否强制校验新旧contentId
     private Boolean checkHistory = false;
 
+    //数据来源 core 主表 snapshot 镜像表
+    private String resourceTable = "core";
 
     public DataVisualizationBaseRequest(Long id,String busiFlag) {
         this.busiFlag = busiFlag;

@@ -26,5 +26,7 @@ public class TableField implements Serializable {
     List<Object> value;
 
     private int inCount;
+    private String term = "eq";
+    private Integer typeNumber;
 
 }

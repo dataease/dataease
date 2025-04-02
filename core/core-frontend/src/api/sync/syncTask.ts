@@ -26,6 +26,7 @@ export interface ISource {
   targetFieldTypeList?: string[]
   incrementCheckbox?: string
   incrementField?: string
+  esQuery?: string
 }
 
 export interface ITableField {

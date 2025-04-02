@@ -267,7 +267,6 @@ const emits = defineEmits(['headersChange'])
 .radio-group_api {
   :deep(.ed-radio) {
     height: 22px !important;
-    line-height: 22px !important;
   }
 }
 .ms-body {

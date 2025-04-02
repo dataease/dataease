@@ -109,7 +109,7 @@ onMounted(() => {
   }
 }
 .ed-form-item {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 
   :deep(.ed-form-item__label) {
     color: #646a73;

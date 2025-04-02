@@ -19,7 +19,7 @@
     </parent>
 
     <properties>
-        <dataease.version>2.10.3</dataease.version>
+        <dataease.version>2.10.6</dataease.version>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
@@ -31,7 +31,7 @@
         <h2.version>2.2.220</h2.version>
         <postgresql>42.5.0</postgresql>
         <knife4j.version>4.4.0</knife4j.version>
-        <calcite-core.version>1.35.17</calcite-core.version>
+        <calcite-core.version>1.35.18</calcite-core.version>
         <commons-dbcp2.version>2.6.0</commons-dbcp2.version>
         <antlr.version>3.5.2</antlr.version>
         <java-jwt.version>3.12.1</java-jwt.version>
@@ -46,6 +46,7 @@
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.exec.version>3.1.0</maven.exec.version>
         <guava.version>33.0.0-jre</guava.version>
+        <commons-net.version>3.8.0</commons-net.version>
         <selenium-java.version>4.19.1</selenium-java.version>
         <angus-mail.version>2.0.3</angus-mail.version>
         <mysql-connector-j.version>8.2.0</mysql-connector-j.version>

@@ -3,13 +3,12 @@
     class="link-container"
     v-loading="loading || requestStore.loadingMap[permissionStore.currentPath]"
   >
-    <ErrorTemplate
-      v-if="!loading && (disableError || peRequireError)"
-      :msg="
-        disableError ? '已禁用分享功能，请联系管理员！' : '已设置有效期密码必填，当前链接无效！'
-      "
-    />
+    <ErrorTemplate v-if="!loading && disableError" msg="已禁用分享功能，请联系管理员！" />
     <IframeError v-else-if="!loading && iframeError" />
+    <ErrorTemplate
+      v-else-if="!loading && peRequireError"
+      msg="已设置有效期密码必填，当前链接无效！"
+    />
     <LinkError v-else-if="!loading && !linkExist" />
     <Exp v-else-if="!loading && linkExp" />
     <PwdTips v-else-if="!loading && !pwdValid" />
@@ -26,7 +25,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, nextTick, ref, reactive } from 'vue'
+import { onMounted, nextTick, ref, reactive, onBeforeUnmount } from 'vue'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import PreviewCanvas from '@/views/data-visualization/PreviewCanvas.vue'
@@ -37,6 +36,8 @@ import PwdTips from './pwd.vue'
 import IframeError from './IframeError.vue'
 import TicketError from './TicketError.vue'
 import ErrorTemplate from './ErrorTemplate.vue'
+import { useLinkStoreWithOut } from '@/store/modules/link'
+const linkStore = useLinkStoreWithOut()
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const pcanvas = ref(null)
@@ -97,6 +98,9 @@ onMounted(async () => {
     }
     loading.value = false
   })
+})
+onBeforeUnmount(() => {
+  linkStore.$reset()
 })
 </script>
 <style lang="less" scoped>

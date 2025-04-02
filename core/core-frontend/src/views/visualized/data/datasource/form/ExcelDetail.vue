@@ -1,6 +1,5 @@
 <script lang="tsx" setup>
 import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
-import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
 import { Icon } from '@/components/icon-custom'
 import { ElIcon } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -15,6 +14,7 @@ import {
   onBeforeUnmount,
   nextTick
 } from 'vue'
+import { fieldType as fieldTypeLowercase } from '@/utils/attr'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { save, update } from '@/api/datasource'
 import type { Action } from 'element-plus-secondary'
@@ -36,6 +36,7 @@ export interface Param {
   creator?: string
   isPlugin?: boolean
   staticMap?: any
+  configuration?: {}
 }
 
 export interface Field {
@@ -44,6 +45,10 @@ export interface Field {
   fieldSize: number
   fieldType: string
   name: string
+  deExtractType: number
+  checked: boolean
+  primaryKey: boolean
+  length: number
 }
 const props = defineProps({
   param: {
@@ -116,10 +121,17 @@ const fieldType = {
   DOUBLE: 'value'
 }
 
+const fieldTypeToStr = {
+  0: 'TEXT',
+  2: 'LONG',
+  3: 'DOUBLE'
+}
+
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
     key: ele.originName,
     fieldType: ele.fieldType,
+    deExtractType: ele.deExtractType,
     dataKey: ele.originName,
     title: ele.name,
     checked: ele.checked,
@@ -180,6 +192,9 @@ const handleExcelDel = () => {
 }
 
 const uploadSuccess = response => {
+  if (!response) {
+    return
+  }
   if (response?.code !== 0) {
     state.excelData = []
     activeTab.value = ''
@@ -188,6 +203,9 @@ const uploadSuccess = response => {
     ElMessage.warning(response.msg)
     return
   }
+  columns.value = []
+  Object.assign(sheetObj, cloneDeep(defaultSheetObj))
+  multipleSelection.value = []
   uploading.value = false
   if (!param.value.name) {
     param.value.name = response.data.excelLabel
@@ -319,68 +337,21 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
   } else {
     method = update
   }
-  if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !props.param.id) {
-    ElMessageBox.confirm(t('dataset.merge_title'), {
-      confirmButtonText: t('dataset.merge'),
-      tip: t('dataset.task.excel_replace_msg'),
-      cancelButtonText: t('dataset.no_merge'),
-      confirmButtonType: 'primary',
-      type: 'warning',
-      autofocus: false,
-      callback: (action: Action) => {
-        if (action === 'close') return
-        loading.value = true
-        table.mergeSheet = action === 'confirm'
-        if (action === 'confirm') {
-          method(table)
-            .then(res => {
-              emitter.emit('showFinishPage', res)
-              successCb?.()
-              ElMessage({
-                message: t('commons.save_success'),
-                type: 'success'
-              })
-            })
-            .finally(() => {
-              finallyCb?.()
-              loading.value = false
-            })
-        }
-
-        if (action === 'cancel') {
-          method(table)
-            .then(res => {
-              emitter.emit('showFinishPage', res)
-              successCb?.()
-              ElMessage({
-                message: t('commons.save_success'),
-                type: 'success'
-              })
-            })
-            .finally(() => {
-              finallyCb?.()
-              loading.value = false
-            })
-        }
-      }
+  if (loading.value) return
+  loading.value = true
+  method(table)
+    .then(res => {
+      emitter.emit('showFinishPage', res)
+      successCb?.()
+      ElMessage({
+        message: t('commons.save_success'),
+        type: 'success'
+      })
     })
-  } else {
-    if (loading.value) return
-    loading.value = true
-    method(table)
-      .then(res => {
-        emitter.emit('showFinishPage', res)
-        successCb?.()
-        ElMessage({
-          message: t('commons.save_success'),
-          type: 'success'
-        })
-      })
-      .finally(() => {
-        finallyCb?.()
-        loading.value = false
-      })
-  }
+    .finally(() => {
+      finallyCb?.()
+      loading.value = false
+    })
 }
 
 const onChange = file => {
@@ -453,6 +424,18 @@ const refreshData = () => {
   currentMode.value = 'preview'
 }
 
+const deExtractTypeChange = item => {
+  item.deType = item.deExtractType
+  const sheet = state.excelData[0]?.sheets.find(ele => ele.sheetId === activeTab.value)
+  sheet.fields.forEach(row => {
+    if (row.originName === item.dataKey) {
+      row.deExtractType = item.deExtractType
+      row.deType = item.deExtractType
+      row.fieldType = fieldTypeToStr[item.deExtractType]
+    }
+  })
+}
+
 const lengthChange = val => {
   const sheet = state.excelData[0]?.sheets.find(ele => ele.sheetId === activeTab.value)
   sheet.fields.forEach(row => {
@@ -469,6 +452,15 @@ const primaryKeyChange = val => {
     }
   })
 }
+
+const fieldOptions = [
+  { label: t('dataset.text'), value: 0 },
+  { label: t('dataset.value'), value: 2 },
+  {
+    label: t('dataset.value') + '(' + t('dataset.float') + ')',
+    value: 3
+  }
+]
 
 const handleSelectionChange = val => {
   if (!initMultipleTable.value) {
@@ -511,7 +503,7 @@ const disabledFieldLength = item => {
   if (!item.checked) {
     return true
   }
-  if (item.fieldType !== 'TEXT') {
+  if (item.deExtractType !== 0) {
     return true
   }
 }
@@ -528,6 +520,9 @@ const changeCurrentMode = val => {
       }
       initMultipleTable.value = false
     })
+  } else {
+    const sheet = state.excelData[0]?.sheets.find(ele => ele.sheetId === activeTab.value)
+    handleNodeClick(sheet)
   }
 }
 
@@ -632,14 +627,31 @@ defineExpose({
           :rules="[
             {
               required: true,
-              message: t('common.please_input') + t('datasource.datasource') + t('common.name')
+              message:
+                t('common.please_input') +
+                t('common.empty') +
+                t('datasource.datasource') +
+                t('common.empty') +
+                t('common.name')
             }
           ]"
-          :label="t('visualization.custom') + t('datasource.datasource') + t('common.name')"
+          :label="
+            t('visualization.custom') +
+            t('common.empty') +
+            t('datasource.datasource') +
+            t('common.empty') +
+            t('common.name')
+          "
         >
           <el-input
             v-model="param.name"
-            :placeholder="t('common.please_input') + t('datasource.datasource') + t('common.name')"
+            :placeholder="
+              t('common.please_input') +
+              t('common.empty') +
+              t('datasource.datasource') +
+              t('common.empty') +
+              t('common.name')
+            "
           />
         </el-form-item>
       </el-form>
@@ -700,20 +712,48 @@ defineExpose({
             <el-table-column :label="t('data_set.field_name')">
               <template #default="scope">{{ scope.row.title }}</template>
             </el-table-column>
-            <el-table-column :label="t('data_set.field_type')">
-              <template #default="scope">
-                <div class="flex-align-center">
-                  <el-icon>
-                    <Icon>
-                      <component
-                        :class="`svg-icon field-icon-${fieldType[scope.row.fieldType]}`"
-                        :is="iconFieldMap[fieldType[scope.row.fieldType]]"
-                      ></component>
-                    </Icon>
-                  </el-icon>
 
-                  {{ t(`dataset.${fieldType[scope.row.fieldType]}`) }}
-                </div>
+            <el-table-column prop="deExtractType" :label="t('datasource.field_type')">
+              <template #default="scope">
+                <el-select
+                  v-model="scope.row.deExtractType"
+                  class="select-type"
+                  style="display: inline-block; width: 120px"
+                  @change="deExtractTypeChange(scope.row)"
+                >
+                  <template #prefix>
+                    <el-icon>
+                      <Icon :className="`field-icon-${fieldTypeLowercase[scope.row.deExtractType]}`"
+                        ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldTypeLowercase[scope.row.deExtractType]}`"
+                          :is="iconFieldMap[fieldTypeLowercase[scope.row.deExtractType]]"
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                  </template>
+                  <el-option
+                    v-for="item in fieldOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                    <span style="float: left">
+                      <el-icon>
+                        <Icon :className="`field-icon-${fieldTypeLowercase[item.value]}`"
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldTypeLowercase[item.value]}`"
+                            :is="iconFieldMap[fieldTypeLowercase[item.value]]"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                    </span>
+                    <span style="float: left; font-size: 12px; color: #8492a6">{{
+                      item.label
+                    }}</span>
+                  </el-option>
+                </el-select>
               </template>
             </el-table-column>
             <el-table-column
@@ -778,7 +818,8 @@ defineExpose({
     background: #f5f6f7;
     padding: 16px;
     .btn-select {
-      width: 164px;
+      min-width: 164px;
+      padding: 0 6px;
       height: 32px;
       display: flex;
       align-items: center;
@@ -796,7 +837,7 @@ defineExpose({
       }
       .ed-button.is-text {
         height: 24px;
-        width: 74px;
+        min-width: 74px;
         line-height: 24px;
       }
       .ed-button + .ed-button {

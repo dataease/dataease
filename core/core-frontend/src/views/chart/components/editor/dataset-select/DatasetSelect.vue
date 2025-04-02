@@ -68,7 +68,8 @@ const sortTypeChange = arr => {
 const initDataset = () => {
   loadingDatasetTree.value = true
   const method = props.sourceType === 'datasource' ? getDatasourceList : getDatasetTree
-  method({})
+  const params = props.sourceType === 'datasource' ? null : {}
+  method(params)
     .then(res => {
       sortTypeChange((res as unknown as Tree[]) || [])
     })
@@ -271,6 +272,7 @@ onMounted(() => {
       :show-arrow="false"
       @show="onPopoverShow"
       @hide="onPopoverHide"
+      :disabled="disabled"
       :effect="themes"
       :offset="4"
     >
@@ -287,10 +289,19 @@ onMounted(() => {
               :placeholder="selectSource"
             >
               <template #suffix>
-                <el-icon class="input-arrow-icon" :class="{ reverse: _popoverShow }">
+                <el-icon
+                  v-show="!disabled"
+                  class="input-arrow-icon"
+                  :class="{ reverse: _popoverShow }"
+                >
                   <ArrowDown />
                 </el-icon>
-                <el-icon v-if="clearShow" class="input-custom-clear-icon" @click="handleClear">
+                <el-icon
+                  v-show="!disabled"
+                  v-if="clearShow"
+                  class="input-custom-clear-icon"
+                  @click="handleClear"
+                >
                   <CircleClose />
                 </el-icon>
               </template>

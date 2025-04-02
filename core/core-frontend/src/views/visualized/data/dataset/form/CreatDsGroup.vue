@@ -16,6 +16,7 @@ import {
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
+import { filterFreeFolder } from '@/utils/utils'
 export interface Tree {
   name: string
   value?: string | number
@@ -159,6 +160,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   if (data.id) {
     const request = { leaf: false, weight: 7 } as BusiTreeRequest
     getDatasetTree(request).then(res => {
+      filterFreeFolder(res, 'dataset')
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
       let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]

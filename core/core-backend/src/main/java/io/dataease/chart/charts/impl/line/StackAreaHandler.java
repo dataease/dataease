@@ -11,6 +11,7 @@ import io.dataease.extensions.view.dto.*;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -100,12 +101,26 @@ public class StackAreaHandler extends YoyChartHandler {
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
                 req.setDsList(dsMap);
-                var assistSql = assistSQL(originSql, assistFields, dsMap);
-                req.setQuery(assistSql);
-                logger.debug("calcite assist sql: " + assistSql);
-                var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
-                result.setAssistData(assistData);
-                result.setDynamicAssistFields(dynamicAssistFields);
+
+                List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                if (ObjectUtils.isNotEmpty(assists)) {
+                    var assistSql = assistSQL(originSql, assistFields, dsMap);
+                    req.setQuery(assistSql);
+                    logger.debug("calcite assistSql sql: " + assistSql);
+                    var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
+                    result.setAssistData(assistData);
+                    result.setDynamicAssistFields(assists);
+                }
+
+                List<ChartSeniorAssistDTO> assistsOriginList = dynamicAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                if (ObjectUtils.isNotEmpty(assistsOriginList)) {
+                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
+                    req.setQuery(assistSqlOriginList);
+                    logger.debug("calcite assistSql sql origin list: " + assistSqlOriginList);
+                    var assistDataOriginList = (List<String[]>) provider.fetchResultField(req).get("data");
+                    result.setAssistDataOriginList(assistDataOriginList);
+                    result.setDynamicAssistFieldsOriginList(assistsOriginList);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

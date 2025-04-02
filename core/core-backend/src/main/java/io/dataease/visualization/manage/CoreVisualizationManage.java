@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
+import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
+import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
@@ -16,9 +18,10 @@ import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
-import io.dataease.visualization.dao.ext.mapper.CoreVisualiationExtMapper;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
+import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoMapper;
+import io.dataease.visualization.dao.ext.mapper.*;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
@@ -43,10 +46,25 @@ public class CoreVisualizationManage {
     private DataVisualizationInfoMapper mapper;
 
     @Resource
+    private SnapshotDataVisualizationInfoMapper snapshotMapper;
+
+    @Resource
+    private ExtVisualizationLinkageMapper linkageMapper;
+
+    @Resource
+    private ExtVisualizationLinkJumpMapper linkJumpMapper;
+
+    @Resource
+    private ExtVisualizationOuterParamsMapper outerParamsMapper;
+
+    @Resource
     private ExtDataVisualizationMapper extDataVisualizationMapper;
 
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
+
+    @Resource
+    private ExtChartViewMapper extCoreChartMapper;
 
     @XpackInteract(value = "visualizationResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -94,9 +112,11 @@ public class CoreVisualizationManage {
             }
         }
         // 删除可视化资源
-        extDataVisualizationMapper.deleteDataVBatch(delIds);
+        extDataVisualizationMapper.deleteDataVBatch(delIds,CommonConstants.RESOURCE_TABLE.CORE);
+        extDataVisualizationMapper.deleteDataVBatch(delIds,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
         // 删除图表信息
-        extDataVisualizationMapper.deleteViewsBatch(delIds);
+        extDataVisualizationMapper.deleteViewsBatch(delIds,CommonConstants.RESOURCE_TABLE.CORE);
+        extDataVisualizationMapper.deleteViewsBatch(delIds,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
 
         coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.DELETE);
     }
@@ -110,8 +130,11 @@ public class CoreVisualizationManage {
                 DEException.throwException("resource not exist");
             }
             visualizationInfo.setUpdateTime(System.currentTimeMillis());
+            SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
+            BeanUtils.copyBean(snapshotVisualizationInfo, visualizationInfo);
             coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
             mapper.updateById(visualizationInfo);
+            snapshotMapper.updateById(snapshotVisualizationInfo);
         }
     }
 
@@ -127,22 +150,42 @@ public class CoreVisualizationManage {
             visualizationInfo.setId(id);
         }
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
+        visualizationInfo.setStatus(CommonConstants.DV_STATUS.UNPUBLISHED);
         visualizationInfo.setCreateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setCreateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
         mapper.insert(visualizationInfo);
+        // 镜像文件插入
+        SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
+        BeanUtils.copyBean(snapshotVisualizationInfo,visualizationInfo);
+        snapshotMapper.insert(snapshotVisualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.NEW);
         return visualizationInfo.getId();
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void innerEdit(DataVisualizationInfo visualizationInfo) {
+        // 镜像和主表保持名称一致
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setVersion(3);
-        mapper.updateById(visualizationInfo);
+        // 更新镜像
+        SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
+        BeanUtils.copyBean(snapshotVisualizationInfo,visualizationInfo);
+        snapshotMapper.updateById(snapshotVisualizationInfo);
+        // 更新主表名称
+        DataVisualizationInfo coreVisualizationInfo = new DataVisualizationInfo();
+        coreVisualizationInfo.setId(visualizationInfo.getId());
+        coreVisualizationInfo.setStatus(visualizationInfo.getStatus());
+        coreVisualizationInfo.setPid(visualizationInfo.getPid());
+        coreVisualizationInfo.setContentId(visualizationInfo.getContentId());
+        coreVisualizationInfo.setName(visualizationInfo.getName());
+        coreVisualizationInfo.setUpdateTime(System.currentTimeMillis());
+        coreVisualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
+        coreVisualizationInfo.setVersion(3);
+        mapper.updateById(coreVisualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
     }
 
@@ -151,11 +194,11 @@ public class CoreVisualizationManage {
     }
 
     private VisualizationNodeBO rootNode() {
-        return new VisualizationNodeBO(0L, "root", false, 7, -1L, 0);
+        return new VisualizationNodeBO(0L, "root", false, 7, -1L, 0,1);
     }
 
     private VisualizationNodeBO convert(VisualizationNodePO po) {
-        return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 9, po.getPid(), po.getExtraFlag());
+        return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 9, po.getPid(), po.getExtraFlag(),po.getExtraFlag1());
     }
 
     public CoreVisualizationManage proxy() {
@@ -191,20 +234,87 @@ public class CoreVisualizationManage {
 
     public IPage<VisualizationResourcePO> queryVisualizationPage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();
-        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
+        Map<String,Object> params = new HashMap<>();
         if (StringUtils.isNotBlank(request.getType())) {
             BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());
             if (ObjectUtils.isEmpty(busiResourceEnum)) {
                 DEException.throwException("type is invalid");
             }
-            queryWrapper.eq("dvResource.type", request.getType());
+            params.put("type",request.getType());
         }
         String info = CommunityUtils.getInfo();
         if (StringUtils.isNotBlank(info)) {
-            queryWrapper.notExists(String.format(info, "core_opt_recent.resource_id"));
+            params.put("info",info);
         }
-        queryWrapper.orderBy(true, request.isAsc(), "core_opt_recent.time");
+        params.put("isAsc",request.isAsc());
         Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
-        return extDataVisualizationMapper.findRecent(page, uid, request.getKeyword(), queryWrapper);
+        return extDataVisualizationMapper.findRecent(page, uid, request.getKeyword(), params);
     }
+    @Transactional
+    public void removeSnapshot(Long dvId){
+        if(dvId != null){
+            // 清理历史数据
+            Set<Long> dvIds = new HashSet<>();
+            dvIds.add(dvId);
+            extDataVisualizationMapper.deleteDataVBatch(dvIds,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+            extCoreChartMapper.deleteViewsBySceneId(dvId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+            linkageMapper.deleteViewLinkageFieldSnapshot(dvId,null);
+            linkageMapper.deleteViewLinkageSnapshot(dvId,null);
+            linkJumpMapper.deleteJumpTargetViewInfoWithVisualizationSnapshot(dvId);
+            linkJumpMapper.deleteJumpInfoWithVisualizationSnapshot(dvId);
+            linkJumpMapper.deleteJumpWithVisualizationSnapshot(dvId);
+            outerParamsMapper.deleteOuterParamsTargetWithVisualizationIdSnapshot(dvId.toString());
+            outerParamsMapper.deleteOuterParamsInfoWithVisualizationIdSnapshot(dvId.toString());
+            outerParamsMapper.deleteOuterParamsWithVisualizationIdSnapshot(dvId.toString());
+        }
+    }
+    @Transactional
+    public void removeDvCore(Long dvId){
+        if(dvId != null){
+            // 清理历史数据
+            Set<Long> dvIds = new HashSet<>();
+            dvIds.add(dvId);
+            extDataVisualizationMapper.deleteDataVBatch(dvIds,CommonConstants.RESOURCE_TABLE.CORE);
+            extCoreChartMapper.deleteViewsBySceneId(dvId,CommonConstants.RESOURCE_TABLE.CORE);
+            linkageMapper.deleteViewLinkageField(dvId,null);
+            linkageMapper.deleteViewLinkage(dvId,null);
+            linkJumpMapper.deleteJumpTargetViewInfoWithVisualization(dvId);
+            linkJumpMapper.deleteJumpInfoWithVisualization(dvId);
+            linkJumpMapper.deleteJumpWithVisualization(dvId);
+            outerParamsMapper.deleteOuterParamsTargetWithVisualizationId(dvId.toString());
+            outerParamsMapper.deleteOuterParamsInfoWithVisualizationId(dvId.toString());
+            outerParamsMapper.deleteOuterParamsWithVisualizationId(dvId.toString());
+        }
+    }
+
+    @Transactional
+    public void dvSnapshotRecover(Long dvId){
+        // 清理历史数据
+        this.removeSnapshot(dvId);
+        // 导入新数据
+        extDataVisualizationMapper.snapshotDataV(dvId);
+        extDataVisualizationMapper.snapshotViews(dvId);
+        extDataVisualizationMapper.snapshotLinkJumpTargetViewInfo(dvId);
+        extDataVisualizationMapper.snapshotLinkJumpInfo(dvId);
+        extDataVisualizationMapper.snapshotLinkJump(dvId);
+        extDataVisualizationMapper.snapshotLinkageField(dvId);
+        extDataVisualizationMapper.snapshotLinkage(dvId);
+        extDataVisualizationMapper.snapshotOuterParamsTargetViewInfo(dvId);
+        extDataVisualizationMapper.snapshotOuterParamsInfo(dvId);
+        extDataVisualizationMapper.snapshotOuterParams(dvId);
+    }
+    @Transactional
+    public void dvRestore(Long dvId){
+        extDataVisualizationMapper.restoreDataV(dvId);
+        extDataVisualizationMapper.restoreViews(dvId);
+        extDataVisualizationMapper.restoreLinkJumpTargetViewInfo(dvId);
+        extDataVisualizationMapper.restoreLinkJumpInfo(dvId);
+        extDataVisualizationMapper.restoreLinkJump(dvId);
+        extDataVisualizationMapper.restoreLinkageField(dvId);
+        extDataVisualizationMapper.restoreLinkage(dvId);
+        extDataVisualizationMapper.restoreOuterParamsTargetViewInfo(dvId);
+        extDataVisualizationMapper.restoreOuterParamsInfo(dvId);
+        extDataVisualizationMapper.restoreOuterParams(dvId);
+    }
+
 }

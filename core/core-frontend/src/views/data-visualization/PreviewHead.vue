@@ -5,6 +5,8 @@ import dvInfoSvg from '@/assets/svg/dv-info.svg'
 import dvHeadMore from '@/assets/svg/dv-head-more.svg'
 import icon_pc_fullscreen from '@/assets/svg/icon_pc_fullscreen.svg'
 import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
+import icon_download_outlined from '@/assets/svg/icon_download_outlined.svg'
+import icon_replace_outlined from '@/assets/svg/icon_replace_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -174,37 +176,35 @@ const initOpenHandler = newWindow => {
         </template>
         {{ t('visualization.edit') }}</el-button
       >
-      <el-dropdown trigger="click">
+      <el-dropdown popper-class="pad12" trigger="click">
         <el-icon class="head-more-icon">
           <Icon name="dv-head-more"><dvHeadMore class="svg-icon" /></Icon>
         </el-icon>
         <template #dropdown>
-          <el-dropdown-menu style="width: 130px">
-            <el-dropdown-item icon="Refresh" @click="reload()"
+          <el-dropdown-menu>
+            <el-dropdown-item @click="reload()"
+              ><el-icon color="#646A73" size="16"><icon_replace_outlined /></el-icon
               >{{ t('visualization.refresh_data') }}
             </el-dropdown-item>
             <el-dropdown
               style="width: 100%; overflow: hidden"
               trigger="hover"
+              popper-class="pad12"
               placement="left-start"
               v-if="exportPermissions[0]"
             >
               <div class="ed-dropdown-menu__item flex-align-center icon">
-                <el-icon><Download /></el-icon>
-                {{ t('visualization.export_as') }}&nbsp;&nbsp;&nbsp;&nbsp;
-                <el-icon><ArrowRight /></el-icon>
+                <el-icon color="#646A73" size="16"><icon_download_outlined /></el-icon>
+                {{ t('visualization.export_as') }}
+                <el-icon color="#646A73" size="16" class="arrow-right_icon"><ArrowRight /></el-icon>
               </div>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item style="width: 118px" @click="download('pdf')"
-                    >PDF</el-dropdown-item
-                  >
-                  <el-dropdown-item
-                    style="width: 118px"
-                    @click="downloadAsAppTemplate('template')"
-                    >{{ t('visualization.style_template') }}</el-dropdown-item
-                  >
-                  <el-dropdown-item style="width: 118px" @click="downloadAsAppTemplate('app')">{{
+                  <el-dropdown-item @click="download('pdf')">PDF</el-dropdown-item>
+                  <el-dropdown-item @click="downloadAsAppTemplate('template')">{{
+                    t('visualization.style_template')
+                  }}</el-dropdown-item>
+                  <el-dropdown-item @click="downloadAsAppTemplate('app')">{{
                     t('visualization.apply_template')
                   }}</el-dropdown-item>
                   <el-dropdown-item @click="download('img')">{{
@@ -222,6 +222,24 @@ const initOpenHandler = newWindow => {
 </template>
 
 <style lang="less">
+.pad12 {
+  .ed-dropdown-menu__item {
+    padding: 5px 36px 5px 12px !important;
+
+    .ed-icon {
+      margin-right: 8px;
+    }
+    .arrow-right_icon {
+      position: absolute;
+      right: 12px;
+      margin-right: 0;
+    }
+
+    &:has(.arrow-right_icon) {
+      width: 100%;
+    }
+  }
+}
 .preview-head {
   width: 100%;
   min-width: 300px;

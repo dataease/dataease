@@ -157,6 +157,11 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         })
       })
       data = filterChartDataByRange(sourceData, maxValue, minValue)
+      if (chart.drill) {
+        getMaxAndMinValueByData(sourceData, 'value', 0, 0, (max, min) => {
+          data = filterChartDataByRange(sourceData, max, min)
+        })
+      }
     } else {
       data = sourceData
     }
@@ -208,10 +213,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options = this.setupOptions(chart, options, context)
     const { Choropleth } = await import('@antv/l7plot/dist/esm/plots/choropleth')
     const view = new Choropleth(container, options)
-    // 完成地图渲染后配置缩放按钮，为了能够获取到默认的缩放比例
-    view.on('loaded', () => {
-      this.configZoomButton(chart, view)
-    })
+    this.configZoomButton(chart, view)
     mapRendering(container)
     view.once('loaded', () => {
       mapRendered(container)
@@ -304,7 +306,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           content.push(name)
         }
         if (label.showQuota) {
-          areaMap[name] && content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
+          ;(areaMap[name] || areaMap[name] === 0) &&
+            content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
         }
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }
@@ -423,7 +426,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         const isLessThanMin = range[0] < ranges[0][0] && range[1] < ranges[0][0]
         let rangeColor = colors[colorIndex]
         if (isLessThanMin) {
-          rangeColor = hexColorToRGBA(basicStyle.areaBaseColor, basicStyle.alpha)
+          rangeColor = basicStyle.areaBaseColor
         }
         items.push({
           value: tmpRange,
@@ -438,7 +441,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
       options.color['value'] = ({ value }) => {
         const item = items.find(item => value >= item.value[0] && value <= item.value[1])
-        return item ? item.color : hexColorToRGBA(basicStyle.areaBaseColor, basicStyle.alpha)
+        return item ? item.color : basicStyle.areaBaseColor
       }
       options.color.scale.domain = [ranges[0][0], ranges[ranges.length - 1][1]]
     } else {
@@ -499,7 +502,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
     })
     //处理label
-    options.label = false
+    options.label = {
+      visible: false
+    }
     if (label.show) {
       const labelLocation = []
       customSubArea.forEach(area => {
@@ -509,7 +514,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
             content.push(area.name)
           }
           if (label.showQuota) {
-            areaMap[area.name] &&
+            ;(areaMap[area.name] || areaMap[area.name] === 0) &&
               content.push(valueFormatter(areaMap[area.name].value, label.quotaLabelFormatter))
           }
           labelLocation.push({
@@ -568,6 +573,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           return result
         }
         const head = originalItem.properties
+        if (!head) {
+          return result
+        }
         const { adcode } = head
         const areaName = subAreaMap['156' + adcode]
         const valItem = areaMap[areaName]

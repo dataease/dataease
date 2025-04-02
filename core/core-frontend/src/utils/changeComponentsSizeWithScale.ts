@@ -22,6 +22,10 @@ const needToChangeDirectionAttrs = {
   height: ['top', 'height']
 }
 
+export function changeSizeWithScaleAdaptor(scale) {
+  return changeComponentsSizeWithScale(scale)
+}
+
 export function changeSizeWithScale(scale) {
   return changeComponentsSizeWithScale(scale)
 }
@@ -49,7 +53,7 @@ function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
     })
 
     if (['Group'].includes(component.component)) {
-      changeComponentsSizeWithScaleCircle(component.propValue, scale)
+      groupSizeStyleAdaptor(component)
     } else if (['DeTabs'].includes(component.component)) {
       component.propValue.forEach(tabItem => {
         changeComponentsSizeWithScaleCircle(tabItem.componentData, scale)

@@ -13,13 +13,15 @@ import {
   svgStrToUrl
 } from '@/views/chart/components/js/util'
 import { deepCopy } from '@/utils/utils'
-import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
 import { PointLayer } from '@antv/l7-layers'
-import { LayerPopup } from '@antv/l7'
-import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
+import { LayerPopup, Popup } from '@antv/l7'
+import {
+  getMapCenter,
+  getMapScene,
+  getMapStyle
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
-import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { filter } from 'lodash-es'
 const { t } = useI18n()
 
@@ -102,18 +104,10 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       miscStyle = parseJson(chart.customAttr).misc
     }
 
-    let mapStyle = basicStyle.mapStyleUrl
-    if (basicStyle.mapStyle !== 'custom') {
-      mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
-    }
     const mapKey = await this.getMapKey()
-    let center: [number, number] = [
-      DEFAULT_BASIC_STYLE.mapCenter.longitude,
-      DEFAULT_BASIC_STYLE.mapCenter.latitude
-    ]
-    if (basicStyle.autoFit === false) {
-      center = [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-    }
+    const mapStyle = getMapStyle(mapKey, basicStyle)
+
+    let center = getMapCenter(basicStyle)
     // 联动时，聚焦到数据点，多个取第一个
     if (
       chart.chartExtRequest?.linkageFilters?.length &&
@@ -128,46 +122,30 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     }
     const chartObj = drawOption.chartObj as unknown as L7Wrapper<L7Config, Scene>
     let scene = chartObj?.getScene()
-    if (!scene) {
-      scene = new Scene({
-        id: container,
-        logoVisible: false,
-        map: new GaodeMap({
-          token: mapKey?.key ?? undefined,
-          style: mapStyle,
-          pitch: miscStyle.mapPitch,
-          center,
-          zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5,
-          showLabel: !(basicStyle.showLabel === false)
-        })
-      })
-    } else {
-      if (scene.getLayers()?.length) {
-        await scene.removeAllLayer()
-        scene.setCenter(center)
-        scene.setPitch(miscStyle.mapPitch)
-        scene.setZoom(basicStyle.autoFit === false ? basicStyle.zoomLevel : 2.5)
-        scene.setMapStyle(mapStyle)
-        scene.map.showLabel = !(basicStyle.showLabel === false)
-      }
-    }
-    mapRendering(container)
-    scene.once('loaded', () => {
-      mapRendered(container)
-    })
+    scene = await getMapScene(
+      chart,
+      scene,
+      container,
+      mapKey,
+      basicStyle,
+      miscStyle,
+      mapStyle,
+      center
+    )
+
+    this.configZoomButton(chart, scene, mapKey)
     if (xAxis?.length < 2) {
       return new L7Wrapper(scene, undefined)
     }
     const configList: L7Config[] = []
     const symbolicLayer = await this.buildSymbolicLayer(chart, scene)
     configList.push(symbolicLayer)
-    const tooltipLayer = this.buildTooltip(chart, container, symbolicLayer)
+    const tooltipLayer = this.buildTooltip(chart, container, symbolicLayer, scene)
     if (tooltipLayer) {
       scene.addPopup(tooltipLayer)
     }
     this.buildLabel(chart, configList)
-    this.configZoomButton(chart, scene)
-    symbolicLayer.on('inited', ev => {
+    symbolicLayer.on('inited', () => {
       chart.container = container
       configCarouselTooltip(chart, symbolicLayer, symbolicLayer.sourceOption.data, scene)
     })
@@ -237,7 +215,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     const colorAssignments = new Map()
     const sizeKey = extBubble.length > 0 ? extBubble[0].dataeaseName : ''
 
-    //todo 条件颜色
+    //条件颜色
     const { threshold } = parseJson(chart.senior)
     let conditions = []
     if (threshold.enable) {
@@ -279,49 +257,43 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
                   const end = parseFloat(t.max)
                   if (start <= value && value <= end) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('lt' === t.term) {
                   if (value < v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('le' === t.term) {
                   if (value <= v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('gt' === t.term) {
                   if (value > v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('ge' === t.term) {
                   if (value >= v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('eq' === t.term) {
                   if (value === v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 } else if ('not_eq' === t.term) {
                   if (value !== v) {
                     color = hexColorToRGBA(_color, alpha)
-                    colorsWithAlpha[index] = color
                     baseColorList[index] = color
                   }
                 }
               }
             }
           }
+
           return {
             ...item,
             color,
@@ -348,8 +320,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           pointLayer.shape('customIcon')
         } else {
           const parser = new DOMParser()
-          for (let index = 0; index < Math.min(colorsWithAlpha.length, colorIndex + 1); index++) {
-            const color = colorsWithAlpha[index]
+          for (let index = 0; index < Math.min(baseColorList.length, colorIndex + 1); index++) {
+            const color = baseColorList[index]
             const fillRegex = /(fill="[^"]*")/g
             const svgStr = basicStyle.customIcon.replace(fillRegex, '')
             const doc = parser.parseFromString(svgStr, 'image/svg+xml')
@@ -363,7 +335,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           })
         }
       } else {
-        pointLayer.shape(mapSymbol).color('_index', colorsWithAlpha)
+        pointLayer.shape(mapSymbol).color('_index', baseColorList)
         pointLayer.style({
           stroke: {
             field: 'color'
@@ -446,7 +418,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
    * @param chart
    * @param pointLayer
    */
-  buildTooltip = (chart, container, pointLayer) => {
+  buildTooltip = (chart, container, pointLayer, scene) => {
     const customAttr = chart.customAttr ? parseJson(chart.customAttr) : null
     this.clearPopup(container)
     if (customAttr?.tooltip?.show) {
@@ -508,8 +480,26 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           }
         })
       }
+      pointLayer.on('touchend', e => {
+        if (e.lngLat) {
+          const fieldData = {
+            ...e.feature,
+            ...Object.fromEntries(this.mergeDetailsToMap(e.feature.details ?? []))
+          }
+          const content = this.buildTooltipContent(tooltip, fieldData, showFields)
+          const popup = new Popup({
+            lngLat: e.lngLat,
+            title: '',
+            closeButton: false,
+            closeOnClick: true,
+            html: `${htmlPrefix}${content}${htmlSuffix}`
+          })
+          scene.addPopup(popup)
+        }
+      })
       return new LayerPopup({
         anchor: 'top-left',
+        className: 'l7-popup-' + container,
         items: [
           {
             layer: pointLayer,

@@ -21,5 +21,7 @@ public class BaseReciDTO implements Serializable {
 
     private List<String> larkGroupList;
 
+    private List<String> larksuiteGroupList;
+
     private List<String> webhookList;
 }
