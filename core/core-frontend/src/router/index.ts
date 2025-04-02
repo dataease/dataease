@@ -156,6 +156,13 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/chart/ChartView.vue')
+  },
+  {
+    path: '/template-manage',
+    name: 'template-manage',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/template/indexInject.vue')
   }
 ]
 
