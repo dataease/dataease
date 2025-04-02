@@ -191,8 +191,15 @@ public class CoreVisualizationExportManage {
         if (StringUtils.isBlank(filterJson)) {
             return new HashMap<>();
         }
-        return JsonUtil.parseObject(filterJson, new TypeReference<Map<Long, ChartExtRequest>>() {
+        Map<Long, ChartExtRequest> extRequestMap = JsonUtil.parseObject(filterJson, new TypeReference<Map<Long, ChartExtRequest>>() {
         });
+        extRequestMap.forEach((key, chartExtRequest) -> {
+            chartExtRequest.setQueryFrom("panel");
+            chartExtRequest.setResultCount(Math.toIntExact(ExportCenterUtils.getExportLimit("view")));
+            chartExtRequest.setResultMode(ChartConstants.VIEW_RESULT_MODE.ALL);
+            chartExtRequest.setPageSize(ExportCenterUtils.getExportLimit("view"));
+        });
+        return extRequestMap;
     }
 
     private Map<String, ChartExtRequest> buildViewRequest(DataVisualizationVO panelDto, Boolean justView) {
