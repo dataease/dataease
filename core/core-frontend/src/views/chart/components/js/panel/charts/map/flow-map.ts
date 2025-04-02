@@ -109,7 +109,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     this.startAndEndNameConfig(chart, xAxis, xAxisExt, misc, configList)
     this.pointConfig(chart, xAxis, xAxisExt, misc, configList)
     configList[0].once('inited', () => {
-      mapRendered(container)
+      mapRendered(container, scene)
     })
     return new L7Wrapper(scene, configList)
   }

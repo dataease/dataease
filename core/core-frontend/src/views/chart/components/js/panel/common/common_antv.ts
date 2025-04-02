@@ -1173,13 +1173,27 @@ export class CustomZoom extends Zoom {
       'l7-button-control',
       container,
       () => {
-        if (this.controlOption['bounds']) {
-          this.mapsService.fitBounds(this.controlOption['bounds'], { animate: true })
+        if (this.mapsService.map?.deMapProvider == 'qq') {
+          if (this.mapsService.map.deMapAutoFit) {
+            this.mapsService.setZoomAndCenter(this.mapsService.map.deMapAutoZoom, [
+              this.mapsService.map.deMapAutoLng,
+              this.mapsService.map.deMapAutoLat
+            ])
+          } else {
+            this.mapsService.setZoomAndCenter(
+              this.controlOption['initZoom'],
+              this.controlOption['center']
+            )
+          }
         } else {
-          this.mapsService.setZoomAndCenter(
-            this.controlOption['initZoom'],
-            this.controlOption['center']
-          )
+          if (this.controlOption['bounds']) {
+            this.mapsService.fitBounds(this.controlOption['bounds'], { animate: true })
+          } else {
+            this.mapsService.setZoomAndCenter(
+              this.controlOption['initZoom'],
+              this.controlOption['center']
+            )
+          }
         }
       }
     )
@@ -1396,11 +1410,21 @@ export function mapRendering(dom: HTMLElement | string) {
   dom.classList.add('de-map-rendering')
 }
 
-export function mapRendered(dom: HTMLElement | string) {
+export function mapRendered(dom: HTMLElement | string, scene?: Scene) {
   if (typeof dom === 'string') {
     dom = document.getElementById(dom)
   }
   dom.classList.add('de-map-rendered')
+
+  if (scene?.map && scene.map.deMapProvider === 'qq') {
+    setTimeout(() => {
+      if (scene.map) {
+        scene.map.deMapAutoZoom = scene.map.getZoom()
+        scene.map.deMapAutoLng = scene.map.getCenter().getLng()
+        scene.map.deMapAutoLat = scene.map.getCenter().getLat()
+      }
+    }, 1000)
+  }
 }
 
 export function getMapCenter(basicStyle: ChartBasicStyle) {
@@ -1498,6 +1522,11 @@ export async function getMapScene(
     }
     if (basicStyle.autoFit === false) {
       scene.setZoomAndCenter(basicStyle.zoomLevel, center)
+      if (mapKey.mapType === 'qq') {
+        scene.map.deMapAutoFit = false
+        scene.map.deMapZoom = basicStyle.zoomLevel
+        scene.map.deMapCenter = center
+      }
     }
   }
   mapRendering(container)
@@ -1511,6 +1540,12 @@ export async function getMapScene(
         //仅渲染：道路及底面(base) + 2d建筑物(building2d)，以达到隐藏文字的效果
       })
       scene.setMapStyle(mapStyle)
+
+      scene.map.deMapProvider = 'qq'
+      scene.map.deMapAutoFit = !!basicStyle.autoFit
+      // scene.map.deMapAutoZoom = scene.map.getZoom()
+      // scene.map.deMapAutoLng = scene.map.getCenter().getLng()
+      // scene.map.deMapAutoLat = scene.map.getCenter().getLat()
     }
     // 去除天地图自己的缩放按钮
     if (mapKey.mapType === 'tianditu') {

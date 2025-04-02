@@ -171,7 +171,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
       dotLayer.addToScene(view.scene)
       dotLayer.once('add', () => {
-        mapRendered(container)
+        mapRendered(container, scene)
       })
       view.scene.map['keyboard'].disable()
       dotLayer.on('dotLayer:click', (ev: MapMouseEvent) => {

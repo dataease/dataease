@@ -14,7 +14,8 @@ import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
   getMapCenter,
   getMapScene,
-  getMapStyle
+  getMapStyle,
+  mapRendered
 } from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 
@@ -115,6 +116,10 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
         colors: basicStyle.colors.reverse(),
         positions: [0, 0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 1.0]
       }
+    })
+
+    config.once('inited', () => {
+      mapRendered(container, scene)
     })
 
     return new L7Wrapper(scene, config)
