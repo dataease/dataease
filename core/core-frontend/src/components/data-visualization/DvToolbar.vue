@@ -28,7 +28,12 @@ import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
-import { canvasSave, checkCanvasChangePre, initCanvasData } from '@/utils/canvasUtils'
+import {
+  canvasSave,
+  checkCanvasChangePre,
+  findAllViewsId,
+  initCanvasData
+} from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
 import { XpackComponent } from '@/components/plugin'
@@ -313,12 +318,15 @@ const multiplexingCanvasOpen = () => {
 }
 
 const publishStatusChange = status => {
+  const targetViewIds = []
+  findAllViewsId(componentData.value, targetViewIds)
   // do update
   updatePublishStatus({
     id: dvInfo.value.id,
     name: dvInfo.value.name,
     mobileLayout: dvInfo.value.mobileLayout,
     status,
+    activeViewIds: targetViewIds,
     type: 'dataV'
   }).then(() => {
     dvMainStore.updateDvInfoCall(status)

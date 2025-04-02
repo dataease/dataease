@@ -150,6 +150,7 @@ const initOpenHandler = newWindow => {
     <div class="canvas-opt-button">
       <el-button
         v-if="!isIframe"
+        :disabled="dvInfo.status === 0"
         secondary
         @click="() => useEmitt().emitter.emit('canvasFullscreen')"
       >
@@ -158,7 +159,7 @@ const initOpenHandler = newWindow => {
         </template>
         {{ t('visualization.fullscreen') }}</el-button
       >
-      <el-button secondary @click="preview()">
+      <el-button secondary @click="preview()" :disabled="dvInfo.status === 0">
         <template #icon>
           <icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></icon>
         </template>
@@ -166,6 +167,7 @@ const initOpenHandler = newWindow => {
       </el-button>
       <ShareVisualHead
         v-if="!shareDisable"
+        :disabled="dvInfo.status === 0"
         :resource-id="dvInfo.id"
         :weight="dvInfo.weight"
         :resource-type="dvInfo.type"
@@ -176,7 +178,7 @@ const initOpenHandler = newWindow => {
         </template>
         {{ t('visualization.edit') }}</el-button
       >
-      <el-dropdown popper-class="pad12" trigger="click">
+      <el-dropdown :disabled="dvInfo.status === 0" popper-class="pad12" trigger="click">
         <el-icon class="head-more-icon">
           <Icon name="dv-head-more"><dvHeadMore class="svg-icon" /></Icon>
         </el-icon>

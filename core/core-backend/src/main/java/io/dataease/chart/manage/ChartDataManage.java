@@ -227,7 +227,7 @@ public class ChartDataManage {
         FilterTreeObj customLinkageFilter = null;
         // 联动条件
         if (ObjectUtils.isNotEmpty(chartExtRequest.getLinkageFilters())) {
-            for(ChartExtFilterDTO linkageFilter: chartExtRequest.getLinkageFilters()) {
+            for (ChartExtFilterDTO linkageFilter : chartExtRequest.getLinkageFilters()) {
                 if (3 == linkageFilter.getFilterType()) {
                     customLinkageFilter = linkageFilter.getCustomFilter();
                 } else {
@@ -813,9 +813,10 @@ public class ChartDataManage {
                     disuseChartIdList.add(chartViewDTO.getId());
                 }
             });
-            if (CollectionUtils.isNotEmpty(disuseChartIdList)) {
-                chartViewManege.disuse(disuseChartIdList);
-            }
+            // 阈值告警处理 统一在发布时处理
+//            if (CollectionUtils.isNotEmpty(disuseChartIdList)) {
+//                chartViewManege.disuse(disuseChartIdList);
+//            }
         }
     }
 

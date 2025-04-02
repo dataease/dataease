@@ -36,16 +36,16 @@ public interface ThresholdApi {
     IPage<ThresholdGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ThresholdGridRequest request);
 
     @Operation(summary = "查询表单")
-    @GetMapping("/formInfo/{id}")
-    ThresholdCreator formInfo(@PathVariable("id") Long id);
+    @GetMapping("/formInfo/{id}/{resourceTable}")
+    ThresholdCreator formInfo(@PathVariable("id") Long id, @PathVariable("resourceTable") String resourceTable);
 
     @Operation(summary = "切换可用")
     @PostMapping("/switch")
     void switchEnable(@RequestBody ThresholdSwitchRequest request);
 
     @Operation(summary = "删除")
-    @PostMapping("/delete")
-    void delete(@RequestBody List<Long> idList);
+    @PostMapping("/delete/{resourceTable}")
+    void delete(@RequestBody List<Long> idList, @PathVariable("resourceTable") String resourceTable);
 
     @Operation(summary = "批量设置接收人")
     @PostMapping("/batchReci")
@@ -65,8 +65,8 @@ public interface ThresholdApi {
     String preview(@RequestBody ThresholdPreviewRequest request);
 
     @Operation(summary = "视图是否设置了阈值告警")
-    @GetMapping("/anyThreshold/{chartId}")
-    boolean anyThreshold(@PathVariable("chartId") Long chartId);
+    @GetMapping("/anyThreshold/{chartId}/{resourceTable}")
+    boolean anyThreshold(@PathVariable("chartId") Long chartId, @PathVariable("resourceTable") String resourceTable);
 
     @Operation(summary = "根据视图ID删除")
     @GetMapping("/deleteWithChart/{chartId}")

@@ -34,8 +34,8 @@ public class ChartViewThresholdManage {
     @Resource
     private ChartViewManege chartViewManege;
 
-    public String convertThresholdRules(Long chartId, String thresholdRules) {
-        ChartViewDTO details = chartViewManege.getDetails(chartId);
+    public String convertThresholdRules(Long chartId, String thresholdRules, String resourceTable) {
+        ChartViewDTO details = chartViewManege.getDetails(chartId, resourceTable);
         return convertThresholdRules(details, thresholdRules);
     }
 
@@ -251,7 +251,7 @@ public class ChartViewThresholdManage {
         String thresholdRules = request.getThresholdRules();
         Long chartId = request.getChartId();
         try {
-            ChartViewDTO chart = chartViewManege.getChart(chartId);
+            ChartViewDTO chart = chartViewManege.getChart(chartId, request.getResourceTable());
             Map<String, Object> data = null;
             if (ObjectUtils.isEmpty(chart) || MapUtils.isEmpty(data = chart.getData())) {
                 return new ThresholdCheckVO(false, null, "查询图表异常！", null);

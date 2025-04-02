@@ -538,6 +538,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if(CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()){
             coreVisualizationManage.removeDvCore(dvId);
             coreVisualizationManage.dvRestore(dvId);
+            chartViewManege.publishThreshold(dvId,request.getActiveViewIds());
         }
     }
 

@@ -10,6 +10,7 @@ import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
+import io.dataease.constant.CommonConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
@@ -114,6 +115,21 @@ public class ChartViewManege {
     public void disuse(List<Long> chartIdList) {
     }
 
+    //镜像操作发布
+    @XpackInteract(value = "chartViewManage")
+    public void publishThreshold(Long resourceId, List<Long> chartIdList) {
+    }
+
+    //镜像操作删除
+    @XpackInteract(value = "chartViewManage")
+    public void removeThreshold(Long resourceId, String resourceTable) {
+
+    }
+
+    //镜像操作恢复
+    public void restoreThreshold(Long resourceId, String resourceTable) {
+    }
+
     @Transactional
     public void deleteBySceneId(Long sceneId, List<Long> chartIds) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
@@ -122,10 +138,20 @@ public class ChartViewManege {
         coreChartViewMapper.delete(wrapper);
     }
 
-    public ChartViewDTO getDetails(Long id) {
-        CoreChartView coreChartView = coreChartViewMapper.selectById(id);
-        if (ObjectUtils.isEmpty(coreChartView)) {
-            return null;
+    public ChartViewDTO getDetails(Long id, String resourceTable) {
+        CoreChartView coreChartView = null;
+        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
+            SnapshotCoreChartView snapshotCoreChartView = snapshotCoreChartViewMapper.selectById(id);
+            if (ObjectUtils.isEmpty(snapshotCoreChartView)) {
+                return null;
+            }
+            coreChartView = new CoreChartView();
+            BeanUtils.copyBean(coreChartView, snapshotCoreChartView);
+        } else {
+            coreChartView = coreChartViewMapper.selectById(id);
+            if (ObjectUtils.isEmpty(coreChartView)) {
+                return null;
+            }
         }
         ChartViewDTO dto = transRecord2DTO(coreChartView);
         return dto;
@@ -201,8 +227,8 @@ public class ChartViewManege {
         }).collect(Collectors.toList());
     }
 
-    public ChartViewDTO getChart(Long id) throws Exception {
-        ChartViewDTO details = getDetails(id);
+    public ChartViewDTO getChart(Long id, String resourceTable) throws Exception {
+        ChartViewDTO details = getDetails(id, resourceTable);
         if (details == null) {
             return null;
         }
@@ -314,8 +340,8 @@ public class ChartViewManege {
         coreDatasetTableFieldMapper.delete(queryWrapper);
     }
 
-    public ChartBaseVO chartBaseInfo(Long id) {
-        ChartBasePO po = extChartViewMapper.queryChart(id);
+    public ChartBaseVO chartBaseInfo(Long id, String resourceTable) {
+        ChartBasePO po = extChartViewMapper.queryChart(id, resourceTable);
         if (ObjectUtils.isEmpty(po)) return null;
         ChartBaseVO vo = BeanUtils.copyBean(new ChartBaseVO(), po);
         TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {

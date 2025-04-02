@@ -7,6 +7,7 @@ import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
+import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
@@ -25,6 +26,7 @@ import io.dataease.visualization.dao.ext.mapper.*;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
+import io.dataease.xpack.base.threshold.manage.ThresholdManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -65,6 +67,9 @@ public class CoreVisualizationManage {
 
     @Resource
     private ExtChartViewMapper extCoreChartMapper;
+
+    @Resource
+    private ChartViewManege chartViewManege;
 
     @XpackInteract(value = "visualizationResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -266,6 +271,9 @@ public class CoreVisualizationManage {
             outerParamsMapper.deleteOuterParamsTargetWithVisualizationIdSnapshot(dvId.toString());
             outerParamsMapper.deleteOuterParamsInfoWithVisualizationIdSnapshot(dvId.toString());
             outerParamsMapper.deleteOuterParamsWithVisualizationIdSnapshot(dvId.toString());
+            //xpack 阈值告警
+            chartViewManege.removeThreshold(dvId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+
         }
     }
     @Transactional
@@ -284,13 +292,17 @@ public class CoreVisualizationManage {
             outerParamsMapper.deleteOuterParamsTargetWithVisualizationId(dvId.toString());
             outerParamsMapper.deleteOuterParamsInfoWithVisualizationId(dvId.toString());
             outerParamsMapper.deleteOuterParamsWithVisualizationId(dvId.toString());
+            //xpack 阈值告警
+            chartViewManege.removeThreshold(dvId,CommonConstants.RESOURCE_TABLE.CORE);
         }
     }
 
     @Transactional
     public void dvSnapshotRecover(Long dvId){
         // 清理历史数据
-        this.removeSnapshot(dvId);
+        CoreVisualizationManage proxy = CommonBeanFactory.proxy(this.getClass());
+        assert proxy != null;
+        proxy.removeSnapshot(dvId);
         // 导入新数据
         extDataVisualizationMapper.snapshotDataV(dvId);
         extDataVisualizationMapper.snapshotViews(dvId);
@@ -302,6 +314,8 @@ public class CoreVisualizationManage {
         extDataVisualizationMapper.snapshotOuterParamsTargetViewInfo(dvId);
         extDataVisualizationMapper.snapshotOuterParamsInfo(dvId);
         extDataVisualizationMapper.snapshotOuterParams(dvId);
+        //xpack 阈值告警
+        chartViewManege.restoreThreshold(dvId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
     }
     @Transactional
     public void dvRestore(Long dvId){
@@ -315,6 +329,8 @@ public class CoreVisualizationManage {
         extDataVisualizationMapper.restoreOuterParamsTargetViewInfo(dvId);
         extDataVisualizationMapper.restoreOuterParamsInfo(dvId);
         extDataVisualizationMapper.restoreOuterParams(dvId);
+        //xpack 阈值告警
+        chartViewManege.restoreThreshold(dvId,CommonConstants.RESOURCE_TABLE.CORE);
     }
 
 }

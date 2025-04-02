@@ -334,6 +334,7 @@ const removeJumpSenior = () => {
             :chart="chart"
             :themes="themes"
             :is-screen="dvInfo.type === 'dataV'"
+            :resource-table="'snapshot'"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9TZW5pb3JIYW5kbGVy"
           />
 

@@ -12,6 +12,7 @@
       <el-button
         secondary
         v-if="props.weight >= 7"
+        :disabled="disabled"
         @click="openPopover"
         v-click-outside="clickOutPopover"
       >
@@ -242,7 +243,8 @@ const { t } = useI18n()
 const props = defineProps({
   resourceId: propTypes.string.def(''),
   resourceType: propTypes.string.def(''),
-  weight: propTypes.number.def(0)
+  weight: propTypes.number.def(0),
+  disabled: propTypes.bool.def(false)
 })
 const popoverVisible = ref(false)
 const pwdRef = ref(null)

@@ -39,7 +39,12 @@ import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
-import { canvasSave, checkCanvasChangePre, initCanvasData } from '@/utils/canvasUtils'
+import {
+  canvasSave,
+  checkCanvasChangePre,
+  findAllViewsId,
+  initCanvasData
+} from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
@@ -189,11 +194,14 @@ const recoverToPublished = () => {
 }
 
 const publishStatusChange = status => {
+  const targetViewIds = []
+  findAllViewsId(componentData.value, targetViewIds)
   // do update
   updatePublishStatus({
     id: dvInfo.value.id,
     name: dvInfo.value.name,
     mobileLayout: dvInfo.value.mobileLayout,
+    activeViewIds: targetViewIds,
     status,
     type: 'dashboard'
   }).then(() => {
