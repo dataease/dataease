@@ -45,7 +45,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     'label-selector': ['seriesLabelVPosition', 'seriesLabelFormatter', 'showExtremum'],
     'tooltip-selector': [
       ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ],
     'legend-selector': [...LINE_EDITOR_PROPERTY_INNER['legend-selector'], 'legendSort']
   }
@@ -69,8 +70,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   }
   async drawChart(drawOptions: G2PlotDrawOptions<G2Line>): Promise<G2Line> {
     const { chart, action, container } = drawOptions
+    chart.container = container
     if (!chart.data?.data?.length) {
-      chart.container = container
       clearExtremum(chart)
       return
     }

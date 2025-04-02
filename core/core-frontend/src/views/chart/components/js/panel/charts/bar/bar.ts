@@ -43,7 +43,14 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     ...BAR_EDITOR_PROPERTY_INNER,
     'basic-style-selector': [...BAR_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
     'label-selector': ['vPosition', 'seriesLabelFormatter', 'showExtremum'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
+    'tooltip-selector': [
+      'fontSize',
+      'color',
+      'backgroundColor',
+      'seriesTooltipFormatter',
+      'show',
+      'carousel'
+    ],
     'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'axisLabelFormatter']
   }
   protected baseOptions: ColumnOptions = {
@@ -69,8 +76,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<Column>): Promise<Column> {
     const { chart, container, action } = drawOptions
+    chart.container = container
     if (!chart?.data?.data?.length) {
-      chart.container = container
       clearExtremum(chart)
       return
     }

@@ -42,6 +42,7 @@ import {
   qqMapStyleOptions,
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 
 const { t: tI18n } = useI18n()
 
@@ -1649,14 +1650,35 @@ export function getTooltipContainer(id) {
   }
   return g2Tooltip
 }
+
+/**
+ * 配置提示轮播
+ * @param plot
+ * @param chart
+ */
+function configCarouselTooltip(plot, chart) {
+  // 启用轮播
+  plot.once('afterrender', () => {
+    const carousel = chart.customAttr?.tooltip?.carousel
+    ChartCarouselTooltip.manage(plot, chart, {
+      xField: 'field',
+      duration: carousel.enable ? carousel?.stayTime * 1000 : 2000,
+      interval: carousel.enable ? carousel?.intervalTime * 1000 : 2000
+    })
+  })
+}
 export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>(
   chart: Chart,
   plot: P
 ) {
   const { tooltip } = parseJson(chart.customAttr)
   if (!tooltip.show) {
+    ChartCarouselTooltip.destroyByContainer(chart.container)
     return
   }
+  // 图表容器，用于计算 tooltip 的位置
+  const chartElement = document.getElementById('shape-id-' + chart.id)
+  configCarouselTooltip(plot, chart)
   // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
   plot.options.tooltip.container.addEventListener('mouseenter', e => {
     e.target.style.visibility = 'visible'
@@ -1668,7 +1690,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
   })
   // 手动处理 tooltip 的显示和隐藏事件，需配合源码理解
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#showTooltip
-  plot.on('tooltip:show', () => {
+  plot.on('tooltip:show', _d => {
     const tooltipCtl = plot.chart.getController('tooltip')
     if (!tooltipCtl) {
       return
@@ -1691,8 +1713,21 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     }
     plot.chart.getOptions().tooltip.follow = false
     tooltipCtl.title = Math.random().toString()
-    plot.chart.getTheme().components.tooltip.x = event.clientX
-    plot.chart.getTheme().components.tooltip.y = event.clientY
+    // 当显示提示为事件触发时，使用event的client坐标，否则使用tooltipCtl.point 数据点的位置，在图表中，需要加上图表在绘制区的位置
+    const { x, y } =
+      !event ||
+      event?.type === 'plot:leave' ||
+      ['pie', 'pie-rose', 'pie-donut'].includes(chart.type)
+        ? {
+            x: tooltipCtl.point.x + Number(chartElement.getBoundingClientRect().left),
+            y:
+              60 +
+              Number(chartElement.getBoundingClientRect().top) +
+              Number(chartElement.style.height.split('px')[0]) / 2
+          }
+        : { x: event.clientX, y: event.clientY }
+    plot.chart.getTheme().components.tooltip.x = x
+    plot.chart.getTheme().components.tooltip.y = y
   })
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#hideTooltip
   plot.on('plot:leave', () => {

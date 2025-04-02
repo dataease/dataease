@@ -56,7 +56,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axis: AxisType[] = [...CHART_MIX_AXIS_TYPE, 'xAxisExtRight', 'yAxisExt']
@@ -94,6 +95,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<DualAxes>): Promise<DualAxes> {
     const { chart, action, container } = drawOptions
+    chart.container = container
     if (!chart.data?.left?.data?.length && !chart.data?.right?.data?.length) {
       return
     }
@@ -670,7 +672,8 @@ export class GroupColumnLineMix extends ColumnLineMix {
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axisConfig = {
@@ -782,7 +785,8 @@ export class StackColumnLineMix extends ColumnLineMix {
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axisConfig = {
@@ -895,7 +899,8 @@ export class DualLineMix extends ColumnLineMix {
     'label-selector': ['seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axisConfig = {
