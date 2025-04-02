@@ -276,9 +276,6 @@ const init = () => {
       initFormatCfgUnit(state.labelForm.labelFormatter)
       initFormatCfgUnit(state.labelForm.quotaLabelFormatter)
       initFormatCfgUnit(state.labelForm.totalFormatter)
-
-      console.log(state.labelForm)
-
       if (chartType.value === 'liquid' && state.labelForm.fontSize < fontSizeList.value[0].value) {
         state.labelForm.fontSize = fontSizeList.value[0].value
       }
