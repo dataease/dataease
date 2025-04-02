@@ -120,11 +120,11 @@ const resourceOptFinish = param => {
     dvInfo.value.dataState = 'ready'
     dvInfo.value.pid = param.pid
     dvInfo.value.name = param.name
-    saveCanvasWithCheck()
+    saveCanvasWithCheck(param.withPublish, param.status)
   }
 }
 
-const saveCanvasWithCheck = () => {
+const saveCanvasWithCheck = (withPublish = false, status?) => {
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
     ElMessageBox.confirm('已切换至新组织，无权保存其他组织的资源', {
       confirmButtonType: 'primary',
@@ -154,24 +154,27 @@ const saveCanvasWithCheck = () => {
         resourceAppOpt.value.init(params)
       })
     } else {
-      const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid || '0' }
-      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+      const params = {
+        name: dvInfo.value.name,
+        leaf: true,
+        id: dvInfo.value.pid || '0'
+      }
+      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
     }
     return
   }
   checkCanvasChangePre(() => {
-    saveResource()
+    saveResource({ withPublish, status })
   })
 }
 
-const saveResource = () => {
-  if (styleChangeTimes.value > 0) {
+const saveResource = (checkParams?) => {
+  if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     eventBus.emit('hideArea-canvas-main')
     nextTick(() => {
       canvasSave(() => {
         snapshotStore.resetStyleChangeTimes()
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-        ElMessage.success(t('commons.save_success'))
         let url = window.location.href
         url = url.replace(/\?opt=create/, `?dvId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
@@ -191,6 +194,11 @@ const saveResource = () => {
             useEmitt().emitter.emit('calcData-all')
             snapshotStore.resetSnapshot()
           })
+        }
+        if (checkParams.withPublish) {
+          publishStatusChange(checkParams.status)
+        } else {
+          ElMessage.success(t('commons.save_success'))
         }
       })
     })
@@ -476,8 +484,7 @@ const fullScreenPreview = () => {
         </el-button>
         <el-dropdown effect="dark" popper-class="menu-outer-dv_popper" trigger="hover">
           <el-button
-            @click="publishStatusChange(1)"
-            :disabled="dvInfo.status === 1 || !dvInfo.id"
+            @click="saveCanvasWithCheck(true, 1)"
             style="float: right; margin: 0 12px 0 0"
             type="primary"
           >

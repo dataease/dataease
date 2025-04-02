@@ -204,7 +204,7 @@ const publishStatusChange = status => {
   })
 }
 
-const saveCanvasWithCheck = () => {
+const saveCanvasWithCheck = (withPublish = false, status?) => {
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
     ElMessageBox.confirm(t('components.from_other_organizations'), {
       confirmButtonType: 'primary',
@@ -235,18 +235,18 @@ const saveCanvasWithCheck = () => {
       })
     } else {
       const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid || '0' }
-      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
       return
     }
   }
   checkCanvasChangePre(() => {
-    saveResource()
+    saveResource({ withPublish, status })
   })
 }
 
-const saveResource = () => {
+const saveResource = (checkParams?) => {
   wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-  if (styleChangeTimes.value > 0) {
+  if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     dvMainStore.matrixSizeAdaptor()
     queryList.value.forEach(ele => {
       useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
@@ -254,7 +254,6 @@ const saveResource = () => {
     try {
       canvasSave(() => {
         snapshotStore.resetStyleChangeTimes()
-        ElMessage.success(t('common.save_success'))
         let url = window.location.href
         url = url.replace(/\?opt=create/, `?resourceId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
@@ -275,6 +274,11 @@ const saveResource = () => {
             dvMainStore.setAppDataInfo(null)
             snapshotStore.resetSnapshot()
           })
+        }
+        if (checkParams.withPublish) {
+          publishStatusChange(checkParams.status)
+        } else {
+          ElMessage.success(t('commons.save_success'))
         }
       })
     } catch (e) {
@@ -726,8 +730,7 @@ const initOpenHandler = newWindow => {
           </el-button>
           <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
             <el-button
-              @click="publishStatusChange(1)"
-              :disabled="dvInfo.status === 1 || !dvInfo.id"
+              @click="saveCanvasWithCheck(true, 1)"
               style="float: right; margin: 0 12px 0 0"
               type="primary"
             >
