@@ -101,7 +101,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'tableScrollBarColor',
       'alpha',
       'tableLayoutMode',
-      'showHoverStyle'
+      'showHoverStyle',
+      'quotaPosition',
+      'quotaColLabel'
     ]
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'yAxis', 'filter']
@@ -286,7 +288,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       fields: {
         rows: r,
         columns: c,
-        values: v
+        values: v,
+        valueInCols: !(basicStyle.quotaPosition === 'row')
       },
       meta: meta,
       data: newData,
@@ -296,6 +299,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       totals: tableTotal as Totals,
+      cornerExtraFieldText: basicStyle.quotaColLabel ?? t('dataset.value'),
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom
@@ -329,20 +333,42 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       }
     }
     // 列汇总别名
-    if (
-      chart.xAxisExt?.length &&
-      chart.yAxis?.length > 1 &&
-      tableTotal.col.showGrandTotals &&
-      tableTotal.col.calcTotals?.cfg?.length
-    ) {
-      const colTotalCfgMap = tableTotal.col.calcTotals.cfg.reduce((p, n) => {
-        p[n.dataeaseName] = n
-        return p
-      }, {})
-      s2Options.layoutCoordinate = (_, __, col) => {
-        if (col?.isGrandTotals) {
-          if (colTotalCfgMap[col.value]?.label) {
-            col.label = colTotalCfgMap[col.value].label
+    if (!(basicStyle.quotaPosition === 'row' && basicStyle.tableLayoutMode === 'tree')) {
+      if (
+        basicStyle.quotaPosition !== 'row' &&
+        chart.xAxisExt?.length &&
+        chart.yAxis?.length > 1 &&
+        tableTotal.col.showGrandTotals &&
+        tableTotal.col.calcTotals?.cfg?.length
+      ) {
+        const colTotalCfgMap = tableTotal.col.calcTotals.cfg.reduce((p, n) => {
+          p[n.dataeaseName] = n
+          return p
+        }, {})
+        s2Options.layoutCoordinate = (_, __, col) => {
+          if (col?.isGrandTotals) {
+            if (colTotalCfgMap[col.value]?.label) {
+              col.label = colTotalCfgMap[col.value].label
+            }
+          }
+        }
+      }
+      if (
+        basicStyle.quotaPosition === 'row' &&
+        chart.xAxisExt?.length &&
+        chart.yAxis?.length > 1 &&
+        tableTotal.row.showGrandTotals &&
+        tableTotal.row.calcTotals?.cfg?.length
+      ) {
+        const rowTotalCfgMap = tableTotal.row.calcTotals.cfg.reduce((p, n) => {
+          p[n.dataeaseName] = n
+          return p
+        }, {})
+        s2Options.layoutCoordinate = (_, row, __) => {
+          if (row?.isGrandTotals) {
+            if (rowTotalCfgMap[row.value]?.label) {
+              row.label = rowTotalCfgMap[row.value].label
+            }
           }
         }
       }

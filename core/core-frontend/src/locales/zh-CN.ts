@@ -2030,6 +2030,7 @@ export default {
     quota_position: '指标展示',
     quota_position_col: '列头展示',
     quota_position_row: '行头展示',
+    quota_col_label: '指标列名',
     table_grand_total_label: '总计别名',
     table_field_total_label: '字段别名'
   },

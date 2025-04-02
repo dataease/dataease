@@ -1722,7 +1722,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   radarAreaColor: true,
   circleBorderColor: '#fff',
   circleBorderWidth: 0,
-  circlePadding: 0
+  circlePadding: 0,
+  quotaPosition: 'col',
+  quotaColLabel: t('dataset.value')
 }
 
 export const BASE_VIEW_CONFIG = {

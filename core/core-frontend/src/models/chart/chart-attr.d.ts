@@ -109,6 +109,14 @@ declare interface ChartBasicStyle {
    */
   defaultExpandLevel: number | 'all'
   /**
+   * 表格指标展示位置
+   */
+  quotaPosition: 'col' | 'row'
+  /**
+   * 行头指标列名称
+   */
+  quotaColLabel: string
+  /**
    * 仪表盘样式
    */
   gaugeStyle: string

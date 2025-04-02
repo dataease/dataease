@@ -2080,8 +2080,9 @@ export default {
     last_item: 'Last item',
     legend_sort: 'Legend Sort',
     quota_position: 'Quota Position',
-    quota_position_col: 'Col',
+    quota_position_col: 'Column',
     quota_position_row: 'Row',
+    quota_col_label: 'Quota Column Label',
     table_grand_total_label: 'Total Alias',
     table_field_total_label: 'Field Alias'
   },

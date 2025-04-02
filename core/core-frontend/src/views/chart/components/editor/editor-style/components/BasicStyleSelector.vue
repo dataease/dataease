@@ -383,7 +383,34 @@ onMounted(() => {
         />
       </el-select>
     </el-form-item>
-
+    <el-form-item
+      class="form-item"
+      v-if="showProperty('quotaPosition')"
+      :label="t('chart.quota_position')"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.quotaPosition"
+        @change="changeBasicStyle('quotaPosition')"
+      >
+        <el-radio label="col" :effect="themes">{{ t('chart.quota_position_col') }}</el-radio>
+        <el-radio label="row" :effect="themes">{{ t('chart.quota_position_row') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('quotaColLabel') && state.basicStyleForm.quotaPosition === 'row'"
+      class="form-item"
+      :label="t('chart.quota_col_label')"
+      :class="'form-item-' + themes"
+    >
+      <el-input
+        :effect="themes"
+        v-model="state.basicStyleForm.quotaColLabel"
+        @change="changeBasicStyle('quotaColLabel')"
+      />
+    </el-form-item>
     <div class="alpha-setting" v-if="showProperty('alpha')">
       <label class="alpha-label" :class="{ dark: 'dark' === themes }">
         {{ t('chart.not_alpha') }}

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, PropType, reactive, watch, ref, inject, nextTick } from 'vue'
+import { onMounted, PropType, reactive, watch, ref, inject, nextTick, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   DEFAULT_BASIC_STYLE,
@@ -52,6 +52,26 @@ const state = reactive({
   selectedSubTotalDimension: undefined as { name: string; checked: boolean },
   subTotalDimensionList: [],
   basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
+})
+
+const showColFieldTotalLabel = computed(() => {
+  const chart = props.chart
+  return (
+    chart.customAttr.basicStyle.quotaPosition !== 'row' &&
+    chart.xAxisExt.length &&
+    chart.yAxis.length > 1
+  )
+})
+
+const showRowFieldTotalLabel = computed(() => {
+  const chart = props.chart
+  return (
+    chart.customAttr.basicStyle.quotaPosition === 'row' &&
+    chart.customAttr.basicStyle.tableLayoutMode !== 'tree' &&
+    chart.xAxis.length &&
+    chart.xAxisExt.length &&
+    chart.yAxis.length > 1
+  )
 })
 
 function onSelectedSubTotalDimensionNameChange(name) {
@@ -380,6 +400,28 @@ onMounted(() => {
         </el-col>
       </el-form-item>
       <el-form-item
+        v-if="showRowFieldTotalLabel"
+        class="form-item"
+        :label="t('chart.table_field_total_label')"
+        :class="'form-item-' + themes"
+      >
+        <el-input
+          :effect="themes"
+          :placeholder="t('chart.table_field_total_label')"
+          size="small"
+          maxlength="20"
+          v-model="state.rowTotalItem.label"
+          clearable
+          @change="
+            changeTotalAggr(
+              state.rowTotalItem,
+              state.tableTotalForm.row.calcTotals.cfg,
+              'row.calcTotals.cfg'
+            )
+          "
+        />
+      </el-form-item>
+      <el-form-item
         v-if="chart.type === 'table-pivot'"
         :label="t('chart.total_sort')"
         class="form-item"
@@ -665,6 +707,7 @@ onMounted(() => {
         </el-col>
       </el-form-item>
       <el-form-item
+        v-if="showColFieldTotalLabel"
         class="form-item"
         :label="t('chart.table_field_total_label')"
         :class="'form-item-' + themes"
