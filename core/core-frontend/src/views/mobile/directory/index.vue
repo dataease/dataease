@@ -324,6 +324,7 @@ onMounted(() => {
 
   .direct-name-arr {
     height: 44px;
+    background-color: #f5f6f7;
     padding: 12px 16px;
     color: #646a73;
     display: flex;
