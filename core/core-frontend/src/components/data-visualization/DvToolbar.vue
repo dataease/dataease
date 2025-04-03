@@ -31,6 +31,7 @@ import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import {
   canvasSave,
   checkCanvasChangePre,
+  cleanUrlAndSetDvId,
   findAllViewsId,
   initCanvasData
 } from '@/utils/canvasUtils'
@@ -181,7 +182,7 @@ const saveResource = (checkParams?) => {
         snapshotStore.resetStyleChangeTimes()
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         let url = window.location.href
-        url = url.replace(/\?opt=create/, `?dvId=${dvInfo.value.id}`)
+        url = url.replace(/(#\/[^?]*)(?:\?[^#]*)?/, `$1?dvId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
           window.history.replaceState(
             {

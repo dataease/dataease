@@ -263,7 +263,7 @@ const saveResource = (checkParams?) => {
       canvasSave(() => {
         snapshotStore.resetStyleChangeTimes()
         let url = window.location.href
-        url = url.replace(/\?opt=create/, `?resourceId=${dvInfo.value.id}`)
+        url = url.replace(/(#\/[^?]*)(?:\?[^#]*)?/, `$1?resourceId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
           window.history.replaceState(
             {
