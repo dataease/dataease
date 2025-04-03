@@ -4267,6 +4267,8 @@ export default {
       download: '下載',
       download_template: '下載模板',
       insert_data: '插入資料',
+      batch_insert_data: '批量導入',
+      batch_insert_data_with_count: '批量導入，共{0}條數據',
       update_data: '更新資料',
       delete_data: '刪除資料',
       recent_committer: '最近提交人',

@@ -4268,6 +4268,8 @@ export default {
       download: '下载',
       download_template: '下载模板',
       insert_data: '插入数据',
+      batch_insert_data: '批量导入',
+      batch_insert_data_with_count: '批量导入，共{0}条数据',
       update_data: '更新数据',
       delete_data: '删除数据',
       recent_committer: '最近提交人',

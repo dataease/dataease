@@ -4386,6 +4386,8 @@ export default {
       download: 'Download',
       download_template: 'Download template',
       insert_data: 'Insert data',
+      batch_insert_data: ' Batch insert data',
+      batch_insert_data_with_count: 'Batch insert data，total count: {0}',
       update_data: 'Update data',
       delete_data: 'Delete data',
       recent_committer: 'Recent committer',
