@@ -354,7 +354,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
         'target',
         targetName || chart.yAxisExt[0]?.name,
         'line',
-        bullet.bar.target.fill,
+        [].concat(bullet.bar.target.fill)[0],
         bullet.bar.ranges.symbolSize
       )
     )
