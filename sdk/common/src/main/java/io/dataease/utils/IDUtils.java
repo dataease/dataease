@@ -1,12 +1,21 @@
 package io.dataease.utils;
 
 
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class IDUtils {
 
-    private static SnowFlake snowFlake = new SnowFlake(1, 1);
+
+    private static SnowFlake snowFlake;
+
+    @Resource
+    public void setSnowFlake(SnowFlake snowFlake) {
+        IDUtils.snowFlake = snowFlake;
+    }
 
     public static String randomID(Integer num) {
         num = ObjectUtils.isEmpty(num) ? 16 : num;

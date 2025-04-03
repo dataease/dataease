@@ -1,6 +1,16 @@
 package io.dataease.utils;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
 public class SnowFlake {
+
+
+    @Value("${dataease.machine-id:1}")
+    public void setMachineId(long machineId) {
+        this.machineId = machineId;
+    }
 
     /**
      * 起始的时间戳
@@ -42,6 +52,10 @@ public class SnowFlake {
         }
         this.datacenterId = datacenterId;
         this.machineId = machineId;
+    }
+
+    public SnowFlake() {
+        this.datacenterId = 1;
     }
 
     /**
