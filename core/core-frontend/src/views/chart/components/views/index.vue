@@ -431,7 +431,7 @@ const windowsJump = (url, jumpType, size = 'middle') => {
 }
 
 const jumpClick = param => {
-  let dimension, jumpInfo, sourceInfo
+  let dimension, jumpInfo, sourceInfo, targetDvType
   // 如果有名称name 获取和name匹配的dimension 否则倒序取最后一个能匹配的
   if (param.name) {
     param.dimensionList.forEach(dimensionItem => {
@@ -501,7 +501,7 @@ const jumpClick = param => {
         if (publicLinkStatus.value) {
           // 判断是否有公共链接ID
           if (jumpInfo.publicJumpId) {
-            let url = `${embeddedBaseUrl}#/de-link/${jumpInfo.publicJumpId}?fromLink=true&dvType=${dvInfo.value.type}`
+            let url = `${embeddedBaseUrl}#/de-link/${jumpInfo.publicJumpId}?fromLink=true&dvType=${jumpInfo.targetDvType}`
             if (attachParamsInfo) {
               url = url + attachParamsInfo + jumpInfoParam
             } else {
@@ -514,7 +514,7 @@ const jumpClick = param => {
             ElMessage.warning(t('visualization.public_link_tips'))
           }
         } else {
-          let url = `${embeddedBaseUrl}#/preview?dvId=${jumpInfo.targetDvId}&fromLink=true&dvType=${dvInfo.value.type}`
+          let url = `${embeddedBaseUrl}#/preview?dvId=${jumpInfo.targetDvId}&fromLink=true&dvType=${jumpInfo.targetDvType}`
           if (attachParamsInfo) {
             url = url + attachParamsInfo + jumpInfoParam
           } else {
