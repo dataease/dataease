@@ -168,14 +168,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
         String busiFlag = request.getBusiFlag();
         String resourceTable = request.getResourceTable();
         // 如果是编辑查询 则进行镜像检查
-        if(CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)){
+        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
             QueryWrapper<SnapshotDataVisualizationInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", dvId);
-            if(!snapshotMapper.exists(queryWrapper)){
+            if (!snapshotMapper.exists(queryWrapper)) {
                 coreVisualizationManage.dvSnapshotRecover(dvId);
             }
         }
-        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag,resourceTable);
+        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag, resourceTable);
         if (result != null) {
             // get creator
             String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
@@ -183,7 +183,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 result.setCreatorName(userName);
             }
             //获取图表信息
-            List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId,resourceTable);
+            List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId, resourceTable);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
                 Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
@@ -514,7 +514,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 coreVisualizationManage.move(request);
             }
         }
-        visualizationInfo.setStatus(CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
+        // 新建保存状态不对问题
+        visualizationInfo.setStatus(request.getStatus() != null ? request.getStatus() : CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
@@ -535,10 +536,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setName(request.getName());
         visualizationInfo.setStatus(request.getStatus());
         coreVisualizationManage.innerEdit(visualizationInfo);
-        if(CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()){
+        if (CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()) {
             coreVisualizationManage.removeDvCore(dvId);
             coreVisualizationManage.dvRestore(dvId);
-            chartViewManege.publishThreshold(dvId,request.getActiveViewIds());
+            chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
         }
     }
 
@@ -670,8 +671,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         newDv.setPid(request.getPid());
         newDv.setCreateTime(System.currentTimeMillis());
         // 复制图表 chart_view
-        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId,CommonConstants.RESOURCE_TABLE.CORE);
-        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.CORE);
+        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
         List<CoreChartView> viewList = extDataVisualizationMapper.findViewInfoByCopyId(copyId);
         if (!CollectionUtils.isEmpty(viewList)) {
             String componentData = newDv.getComponentData();
