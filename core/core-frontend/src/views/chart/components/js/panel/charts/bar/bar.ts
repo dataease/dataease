@@ -570,6 +570,7 @@ export class GroupBar extends StackBar {
     super(name)
     this.baseOptions = {
       ...this.baseOptions,
+      marginRatio: 0,
       isGroup: true,
       isStack: false,
       meta: {

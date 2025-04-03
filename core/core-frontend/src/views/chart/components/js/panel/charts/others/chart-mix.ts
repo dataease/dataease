@@ -129,6 +129,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       geometryOptions: [
         {
           geometry: data1Type,
+          marginRatio: 0,
           color: [],
           isGroup: isGroup,
           isStack: isStack,
