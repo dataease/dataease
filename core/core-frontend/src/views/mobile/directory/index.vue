@@ -154,7 +154,7 @@ const dfsTableData = arr => {
 }
 
 const getTree = async () => {
-  const request = { busiFlag: 'dashboard' } as BusiTreeRequest
+  const request = { busiFlag: 'dashboard', resourceTable: 'snapshot' } as BusiTreeRequest
   await interactiveStore.setInteractive(request)
   const interactiveData = interactiveStore.getPanel
   const nodeData = interactiveData.treeNodes
