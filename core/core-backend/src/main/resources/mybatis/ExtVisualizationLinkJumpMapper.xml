@@ -45,6 +45,7 @@
 
     <resultMap id="LinkJumpInfoMap" type="io.dataease.api.visualization.dto.VisualizationLinkJumpInfoDTO"
                extends="LinkJumpInfoBaseResultMap">
+        <result column="target_dv_type" jdbcType="VARCHAR" property="targetDvType"/>
         <result column="source_field_id" jdbcType="BIGINT" property="sourceFieldId"/>
         <result column="source_de_type" jdbcType="INTEGER" property="sourceDeType"/>
         <result column="source_field_name" jdbcType="VARCHAR" property="sourceFieldName"/>
@@ -92,6 +93,7 @@
                 vlji.jump_type,
                 vlji.window_size,
                 vlji.target_dv_id,
+                dvi.type as target_dv_type,
                 vlji.content,
                 <if test="!isDesktop">
                 xpack_share.uuid AS publicJumpId,
@@ -111,6 +113,7 @@
                     AND vlj.id = #{id}
                     LEFT JOIN snapshot_visualization_link_jump_info vlji ON vlj.id = vlji.link_jump_id
                     AND cdtf.id = vlji.source_field_id
+                    LEFT JOIN snapshot_data_visualization_info dvi ON vlji.target_dv_id = dvi.id
                     LEFT JOIN snapshot_visualization_link_jump_target_view_info vljtvi ON vlji.id = vljtvi.link_jump_info_id
                     <if test="!isDesktop">
                     LEFT JOIN xpack_share ON xpack_share.creator = #{uid}
@@ -141,6 +144,7 @@
             vlji.jump_type,
             vlji.window_size,
             vlji.target_dv_id,
+            dvi.type as target_dv_type,
             vlji.content,
             <if test="!isDesktop">
             xpack_share.uuid AS publicJumpId,
@@ -160,6 +164,7 @@
                 AND vlj.id = #{id}
                 LEFT JOIN visualization_link_jump_info vlji ON vlj.id = vlji.link_jump_id
                 AND cdtf.id = vlji.source_field_id
+                LEFT JOIN snapshot_data_visualization_info dvi ON vlji.target_dv_id = dvi.id
                 LEFT JOIN visualization_link_jump_target_view_info vljtvi ON vlji.id = vljtvi.link_jump_info_id
                 <if test="!isDesktop">
                 LEFT JOIN xpack_share ON xpack_share.creator = #{uid}
