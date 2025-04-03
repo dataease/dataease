@@ -332,7 +332,7 @@ const save = () => {
             :canvas-view-info-mobile="canvasViewInfoMobile"
           ></component-style-editor>
         </div>
-        <div class="config-mobile-tab" v-show="activeCollapse === 'com'">
+        <div class="config-mobile-tab" v-if="activeCollapse === 'com'">
           <div
             :style="{ height: '196px', width: '196px' }"
             class="mobile-wrapper-inner-adaptor"
