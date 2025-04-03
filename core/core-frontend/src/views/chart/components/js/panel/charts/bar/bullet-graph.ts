@@ -89,7 +89,6 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
         dimensionList: items[0].dimensionList,
         quotaList: []
       }
-      console.log(`Field: ${field}`)
       items.forEach(item => {
         const quotaId = item.quotaList[0]?.id
         const v = item.value || 0
@@ -181,7 +180,6 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
           }
         }
       }
-      console.log(actionParams)
       action(actionParams)
     })
     configPlotTooltipEvent(chart, newChart)
@@ -330,7 +328,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
               'dynamic',
               rangeName || chart.extBubble[0]?.name,
               bullet.bar.ranges.symbol,
-              bullet.bar.ranges.fill,
+              [].concat(bullet.bar.ranges.fill)[0],
               bullet.bar.ranges.symbolSize
             )
           )
