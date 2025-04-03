@@ -26,7 +26,6 @@ import io.dataease.visualization.dao.ext.mapper.*;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
-import io.dataease.xpack.base.threshold.manage.ThresholdManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
