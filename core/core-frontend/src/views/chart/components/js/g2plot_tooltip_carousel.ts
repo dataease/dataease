@@ -113,6 +113,9 @@ class ChartCarouselTooltip {
   private init() {
     this.values = [].concat(this.getUniqueValues())
     if (!this.values.length) return
+    this.chartIsVisible = true
+    this.states.paused = false
+    this.states.destroyed = false
     this.bindEventListeners()
     this.startCarousel()
   }
@@ -193,7 +196,7 @@ class ChartCarouselTooltip {
     this.debounce(() => {
       this.stop()
       startNestedTimers()
-    }, 200)()
+    }, 300)()
   }
 
   /**
@@ -305,7 +308,19 @@ class ChartCarouselTooltip {
    *  绑定事件监听
    *  */
   private bindEventListeners() {
-    const { chart } = this.plot
+    let deCanvasElement = document.getElementById('de-canvas-canvas-main')
+    if (!deCanvasElement) {
+      deCanvasElement = document.getElementById('preview-canvas-main')
+    }
+    if (!deCanvasElement) {
+      deCanvasElement = document.getElementById('canvas-mark-line')
+    }
+    if (!deCanvasElement) {
+      this.unHighlightPoint()
+      this.hideTooltip()
+      this.setPaused(true)
+    }
+    deCanvasElement?.addEventListener('scroll', this.handleScroll.bind(this))
     const chartElement = document.getElementById(this.chart.container)
     chartElement.addEventListener('mouseenter', () => {
       this.unHighlightPoint()
@@ -315,24 +330,28 @@ class ChartCarouselTooltip {
 
     // 当鼠标离开 chart 时，检查状态
     chartElement.addEventListener('mouseleave', () => {
-      this.setPaused(false)
-    })
-
-    // 页面可见性控制
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        this.unHighlightPoint()
-        this.hideTooltip()
-        this.setPaused(true)
-      } else if (this.chartIsVisible) {
+      if (deCanvasElement) {
         this.setPaused(false)
       }
     })
 
-    // 元素可视性观察（交叉观察器）
-    this.setupIntersectionObserver()
-    const deCanvasElement = document.getElementById('de-canvas-canvas-main')
-    deCanvasElement.addEventListener('scroll', this.handleScroll.bind(this))
+    if (deCanvasElement) {
+      // 页面可见性控制
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          this.unHighlightPoint()
+          this.hideTooltip()
+          this.setPaused(true)
+        } else if (this.chartIsVisible) {
+          this.setPaused(false)
+        }
+      })
+    }
+
+    if (deCanvasElement) {
+      // 元素可视性观察（交叉观察器）
+      this.setupIntersectionObserver()
+    }
   }
 
   private handleScroll() {

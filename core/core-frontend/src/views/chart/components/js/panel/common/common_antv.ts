@@ -1714,7 +1714,12 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     return
   }
   // 图表容器，用于计算 tooltip 的位置
-  const chartElement = document.getElementById('shape-id-' + chart.id)
+  // 编辑时
+  let chartElement = document.getElementById('shape-id-' + chart.id)
+  if (!chartElement) {
+    // 公共连接时
+    chartElement = document.getElementById('enlarge-inner-content-' + chart.id)
+  }
   configCarouselTooltip(plot, chart)
   // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
   plot.options.tooltip.container.addEventListener('mouseenter', e => {
@@ -1733,6 +1738,16 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
       return
     }
     const event = plot.chart.interactions.tooltip?.context?.event
+    const isCarousel =
+      !event ||
+      event?.type === 'plot:leave' ||
+      ['pie', 'pie-rose', 'pie-donut'].includes(chart.type)
+    const wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
+    if (isCarousel && wrapperDom) {
+      wrapperDom.style.zIndex = '1'
+    } else {
+      wrapperDom.style.zIndex = '9999'
+    }
     if (tooltipCtl.tooltip) {
       // 处理视图放大后再关闭 tooltip 的 dom 被清除
       const container = tooltipCtl.tooltip.cfg.container
@@ -1751,18 +1766,15 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     plot.chart.getOptions().tooltip.follow = false
     tooltipCtl.title = Math.random().toString()
     // 当显示提示为事件触发时，使用event的client坐标，否则使用tooltipCtl.point 数据点的位置，在图表中，需要加上图表在绘制区的位置
-    const { x, y } =
-      !event ||
-      event?.type === 'plot:leave' ||
-      ['pie', 'pie-rose', 'pie-donut'].includes(chart.type)
-        ? {
-            x: tooltipCtl.point.x + Number(chartElement.getBoundingClientRect().left),
-            y:
-              60 +
-              Number(chartElement.getBoundingClientRect().top) +
-              Number(chartElement.style.height.split('px')[0]) / 2
-          }
-        : { x: event.clientX, y: event.clientY }
+    const { x, y } = isCarousel
+      ? {
+          x: tooltipCtl.point.x + Number(chartElement.getBoundingClientRect().left),
+          y:
+            60 +
+            Number(chartElement.getBoundingClientRect().top) +
+            Number(chartElement.style.height.split('px')[0]) / 2
+        }
+      : { x: event.clientX, y: event.clientY }
     plot.chart.getTheme().components.tooltip.x = x
     plot.chart.getTheme().components.tooltip.y = y
   })
