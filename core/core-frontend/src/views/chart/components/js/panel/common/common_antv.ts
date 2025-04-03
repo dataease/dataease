@@ -1410,12 +1410,7 @@ export function mapRendering(dom: HTMLElement | string) {
   dom.classList.add('de-map-rendering')
 }
 
-export function mapRendered(dom: HTMLElement | string, scene?: Scene) {
-  if (typeof dom === 'string') {
-    dom = document.getElementById(dom)
-  }
-  dom.classList.add('de-map-rendered')
-
+export function qqMapRendered(scene?: Scene) {
   if (scene?.map && scene.map.deMapProvider === 'qq') {
     setTimeout(() => {
       if (scene.map) {
@@ -1425,6 +1420,13 @@ export function mapRendered(dom: HTMLElement | string, scene?: Scene) {
       }
     }, 1000)
   }
+}
+
+export function mapRendered(dom: HTMLElement | string) {
+  if (typeof dom === 'string') {
+    dom = document.getElementById(dom)
+  }
+  dom.classList.add('de-map-rendered')
 }
 
 export function getMapCenter(basicStyle: ChartBasicStyle) {

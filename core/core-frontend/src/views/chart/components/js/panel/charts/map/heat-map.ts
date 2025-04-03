@@ -15,7 +15,8 @@ import {
   getMapCenter,
   getMapScene,
   getMapStyle,
-  mapRendered
+  mapRendered,
+  qqMapRendered
 } from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 
@@ -119,7 +120,10 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
     })
 
     config.once('inited', () => {
-      mapRendered(container, scene)
+      mapRendered(container)
+    })
+    config.on('inited', () => {
+      qqMapRendered(scene)
     })
 
     return new L7Wrapper(scene, config)

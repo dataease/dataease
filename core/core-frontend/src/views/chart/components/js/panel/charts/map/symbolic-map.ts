@@ -19,7 +19,9 @@ import { LayerPopup, Popup } from '@antv/l7'
 import {
   getMapCenter,
   getMapScene,
-  getMapStyle
+  getMapStyle,
+  mapRendered,
+  qqMapRendered
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { filter } from 'lodash-es'
@@ -145,9 +147,13 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       scene.addPopup(tooltipLayer)
     }
     this.buildLabel(chart, configList)
+    symbolicLayer.once('inited', () => {
+      mapRendered(container)
+    })
     symbolicLayer.on('inited', () => {
       chart.container = container
       configCarouselTooltip(chart, symbolicLayer, symbolicLayer.sourceOption.data, scene)
+      qqMapRendered(scene)
     })
     symbolicLayer.on('click', ev => {
       const data = ev.feature
