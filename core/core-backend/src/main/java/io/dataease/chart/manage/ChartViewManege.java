@@ -127,6 +127,7 @@ public class ChartViewManege {
     }
 
     //镜像操作恢复
+    @XpackInteract(value = "chartViewManage")
     public void restoreThreshold(Long resourceId, String resourceTable) {
     }
 
