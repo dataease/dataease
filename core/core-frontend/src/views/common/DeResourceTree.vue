@@ -273,6 +273,29 @@ const nodeClick = (data: BusiTreeNode, node) => {
     cancelPreRequest()
     selectedNodeKey.value = data.id
     if (data.leaf) {
+      if (!embeddedStore.baseUrl) {
+        let url = window.location.href
+        const paramName = 'dvId'
+        const paramValue = data.id
+        // 检查是否已经有查询参数（在哈希部分）
+        if (url.includes('?')) {
+          const regex = new RegExp(`([?&])${paramName}=[^&]*`)
+          if (regex.test(url)) {
+            url = url.replace(regex, `$1${paramName}=${paramValue}`)
+          } else {
+            url += `&${paramName}=${paramValue}`
+          }
+        } else {
+          url += `?${paramName}=${paramValue}`
+        }
+        window.history.replaceState(
+          {
+            path: url
+          },
+          '',
+          url
+        )
+      }
       emit('nodeClick', data)
     } else {
       resourceListTree.value.setCurrentKey(null)
@@ -335,6 +358,9 @@ const afterTreeInit = () => {
   nextTick(() => {
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
     resourceListTree.value.filter(filterText.value)
+    nextTick(() => {
+      document.querySelector('.is-current')?.firstChild?.click()
+    })
   })
 }
 
