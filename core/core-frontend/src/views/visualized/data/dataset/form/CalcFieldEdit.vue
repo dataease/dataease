@@ -136,7 +136,7 @@ const setFieldForm = () => {
 
 const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   let name2Id = originName
-  const nameIdMap = [...state.dimensionData, ...state.quotaData].reduce((pre, next) => {
+  const nameIdMap = [...dimensionDataList, ...quotaDataList].reduce((pre, next) => {
     pre[next[from]] = next[to]
     return pre
   }, {})
@@ -235,10 +235,8 @@ watch(
         )
       )
     } else {
-      state.dimensionData = JSON.parse(JSON.stringify(dimensionDataList)).filter(
-        ele => ele.extField === 0
-      )
-      state.quotaData = JSON.parse(JSON.stringify(quotaDataList)).filter(ele => ele.extField === 0)
+      state.dimensionData = JSON.parse(JSON.stringify(dimensionDataList))
+      state.quotaData = JSON.parse(JSON.stringify(quotaDataList))
     }
   }
 )
