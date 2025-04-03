@@ -121,6 +121,7 @@ const initOpenHandler = newWindow => {
       placement="top"
     >
       <el-icon
+        v-if="dvInfo.status !== 0"
         class="custom-icon hover-icon"
         @click="executeStore"
         :style="{ color: favorited ? '#FFC60A' : '#646A73' }"

@@ -112,6 +112,7 @@ public class VisualizationStoreManage {
         if (StringUtils.isNotBlank(info)) {
             queryWrapper.notExists(String.format(info, "s.resource_id"));
         }
+        queryWrapper.ne("v.status", 0);
         queryWrapper.orderBy(true, request.isAsc(), "v.update_time");
         Page<StorePO> page = new Page<>(goPage, pageSize);
         return coreStoreExtMapper.query(page, queryWrapper);

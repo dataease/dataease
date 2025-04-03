@@ -424,6 +424,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
             snapshotMapper.deleteById(request.getId());
             visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
         }
+        // 文件夹走默认发布 非文件夹默认未发布
+        visualizationInfo.setStatus(DataVisualizationConstants.NODE_TYPE.FOLDER.equals(visualizationInfo.getNodeType())
+                ? CommonConstants.DV_STATUS.PUBLISHED : CommonConstants.DV_STATUS.UNPUBLISHED);
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
         request.setId(newDvId);
         // 还原ID信息
@@ -590,6 +593,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
+        if (StringUtils.isEmpty(request.getResourceTable())) {
+            request.setResourceTable(CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+        }
         String busiFlag = request.getBusiFlag();
         if (busiFlag.equals("dashboard-dataV")) {
             BusiNodeRequest requestDv = new BusiNodeRequest();

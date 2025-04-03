@@ -254,7 +254,7 @@
                   data_visualization_info
               WHERE
                   data_visualization_info.delete_flag = 0
-                AND node_type = 'leaf') dvResource
+                AND node_type = 'leaf' and data_visualization_info.status != 0 ) dvResource
                  LEFT JOIN core_store ON dvResource.id = core_store.resource_id
             AND core_store.uid = #{uid}
                  INNER JOIN core_opt_recent ON dvResource.resource_id = core_opt_recent.resource_id

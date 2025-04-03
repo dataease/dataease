@@ -158,7 +158,7 @@ public class CoreVisualizationManage {
             visualizationInfo.setId(id);
         }
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
-        visualizationInfo.setStatus(CommonConstants.DV_STATUS.UNPUBLISHED);
+        visualizationInfo.setStatus(visualizationInfo.getStatus());
         visualizationInfo.setCreateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setCreateTime(System.currentTimeMillis());

@@ -21,5 +21,5 @@ public class BusiNodeRequest implements Serializable {
 
     private String sortType;
 
-    private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
+    private String resourceTable;
 }
