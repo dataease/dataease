@@ -13,6 +13,7 @@
       class="multiplexing-area"
       no-close
       show-position="multiplexing"
+      resource-table="snapshot"
     ></dashboard-preview-show>
     <preview-show
       v-if="dialogShow && curDvType === 'dataV'"
@@ -20,6 +21,7 @@
       class="multiplexing-area"
       no-close
       show-position="multiplexing"
+      resource-table="snapshot"
     ></preview-show>
     <template #footer>
       <el-row class="multiplexing-footer">

@@ -60,10 +60,15 @@ const props = defineProps({
     required: false,
     type: Boolean,
     default: false
+  },
+  resourceTable: {
+    required: false,
+    type: String,
+    default: 'core'
   }
 })
 
-const { showPosition } = toRefs(props)
+const { showPosition, resourceTable } = toRefs(props)
 
 const resourceTreeRef = ref()
 
@@ -263,6 +268,7 @@ defineExpose({
         v-show="slideShow"
         :cur-canvas-type="'dashboard'"
         :show-position="showPosition"
+        :resource-table="resourceTable"
         @node-click="resourceNodeClick"
       />
     </el-aside>

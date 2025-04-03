@@ -1,5 +1,6 @@
 package io.dataease.model;
 
+import io.dataease.constant.CommonConstants;
 import lombok.Data;
 
 import java.io.Serial;
@@ -19,4 +20,6 @@ public class BusiNodeRequest implements Serializable {
     private Integer weight;
 
     private String sortType;
+
+    private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
 }

@@ -493,7 +493,11 @@ defineExpose({
     :id="domId"
     class="canvas-container"
     :style="canvasStyle"
-    :class="{ 'de-download-custom': downloadStatus, 'datav-preview': dataVPreview }"
+    :class="{
+      'de-download-custom': downloadStatus,
+      'datav-preview': dataVPreview,
+      'datav-preview-unpublish': dvInfo.status === 0
+    }"
     ref="previewCanvas"
     @mousedown="handleMouseDown"
     @scroll="scrollPreview"
@@ -590,5 +594,9 @@ defineExpose({
 
 .datav-preview {
   overflow-y: hidden !important;
+}
+
+.datav-preview-unpublish {
+  background-color: inherit !important;
 }
 </style>

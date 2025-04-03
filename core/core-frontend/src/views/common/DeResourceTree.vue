@@ -70,6 +70,11 @@ const props = defineProps({
     required: false,
     type: String,
     default: 'preview'
+  },
+  resourceTable: {
+    required: false,
+    type: String,
+    default: 'core'
   }
 })
 const defaultProps = {
@@ -303,6 +308,19 @@ const nodeClick = (data: BusiTreeNode, node) => {
   }
 }
 
+const filterTreeData = nodes => {
+  if (props.resourceTable === 'snapshot') {
+    return nodes
+      .filter(node => node.extraFlag1 !== 0) // 过滤当前层
+      .map(node => ({
+        ...node,
+        children: node.children ? filterTreeData(node.children) : [] // 递归过滤子节点
+      }))
+  } else {
+    return nodes
+  }
+}
+
 const getTree = async () => {
   const request = { busiFlag: curCanvasType.value } as BusiTreeRequest
   const isDashboard = curCanvasType.value == 'dashboard'
@@ -322,12 +340,12 @@ const getTree = async () => {
   let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1].value
   curSortType = wsCache.get(`TreeSort-${curCanvasType.value}`) ?? curSortType
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-    state.originResourceTree = nodeData[0]['children'] || []
+    state.originResourceTree = filterTreeData(nodeData[0]['children'] || [])
     sortTypeChange(curSortType)
     afterTreeInit()
     return
   }
-  state.originResourceTree = nodeData
+  state.originResourceTree = filterTreeData(nodeData)
   sortTypeChange(curSortType)
   afterTreeInit()
 }

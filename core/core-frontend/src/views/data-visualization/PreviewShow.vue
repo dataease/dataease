@@ -46,6 +46,11 @@ const props = defineProps({
     required: false,
     type: Boolean,
     default: false
+  },
+  resourceTable: {
+    required: false,
+    type: String,
+    default: 'core'
   }
 })
 
@@ -250,6 +255,7 @@ onBeforeMount(() => {
         v-show="slideShow"
         :cur-canvas-type="'dataV'"
         :show-position="showPosition"
+        :resource-table="resourceTable"
         @node-click="resourceNodeClick"
       />
     </el-aside>
