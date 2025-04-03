@@ -73,21 +73,6 @@ onMounted(() => {
 <template>
   <el-form ref="bulletForm" :model="state.bulletForm" size="small" label-position="top">
     <div v-if="selectorType === 'target'">
-      <div style="flex: 1; display: flex">
-        <el-form-item
-          :label="t('chart.legend_name')"
-          class="form-item"
-          :class="'form-item-' + themes"
-          style="width: 100%"
-        >
-          <el-input
-            :effect="themes"
-            v-model="state.bulletForm.bar.target.name"
-            size="small"
-            @change="changeStyle('bar.target.name')"
-          />
-        </el-form-item>
-      </div>
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-radio-group
           :effect="themes"

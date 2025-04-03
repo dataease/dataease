@@ -70,21 +70,6 @@ onMounted(() => {
     <div v-if="selectorType === 'measure'">
       <div style="flex: 1; display: flex">
         <el-form-item
-          :label="t('chart.legend_name')"
-          class="form-item"
-          :class="'form-item-' + themes"
-          style="width: 100%"
-        >
-          <el-input
-            :effect="themes"
-            v-model="state.bulletForm.bar.measures.name"
-            size="small"
-            @change="changeStyle('bar.measures.name')"
-          />
-        </el-form-item>
-      </div>
-      <div style="flex: 1; display: flex">
-        <el-form-item
           :label="t('visualization.backgroundColor')"
           class="form-item"
           :class="'form-item-' + themes"
