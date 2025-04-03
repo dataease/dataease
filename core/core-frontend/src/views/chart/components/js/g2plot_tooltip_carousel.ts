@@ -219,6 +219,9 @@ class ChartCarouselTooltip {
     if (['pie', 'pie-donut'].includes(this.chart.type)) {
       return this.getPieTooltipPosition(view, value)
     }
+    if (this.plot instanceof DualAxes) {
+      return this.getDualAxesTooltipPosition(view, value)
+    }
     const types = view
       .scale()
       .getGeometries()
@@ -267,6 +270,23 @@ class ChartCarouselTooltip {
   }
 
   /**
+   * 获取双轴图表的 Tooltip 位置
+   * @param view
+   * @param value
+   * @private
+   */
+  private getDualAxesTooltipPosition(view, value: string) {
+    const xScale = view.getXScale()
+    const values = xScale.values
+    const [rangeStart, rangeEnd] = xScale.range
+    const totalMonths = values.length
+    const bandWidth = (rangeEnd - rangeStart) / totalMonths
+    const index = values.indexOf(value)
+    const xPos = rangeStart + bandWidth * (index + 0.5)
+    return view.getCoordinate().convert({ x: xPos, y: 0 })
+  }
+
+  /**
    * 高亮指定元素
    * */
   private highlightElement(value: string) {
@@ -308,12 +328,12 @@ class ChartCarouselTooltip {
    *  绑定事件监听
    *  */
   private bindEventListeners() {
-    let deCanvasElement = document.getElementById('de-canvas-canvas-main')
-    if (!deCanvasElement) {
-      deCanvasElement = document.getElementById('preview-canvas-main')
-    }
-    if (!deCanvasElement) {
-      deCanvasElement = document.getElementById('canvas-mark-line')
+    // 用于监听在不同的浏览页面的滚动事件
+    const elementIds = ['de-canvas-canvas-main', 'preview-canvas-main', 'canvas-mark-line']
+    let deCanvasElement = null
+    for (const id of elementIds) {
+      deCanvasElement = document.getElementById(id)
+      if (deCanvasElement) break
     }
     if (!deCanvasElement) {
       this.unHighlightPoint()
@@ -346,9 +366,6 @@ class ChartCarouselTooltip {
           this.setPaused(false)
         }
       })
-    }
-
-    if (deCanvasElement) {
       // 元素可视性观察（交叉观察器）
       this.setupIntersectionObserver()
     }

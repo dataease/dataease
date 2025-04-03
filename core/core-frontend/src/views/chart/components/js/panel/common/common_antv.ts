@@ -1716,10 +1716,8 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
   // 图表容器，用于计算 tooltip 的位置
   // 编辑时
   let chartElement = document.getElementById('shape-id-' + chart.id)
-  if (!chartElement) {
-    // 公共连接时
-    chartElement = document.getElementById('enlarge-inner-content-' + chart.id)
-  }
+  // 公共连接页面
+  chartElement = chartElement || document.getElementById('enlarge-inner-content-' + chart.id)
   configCarouselTooltip(plot, chart)
   // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
   plot.options.tooltip.container.addEventListener('mouseenter', e => {
@@ -1742,12 +1740,9 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
       !event ||
       event?.type === 'plot:leave' ||
       ['pie', 'pie-rose', 'pie-donut'].includes(chart.type)
+    plot.options.tooltip.showMarkers = isCarousel ? true : false
     const wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
-    if (isCarousel && wrapperDom) {
-      wrapperDom.style.zIndex = '1'
-    } else {
-      wrapperDom.style.zIndex = '9999'
-    }
+    wrapperDom.style.zIndex = isCarousel && wrapperDom ? '1' : '9999'
     if (tooltipCtl.tooltip) {
       // 处理视图放大后再关闭 tooltip 的 dom 被清除
       const container = tooltipCtl.tooltip.cfg.container
