@@ -61,11 +61,12 @@ import io.dataease.visualization.manage.CoreBusiManage;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -358,9 +359,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         //表名映射更新
                         Map<String, String> appDsTableNamesMap = dsTableNamesMap.get(key);
                         Map<String, String> systemDsTableNamesMap = dsTableNamesMap.get(value);
-                        if (!CollectionUtils.isEmpty(appDsTableNamesMap)) {
+                        if (MapUtils.isNotEmpty(appDsTableNamesMap)) {
                             appDsTableNamesMap.forEach((keyName, valueName) -> {
-                                if (!CollectionUtils.isEmpty(systemDsTableNamesMap) && StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
+                                if (MapUtils.isNotEmpty(systemDsTableNamesMap) && StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
                                     dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, systemDsTableNamesMap.get(keyName)));
                                 } else {
                                     dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, "excel_can_not_find"));
@@ -398,7 +399,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 //表名映射更新
                 Map<String, String> appDsTableNamesMap = dsTableNamesMap.get(key);
                 Map<String, String> systemDsTableNamesMap = dsTableNamesMap.get(value);
-                if (!CollectionUtils.isEmpty(appDsTableNamesMap) && !CollectionUtils.isEmpty(systemDsTableNamesMap)) {
+                if (MapUtils.isNotEmpty(appDsTableNamesMap) && MapUtils.isNotEmpty(systemDsTableNamesMap)) {
                     appDsTableNamesMap.forEach((keyName, valueName) -> {
                         if (StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
                             componentDataStr.set(componentDataStr.get().replaceAll(key.toString(), value.toString()));
@@ -908,7 +909,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (AuthUtils.getUser().getDefaultOid() != null) {
             wrapper.eq("org_id", AuthUtils.getUser().getDefaultOid());
         }
-        if (visualizationInfoMapper.exists(wrapper)) {
+        List<DataVisualizationInfo> existList = visualizationInfoMapper.selectList(wrapper);
+        if (CollectionUtils.isNotEmpty(existList) && existList.stream().anyMatch(item -> item.getName().equals(request.getName().trim()))) {
             DEException.throwException("当前名称已经存在");
         }
     }
