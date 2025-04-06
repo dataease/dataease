@@ -148,6 +148,7 @@ body {
 .field-icon-red {
   color: #f54a45;
 }
+
 .field-icon-url {
   color: #3370ff;
 }
@@ -195,9 +196,11 @@ body {
 
 .hover-icon-in-table {
   color: var(--ed-color-primary) !important;
+
   &[aria-expanded='true'] {
     background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
+
   &:hover {
     background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
@@ -241,6 +244,7 @@ body {
 .toolbar-icon-disabled {
   cursor: not-allowed !important;
   color: #5f5f5f !important;
+
   &:active,
   &:hover {
     background: transparent;
@@ -276,6 +280,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+
   .ed-icon {
     font-size: 14px;
     position: relative;
@@ -285,6 +290,7 @@ body {
   &:disabled {
     color: #5f5f5f;
     cursor: not-allowed;
+
     &::after {
       display: none !important;
     }
@@ -356,13 +362,16 @@ body {
 .create-dialog {
   .ed-form-item {
     margin-bottom: 16px;
+
     &.is-error {
       margin-bottom: 40px;
     }
+
     &:last-child {
       &.is-error {
         margin-bottom: 24px;
       }
+
       margin-bottom: 0;
     }
   }
@@ -390,13 +399,16 @@ em {
   max-height: 100vh;
   overflow-y: auto;
   background: none !important;
+
   .ed-dialog__header {
     padding: 0px;
+
     .ed-dialog__headerbtn {
       .ed-icon {
         font-size: 24px;
         color: white;
       }
+
       background: rgba(31, 35, 41, 0.9);
       height: 48px;
       width: 48px;
@@ -404,11 +416,13 @@ em {
       right: 24px;
       padding: 12px;
       border-radius: 50%;
+
       &:hover {
         background: #646a73;
       }
     }
   }
+
   .ed-dialog__body {
     padding: 0px;
     background-color: #1f232999;
@@ -494,6 +508,7 @@ strong {
 
   .btn-text {
     padding: 2px 4px;
+
     &:hover {
       background: var(--primary10, #3370ff1a);
     }
@@ -528,6 +543,7 @@ strong {
       transform: rotate(-360deg);
     }
   }
+
   .ed-message__icon {
     color: var(--primary, #3370ff);
     animation: circle infinite 0.75s linear;

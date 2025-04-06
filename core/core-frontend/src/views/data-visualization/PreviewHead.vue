@@ -114,7 +114,9 @@ const initOpenHandler = newWindow => {
 <template>
   <div class="preview-head flex-align-center">
     <div :title="dvInfo.name" class="canvas-name ellipsis">{{ dvInfo.name }}</div>
-
+    <div v-show="dvInfo.status === 2" class="canvas-have-update">
+      {{ t('visualization.publish_update_tips') }}
+    </div>
     <el-tooltip
       effect="dark"
       :content="favorited ? t('visualization.cancel_store') : t('visualization.store')"
@@ -253,6 +255,16 @@ const initOpenHandler = newWindow => {
     max-width: 200px;
     font-size: 16px;
     font-weight: 500;
+  }
+  .canvas-have-update {
+    background-color: rgba(52, 199, 36, 0.2);
+    color: rgba(44, 169, 31, 1);
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    vertical-align: middle;
+    padding: 0 4px;
+    margin-left: 8px;
   }
   .custom-icon {
     cursor: pointer;

@@ -736,7 +736,11 @@ const initOpenHandler = newWindow => {
           >
             {{ t('data_set.save') }}
           </el-button>
-          <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
+          <el-dropdown
+            :disabled="dvInfo.status === 0"
+            popper-class="menu-outer-dv_popper"
+            trigger="hover"
+          >
             <el-button
               @click="saveCanvasWithCheck(true, 1)"
               style="float: right; margin: 0 12px 0 0"
@@ -746,7 +750,7 @@ const initOpenHandler = newWindow => {
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="recoverToPublished" :disabled="dvInfo.status !== 2">
+                <el-dropdown-item @click="recoverToPublished" v-if="dvInfo.status === 2">
                   <el-icon class="handle-icon">
                     <Icon name="icon_left_outlined"
                       ><dv-recover-outlined class="svg-icon toolbar-icon"
@@ -754,7 +758,10 @@ const initOpenHandler = newWindow => {
                   </el-icon>
                   {{ t('visualization.publish_recover') }}
                 </el-dropdown-item>
-                <el-dropdown-item @click="publishStatusChange(0)" :disabled="dvInfo.status === 0">
+                <el-dropdown-item
+                  @click="publishStatusChange(0)"
+                  v-if="[1, 2].includes(dvInfo.status)"
+                >
                   <el-icon class="handle-icon">
                     <Icon name="icon_left_outlined"
                       ><dv-cancel-publish class="svg-icon toolbar-icon"

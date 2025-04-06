@@ -495,7 +495,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, stExp = "#p0.type")
     @Override
     @Transactional
-    public void updateCanvas(DataVisualizationBaseRequest request) {
+    public DataVisualizationVO updateCanvas(DataVisualizationBaseRequest request) {
         Long dvId = request.getId();
         if (dvId == null) {
             DEException.throwException("ID can not be null");
@@ -525,6 +525,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
+        return new DataVisualizationVO(visualizationInfo.getStatus());
     }
 
     @Override

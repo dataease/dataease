@@ -610,8 +610,12 @@ export async function canvasSave(callBack) {
     })
   }
   method(canvasInfo).then(res => {
-    // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2
-    dvMainStore.updateDvInfoCall(method === updateCanvas ? 2 : 0, res.data, newContentId)
+    if (method === updateCanvas) {
+      // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2
+      dvMainStore.updateDvInfoCall(res.data?.status, null, newContentId)
+    } else {
+      dvMainStore.updateDvInfoCall(0, res.data, newContentId)
+    }
     snapshotStore.resetStyleChangeTimes()
     callBack(res)
   })

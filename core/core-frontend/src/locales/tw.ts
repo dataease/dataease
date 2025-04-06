@@ -2814,6 +2814,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    publish_update_tips: '有更新',
     filter_freeze_tips: '已存在置頂查詢組件，確定切換該組件？',
     query_position: '查詢組件位置',
     default: '預設',

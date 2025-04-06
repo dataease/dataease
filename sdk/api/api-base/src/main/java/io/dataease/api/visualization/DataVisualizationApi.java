@@ -62,7 +62,7 @@ public interface DataVisualizationApi {
     @PostMapping("/updateCanvas")
     @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
     @Operation(summary = "画布更新")
-    void updateCanvas(@RequestBody DataVisualizationBaseRequest request);
+    DataVisualizationVO updateCanvas(@RequestBody DataVisualizationBaseRequest request);
 
 
     @PostMapping("/updatePublishStatus")
