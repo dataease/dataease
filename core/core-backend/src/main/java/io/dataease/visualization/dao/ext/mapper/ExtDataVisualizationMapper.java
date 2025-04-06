@@ -98,4 +98,7 @@ public interface ExtDataVisualizationMapper {
     void restoreOuterParamsInfo(@Param("dvId") Long dvId);
 
     void restoreOuterParams(@Param("dvId") Long dvId);
+
+    @Select("select status from data_visualization_info where id = #{dvId}")
+    Integer findDvInfoStats(@Param("dvId") Long dvId);
 }

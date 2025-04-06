@@ -518,8 +518,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 coreVisualizationManage.move(request);
             }
         }
-        // 新建保存状态不对问题
-        visualizationInfo.setStatus(request.getStatus() != null ? request.getStatus() : CommonConstants.DV_STATUS.SAVED_UNPUBLISHED);
+        // 状态修改统一为后端操作：历史状态检查 如果 状态为 0（未发布） 或者 2（已发布未保存）则状态不变
+        // 如果当前状态为 1 则状态修改为  2（已发布未保存）
+        Integer curStatus = extDataVisualizationMapper.findDvInfoStats(dvId);
+        visualizationInfo.setStatus(curStatus == 1?CommonConstants.DV_STATUS.SAVED_UNPUBLISHED:curStatus);
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
