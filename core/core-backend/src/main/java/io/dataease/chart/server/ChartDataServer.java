@@ -338,7 +338,7 @@ public class ChartDataServer implements ChartDataApi {
 
             Map<String, Object> customAttr = viewInfo.getCustomAttr();
             Map<String, Object> tableHeaderMap = (Map<String, Object>) customAttr.get("tableHeader");
-            if (Boolean.valueOf(tableHeaderMap.get("headerGroup").toString())) {
+            if (tableHeaderMap.get("headerGroup") != null && Boolean.valueOf(tableHeaderMap.get("headerGroup").toString())) {
                 tableHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
                 for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
                     totalDepth = Math.max(totalDepth, getDepth(column, 1));
@@ -450,10 +450,8 @@ public class ChartDataServer implements ChartDataApi {
 
                         Cell cell = row.createCell(j);
                         if (i == 0) {// 头部
-                            if (tableHeader != null) {
-                                cell.setCellValue(cellValObj.toString());
-                                cell.setCellStyle(cellStyle);
-                            }
+                            cell.setCellValue(cellValObj.toString());
+                            cell.setCellStyle(cellStyle);
                             //设置列的宽度
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {

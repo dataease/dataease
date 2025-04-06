@@ -62,6 +62,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1458,7 +1459,7 @@ public class DatasourceServer implements DatasourceApi {
             if (exception.getCause() == null) {
                 return exception.getMessage();
             }
-            if (exception instanceof DEException && !(exception.getCause() instanceof DEException)) {
+            if (exception instanceof DEException && (!(exception.getCause() instanceof DEException) && !(exception.getCause() instanceof InvocationTargetException))) {
                 return exception.getMessage();
             }
             exception = exception.getCause();
