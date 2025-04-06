@@ -925,21 +925,21 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     public String getAbsPath(String id) {
-        CoreChartView coreChartView = coreChartViewMapper.selectById(id);
-        if (coreChartView == null) {
+        ChartViewDTO viewDTO = chartViewManege.findChartViewAround(id);
+        if (viewDTO == null) {
             return null;
         }
-        if (coreChartView.getSceneId() == null) {
-            return coreChartView.getTitle();
+        if (viewDTO.getSceneId() == null) {
+            return viewDTO.getTitle();
         }
-        List<DataVisualizationInfo> parents = getParents(coreChartView.getSceneId());
+        List<DataVisualizationInfo> parents = getParents(viewDTO.getSceneId());
         StringBuilder stringBuilder = new StringBuilder();
         parents.forEach(ele -> {
             if (ObjectUtils.isNotEmpty(ele)) {
                 stringBuilder.append(ele.getName()).append("/");
             }
         });
-        stringBuilder.append(coreChartView.getTitle());
+        stringBuilder.append(viewDTO.getTitle());
         return stringBuilder.toString();
     }
 

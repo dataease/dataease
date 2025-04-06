@@ -500,4 +500,8 @@ public class ChartViewManege {
             return result;
         }
     }
+
+    public ChartViewDTO findChartViewAround(String viewId) {
+        return extChartViewMapper.findChartViewAround(viewId);
+    }
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
+import dvDashboardSpineMobileDisabled from '@/assets/svg/dv-dashboard-spine-mobile-disabled.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvCopyDark from '@/assets/svg/dv-copy-dark.svg'
 import dvDelete from '@/assets/svg/dv-delete.svg'
@@ -786,7 +787,7 @@ defineExpose({
               ></Icon>
               <Icon v-if="!data.extraFlag1"
                 ><component
-                  :is="data.extraFlag ? dvDashboardSpineDisabled : dvDashboardSpineDisabled"
+                  :is="data.extraFlag ? dvDashboardSpineMobileDisabled : dvDashboardSpineDisabled"
                 ></component
               ></Icon>
             </el-icon>
