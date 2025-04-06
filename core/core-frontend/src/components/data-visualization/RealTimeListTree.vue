@@ -243,6 +243,7 @@ const unlock = () => {
 const hideComponent = () => {
   setTimeout(() => {
     layerStore.hideComponent()
+    layerStore.pausedTooltipCarousel(curComponent.value.id)
     snapshotStore.recordSnapshotCache('realTime-hideComponent')
   })
 }
@@ -250,6 +251,7 @@ const hideComponent = () => {
 const showComponent = () => {
   setTimeout(() => {
     layerStore.showComponent()
+    layerStore.resumeTooltipCarousel(curComponent.value.id)
     snapshotStore.recordSnapshotCache('showComponent')
   })
 }

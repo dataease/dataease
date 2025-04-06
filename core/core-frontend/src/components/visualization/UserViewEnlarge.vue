@@ -7,6 +7,7 @@
     width="70vw"
     trigger="click"
     class="userViewEnlarge-class"
+    @close="handleClose"
   >
     <template #header v-if="!isIframe">
       <div class="header-title">
@@ -182,6 +183,7 @@ import { getCanvasStyle } from '@/utils/style'
 import { exportPermission } from '@/utils/utils'
 import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
 import { supportExtremumChartType } from '@/views/chart/components/js/extremumUitl'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -456,7 +458,9 @@ const htmlToImage = () => {
 const initWatermark = () => {
   activeWatermarkCheckUser('enlarge-inner-content', 'canvas-main', state.scale)
 }
-
+const handleClose = () => {
+  ChartCarouselTooltip.closeEnlargeDialogDestroy(viewInfo.value.id)
+}
 defineExpose({
   dialogInit
 })

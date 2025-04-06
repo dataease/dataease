@@ -3,22 +3,19 @@ import { DualAxes, Plot } from '@antv/g2plot'
 /**
  * 使用 Map 来存储实例，键为 chart.container 对象
  */
-export const carouselManagerInstances = new Map<unknown, ChartCarouselTooltip>()
-// 支持的图表类型集合
-const SUPPORT_CHART_TYPES = new Set([
-  'line',
-  'area',
-  'area-stack',
-  'bar',
-  'bar-stack',
-  'bar-group',
-  'bar-group-stack',
-  'chart-mix',
-  'chart-mix-group',
-  'chart-mix-stack',
-  'chart-mix-dual-line',
-  'pie'
-])
+export const CAROUSEL_MANAGER_INSTANCES = new Map<string, ChartCarouselTooltip>()
+/**
+ * 支持的图表类型
+ */
+const CHART_CATEGORY = {
+  COLUMN: ['bar', 'bar-stack', 'bar-group', 'bar-group-stack'],
+  LINE: ['line', 'area', 'area-stack'],
+  MIX: ['chart-mix', 'chart-mix-group', 'chart-mix-stack', 'chart-mix-dual-line'],
+  PIE: ['pie']
+}
+const isSupport = (chartType: string) => {
+  return Object.values(CHART_CATEGORY).some(category => category.includes(chartType))
+}
 
 // 轮播配置默认值
 const DEFAULT_CAROUSEL_CONFIG: Required<CarouselConfig> = {
@@ -46,12 +43,12 @@ class ChartCarouselTooltip {
   // 合并定时器管理
   private timers = { interval: null, carousel: null }
   private states = { paused: false, destroyed: false }
+  // 图表可视性变化
   private observers: Map<Element, IntersectionObserver> = new Map()
-  // 滚动事件计时器
-  private scrollTimeout: number | null = null
+  // 图表元素大小变化
+  private resizeObservers: Map<Element, ResizeObserver> = new Map()
   // 图表是否在可视范围内
   private chartIsVisible: boolean
-  private tooltipContainer: HTMLElement
 
   private constructor(plot: Plot | DualAxes, private chart: Chart, config: CarouselConfig) {
     this.plot = plot
@@ -64,47 +61,115 @@ class ChartCarouselTooltip {
    * */
   static manage(plot: Plot | DualAxes, chart: Chart, config: CarouselConfig) {
     const container = chart.container
-    const exists = carouselManagerInstances.get(container)
+    let instance = CAROUSEL_MANAGER_INSTANCES.get(container)
 
-    if (exists) {
-      // 切换到不支持的图表时
-      if (!SUPPORT_CHART_TYPES.has(chart.type)) {
-        this.destroyByContainer(container)
-        return null
+    CAROUSEL_MANAGER_INSTANCES.forEach((instance, _key) => {
+      if (container.includes('viewDialog')) {
+        instance.paused()
       }
-      exists.update(plot, chart, config)
-      return exists
-    }
+    })
 
-    if (SUPPORT_CHART_TYPES.has(chart.type)) {
-      const instance = new this(plot, chart, config)
-      carouselManagerInstances.set(container, instance)
-      return instance
-    }
-    return null
-  }
-
-  /**
-   * 通过容器DOM销毁对应实例（外部调用接口）
-   * */
-  static destroyByContainer(container: string) {
-    const instance = carouselManagerInstances.get(container)
     if (instance) {
       instance.destroy()
-      // 弱引用会自动清除，这里显式删除确保及时清理
-      carouselManagerInstances.delete(container)
+    }
+    if (isSupport(chart.type)) {
+      instance = new this(plot, chart, config)
+      CAROUSEL_MANAGER_INSTANCES.set(container, instance)
+    }
+
+    return instance
+  }
+
+  /**
+   * 销毁实例
+   * @param container
+   */
+  static destroyByContainer(container: string) {
+    const instance = CAROUSEL_MANAGER_INSTANCES.get(container)
+    if (instance) {
+      instance.destroy()
+      CAROUSEL_MANAGER_INSTANCES.delete(container)
     }
   }
 
   /**
-   * 通过容器DOM获取对应实例（外部调用接口）
+   * 通过容器DOM获取对应实例
    * */
   static getInstanceByContainer(container: string) {
-    const instance = carouselManagerInstances.get(container)
+    const instance = CAROUSEL_MANAGER_INSTANCES.get(container)
     if (instance) {
       return instance
     }
     return null
+  }
+
+  /**
+   * 通过chart.id销毁对应实例
+   * 关闭放大图表弹窗，销毁对应实例
+   * 重启图表自身轮播
+   * */
+  static closeEnlargeDialogDestroy(id: string) {
+    // 首先，暂停并删除包含 'viewDialog' 的实例
+    CAROUSEL_MANAGER_INSTANCES?.forEach((instance, key) => {
+      if (instance.chart.id === id && instance.chart.container.includes('viewDialog')) {
+        CAROUSEL_MANAGER_INSTANCES.delete(key)
+      }
+      if (instance.chart.id === id) {
+        instance.resume()
+      }
+    })
+    // 然后，恢复
+    CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
+      instance.resume()
+    })
+  }
+
+  /**
+   * 判断是否为柱状图
+   * @param chartType
+   */
+  static isColumn(chartType: string) {
+    return CHART_CATEGORY.COLUMN.includes(chartType)
+  }
+
+  /**
+   * 判断是否为折线图
+   * @param chartType
+   */
+  static isLine(chartType: string) {
+    return CHART_CATEGORY.LINE.includes(chartType)
+  }
+
+  /**
+   * 判断是否为饼图
+   * @param chartType
+   */
+  static isPie(chartType: string) {
+    return CHART_CATEGORY.PIE.includes(chartType)
+  }
+
+  /**
+   * 暂停轮播
+   * @param id
+   */
+  static paused(id: string) {
+    CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
+      if (instance.chart.id === id) {
+        setTimeout(() => instance.paused(), 200)
+      }
+    })
+  }
+
+  /**
+   * @param id
+   */
+  static resume(id: string) {
+    CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
+      if (instance.chart.id === id) {
+        instance.paused()
+        setTimeout(() => instance.resume(), 500)
+      }
+    })
   }
 
   /**
@@ -149,54 +214,33 @@ class ChartCarouselTooltip {
       this.currentIndex = 0
       // 定义递归处理数据数组的函数
       const processArray = () => {
-        // 设置定时器，等待 duration 毫秒后执行
-        this.timers.carousel = window.setTimeout(
-          async () => {
-            if (this.states.paused || this.states.destroyed) return
-            // 获取当前需要显示的值
-            const currentValue = this.values[this.currentIndex]
-            // 高亮当前数据点
-            this.highlightElement(currentValue)
-            // 计算 Tooltip 显示的位置
-            const point = this.calculatePosition(currentValue)
-            if (point) {
-              // 显示 Tooltip，并设置其位置为顶部
-              this.plot.chart.showTooltip(point)
-              this.plot.chart.getController('tooltip').update()
-            }
-            // 更新索引，指向下一个数据点
-            this.currentIndex++
-            // 如果已经遍历完所有数据点
-            if (this.currentIndex >= this.values.length) {
-              // 等待当前提示显示完成
-              await new Promise(resolve => setTimeout(resolve, this.config.duration))
-              // 取消所有数据点的高亮状态
-              this.unHighlightPoint()
-              // 隐藏 Tooltip
-              this.hideTooltip()
-              // 清除当前定时器
-              clearTimeout(this.timers.carousel)
-              // 等待配置的轮播间隔
-              await new Promise(resolve => setTimeout(resolve, this.config.interval))
-              // 重置索引，重新开始轮播
-              this.currentIndex = 0
-              processArray()
-            } else {
-              // 如果未遍历完，继续处理下一个数据点
-              processArray()
-            }
-          },
-          this.currentIndex === 0 ? 0 : this.config.duration
-        )
+        if (this.states.paused || this.states.destroyed || !this.isElementFullyVisible()) return
+        // 获取当前需要显示的值
+        const currentValue = this.values[this.currentIndex]
+        // 计算 Tooltip 显示的位置
+        const point = this.calculatePosition(currentValue)
+        // 高亮当前数据点
+        this.highlightElement(currentValue)
+        if (point) {
+          // 显示 Tooltip，并设置其位置为顶部
+          this.plot.chart.showTooltip(point)
+          this.plot.chart.getController('tooltip').update()
+        }
+        // 更新索引，指向下一个数据点
+        this.currentIndex++
+        if (this.currentIndex > this.values.length) {
+          this.currentIndex = 0
+          this.hideTooltip()
+          this.timers.interval = setTimeout(() => processArray(), this.config.interval)
+        } else {
+          // 如果未遍历完，继续处理下一个数据点
+          this.timers.carousel = setTimeout(() => processArray(), this.config.duration)
+        }
       }
-      // 开始处理数据数组
       processArray()
     }
-    // 启动嵌套定时器
-    this.debounce(() => {
-      this.stop()
-      startNestedTimers()
-    }, 300)()
+    this.stop()
+    startNestedTimers()
   }
 
   /**
@@ -210,6 +254,29 @@ class ChartCarouselTooltip {
     )
   }
 
+  /**
+   *  判断图表是否在可视范围内
+   *  */
+  private isElementFullyVisible(): boolean {
+    // 全屏
+    const isFullscreen = document.fullscreenElement !== null
+    // 新页面或公共连接
+    const isNewPagePulicLink = document
+      .getElementById('enlarge-inner-content-' + this.chart.id)
+      ?.getBoundingClientRect()
+    const isMobileEdit = document.getElementsByClassName('panel-mobile')?.length > 0
+    const isMobileList = document.getElementsByClassName('mobile-com-list')?.length > 0
+    if (isMobileList) {
+      return false
+    }
+    const rect = this.plot.chart.ele.getBoundingClientRect()
+    return (
+      rect.top >= (isFullscreen || isNewPagePulicLink || isMobileEdit ? 0 : 64) &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    )
+  }
   /**
    *  计算元素位置（核心定位逻辑）
    *  */
@@ -237,7 +304,9 @@ class ChartCarouselTooltip {
           .elements.find(item => item.data.field === value && (item.model.x || item.model.y))?.model
       }
     })
-    return { x: [].concat(point?.x)?.[0], y: 60 }
+    // 处理柱状图和折线图,柱状图固定y轴位置
+    const y = CHART_CATEGORY.COLUMN.includes(this.chart.type) ? 0 : [].concat(point?.y)?.[0]
+    return { x: [].concat(point?.x)?.[0], y: y }
   }
 
   /**
@@ -278,6 +347,12 @@ class ChartCarouselTooltip {
   private getDualAxesTooltipPosition(view, value: string) {
     const xScale = view.getXScale()
     const values = xScale.values
+    if (values.length < 2) {
+      const point = view
+        .getGeometries()?.[0]
+        .elements[view.getGeometries()?.[0].elements?.length - 1].getModel()
+      return point || { x: 0, y: 0 }
+    }
     const [rangeStart, rangeEnd] = xScale.range
     const totalMonths = values.length
     const bandWidth = (rangeEnd - rangeStart) / totalMonths
@@ -328,78 +403,69 @@ class ChartCarouselTooltip {
    *  绑定事件监听
    *  */
   private bindEventListeners() {
-    // 用于监听在不同的浏览页面的滚动事件
-    const elementIds = ['de-canvas-canvas-main', 'preview-canvas-main', 'canvas-mark-line']
-    let deCanvasElement = null
-    for (const id of elementIds) {
-      deCanvasElement = document.getElementById(id)
-      if (deCanvasElement) break
+    // 定义图表元素ID前缀数组
+    // 图表在不同的显示页面可能有不同的ID前缀
+    const chartElementIds = ['enlarge-inner-content-', 'enlarge-inner-shape-']
+    let chartElement = null
+
+    // 查找图表元素
+    for (const idPrefix of chartElementIds) {
+      chartElement = document.getElementById(idPrefix + this.chart.id)
+      if (chartElement) break
     }
-    if (!deCanvasElement) {
-      this.unHighlightPoint()
-      this.hideTooltip()
-      this.setPaused(true)
-    }
-    deCanvasElement?.addEventListener('scroll', this.handleScroll.bind(this))
-    const chartElement = document.getElementById(this.chart.container)
-    chartElement.addEventListener('mouseenter', () => {
-      this.unHighlightPoint()
-      this.hideTooltip()
-      this.setPaused(true)
+
+    // 绑定鼠标进入和离开事件
+    chartElement?.addEventListener('mouseenter', () => this.paused())
+    chartElement?.addEventListener('mouseleave', () => {
+      this.paused()
+      this.resume()
     })
 
-    // 当鼠标离开 chart 时，检查状态
-    chartElement.addEventListener('mouseleave', () => {
-      if (deCanvasElement) {
-        this.setPaused(false)
+    // 定义鼠标滚轮事件处理函数
+    const handleMouseWheel = this.debounce(() => {
+      CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
+        instance.paused()
+        instance.resume()
+      })
+    }, 50)
+    // 获取目标元素，优先全屏预览
+    const targetDiv =
+      document.getElementById('de-preview-content') ||
+      document.getElementById('preview-canvas-main') ||
+      document.getElementById('dv-main-center') ||
+      document.getElementById('edit-canvas-main') ||
+      document.getElementById('canvas-mark-line') ||
+      document.getElementById('de-canvas-canvas-main')
+    // 绑定目标元素的事件
+    if (targetDiv) {
+      targetDiv.removeEventListener('wheel', handleMouseWheel)
+      targetDiv.addEventListener('wheel', handleMouseWheel)
+    }
+    // 页面可见性控制
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
+          instance.paused()
+        })
+      } else if (this.chartIsVisible) {
+        CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
+          instance.resume()
+        })
       }
     })
-
-    if (deCanvasElement) {
-      // 页面可见性控制
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-          this.unHighlightPoint()
-          this.hideTooltip()
-          this.setPaused(true)
-        } else if (this.chartIsVisible) {
-          this.setPaused(false)
-        }
-      })
-      // 元素可视性观察（交叉观察器）
-      this.setupIntersectionObserver()
-    }
-  }
-
-  private handleScroll() {
-    this.hideTooltip()
-    this.unHighlightPoint()
-    this.stop()
-    this.debounce(() => {
-      clearTimeout(this.scrollTimeout)
-      // 设置新的定时器，如果在 200 毫秒内没有新的滚动事件，就认为滚动停止
-      this.scrollTimeout = setTimeout(() => {
-        this.hideTooltip()
-        this.unHighlightPoint()
-        // 可视范围内才恢复轮播
-        if (this.chartIsVisible) {
-          this.setPaused(false)
-        }
-      }, 200)
-    }, 300)()
+    // 元素可视性观察（交叉观察器）
+    this.setupIntersectionObserver()
+    // 元素大小观察（大小观察器）
+    this.setupResizeObserver()
   }
 
   /**
    * 设置暂停状态
    * */
   private setPaused(state: boolean) {
-    this.debounce(() => {
-      this.states.paused = state
-      state ? this.stop() : this.startCarousel()
-      this.plot.chart.render(true)
-    }, 300)()
+    this.states.paused = state
+    state ? this.stop() : this.startCarousel()
   }
-
   /**
    * 设置交叉观察器
    * */
@@ -412,20 +478,46 @@ class ChartCarouselTooltip {
           entries => {
             entries.forEach(entry => {
               if (entry.intersectionRatio < 1) {
-                this.hideTooltip()
-                this.unHighlightPoint()
+                this.paused()
                 this.chartIsVisible = false
-                this.setPaused(true)
               } else {
+                this.paused()
                 this.chartIsVisible = true
-                this.setPaused(false)
+                this.resume()
               }
             })
           },
-          { threshold: 1 }
+          { threshold: [0, 0.1, 0.5, 1] }
         )
       )
       this.observers.get(this.plot.chart.ele.id).observe(this.plot.chart.ele)
+    }
+  }
+
+  /**
+   * 设置元素大小观察器
+   * 当元素全部可见时
+   * 图表的最外层元素
+   * @private
+   */
+  private setupResizeObserver() {
+    // 放大图表弹窗不需要监听
+    if (this.plot.chart.ele.id.includes('viewDialog')) return
+    // 创建防抖回调函数
+    const debouncedCallback = (entries: ResizeObserverEntry[]) => {
+      for (const entry of entries) {
+        if (entry.target) {
+          this.debounce(() => {
+            this.paused()
+            this.resume()
+          }, 200)
+        }
+      }
+    }
+    // 监听元素大小, 发生变化时重新轮播
+    if (!this.resizeObservers.get(this.plot.chart.ele.id)) {
+      this.resizeObservers.set(this.plot.chart.ele.id, new ResizeObserver(debouncedCallback))
+      this.resizeObservers.get(this.plot.chart.ele.id).observe(this.plot.chart.ele)
     }
   }
 

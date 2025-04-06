@@ -306,7 +306,7 @@ export class StackArea extends Area {
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': ['vPosition', 'fontSize', 'color', 'labelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter', 'show']
+    'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter', 'show', 'carousel']
   }
   axisConfig = {
     ...this['axisConfig'],

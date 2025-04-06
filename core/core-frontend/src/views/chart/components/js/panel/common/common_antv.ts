@@ -1704,6 +1704,41 @@ function configCarouselTooltip(plot, chart) {
     })
   })
 }
+/**
+ * 计算 Tooltip 的位置
+ * @param {Chart} chart - 图表实例
+ * @param {boolean} isCarousel - 是否为轮播模式
+ * @param {object} tooltipCtl - Tooltip 控制器
+ * @param {HTMLElement} chartElement - 图表元素
+ * @param {Event} event - 事件对象
+ * @param {boolen} enlargeElement - 放大弹窗
+ * @returns {{x: number, y: number}} - 计算后的 x 和 y 坐标
+ */
+function calculateTooltipPosition(
+  chart,
+  isCarousel,
+  tooltipCtl,
+  chartElement,
+  event,
+  enlargeElement
+) {
+  // 辅助函数: 根据不同图表类型计算 Tooltip 的y位置
+  const getTooltipY = () => {
+    return (
+      Number(chartElement.getBoundingClientRect().top) +
+      chartElement.getBoundingClientRect().height / 2
+    )
+    // return tooltipCtl.point.y + Number(chartElement.getBoundingClientRect().top)
+  }
+  if (isCarousel) {
+    return {
+      x: tooltipCtl.point.x + Number(chartElement.getBoundingClientRect().left),
+      y: getTooltipY()
+    }
+  } else {
+    return { x: event.clientX, y: event.clientY }
+  }
+}
 export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>(
   chart: Chart,
   plot: P
@@ -1714,10 +1749,16 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     return
   }
   // 图表容器，用于计算 tooltip 的位置
-  // 编辑时
-  let chartElement = document.getElementById('shape-id-' + chart.id)
-  // 公共连接页面
-  chartElement = chartElement || document.getElementById('enlarge-inner-content-' + chart.id)
+  // 获取图表元素，优先顺序：放大 > 预览 > 公共连接页面 > 默认
+  const chartElement =
+    document.getElementById('container-viewDialog-' + chart.id + '-common') ||
+    document.getElementById('container-preview-' + chart.id + '-common') ||
+    document.getElementById('enlarge-inner-content-' + chart.id) ||
+    document.getElementById('shape-id-' + chart.id)
+  // 是否是放大弹窗
+  const enlargeElement = chartElement?.id.includes('viewDialog')
+  // 轮播时tooltip的zIndex
+  const carousel_zIndex = enlargeElement ? '9999' : '1002'
   configCarouselTooltip(plot, chart)
   // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
   plot.options.tooltip.container.addEventListener('mouseenter', e => {
@@ -1736,13 +1777,15 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
       return
     }
     const event = plot.chart.interactions.tooltip?.context?.event
+    // 是否时轮播模式
     const isCarousel =
-      !event ||
-      event?.type === 'plot:leave' ||
-      ['pie', 'pie-rose', 'pie-donut'].includes(chart.type)
+      chart.customAttr?.tooltip?.carousel &&
+      (!event || // 事件触发时，使用event的client坐标
+        ['plot:leave', 'plot:mouseleave'].includes(event?.type) || //鼠标离开时，使用tooltipCtl.point
+        ['pie', 'pie-rose', 'pie-donut'].includes(chart.type)) // 饼图时，使用tooltipCtl.point
     plot.options.tooltip.showMarkers = isCarousel ? true : false
     const wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
-    wrapperDom.style.zIndex = isCarousel && wrapperDom ? '1' : '9999'
+    wrapperDom.style.zIndex = isCarousel && wrapperDom ? carousel_zIndex : '9999'
     if (tooltipCtl.tooltip) {
       // 处理视图放大后再关闭 tooltip 的 dom 被清除
       const container = tooltipCtl.tooltip.cfg.container
@@ -1761,15 +1804,14 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     plot.chart.getOptions().tooltip.follow = false
     tooltipCtl.title = Math.random().toString()
     // 当显示提示为事件触发时，使用event的client坐标，否则使用tooltipCtl.point 数据点的位置，在图表中，需要加上图表在绘制区的位置
-    const { x, y } = isCarousel
-      ? {
-          x: tooltipCtl.point.x + Number(chartElement.getBoundingClientRect().left),
-          y:
-            60 +
-            Number(chartElement.getBoundingClientRect().top) +
-            Number(chartElement.style.height.split('px')[0]) / 2
-        }
-      : { x: event.clientX, y: event.clientY }
+    const { x, y } = calculateTooltipPosition(
+      chart,
+      isCarousel,
+      tooltipCtl,
+      chartElement,
+      event,
+      enlargeElement
+    )
     plot.chart.getTheme().components.tooltip.x = x
     plot.chart.getTheme().components.tooltip.y = y
   })
