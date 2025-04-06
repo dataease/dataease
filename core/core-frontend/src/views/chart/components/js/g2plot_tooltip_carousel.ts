@@ -261,7 +261,7 @@ class ChartCarouselTooltip {
     // 全屏
     const isFullscreen = document.fullscreenElement !== null
     // 新页面或公共连接
-    const isNewPagePulicLink = document
+    const isNewPagePublicLink = document
       .getElementById('enlarge-inner-content-' + this.chart.id)
       ?.getBoundingClientRect()
     const isMobileEdit = document.getElementsByClassName('panel-mobile')?.length > 0
@@ -271,7 +271,7 @@ class ChartCarouselTooltip {
     }
     const rect = this.plot.chart.ele.getBoundingClientRect()
     return (
-      rect.top >= (isFullscreen || isNewPagePulicLink || isMobileEdit ? 0 : 64) &&
+      rect.top >= (isFullscreen || isNewPagePublicLink || isMobileEdit ? 0 : 64) &&
       rect.left >= 0 &&
       rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement.clientWidth)

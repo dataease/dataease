@@ -1711,7 +1711,7 @@ function configCarouselTooltip(plot, chart) {
  * @param {object} tooltipCtl - Tooltip 控制器
  * @param {HTMLElement} chartElement - 图表元素
  * @param {Event} event - 事件对象
- * @param {boolen} enlargeElement - 放大弹窗
+ * @param {boolean} enlargeElement - 放大弹窗
  * @returns {{x: number, y: number}} - 计算后的 x 和 y 坐标
  */
 function calculateTooltipPosition(
