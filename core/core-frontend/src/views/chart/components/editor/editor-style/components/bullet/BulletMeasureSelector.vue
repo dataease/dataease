@@ -25,7 +25,7 @@ const props = defineProps({
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
-  bulletForm: {
+  bulletMeasureForm: {
     bar: {
       measures: {
         fill: 'rgba(0,128,255,1)',
@@ -44,7 +44,11 @@ watch(
   { deep: true }
 )
 const changeStyle = (prop?) => {
-  emit('onMiscChange', { data: { bullet: { ...state.bulletForm } }, requestData: true }, prop)
+  emit(
+    'onMiscChange',
+    { data: { bullet: { ...state.bulletMeasureForm } }, requestData: true },
+    prop
+  )
 }
 
 const init = () => {
@@ -56,7 +60,7 @@ const init = () => {
     } else {
       customAttr = JSON.parse(chart.customAttr)
     }
-    state.bulletForm = defaultsDeep(customAttr.misc.bullet, cloneDeep(DEFAULT_MISC.bullet))
+    state.bulletMeasureForm = defaultsDeep(customAttr.misc.bullet, cloneDeep(DEFAULT_MISC.bullet))
   }
 }
 
@@ -66,7 +70,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form ref="bulletForm" :model="state.bulletForm" size="small" label-position="top">
+  <el-form
+    ref="bulletMeasureForm"
+    :model="state.bulletMeasureForm"
+    size="small"
+    label-position="top"
+    @submit.prevent
+  >
     <div v-if="selectorType === 'measure'">
       <div style="flex: 1; display: flex">
         <el-form-item
@@ -76,7 +86,7 @@ onMounted(() => {
           style="padding-right: 4px"
         >
           <el-color-picker
-            v-model="state.bulletForm.bar.measures.fill"
+            v-model="state.bulletMeasureForm.bar.measures.fill"
             :predefine="predefineColors"
             :effect="themes"
             @change="changeStyle('bar.measures.fill')"
@@ -92,7 +102,7 @@ onMounted(() => {
         >
           <el-input-number
             :effect="props.themes"
-            v-model="state.bulletForm.bar.measures.size"
+            v-model="state.bulletMeasureForm.bar.measures.size"
             :min="1"
             :max="100"
             size="small"

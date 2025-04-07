@@ -24,7 +24,7 @@ const props = defineProps({
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
-  bulletForm: {
+  bulletRangeForm: {
     bar: {
       ranges: {
         fill: 'rgba(0,128,255,0.5)',
@@ -52,19 +52,23 @@ watch(
 )
 
 const changeStyle = (prop?) => {
-  if (state.bulletForm.bar.ranges.showType === 'fixed' && state.rangeList.length) {
-    state.bulletForm.bar.ranges.fixedRange = cloneDeep(state.rangeList)
+  if (state.bulletRangeForm.bar.ranges.showType === 'fixed' && state.rangeList.length) {
+    state.bulletRangeForm.bar.ranges.fixedRange = cloneDeep(state.rangeList)
   }
-  emit('onMiscChange', { data: { bullet: { ...state.bulletForm } }, requestData: true }, prop)
+  emit('onMiscChange', { data: { bullet: { ...state.bulletRangeForm } }, requestData: true }, prop)
 }
 const changeRangeNumber = () => {
-  if (state.bulletForm.bar.ranges.fixedRangeNumber === null) {
-    state.bulletForm.bar.ranges.fixedRangeNumber = 1
+  if (state.bulletRangeForm.bar.ranges.fixedRangeNumber === null) {
+    state.bulletRangeForm.bar.ranges.fixedRangeNumber = 1
   }
-  if (state.rangeList.length > state.bulletForm.bar.ranges.fixedRangeNumber) {
-    state.rangeList = state.rangeList.slice(0, state.bulletForm.bar.ranges.fixedRangeNumber)
+  if (state.rangeList.length > state.bulletRangeForm.bar.ranges.fixedRangeNumber) {
+    state.rangeList = state.rangeList.slice(0, state.bulletRangeForm.bar.ranges.fixedRangeNumber)
   } else {
-    for (let i = state.rangeList.length; i < state.bulletForm.bar.ranges.fixedRangeNumber; i++) {
+    for (
+      let i = state.rangeList.length;
+      i < state.bulletRangeForm.bar.ranges.fixedRangeNumber;
+      i++
+    ) {
       state.rangeList.push({
         name: t('chart.symbolic_range') + (i + 1),
         fixedRangeValue: undefined,
@@ -94,17 +98,17 @@ const init = () => {
     } else {
       customAttr = JSON.parse(chart.customAttr)
     }
-    state.bulletForm = defaultsDeep(customAttr.misc.bullet, cloneDeep(DEFAULT_MISC.bullet))
+    state.bulletRangeForm = defaultsDeep(customAttr.misc.bullet, cloneDeep(DEFAULT_MISC.bullet))
     getRangeList()
   }
 }
 
 const getRangeList = () => {
   const range = []
-  if (state.bulletForm.bar.ranges?.fixedRange?.length) {
-    state.rangeList = state.bulletForm.bar.ranges.fixedRange
+  if (state.bulletRangeForm.bar.ranges?.fixedRange?.length) {
+    state.rangeList = state.bulletRangeForm.bar.ranges.fixedRange
   } else {
-    for (let i = 0; i < state.bulletForm.bar.ranges.fixedRangeNumber; i++) {
+    for (let i = 0; i < state.bulletRangeForm.bar.ranges.fixedRangeNumber; i++) {
       range.push({
         name: '区间' + (i + 1),
         fixedRangeValue: undefined,
@@ -116,7 +120,7 @@ const getRangeList = () => {
 }
 
 const changeShowType = () => {
-  if (state.bulletForm.bar.ranges.showType === 'dynamic') {
+  if (state.bulletRangeForm.bar.ranges.showType === 'dynamic') {
     changeStyle()
   } else {
     changeRangeItem()
@@ -129,7 +133,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form ref="bulletForm" :model="state.bulletForm" size="small" label-position="top">
+  <el-form
+    ref="bulletRangeForm"
+    :model="state.bulletRangeForm"
+    size="small"
+    label-position="top"
+    @submit.prevent
+  >
     <div v-if="selectorType === 'range'">
       <el-form-item
         :label="t('chart.radar_size')"
@@ -139,7 +149,7 @@ onMounted(() => {
       >
         <el-input-number
           :effect="props.themes"
-          v-model="state.bulletForm.bar.ranges.size"
+          v-model="state.bulletRangeForm.bar.ranges.size"
           :min="1"
           size="small"
           controls-position="right"
@@ -149,14 +159,14 @@ onMounted(() => {
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-radio-group
           :effect="themes"
-          v-model="state.bulletForm.bar.ranges.showType"
+          v-model="state.bulletRangeForm.bar.ranges.showType"
           @change="changeShowType()"
         >
           <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
           <el-radio :effect="themes" label="fixed">{{ t('chart.fix') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <div v-if="state.bulletForm.bar.ranges.showType === 'dynamic'">
+      <div v-if="state.bulletRangeForm.bar.ranges.showType === 'dynamic'">
         <div style="flex: 1; display: flex">
           <el-form-item
             :label="t('visualization.backgroundColor')"
@@ -165,7 +175,7 @@ onMounted(() => {
             style="padding-right: 4px"
           >
             <el-color-picker
-              v-model="state.bulletForm.bar.ranges.fill"
+              v-model="state.bulletRangeForm.bar.ranges.fill"
               :predefine="predefineColors"
               :effect="themes"
               @change="changeStyle('bar.ranges.fill')"
@@ -175,7 +185,7 @@ onMounted(() => {
           </el-form-item>
         </div>
       </div>
-      <div v-if="state.bulletForm.bar.ranges.showType === 'fixed'">
+      <div v-if="state.bulletRangeForm.bar.ranges.showType === 'fixed'">
         <div style="flex: 1; display: flex">
           <el-form-item
             style="width: 100%"
@@ -185,7 +195,7 @@ onMounted(() => {
           >
             <el-input-number
               :effect="themes"
-              v-model="state.bulletForm.bar.ranges.fixedRangeNumber"
+              v-model="state.bulletRangeForm.bar.ranges.fixedRangeNumber"
               :precision="0"
               :min="1"
               :max="9"

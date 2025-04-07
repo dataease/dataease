@@ -25,7 +25,7 @@ const props = defineProps({
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
-  bulletForm: {
+  bulletTargetForm: {
     bar: {
       target: {
         fill: 'rgb(0,0,0)',
@@ -46,10 +46,10 @@ watch(
   { deep: true }
 )
 const changeStyle = (prop?) => {
-  if (state.bulletForm.bar.target.value === null) {
-    state.bulletForm.bar.target.value = 1
+  if (state.bulletTargetForm.bar.target.value === null) {
+    state.bulletTargetForm.bar.target.value = 1
   }
-  emit('onMiscChange', { data: { bullet: { ...state.bulletForm } }, requestData: true }, prop)
+  emit('onMiscChange', { data: { bullet: { ...state.bulletTargetForm } }, requestData: true }, prop)
 }
 
 const init = () => {
@@ -61,7 +61,7 @@ const init = () => {
     } else {
       customAttr = JSON.parse(chart.customAttr)
     }
-    state.bulletForm = defaultsDeep(customAttr.misc.bullet, cloneDeep(DEFAULT_MISC.bullet))
+    state.bulletTargetForm = defaultsDeep(customAttr.misc.bullet, cloneDeep(DEFAULT_MISC.bullet))
   }
 }
 
@@ -71,19 +71,25 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form ref="bulletForm" :model="state.bulletForm" size="small" label-position="top">
+  <el-form
+    ref="bulletTargetForm"
+    :model="state.bulletTargetForm"
+    size="small"
+    label-position="top"
+    @submit.prevent
+  >
     <div v-if="selectorType === 'target'">
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-radio-group
           :effect="themes"
-          v-model="state.bulletForm.bar.target.showType"
+          v-model="state.bulletTargetForm.bar.target.showType"
           @change="changeStyle('bar.target.name')"
         >
           <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
           <el-radio :effect="themes" label="fixed">{{ t('chart.fix') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <div v-if="state.bulletForm.bar.target.showType === 'dynamic'">
+      <div v-if="state.bulletTargetForm.bar.target.showType === 'dynamic'">
         <div style="flex: 1; display: flex">
           <el-form-item
             :label="t('visualization.color')"
@@ -92,7 +98,7 @@ onMounted(() => {
             style="padding-right: 4px"
           >
             <el-color-picker
-              v-model="state.bulletForm.bar.target.fill"
+              v-model="state.bulletTargetForm.bar.target.fill"
               :predefine="predefineColors"
               :effect="themes"
               @change="changeStyle('bar.target.fill')"
@@ -108,7 +114,7 @@ onMounted(() => {
           >
             <el-input-number
               :effect="props.themes"
-              v-model="state.bulletForm.bar.target.size"
+              v-model="state.bulletTargetForm.bar.target.size"
               :min="1"
               :max="100"
               size="small"
@@ -118,7 +124,7 @@ onMounted(() => {
           </el-form-item>
         </div>
       </div>
-      <div v-if="state.bulletForm.bar.target.showType === 'fixed'">
+      <div v-if="state.bulletTargetForm.bar.target.showType === 'fixed'">
         <div style="flex: 1; display: flex">
           <el-form-item
             :label="t('chart.progress_target')"
@@ -128,7 +134,7 @@ onMounted(() => {
           >
             <el-input-number
               :effect="props.themes"
-              v-model="state.bulletForm.bar.target.value"
+              v-model="state.bulletTargetForm.bar.target.value"
               :min="1"
               size="small"
               controls-position="right"
@@ -144,7 +150,7 @@ onMounted(() => {
             style="padding-left: 4px"
           >
             <el-color-picker
-              v-model="state.bulletForm.bar.target.fill"
+              v-model="state.bulletTargetForm.bar.target.fill"
               :predefine="predefineColors"
               :effect="themes"
               @change="changeStyle('bar.target.fill')"
@@ -160,7 +166,7 @@ onMounted(() => {
           >
             <el-input-number
               :effect="props.themes"
-              v-model="state.bulletForm.bar.target.size"
+              v-model="state.bulletTargetForm.bar.target.size"
               :min="1"
               :max="100"
               size="small"
