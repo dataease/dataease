@@ -58,7 +58,7 @@ export const configHandler = config => {
     if (expired && config.url !== refreshUrl) {
       if (!getRefreshStatus()) {
         setRefreshStatus(true)
-        refreshApi()
+        refreshApi(Date.now())
           .then(res => {
             if (res?.data?.token) {
               userStore.setToken(res.data.token)
