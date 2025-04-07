@@ -2787,7 +2787,7 @@ export default {
     msg_center: 'Message center',
     to_be_filled: 'To be filled',
     the_minimum_value:
-      'The maximum value of the numerical interval must be greater than the minimum value',
+      'The maximum value of the numerical interval must be greater than or equal to the minimum value',
     before_querying:
       'The query condition is required, please set the option value before querying! ',
     here_or_click: 'Drag the field on the right here or click',

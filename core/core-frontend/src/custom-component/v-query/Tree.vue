@@ -66,26 +66,28 @@ const placeholderText = computed(() => {
   return ' '
 })
 const { config } = toRefs(props)
-
+const fromTreeSelectConfirm = ref(false)
 const multiple = ref(false)
-
 const treeSelectConfirm = val => {
   treeValue.value = val
   handleValueChange()
 }
 
 const handleValueChange = () => {
+  fromTreeSelectConfirm.value = true
   const value = Array.isArray(treeValue.value) ? [...treeValue.value] : treeValue.value
   if (!props.isConfig) {
     config.value.selectValue = Array.isArray(treeValue.value)
       ? [...treeValue.value]
       : treeValue.value
     nextTick(() => {
+      fromTreeSelectConfirm.value = false
       isConfirmSearch(config.value.id)
     })
     return
   }
   config.value.defaultValue = value
+  fromTreeSelectConfirm.value = false
 }
 
 const changeFromId = ref(false)
@@ -144,6 +146,39 @@ onMounted(() => {
     init()
   }, 0)
 })
+
+watch(
+  () => config.value.defaultValue,
+  val => {
+    if (props.isConfig) return
+    if (config.value.multiple) {
+      treeValue.value = Array.isArray(val) ? [...val] : val
+    }
+    nextTick(() => {
+      multiple.value = config.value.multiple
+    })
+  }
+)
+
+watch(
+  () => config.value.selectValue,
+  val => {
+    if (props.isConfig || fromTreeSelectConfirm.value) return
+
+    if (config.value.multiple) {
+      treeValue.value = Array.isArray(val) ? [...val] : val
+    }
+
+    nextTick(() => {
+      multiple.value = config.value.multiple
+      if (!config.value.multiple) {
+        treeValue.value = Array.isArray(config.value.selectValue)
+          ? [...config.value.selectValue]
+          : config.value.selectValue
+      }
+    })
+  }
+)
 
 const showWholePath = ref(false)
 watch(

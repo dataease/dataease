@@ -7,7 +7,13 @@ import { type TimeRange } from './time-format'
 import dayjs from 'dayjs'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useShortcuts } from './shortcuts'
-import { getThisStart, getThisEnd, getLastStart, getAround } from './time-format-dayjs'
+import {
+  getThisStart,
+  getThisEnd,
+  getLastStart,
+  getAround,
+  getCustomRange
+} from './time-format-dayjs'
 import VanPopup from 'vant/es/popup'
 import VanDatePicker from 'vant/es/date-picker'
 import VanTimePicker from 'vant/es/time-picker'
@@ -251,6 +257,7 @@ const disabledDate = val => {
     regularOrTrends,
     regularOrTrendsValue,
     relativeToCurrent,
+    relativeToCurrentRange,
     timeNum,
     relativeToCurrentType,
     around,
@@ -261,6 +268,7 @@ const disabledDate = val => {
     aroundRange
   } = config.value.timeRange || {}
   let isDynamicWindowTime = false
+
   if (startWindowTime.value && dynamicWindow) {
     isDynamicWindowTime =
       dayjs(startWindowTime.value)
@@ -336,26 +344,31 @@ const disabledDate = val => {
   }
 
   if (intervalType === 'timeInterval') {
-    const startTime =
-      regularOrTrends === 'fixed'
-        ? new Date(
-            dayjs(new Date(regularOrTrendsValue[0]))
-              .startOf(queryTimeType.value)
-              .format('YYYY/MM/DD HH:mm:ss')
-          )
-        : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
-    const endTime =
-      regularOrTrends === 'fixed'
-        ? new Date(
-            dayjs(new Date(regularOrTrendsValue[1]))
-              .endOf(queryTimeType.value)
-              .format('YYYY/MM/DD HH:mm:ss')
-          )
-        : getAround(
-            relativeToCurrentTypeRange,
-            aroundRange === 'f' ? 'subtract' : 'add',
-            timeNumRange
-          )
+    let endTime
+    if (relativeToCurrentRange === 'custom') {
+      startTime =
+        regularOrTrends === 'fixed'
+          ? new Date(
+              dayjs(new Date(regularOrTrendsValue[0]))
+                .startOf(queryTimeType.value)
+                .format('YYYY/MM/DD HH:mm:ss')
+            )
+          : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+      endTime =
+        regularOrTrends === 'fixed'
+          ? new Date(
+              dayjs(new Date(regularOrTrendsValue[1]))
+                .endOf(queryTimeType.value)
+                .format('YYYY/MM/DD HH:mm:ss')
+            )
+          : getAround(
+              relativeToCurrentTypeRange,
+              aroundRange === 'f' ? 'subtract' : 'add',
+              timeNumRange
+            )
+    } else {
+      ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
+    }
     return (
       timeStamp < +new Date(startTime) - 1000 ||
       timeStamp > +new Date(endTime) ||

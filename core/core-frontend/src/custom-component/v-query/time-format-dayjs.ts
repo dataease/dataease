@@ -65,7 +65,7 @@ function getCustomRange(relativeToCurrentRange: string): [Date, Date] {
       return [getLastStart('day'), getLastEnd('day')]
     case 'LastThreeDays':
       return [
-        new Date(dayjs().subtract(3, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')),
+        new Date(dayjs().subtract(2, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')),
         getThisEnd('day')
       ]
     case 'monthBeginning':

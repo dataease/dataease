@@ -2717,7 +2717,7 @@ export default {
     custom_sort: '自訂排序',
     msg_center: '訊息中心',
     to_be_filled: '待填報',
-    the_minimum_value: '數值區間最大值必須大於最小值',
+    the_minimum_value: '數值區間最大值必須大於等於最小值',
     before_querying: '查詢條件是必填項，請設定選項值後，再進行查詢！ ',
     here_or_click: '將右側的字段拖曳到這裡或點擊',
     add_query_condition: '新增查詢條件',

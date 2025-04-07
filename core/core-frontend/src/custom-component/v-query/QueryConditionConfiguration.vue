@@ -510,6 +510,24 @@ const setTreeDefault = () => {
   }
 }
 
+const setTreeDefaultBatch = ele => {
+  if (!!ele.checkedFields.length) {
+    let tableId = ''
+    fields.value.forEach(ele => {
+      if (
+        ele.checkedFields.includes(ele.componentId) &&
+        ele.checkedFieldsMap[ele.componentId] &&
+        !tableId
+      ) {
+        tableId = datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId
+      }
+    })
+    if (tableId && !ele.treeDatasetId) {
+      ele.treeDatasetId = tableId
+    }
+  }
+}
+
 const numTypeChange = () => {
   if (!curComponent.value.checkedFieldsMapArrNum[currentComponentId]) {
     curComponent.value.checkedFieldsMapArrNum[currentComponentId] = []
@@ -1045,10 +1063,12 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
     dynamicWindow,
     maximumSingleQuery,
     timeNumRange,
+    relativeToCurrentRange,
     relativeToCurrentTypeRange,
     aroundRange
   } = ele.timeRange || {}
   let isDynamicWindowTime = false
+
   const noTime = ele.timeGranularityMultiple.split('time').join('').split('range')[0]
   const queryTimeType = noTime === 'date' ? 'day' : (noTime as ManipulateType)
   if (startWindowTime && dynamicWindow) {
@@ -1120,22 +1140,27 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
   }
 
   if (intervalType === 'timeInterval') {
-    const startTime =
-      regularOrTrends === 'fixed'
-        ? new Date(
-            dayjs(new Date(regularOrTrendsValue[0])).startOf(noTime).format('YYYY/MM/DD HH:mm:ss')
-          )
-        : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
-    const endTime =
-      regularOrTrends === 'fixed'
-        ? new Date(
-            dayjs(new Date(regularOrTrendsValue[1])).endOf(noTime).format('YYYY/MM/DD HH:mm:ss')
-          )
-        : getAround(
-            relativeToCurrentTypeRange,
-            aroundRange === 'f' ? 'subtract' : 'add',
-            timeNumRange
-          )
+    let endTime
+    if (relativeToCurrentRange === 'custom') {
+      startTime =
+        regularOrTrends === 'fixed'
+          ? new Date(
+              dayjs(new Date(regularOrTrendsValue[0])).startOf(noTime).format('YYYY/MM/DD HH:mm:ss')
+            )
+          : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+      endTime =
+        regularOrTrends === 'fixed'
+          ? new Date(
+              dayjs(new Date(regularOrTrendsValue[1])).endOf(noTime).format('YYYY/MM/DD HH:mm:ss')
+            )
+          : getAround(
+              relativeToCurrentTypeRange,
+              aroundRange === 'f' ? 'subtract' : 'add',
+              timeNumRange
+            )
+    } else {
+      ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
+    }
 
     return (
       startWindowTime < +new Date(startTime) - 1000 ||
@@ -1242,7 +1267,10 @@ const validate = () => {
         return true
       }
       if (!ele.treeDatasetId) {
-        ElMessage.error(t('data_set.dataset_cannot_be'))
+        setTreeDefaultBatch(ele)
+        if (!ele.treeDatasetId) {
+          ElMessage.error(t('data_set.dataset_cannot_be'))
+        }
         return true
       }
 
@@ -1495,7 +1523,11 @@ const validate = () => {
       return true
     }
 
-    if (!['9', '22'].includes(ele.displayType) && ele.optionValueSource === 1 && !ele.field.id) {
+    if (
+      !['9', '22', '1', '7'].includes(ele.displayType) &&
+      ele.optionValueSource === 1 &&
+      !ele.field.id
+    ) {
       ElMessage.error(
         !ele.dataset?.id ? t('v_query.option_value_field') : t('v_query.the_data_set')
       )
@@ -1544,6 +1576,8 @@ const confirmClick = () => {
     cascadeArr = []
     queryElement.value.propValue = cloneDeep(conditions.value)
     snapshotStore.recordSnapshotCache('confirmClick')
+    curComponent.value.id = ''
+    relationshipChartIndex.value = 0
     nextTick(() => {
       emits('queryData')
     })
@@ -1854,7 +1888,7 @@ const handleCondition = (item, idx = 0) => {
   nextTick(() => {
     if (curComponent.value.displayType === '9') {
       oldDisplayType = '9'
-      handleRelationshipChart(idx)
+      handleRelationshipChart(idx, true)
       if (!curComponent.value.treeDatasetId && fields.value?.length) {
         nextTick(() => {
           setTreeDefault()
@@ -1910,7 +1944,7 @@ const sortComputed = computed(() => {
 const treeDialog = ref()
 const startTreeDesign = () => {
   treeDialog.value.init(
-    curComponent.value.dataset.fields.filter(ele => ele.groupType === 'd'),
+    curComponent.value.dataset.fields.filter(ele => ele.groupType === 'd' && ele.deType === 0),
     curComponent.value.treeFieldList
   )
 }
@@ -2217,8 +2251,8 @@ const setRelationBack = () => {
     checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
   }
 }
-const handleRelationshipChart = index => {
-  if (curComponent.value.treeCheckedList?.length) {
+const handleRelationshipChart = (index, initShip = false) => {
+  if (curComponent.value.treeCheckedList?.length && !initShip) {
     curComponent.value.treeCheckedList[relationshipChartIndex.value] = {
       checkedFields: [...curComponent.value.checkedFields],
       checkedFieldsMap: cloneDeep(curComponent.value.checkedFieldsMap)
@@ -3789,7 +3823,7 @@ defineExpose({
           flex-wrap: wrap;
           .search-tree {
             width: 100%;
-            height: 200px;
+            height: 216px;
             margin-top: 8px;
             position: relative;
             padding: 16px;
