@@ -316,6 +316,31 @@ const mergeCell = computed(() => {
   }
   return false
 })
+
+const preventInvalidKeydown = event => {
+  const invalidKeys = ['e', 'E', '+', '-', '.']
+  if (invalidKeys.includes(event.key)) {
+    event.preventDefault()
+  }
+}
+// 验证输入值
+const validateInput = (value, field) => {
+  if (value === '') {
+    state.basicStyleForm[field] = 1
+    return
+  }
+
+  let num = parseInt(value, 10)
+
+  if (isNaN(num)) {
+    num = 1
+  } else if (num < 1) {
+    num = 1
+  } else if (num > 100) {
+    num = 100
+  }
+  state.basicStyleForm[field] = num
+}
 onMounted(() => {
   init()
   getMapKey().then(res => {
@@ -1421,7 +1446,9 @@ onMounted(() => {
               :max="100"
               class="basic-input-number"
               :controls="false"
+              @input="validateInput($event, 'innerRadius')"
               @change="changeBasicStyle('innerRadius')"
+              @keydown="preventInvalidKeydown"
             >
               <template #suffix> % </template>
             </el-input>
@@ -1456,7 +1483,9 @@ onMounted(() => {
               :max="100"
               class="basic-input-number"
               :controls="false"
+              @input="validateInput($event, 'radius')"
               @change="changeBasicStyle('radius')"
+              @keydown="preventInvalidKeydown"
             >
               <template #suffix> % </template>
             </el-input>
