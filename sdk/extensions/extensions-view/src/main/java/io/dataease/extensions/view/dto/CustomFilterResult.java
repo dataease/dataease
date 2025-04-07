@@ -13,4 +13,10 @@ import java.util.Map;
 public class CustomFilterResult {
     private List<ChartExtFilterDTO> filterList;
     private Map<String, Object> context;
+    private boolean isDrill;// 组合图右轴判断是否下钻字段，其余地方没有用
+
+    public CustomFilterResult(List<ChartExtFilterDTO> filterList, Map<String, Object> context) {
+        this.filterList = filterList;
+        this.context = context;
+    }
 }

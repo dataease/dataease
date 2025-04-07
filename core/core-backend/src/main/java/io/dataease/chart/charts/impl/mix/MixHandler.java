@@ -57,7 +57,7 @@ public class MixHandler extends YoyChartHandler {
         boolean isDrill = filterResult
                 .getFilterList()
                 .stream()
-                .anyMatch(ele -> ele.getFilterType() == 1);
+                .anyMatch(ele -> ele.getFilterType() == 1) || filterResult.isDrill();
         if (StringUtils.equals((String) formatResult.getContext().get("isRight"), "isRight")) {
             var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
             var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
@@ -157,7 +157,12 @@ public class MixHandler extends YoyChartHandler {
         customFilter(view, originFilter.getFilterList(), formatResult2);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         ExtWhere2Str.extWhere2sqlOjb(sqlMeta, originFilter.getFilterList(), FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+        originFilter.setDrill(filterResult
+                .getFilterList()
+                .stream()
+                .anyMatch(ele -> ele.getFilterType() == 1));
         var rightResult = (T) super.calcChartResult(view, formatResult2, originFilter, sqlMap, sqlMeta, provider);
+
         try {
             //如果有同环比过滤,应该用原始sql
             var originSql = rightResult.getQuerySql();
