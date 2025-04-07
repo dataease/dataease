@@ -13,14 +13,14 @@ import icon_undo_outlined from '@/assets/svg/icon_undo_outlined.svg'
 import icon_redo_outlined from '@/assets/svg/icon_redo_outlined.svg'
 import dvRecoverOutlined from '@/assets/svg/dv-recover_outlined.svg'
 import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
-import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import {ElIcon, ElMessage, ElMessageBox} from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { ref, nextTick, computed, toRefs, onBeforeUnmount, onMounted } from 'vue'
-import { useEmbedded } from '@/store/modules/embedded'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { useAppStoreWithOut } from '@/store/modules/app'
-import { storeToRefs } from 'pinia'
+import {ref, nextTick, computed, toRefs, onBeforeUnmount, onMounted} from 'vue'
+import {useEmbedded} from '@/store/modules/embedded'
+import {dvMainStoreWithOut} from '@/store/modules/data-visualization/dvMain'
+import {snapshotStoreWithOut} from '@/store/modules/data-visualization/snapshot'
+import {useAppStoreWithOut} from '@/store/modules/app'
+import {storeToRefs} from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
@@ -35,10 +35,10 @@ import {
   findAllViewsId,
   initCanvasData
 } from '@/utils/canvasUtils'
-import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
+import {changeSizeWithScale} from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
-import { XpackComponent } from '@/components/plugin'
-import { useCache } from '@/hooks/web/useCache'
+import {XpackComponent} from '@/components/plugin'
+import {useCache} from '@/hooks/web/useCache'
 import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
 import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
@@ -46,29 +46,30 @@ import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabel.vue'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
-import { useEmitt } from '@/hooks/web/useEmitt'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import {useEmitt} from '@/hooks/web/useEmitt'
+import {useUserStoreWithOut} from '@/store/modules/user'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
-import { useI18n } from '@/hooks/web/useI18n'
-import { updatePublishStatus } from '@/api/visualization/dataVisualization'
+import {useI18n} from '@/hooks/web/useI18n'
+import {updatePublishStatus} from '@/api/visualization/dataVisualization'
+
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
+const {styleChangeTimes, snapshotIndex} = storeToRefs(snapshotStore)
 const resourceGroupOpt = ref(null)
 const resourceAppOpt = ref(null)
 const dvToolbarMain = ref(null)
-const { componentData, canvasStyleData, canvasViewInfo, dvInfo, editMode, appData } =
+const {componentData, canvasStyleData, canvasViewInfo, dvInfo, editMode, appData} =
   storeToRefs(dvMainStore)
 let scaleEdit = 100
-const { wsCache } = useCache('localStorage')
+const {wsCache} = useCache('localStorage')
 const dvModel = 'dataV'
 const outerParamsSetRef = ref(null)
 const fullScreeRef = ref(null)
 const userStore = useUserStoreWithOut()
-const { t } = useI18n()
+const {t} = useI18n()
 const emits = defineEmits(['recoverToPublished'])
 
 const props = defineProps({
@@ -165,12 +166,12 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
         leaf: true,
         id: dvInfo.value.pid || '0'
       }
-      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
+      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, {withPublish, status})
     }
     return
   }
   checkCanvasChangePre(() => {
-    saveResource({ withPublish, status })
+    saveResource({withPublish, status})
   })
 }
 
@@ -193,7 +194,7 @@ const saveResource = (checkParams?) => {
           )
         }
         if (appData.value) {
-          initCanvasData(dvInfo.value.id, { busiFlag: 'dataV' }, () => {
+          initCanvasData(dvInfo.value.id, {busiFlag: 'dataV', resourceTable: 'snapshot'}, () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
             resourceAppOpt.value.close()
             dvMainStore.setAppDataInfo(null)
@@ -212,7 +213,7 @@ const saveResource = (checkParams?) => {
 }
 
 const clearCanvas = () => {
-  dvMainStore.setCurComponent({ component: null, index: null })
+  dvMainStore.setCurComponent({component: null, index: null})
   dvMainStore.setComponentData([])
   snapshotStore.recordSnapshotCache('renderChart')
 }
@@ -263,7 +264,7 @@ const backHandler = (url: string) => {
     openHandler.value.invokeMethod(pm)
     return
   }
-  dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
+  dvMainStore.canvasStateChange({key: 'curPointArea', value: 'base'})
   wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   wsCache.set('dv-info-id', dvInfo.value.id)
   if (!!history.state.back) {
@@ -304,7 +305,7 @@ const openOuterParamsSet = () => {
     ElMessage.warning(t('components.add_components_first'))
     return
   }
-  if (!dvInfo.value.id) {
+  if (!dvInfo.value.id || dvInfo.value.dataState === 'prepare') {
     ElMessage.warning(t('components.current_page_first'))
     return
   }
@@ -339,7 +340,7 @@ const publishStatusChange = status => {
 
 const isIframe = computed(() => appStore.getIsIframe)
 const fullScreenPreview = () => {
-  dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
+  dvMainStore.canvasStateChange({key: 'curPointArea', value: 'base'})
   fullScreeRef.value.toggleFullscreen()
 }
 </script>
@@ -358,8 +359,10 @@ const fullScreenPreview = () => {
       <template v-else>
         <el-icon class="custom-el-icon back-icon" @click="backToMain()">
           <Icon name="icon_left_outlined"
-            ><icon_left_outlined class="svg-icon toolbar-icon"
-          /></Icon>
+          >
+            <icon_left_outlined class="svg-icon toolbar-icon"
+            />
+          </Icon>
         </el-icon>
         <div class="left-area">
           <span id="dv-canvas-name" class="name-area" @dblclick="editCanvasName">
@@ -372,7 +375,9 @@ const fullScreenPreview = () => {
                 :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
                 @click="undo()"
               >
-                <Icon name="icon_undo_outlined"><icon_undo_outlined class="svg-icon" /></Icon>
+                <Icon name="icon_undo_outlined">
+                  <icon_undo_outlined class="svg-icon"/>
+                </Icon>
               </el-icon>
             </el-tooltip>
             <el-tooltip effect="ndark" :content="$t('commons.reduction')" placement="bottom">
@@ -383,7 +388,9 @@ const fullScreenPreview = () => {
                 }"
                 @click="redo()"
               >
-                <Icon name="icon_redo_outlined"><icon_redo_outlined class="svg-icon" /></Icon>
+                <Icon name="icon_redo_outlined">
+                  <icon_redo_outlined class="svg-icon"/>
+                </Icon>
               </el-icon>
             </el-tooltip>
           </div>
@@ -508,8 +515,10 @@ const fullScreenPreview = () => {
               <el-dropdown-item @click="recoverToPublished" v-if="dvInfo.status === 2">
                 <el-icon class="handle-icon">
                   <Icon name="icon_left_outlined"
-                    ><dv-recover-outlined class="svg-icon toolbar-icon"
-                  /></Icon>
+                  >
+                    <dv-recover-outlined class="svg-icon toolbar-icon"
+                    />
+                  </Icon>
                 </el-icon>
                 {{ t('visualization.publish_recover') }}
               </el-dropdown-item>
@@ -519,8 +528,10 @@ const fullScreenPreview = () => {
               >
                 <el-icon class="handle-icon">
                   <Icon name="icon_left_outlined"
-                    ><dv-cancel-publish class="svg-icon toolbar-icon"
-                  /></Icon>
+                  >
+                    <dv-cancel-publish class="svg-icon toolbar-icon"
+                    />
+                  </Icon>
                 </el-icon>
                 {{ t('visualization.cancel_publish') }}
               </el-dropdown-item>
@@ -558,26 +569,29 @@ const fullScreenPreview = () => {
   </div>
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>
   <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
-  <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+  <outer-params-set ref="outerParamsSetRef"></outer-params-set>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="/>
 </template>
 
 <style lang="less" scoped>
 .toolbar-main {
   position: relative;
 }
+
 .preview-state-head {
   height: 0px !important;
   overflow: hidden;
   padding: 0;
   margin: 0;
 }
+
 .edit-button {
   right: 10px;
   top: 10px;
   position: absolute;
   z-index: 10;
 }
+
 .toolbar {
   height: @top-bar-height;
   white-space: nowrap;
@@ -587,17 +601,20 @@ const fullScreenPreview = () => {
   box-shadow: 0px 2px 4px 0px rgba(31, 35, 41, 0.12);
   display: flex;
   transition: 0.5s;
+
   .back-icon {
     margin-left: 20px;
     margin-top: 22px;
     font-size: 20px;
   }
+
   .left-area {
     margin-top: 8px;
     margin-left: 14px;
     width: 300px;
     display: flex;
     flex-direction: column;
+
     .name-area {
       position: relative;
       line-height: 24px;
@@ -607,6 +624,7 @@ const fullScreenPreview = () => {
       overflow: hidden;
       cursor: pointer;
       color: @dv-canvas-main-font-color;
+
       input {
         position: absolute;
         left: 0;
@@ -620,6 +638,7 @@ const fullScreenPreview = () => {
         height: 100%;
       }
     }
+
     .opt-area {
       width: 300px;
       text-align: left;
@@ -630,24 +649,28 @@ const fullScreenPreview = () => {
       }
     }
   }
+
   .middle-area {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   .right-area {
     width: 400px;
     display: flex;
     align-items: center;
     justify-content: right;
   }
+
   .custom-el-icon {
     margin-left: 15px;
     color: #ffffff;
     cursor: pointer;
     vertical-align: -0.2em;
   }
+
   .toolbar-icon {
     width: 20px;
     height: 20px;
@@ -658,6 +681,7 @@ const fullScreenPreview = () => {
   border-color: rgba(255, 255, 255, 0.3);
   color: #ffffff;
   background-color: transparent;
+
   &:hover,
   &:focus {
     background-color: #121a2c;

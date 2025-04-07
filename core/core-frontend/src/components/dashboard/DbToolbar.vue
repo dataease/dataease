@@ -146,7 +146,7 @@ const previewInner = () => {
 }
 
 const previewOuter = () => {
-  if (!dvInfo.value.id) {
+  if (!dvInfo.value.id || dvInfo.value.dataState === 'prepare') {
     ElMessage.warning(t('components.current_page_first'))
     return
   }
@@ -441,7 +441,7 @@ const openOuterParamsSet = () => {
     ElMessage.warning(t('components.add_components_first'))
     return
   }
-  if (!dvInfo.value.id) {
+  if (!dvInfo.value.id || dvInfo.value.dataState === 'prepare') {
     ElMessage.warning(t('components.current_page_first'))
     return
   }

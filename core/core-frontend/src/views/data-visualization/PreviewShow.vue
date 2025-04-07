@@ -80,7 +80,7 @@ const loadCanvasData = (dvId, weight?, ext?) => {
   dataInitState.value = false
   initMethod(
     dvId,
-    { busiFlag: 'dataV' },
+    { busiFlag: 'dataV', resourceTable: 'core' },
     function ({
       canvasDataResult,
       canvasStyleResult,
