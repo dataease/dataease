@@ -274,7 +274,7 @@ defineExpose({
     </el-aside>
     <el-container
       class="preview-area"
-      :class="{ 'no-data': !hasTreeData }"
+      :class="{ 'no-data': !state.dvInfo?.id }"
       v-loading="!dataInitState"
     >
       <div
