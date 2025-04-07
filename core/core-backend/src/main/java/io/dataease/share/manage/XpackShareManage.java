@@ -154,7 +154,6 @@ public class XpackShareManage {
         Long uid = AuthUtils.getUser().getUserId();
         QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("s.creator", uid);
-        queryWrapper.ne("v.status", 0);
         if (StringUtils.isNotBlank(request.getType())) {
             BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());
             if (ObjectUtils.isEmpty(busiResourceEnum)) {
@@ -208,7 +207,7 @@ public class XpackShareManage {
         return pos.stream().map(po ->
                 new XpackShareGridVO(
                         po.getShareId(), po.getResourceId(), po.getName(), po.getCreator().toString(),
-                        po.getTime(), po.getExp(), 9, po.getExtFlag(), po.getType())).toList();
+                        po.getTime(), po.getExp(), 9, po.getExtFlag(),po.getExtFlag1(), po.getType())).toList();
     }
 
     private XpackShareManage proxy() {

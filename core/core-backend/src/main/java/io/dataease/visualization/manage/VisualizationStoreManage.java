@@ -90,7 +90,7 @@ public class VisualizationStoreManage {
                 new VisualizationStoreVO(
                         po.getStoreId(), po.getResourceId(), po.getName(),
                         po.getType(), String.valueOf(po.getCreator()), ObjectUtils.isEmpty(po.getEditor()) ? null : String.valueOf(po.getEditor()),
-                        po.getEditTime(), 9, po.getExtFlag())).toList();
+                        po.getEditTime(), 9, po.getExtFlag(), po.getExtFlag1())).toList();
     }
 
     public IPage<StorePO> queryStorePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
@@ -112,7 +112,6 @@ public class VisualizationStoreManage {
         if (StringUtils.isNotBlank(info)) {
             queryWrapper.notExists(String.format(info, "s.resource_id"));
         }
-        queryWrapper.ne("v.status", 0);
         queryWrapper.orderBy(true, request.isAsc(), "v.update_time");
         Page<StorePO> page = new Page<>(goPage, pageSize);
         return coreStoreExtMapper.query(page, queryWrapper);
