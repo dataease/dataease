@@ -60,6 +60,7 @@ class ChartCarouselTooltip {
    * 创建或更新实例
    * */
   static manage(plot: Plot | DualAxes, chart: Chart, config: CarouselConfig) {
+    if (!isSupport(chart.type)) return null
     const container = chart.container
     let instance = CAROUSEL_MANAGER_INSTANCES.get(container)
 
