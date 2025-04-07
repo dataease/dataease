@@ -113,7 +113,7 @@
                     AND vlj.id = #{id}
                     LEFT JOIN snapshot_visualization_link_jump_info vlji ON vlj.id = vlji.link_jump_id
                     AND cdtf.id = vlji.source_field_id
-                    LEFT JOIN snapshot_data_visualization_info dvi ON vlji.target_dv_id = dvi.id
+                    LEFT JOIN data_visualization_info dvi ON vlji.target_dv_id = dvi.id
                     LEFT JOIN snapshot_visualization_link_jump_target_view_info vljtvi ON vlji.id = vljtvi.link_jump_info_id
                     <if test="!isDesktop">
                     LEFT JOIN xpack_share ON xpack_share.creator = #{uid}
@@ -164,7 +164,7 @@
                 AND vlj.id = #{id}
                 LEFT JOIN visualization_link_jump_info vlji ON vlj.id = vlji.link_jump_id
                 AND cdtf.id = vlji.source_field_id
-                LEFT JOIN snapshot_data_visualization_info dvi ON vlji.target_dv_id = dvi.id
+                LEFT JOIN data_visualization_info dvi ON vlji.target_dv_id = dvi.id
                 LEFT JOIN visualization_link_jump_target_view_info vljtvi ON vlji.id = vljtvi.link_jump_info_id
                 <if test="!isDesktop">
                 LEFT JOIN xpack_share ON xpack_share.creator = #{uid}
