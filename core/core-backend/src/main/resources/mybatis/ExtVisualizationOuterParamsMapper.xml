@@ -220,8 +220,8 @@
            SELECT DISTINCT
           	ccv.id as chartId,ccv.title as chartName,ccv.type as chartType
           FROM
-          	core_chart_view ccv
-          	INNER JOIN data_visualization_info dvi ON ccv.scene_id = dvi.id
+          	snapshot_core_chart_view ccv
+          	INNER JOIN snapshot_data_visualization_info dvi ON ccv.scene_id = dvi.id
           WHERE
           	ccv.table_id = #{dataset_group_id}
           	AND ccv.type != 'VQuery'
