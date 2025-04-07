@@ -925,7 +925,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       } else {
         this.hiddenListStatus = !this.hiddenListStatus
       }
-      this.setBatchOptStatus(false)
+      if (this.dvInfo.type === 'dashboard') {
+        this.setBatchOptStatus(false)
+      }
     },
     removeCurBatchComponentWithId(id) {
       for (let index = 0; index < this.curBatchOptComponents.length; index++) {
