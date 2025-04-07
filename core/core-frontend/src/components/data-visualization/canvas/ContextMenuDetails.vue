@@ -329,6 +329,7 @@ const editQueryCriteria = () => {
           <xpack-component
             :chart="curComponent"
             is-screen
+            resource-table="snapshot"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
           />
           <li @click="categoryChange('hidden')" v-show="showMoveMenu">
