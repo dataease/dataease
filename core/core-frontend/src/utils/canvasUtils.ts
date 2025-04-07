@@ -242,6 +242,12 @@ export function historyAdaptor(
   attachInfo,
   canvasVersion
 ) {
+  // 防止出现主画布canvasId 不一致情况
+  if (attachInfo.resourceTable === 'snapshot') {
+    canvasDataResult.forEach(componentItem => {
+      componentItem.canvasId = 'canvas-main'
+    })
+  }
   const curVersion = wsCache.get('x-de-execute-version')
   // 含有定时报告过滤项每次都需要匹配
   const reportFilterInfo = canvasInfo?.reportFilterInfo
