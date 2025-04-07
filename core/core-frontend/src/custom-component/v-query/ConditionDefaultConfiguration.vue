@@ -57,14 +57,14 @@ const props = defineProps({
 
 const showFlag = computed(() => props.showPosition === 'main')
 const { curComponent } = toRefs(props)
-const loadingDeault = ref(true)
+const loadingDefault = ref(true)
 watch(
   () => curComponent.value.id,
   val => {
     if (!val) return
-    loadingDeault.value = false
+    loadingDefault.value = false
     nextTick(() => {
-      loadingDeault.value = true
+      loadingDefault.value = true
     })
   },
   { immediate: true }
@@ -657,7 +657,7 @@ defineExpose({
       </template>
     </div>
     <div
-      v-if="curComponent.defaultValueCheck && loadingDeault"
+      v-if="curComponent.defaultValueCheck && loadingDefault"
       class="parameters"
       :class="dynamicTime && 'setting'"
     >
