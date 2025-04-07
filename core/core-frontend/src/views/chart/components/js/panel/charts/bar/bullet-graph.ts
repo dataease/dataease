@@ -14,7 +14,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { BulletOptions } from '@antv/g2plot'
-import { cloneDeep, isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash-es'
 import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
@@ -57,9 +57,14 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
     'basic-style-selector': ['radiusColumnBar', 'layout'],
     'label-selector': ['hPosition', 'fontSize', 'color', 'labelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
-    'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'showLengthLimit'],
+    'x-axis-selector': [
+      ...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'].filter(item => item != 'position'),
+      'showLengthLimit'
+    ],
     'y-axis-selector': [
-      ...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'].filter(item => item !== 'axisValue'),
+      ...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'].filter(
+        item => item !== 'axisValue' && item !== 'position'
+      ),
       'axisLabelFormatter'
     ],
     'legend-selector': ['showRange', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition']
@@ -68,64 +73,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
   async drawChart(drawOption: G2PlotDrawOptions<G2Bullet>): Promise<G2Bullet> {
     const { chart, container, action } = drawOption
     if (!chart.data?.data?.length) return
-    // 先根据维度分组，再根据指标字段组装成子弹图的格式
-    const groupedData = chart.data.data.reduce((acc, item) => {
-      const field = item.field
-      if (!acc[field]) {
-        acc[field] = []
-      }
-      acc[field].push(item)
-      return acc
-    }, {})
-    const result = []
-    // 组装子弹图数据，每个维度对应一个子弹图
-    Object.keys(groupedData).forEach(field => {
-      const items = groupedData[field]
-      const entry = {
-        title: field,
-        ranges: new Set(),
-        measures: new Set(),
-        target: new Set(),
-        dimensionList: items[0].dimensionList,
-        quotaList: []
-      }
-      items.forEach(item => {
-        const quotaId = item.quotaList[0]?.id
-        const v = item.value || 0
-        if (quotaId === chart.yAxis[0]?.id) {
-          entry.measures.add(v)
-        }
-        if (quotaId === chart.yAxisExt[0]?.id) {
-          entry.target.add(v)
-        }
-        if (quotaId === chart.extBubble[0]?.id) {
-          entry.ranges.add(v)
-        }
-        entry.quotaList.push(item.quotaList[0])
-      })
-      entry['minRanges'] = cloneDeep([...entry.ranges])
-      entry['originalRanges'] = [...entry.ranges]
-      entry['originalTarget'] = [...entry.target]
-      entry.ranges = [...entry.ranges]
-      entry.measures = [...entry.measures]
-      entry.target = [...entry.target]
-      result.push(entry)
-    })
-    // 由于图库存在目标大于区间数据时，目标值的显示与实际值的显示的刻度值不一致的问题，所以需要对目标值和区间值进行处理
-    // 需要将目标值和区间值的最大值设置为130%的目标值
-    const maxRanges = Math.max(...result.map(item => item.ranges[0] || 0))
-    const maxTarget = Math.max(...result.map(item => item.target[0] || 0))
-    // 如果maxRanges小于maxTarget30%,则maxRanges设置为maxTarget的130%,向下取整
-    const roundToNearestTen = (num: number) => {
-      return num % 10 < 5 ? Math.floor(num / 10) * 10 : Math.ceil(num / 10) * 10
-    }
-    const minRanges = maxTarget * 1.25
-    if (maxRanges < minRanges) {
-      result.forEach(item => {
-        item.ranges = [roundToNearestTen(minRanges)]
-        item.originalRanges = item.ranges
-      })
-    }
+    const result = mergeBulletData(chart)
     // 处理自定义区间
     const { bullet } = parseJson(chart.customAttr).misc
     if (bullet.bar.ranges.showType === 'fixed') {
@@ -149,7 +97,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
       targetField: 'target',
       xField: 'title',
       meta: {
-        ['title']: {
+        title: {
           type: 'cat'
         }
       },
@@ -219,9 +167,12 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
   protected configMisc(chart: Chart, options: BulletOptions): BulletOptions {
     const { bullet } = parseJson(chart.customAttr).misc
     const isDynamic = bullet.bar.ranges.showType === 'dynamic'
+    // 动态背景按大小升序
     const rangeColor = isDynamic
       ? bullet.bar.ranges.fill
-      : bullet.bar.ranges.fixedRange?.map(item => item.fill) || []
+      : bullet.bar.ranges.fixedRange
+          ?.sort((a, b) => (a.fixedRangeValue ?? 0) - (b.fixedRangeValue ?? 0))
+          .map(item => item.fill) || []
     return {
       ...options,
       color: {
@@ -277,16 +228,6 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
     }
 
     yAxisConfig.label.style = style
-    const maxRanges = Math.max(
-      ...options.data.map(item => item.ranges[item.ranges.length - 1] || 0)
-    )
-    const maxTarget = Math.max(
-      ...options.data.map(item => item.target[item.target.length - 1] || 0)
-    )
-    const maxMeasure = Math.max(
-      ...options.data.map(item => item.measures[item.measures.length - 1] || 0)
-    )
-    yAxisConfig.maxLimit = Math.max(maxRanges, maxTarget, maxMeasure)
     return tmpOptions
   }
 
@@ -480,4 +421,68 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
       this.configTooltip
     )(chart, options, {}, this)
   }
+}
+
+/**
+ * 组装子弹图数据
+ * @param chart
+ */
+function mergeBulletData(chart): any[] {
+  // 先根据维度分组，再根据指标字段组装成子弹图的格式
+  const groupedData = chart.data.data.reduce((acc, item) => {
+    const field = item.field
+    if (!acc[field]) {
+      acc[field] = []
+    }
+    acc[field].push(item)
+    return acc
+  }, {})
+  const result = []
+  // 组装子弹图数据，每个维度对应一个子弹图
+  Object.keys(groupedData).forEach(field => {
+    const items = groupedData[field]
+    // 初始化子弹图条目结构
+    const entry = {
+      title: field,
+      ranges: [],
+      measures: [],
+      target: [],
+      dimensionList: items[0].dimensionList,
+      quotaList: []
+    }
+
+    // 防止指标相同时无数据有可能会导致数据不一致
+    items.forEach(item => {
+      const quotaId = item.quotaList[0]?.id
+      const v = item.value || 0
+      if (quotaId === chart.yAxis[0]?.id) {
+        entry.measures.push(v)
+      }
+      if (quotaId === chart.yAxisExt[0]?.id) {
+        entry.target.push(v)
+      }
+      if (quotaId === chart.extBubble[0]?.id) {
+        entry.ranges.push(v)
+      }
+      entry.quotaList.push(item.quotaList[0])
+    })
+    // 对数据进行累加
+    const ranges = chart.extBubble[0]?.id
+      ? [].concat(entry.ranges?.reduce((acc, curr) => acc + curr, 0))
+      : []
+    const target = [].concat(entry.target?.reduce((acc, curr) => acc + curr, 0))
+    const measures = [].concat(entry.measures?.reduce((acc, curr) => acc + curr, 0))
+    const bulletData = {
+      ...entry,
+      measures: measures,
+      target: target,
+      ranges: ranges,
+      quotaList: [...entry.quotaList],
+      minRanges: ranges,
+      originalRanges: ranges,
+      originalTarget: target
+    }
+    result.push(bulletData)
+  })
+  return result
 }
