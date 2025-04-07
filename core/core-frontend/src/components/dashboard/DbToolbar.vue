@@ -272,15 +272,18 @@ const saveResource = (checkParams?) => {
             url
           )
         }
-
         if (appData.value) {
-          initCanvasData(dvInfo.value.id, { busiFlag: 'dashboard' }, () => {
-            useEmitt().emitter.emit('refresh-dataset-selector')
-            useEmitt().emitter.emit('calcData-all')
-            resourceAppOpt.value.close()
-            dvMainStore.setAppDataInfo(null)
-            snapshotStore.resetSnapshot()
-          })
+          initCanvasData(
+            dvInfo.value.id,
+            { busiFlag: 'dashboard', resourceTable: 'snapshot' },
+            () => {
+              useEmitt().emitter.emit('refresh-dataset-selector')
+              useEmitt().emitter.emit('calcData-all')
+              resourceAppOpt.value.close()
+              dvMainStore.setAppDataInfo(null)
+              snapshotStore.resetSnapshot()
+            }
+          )
         }
         if (checkParams.withPublish) {
           publishStatusChange(checkParams.status)

@@ -243,7 +243,7 @@ export function historyAdaptor(
   canvasVersion
 ) {
   // 防止出现主画布canvasId 不一致情况
-  if (attachInfo.resourceTable === 'snapshot') {
+  if (attachInfo?.resourceTable === 'snapshot') {
     canvasDataResult.forEach(componentItem => {
       componentItem.canvasId = 'canvas-main'
     })
@@ -912,7 +912,13 @@ export async function decompressionPre(params, callBack) {
     .catch(e => {
       console.error(e)
     })
-  historyAdaptor(deTemplateData.canvasStyleData, deTemplateData.componentData, null, null, null)
+  historyAdaptor(
+    deTemplateData.canvasStyleData,
+    deTemplateData.componentData,
+    null,
+    { resourceTable: 'snapshot' },
+    null
+  )
   callBack(deTemplateData)
 }
 
