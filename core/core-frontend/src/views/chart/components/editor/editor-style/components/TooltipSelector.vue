@@ -645,7 +645,7 @@ onMounted(() => {
                 v-model="state.tooltipForm.tooltipFormatter.unit"
                 :placeholder="t('chart.pls_select_field')"
                 size="small"
-                @change="changeTooltipAttr('tooltipFormatter.unit')"
+                @change="changeTooltipAttr('tooltipFormatter')"
               >
                 <el-option
                   v-for="item in getUnitTypeList(state.tooltipForm.tooltipFormatter.unitLanguage)"

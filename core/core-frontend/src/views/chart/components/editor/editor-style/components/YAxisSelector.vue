@@ -604,7 +604,7 @@ onMounted(() => {
                     v-model="state.axisForm.axisLabelFormatter.unit"
                     :placeholder="t('chart.pls_select_field')"
                     size="small"
-                    @change="changeAxisStyle('axisLabelFormatter.unit')"
+                    @change="changeAxisStyle('axisLabelFormatter')"
                   >
                     <el-option
                       v-for="item in getUnitTypeList(

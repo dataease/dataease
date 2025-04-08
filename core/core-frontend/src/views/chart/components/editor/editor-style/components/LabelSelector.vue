@@ -789,7 +789,7 @@ const isProgressBar = computed(() => {
                 :effect="themes"
                 v-model="state.labelForm.labelFormatter.unit"
                 :placeholder="$t('chart.pls_select_field')"
-                @change="changeLabelAttr('labelFormatter.unit')"
+                @change="changeLabelAttr('labelFormatter')"
               >
                 <el-option
                   v-for="item in getUnitTypeList(state.labelForm.labelFormatter.unitLanguage)"
@@ -946,7 +946,7 @@ const isProgressBar = computed(() => {
                   :effect="themes"
                   v-model="state.labelForm.totalFormatter.unit"
                   :placeholder="$t('chart.pls_select_field')"
-                  @change="changeLabelAttr('totalFormatter.unit')"
+                  @change="changeLabelAttr('totalFormatter')"
                 >
                   <el-option
                     v-for="item in getUnitTypeList(state.labelForm.totalFormatter.unitLanguage)"
@@ -1109,7 +1109,7 @@ const isProgressBar = computed(() => {
                   v-model="state.labelForm.quotaLabelFormatter.unit"
                   :placeholder="t('chart.pls_select_field')"
                   size="small"
-                  @change="changeLabelAttr('quotaLabelFormatter.unit')"
+                  @change="changeLabelAttr('quotaLabelFormatter')"
                 >
                   <el-option
                     v-for="item in getUnitTypeList(
@@ -1639,7 +1639,7 @@ const isProgressBar = computed(() => {
                   :effect="themes"
                   v-model="state.labelForm.labelFormatter.unit"
                   :placeholder="$t('chart.pls_select_field')"
-                  @change="changeLabelAttr('labelFormatter.unit')"
+                  @change="changeLabelAttr('labelFormatter')"
                 >
                   <el-option
                     v-for="item in getUnitTypeList(state.labelForm.labelFormatter.unitLanguage)"
@@ -1897,7 +1897,7 @@ const isProgressBar = computed(() => {
                   :effect="themes"
                   v-model="state.labelForm.labelFormatter.unit"
                   :placeholder="$t('chart.pls_select_field')"
-                  @change="changeLabelAttr('labelFormatter.unit')"
+                  @change="changeLabelAttr('labelFormatter')"
                 >
                   <el-option
                     v-for="item in getUnitTypeList(state.labelForm.labelFormatter.unitLanguage)"
