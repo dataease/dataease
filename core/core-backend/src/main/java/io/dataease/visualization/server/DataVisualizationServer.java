@@ -172,6 +172,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
             QueryWrapper<SnapshotDataVisualizationInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", dvId);
+            queryWrapper.in("status", Arrays.asList(CommonConstants.DV_STATUS.UNPUBLISHED, CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)); // 状态为0 未发布 和 2 已保存未发布的 不需要重置镜像
             if (!snapshotMapper.exists(queryWrapper)) {
                 coreVisualizationManage.dvSnapshotRecover(dvId);
             }
