@@ -3601,7 +3601,7 @@ export default {
     refresh: '刷新',
     time_tips: '单位: 分钟，范围: [0-1440],0代表无期限，自首次使用ticket访问开始',
     arg_val_tips: '请输入参数值',
-    arg_format_tips: '请使用JSON格式字符串，示例单值[argVal]，多值[argVal1, argVal2]',
+    arg_format_tips: '请使用JSON数组格式，示例单值[argVal]，多值[argVal1, argVal2]',
     param_error: 'Ticket 参数错误！',
     exp_error: 'Ticket 已过期！',
     disable_error: '已禁用分享功能，请联系管理员！',

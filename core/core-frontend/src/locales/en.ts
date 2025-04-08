@@ -3702,7 +3702,7 @@ export default {
       'Unit: minutes, range: [0-1440], 0 means no time limit, starting from the first access using the ticket',
     arg_val_tips: 'Please enter parameter values',
     arg_format_tips:
-      'Please use JSON format string, example single valued [argVal], multi valued [argVal1, argVal2]',
+      'Please use JSON array format, example single valued [argVal], multi valued [argVal1, argVal2]',
     param_error: 'Ticket parameter error!',
     exp_error: 'Ticket has expired!',
     disable_error: 'Sharing feature has been disabled, please contact administrator!',
