@@ -230,6 +230,7 @@ defineExpose({
     :style="freezeStyle"
   >
     <canvas-opt-bar
+      style="position: fixed"
       canvas-id="canvas-main"
       :canvas-style-data="state.canvasStylePreview || {}"
       :component-data="state.canvasDataPreview || []"
