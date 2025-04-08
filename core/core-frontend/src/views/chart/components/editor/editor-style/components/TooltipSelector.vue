@@ -86,6 +86,9 @@ const changeChartType = () => {
       })
     }
   })
+  if (formatter[0]) {
+    curSeriesFormatter.value = formatter[0]
+  }
   emit('onTooltipChange', { data: state.tooltipForm, render: false }, 'seriesTooltipFormatter')
   emit('onExtTooltipChange', extTooltip.value)
 }
@@ -109,6 +112,9 @@ const changeDataset = () => {
       })
     }
   })
+  if (formatter[0]) {
+    curSeriesFormatter.value = formatter[0]
+  }
 }
 
 const AXIS_PROP: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']
@@ -271,6 +277,9 @@ const init = () => {
       }, {})
       if (!curSeriesFormatter?.value || !seriesAxisMap[curSeriesFormatter.value?.seriesId]) {
         curSeriesFormatter.value = {}
+        if (formatter[0]) {
+          curSeriesFormatter.value = formatter[0]
+        }
       } else {
         curSeriesFormatter.value = seriesAxisMap[curSeriesFormatter.value?.seriesId]
       }
@@ -688,6 +697,7 @@ onMounted(() => {
       </el-form-item>
     </template>
     <div v-if="showSeriesTooltipFormatter">
+      {{ curSeriesFormatter }}
       <el-form-item>
         <el-select
           size="small"
