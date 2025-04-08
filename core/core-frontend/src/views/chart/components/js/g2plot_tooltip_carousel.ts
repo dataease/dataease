@@ -155,8 +155,9 @@ class ChartCarouselTooltip {
     setTimeout(() => {
       // 然后，恢复
       CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
-        instance.chartIsVisible = true
-        instance.resume()
+        if (instance.chartIsVisible) {
+          instance.resume()
+        }
       })
     }, 400)
   }
@@ -165,10 +166,13 @@ class ChartCarouselTooltip {
    * 暂停轮播
    * @param id
    */
-  static paused(id: string) {
+  static paused(id?: string) {
     CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
-      if (instance.chart.id === id) {
+      if (id && instance.chart.id === id) {
         setTimeout(() => instance.paused(), 200)
+      }
+      if (!id) {
+        instance.paused()
       }
     })
   }
@@ -332,7 +336,7 @@ class ChartCarouselTooltip {
     const piePoint = view
       .scale()
       .getGeometries()[0]
-      .elements.find(item => item.data.field === value)
+      ?.elements.find(item => item.data.field === value)
       ?.getModel()
     if (!piePoint) {
       return { x: 0, y: 0 }
@@ -365,6 +369,7 @@ class ChartCarouselTooltip {
    */
   private getDualAxesTooltipPosition(view, value: string) {
     const xScale = view.getXScale()
+    if (!xScale) return { x: 0, y: 0 }
     const values = xScale.values
     if (values.length < 2) {
       const point = view

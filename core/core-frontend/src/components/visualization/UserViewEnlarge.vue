@@ -325,6 +325,7 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   }
   nextTick(() => {
     initWatermark()
+    ChartCarouselTooltip.paused()
   })
 }
 
