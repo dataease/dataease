@@ -45,7 +45,8 @@ import {
 import ChartCarouselTooltip, {
   isPie,
   isLine,
-  isColumn
+  isColumn,
+  isMix
 } from '@/views/chart/components/js/g2plot_tooltip_carousel'
 
 const { t: tI18n } = useI18n()
@@ -1728,14 +1729,14 @@ function calculateTooltipPosition(
 ) {
   // 辅助函数: 根据不同图表类型计算 Tooltip 的y位置
   const getTooltipY = () => {
+    const top = Number(chartElement.getBoundingClientRect().top)
     if (isColumn(chart.type)) {
-      return (
-        60 +
-        Number(chartElement.getBoundingClientRect().top) +
-        chartElement.getBoundingClientRect().height / 2
-      )
+      return top + chartElement.getBoundingClientRect().height / 2
     }
-    return 60 + tooltipCtl.point.y + Number(chartElement.getBoundingClientRect().top)
+    if (isMix || isPie) {
+      return top + tooltipCtl.point.y
+    }
+    return top + tooltipCtl.point.y + 60
   }
   if (isCarousel) {
     return {

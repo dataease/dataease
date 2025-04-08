@@ -38,6 +38,14 @@ export function isPie(chartType: string) {
   return CHART_CATEGORY.PIE.includes(chartType)
 }
 
+/**
+ * 判断是否为组合图
+ * @param chartType
+ */
+export function isMix(chartType: string) {
+  return CHART_CATEGORY.MIX.includes(chartType)
+}
+
 const isSupport = (chartType: string) => {
   return Object.values(CHART_CATEGORY).some(category => category.includes(chartType))
 }
@@ -69,9 +77,9 @@ class ChartCarouselTooltip {
   private timers = { interval: null, carousel: null }
   private states = { paused: false, destroyed: false }
   // 图表可视性变化
-  private observers: Map<Element, IntersectionObserver> = new Map()
+  private observers: Map<string, IntersectionObserver> = new Map()
   // 图表元素大小变化
-  private resizeObservers: Map<Element, ResizeObserver> = new Map()
+  private resizeObservers: Map<string, ResizeObserver> = new Map()
   // 图表是否在可视范围内
   private chartIsVisible: boolean
 
@@ -96,7 +104,8 @@ class ChartCarouselTooltip {
     })
 
     if (instance) {
-      instance.destroy()
+      instance.update(plot, chart, config)
+      return instance
     }
     if (isSupport(chart.type)) {
       instance = new this(plot, chart, config)
@@ -114,7 +123,6 @@ class ChartCarouselTooltip {
     const instance = CAROUSEL_MANAGER_INSTANCES.get(container)
     if (instance) {
       instance.destroy()
-      CAROUSEL_MANAGER_INSTANCES.delete(container)
     }
   }
 
@@ -138,16 +146,19 @@ class ChartCarouselTooltip {
     // 首先，暂停并删除包含 'viewDialog' 的实例
     CAROUSEL_MANAGER_INSTANCES?.forEach((instance, key) => {
       if (instance.chart.id === id && instance.chart.container.includes('viewDialog')) {
-        CAROUSEL_MANAGER_INSTANCES.delete(key)
+        const dialogInstance = CAROUSEL_MANAGER_INSTANCES.get(key)
+        if (dialogInstance) {
+          dialogInstance.destroy()
+        }
       }
-      if (instance.chart.id === id) {
+    })
+    setTimeout(() => {
+      // 然后，恢复
+      CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
+        instance.chartIsVisible = true
         instance.resume()
-      }
-    })
-    // 然后，恢复
-    CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
-      instance.resume()
-    })
+      })
+    }, 400)
   }
 
   /**
@@ -489,28 +500,30 @@ class ChartCarouselTooltip {
    * 设置交叉观察器
    * */
   private setupIntersectionObserver() {
-    // 监听元素可见性变化,全部可见时开始轮播
-    if (!this.observers.get(this.plot.chart.ele.id)) {
-      this.observers.set(
-        this.plot.chart.ele.id,
-        new IntersectionObserver(
-          entries => {
-            entries.forEach(entry => {
-              if (entry.intersectionRatio < 1) {
-                this.paused()
-                this.chartIsVisible = false
-              } else {
-                this.paused()
-                this.chartIsVisible = true
-                this.resume()
-              }
-            })
-          },
-          { threshold: [0, 0.1, 0.5, 1] }
+    setTimeout(() => {
+      // 监听元素可见性变化,全部可见时开始轮播
+      if (!this.observers.get(this.plot.chart.ele.id)) {
+        this.observers.set(
+          this.plot.chart.ele.id,
+          new IntersectionObserver(
+            entries => {
+              entries.forEach(entry => {
+                if (entry.intersectionRatio < 1) {
+                  this.paused()
+                  this.chartIsVisible = false
+                } else {
+                  this.paused()
+                  this.chartIsVisible = true
+                  this.resume()
+                }
+              })
+            },
+            { threshold: [1] }
+          )
         )
-      )
-      this.observers.get(this.plot.chart.ele.id).observe(this.plot.chart.ele)
-    }
+        this.observers.get(this.plot.chart.ele.id).observe(this.plot.chart.ele)
+      }
+    }, 100)
   }
 
   /**
@@ -566,12 +579,26 @@ class ChartCarouselTooltip {
    * 销毁实例
    * */
   destroy() {
-    this.states.destroyed = true
     this.stop()
-    this.plot.chart.off('plot:mouseenter')
-    this.plot.chart.off('plot:mouseleave')
+    this.clearObserver()
+    this.states.destroyed = true
+    CAROUSEL_MANAGER_INSTANCES.delete(this.chart.container)
   }
-
+  /**
+   * 清除观察器
+   * */
+  clearObserver() {
+    const observer = this.observers.get(this.plot.chart.ele.id)
+    if (observer) {
+      observer.disconnect()
+      this.observers.delete(this.plot.chart.ele.id)
+    }
+    const resizeObservers = this.resizeObservers.get(this.plot.chart.ele.id)
+    if (resizeObservers) {
+      resizeObservers.disconnect()
+      this.resizeObservers.delete(this.plot.chart.ele.id)
+    }
+  }
   /** 暂停 */
   paused() {
     this.hideTooltip()
