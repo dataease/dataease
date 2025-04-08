@@ -3595,7 +3595,14 @@ export default {
     refresh: '刷新',
     time_tips: '單位: 分鐘，範圍: [0-1440],0代表無期限，自首次使用ticket訪問開始',
     arg_val_tips: '請輸入參數值',
-    arg_format_tips: '請使用JSON格式字符串，示例單值[argVal]，多值[argVal1, argVal2]'
+    arg_format_tips: '請使用JSON格式字符串，示例單值[argVal]，多值[argVal1, argVal2]',
+    param_error: 'Ticket 參數錯誤！',
+    exp_error: 'Ticket 已過期！',
+    disable_error: '已禁用分享功能，請聯系管理員！',
+    pe_require_error: '已設置有效期密碼必填，當前鏈接無效！',
+    iframe_error: '僅嵌入式版和企業版支持iframe方式內嵌公共鏈接！',
+    link_error: '鏈接不存在！',
+    link_exp_error: '鏈接已過期！'
   },
   pblink: {
     key_pwd: '請輸入密碼開啟連結',
