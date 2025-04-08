@@ -55,13 +55,12 @@ import SortPriorityEdit from '@/views/chart/components/editor/drag-item/componen
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
-import { cloneDeep, forEach, get } from 'lodash-es'
+import { cloneDeep, forEach, get, debounce, set, concat, keys } from 'lodash-es'
 import { deleteField, saveField } from '@/api/dataset'
 import { getWorldTree, listCustomGeoArea } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
-import { set, concat, keys } from 'lodash-es'
 import { PluginComponent } from '@/components/plugin'
 import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/chart'
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
@@ -1726,14 +1725,14 @@ const { y, isDragging } = useDraggable(el, {
   draggingElement: elDrag
 })
 const previewHeight = ref(0)
-const calcEle = () => {
+const calcEle = debounce(() => {
   nextTick(() => {
     previewHeight.value = (elDrag.value as HTMLDivElement).offsetHeight
     y.value = previewHeight.value / 2 + 200
   })
-}
+}, 500)
 
-const setCacheId = () => {
+const setCacheId = debounce(() => {
   nextTick(() => {
     // 富文本不使用cacheId
     if (
@@ -1745,7 +1744,7 @@ const setCacheId = () => {
       return
     view.value.tableId = cacheId as unknown as number
   })
-}
+}, 500)
 watch(
   () => curComponent.value,
   val => {
