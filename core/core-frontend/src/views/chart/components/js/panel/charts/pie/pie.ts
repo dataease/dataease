@@ -120,6 +120,14 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
         field: {
           type: 'cat'
         }
+      },
+      state: {
+        active: {
+          style: {
+            lineWidth: 2,
+            fillOpacity: 0.5
+          }
+        }
       }
     }
     const options = this.setupOptions(chart, initOptions)

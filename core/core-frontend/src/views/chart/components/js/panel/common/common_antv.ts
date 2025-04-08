@@ -42,7 +42,11 @@ import {
   qqMapStyleOptions,
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
-import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+import ChartCarouselTooltip, {
+  isPie,
+  isLine,
+  isColumn
+} from '@/views/chart/components/js/g2plot_tooltip_carousel'
 
 const { t: tI18n } = useI18n()
 
@@ -1724,11 +1728,14 @@ function calculateTooltipPosition(
 ) {
   // 辅助函数: 根据不同图表类型计算 Tooltip 的y位置
   const getTooltipY = () => {
-    return (
-      Number(chartElement.getBoundingClientRect().top) +
-      chartElement.getBoundingClientRect().height / 2
-    )
-    // return tooltipCtl.point.y + Number(chartElement.getBoundingClientRect().top)
+    if (isColumn(chart.type)) {
+      return (
+        60 +
+        Number(chartElement.getBoundingClientRect().top) +
+        chartElement.getBoundingClientRect().height / 2
+      )
+    }
+    return 60 + tooltipCtl.point.y + Number(chartElement.getBoundingClientRect().top)
   }
   if (isCarousel) {
     return {

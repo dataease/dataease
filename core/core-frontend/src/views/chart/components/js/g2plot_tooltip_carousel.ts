@@ -11,8 +11,33 @@ const CHART_CATEGORY = {
   COLUMN: ['bar', 'bar-stack', 'bar-group', 'bar-group-stack'],
   LINE: ['line', 'area', 'area-stack'],
   MIX: ['chart-mix', 'chart-mix-group', 'chart-mix-stack', 'chart-mix-dual-line'],
-  PIE: ['pie']
+  PIE: ['pie', 'pie-donut']
 }
+
+/**
+ * 判断是否为柱状图
+ * @param chartType
+ */
+export function isColumn(chartType: string) {
+  return CHART_CATEGORY.COLUMN.includes(chartType)
+}
+
+/**
+ * 判断是否为折线图
+ * @param chartType
+ */
+export function isLine(chartType: string) {
+  return CHART_CATEGORY.LINE.includes(chartType)
+}
+
+/**
+ * 判断是否为饼图
+ * @param chartType
+ */
+export function isPie(chartType: string) {
+  return CHART_CATEGORY.PIE.includes(chartType)
+}
+
 const isSupport = (chartType: string) => {
   return Object.values(CHART_CATEGORY).some(category => category.includes(chartType))
 }
@@ -126,30 +151,6 @@ class ChartCarouselTooltip {
   }
 
   /**
-   * 判断是否为柱状图
-   * @param chartType
-   */
-  static isColumn(chartType: string) {
-    return CHART_CATEGORY.COLUMN.includes(chartType)
-  }
-
-  /**
-   * 判断是否为折线图
-   * @param chartType
-   */
-  static isLine(chartType: string) {
-    return CHART_CATEGORY.LINE.includes(chartType)
-  }
-
-  /**
-   * 判断是否为饼图
-   * @param chartType
-   */
-  static isPie(chartType: string) {
-    return CHART_CATEGORY.PIE.includes(chartType)
-  }
-
-  /**
    * 暂停轮播
    * @param id
    */
@@ -232,6 +233,9 @@ class ChartCarouselTooltip {
         if (this.currentIndex > this.values.length) {
           this.currentIndex = 0
           this.hideTooltip()
+          this.plot.chart.showTooltip({ x: 0, y: 0 })
+          this.plot.chart.getController('tooltip').update()
+          this.unHighlightPoint(currentValue)
           this.timers.interval = setTimeout(() => processArray(), this.config.interval)
         } else {
           // 如果未遍历完，继续处理下一个数据点
@@ -284,7 +288,7 @@ class ChartCarouselTooltip {
   private calculatePosition(value: string) {
     const view = this.plot.chart.views?.[0] || this.plot.chart
     // 饼图特殊处理
-    if (['pie', 'pie-donut'].includes(this.chart.type)) {
+    if (CHART_CATEGORY.PIE.includes(this.chart.type)) {
       return this.getPieTooltipPosition(view, value)
     }
     if (this.plot instanceof DualAxes) {
@@ -318,9 +322,12 @@ class ChartCarouselTooltip {
       .scale()
       .getGeometries()[0]
       .elements.find(item => item.data.field === value)
-      .getModel()
+      ?.getModel()
+    if (!piePoint) {
+      return { x: 0, y: 0 }
+    }
     const coordinates = [
-      { x: piePoint.x[0], y: piePoint.y[0] },
+      { x: [].concat(piePoint.x)[0], y: piePoint.y[0] },
       { x: piePoint.x[0], y: piePoint.y[1] },
       { x: piePoint.x[1], y: piePoint.y[0] },
       { x: piePoint.x[1], y: piePoint.y[1] }
@@ -366,17 +373,28 @@ class ChartCarouselTooltip {
    * 高亮指定元素
    * */
   private highlightElement(value: string) {
+    if (CHART_CATEGORY.LINE.includes(this.chart.type)) return
     this.unHighlightPoint(value)
-    const activeType = this.chart.type === 'pie' ? 'selected' : 'inactive'
-    this.plot.setState(activeType, (data: any) => data[this.config.xField] === value, true)
+    this.plot.setState(
+      this.getHighlightType(),
+      (data: any) => data[this.config.xField] === value,
+      true
+    )
   }
 
   /**
    * 取消高亮
    * **/
   private unHighlightPoint(value?: string) {
-    const activeType = this.chart.type === 'pie' ? 'selected' : 'inactive'
-    this.plot.setState(activeType, (data: any) => data[this.config.xField] !== value, false)
+    if (CHART_CATEGORY.LINE.includes(this.chart.type)) return
+    this.plot.setState(
+      this.getHighlightType(),
+      (data: any) => data[this.config.xField] !== value,
+      false
+    )
+  }
+  private getHighlightType() {
+    return 'active'
   }
 
   /**
