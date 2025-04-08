@@ -88,7 +88,10 @@ const checkDialog = () => {
     }
   })
   document.querySelectorAll('.ed-popper').forEach(element => {
-    if (window.getComputedStyle(element).getPropertyValue('display') != 'none') {
+    if (
+      !element.classList?.contains('template-popper-tips') &&
+      window.getComputedStyle(element).getPropertyValue('display') != 'none'
+    ) {
       haveDialog = true
     }
   })
