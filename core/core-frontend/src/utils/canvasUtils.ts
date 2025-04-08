@@ -329,7 +329,7 @@ export function refreshOtherComponent(dvId, busiFlag) {
 }
 
 export function initCanvasDataPrepare(dvId, params, callBack) {
-  const busiFlag = params.busiFlag
+  const busiFlag = params.busiFlg
   const copyFlag = busiFlag != null && busiFlag.includes('-copy')
   const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
   const method = copyFlag ? findCopyResource : findById

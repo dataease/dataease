@@ -64,6 +64,12 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
     //数据来源 core 主表 snapshot 镜像表
     private String resourceTable = "core";
 
+    public DataVisualizationBaseRequest(Long id,String busiFlag,String resource) {
+        this.busiFlag = busiFlag;
+        this.resourceTable = resource;
+        super.setId(id);
+    }
+
     public DataVisualizationBaseRequest(Long id,String busiFlag) {
         this.busiFlag = busiFlag;
         super.setId(id);

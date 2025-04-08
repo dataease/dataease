@@ -152,7 +152,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
-        DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, busiFlag));
+        DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, busiFlag, CommonConstants.RESOURCE_TABLE.SNAPSHOT));
         if (result != null && result.getPid() == -1) {
             return result;
         } else {
@@ -521,7 +521,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         // 状态修改统一为后端操作：历史状态检查 如果 状态为 0（未发布） 或者 2（已发布未保存）则状态不变
         // 如果当前状态为 1 则状态修改为  2（已发布未保存）
         Integer curStatus = extDataVisualizationMapper.findDvInfoStats(dvId);
-        visualizationInfo.setStatus(curStatus == 1?CommonConstants.DV_STATUS.SAVED_UNPUBLISHED:curStatus);
+        visualizationInfo.setStatus(curStatus == 1 ? CommonConstants.DV_STATUS.SAVED_UNPUBLISHED : curStatus);
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
@@ -547,7 +547,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             coreVisualizationManage.removeDvCore(dvId);
             coreVisualizationManage.dvRestore(dvId);
             chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
-        }else if(CommonConstants.DV_STATUS.UNPUBLISHED == request.getStatus()){
+        } else if (CommonConstants.DV_STATUS.UNPUBLISHED == request.getStatus()) {
             chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
         }
     }
