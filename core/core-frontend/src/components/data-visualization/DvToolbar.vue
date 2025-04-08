@@ -696,3 +696,19 @@ const fullScreenPreview = () => {
   margin-left: 10px;
 }
 </style>
+
+<style lang="less">
+.menu-outer-dv_popper {
+  border: 1px solid rgba(67, 67, 67, 1) !important;
+  background-color: rgba(41, 41, 41, 1) !important;
+  .ed-dropdown-menu {
+    background-color: rgba(41, 41, 41, 1) !important;
+  }
+  .ed-dropdown-menu__item {
+    color: rgba(235, 235, 235, 1) !important;
+  }
+  .handle-icon {
+    color: rgba(166, 166, 166, 1) !important;
+  }
+}
+</style>

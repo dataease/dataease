@@ -298,65 +298,73 @@ const editQueryCriteria = () => {
         <el-divider class="custom-divider" />
         <li @click="deleteComponent">{{ t('visualization.delete') }}</li>
       </template>
-      <li
-        v-show="!(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')"
-        @click="decompose()"
-      >
-        {{ t('visualization.cancel_group') }}
-      </li>
-      <el-divider class="custom-divider" v-show="composeDivider" />
-      <template v-if="curComponent">
-        <template v-if="!curComponent['isLock'] && curComponent.category === 'hidden'">
-          <li @click="categoryChange('base')">{{ t('visualization.move_to_screen_show') }}</li>
-          <li @click="editQueryCriteria">{{ t('visualization.edit') }}</li>
-          <li v-if="activePosition === 'aside'" @click="rename">{{ t('visualization.rename') }}</li>
-          <li @click="copy">{{ t('visualization.copy') }}</li>
-          <li @click="paste">{{ t('visualization.paste') }}</li>
-          <el-divider class="custom-divider" />
-          <li @click="deleteComponent">{{ t('visualization.delete') }}</li>
+      <template v-else>
+        <li
+          v-show="
+            !(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')
+          "
+          @click="decompose()"
+        >
+          {{ t('visualization.cancel_group') }}
+        </li>
+        <el-divider class="custom-divider" v-show="composeDivider" />
+        <template v-if="curComponent">
+          <template v-if="!curComponent['isLock'] && curComponent.category === 'hidden'">
+            <li @click="categoryChange('base')">{{ t('visualization.move_to_screen_show') }}</li>
+            <li @click="editQueryCriteria">{{ t('visualization.edit') }}</li>
+            <li v-if="activePosition === 'aside'" @click="rename">
+              {{ t('visualization.rename') }}
+            </li>
+            <li @click="copy">{{ t('visualization.copy') }}</li>
+            <li @click="paste">{{ t('visualization.paste') }}</li>
+            <el-divider class="custom-divider" />
+            <li @click="deleteComponent">{{ t('visualization.delete') }}</li>
+          </template>
+          <template v-if="!curComponent['isLock'] && curComponent.category !== 'hidden'">
+            <li v-if="curComponent.component === 'VQuery'" @click="editQueryCriteria">
+              {{ t('visualization.edit') }}
+            </li>
+            <li @click="upComponent">{{ t('visualization.up_component') }}</li>
+            <li @click="downComponent">{{ t('visualization.down_component') }}</li>
+            <li @click="topComponent">{{ t('visualization.top_component') }}</li>
+            <li @click="bottomComponent">{{ t('visualization.bottom_component') }}</li>
+            <li @click="customSort" v-if="curComponent.component === 'DeTabs'">
+              {{ t('visualization.sort') }}
+            </li>
+            <xpack-component
+              :chart="curComponent"
+              is-screen
+              resource-table="snapshot"
+              jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
+            />
+            <li @click="categoryChange('hidden')" v-show="showMoveMenu">
+              {{ t('visualization.move_to_pop_area') }}
+            </li>
+            <el-divider class="custom-divider" />
+            <li @click="hide" v-show="curComponent['isShow']">{{ t('visualization.hidden') }}</li>
+            <li @click="show" v-show="!curComponent['isShow'] || isGroupArea">
+              {{ t('visualization.cancel_hidden') }}
+            </li>
+            <li @click="lock">{{ t('visualization.lock') }}</li>
+            <li v-if="curComponent['isLock'] || isGroupArea" @click="unlock">
+              {{ t('visualization.unlock') }}
+            </li>
+            <el-divider class="custom-divider" />
+            <li v-if="activePosition === 'aside'" @click="rename">
+              {{ t('visualization.rename') }}
+            </li>
+            <li @click="copy">{{ t('visualization.copy') }}</li>
+            <li @click="paste">{{ t('visualization.paste') }}</li>
+            <li @click="cut">{{ t('visualization.cut') }}</li>
+            <el-divider class="custom-divider" />
+            <li @click="deleteComponent">{{ t('visualization.delete') }}</li>
+          </template>
+          <li v-if="curComponent['isLock']" @click="unlock">{{ t('visualization.unlock') }}</li>
         </template>
-        <template v-if="!curComponent['isLock'] && curComponent.category !== 'hidden'">
-          <li v-if="curComponent.component === 'VQuery'" @click="editQueryCriteria">
-            {{ t('visualization.edit') }}
-          </li>
-          <li @click="upComponent">{{ t('visualization.up_component') }}</li>
-          <li @click="downComponent">{{ t('visualization.down_component') }}</li>
-          <li @click="topComponent">{{ t('visualization.top_component') }}</li>
-          <li @click="bottomComponent">{{ t('visualization.bottom_component') }}</li>
-          <li @click="customSort" v-if="curComponent.component === 'DeTabs'">
-            {{ t('visualization.sort') }}
-          </li>
-          <xpack-component
-            :chart="curComponent"
-            is-screen
-            resource-table="snapshot"
-            jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
-          />
-          <li @click="categoryChange('hidden')" v-show="showMoveMenu">
-            {{ t('visualization.move_to_pop_area') }}
-          </li>
-          <el-divider class="custom-divider" />
-          <li @click="hide" v-show="curComponent['isShow']">{{ t('visualization.hidden') }}</li>
-          <li @click="show" v-show="!curComponent['isShow'] || isGroupArea">
-            {{ t('visualization.cancel_hidden') }}
-          </li>
-          <li @click="lock">{{ t('visualization.lock') }}</li>
-          <li v-if="curComponent['isLock'] || isGroupArea" @click="unlock">
-            {{ t('visualization.unlock') }}
-          </li>
-          <el-divider class="custom-divider" />
-          <li v-if="activePosition === 'aside'" @click="rename">{{ t('visualization.rename') }}</li>
-          <li @click="copy">{{ t('visualization.copy') }}</li>
-          <li @click="paste">{{ t('visualization.paste') }}</li>
-          <li @click="cut">{{ t('visualization.cut') }}</li>
-          <el-divider class="custom-divider" />
-          <li @click="deleteComponent">{{ t('visualization.delete') }}</li>
-        </template>
-        <li v-if="curComponent['isLock']" @click="unlock">{{ t('visualization.unlock') }}</li>
+        <li v-else-if="!curComponent && !areaData.components.length" @click="paste">
+          {{ t('visualization.paste') }}
+        </li>
       </template>
-      <li v-else-if="!curComponent && !areaData.components.length" @click="paste">
-        {{ t('visualization.paste') }}
-      </li>
     </ul>
   </div>
 </template>
