@@ -3000,7 +3000,8 @@ export default {
     board_width: '線寬',
     board_radius: '圓角',
     enable_event_binding: '開啟事件綁定',
-    event_binding_tips: '事件綁定需退出編輯模式後生效，富文字、指標卡開啟綁定事件則內部點擊事件失效',
+    event_binding_tips:
+      '事件綁定需退出編輯模式後生效，富文字、指標卡開啟綁定事件則內部點擊事件失效',
     input_url_tips: '請輸入跳轉地址',
     edit_title: '編輯標題',
     custom_sort: '自定義排序',
