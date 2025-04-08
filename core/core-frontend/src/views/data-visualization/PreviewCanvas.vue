@@ -4,7 +4,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { initCanvasData, isMainCanvas, onInitReady } from '@/utils/canvasUtils'
+import { initCanvasData, onInitReady } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
 import { getOuterParamsInfo } from '@/api/visualization/outerParams'
@@ -125,22 +125,25 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
-      if (jumpParam || (!ignoreParams && attachParam)) {
-        await filterEnumMapSync(canvasDataResult)
-      }
-      if (jumpParam) {
-        dvMainStore.addViewTrackFilter(jumpParam)
-      }
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      if (!ignoreParams) {
-        state.initState = false
-        dvMainStore.addOuterParamsFilter(attachParam)
-        state.initState = true
+      if (state.dvInfo.status) {
+        if (jumpParam || (!ignoreParams && attachParam)) {
+          await filterEnumMapSync(canvasDataResult)
+        }
+        if (jumpParam) {
+          dvMainStore.addViewTrackFilter(jumpParam)
+        }
+        if (!ignoreParams) {
+          state.initState = false
+          dvMainStore.addOuterParamsFilter(attachParam)
+          state.initState = true
+        }
       }
+
       if (props.publicLinkStatus) {
         // 设置浏览器title为当前仪表板名称
         document.title = dvInfo.name

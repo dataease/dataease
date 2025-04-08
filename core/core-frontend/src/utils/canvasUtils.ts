@@ -32,8 +32,14 @@ import { deepCopy, nameTrim } from '@/utils/utils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 const dvMainStore = dvMainStoreWithOut()
-const { inMobile, dvInfo, canvasStyleData, componentData, canvasViewInfo, appData } =
-  storeToRefs(dvMainStore)
+const {
+  inMobile,
+  dvInfo: curDvInfo,
+  canvasStyleData,
+  componentData,
+  canvasViewInfo,
+  appData
+} = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
@@ -534,12 +540,12 @@ export function initCanvasDataMobile(dvId, params, callBack) {
 
 export function checkCanvasChangePre(callBack) {
   // do pre
-  const isUpdate = dvInfo.value.id && dvInfo.value.optType !== 'copy'
+  const isUpdate = curDvInfo.value.id && curDvInfo.value.optType !== 'copy'
   // 桌面版为单人模式不需要检查
   if (isUpdate && !isDesktop()) {
-    const params = { ...dvInfo.value, watermarkInfo: null }
+    const params = { ...curDvInfo.value, watermarkInfo: null }
     const tips =
-      (dvInfo.value.type === 'dashboard'
+      (curDvInfo.value.type === 'dashboard'
         ? t('work_branch.dashboard')
         : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips')
     checkCanvasChange(params).then(rsp => {
@@ -585,7 +591,7 @@ export async function canvasSave(callBack) {
     componentData: JSON.stringify(componentDataToSave),
     canvasViewInfo: canvasViewInfo.value,
     appData: appData.value,
-    ...dvInfo.value,
+    ...curDvInfo.value,
     checkVersion: wsCache.get('x-de-execute-version'),
     contentId: newContentId,
     watermarkInfo: null
@@ -604,15 +610,16 @@ export async function canvasSave(callBack) {
     ElMessage.error('数据集分组名称已存在')
     return
   }
-  nameTrim(dvInfo.value, t('components.length_1_64_characters'))
-  const method = dvInfo.value.id && dvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
+  nameTrim(curDvInfo.value, t('components.length_1_64_characters'))
+  const method =
+    curDvInfo.value.id && curDvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
   if (method === updateCanvas) {
     await dvNameCheck({
       opt: 'edit',
       nodeType: 'leaf',
-      name: dvInfo.value.name,
-      type: dvInfo.value.type,
-      id: dvInfo.value.id
+      name: curDvInfo.value.name,
+      type: curDvInfo.value.type,
+      id: curDvInfo.value.id
     })
   }
   method(canvasInfo).then(res => {
@@ -923,7 +930,7 @@ export async function decompressionPre(params, callBack) {
 }
 
 export function isDashboard() {
-  return dvInfo.value.type === 'dashboard'
+  return curDvInfo.value.type === 'dashboard'
 }
 
 export function trackBarStyleCheck(element, trackbarStyle, _scale, trackMenuNumber) {

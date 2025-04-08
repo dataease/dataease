@@ -109,22 +109,23 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
         await router.push('/DashboardEmpty')
         return
       }
-      if (jumpParam || attachParam) {
-        await filterEnumMapSync(canvasDataResult)
-      }
-      if (jumpParam) {
-        dvMainStore.addViewTrackFilter(jumpParam)
-      }
+      state.dvInfo = dvInfo
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
-      state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      state.initState = false
+      if (state.dvInfo.status) {
+        if (jumpParam || attachParam) {
+          await filterEnumMapSync(canvasDataResult)
+        }
+        if (jumpParam) {
+          dvMainStore.addViewTrackFilter(jumpParam)
+        }
 
-      dvMainStore.addOuterParamsFilter(attachParam)
-      state.initState = true
-
+        state.initState = false
+        dvMainStore.addOuterParamsFilter(attachParam)
+        state.initState = true
+      }
       if (props.publicLinkStatus) {
         // 设置浏览器title为当前仪表板名称
         document.title = dvInfo.name
