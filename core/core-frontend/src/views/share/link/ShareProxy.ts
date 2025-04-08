@@ -78,9 +78,11 @@ class ShareProxy {
     }
     const res = await request.post({ url, data: param })
     const proxyInfo: ProxyInfo = res.data as ProxyInfo
-    proxyInfo.uuid = uuid
-    if (this.pwd) {
-      proxyInfo.pwd = this.pwd
+    if (proxyInfo) {
+      proxyInfo.uuid = uuid
+      if (this.pwd) {
+        proxyInfo.pwd = this.pwd
+      }
     }
     return proxyInfo
   }
