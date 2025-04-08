@@ -712,9 +712,10 @@ onMounted(() => {
       :label="t('chart.legend_sort')"
     >
       <el-select
-        :effect="themes"
         v-model="state.legendForm.sort"
         size="small"
+        :effect="themes"
+        :disabled="!chart.xAxisExt?.length"
         @change="changeLegendSort"
       >
         <el-option :label="t('chart.none')" value="none" />
@@ -722,7 +723,6 @@ onMounted(() => {
         <el-option :label="t('chart.desc')" value="desc" />
         <el-option
           value="custom"
-          :disabled="!chart.xAxisExt?.length"
           :label="t('visualization.custom_sort')"
           @click="changeLegendSort('custom')"
         />
