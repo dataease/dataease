@@ -3085,7 +3085,7 @@ export default {
     board_radius: 'Border Radius',
     enable_event_binding: 'Enable Event Binding',
     event_binding_tips:
-      'Event binding will take effect after exiting edit mode. If rich text has event binding enabled, internal click events will be disabled',
+      'Event bindings will take effect after exiting edit mode. When rich text or metric cards have event binding enabled, their internal click events will be disabled.',
     input_url_tips: 'Please enter the redirect URL',
     edit_title: 'Edit Title',
     custom_sort: 'Custom Sort',
