@@ -697,7 +697,6 @@ onMounted(() => {
       </el-form-item>
     </template>
     <div v-if="showSeriesTooltipFormatter">
-      {{ curSeriesFormatter }}
       <el-form-item>
         <el-select
           size="small"
