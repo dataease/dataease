@@ -416,25 +416,22 @@ const componentMoveIn = component => {
     if (editableTabsValue.value === tabItem.name) {
       //获取主画布当前组件的index
       if (isDashboard()) {
-        const curIndex = findComponentIndexByIdWithFilterHidden(component.id)
-        if (curIndex > -1) {
-          eventBus.emit('removeMatrixItem-canvas-main', curIndex)
-          dvMainStore.setCurComponent({ component: null, index: null })
-          component.canvasId = element.value.id + '--' + tabItem.name
-          const refInstance = currentInstance.refs['tabCanvas_' + index][0]
-          if (refInstance) {
-            const matrixBase = refInstance.getBaseMatrixSize() //矩阵基础大小
-            canvasChangeAdaptor(component, matrixBase)
-            component.x = 1
-            component.y = 200
-            component.style.left = 0
-            component.style.top = 0
-            tabItem.componentData.push(component)
-            refInstance.addItemBox(component) //在适当的时候初始化布局组件
-            nextTick(() => {
-              refInstance.canvasInitImmediately()
-            })
-          }
+        eventBus.emit('removeMatrixItemById-canvas-main', component.id)
+        dvMainStore.setCurComponent({ component: null, index: null })
+        component.canvasId = element.value.id + '--' + tabItem.name
+        const refInstance = currentInstance.refs['tabCanvas_' + index][0]
+        if (refInstance) {
+          const matrixBase = refInstance.getBaseMatrixSize() //矩阵基础大小
+          canvasChangeAdaptor(component, matrixBase)
+          component.x = 1
+          component.y = 200
+          component.style.left = 0
+          component.style.top = 0
+          tabItem.componentData.push(component)
+          refInstance.addItemBox(component) //在适当的时候初始化布局组件
+          nextTick(() => {
+            refInstance.canvasInitImmediately()
+          })
         }
       } else {
         const curIndex = findComponentIndexById(component.id)
