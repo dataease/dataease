@@ -153,7 +153,7 @@ const htmlToImage = () => {
   useEmitt().emitter.emit('l7-prepare-picture', config.value.id)
   downLoading.value = true
   setTimeout(() => {
-    const vueDom = componentWrapperInnerRef.value
+    const vueDom = document.getElementById(viewDemoInnerId.value)
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value / 100)
     downloadCanvas2('img', vueDom, '图表', () => {
       // do callback

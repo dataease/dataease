@@ -695,7 +695,7 @@ const canvas2Picture = (pictureData, online) => {
   mapDom.appendChild(imgDom)
 }
 const preparePicture = id => {
-  if (id !== curView.id) {
+  if (id !== curView?.id) {
     return
   }
   const chartView = chartViewManager.getChartView(curView.render, curView.type)
@@ -719,7 +719,7 @@ const preparePicture = id => {
   }
 }
 const unPreparePicture = id => {
-  if (id !== curView.id) {
+  if (id !== curView?.id) {
     return
   }
   const chartView = chartViewManager.getChartView(curView.render, curView.type)
