@@ -19,7 +19,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { parseJson } from '@/views/chart/components/js/util'
-import { defaultsDeep, cloneDeep } from 'lodash-es'
+import { defaultsDeep, cloneDeep, concat } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
@@ -187,32 +187,19 @@ const linkageActive = () => {
   })
 }
 const checkSelected = param => {
-  // 当前图表是双轴图时
-  const chartMixFieldIds = []
-  if (view.value.type.includes('chart-mix')) {
-    chartData.value?.left?.fields?.forEach(field => {
-      if (!chartMixFieldIds.includes(field.id)) {
-        chartMixFieldIds.push(field.id)
-      }
-    })
-    chartData.value?.right?.fields?.forEach(field => {
-      if (!chartMixFieldIds.includes(field.id)) {
-        chartMixFieldIds.push(field.id)
-      }
-    })
-  }
   // 获取当前视图的所有联动字段ID
   const mappingFieldIds = Array.from(
     new Set(
-      chartMixFieldIds.length
-        ? chartMixFieldIds
+      (view.value.type.includes('chart-mix')
+        ? concat(chartData.value?.left?.fields, chartData.value?.right?.fields)
         : chartData.value?.fields
-            .map(item => item.id)
-            .filter(id =>
-              Object.keys(nowPanelTrackInfo.value).some(
-                key => key.startsWith(view.value.id) && key.split('#')[1] === id
-              )
-            )
+      )
+        .map(item => item?.id)
+        .filter(id =>
+          Object.keys(nowPanelTrackInfo.value).some(
+            key => key.startsWith(view.value.id) && key.split('#')[1] === id
+          )
+        )
     )
   )
   // 维度字段匹配
