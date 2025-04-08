@@ -125,8 +125,10 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
-      if (jumpParam) {
+      if (jumpParam || (!ignoreParams && attachParam)) {
         await filterEnumMapSync(canvasDataResult)
+      }
+      if (jumpParam) {
         dvMainStore.addViewTrackFilter(jumpParam)
       }
       state.canvasDataPreview = canvasDataResult

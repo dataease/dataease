@@ -109,8 +109,10 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
         await router.push('/DashboardEmpty')
         return
       }
-      if (jumpParam) {
+      if (jumpParam || (!ignoreParams && attachParam)) {
         await filterEnumMapSync(canvasDataResult)
+      }
+      if (jumpParam) {
         dvMainStore.addViewTrackFilter(jumpParam)
       }
       state.canvasDataPreview = canvasDataResult
