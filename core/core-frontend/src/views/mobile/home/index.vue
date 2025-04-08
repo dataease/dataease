@@ -149,6 +149,7 @@ onMounted(() => {
 })
 
 const handleCellClick = ele => {
+  if (ele.extFlag1 === 0) return
   wsCache.set('activeTab', activeTab.value)
   router.push({
     path: '/panel/mobile',
@@ -183,6 +184,7 @@ const formatterTime = val => {
           @click="handleCellClick(ele)"
           v-for="ele in state.tableData"
           :key="ele.id"
+          :style="{ color: ele.extFlag1 === 0 ? '#bbbfc4' : '#1f2329' }"
           size="large"
           :label="ele.name"
           :time="formatterTime(ele.lastEditTime || ele.time)"
