@@ -161,8 +161,8 @@ const doUseCache = flag => {
 
 const initLocalCanvasData = callBack => {
   const { resourceId, opt, sourcePid } = state
-  const busiFlg = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
-  initCanvasData(resourceId, { busiFlg, resourceTable: 'snapshot' }, function () {
+  const busiFlag = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
+  initCanvasData(resourceId, { busiFlag, resourceTable: 'snapshot' }, function () {
     dataInitState.value = true
     if (dvInfo.value && opt === 'copy') {
       dvInfo.value.dataState = 'prepare'

@@ -15,6 +15,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
+import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
 const { t } = useI18n()
 const styleActiveNames = ref(['basicStyle'])
 const dvMainStore = dvMainStoreWithOut()
@@ -331,6 +332,7 @@ const onTitleChange = () => {
               />
             </el-form-item>
             <el-form-item
+              v-if="!mobileInPc && isDashboard() && isMainCanvas(element.canvasId)"
               class="form-item margin-bottom-8"
               :class="'form-item-' + themes"
               :label="t('visualization.query_position')"

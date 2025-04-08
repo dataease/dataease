@@ -1,7 +1,11 @@
 <template>
   <div
     class="shape"
-    :class="{ 'shape-group-area': isGroupArea, 'freeze-component': freezeFlag }"
+    :class="{
+      'shape-group-area': isGroupArea,
+      'freeze-component': freezeFlag,
+      'freeze-component-fullscreen': freezeFlag && fullscreenFlag
+    }"
     ref="shapeInnerRef"
     :id="domId"
     v-loading="downLoading"
@@ -177,7 +181,8 @@ const {
   tabMoveOutComponentId,
   mobileInPc,
   mainScrollTop,
-  hiddenListStatus
+  hiddenListStatus,
+  fullscreenFlag
 } = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emit = defineEmits([
@@ -1332,5 +1337,9 @@ onMounted(() => {
   position: fixed;
   z-index: 1;
   top: 66px !important;
+}
+
+.freeze-component-fullscreen {
+  top: 5px !important;
 }
 </style>
