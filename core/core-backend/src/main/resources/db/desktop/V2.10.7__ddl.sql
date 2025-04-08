@@ -129,7 +129,7 @@ CREATE TABLE `snapshot_visualization_link_jump_target_view_info` (
                                                                      `copy_from` bigint DEFAULT NULL COMMENT '复制来源',
                                                                      `copy_id` bigint DEFAULT NULL COMMENT '复制来源ID',
                                                                      `target_type` varchar(50) DEFAULT 'view' COMMENT '联动目标类型 view 图表 filter 过滤组件 outParams 外部参数',
-                                                                     PRIMARY KEY (`target_id`) USING BTREE
+                                                                     PRIMARY KEY (`target_id`)
 );
 
 -- ----------------------------
@@ -177,7 +177,7 @@ CREATE TABLE `snapshot_visualization_outer_params` (
                                                        `remark` varchar(255) DEFAULT NULL COMMENT '备注',
                                                        `copy_from` varchar(50) DEFAULT NULL COMMENT '复制来源',
                                                        `copy_id` varchar(50) DEFAULT NULL COMMENT '复制来源ID',
-                                                       PRIMARY KEY (`params_id`) USING BTREE
+                                                       PRIMARY KEY (`params_id`)
 );
 
 -- ----------------------------
@@ -194,7 +194,7 @@ CREATE TABLE `snapshot_visualization_outer_params_info` (
                                                             `required` tinyint(1) DEFAULT '0' COMMENT '是否必填',
                                                             `default_value` varchar(255) DEFAULT NULL COMMENT '默认值 JSON格式',
                                                             `enabled_default` tinyint(1) DEFAULT '0' COMMENT '是否启用默认值',
-                                                            PRIMARY KEY (`params_info_id`) USING BTREE
+                                                            PRIMARY KEY (`params_info_id`)
 );
 
 DROP TABLE IF EXISTS `snapshot_visualization_outer_params_target_view_info`;
