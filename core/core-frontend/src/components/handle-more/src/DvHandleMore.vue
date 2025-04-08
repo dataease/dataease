@@ -140,7 +140,7 @@ const menuDisabledCheck = ele => {
   display: none !important;
 }
 .menu-more-dv_popper {
-  width: 120px;
+  min-width: 120px;
   margin-top: -2px !important;
 }
 

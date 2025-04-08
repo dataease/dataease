@@ -994,7 +994,7 @@ defineExpose({
 
 <style lang="less">
 .menu-outer-dv_popper {
-  width: 140px;
+  min-width: 140px;
   margin-top: -2px !important;
 
   .ed-icon {
