@@ -101,11 +101,13 @@ watch(
     })
   }
 )
-
+let oldId
 watch(
   () => config.value.treeFieldList,
-  () => {
-    if (changeFromId.value) return
+  val => {
+    let idStr = val.map(ele => ele.id).join('-')
+    if (changeFromId.value || idStr === oldId) return
+    oldId = idStr
     treeValue.value = config.value.multiple ? [] : undefined
     config.value.defaultValue = config.value.multiple ? [] : undefined
     config.value.selectValue = config.value.multiple ? [] : undefined
@@ -127,6 +129,7 @@ const init = () => {
     treeValue.value = plus ? [] : undefined
   }
   nextTick(() => {
+    oldId = config.value.treeFieldList?.map(ele => ele.id).join('-')
     multiple.value = config.value.multiple
   })
   getTreeOption()
