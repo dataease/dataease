@@ -195,7 +195,7 @@ const showCustomSort = item => {
 const showSort = () => {
   const { type: chartType } = props.chart
   const { type: propType } = props
-  const notShowSort = ['word-cloud', 'stock-line'].includes(chartType)
+  const notShowSort = ['word-cloud', 'stock-line', 'treemap'].includes(chartType)
   if (notShowSort || propType === 'extColor') {
     return false
   }

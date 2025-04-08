@@ -320,7 +320,9 @@ const showSort = computed(() => {
     props.type !== 'extLabel' &&
     props.type !== 'extTooltip' &&
     props.type !== 'extBubble' &&
-    !['indicator', 'liquid', 'gauge', 'word-cloud', 'stock-line'].includes(chart.value.type) &&
+    !['indicator', 'liquid', 'gauge', 'word-cloud', 'stock-line', 'treemap'].includes(
+      chart.value.type
+    ) &&
     !chart.value.type.includes('chart-mix')
   )
 })
