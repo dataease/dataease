@@ -109,7 +109,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
         await router.push('/DashboardEmpty')
         return
       }
-      if (jumpParam || (!ignoreParams && attachParam)) {
+      if (jumpParam || attachParam) {
         await filterEnumMapSync(canvasDataResult)
       }
       if (jumpParam) {
