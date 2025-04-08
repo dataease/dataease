@@ -77,6 +77,8 @@ public class CoreVisualizationExportManage {
             ChartExtRequest extRequest = chartExtRequestMap.get(view.getId());
             if (ObjectUtils.isNotEmpty(extRequest)) {
                 view.setChartExtRequest(extRequest);
+            } else {
+                view.setChartExtRequest(buildDefaultRequest());
             }
             view.getChartExtRequest().setUser(AuthUtils.getUser().getUserId());
             view.setTitle((i + 1) + "-" + view.getTitle());
@@ -200,6 +202,16 @@ public class CoreVisualizationExportManage {
             chartExtRequest.setPageSize(ExportCenterUtils.getExportLimit("view"));
         });
         return extRequestMap;
+    }
+
+    private ChartExtRequest buildDefaultRequest() {
+        ChartExtRequest chartExtRequest = new ChartExtRequest();
+        chartExtRequest.setQueryFrom("panel");
+        chartExtRequest.setFilter(new ArrayList<>());
+        chartExtRequest.setResultCount(Math.toIntExact(ExportCenterUtils.getExportLimit("view")));
+        chartExtRequest.setResultMode(ChartConstants.VIEW_RESULT_MODE.ALL);
+        chartExtRequest.setPageSize(ExportCenterUtils.getExportLimit("view"));
+        return chartExtRequest;
     }
 
     private Map<String, ChartExtRequest> buildViewRequest(DataVisualizationVO panelDto, Boolean justView) {
