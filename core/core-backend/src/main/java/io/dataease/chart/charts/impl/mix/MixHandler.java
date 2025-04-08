@@ -156,7 +156,7 @@ public class MixHandler extends YoyChartHandler {
         // 右轴重新检测同环比过滤
         customFilter(view, originFilter.getFilterList(), formatResult2);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
-        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, originFilter.getFilterList(), FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, filterResult.getFilterList(), FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
         originFilter.setDrill(filterResult
                 .getFilterList()
                 .stream()
