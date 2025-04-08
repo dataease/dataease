@@ -187,16 +187,32 @@ const linkageActive = () => {
   })
 }
 const checkSelected = param => {
+  // 当前图表是双轴图时
+  const chartMixFieldIds = []
+  if (view.value.type.includes('chart-mix')) {
+    chartData.value?.left?.fields?.forEach(field => {
+      if (!chartMixFieldIds.includes(field.id)) {
+        chartMixFieldIds.push(field.id)
+      }
+    })
+    chartData.value?.right?.fields?.forEach(field => {
+      if (!chartMixFieldIds.includes(field.id)) {
+        chartMixFieldIds.push(field.id)
+      }
+    })
+  }
   // 获取当前视图的所有联动字段ID
   const mappingFieldIds = Array.from(
     new Set(
-      chartData.value?.fields
-        .map(item => item.id)
-        .filter(id =>
-          Object.keys(nowPanelTrackInfo.value).some(
-            key => key.startsWith(view.value.id) && key.split('#')[1] === id
-          )
-        )
+      chartMixFieldIds.length
+        ? chartMixFieldIds
+        : chartData.value?.fields
+            .map(item => item.id)
+            .filter(id =>
+              Object.keys(nowPanelTrackInfo.value).some(
+                key => key.startsWith(view.value.id) && key.split('#')[1] === id
+              )
+            )
     )
   )
   // 维度字段匹配
