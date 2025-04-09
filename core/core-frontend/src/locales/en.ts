@@ -717,7 +717,8 @@ export default {
     upload_a_cover: 'Please upload a cover',
     edit_theme: 'Edit theme',
     cover: 'Cover',
-    to_delete_: 'Are you sure you want to delete [{0}]?'
+    to_delete_: 'Are you sure you want to delete [{0}]?',
+    to_delete_variable: 'Are you sure you want to delete {0}?'
   },
   user: {
     change_password: 'Change Password',

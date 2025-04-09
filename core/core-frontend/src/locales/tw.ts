@@ -693,7 +693,8 @@ export default {
     upload_a_cover: '請上傳封面',
     edit_theme: '編輯主題',
     cover: '封面',
-    to_delete_: '確定刪除[{0}]嗎?'
+    to_delete_: '確定刪除[{0}]嗎?',
+    to_delete_variable: '確定刪除 {0} 嗎?'
   },
   user: {
     change_password: '修改密碼',

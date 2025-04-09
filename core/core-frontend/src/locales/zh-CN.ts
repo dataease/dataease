@@ -695,7 +695,8 @@ export default {
     upload_a_cover: '请上传封面',
     edit_theme: '编辑主题',
     cover: '封面',
-    to_delete_: '确定删除[{0}]吗?'
+    to_delete_: '确定删除[{0}]吗?',
+    to_delete_variable: '确定删除 {0} 吗?'
   },
   user: {
     change_password: '修改密码',
