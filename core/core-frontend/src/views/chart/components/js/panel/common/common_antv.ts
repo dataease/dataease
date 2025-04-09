@@ -1733,7 +1733,7 @@ function calculateTooltipPosition(
     if (isColumn(chart.type)) {
       return top + chartElement.getBoundingClientRect().height / 2
     }
-    if (isMix || isPie) {
+    if (isMix(chart.type) || isPie(chart.type)) {
       return top + tooltipCtl.point.y
     }
     return top + tooltipCtl.point.y + 60
