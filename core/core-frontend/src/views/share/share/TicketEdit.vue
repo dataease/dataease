@@ -184,7 +184,6 @@ const setErrorStatus = (index, value, status?: boolean) => {
       valid = false
     }
   }
-  debugger
   const domRef = inputRefList[index]
   const e = domRef.input
   const className = 'link-ticket-error-msg'
