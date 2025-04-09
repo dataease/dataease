@@ -208,3 +208,18 @@ CREATE TABLE `snapshot_visualization_outer_params_target_view_info` (
                                                                         `target_ds_id` varchar(50) DEFAULT NULL COMMENT '联动数据集id/联动过滤组件id',
                                                                         PRIMARY KEY (`target_id`)
 );
+
+DROP TABLE IF EXISTS `de_template_version`;
+CREATE TABLE `de_template_version` (
+                                       `installed_rank` int NOT NULL,
+                                       `version` varchar(50)  DEFAULT NULL,
+                                       `description` varchar(200)  DEFAULT NULL,
+                                       `type` varchar(20)  DEFAULT NULL,
+                                       `script` varchar(1000)  NOT NULL,
+                                       `checksum` int DEFAULT NULL,
+                                       `installed_by` varchar(100)  DEFAULT NULL,
+                                       `installed_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                       `execution_time` int DEFAULT NULL,
+                                       `success` tinyint(1) NOT NULL,
+                                       PRIMARY KEY (`installed_rank`)
+);
