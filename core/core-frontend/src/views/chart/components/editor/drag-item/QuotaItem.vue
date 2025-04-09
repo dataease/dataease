@@ -315,14 +315,22 @@ const showHideIcon = computed(() => {
   return ['tale-info', 'table-normal'].includes(props.chart.type) && item.value.hide
 })
 
+const NOT_SUPPORT_SORT = [
+  'circle-packing',
+  'indicator',
+  'liquid',
+  'gauge',
+  'word-cloud',
+  'stock-line',
+  'treemap'
+]
+
 const showSort = computed(() => {
   return (
     props.type !== 'extLabel' &&
     props.type !== 'extTooltip' &&
     props.type !== 'extBubble' &&
-    !['indicator', 'liquid', 'gauge', 'word-cloud', 'stock-line', 'treemap'].includes(
-      chart.value.type
-    ) &&
+    !NOT_SUPPORT_SORT.includes(chart.value.type) &&
     !chart.value.type.includes('chart-mix')
   )
 })
