@@ -1,8 +1,8 @@
 package io.dataease.engine.trans;
 
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
-import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.constant.SQLConstants;
+import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
@@ -11,6 +11,7 @@ import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeItem;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
 import org.apache.commons.collections4.CollectionUtils;
@@ -180,7 +181,9 @@ public class WhereTree2Str {
         if (StringUtils.equalsIgnoreCase(item.getFilterType(), "enum")) {
             if (CollectionUtils.isNotEmpty(item.getEnumValue())) {
                 if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
-                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) && !isCross) {
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
+                        && !isCross
+                        && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
                     res = "(" + whereName + " IN (" + item.getEnumValue().stream().map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + "))";
                 } else {
                     res = "(" + whereName + " IN ('" + String.join("','", item.getEnumValue()) + "'))";
@@ -205,14 +208,18 @@ public class WhereTree2Str {
                 whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
                 if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
-                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) && !isCross) {
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
+                        && !isCross
+                        && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
                     whereValue = "(" + Arrays.stream(value.split(",")).map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + ")";
                 } else {
                     whereValue = "('" + String.join("','", value.split(",")) + "')";
                 }
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
-                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) && !isCross) {
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
+                        && !isCross
+                        && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
                     whereValue = "'" + SQLConstants.MSSQL_N_PREFIX + "%" + value + "%'";
                 } else {
                     whereValue = "'%" + value + "%'";
@@ -256,7 +263,9 @@ public class WhereTree2Str {
                     }
                 } else {
                     if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
-                            || StringUtils.containsIgnoreCase(field.getType(), "NCHAR")) && !isCross) {
+                            || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
+                            && !isCross
+                            && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value);
                     } else {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, PropType, reactive, watch, ref, inject, nextTick } from 'vue'
+import { onMounted, PropType, reactive, watch, ref, inject, nextTick, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   DEFAULT_BASIC_STYLE,
@@ -52,6 +52,26 @@ const state = reactive({
   selectedSubTotalDimension: undefined as { name: string; checked: boolean },
   subTotalDimensionList: [],
   basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
+})
+
+const showColFieldTotalLabel = computed(() => {
+  const chart = props.chart
+  return (
+    chart.customAttr.basicStyle.quotaPosition !== 'row' &&
+    chart.xAxisExt.length &&
+    chart.yAxis.length > 1
+  )
+})
+
+const showRowFieldTotalLabel = computed(() => {
+  const chart = props.chart
+  return (
+    chart.customAttr.basicStyle.quotaPosition === 'row' &&
+    chart.customAttr.basicStyle.tableLayoutMode !== 'tree' &&
+    chart.xAxis.length &&
+    chart.xAxisExt.length &&
+    chart.yAxis.length > 1
+  )
 })
 
 function onSelectedSubTotalDimensionNameChange(name) {
@@ -160,6 +180,7 @@ const init = () => {
       total.dataeaseName = totalCfg[0].dataeaseName
       total.aggregation = totalCfg[0].aggregation
       total.originName = totalCfg[0].originName
+      total.label = totalCfg[0].label
     }
   })
 
@@ -175,6 +196,7 @@ const changeTotal = (totalItem, totals) => {
     if (item.dataeaseName === totalItem.dataeaseName) {
       totalItem.aggregation = item.aggregation
       totalItem.originName = item.originName
+      totalItem.label = item.label
       return
     }
   }
@@ -184,6 +206,7 @@ const changeTotalAggr = (totalItem, totals, colOrNum) => {
     const item = totals[i]
     if (item.dataeaseName === totalItem.dataeaseName) {
       item.aggregation = totalItem.aggregation
+      item.label = totalItem.label
       break
     }
   }
@@ -197,7 +220,8 @@ const setupTotalCfg = (totalCfg, axis) => {
     axis.forEach(i => {
       totalCfg.push({
         dataeaseName: i.dataeaseName,
-        aggregation: 'SUM'
+        aggregation: 'SUM',
+        label: i.chartShowName ?? i.name
       })
     })
     return
@@ -215,7 +239,10 @@ const setupTotalCfg = (totalCfg, axis) => {
     totalCfg.push({
       dataeaseName: i.dataeaseName,
       aggregation: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].aggregation : 'SUM',
-      originName: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].originName : ''
+      originName: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].originName : '',
+      label: cfgMap[i.dataeaseName]?.label
+        ? cfgMap[i.dataeaseName].label
+        : i.chartShowName ?? i.name
     })
   })
 }
@@ -303,13 +330,13 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        :label="t('chart.total_label')"
+        :label="t('chart.table_grand_total_label')"
         class="form-item"
         :class="'form-item-' + themes"
       >
         <el-input
           :effect="themes"
-          :placeholder="t('chart.total_label')"
+          :placeholder="t('chart.table_grand_total_label')"
           size="small"
           maxlength="20"
           v-model="state.tableTotalForm.row.label"
@@ -371,6 +398,28 @@ onMounted(() => {
             />
           </el-icon>
         </el-col>
+      </el-form-item>
+      <el-form-item
+        v-if="showRowFieldTotalLabel"
+        class="form-item"
+        :label="t('chart.table_field_total_label')"
+        :class="'form-item-' + themes"
+      >
+        <el-input
+          :effect="themes"
+          :placeholder="t('chart.table_field_total_label')"
+          size="small"
+          maxlength="20"
+          v-model="state.rowTotalItem.label"
+          clearable
+          @change="
+            changeTotalAggr(
+              state.rowTotalItem,
+              state.tableTotalForm.row.calcTotals.cfg,
+              'row.calcTotals.cfg'
+            )
+          "
+        />
       </el-form-item>
       <el-form-item
         v-if="chart.type === 'table-pivot'"
@@ -588,13 +637,13 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        :label="t('chart.total_label')"
+        :label="t('chart.table_grand_total_label')"
         class="form-item"
         :class="'form-item-' + themes"
       >
         <el-input
           :effect="themes"
-          :placeholder="t('chart.total_label')"
+          :placeholder="t('chart.table_grand_total_label')"
           size="small"
           maxlength="20"
           v-model="state.tableTotalForm.col.label"
@@ -656,6 +705,28 @@ onMounted(() => {
             />
           </el-icon>
         </el-col>
+      </el-form-item>
+      <el-form-item
+        v-if="showColFieldTotalLabel"
+        class="form-item"
+        :label="t('chart.table_field_total_label')"
+        :class="'form-item-' + themes"
+      >
+        <el-input
+          :effect="themes"
+          :placeholder="t('chart.table_field_total_label')"
+          size="small"
+          maxlength="20"
+          v-model="state.colTotalItem.label"
+          clearable
+          @change="
+            changeTotalAggr(
+              state.colTotalItem,
+              state.tableTotalForm.col.calcTotals.cfg,
+              'col.calcTotals.cfg'
+            )
+          "
+        />
       </el-form-item>
       <el-form-item
         v-if="chart.type === 'table-pivot'"

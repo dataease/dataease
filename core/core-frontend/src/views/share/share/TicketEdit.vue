@@ -16,6 +16,7 @@ const { t } = useI18n()
 const dialogVisible = ref(false)
 const loadingInstance = ref(null)
 const ticketForm = ref<FormInstance>()
+const inputRefList = ref<HTMLElement[]>([])
 const props = defineProps({
   uuid: propTypes.string.def('')
 })
@@ -148,7 +149,8 @@ const args2ArgList = () => {
       const row = { name: key, val: JSON.stringify(val) }
       state.argList.push(row)
     } else {
-      const row = { name: key, val: argObj[key] }
+      const tempArray = [val]
+      const row = { name: key, val: JSON.stringify(tempArray) }
       state.argList.push(row)
     }
   }
@@ -165,10 +167,55 @@ const argList2Args = () => {
   const argObj = {}
   state.argList.forEach(row => {
     if (row.name && row.val) {
-      argObj[row.name] = row.val
+      argObj[row.name] = JSON.parse(row.val)
     }
   })
   state.form.args = JSON.stringify(argObj)
+}
+const setErrorStatus = (index, value, status?: boolean) => {
+  let valid = !!status
+  if (!value?.length) {
+    valid = true
+  } else if (status === null || typeof status === 'undefined') {
+    try {
+      JSON.parse(value)
+      valid = true
+    } catch (error) {
+      valid = false
+    }
+  }
+  const domRef = inputRefList[index]
+  const e = domRef.input
+  const className = 'link-ticket-error-msg'
+  const fullClassName = `.${className}`
+  if (valid) {
+    e.style = null
+    e.style.borderColor = null
+    const child = e.parentElement.querySelector(fullClassName)
+    if (child) {
+      e.parentElement['style'] = null
+      e.parentElement.removeChild(child)
+    }
+  } else {
+    const msg = 'JSON格式错误'
+    e.style.color = 'red'
+    e.style.borderColor = 'red'
+    e.parentElement['style']['box-shadow'] = '0 0 0 1px red inset'
+    const child = e.parentElement.querySelector(fullClassName)
+    if (!child) {
+      const errorDom = document.createElement('div')
+      errorDom.className = className
+      errorDom.innerText = msg
+      e.parentElement.appendChild(errorDom)
+    } else {
+      child.innerText = msg
+    }
+  }
+}
+const setInputRef = (el, index) => {
+  if (el) {
+    inputRefList[index] = el
+  }
 }
 const copyTicket = async ticket => {
   const url = `${linkUrl.value}?ticket=${ticket}`
@@ -286,7 +333,12 @@ defineExpose({
         </template>
         <div class="args-line" v-for="(row, index) in state.argList" :key="index">
           <el-input v-model="row['name']" :placeholder="t('visualization.input_param_name')" />
-          <el-input v-model="row['val']" :placeholder="t('link_ticket.arg_val_tips')" />
+          <el-input
+            :ref="el => setInputRef(el, index)"
+            v-model="row['val']"
+            :placeholder="t('link_ticket.arg_val_tips')"
+            @blur="setErrorStatus(index, row['val'])"
+          />
           <div
             :style="{ opacity: state.argList.length !== 1 ? 1 : 0 }"
             class="arg-del-btn"
@@ -402,6 +454,16 @@ defineExpose({
     }
     &:not(:last-child) {
       margin-bottom: 8px;
+    }
+    :deep(.link-ticket-error-msg) {
+      color: red;
+      position: absolute;
+      z-index: 9;
+      font-size: 10px;
+      height: 10px;
+      top: 21px;
+      width: 350px;
+      left: 0px;
     }
   }
   .ticket-tips-label {

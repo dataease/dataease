@@ -15,4 +15,6 @@ public class ThresholdCheckRequest implements Serializable {
     private String thresholdRules;
 
     private String thresholdTemplate;
+
+    private String resourceTable;
 }

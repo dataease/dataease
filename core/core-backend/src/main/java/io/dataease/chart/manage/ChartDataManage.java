@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -223,11 +224,17 @@ public class ChartDataManage {
         }
 
         List<ChartExtFilterDTO> filters = new ArrayList<>();
+        FilterTreeObj customLinkageFilter = null;
         // 联动条件
         if (ObjectUtils.isNotEmpty(chartExtRequest.getLinkageFilters())) {
-            filters.addAll(chartExtRequest.getLinkageFilters());
+            for (ChartExtFilterDTO linkageFilter : chartExtRequest.getLinkageFilters()) {
+                if (3 == linkageFilter.getFilterType()) {
+                    customLinkageFilter = linkageFilter.getCustomFilter();
+                } else {
+                    filters.add(linkageFilter);
+                }
+            }
         }
-
         // 外部参数条件
         if (ObjectUtils.isNotEmpty(chartExtRequest.getOuterParamsFilters())) {
             filters.addAll(chartExtRequest.getOuterParamsFilters());
@@ -355,6 +362,10 @@ public class ChartDataManage {
         }
         // 字段过滤器
         FilterTreeObj fieldCustomFilter = view.getCustomFilter();
+        // 指标表联动时 使用的CustomFilter
+        if (customLinkageFilter != null) {
+            fieldCustomFilter = customLinkageFilter;
+        }
         chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
         fieldCustomFilter = chartFilterTreeService.charReplace(fieldCustomFilter);
         // 获取dsMap,union sql
@@ -802,9 +813,10 @@ public class ChartDataManage {
                     disuseChartIdList.add(chartViewDTO.getId());
                 }
             });
-            if (CollectionUtils.isNotEmpty(disuseChartIdList)) {
-                chartViewManege.disuse(disuseChartIdList);
-            }
+            // 阈值告警处理 统一在发布时处理
+//            if (CollectionUtils.isNotEmpty(disuseChartIdList)) {
+//                chartViewManege.disuse(disuseChartIdList);
+//            }
         }
     }
 

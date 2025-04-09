@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import icon_bold_outlined from '@/assets/svg/icon_bold_outlined.svg'
 import { uploadFileResult } from '@/api/staticResource'
 import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
@@ -15,6 +15,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
+import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
 const { t } = useI18n()
 const styleActiveNames = ref(['basicStyle'])
 const dvMainStore = dvMainStoreWithOut()
@@ -116,6 +117,47 @@ const currentSearch = ref({
   placeholder: '',
   queryConditionWidth: 227
 })
+
+const onFreezeChange = newVal => {
+  if (element.value.freeze) {
+    let historyFreezeCount = 0
+    dvMainStore.componentData.forEach(item => {
+      if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+        historyFreezeCount++
+      }
+    })
+    if (historyFreezeCount) {
+      ElMessageBox.confirm(t('visualization.filter_freeze_tips'), {
+        confirmButtonType: 'primary',
+        type: 'warning',
+        confirmButtonText: t('common.sure'),
+        cancelButtonText: t('common.cancel'),
+        autofocus: false,
+        showClose: false
+      })
+        .then(() => {
+          dvMainStore.componentData.forEach(item => {
+            if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+              item.freeze = false
+            }
+          })
+          snapshotStore.recordSnapshotCache('onFreezeChange')
+        })
+        .catch(() => {
+          element.value.freeze = false
+        })
+    } else {
+      dvMainStore.componentData.forEach(item => {
+        if (item.innerType === 'VQuery' && item.id !== element.value.id && item.freeze) {
+          item.freeze = false
+        }
+      })
+      snapshotStore.recordSnapshotCache('onFreezeChange')
+    }
+  } else {
+    snapshotStore.recordSnapshotCache('onFreezeChange')
+  }
+}
 
 const handleCurrentPlaceholder = val => {
   const obj = props.element.propValue.find(ele => {
@@ -288,6 +330,26 @@ const onTitleChange = () => {
                 is-custom
                 :predefine="COLOR_PANEL"
               />
+            </el-form-item>
+            <el-form-item
+              v-if="!mobileInPc && isDashboard() && isMainCanvas(element.canvasId)"
+              class="form-item margin-bottom-8"
+              :class="'form-item-' + themes"
+              :label="t('visualization.query_position')"
+            >
+              <el-radio-group
+                v-model="element.freeze"
+                :effect="themes"
+                size="small"
+                @change="onFreezeChange"
+              >
+                <el-radio :effect="themes" style="min-width: 80px" :label="true">{{
+                  t('visualization.to_top')
+                }}</el-radio>
+                <el-radio :effect="themes" style="min-width: 80px" :label="false">{{
+                  t('visualization.default')
+                }}</el-radio>
+              </el-radio-group>
             </el-form-item>
             <background-overall-common
               :common-background-pop="commonBackgroundPop"

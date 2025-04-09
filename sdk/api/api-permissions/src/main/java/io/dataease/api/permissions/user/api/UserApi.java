@@ -61,6 +61,11 @@ public interface UserApi {
     @PostMapping("/create")
     void create(@RequestBody UserCreator creator);
 
+    @Operation(summary = "创建第三方用户")
+    @DePermit("m:read")
+    @PostMapping("/createPlatform")
+    void createPlatform(@RequestBody PlatformUserCreator creator);
+
     @Operation(summary = "编辑")
     @DePermit({"m:read", "#p0.id + ':manage'"})
     @PostMapping("/edit")

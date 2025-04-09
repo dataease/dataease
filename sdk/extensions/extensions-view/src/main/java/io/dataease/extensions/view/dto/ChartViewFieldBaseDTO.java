@@ -15,9 +15,20 @@ public class ChartViewFieldBaseDTO extends DatasetTableFieldDTO implements Seria
 
     private String sort;
 
+    /**
+     * 日期解析格式，后端参与聚合运算
+     */
     private String dateStyle;
 
+    /**
+     * 日期分隔符
+     */
     private String datePattern;
+
+    /**
+     * 日期显示格式，仅前端图表格式化
+     */
+    private String dateShowFormat;
 
     private Integer extField;
 

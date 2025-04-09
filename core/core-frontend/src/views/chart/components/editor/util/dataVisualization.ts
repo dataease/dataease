@@ -61,6 +61,7 @@ export const MOBILE_SETTING_DARK = {
 export const DEFAULT_DASHBOARD_STYLE_BASE = {
   gap: 'yes',
   gapSize: 5,
+  gapMode: 'middle',
   showGrid: false,
   matrixBase: 4, // 当前matrix的基数 （是pcMatrixCount的几倍）
   resultMode: 'all', // 图表结果显示模式 all 图表 custom 仪表板自定义

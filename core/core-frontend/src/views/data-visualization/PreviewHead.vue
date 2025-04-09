@@ -114,13 +114,16 @@ const initOpenHandler = newWindow => {
 <template>
   <div class="preview-head flex-align-center">
     <div :title="dvInfo.name" class="canvas-name ellipsis">{{ dvInfo.name }}</div>
-
+    <div v-show="dvInfo.status === 2" class="canvas-have-update">
+      {{ t('visualization.publish_update_tips') }}
+    </div>
     <el-tooltip
       effect="dark"
       :content="favorited ? t('visualization.cancel_store') : t('visualization.store')"
       placement="top"
     >
       <el-icon
+        v-if="dvInfo.status !== 0"
         class="custom-icon hover-icon"
         @click="executeStore"
         :style="{ color: favorited ? '#FFC60A' : '#646A73' }"
@@ -150,6 +153,7 @@ const initOpenHandler = newWindow => {
     <div class="canvas-opt-button">
       <el-button
         v-if="!isIframe"
+        :disabled="dvInfo.status === 0"
         secondary
         @click="() => useEmitt().emitter.emit('canvasFullscreen')"
       >
@@ -158,7 +162,7 @@ const initOpenHandler = newWindow => {
         </template>
         {{ t('visualization.fullscreen') }}</el-button
       >
-      <el-button secondary @click="preview()">
+      <el-button secondary @click="preview()" :disabled="dvInfo.status === 0">
         <template #icon>
           <icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></icon>
         </template>
@@ -166,6 +170,7 @@ const initOpenHandler = newWindow => {
       </el-button>
       <ShareVisualHead
         v-if="!shareDisable"
+        :disabled="dvInfo.status === 0"
         :resource-id="dvInfo.id"
         :weight="dvInfo.weight"
         :resource-type="dvInfo.type"
@@ -176,7 +181,7 @@ const initOpenHandler = newWindow => {
         </template>
         {{ t('visualization.edit') }}</el-button
       >
-      <el-dropdown popper-class="pad12" trigger="click">
+      <el-dropdown :disabled="dvInfo.status === 0" popper-class="pad12" trigger="click">
         <el-icon class="head-more-icon">
           <Icon name="dv-head-more"><dvHeadMore class="svg-icon" /></Icon>
         </el-icon>
@@ -250,6 +255,16 @@ const initOpenHandler = newWindow => {
     max-width: 200px;
     font-size: 16px;
     font-weight: 500;
+  }
+  .canvas-have-update {
+    background-color: rgba(52, 199, 36, 0.2);
+    color: rgba(44, 169, 31, 1);
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    vertical-align: middle;
+    padding: 0 4px;
+    margin-left: 8px;
   }
   .custom-icon {
     cursor: pointer;

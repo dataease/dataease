@@ -162,7 +162,7 @@ const activeTableData = computed(() => {
 <template>
   <div class="de-mobile-user">
     <template v-if="showNavBar">
-      <div class="logout flex-center">我的</div>
+      <div class="logout flex-center" style="padding-top: 8px; margin: 0">我的</div>
       <div class="mobile-user-top">
         <van-image round width="48" height="48" :src="userImg" />
         <div class="user-name">
@@ -220,7 +220,7 @@ const activeTableData = computed(() => {
 
 <style lang="less" scoped>
 .de-mobile-user {
-  height: calc(100% - 48px);
+  height: calc(100% - 50px);
   width: 100vw;
   background: #f5f6f7;
 

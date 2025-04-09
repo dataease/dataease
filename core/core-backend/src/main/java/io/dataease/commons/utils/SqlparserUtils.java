@@ -42,11 +42,12 @@ import static org.apache.calcite.sql.SqlKind.*;
 
 public class SqlparserUtils {
     public static final String regex = "\\$\\{(.*?)\\}";
-    public static final String regex2 = "\\[(.*?)\\]";
+    public static final String regex2 = "\\$f2cde\\[(.*?)\\]";
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SysParamsSubstitutedParams = "DeSysParams_";
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
     private boolean removeSysParams;
+    boolean hasVariables = false;
     private UserFormVO userEntity;
     private final List<Map<String, String>> sysParams = new ArrayList<>();
 
@@ -62,6 +63,7 @@ public class SqlparserUtils {
         } catch (Exception e) {
             DEException.throwException(e);
         }
+        hasVariables = false;
         sql = sql.trim();
         if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
@@ -149,6 +151,9 @@ public class SqlparserUtils {
     }
 
     private static boolean isParams(String paramId){
+        if(Arrays.asList("userId", "userEmail", "userName").contains(paramId)){
+            return true;
+        }
         boolean isLong = false;
         try {
             Long.valueOf(paramId);
@@ -165,19 +170,18 @@ public class SqlparserUtils {
         String tmpSql = sql.replaceAll("(?m)^\\s*$[\n\r]{0,}", "");
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tmpSql);
-        boolean hasVariables = false;
         while (matcher.find()) {
             hasVariables = true;
             tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
         }
         if (removeSysParams) {
             for (Map<String, String> sysParam : sysParams) {
-                tmpSql = tmpSql.replaceAll(sysParam.get("replace"), sysParam.get("origin"));
+                tmpSql = tmpSql.replace(sysParam.get("replace"), sysParam.get("origin"));
             }
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
             while (matcher.find()) {
-                String paramId = matcher.group().substring(1, matcher.group().length() - 1);
+                String paramId = matcher.group().substring(7, matcher.group().length() - 1);
                 if(!isParams(paramId)){
                     continue;
                 }
@@ -188,15 +192,15 @@ public class SqlparserUtils {
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
             while (matcher.find()) {
-                String paramId = matcher.group().substring(1, matcher.group().length() - 1);
+                String paramId = matcher.group().substring(7, matcher.group().length() - 1);
                 if(!isParams(paramId)){
                     continue;
                 }
                 hasVariables = true;
-                tmpSql = tmpSql.replace(matcher.group(), SysParamsSubstitutedParams + matcher.group().substring(1, matcher.group().length() - 1));
+                tmpSql = tmpSql.replace(matcher.group(), SysParamsSubstitutedParams + matcher.group().substring(7, matcher.group().length() - 1));
                 Map<String, String> sysParam = new HashMap<>();
                 sysParam.put("origin", matcher.group());
-                sysParam.put("replace", SysParamsSubstitutedParams + matcher.group().substring(1, matcher.group().length() - 1));
+                sysParam.put("replace", SysParamsSubstitutedParams + matcher.group().substring(7, matcher.group().length() - 1));
                 sysParams.add(sysParam);
             }
         }

@@ -107,8 +107,8 @@ export abstract class L7ChartView<
     return options
   }
 
-  protected configZoomButton(chart: Chart, plot: S) {
-    configL7Zoom(chart, plot)
+  protected configZoomButton(chart: Chart, plot: S, mapKey?: any) {
+    configL7Zoom(chart, plot, mapKey)
   }
 
   protected configLabel(chart: Chart, options: O): O {

@@ -21,6 +21,12 @@ public class LinkInterceptor implements HandlerInterceptor {
 
     private final static String whiteListText = "/user/ipInfo, /apisix/check, /datasetData/enumValue, /datasetData/enumValueObj, /datasetData/getFieldTree, /dekey, /symmetricKey, /share/validate, /sysParameter/queryOnlineMap, /xpackComponent/viewPlugins";
 
+    private final static String whiteStartListText = "/dataVisualization/findDvType/";
+
+    private boolean isWhiteStart(String url) {
+        List<String> whiteStartList = Arrays.stream(StringUtils.split(whiteStartListText, ",")).map(String::trim).toList();
+        return whiteStartList.stream().anyMatch(item -> StringUtils.startsWith(url, item));
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -33,6 +39,7 @@ public class LinkInterceptor implements HandlerInterceptor {
             if (deLinkPermit == null) {
 
                 List<String> whiteList = Arrays.stream(StringUtils.split(whiteListText, ",")).map(String::trim).toList();
+
                 String requestURI = ServletUtils.request().getRequestURI();
                 if (StringUtils.startsWith(requestURI, WhitelistUtils.getContextPath())) {
                     requestURI = requestURI.replaceFirst(WhitelistUtils.getContextPath(), "");
@@ -40,7 +47,7 @@ public class LinkInterceptor implements HandlerInterceptor {
                 if (StringUtils.startsWith(requestURI, AuthConstant.DE_API_PREFIX)) {
                     requestURI = requestURI.replaceFirst(AuthConstant.DE_API_PREFIX, "");
                 }
-                boolean valid = whiteList.contains(requestURI) || WhitelistUtils.match(requestURI);
+                boolean valid = whiteList.contains(requestURI) || isWhiteStart(requestURI) || WhitelistUtils.match(requestURI);
                 if (!valid) {
                     DEException.throwException("分享链接Token不支持访问当前url[" + requestURI + "]");
                 }

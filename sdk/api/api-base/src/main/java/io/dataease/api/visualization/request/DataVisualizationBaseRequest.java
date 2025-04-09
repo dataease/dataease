@@ -7,6 +7,8 @@ import io.dataease.api.visualization.vo.VisualizationExport2AppVO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 public class DataVisualizationBaseRequest extends DataVisualizationVO {
@@ -30,6 +32,8 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
     private String templateUrl;
 
     private String busiFlag;
+
+    private List<Long> activeViewIds;
 
     // 查询来源 main=主工程 report=定时报告
     private String source;
@@ -57,6 +61,14 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
     // 是否强制校验新旧contentId
     private Boolean checkHistory = false;
 
+    //数据来源 core 主表 snapshot 镜像表
+    private String resourceTable = "core";
+
+    public DataVisualizationBaseRequest(Long id,String busiFlag,String resource) {
+        this.busiFlag = busiFlag;
+        this.resourceTable = resource;
+        super.setId(id);
+    }
 
     public DataVisualizationBaseRequest(Long id,String busiFlag) {
         this.busiFlag = busiFlag;

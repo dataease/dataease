@@ -3,10 +3,16 @@ import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { PropType, computed, onMounted, reactive, watch, ref, inject } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
-import { ElIcon, ElSpace } from 'element-plus-secondary'
+import { ElFormItem, ElIcon, ElSpace } from 'element-plus-secondary'
 import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
-import { formatterType, unitType } from '../../../js/formatter'
+import {
+  isEnLocal,
+  formatterType,
+  getUnitTypeList,
+  initFormatCfgUnit,
+  onChangeFormatCfgUnitLanguage
+} from '@/views/chart/components/js/formatter'
 import { fieldType } from '@/utils/attr'
 import { defaultTo, partition, map, includes, isEmpty } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
@@ -63,6 +69,7 @@ const changeChartType = () => {
   formatter.splice(0, formatter.length)
   const axisIds = []
   quotaAxis.value.forEach(axis => {
+    initFormatCfgUnit(axis.formatterCfg)
     formatter.push({
       ...axis,
       show: true
@@ -71,6 +78,7 @@ const changeChartType = () => {
   })
   quotaData.value.forEach(quotaAxis => {
     if (!axisIds.includes(quotaAxis.id)) {
+      initFormatCfgUnit(quotaAxis.formatterCfg)
       formatter.push({
         ...quotaAxis,
         seriesId: quotaAxis.id,
@@ -78,6 +86,9 @@ const changeChartType = () => {
       })
     }
   })
+  if (formatter[0]) {
+    curSeriesFormatter.value = formatter[0]
+  }
   emit('onTooltipChange', { data: state.tooltipForm, render: false }, 'seriesTooltipFormatter')
   emit('onExtTooltipChange', extTooltip.value)
 }
@@ -101,6 +112,9 @@ const changeDataset = () => {
       })
     }
   })
+  if (formatter[0]) {
+    curSeriesFormatter.value = formatter[0]
+  }
 }
 
 const AXIS_PROP: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']
@@ -229,6 +243,12 @@ const changeTooltipAttr = (prop: string, requestData = false, render = true) => 
   }
   emit('onTooltipChange', { data: state.tooltipForm, requestData, render }, prop)
 }
+
+function changeUnitLanguage(cfg: BaseFormatter, lang, prop: string) {
+  onChangeFormatCfgUnitLanguage(cfg, lang)
+  changeTooltipAttr(prop)
+}
+
 const formatterSelector = ref()
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
@@ -236,6 +256,9 @@ const init = () => {
     const customAttr = JSON.parse(JSON.stringify(chart.customAttr))
     if (customAttr.tooltip) {
       state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
+
+      initFormatCfgUnit(state.tooltipForm.tooltipFormatter)
+
       formatterSelector.value?.blur()
       // 新增图表
       const formatter = state.tooltipForm.seriesTooltipFormatter
@@ -244,6 +267,9 @@ const init = () => {
         curSeriesFormatter.value = {}
         return
       }
+      formatter.forEach(f => {
+        initFormatCfgUnit(f.formatterCfg)
+      })
       const seriesAxisMap = formatter.reduce((pre, next) => {
         next.seriesId = next.seriesId ?? next.id
         pre[next.seriesId] = next
@@ -251,6 +277,9 @@ const init = () => {
       }, {})
       if (!curSeriesFormatter?.value || !seriesAxisMap[curSeriesFormatter.value?.seriesId]) {
         curSeriesFormatter.value = {}
+        if (formatter[0]) {
+          curSeriesFormatter.value = formatter[0]
+        }
       } else {
         curSeriesFormatter.value = seriesAxisMap[curSeriesFormatter.value?.seriesId]
       }
@@ -590,47 +619,72 @@ onMounted(() => {
         />
       </el-form-item>
 
-      <el-row :gutter="8" v-if="state.tooltipForm.tooltipFormatter.type !== 'percent'">
-        <el-col :span="12">
-          <el-form-item
-            :label="t('chart.value_formatter_unit')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-select
-              :disabled="state.tooltipForm.tooltipFormatter.type === 'percent'"
-              :effect="props.themes"
-              v-model="state.tooltipForm.tooltipFormatter.unit"
-              :placeholder="t('chart.pls_select_field')"
-              size="small"
-              @change="changeTooltipAttr('tooltipFormatter.unit')"
+      <template v-if="state.tooltipForm.tooltipFormatter.type !== 'percent'">
+        <el-row :gutter="8">
+          <el-col :span="12" v-if="!isEnLocal">
+            <el-form-item
+              :label="$t('chart.value_formatter_unit_language')"
+              class="form-item"
+              :class="'form-item-' + themes"
             >
-              <el-option
-                v-for="item in unitType"
-                :key="item.value"
-                :label="t('chart.' + item.name)"
-                :value="item.value"
+              <el-select
+                :disabled="state.tooltipForm.tooltipFormatter.type === 'percent'"
+                size="small"
+                :effect="themes"
+                v-model="state.tooltipForm.tooltipFormatter.unitLanguage"
+                :placeholder="$t('chart.pls_select_field')"
+                @change="
+                  v => changeUnitLanguage(state.tooltipForm.tooltipFormatter, v, 'tooltipFormatter')
+                "
+              >
+                <el-option :label="$t('chart.value_formatter_unit_language_ch')" value="ch" />
+                <el-option :label="$t('chart.value_formatter_unit_language_en')" value="en" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="isEnLocal ? 24 : 12">
+            <el-form-item
+              :label="t('chart.value_formatter_unit')"
+              class="form-item"
+              :class="'form-item-' + themes"
+            >
+              <el-select
+                :disabled="state.tooltipForm.tooltipFormatter.type === 'percent'"
+                :effect="props.themes"
+                v-model="state.tooltipForm.tooltipFormatter.unit"
+                :placeholder="t('chart.pls_select_field')"
+                size="small"
+                @change="changeTooltipAttr('tooltipFormatter')"
+              >
+                <el-option
+                  v-for="item in getUnitTypeList(state.tooltipForm.tooltipFormatter.unitLanguage)"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="8">
+          <el-col :span="24">
+            <el-form-item
+              :label="t('chart.value_formatter_suffix')"
+              class="form-item"
+              :class="'form-item-' + themes"
+            >
+              <el-input
+                :effect="props.themes"
+                v-model="state.tooltipForm.tooltipFormatter.suffix"
+                size="small"
+                clearable
+                :placeholder="t('commons.input_content')"
+                @change="changeTooltipAttr('tooltipFormatter.suffix')"
               />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item
-            :label="t('chart.value_formatter_suffix')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-input
-              :effect="props.themes"
-              v-model="state.tooltipForm.tooltipFormatter.suffix"
-              size="small"
-              clearable
-              :placeholder="t('commons.input_content')"
-              @change="changeTooltipAttr('tooltipFormatter.suffix')"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </template>
 
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-checkbox
@@ -781,50 +835,82 @@ onMounted(() => {
             />
           </el-form-item>
 
-          <el-row :gutter="8" v-if="curSeriesFormatter.formatterCfg.type !== 'percent'">
-            <el-col :span="12">
-              <el-form-item
-                :label="t('chart.value_formatter_unit')"
-                class="form-item"
-                :class="'form-item-' + themes"
-              >
-                <el-select
-                  :disabled="
-                    !curSeriesFormatter.show || curSeriesFormatter.formatterCfg.type == 'percent'
-                  "
-                  :effect="props.themes"
-                  v-model="curSeriesFormatter.formatterCfg.unit"
-                  :placeholder="t('chart.pls_select_field')"
-                  size="small"
-                  @change="changeTooltipAttr('seriesTooltipFormatter')"
+          <template v-if="curSeriesFormatter.formatterCfg.type !== 'percent'">
+            <el-row :gutter="8">
+              <el-col :span="12" v-if="!isEnLocal">
+                <el-form-item
+                  :label="$t('chart.value_formatter_unit_language')"
+                  class="form-item"
+                  :class="'form-item-' + themes"
                 >
-                  <el-option
-                    v-for="item in unitType"
-                    :key="item.value"
-                    :label="t('chart.' + item.name)"
-                    :value="item.value"
+                  <el-select
+                    :disabled="
+                      !curSeriesFormatter.show || curSeriesFormatter.formatterCfg.type == 'percent'
+                    "
+                    size="small"
+                    :effect="themes"
+                    v-model="curSeriesFormatter.formatterCfg.unitLanguage"
+                    :placeholder="$t('chart.pls_select_field')"
+                    @change="
+                      v =>
+                        changeUnitLanguage(
+                          curSeriesFormatter.formatterCfg,
+                          v,
+                          'seriesTooltipFormatter'
+                        )
+                    "
+                  >
+                    <el-option :label="$t('chart.value_formatter_unit_language_ch')" value="ch" />
+                    <el-option :label="$t('chart.value_formatter_unit_language_en')" value="en" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="isEnLocal ? 24 : 12">
+                <el-form-item
+                  :label="t('chart.value_formatter_unit')"
+                  class="form-item"
+                  :class="'form-item-' + themes"
+                >
+                  <el-select
+                    :disabled="
+                      !curSeriesFormatter.show || curSeriesFormatter.formatterCfg.type == 'percent'
+                    "
+                    :effect="props.themes"
+                    v-model="curSeriesFormatter.formatterCfg.unit"
+                    :placeholder="t('chart.pls_select_field')"
+                    size="small"
+                    @change="changeTooltipAttr('seriesTooltipFormatter')"
+                  >
+                    <el-option
+                      v-for="item in getUnitTypeList(curSeriesFormatter.formatterCfg.unitLanguage)"
+                      :key="item.value"
+                      :label="item.name"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="8">
+              <el-col :span="24">
+                <el-form-item
+                  :label="t('chart.value_formatter_suffix')"
+                  class="form-item"
+                  :class="'form-item-' + themes"
+                >
+                  <el-input
+                    :disabled="!curSeriesFormatter.show"
+                    :effect="props.themes"
+                    v-model="curSeriesFormatter.formatterCfg.suffix"
+                    size="small"
+                    clearable
+                    :placeholder="t('commons.input_content')"
+                    @change="changeTooltipAttr('seriesTooltipFormatter')"
                   />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item
-                :label="t('chart.value_formatter_suffix')"
-                class="form-item"
-                :class="'form-item-' + themes"
-              >
-                <el-input
-                  :disabled="!curSeriesFormatter.show"
-                  :effect="props.themes"
-                  v-model="curSeriesFormatter.formatterCfg.suffix"
-                  size="small"
-                  clearable
-                  :placeholder="t('commons.input_content')"
-                  @change="changeTooltipAttr('seriesTooltipFormatter')"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </template>
 
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-checkbox
@@ -872,7 +958,8 @@ onMounted(() => {
               :effect="themes"
               controls-position="right"
               size="middle"
-              :min="0"
+              precision="0"
+              :min="1"
               :max="600"
               :disabled="!state.tooltipForm.carousel.enable"
               @change="changeTooltipAttr('carousel')"
@@ -891,7 +978,8 @@ onMounted(() => {
               :effect="themes"
               controls-position="right"
               size="middle"
-              :min="0"
+              precision="0"
+              :min="1"
               :max="600"
               :disabled="!state.tooltipForm.carousel.enable"
               @change="changeTooltipAttr('carousel')"

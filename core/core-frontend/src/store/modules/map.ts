@@ -6,6 +6,7 @@ interface MapStore {
   mapKey: {
     key: string
     securityCode: string
+    mapType: string
   }
 }
 export const useMapStore = defineStore('map', {
@@ -13,7 +14,8 @@ export const useMapStore = defineStore('map', {
     mapCache: {},
     mapKey: {
       key: '',
-      securityCode: ''
+      securityCode: '',
+      mapType: ''
     }
   }),
   actions: {

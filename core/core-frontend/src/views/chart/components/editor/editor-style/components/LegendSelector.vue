@@ -5,17 +5,18 @@ import icon_rightAlign_outlined from '@/assets/svg/icon_right-align_outlined.svg
 import icon_topAlign_outlined from '@/assets/svg/icon_top-align_outlined.svg'
 import icon_verticalAlign_outlined from '@/assets/svg/icon_vertical-align_outlined.svg'
 import icon_bottomAlign_outlined from '@/assets/svg/icon_bottom-align_outlined.svg'
-import { computed, onMounted, reactive, watch } from 'vue'
+import { computed, onMounted, reactive, watch, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
   DEFAULT_LEGEND_STYLE,
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
-import { ElCol, ElRow, ElSpace } from 'element-plus-secondary'
+import { ElCol, ElFormItem, ElRow, ElSpace } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getDynamicColorScale } from '@/views/chart/components/js/util'
+import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
 
 const { t } = useI18n()
 
@@ -55,7 +56,9 @@ const state = reactive({
   legendForm: {
     ...JSON.parse(JSON.stringify(DEFAULT_LEGEND_STYLE)),
     miscForm: JSON.parse(JSON.stringify(DEFAULT_MISC)) as ChartMiscAttr
-  }
+  },
+  showCustomSort: false,
+  customSortField: null
 })
 
 const chartType = computed(() => {
@@ -99,7 +102,9 @@ const changeMisc = prop => {
   emit('onMiscChange', { data: state.legendForm.miscForm, requestData: true }, prop)
 }
 
+const legendSort = ref()
 const init = () => {
+  legendSort.value?.blur()
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customStyle) {
     let customStyle = null
@@ -226,6 +231,31 @@ const getMapCustomRange = index => {
   if (index === state.legendForm.miscForm.mapLegendNumber) return t('chart.max')
   return ''
 }
+const customSort = []
+const changeLegendSort = sort => {
+  if (sort === 'custom') {
+    state.customSortField = cloneDeep(props.chart.xAxisExt?.[0])
+    if (!state.customSortField) {
+      return
+    }
+    state.showCustomSort = true
+  } else {
+    state.showCustomSort = false
+    state.legendForm.sort = sort
+  }
+  changeLegendStyle('sort')
+}
+const closeCustomSort = () => {
+  state.showCustomSort = false
+}
+const saveCustomSort = () => {
+  state.showCustomSort = false
+  state.legendForm.customSort = customSort
+  changeLegendStyle('customSort')
+}
+const customSortChange = list => {
+  customSort.splice(0, customSort.length, ...list)
+}
 onMounted(() => {
   init()
 })
@@ -281,7 +311,51 @@ onMounted(() => {
         </el-form-item>
       </el-col>
     </el-row>
-
+    <el-form-item v-if="showProperty('showRange')" class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.legendForm.showRange"
+        @change="changeLegendStyle('showRange')"
+        :label="t('chart.show_range_bg')"
+      />
+    </el-form-item>
+    <div
+      style="flex: 1; display: flex"
+      v-if="showProperty('showRange') && state.legendForm.showRange"
+    >
+      <el-form-item :label="t('chart.icon')" class="form-item" :class="'form-item-' + themes">
+        <el-select
+          :effect="themes"
+          v-model="state.legendForm.miscForm.bullet.bar.ranges.symbol"
+          :placeholder="t('chart.icon')"
+          @change="changeMisc('bullet.bar.ranges.symbol')"
+        >
+          <el-option
+            v-for="item in iconSymbolOptions"
+            :key="item.value"
+            :label="item.name"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 8px">
+        <template #label>&nbsp;</template>
+        <el-select
+          :effect="themes"
+          v-model="state.legendForm.miscForm.bullet.bar.ranges.symbolSize"
+          size="small"
+          @change="changeMisc('bullet.bar.ranges.symbolSize')"
+        >
+          <el-option
+            v-for="option in sizeList"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
+          />
+        </el-select>
+      </el-form-item>
+    </div>
     <el-space>
       <el-form-item
         class="form-item"
@@ -633,7 +707,55 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
     </el-space>
+    <el-form-item
+      class="form-item"
+      v-if="showProperty('legendSort')"
+      :class="'form-item-' + themes"
+      :label="t('chart.legend_sort')"
+    >
+      <el-select
+        v-model="state.legendForm.sort"
+        size="small"
+        :effect="themes"
+        :disabled="!chart.xAxisExt?.length"
+        ref="legendSort"
+        @change="changeLegendSort"
+      >
+        <el-option :label="t('chart.none')" value="none" />
+        <el-option :label="t('chart.asc')" value="asc" />
+        <el-option :label="t('chart.desc')" value="desc" />
+        <el-option
+          value="custom"
+          :label="t('visualization.custom_sort')"
+          @click="changeLegendSort('custom')"
+        />
+      </el-select>
+    </el-form-item>
   </el-form>
+  <el-dialog
+    v-if="state.showCustomSort"
+    v-model="state.showCustomSort"
+    :title="t('chart.custom_sort') + t('chart.sort')"
+    :visible="state.showCustomSort"
+    :close-on-click-modal="false"
+    destroy-on-close
+    width="372px"
+    class="dialog-css custom_sort_dialog"
+  >
+    <custom-sort-edit
+      field-type="xAxisExt"
+      :chart="chart"
+      :field="state.customSortField"
+      :origin-sort-list="state.legendForm.customSort"
+      @on-sort-change="customSortChange"
+    />
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="closeCustomSort">{{ t('chart.cancel') }} </el-button>
+        <el-button type="primary" @click="saveCustomSort">{{ t('chart.confirm') }} </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>

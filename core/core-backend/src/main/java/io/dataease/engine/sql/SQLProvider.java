@@ -197,7 +197,7 @@ public class SQLProvider {
     }
 
     public static String sqlLimit(String sql, ChartViewDTO view) {
-        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info")) {
+        if (StringUtils.equalsAnyIgnoreCase(view.getType(), "table-info", "table-normal")) {
             return sql;
         }
         if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {

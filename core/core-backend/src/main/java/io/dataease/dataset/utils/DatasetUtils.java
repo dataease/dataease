@@ -1,15 +1,15 @@
 package io.dataease.dataset.utils;
 
 import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.engine.constant.ExtFieldConstant;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.utils.TreeUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,5 +52,65 @@ public class DatasetUtils {
             }
         });
         return result;
+    }
+
+    public static String getEncode(String str) {
+        return Base64.getEncoder().encodeToString(str.getBytes());
+    }
+
+    public static String getDecode(String str) {
+        return new String(Base64.getDecoder().decode(str));
+    }
+
+    /**
+     * 计算字段表达式base64加密
+     *
+     * @param obj
+     */
+    public static void dsEncode(DatasetGroupInfoDTO obj) {
+        for (DatasetTableFieldDTO dto : obj.getAllFields()) {
+            if (dto.getExtField().equals(ExtFieldConstant.EXT_CALC)) {
+                dto.setOriginName(getEncode(dto.getOriginName()));
+            }
+        }
+    }
+
+    /**
+     * 计算字段表达式base64加密
+     *
+     * @param obj
+     */
+    public static void dsDecode(DatasetGroupInfoDTO obj) {
+        for (DatasetTableFieldDTO dto : obj.getAllFields()) {
+            if (dto.getExtField().equals(ExtFieldConstant.EXT_CALC)) {
+                dto.setOriginName(getDecode(dto.getOriginName()));
+            }
+        }
+    }
+
+    /**
+     * 计算字段表达式base64加密
+     *
+     * @param fields
+     */
+    public static void listEncode(List<DatasetTableFieldDTO> fields) {
+        for (DatasetTableFieldDTO dto : fields) {
+            if (dto.getExtField().equals(ExtFieldConstant.EXT_CALC)) {
+                dto.setOriginName(getEncode(dto.getOriginName()));
+            }
+        }
+    }
+
+    /**
+     * 计算字段表达式base64解密
+     *
+     * @param fields
+     */
+    public static void listDecode(List<DatasetTableFieldDTO> fields) {
+        for (DatasetTableFieldDTO dto : fields) {
+            if (dto.getExtField().equals(ExtFieldConstant.EXT_CALC)) {
+                dto.setOriginName(getDecode(dto.getOriginName()));
+            }
+        }
     }
 }

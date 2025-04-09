@@ -9,7 +9,7 @@ const { componentData, canvasStyleData } = storeToRefs(dvMainStore)
 const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMultiple: string) => {
   const timeType = (timeGranularityMultiple || '').split('range')[0]
 
-  if (timeGranularityMultiple === 'datetimerange' || type === 1 || !timeType) {
+  if (['datetimerange', 'yearrange'].includes(timeGranularityMultiple) || type === 1 || !timeType) {
     return selectValue.map(ele => +new Date(ele))
   }
 
@@ -79,13 +79,22 @@ const getDayEnd = timestamp => {
   ]
 }
 
-const getFieldId = (arr, result) => {
-  const [obj] = result
-  const idArr = obj.split(',')
-  return arr
-    .map(ele => ele.id)
-    .slice(0, idArr.length)
-    .join(',')
+const getFieldId = (arr, result, relationshipChartIndex, ids) => {
+  const [obj] = [...result].reverse()
+  const valArr = obj.split(',')
+  const idArr = arr.map(ele => ele.id)
+  const indexArr = relationshipChartIndex.filter(ele => valArr[ele])
+  if (!relationshipChartIndex.length) {
+    return [idArr.slice(0, valArr.length).join(','), [...new Set(result)]]
+  } else {
+    for (const key in result) {
+      result[key] = indexArr.map(ele => result[key].split(',')[ele]).join(',')
+    }
+    return [
+      indexArr.map(ele => ids[ele]).join(','),
+      result.filter(ele => !ele.endsWith(',') && !!ele)
+    ]
+  }
 }
 
 const getValueByDefaultValueCheckOrFirstLoad = (
@@ -278,7 +287,25 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
       ele.propValue.forEach(item => {
-        if (item.checkedFields.includes(curComponentId) && item.checkedFieldsMap[curComponentId]) {
+        let shouldSearch = false
+        const relationshipChartIndex = []
+        const ids = Array(5).fill(1)
+        if (item.displayType === '9' && item.treeCheckedList?.length) {
+          item.treeCheckedList.forEach((itx, idx) => {
+            if (
+              itx.checkedFields.includes(curComponentId) &&
+              itx.checkedFieldsMap[curComponentId] &&
+              idx < item.treeFieldList.length
+            ) {
+              relationshipChartIndex.push(idx)
+              ids[idx] = itx.checkedFieldsMap[curComponentId]
+            }
+          })
+        } else {
+          shouldSearch =
+            item.checkedFields.includes(curComponentId) && item.checkedFieldsMap[curComponentId]
+        }
+        if (shouldSearch || relationshipChartIndex.length) {
           let selectValue
           const {
             id,
@@ -424,9 +451,12 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               firstLoad
             )
             if (result?.length) {
-              const fieldId = isTree
-                ? getFieldId(treeFieldList, result)
-                : item.checkedFieldsMap[curComponentId]
+              let fieldId = item.checkedFieldsMap[curComponentId]
+              if (isTree) {
+                const [i, r] = getFieldId(treeFieldList, result, relationshipChartIndex, ids)
+                fieldId = i
+                result = r
+              }
               let parametersFilter = duplicateRemoval(
                 parameters.reduce((pre, next) => {
                   if (next.id === fieldId && !pre.length) {

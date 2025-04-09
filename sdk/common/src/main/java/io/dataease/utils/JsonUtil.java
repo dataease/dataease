@@ -14,6 +14,7 @@ import java.util.List;
 public class JsonUtil {
 
     private static final ObjectMapper objectMapper;
+
     static {
         objectMapper = new ObjectMapper();
         // 配置更大的 StreamReadConstraints 限制
@@ -41,6 +42,17 @@ public class JsonUtil {
         T t = null;
         try {
             t = objectMapper.readValue(json, classOfT);
+        } catch (JsonProcessingException e) {
+            LogUtil.error(e.getMessage(), e);
+        }
+        return t;
+    }
+
+    public static <T> T parseObject(String json, TypeReference<T> typeReference) {
+        if (json == null) return null;
+        T t = null;
+        try {
+            t = objectMapper.readValue(json, typeReference);
         } catch (JsonProcessingException e) {
             LogUtil.error(e.getMessage(), e);
         }

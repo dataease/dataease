@@ -1,6 +1,6 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
-import { formatterItem } from '@/views/chart/components/js/formatter'
+import { formatterItem, isEnLocal } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 
 export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
@@ -318,6 +318,32 @@ export const DEFAULT_MISC: ChartMiscAttr = {
     min: 0,
     max: 0,
     fieldId: undefined
+  },
+  bullet: {
+    bar: {
+      ranges: {
+        fill: ['rgba(0,128,255,0.3)'],
+        size: 20,
+        showType: 'dynamic',
+        fixedRangeNumber: 3,
+        symbol: 'circle',
+        symbolSize: 4
+      },
+      measures: {
+        fill: ['rgba(0,128,255,1)'],
+        size: 15,
+        symbol: 'circle',
+        symbolSize: 4
+      },
+      target: {
+        fill: 'rgb(0,0,0)',
+        size: 20,
+        showType: 'dynamic',
+        value: 0,
+        symbol: 'line',
+        symbolSize: 4
+      }
+    }
   }
 }
 
@@ -552,17 +578,6 @@ export const DEFAULT_TITLE_STYLE_DARK = {
   remarkBackgroundColor: '#5A5C62'
 }
 
-export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
-  show: true,
-  hPosition: 'center',
-  vPosition: 'bottom',
-  orient: 'horizontal',
-  icon: 'circle',
-  color: '#333333',
-  fontSize: 12,
-  size: 4
-}
-
 export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
   show: true,
   hPosition: 'center',
@@ -571,7 +586,24 @@ export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
   icon: 'circle',
   color: '#333333',
   fontSize: 12,
-  size: 4
+  size: 4,
+  showRange: true,
+  sort: 'none',
+  customSort: []
+}
+
+export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
+  show: true,
+  hPosition: 'center',
+  vPosition: 'bottom',
+  orient: 'horizontal',
+  icon: 'circle',
+  color: '#333333',
+  fontSize: 12,
+  size: 4,
+  showRange: true,
+  sort: 'none',
+  customSort: []
 }
 
 export const DEFAULT_LEGEND_STYLE_LIGHT: ChartLegendStyle = {
@@ -634,6 +666,7 @@ export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -680,6 +713,7 @@ export const DEFAULT_YAXIS_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -724,6 +758,7 @@ export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
   },
   axisLabelFormatter: {
     type: 'auto',
+    unitLanguage: isEnLocal ? 'en' : 'ch',
     unit: 1,
     suffix: '',
     decimalCount: 2,
@@ -1395,6 +1430,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'stock-line',
         title: t('chart.chart_stock_line'),
         icon: 'stock-line'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bullet-graph',
+        title: t('chart.bullet_chart'),
+        icon: 'bullet-graph'
       }
     ]
   },
@@ -1680,7 +1722,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   radarAreaColor: true,
   circleBorderColor: '#fff',
   circleBorderWidth: 0,
-  circlePadding: 0
+  circlePadding: 0,
+  quotaPosition: 'col',
+  quotaColLabel: t('dataset.value')
 }
 
 export const BASE_VIEW_CONFIG = {

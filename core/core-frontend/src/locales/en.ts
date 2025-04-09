@@ -1,6 +1,13 @@
 export default {
   common: {
     empty: ' ',
+    associated_chart: 'Associated chart',
+    associated_chart_first: 'First level associated chart',
+    changing_the_display:
+      'Changing the display type will clear the drop-down tree related settings. Are you sure?',
+    other_levels:
+      'Except for level 1, no query condition configuration is required for other levels',
+    tree_structure: 'The drop-down tree structure cannot be empty',
     component: {
       input: 'Input',
       textarea: 'Textarea',
@@ -371,6 +378,7 @@ export default {
     lweek: 'Last week',
     cmonth: 'This month',
     cquarter: 'This quarter',
+    tquarter: 'This quarter',
     lquarter: 'Last quarter',
     cyear: 'This year'
   },
@@ -709,7 +717,8 @@ export default {
     upload_a_cover: 'Please upload a cover',
     edit_theme: 'Edit theme',
     cover: 'Cover',
-    to_delete_: 'Are you sure you want to delete [{0}]?'
+    to_delete_: 'Are you sure you want to delete [{0}]?',
+    to_delete_variable: 'Are you sure you want to delete {0}?'
   },
   user: {
     change_password: 'Change Password',
@@ -1382,6 +1391,7 @@ export default {
     table_show_col_tooltip: 'Turn on column header tooltip',
     table_show_cell_tooltip: 'Turn on cell tooltip',
     table_show_header_tooltip: 'Turn on header tooltip',
+    table_summary: 'Total',
     table_show_summary: 'Show total',
     table_summary_label: 'Total label',
     table_header_show_horizon_border: 'Header horizontal border',
@@ -1441,7 +1451,12 @@ export default {
     y_W: 'Year Week',
     y_M_d: 'Year Month Day',
     M_d: 'Month Day',
+    M: 'Month',
+    d: 'Day',
+    H: 'Hours',
+    H_m: 'Hours Minutes',
     H_m_s: 'Hours Minutes Seconds',
+    y_M_d_H: 'Year Month Day Hours',
     y_M_d_H_m: 'Year Month Day Hours Minutes',
     y_M_d_H_m_s: 'Year Month Day Hours Minutes Seconds',
     date_sub: 'yyyy-MM-dd',
@@ -1723,6 +1738,9 @@ export default {
     value_formatter_value: 'Number',
     value_formatter_percent: 'Percentage',
     value_formatter_unit: 'Unit',
+    value_formatter_unit_language: 'Language',
+    value_formatter_unit_language_ch: 'Chinese',
+    value_formatter_unit_language_en: 'English',
     value_formatter_decimal_count: 'Number of decimal places',
     value_formatter_suffix: 'Unit suffix',
     show_gap: 'Show interval value',
@@ -2048,7 +2066,26 @@ export default {
     expand_all: 'Expand all',
     level_label: 'Level {num}',
     default_expand_level: 'Default expand level',
-    no_data_or_not_positive: 'No data available, or all data are not positive, unable to plot'
+    no_data_or_not_positive: 'No data available, or all data are not positive, unable to plot',
+    map_type: 'Map Provider',
+    map_type_gaode: 'Gaode Map',
+    map_type_tianditu: 'Tianditu',
+    map_type_baidu: 'Baidu Map',
+    map_type_tencent: 'Tencent Map',
+    bullet_chart: 'Bullet Chart',
+    range_bg: 'Range Background',
+    legend_name: 'Legend Name',
+    threshold_value: 'Threshold Value',
+    range_num: 'Number of Range',
+    show_range_bg: 'Show Range Background',
+    last_item: 'Last item',
+    legend_sort: 'Legend Sort',
+    quota_position: 'Quota Position',
+    quota_position_col: 'Column',
+    quota_position_row: 'Row',
+    quota_col_label: 'Quota Column Label',
+    table_grand_total_label: 'Total Alias',
+    table_field_total_label: 'Field Alias'
   },
   dataset: {
     field_value: 'Field Value',
@@ -2751,7 +2788,7 @@ export default {
     msg_center: 'Message center',
     to_be_filled: 'To be filled',
     the_minimum_value:
-      'The maximum value of the numerical interval must be greater than the minimum value',
+      'The maximum value of the numerical interval must be greater than or equal to the minimum value',
     before_querying:
       'The query condition is required, please set the option value before querying! ',
     here_or_click: 'Drag the field on the right here or click',
@@ -2858,6 +2895,27 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    publish_update_tips: 'Update available',
+    filter_freeze_tips:
+      'A pinned query component already exists. Confirm switching to this component?',
+    query_position: 'Query Component Position',
+    default: 'Default',
+    to_top: 'Pin to Top',
+    publish_recover: 'Revert Publish',
+    publish_tips1: 'Visible after publication',
+    publish_tips2: 'Available after publication {0}',
+    cancel_publish_tips: 'Successfully unpublished',
+    resource_not_published: 'Resource not published',
+    re_publish: 'Republish',
+    published_success: 'Published successfully',
+    cancel_publish: 'Cancel Publish',
+    publish: 'Publish',
+    freeze_top: 'Position frozen at the top',
+    indicator_linkage: 'Indicator card linkage only carries chart filtering parameters',
+    gap_size: 'Gap Size',
+    small: 'Small',
+    middle: 'Medium',
+    large: 'Large',
     no_details: 'No Data',
     sync_pc_design: 'Synchronize PC Design',
     title_background: 'Title Background',
@@ -3028,12 +3086,13 @@ export default {
     board_radius: 'Border Radius',
     enable_event_binding: 'Enable Event Binding',
     event_binding_tips:
-      'Event binding will take effect after exiting edit mode. If rich text has event binding enabled, internal click events will be disabled',
+      'Event bindings will take effect after exiting edit mode. When rich text or metric cards have event binding enabled, their internal click events will be disabled.',
     input_url_tips: 'Please enter the redirect URL',
     edit_title: 'Edit Title',
     custom_sort: 'Custom Sort',
     show_date: 'Show Date',
     show_time: 'Show Time',
+    show_week: 'Show Week',
     link_info: 'Link Information',
     pic_upload_tips: 'Please upload an image...',
     pic_group: 'Image Group',
@@ -3644,7 +3703,15 @@ export default {
       'Unit: minutes, range: [0-1440], 0 means no time limit, starting from the first access using the ticket',
     arg_val_tips: 'Please enter parameter values',
     arg_format_tips:
-      'Please use JSON format string, example single valued argVal, multi valued [argVal1, argVal2]'
+      'Please use JSON array format, example single valued [argVal], multi valued [argVal1, argVal2]',
+    param_error: 'Ticket parameter error!',
+    exp_error: 'Ticket has expired!',
+    disable_error: 'Sharing feature has been disabled, please contact administrator!',
+    pe_require_error: 'Expiration password is required, current link is invalid!',
+    iframe_error:
+      'Only embedded version and enterprise version support iframe embedding of public links!',
+    link_error: 'Link does not exist!',
+    link_exp_error: 'Link has expired!'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
@@ -4149,7 +4216,8 @@ export default {
       'After data filling is enabled, the form data can be stored in the Datasource. Once enabled, it is not allowed to be closed later. ',
     new_folder: 'New folder',
     form_manage: 'Form management',
-    my_job: 'My reports',
+    my_job: 'My data filling task',
+    short_name: 'Task',
     disable_data_fill_hint:
       'After closing data filling, the form data will fail to submit. Are you sure you want to close it? ',
     enable_data_fill_hint:
@@ -4157,6 +4225,7 @@ export default {
     todo: 'To be filled',
     finished: 'Filled',
     expired: 'Expired',
+    all: 'All',
     required_select: 'Required',
     condition: 'Filter value',
     add_condition: 'Add condition',
@@ -4327,6 +4396,8 @@ export default {
       download: 'Download',
       download_template: 'Download template',
       insert_data: 'Insert data',
+      batch_insert_data: ' Batch insert data',
+      batch_insert_data_with_count: 'Batch insert data，total count: {0}',
       update_data: 'Update data',
       delete_data: 'Delete data',
       recent_committer: 'Recent committer',
@@ -4337,6 +4408,8 @@ export default {
       data_not_found: '] does not exist'
     },
     task: {
+      commit_operate_type: 'Commit type',
+      committer: 'Committer',
       time_check_5_minute_later_than_current:
         'Cannot be less than 5 minutes after the current time',
       time_check_later_than_current: 'Cannot be less than the current time',

@@ -462,6 +462,9 @@ public class CalciteProvider extends Provider {
                 statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
             }
 
+            if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
+                datasourceRequest.setQuery(new String(datasourceRequest.getQuery().getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset()));
+            }
             if (CollectionUtils.isNotEmpty(datasourceRequest.getTableFieldWithValues())) {
                 LogUtil.info("execWithPreparedStatement sql: " + datasourceRequest.getQuery());
                 for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
@@ -604,15 +607,11 @@ public class CalciteProvider extends Provider {
     }
 
     private List<String[]> getData(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
-        String charset = null;
-        String targetCharset = "UTF-8";
+        String targetCharset = null;
         if (datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
             DatasourceConfiguration jdbcConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
 
-            if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
-                charset = jdbcConfiguration.getCharset();
-            }
-            if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset()) && !jdbcConfiguration.getTargetCharset().equalsIgnoreCase("Default")) {
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset())) {
                 targetCharset = jdbcConfiguration.getTargetCharset();
             }
         }
@@ -639,13 +638,11 @@ public class CalciteProvider extends Provider {
                     default:
                         if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
                             row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
+                        }
+                        if (targetCharset != null && StringUtils.isNotEmpty(rs.getString(j + 1)) && (columnType != Types.NVARCHAR && columnType != Types.NCHAR)) {
+                            row[j] = new String(rs.getBytes(j + 1), targetCharset);
                         } else {
-                            if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
-                                String originStr = new String(rs.getString(j + 1).getBytes(charset), targetCharset);
-                                row[j] = new String(originStr.getBytes("UTF-8"), "UTF-8");
-                            } else {
-                                row[j] = rs.getString(j + 1);
-                            }
+                            row[j] = rs.getString(j + 1);
                         }
 
                         break;
@@ -1220,6 +1217,18 @@ public class CalciteProvider extends Provider {
                 }
                 tableSqls.add("select table_name, comments, owner  from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'TABLE'");
                 tableSqls.add("select table_name, comments, owner  from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'VIEW'");
+                tableSqls.add("SELECT \n" +
+                        "    m.mview_name,\n" +
+                        "    c.comments\n" +
+                        "FROM \n" +
+                        "    ALL_MVIEWS m\n" +
+                        "LEFT JOIN \n" +
+                        "    ALL_TAB_COMMENTS c \n" +
+                        "ON \n" +
+                        "    m.owner = c.owner \n" +
+                        "    AND m.mview_name = c.table_name\n" +
+                        "    AND c.table_type = 'MATERIALIZED VIEW'\n" +
+                        "WHERE m.OWNER ='DE_SCHEMA'".replace("DE_SCHEMA", configuration.getSchema()));
                 break;
             case db2:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
@@ -1242,6 +1251,29 @@ public class CalciteProvider extends Provider {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
                 tableSqls.add("SELECT  \n" + "    relname AS TableName,  \n" + "    obj_description(relfilenode::regclass, 'pg_class') AS TableDescription  \n" + "FROM  \n" + "    pg_class  \n" + "WHERE  \n" + "   relkind in  ('r','p', 'f')  \n" + "    AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'SCHEMA') ".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" +
+                        "    c.relname AS view_name,\n" +
+                        "    COALESCE(d.description, 'No description provided') AS view_description\n" +
+                        "FROM \n" +
+                        "    pg_class c\n" +
+                        "JOIN \n" +
+                        "    pg_namespace n ON c.relnamespace = n.oid\n" +
+                        "LEFT JOIN \n" +
+                        "    pg_description d ON c.oid = d.objoid\n" +
+                        "WHERE \n" +
+                        "    c.relkind = 'v'  \n" +
+                        "    AND n.nspname = 'SCHEMA'".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" +
+                        "    c.relname AS materialized_view_name,\n" +
+                        "    COALESCE(d.description, '') AS view_description\n" +
+                        "FROM \n" +
+                        "    pg_class c\n" +
+                        "JOIN \n" +
+                        "    pg_namespace n ON c.relnamespace = n.oid\n" +
+                        "LEFT JOIN \n" +
+                        "    pg_description d ON c.oid = d.objoid\n" +
+                        "WHERE \n" +
+                        "    c.relkind = 'm' and n.nspname ='SCHEMA';  ".replace("SCHEMA", configuration.getSchema()));
                 break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);

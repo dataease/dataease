@@ -10,10 +10,12 @@ import {
   TOOLTIP_TPL
 } from '../../common/common_antv'
 import {
+  convertToAlphaColor,
   flow,
   getLineConditions,
   getLineLabelColorByCondition,
   hexColorToRGBA,
+  isAlphaColor,
   parseJson,
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
@@ -43,8 +45,10 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     'label-selector': ['seriesLabelVPosition', 'seriesLabelFormatter', 'showExtremum'],
     'tooltip-selector': [
       ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
-    ]
+      'seriesTooltipFormatter',
+      'carousel'
+    ],
+    'legend-selector': [...LINE_EDITOR_PROPERTY_INNER['legend-selector'], 'legendSort']
   }
   axis: AxisType[] = [...LINE_AXIS_TYPE, 'xAxisExt']
   axisConfig = {
@@ -66,8 +70,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   }
   async drawChart(drawOptions: G2PlotDrawOptions<G2Line>): Promise<G2Line> {
     const { chart, action, container } = drawOptions
+    chart.container = container
     if (!chart.data?.data?.length) {
-      chart.container = container
       clearExtremum(chart)
       return
     }
@@ -321,17 +325,30 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       if (sort?.length) {
         // 用值域限定排序，有可能出现新数据但是未出现在图表上，所以这边要遍历一下子维度，加到后面，让新数据显示出来
         const data = optionTmp.data
-        data?.forEach(d => {
-          const cat = d['category']
-          if (cat && !sort.includes(cat)) {
-            sort.push(cat)
+        const cats =
+          data?.reduce((p, n) => {
+            const cat = n['category']
+            if (cat && !p.includes(cat)) {
+              p.push(cat)
+            }
+            return p
+          }, []) || []
+        const values = sort.reduce((p, n) => {
+          if (cats.includes(n)) {
+            const index = cats.indexOf(n)
+            if (index !== -1) {
+              cats.splice(index, 1)
+            }
+            p.push(n)
           }
-        })
+          return p
+        }, [])
+        cats.length > 0 && values.push(...cats)
         optionTmp.meta = {
           ...optionTmp.meta,
           category: {
             type: 'cat',
-            values: sort
+            values
           }
         }
       }
@@ -349,6 +366,56 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       return {
         r: size,
         fill: style.stroke
+      }
+    }
+    const { sort, customSort, icon } = customStyle.legend
+    if (sort && sort !== 'none' && chart.xAxisExt.length) {
+      const customAttr = parseJson(chart.customAttr)
+      const { basicStyle } = customAttr
+      const seriesMap =
+        basicStyle.seriesColor?.reduce((p, n) => {
+          p[n.id] = n
+          return p
+        }, {}) || {}
+      const dupCheck = new Set()
+      const items = optionTmp.data?.reduce((arr, item) => {
+        if (!dupCheck.has(item.category)) {
+          const fill =
+            seriesMap[item.category]?.color ??
+            optionTmp.color[dupCheck.size % optionTmp.color.length]
+          dupCheck.add(item.category)
+          arr.push({
+            name: item.category,
+            value: item.category,
+            marker: {
+              symbol: icon,
+              style: {
+                r: size,
+                fill: isAlphaColor(fill) ? fill : convertToAlphaColor(fill, basicStyle.alpha)
+              }
+            }
+          })
+        }
+        return arr
+      }, [])
+      if (sort !== 'custom') {
+        items.sort((a, b) => {
+          return sort !== 'desc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+        })
+      } else {
+        const tmp = []
+        ;(customSort || []).forEach(item => {
+          const index = items.findIndex(i => i.name === item)
+          if (index !== -1) {
+            tmp.push(items[index])
+            items.splice(index, 1)
+          }
+        })
+        items.unshift(...tmp)
+      }
+      optionTmp.legend.items = items
+      if (xAxisExt?.customSort?.length > 0) {
+        delete optionTmp.meta?.category.values
       }
     }
     return optionTmp

@@ -6,13 +6,17 @@
     trigger="click"
     :title="t('visualization.multiplexing')"
     custom-class="custom-drawer"
+    @closed="handleClose()"
   >
+    <!-- 标识当前在复用页，用于作为轮播提示前缀 -->
+    <div v-if="dialogShow" id="multiplexingDrawer" />
     <dashboard-preview-show
       v-if="dialogShow && curDvType === 'dashboard'"
       ref="multiplexingPreviewShowRef"
       class="multiplexing-area"
       no-close
       show-position="multiplexing"
+      resource-table="snapshot"
     ></dashboard-preview-show>
     <preview-show
       v-if="dialogShow && curDvType === 'dataV'"
@@ -20,6 +24,7 @@
       class="multiplexing-area"
       no-close
       show-position="multiplexing"
+      resource-table="snapshot"
     ></preview-show>
     <template #footer>
       <el-row class="multiplexing-footer">
@@ -66,6 +71,7 @@ import { storeToRefs } from 'pinia'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import PreviewShow from '@/views/data-visualization/PreviewShow.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const dialogShow = ref(false)
@@ -82,6 +88,7 @@ const state = reactive({
   ]
 })
 const dialogInit = (dvType = 'dashboard') => {
+  ChartCarouselTooltip.paused()
   curDvType.value = dvType
   dialogShow.value = true
   dvMainStore.initCurMultiplexingComponents()
@@ -102,7 +109,9 @@ const saveMultiplexing = () => {
     snapshotStore.recordSnapshotCache('saveMultiplexing')
   })
 }
-
+const handleClose = () => {
+  ChartCarouselTooltip.closeEnlargeDialogDestroy()
+}
 defineExpose({
   dialogInit
 })

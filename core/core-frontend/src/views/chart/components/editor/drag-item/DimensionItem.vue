@@ -192,17 +192,25 @@ const showCustomSort = item => {
   }
   return !item.chartId && (item.deType === 0 || item.deType === 5)
 }
-const showSort = () => {
+
+const NOT_SUPPORT_SORT = ['word-cloud', 'stock-line', 'treemap', 'circle-packing']
+const showSort = computed(() => {
   const { type: chartType } = props.chart
   const { type: propType } = props
-  const notShowSort = ['word-cloud', 'stock-line'].includes(chartType)
+  const notShowSort = NOT_SUPPORT_SORT.includes(chartType)
   if (notShowSort || propType === 'extColor') {
     return false
   }
   const isChartMix = chartType.includes('chart-mix')
   const isDimensionType = ['dimension', 'dimensionStack', 'dimensionExt'].includes(propType)
   return !isChartMix || isDimensionType
-}
+})
+const showSortPriority = computed(() => {
+  if (props.chart.type.includes('chart-mix')) {
+    return false
+  }
+  return showSort.value
+})
 const toggleHide = () => {
   item.value.index = props.index
   item.value.hide = !item.value.hide
@@ -212,6 +220,7 @@ const toggleHide = () => {
 const showHideIcon = computed(() => {
   return ['table-info', 'table-normal'].includes(props.chart.type) && item.value.hide
 })
+
 onMounted(() => {
   getItemTagType()
 })
@@ -226,17 +235,17 @@ onMounted(() => {
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
         <span v-if="type !== 'extColor'" style="display: flex; color: #646a73">
-          <el-icon v-if="'asc' === item.sort && showSort()">
+          <el-icon v-if="'asc' === item.sort && showSort">
             <Icon name="icon_sort-a-to-z_outlined"
               ><icon_sortAToZ_outlined class="svg-icon"
             /></Icon>
           </el-icon>
-          <el-icon v-if="'desc' === item.sort && showSort()">
+          <el-icon v-if="'desc' === item.sort && showSort">
             <Icon name="icon_sort-z-to-a_outlined"
               ><icon_sortZToA_outlined class="svg-icon"
             /></Icon>
           </el-icon>
-          <el-icon v-if="'custom_sort' === item.sort && showSort()">
+          <el-icon v-if="'custom_sort' === item.sort && showSort">
             <Icon name="icon_sort_outlined"><icon_sort_outlined class="svg-icon" /></Icon>
           </el-icon>
           <el-icon>
@@ -283,7 +292,7 @@ onMounted(() => {
             class="item-span-style"
             :class="{
               'hidden-status': showHideIcon,
-              'sort-status': showSort() && item.sort !== 'none'
+              'sort-status': showSort && item.sort !== 'none'
             }"
           >
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
@@ -312,7 +321,7 @@ onMounted(() => {
           class="drop-style"
           :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
         >
-          <el-dropdown-item @click.prevent v-if="showSort()">
+          <el-dropdown-item @click.prevent v-if="showSort">
             <el-dropdown
               :effect="themes"
               popper-class="data-dropdown_popper_mr9"
@@ -398,14 +407,14 @@ onMounted(() => {
               </template>
             </el-dropdown>
           </el-dropdown-item>
-          <!-- <el-dropdown-item
-            v-if="showSort()"
+          <el-dropdown-item
+            v-if="showSortPriority"
             :command="beforeClickItem('sortPriority')"
             class="menu-item-padding"
           >
             <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
-          </el-dropdown-item> -->
+          </el-dropdown-item>
           <el-dropdown-item
             @click.prevent
             v-if="item.deType === 1"
@@ -526,6 +535,25 @@ onMounted(() => {
                       {{ t('chart.H_m_s') }}
                       <el-icon class="sub-menu-content--icon">
                         <Icon name="icon_done_outlined" v-if="'H_m_s' === item.dateStyle"
+                          ><icon_done_outlined class="svg-icon"
+                        /></Icon>
+                      </el-icon>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="menu-item-padding"
+                    :command="beforeDateStyle('y_M_d_H')"
+                    :divided="
+                      chart.type.includes('bar-range') && ['quota', 'quotaExt'].includes(type)
+                    "
+                  >
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_M_d_H' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_M_d_H') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_M_d_H' === item.dateStyle"
                           ><icon_done_outlined class="svg-icon"
                         /></Icon>
                       </el-icon>

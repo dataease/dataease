@@ -46,6 +46,11 @@ const props = defineProps({
     required: false,
     type: Boolean,
     default: false
+  },
+  resourceTable: {
+    required: false,
+    type: String,
+    default: 'core'
   }
 })
 
@@ -75,7 +80,7 @@ const loadCanvasData = (dvId, weight?, ext?) => {
   dataInitState.value = false
   initMethod(
     dvId,
-    'dataV',
+    { busiFlag: 'dataV', resourceTable: 'core' },
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -250,12 +255,13 @@ onBeforeMount(() => {
         v-show="slideShow"
         :cur-canvas-type="'dataV'"
         :show-position="showPosition"
+        :resource-table="resourceTable"
         @node-click="resourceNodeClick"
       />
     </el-aside>
     <el-container
       class="preview-area"
-      :class="{ 'no-data': !hasTreeData }"
+      :class="{ 'no-data': !state.dvInfo?.id }"
       v-loading="!dataInitState"
     >
       <div @click="slideOpenChange" class="flexible-button-area" v-if="false">

@@ -1,13 +1,10 @@
 <script lang="tsx" setup>
-import { computed, onMounted, PropType, reactive, ref, watch } from 'vue'
+import { onMounted, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
-  COLOR_PANEL,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
-import { formatterType, unitType } from '@/views/chart/components/js/formatter'
-import { ElMessage } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
 import DualYAxisSelectorInner from './DualYAxisSelectorInner.vue'
 

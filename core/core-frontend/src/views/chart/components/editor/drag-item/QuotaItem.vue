@@ -315,14 +315,23 @@ const showHideIcon = computed(() => {
   return ['tale-info', 'table-normal'].includes(props.chart.type) && item.value.hide
 })
 
+const NOT_SUPPORT_SORT = [
+  'circle-packing',
+  'indicator',
+  'liquid',
+  'gauge',
+  'word-cloud',
+  'stock-line',
+  'treemap'
+]
+
 const showSort = computed(() => {
   return (
     props.type !== 'extLabel' &&
     props.type !== 'extTooltip' &&
     props.type !== 'extBubble' &&
-    !['chart-mix', 'indicator', 'liquid', 'gauge', 'word-cloud', 'stock-line'].includes(
-      chart.value.type
-    )
+    !NOT_SUPPORT_SORT.includes(chart.value.type) &&
+    !chart.value.type.includes('chart-mix')
   )
 })
 
@@ -613,7 +622,9 @@ onMounted(() => {
           <!--同比/环比等快速计算-->
           <el-dropdown-item
             @click.prevent
-            v-if="chart.type !== 'table-info' && props.type !== 'extBubble'"
+            v-if="
+              !['table-info', 'bullet-graph'].includes(chart.type) && props.type !== 'extBubble'
+            "
           >
             <el-dropdown
               placement="right-start"
@@ -790,14 +801,14 @@ onMounted(() => {
             </el-dropdown>
           </el-dropdown-item>
 
-          <!-- <el-dropdown-item
+          <el-dropdown-item
             v-if="showSort"
             class="menu-item-padding"
             :command="beforeClickItem('sortPriority')"
           >
             <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
-          </el-dropdown-item> -->
+          </el-dropdown-item>
 
           <el-dropdown-item
             class="menu-item-padding"

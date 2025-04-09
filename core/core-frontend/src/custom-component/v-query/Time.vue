@@ -7,7 +7,13 @@ import { type TimeRange } from './time-format'
 import dayjs from 'dayjs'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useShortcuts } from './shortcuts'
-import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
+import {
+  getThisStart,
+  getThisEnd,
+  getLastStart,
+  getAround,
+  getCustomRange
+} from './time-format-dayjs'
 import VanPopup from 'vant/es/popup'
 import VanDatePicker from 'vant/es/date-picker'
 import VanTimePicker from 'vant/es/time-picker'
@@ -139,6 +145,9 @@ watch(
 )
 
 const handleValueChange = () => {
+  selectValue.value = Array.isArray(selectValue.value)
+    ? selectValue.value.map(ele => dayjs(ele).format('YYYY/MM/DD HH:mm:ss'))
+    : dayjs(selectValue.value).format('YYYY/MM/DD HH:mm:ss')
   const value = Array.isArray(selectValue.value) ? [...selectValue.value] : selectValue.value
   if (!props.isConfig) {
     config.value.selectValue = Array.isArray(selectValue.value)
@@ -251,6 +260,7 @@ const disabledDate = val => {
     regularOrTrends,
     regularOrTrendsValue,
     relativeToCurrent,
+    relativeToCurrentRange,
     timeNum,
     relativeToCurrentType,
     around,
@@ -261,6 +271,7 @@ const disabledDate = val => {
     aroundRange
   } = config.value.timeRange || {}
   let isDynamicWindowTime = false
+
   if (startWindowTime.value && dynamicWindow) {
     isDynamicWindowTime =
       dayjs(startWindowTime.value)
@@ -297,6 +308,14 @@ const disabledDate = val => {
       case 'lastMonth':
         startTime = getLastStart('month')
         break
+      case 'thisQuarter':
+        startTime = getThisStart('quarter')
+        break
+      case 'thisWeek':
+        startTime = new Date(
+          dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')
+        )
+        break
       case 'today':
         startTime = getThisStart('day')
         break
@@ -305,6 +324,9 @@ const disabledDate = val => {
         break
       case 'monthBeginning':
         startTime = getThisStart('month')
+        break
+      case 'monthEnd':
+        startTime = getThisEnd('month')
         break
       case 'yearBeginning':
         startTime = getThisStart('year')
@@ -325,26 +347,31 @@ const disabledDate = val => {
   }
 
   if (intervalType === 'timeInterval') {
-    const startTime =
-      regularOrTrends === 'fixed'
-        ? new Date(
-            dayjs(new Date(regularOrTrendsValue[0]))
-              .startOf(queryTimeType.value)
-              .format('YYYY/MM/DD HH:mm:ss')
-          )
-        : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
-    const endTime =
-      regularOrTrends === 'fixed'
-        ? new Date(
-            dayjs(new Date(regularOrTrendsValue[1]))
-              .endOf(queryTimeType.value)
-              .format('YYYY/MM/DD HH:mm:ss')
-          )
-        : getAround(
-            relativeToCurrentTypeRange,
-            aroundRange === 'f' ? 'subtract' : 'add',
-            timeNumRange
-          )
+    let endTime
+    if (relativeToCurrentRange === 'custom') {
+      startTime =
+        regularOrTrends === 'fixed'
+          ? new Date(
+              dayjs(new Date(regularOrTrendsValue[0]))
+                .startOf(queryTimeType.value)
+                .format('YYYY/MM/DD HH:mm:ss')
+            )
+          : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+      endTime =
+        regularOrTrends === 'fixed'
+          ? new Date(
+              dayjs(new Date(regularOrTrendsValue[1]))
+                .endOf(queryTimeType.value)
+                .format('YYYY/MM/DD HH:mm:ss')
+            )
+          : getAround(
+              relativeToCurrentTypeRange,
+              aroundRange === 'f' ? 'subtract' : 'add',
+              timeNumRange
+            )
+    } else {
+      ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
+    }
     return (
       timeStamp < +new Date(startTime) - 1000 ||
       timeStamp > +new Date(endTime) ||
@@ -388,8 +415,9 @@ const selectSecond = ref(false)
 
 const setArrValue = () => {
   currentDate.value = currentDate.value.slice(0, getIndex() + 1)
-  const timeFormat =
-    currentDate.value.length === 2 ? currentDate.value.concat(['01']) : currentDate.value
+  const timeFormat = [1, 2].includes(currentDate.value.length)
+    ? currentDate.value.concat(Array([0, 2, 1][currentDate.value.length]).fill('01'))
+    : currentDate.value
   if (isRange.value) {
     const [start, end] = selectValue.value || []
     if (selectSecond.value) {

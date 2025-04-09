@@ -401,6 +401,7 @@ onMounted(() => {
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
+  margin: 3px 0 !important;
 }
 :deep(.form-item-dark) {
   .ed-form-item__label {

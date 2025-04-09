@@ -18,6 +18,7 @@ import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.*;
+import io.dataease.i18n.Lang;
 import io.dataease.license.manage.F2CLicLimitedManage;
 import io.dataease.result.ResultCode;
 import io.dataease.utils.JsonUtil;
@@ -323,7 +324,8 @@ public class ChartDataServer implements ChartDataApi {
         xAxis.addAll(viewInfo.getXAxisExt());
         xAxis.addAll(viewInfo.getYAxisExt());
         xAxis.addAll(viewInfo.getExtStack());
-
+        TableHeader tableHeader = null;
+        Integer totalDepth = 0;
         if (viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) {
             for (ChartViewFieldDTO xAxi : xAxis) {
                 if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
@@ -331,6 +333,18 @@ public class ChartDataServer implements ChartDataApi {
                     styles.add(formatterCellStyle);
                 } else {
                     styles.add(null);
+                }
+            }
+
+            Map<String, Object> customAttr = viewInfo.getCustomAttr();
+            Map<String, Object> tableHeaderMap = (Map<String, Object>) customAttr.get("tableHeader");
+            if (tableHeaderMap.get("headerGroup") != null && Boolean.valueOf(tableHeaderMap.get("headerGroup").toString())) {
+                tableHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
+                for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
+                    totalDepth = Math.max(totalDepth, getDepth(column, 1));
+                }
+                for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
+                    setWidth(column, 1);
                 }
             }
         }
@@ -379,9 +393,31 @@ public class ChartDataServer implements ChartDataApi {
             mergeHead = true;
         }
         if (CollectionUtils.isNotEmpty(details) && (!mergeHead || details.size() > 2)) {
-            int realDetailRowIndex = 2;
+            int realDetailRowIndex = tableHeader == null ? 2 : totalDepth;
+            if (tableHeader != null) {
+                cellStyle.setBorderTop(BorderStyle.THIN);
+                cellStyle.setBorderRight(BorderStyle.THIN);
+                cellStyle.setBorderBottom(BorderStyle.THIN);
+                cellStyle.setBorderLeft(BorderStyle.THIN);
+                Map<String, Row> rowMap = new HashMap<>();
+                for (Integer i = 0; i < totalDepth; i++) {
+                    rowMap.put("row" + i, detailsSheet.createRow(i));
+                }
+                int width = 0;
+                Integer depth = 0;
+                for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
+                    createCell(tableHeader, column, width, depth, detailsSheet, cellStyle, totalDepth, rowMap, xAxis);
+                    width = width + column.getWidth();
+                }
+            }
             for (int i = (mergeHead ? 2 : 0); i < details.size(); i++) {
-                Row row = detailsSheet.createRow(realDetailRowIndex > 2 ? realDetailRowIndex : i);
+                int rowIndex = i;
+                if (tableHeader != null) {
+                    rowIndex = realDetailRowIndex - 1 + i;
+                } else {
+                    rowIndex = realDetailRowIndex > 2 ? realDetailRowIndex : i;
+                }
+                Row row = detailsSheet.createRow(rowIndex);
                 Object[] rowData = details.get(i);
                 if (rowData != null) {
                     for (int j = 0; j < rowData.length; j++) {
@@ -422,7 +458,7 @@ public class ChartDataServer implements ChartDataApi {
                             try {
                                 if ((viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
                                     try {
-                                        FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO() : xAxis.get(j).getFormatterCfg();
+                                        FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en") : xAxis.get(j).getFormatterCfg();
                                         row.getCell(j).setCellStyle(styles.get(j));
                                         row.getCell(j).setCellValue(Double.valueOf(cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()))));
                                     } catch (Exception e) {
@@ -441,6 +477,7 @@ public class ChartDataServer implements ChartDataApi {
                         } else {
                             if (!viewInfo.getType().equalsIgnoreCase("circle-packing")) {
                                 Map<String, Object> senior = viewInfo.getSenior();
+                                viewInfo.getCustomAttr().get("");
                                 ChartSeniorFunctionCfgDTO functionCfgDTO = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("functionCfg")), ChartSeniorFunctionCfgDTO.class);
                                 if (functionCfgDTO != null && StringUtils.isNotEmpty(functionCfgDTO.getEmptyDataStrategy()) && functionCfgDTO.getEmptyDataStrategy().equalsIgnoreCase("setZero")) {
                                     if ((viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info"))) {
@@ -456,6 +493,90 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 }
             }
+        }
+    }
+
+
+    private static Integer getDepth(TableHeader.ColumnInfo column, Integer parentDepth) {
+        if (org.springframework.util.CollectionUtils.isEmpty(column.getChildren())) {
+            return parentDepth;
+        } else {
+            Integer depth = 0;
+            for (TableHeader.ColumnInfo child : column.getChildren()) {
+                depth = Math.max(depth, getDepth(child, parentDepth + 1));
+            }
+            return depth;
+        }
+    }
+
+    private static void createCell(TableHeader tableHeader, TableHeader.ColumnInfo column, Integer width, Integer depth, Sheet sheet, CellStyle cellStyle, Integer totaalDepth, Map<String, Row> rowMap, List<ChartViewFieldDTO> xAxis) {
+        if (org.springframework.util.CollectionUtils.isEmpty(column.getChildren())) {
+            Integer toDepth = totaalDepth - 1 > depth ? totaalDepth - 1 : depth;
+            if (depth.equals(toDepth)) {
+                Cell cell = rowMap.get("row" + depth).createCell(width);
+                cell.setCellStyle(cellStyle);
+                cell.setCellValue(getDeFieldName(xAxis, column.getKey()));
+            } else {
+                for (int i = depth; i <= toDepth; i++) {
+                    Cell cell1 = rowMap.get("row" + i).createCell(width);
+                    cell1.setCellValue(getDeFieldName(xAxis, column.getKey()));
+                    cell1.setCellStyle(cellStyle);
+                }
+                CellRangeAddress region = new CellRangeAddress(depth, toDepth, width, width);
+                sheet.addMergedRegion(region);
+
+                Cell mergedCell = rowMap.get("row" + depth).getCell(width);
+                mergedCell.setCellStyle(cellStyle);
+
+            }
+        } else {
+            Cell cell1 = rowMap.get("row" + depth).createCell(width);
+            cell1.setCellValue(getGroupName(tableHeader, column.getKey()));
+            cell1.setCellStyle(cellStyle);
+            Cell cell2 = rowMap.get("row" + depth).createCell(width + column.getWidth() - 1);
+            cell2.setCellValue(getGroupName(tableHeader, column.getKey()));
+            cell2.setCellStyle(cellStyle);
+            CellRangeAddress region = new CellRangeAddress(depth, depth, width, width + column.getWidth() - 1);
+            sheet.addMergedRegion(region);
+            Cell mergedCell = rowMap.get("row" + depth).getCell(width);
+            mergedCell.setCellStyle(cellStyle);
+            int subWith = width;
+            for (TableHeader.ColumnInfo child : column.getChildren()) {
+                createCell(tableHeader, child, subWith, depth + 1, sheet, cellStyle, totaalDepth, rowMap, xAxis);
+                subWith = subWith + child.getWidth();
+            }
+        }
+    }
+
+    private static String getGroupName(TableHeader tableHeader, String key) {
+        for (TableHeader.MetaInfo metaInfo : tableHeader.getHeaderGroupConfig().getMeta()) {
+            if (metaInfo.getField().equals(key)) {
+                return metaInfo.getName();
+            }
+        }
+        return "";
+    }
+
+    private static String getDeFieldName(List<ChartViewFieldDTO> xAxis, String key) {
+        for (ChartViewFieldDTO xAxi : xAxis) {
+            if (xAxi.getDataeaseName().equals(key)) {
+                return xAxi.getName();
+            }
+        }
+        return "";
+    }
+
+    private static Integer setWidth(TableHeader.ColumnInfo column, Integer parentWidth) {
+        if (org.springframework.util.CollectionUtils.isEmpty(column.getChildren())) {
+            column.setWidth(parentWidth);
+            return parentWidth;
+        } else {
+            Integer depth = 0;
+            for (TableHeader.ColumnInfo child : column.getChildren()) {
+                depth = depth + setWidth(child, 1);
+            }
+            column.setWidth(depth);
+            return depth;
         }
     }
 

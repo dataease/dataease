@@ -143,12 +143,7 @@ const onSubmit = async () => {
         return
       }
       showMfa.value = false
-      if (!isLdap && mfa?.enabled) {
-        for (const key in mfa) {
-          mfaData.value[key] = mfa[key]
-        }
-        showMfa.value = true
-        duringLogin.value = false
+      if (toMfa(mfa)) {
         return
       }
       userStore.setToken(token)
@@ -176,6 +171,19 @@ const switchType = type => {
 }
 const toMain = () => {
   router.push({ path: '/index' })
+}
+const toMfa = (mfa: any) => {
+  const isLdap = loginType.value === 'ldap'
+  if (!isLdap && mfa?.enabled) {
+    for (const key in mfa) {
+      mfaData.value[key] = mfa[key]
+    }
+    showMfa.value = true
+    duringLogin.value = false
+    showPlatLoginMask.value = false
+    return true
+  }
+  return false
 }
 const loadFail = () => {
   xpackLoadFail.value = true
@@ -248,6 +256,7 @@ const loadFail = () => {
     <XpackComponent
       jsname="L2NvbXBvbmVudC9sb2dpbi9Nb2JpbGVIYW5kbGVy"
       @switch-type="switchType"
+      @to-mfa="toMfa"
       @to-main="toMain"
     />
   </div>

@@ -12,9 +12,10 @@ import Board from '@/components/de-board/Board.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { isMobile } from '@/utils/utils'
-import { isDashboard } from '@/utils/canvasUtils'
+import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 const appStore = useAppStoreWithOut()
 
 const componentWrapperInnerRef = ref(null)
@@ -23,6 +24,7 @@ const dvMainStore = dvMainStoreWithOut()
 const downLoading = ref(false)
 const { wsCache } = useCache('localStorage')
 const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+const dePreviewPopDialogRef = ref(null)
 const commonFilterAttrsFilterBorder = [
   'width',
   'height',
@@ -122,6 +124,11 @@ const props = defineProps({
   optType: {
     type: String,
     required: false
+  },
+  // 画布滚动距离
+  scrollMain: {
+    type: Number,
+    default: 0
   }
 })
 const {
@@ -133,7 +140,8 @@ const {
   dvInfo,
   searchCount,
   scale,
-  suffixId
+  suffixId,
+  scrollMain
 } = toRefs(props)
 let currentInstance
 const component = ref(null)
@@ -145,7 +153,7 @@ const htmlToImage = () => {
   useEmitt().emitter.emit('l7-prepare-picture', config.value.id)
   downLoading.value = true
   setTimeout(() => {
-    const vueDom = componentWrapperInnerRef.value
+    const vueDom = document.getElementById(viewDemoInnerId.value)
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value / 100)
     downloadCanvas2('img', vueDom, '图表', () => {
       // do callback
@@ -163,8 +171,11 @@ const handleInnerMouseDown = e => {
     e.stopPropagation()
     e.preventDefault()
   }
-  if (showPosition.value.includes('popEdit') || dvMainStore.mobileInPc) {
+  if (['popEdit', 'preview'].includes(showPosition.value) || dvMainStore.mobileInPc) {
     onClick(e)
+    if (e.target?.className?.includes('ed-input__inner')) return
+    e.stopPropagation()
+    e.preventDefault()
   }
 }
 
@@ -318,25 +329,9 @@ const onWrapperClick = e => {
       const jumpType = config.value.events.jump.type
       try {
         if ('newPop' === jumpType) {
-          console.info('DataEase Component Jump newPop value:' + window['originOpen'])
-          if (window['originOpen']) {
-            console.info('DataEase Component originOpen newPop')
-            window['originOpen'](
-              url,
-              '_blank',
-              'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
-            )
-          } else {
-            window.open(
-              url,
-              '_blank',
-              'width=800,height=600,left=200,top=100,toolbar=no,scrollbars=yes,resizable=yes,location=no'
-            )
-          }
+          dePreviewPopDialogRef.value.previewInit({ url, size: 'middle' })
         } else if ('_blank' === jumpType) {
-          console.info('DataEase Component Jump _blank value:' + window['originOpen'])
           if (window['originOpen']) {
-            console.info('DataEase Component originOpen _blank')
             window['originOpen'](url, '_blank')
           } else {
             window.open(url, '_blank')
@@ -371,12 +366,25 @@ const initOpenHandler = newWindow => {
 }
 const deepScale = computed(() => scale.value / 100)
 const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && props.active))
+
+const freezeFlag = computed(() => {
+  return (
+    isMainCanvas(props.canvasId) &&
+    config.value.freeze &&
+    scrollMain.value - config.value.style?.top > 0
+  )
+})
 </script>
 
 <template>
   <div
     class="wrapper-outer"
-    :class="showPosition + '-' + config.component"
+    :class="[
+      showPosition + '-' + config.component,
+      {
+        'freeze-component': freezeFlag
+      }
+    ]"
     :id="wrapperId"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
@@ -438,6 +446,7 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
           :is-edit="false"
           :suffix-id="suffixId"
           :font-family="fontFamily"
+          :active="active"
           @onPointClick="onPointClick"
         />
       </div>
@@ -452,6 +461,7 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
       ref="openHandler"
       jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
     />
+    <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>
 
@@ -510,5 +520,12 @@ const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && 
 }
 .event-active {
   cursor: pointer;
+}
+
+.freeze-component {
+  position: fixed;
+  z-index: 1;
+  top: var(--top-show-offset) px !important;
+  left: var(--left-show-offset) px !important;
 }
 </style>

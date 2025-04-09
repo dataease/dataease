@@ -3,7 +3,7 @@ import { toRefs, PropType, onBeforeMount, watch, computed } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
 import type { ManipulateType } from 'dayjs'
-import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
+import { getThisStart, getThisEnd, getLastStart, getAround } from './time-format-dayjs'
 interface SelectConfig {
   intervalType: string
   regularOrTrendsValue: Date
@@ -113,6 +113,9 @@ const init = () => {
         break
       case 'monthBeginning':
         config.value.regularOrTrendsValue = getThisStart('month')
+        break
+      case 'monthEnd':
+        config.value.regularOrTrendsValue = getThisEnd('month')
         break
       case 'yearBeginning':
         config.value.regularOrTrendsValue = getThisStart('year')

@@ -48,7 +48,12 @@ router.beforeEach(async (to, from, next) => {
           linkQuery = '?' + tempQuery
         }
       }
-      window.location.href = window.origin + '/mobile.html#' + to.path + linkQuery
+      let pathname = window.location.pathname
+      pathname = pathname.replace('casbi/', '')
+      pathname = pathname.replace('oidc/', '')
+      pathname = pathname.substring(0, pathname.length - 1)
+      const prefix = window.origin + pathname
+      window.location.href = prefix + '/mobile.html#' + to.path + linkQuery
     } else if (
       wsCache.get('user.token') ||
       isDesktop ||

@@ -33,10 +33,24 @@ import { PositionType } from '@antv/l7-core'
 import { centroid } from '@turf/centroid'
 import type { Plot } from '@antv/g2plot'
 import type { PickOptions } from '@antv/g2plot/lib/core/plot'
-import { defaults } from 'lodash-es'
+import { defaults, find } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
-const { t: tI18n } = useI18n()
 import { isMobile } from '@/utils/utils'
+import { GaodeMap, TMap, TencentMap } from '@antv/l7-maps'
+import {
+  gaodeMapStyleOptions,
+  qqMapStyleOptions,
+  tdtMapStyleOptions
+} from '@/views/chart/components/js/panel/charts/map/common'
+import ChartCarouselTooltip, {
+  isPie,
+  isLine,
+  isColumn,
+  isMix,
+  isSupport
+} from '@/views/chart/components/js/g2plot_tooltip_carousel'
+
+const { t: tI18n } = useI18n()
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -1003,6 +1017,9 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
         return result
       }
       const head = originalItem.properties
+      if (!head) {
+        return result
+      }
       const formatter = formatterMap[head.quotaList?.[0]?.id]
       if (!isEmpty(formatter)) {
         const originValue = parseFloat(head.value as string)
@@ -1162,13 +1179,27 @@ export class CustomZoom extends Zoom {
       'l7-button-control',
       container,
       () => {
-        if (this.controlOption['bounds']) {
-          this.mapsService.fitBounds(this.controlOption['bounds'], { animate: true })
+        if (this.mapsService.map?.deMapProvider == 'qq') {
+          if (this.mapsService.map.deMapAutoFit) {
+            this.mapsService.setZoomAndCenter(this.mapsService.map.deMapAutoZoom, [
+              this.mapsService.map.deMapAutoLng,
+              this.mapsService.map.deMapAutoLat
+            ])
+          } else {
+            this.mapsService.setZoomAndCenter(
+              this.controlOption['initZoom'],
+              this.controlOption['center']
+            )
+          }
         } else {
-          this.mapsService.setZoomAndCenter(
-            this.controlOption['initZoom'],
-            this.controlOption['center']
-          )
+          if (this.controlOption['bounds']) {
+            this.mapsService.fitBounds(this.controlOption['bounds'], { animate: true })
+          } else {
+            this.mapsService.setZoomAndCenter(
+              this.controlOption['initZoom'],
+              this.controlOption['center']
+            )
+          }
         }
       }
     )
@@ -1218,7 +1249,11 @@ export class CustomZoom extends Zoom {
     } as IZoomControlOption
   }
 }
-export function configL7Zoom(chart: Chart, scene: Scene) {
+export function configL7Zoom(
+  chart: Chart,
+  scene: Scene,
+  mapKey?: { key: string; securityCode: string; mapType: string }
+) {
   const { basicStyle } = parseJson(chart.customAttr)
   const zoomOption = scene?.getControlByName('zoom')
   if (zoomOption) {
@@ -1230,20 +1265,56 @@ export function configL7Zoom(chart: Chart, scene: Scene) {
   if (!scene?.getControlByName('zoom')) {
     if (!scene.map) {
       scene.once('loaded', () => {
-        scene.map.on('complete', () => {
-          const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
-          const center =
-            basicStyle.autoFit === false
-              ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
-              : [scene.map.getCenter().lng, scene.map.getCenter().lat]
-          const newZoomOptions = {
-            initZoom: initZoom,
-            center: center,
-            buttonColor: basicStyle.zoomButtonColor,
-            buttonBackground: basicStyle.zoomBackground
-          } as any
-          scene.addControl(new CustomZoom(newZoomOptions))
-        })
+        switch (mapKey?.mapType) {
+          case 'tianditu':
+            //天地图
+            {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().getLng(), scene.map.getCenter().getLat()]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            }
+            break
+          case 'qq':
+            {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            }
+            break
+          default:
+            scene.map.on('complete', () => {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [scene.map.getCenter().lng, scene.map.getCenter().lat]
+              const newZoomOptions = {
+                initZoom: initZoom,
+                center: center,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            })
+        }
       })
     } else {
       const newZoomOptions = {
@@ -1345,6 +1416,18 @@ export function mapRendering(dom: HTMLElement | string) {
   dom.classList.add('de-map-rendering')
 }
 
+export function qqMapRendered(scene?: Scene) {
+  if (scene?.map && scene.map.deMapProvider === 'qq') {
+    setTimeout(() => {
+      if (scene.map) {
+        scene.map.deMapAutoZoom = scene.map.getZoom()
+        scene.map.deMapAutoLng = scene.map.getCenter().getLng()
+        scene.map.deMapAutoLat = scene.map.getCenter().getLat()
+      }
+    }, 1000)
+  }
+}
+
 export function mapRendered(dom: HTMLElement | string) {
   if (typeof dom === 'string') {
     dom = document.getElementById(dom)
@@ -1352,6 +1435,213 @@ export function mapRendered(dom: HTMLElement | string) {
   dom.classList.add('de-map-rendered')
 }
 
+export function getMapCenter(basicStyle: ChartBasicStyle) {
+  let center: [number, number]
+  if (basicStyle.autoFit === false) {
+    const longitude = basicStyle?.mapCenter?.longitude ?? DEFAULT_BASIC_STYLE.mapCenter.longitude
+    const latitude = basicStyle?.mapCenter?.latitude ?? DEFAULT_BASIC_STYLE.mapCenter.latitude
+    center = [longitude, latitude]
+  } else {
+    center = undefined
+  }
+  return center
+}
+
+export function getMapStyle(
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle
+) {
+  let mapStyle: string
+  switch (mapKey.mapType) {
+    case 'tianditu':
+      if (!find(tdtMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
+        mapStyle = 'normal'
+      } else {
+        mapStyle = basicStyle.mapStyle
+      }
+      break
+    case 'qq':
+      if (
+        !find(qqMapStyleOptions, s => s.value === basicStyle.mapStyle) ||
+        basicStyle.mapStyle === 'normal'
+      ) {
+        mapStyle = 'normal'
+      } else {
+        mapStyle = basicStyle.mapStyleUrl
+      }
+      break
+    default:
+      if (!find(gaodeMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
+        basicStyle.mapStyle = 'normal'
+      }
+      mapStyle = basicStyle.mapStyleUrl
+      if (basicStyle.mapStyle !== 'custom') {
+        mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
+      }
+      break
+  }
+  return mapStyle
+}
+
+export async function getMapScene(
+  chart: Chart,
+  scene: Scene,
+  container: string,
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle,
+  miscStyle: ChartMiscAttr,
+  mapStyle: string,
+  center?: [number, number]
+) {
+  if (!scene) {
+    scene = new Scene({
+      id: container,
+      logoVisible: false,
+      map: getMapObject(mapKey, basicStyle, miscStyle, mapStyle, center)
+    })
+  } else {
+    if (mapKey.mapType === 'tianditu') {
+      scene.map?.checkResize()
+    }
+    if (scene.getLayers()?.length) {
+      await scene.removeAllLayer()
+      try {
+        scene.setPitch(miscStyle.mapPitch)
+      } catch (e) {}
+      if (mapKey.mapType === 'tianditu') {
+        if (mapStyle === 'normal') {
+          scene.map?.removeStyle()
+        } else {
+          scene.setMapStyle(mapStyle)
+        }
+      } else {
+        scene.setMapStyle(mapStyle)
+      }
+
+      scene.map.showLabel = !(basicStyle.showLabel === false)
+      if (mapKey.mapType === 'qq') {
+        scene.map.setBaseMap({
+          //底图设置（参数为：VectorBaseMap对象）
+          type: 'vector', //类型：失量底图
+          features: basicStyle.showLabel === false ? ['base', 'building2d'] : undefined
+          //仅渲染：道路及底面(base) + 2d建筑物(building2d)，以达到隐藏文字的效果
+        })
+      }
+    }
+    if (basicStyle.autoFit === false) {
+      scene.setZoomAndCenter(basicStyle.zoomLevel, center)
+      if (mapKey.mapType === 'qq') {
+        scene.map.deMapAutoFit = false
+        scene.map.deMapZoom = basicStyle.zoomLevel
+        scene.map.deMapCenter = center
+      }
+    }
+  }
+  mapRendering(container)
+  scene.once('loaded', () => {
+    mapRendered(container)
+    if (mapKey.mapType === 'qq') {
+      scene.map.setBaseMap({
+        //底图设置（参数为：VectorBaseMap对象）
+        type: 'vector', //类型：失量底图
+        features: basicStyle.showLabel === false ? ['base', 'building2d'] : undefined
+        //仅渲染：道路及底面(base) + 2d建筑物(building2d)，以达到隐藏文字的效果
+      })
+      scene.setMapStyle(mapStyle)
+
+      scene.map.deMapProvider = 'qq'
+      scene.map.deMapAutoFit = !!basicStyle.autoFit
+      // scene.map.deMapAutoZoom = scene.map.getZoom()
+      // scene.map.deMapAutoLng = scene.map.getCenter().getLng()
+      // scene.map.deMapAutoLat = scene.map.getCenter().getLat()
+    }
+    // 去除天地图自己的缩放按钮
+    if (mapKey.mapType === 'tianditu') {
+      if (mapStyle === 'normal') {
+        scene.map?.removeStyle()
+      } else {
+        scene.setMapStyle(mapStyle)
+      }
+
+      const tdtControl = document.querySelector(
+        `#component${chart.id} .tdt-control-zoom.tdt-bar.tdt-control`
+      )
+      if (tdtControl) {
+        tdtControl.style.display = 'none'
+      }
+      const tdtControlOuter = document.querySelectorAll(
+        `#wrapper-outer-id-${chart.id} .tdt-control-zoom.tdt-bar.tdt-control`
+      )
+      if (tdtControlOuter && tdtControlOuter.length > 0) {
+        for (let i = 0; i < tdtControlOuter.length; i++) {
+          tdtControlOuter[i].style.display = 'none'
+        }
+      }
+      const tdtCopyrightControl = document.querySelector(
+        `#component${chart.id} .tdt-control-copyright.tdt-control`
+      )
+      if (tdtCopyrightControl) {
+        tdtCopyrightControl.style.display = 'none'
+      }
+      const tdtCopyrightControlOuter = document.querySelectorAll(
+        `#wrapper-outer-id-${chart.id} .tdt-control-copyright.tdt-control`
+      )
+      if (tdtCopyrightControlOuter && tdtCopyrightControlOuter.length > 0) {
+        for (let i = 0; i < tdtCopyrightControlOuter.length; i++) {
+          tdtCopyrightControlOuter[i].style.display = 'none'
+        }
+      }
+    }
+  })
+  return scene
+}
+
+export function getMapObject(
+  mapKey: { key: string; securityCode: string; mapType: string },
+  basicStyle: ChartBasicStyle,
+  miscStyle: ChartMiscAttr,
+  mapStyle: string,
+  center?: [number, number]
+) {
+  switch (mapKey.mapType) {
+    case 'tianditu':
+      return new TMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle, //不生效
+        pitch: undefined, //不支持
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
+        showLabel: !(basicStyle.showLabel === false), //不支持
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+    case 'qq':
+      return new TencentMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle,
+        pitch: miscStyle.mapPitch,
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 12,
+        showLabel: !(basicStyle.showLabel === false),
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+    default:
+      return new GaodeMap({
+        token: mapKey?.key ?? undefined,
+        style: mapStyle,
+        pitch: miscStyle.mapPitch,
+        center,
+        zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
+        showLabel: !(basicStyle.showLabel === false),
+        WebGLParams: {
+          preserveDrawingBuffer: true
+        }
+      })
+  }
+}
 /**
  * 隐藏缩放控件
  * @param basicStyle
@@ -1403,14 +1693,85 @@ export function getTooltipContainer(id) {
   }
   return g2Tooltip
 }
+
+/**
+ * 配置提示轮播
+ * @param plot
+ * @param chart
+ */
+function configCarouselTooltip(plot, chart) {
+  const start = isSupport(chart.type) && !document.getElementById('multiplexingDrawer')
+  if (start) {
+    // 启用轮播
+    plot.once('afterrender', () => {
+      const carousel = chart.customAttr?.tooltip?.carousel
+      ChartCarouselTooltip.manage(plot, chart, {
+        xField: 'field',
+        duration: carousel.enable ? carousel?.stayTime * 1000 : 2000,
+        interval: carousel.enable ? carousel?.intervalTime * 1000 : 2000
+      })
+    })
+  }
+}
+/**
+ * 计算 Tooltip 的位置
+ * @param {Chart} chart - 图表实例
+ * @param {boolean} isCarousel - 是否为轮播模式
+ * @param {object} tooltipCtl - Tooltip 控制器
+ * @param {HTMLElement} chartElement - 图表元素
+ * @param {Event} event - 事件对象
+ * @param {boolean} enlargeElement - 放大弹窗
+ * @returns {{x: number, y: number}} - 计算后的 x 和 y 坐标
+ */
+function calculateTooltipPosition(
+  chart,
+  isCarousel,
+  tooltipCtl,
+  chartElement,
+  event,
+  enlargeElement
+) {
+  // 辅助函数: 根据不同图表类型计算 Tooltip 的y位置
+  const getTooltipY = () => {
+    const top = Number(chartElement.getBoundingClientRect().top)
+    if (isColumn(chart.type)) {
+      return top + chartElement.getBoundingClientRect().height / 2
+    }
+    if (isMix(chart.type) || isPie(chart.type)) {
+      return top + tooltipCtl.point.y
+    }
+    return top + tooltipCtl.point.y + 60
+  }
+  if (isCarousel) {
+    return {
+      x: tooltipCtl.point.x + Number(chartElement.getBoundingClientRect().left),
+      y: getTooltipY()
+    }
+  } else {
+    return { x: event.clientX, y: event.clientY }
+  }
+}
 export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>(
   chart: Chart,
   plot: P
 ) {
   const { tooltip } = parseJson(chart.customAttr)
   if (!tooltip.show) {
+    ChartCarouselTooltip.destroyByContainer(chart.container)
     return
   }
+  // 图表容器，用于计算 tooltip 的位置
+  // 获取图表元素，优先顺序：放大 > 预览 > 公共连接页面 > 默认
+  const chartElement =
+    document.getElementById('container-viewDialog-' + chart.id + '-common') ||
+    document.getElementById('container-preview-' + chart.id + '-common') ||
+    document.getElementById('enlarge-inner-content-' + chart.id) ||
+    document.getElementById('shape-id-' + chart.id)
+  // 是否是放大弹窗
+  const enlargeElement = chartElement?.id.includes('viewDialog')
+  // 轮播时tooltip的zIndex
+  const carousel_zIndex = enlargeElement ? '9999' : '1002'
+  configCarouselTooltip(plot, chart)
   // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
   plot.options.tooltip.container.addEventListener('mouseenter', e => {
     e.target.style.visibility = 'visible'
@@ -1422,12 +1783,21 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
   })
   // 手动处理 tooltip 的显示和隐藏事件，需配合源码理解
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#showTooltip
-  plot.on('tooltip:show', () => {
+  plot.on('tooltip:show', _d => {
     const tooltipCtl = plot.chart.getController('tooltip')
     if (!tooltipCtl) {
       return
     }
     const event = plot.chart.interactions.tooltip?.context?.event
+    // 是否时轮播模式
+    const isCarousel =
+      chart.customAttr?.tooltip?.carousel &&
+      (!event || // 事件触发时，使用event的client坐标
+        ['plot:leave', 'plot:mouseleave'].includes(event?.type) || //鼠标离开时，使用tooltipCtl.point
+        ['pie', 'pie-rose', 'pie-donut'].includes(chart.type)) // 饼图时，使用tooltipCtl.point
+    plot.options.tooltip.showMarkers = isCarousel ? true : false
+    const wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
+    wrapperDom.style.zIndex = isCarousel && wrapperDom ? carousel_zIndex : '9999'
     if (tooltipCtl.tooltip) {
       // 处理视图放大后再关闭 tooltip 的 dom 被清除
       const container = tooltipCtl.tooltip.cfg.container
@@ -1445,8 +1815,17 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     }
     plot.chart.getOptions().tooltip.follow = false
     tooltipCtl.title = Math.random().toString()
-    plot.chart.getTheme().components.tooltip.x = event.clientX
-    plot.chart.getTheme().components.tooltip.y = event.clientY
+    // 当显示提示为事件触发时，使用event的client坐标，否则使用tooltipCtl.point 数据点的位置，在图表中，需要加上图表在绘制区的位置
+    const { x, y } = calculateTooltipPosition(
+      chart,
+      isCarousel,
+      tooltipCtl,
+      chartElement,
+      event,
+      enlargeElement
+    )
+    plot.chart.getTheme().components.tooltip.x = x
+    plot.chart.getTheme().components.tooltip.y = y
   })
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#hideTooltip
   plot.on('plot:leave', () => {

@@ -22,6 +22,7 @@ import EmptyBackground from '../../empty-background/src/EmptyBackground.vue'
 import LinkOptBar from '@/components/data-visualization/canvas/LinkOptBar.vue'
 import { isDesktop } from '@/utils/ModelUtil'
 import { isMobile } from '@/utils/utils'
+import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState, inMobile } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
@@ -30,6 +31,7 @@ const emits = defineEmits(['onResetLayout'])
 const fullScreeRef = ref(null)
 const isOverSize = ref(false)
 const isDesktopFlag = isDesktop()
+const { t } = useI18n()
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -93,6 +95,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  // 联动按钮位置
+  showLinkageButton: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -125,7 +132,8 @@ const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
 const state = reactive({
-  initState: true
+  initState: true,
+  scrollMain: 0
 })
 
 const curSearchCount = computed(() => {
@@ -471,6 +479,10 @@ const downloadAsPDF = () => {
   // test
 }
 
+const scrollPreview = () => {
+  state.scrollMain = previewCanvas.value.scrollTop
+}
+
 defineExpose({
   restore
 })
@@ -481,9 +493,14 @@ defineExpose({
     :id="domId"
     class="canvas-container"
     :style="canvasStyle"
-    :class="{ 'de-download-custom': downloadStatus, 'datav-preview': dataVPreview }"
+    :class="{
+      'de-download-custom': downloadStatus,
+      'datav-preview': dataVPreview,
+      'datav-preview-unpublish': dvInfo.status === 0
+    }"
     ref="previewCanvas"
     @mousedown="handleMouseDown"
+    @scroll="scrollPreview"
     v-if="state.initState"
   >
     <!--弹框触发区域-->
@@ -501,12 +518,14 @@ defineExpose({
       :show-position="'preview'"
     ></PopArea>
     <canvas-opt-bar
+      v-if="showLinkageButton"
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
       :component-data="baseComponentData"
+      :is-fixed="isOverSize"
     ></canvas-opt-bar>
-    <template v-if="renderReady">
-      <ComponentWrapper
+    <template v-if="renderReady && dvInfo?.status !== 0">
+      <component-wrapper
         v-for="(item, index) in baseComponentData"
         v-show="item.isShow"
         :active="item.id === (curComponent || {})['id']"
@@ -523,11 +542,19 @@ defineExpose({
         :scale="mobileInPc && isDashboard() ? 100 : scaleMin"
         :is-selector="props.isSelector"
         :font-family="canvasStyleData.fontFamily || fontFamily"
+        :scroll-main="state.scrollMain"
         @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
         @datasetParamsInit="datasetParamsInit(item)"
         @onPointClick="onPointClick"
+        :index="index"
       />
     </template>
+    <empty-background
+      v-if="dvInfo?.status === 0"
+      :description="t('visualization.resource_not_published')"
+      img-type="none"
+    >
+    </empty-background>
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
   <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
@@ -567,5 +594,9 @@ defineExpose({
 
 .datav-preview {
   overflow-y: hidden !important;
+}
+
+.datav-preview-unpublish {
+  background-color: inherit !important;
 }
 </style>

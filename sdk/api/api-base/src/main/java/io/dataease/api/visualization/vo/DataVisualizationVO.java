@@ -202,4 +202,8 @@ public class DataVisualizationVO implements Serializable {
         }
         this.version = version;
     }
+
+    public DataVisualizationVO(Integer status) {
+        this.status = status;
+    }
 }

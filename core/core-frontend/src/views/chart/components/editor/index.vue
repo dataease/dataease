@@ -55,13 +55,12 @@ import SortPriorityEdit from '@/views/chart/components/editor/drag-item/componen
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
-import { cloneDeep, forEach, get } from 'lodash-es'
+import { cloneDeep, forEach, get, debounce, set, concat, keys } from 'lodash-es'
 import { deleteField, saveField } from '@/api/dataset'
 import { getWorldTree, listCustomGeoArea } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
-import { set, concat, keys } from 'lodash-es'
 import { PluginComponent } from '@/components/plugin'
 import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/chart'
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
@@ -103,6 +102,10 @@ const renameForm = ref<FormInstance>()
 const { emitter } = useEmitt({
   name: 'set-table-column-width',
   callback: args => onTableColumnWidthChange(args)
+})
+useEmitt({
+  name: 'set-page-size',
+  callback: args => onTablePageSizeChange(args)
 })
 const props = defineProps({
   view: {
@@ -1035,12 +1038,13 @@ const onTypeChange = (render, type) => {
 }
 
 const onBasicStyleChange = (chartForm: ChartEditorForm<ChartBasicStyle>, prop: string) => {
-  const { data, requestData } = chartForm
+  const { data, requestData, render } = chartForm
   const val = get(data, prop)
   set(view.value.customAttr.basicStyle, prop, val)
   if (requestData) {
     calcData(view.value)
-  } else {
+  }
+  if (render !== false) {
     renderChart(view.value)
   }
 }
@@ -1256,6 +1260,14 @@ const onTableColumnWidthChange = val => {
     return
   }
   view.value.customAttr.basicStyle.tableFieldWidth = val
+  snapshotStore.recordSnapshotCache('renderChart', view.value.id)
+}
+
+const onTablePageSizeChange = val => {
+  if (editMode.value !== 'edit') {
+    return
+  }
+  view.value.customAttr.basicStyle.tablePageSize = val
   snapshotStore.recordSnapshotCache('renderChart', view.value.id)
 }
 
@@ -1590,6 +1602,7 @@ const closeSortPriority = () => {
 }
 const saveSortPriority = () => {
   view.value.sortPriority = state.sortPriority as ChartViewField[]
+  recordSnapshotInfo('render')
   closeSortPriority()
 }
 const onPriorityChange = val => {
@@ -1725,14 +1738,14 @@ const { y, isDragging } = useDraggable(el, {
   draggingElement: elDrag
 })
 const previewHeight = ref(0)
-const calcEle = () => {
+const calcEle = debounce(() => {
   nextTick(() => {
     previewHeight.value = (elDrag.value as HTMLDivElement).offsetHeight
     y.value = previewHeight.value / 2 + 200
   })
-}
+}, 500)
 
-const setCacheId = () => {
+const setCacheId = debounce(() => {
   nextTick(() => {
     // 富文本不使用cacheId
     if (
@@ -1744,7 +1757,7 @@ const setCacheId = () => {
       return
     view.value.tableId = cacheId as unknown as number
   })
-}
+}, 500)
 watch(
   () => curComponent.value,
   val => {

@@ -35,6 +35,14 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item>
+        <el-checkbox
+          :effect="themes"
+          v-model="formatInfo.showWeek"
+          :label="t('visualization.show_week')"
+          @change="onFormatChange"
+        />
+      </el-form-item>
     </el-form>
   </el-row>
 </template>

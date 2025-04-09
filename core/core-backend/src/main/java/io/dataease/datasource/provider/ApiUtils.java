@@ -719,6 +719,7 @@ public class ApiUtils {
                     fieldChildren.add(itemChild);
                 }
             }
+            field.put("children", fieldChildren);
         }
     }
 

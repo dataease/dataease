@@ -207,7 +207,7 @@ public class XpackShareManage {
         return pos.stream().map(po ->
                 new XpackShareGridVO(
                         po.getShareId(), po.getResourceId(), po.getName(), po.getCreator().toString(),
-                        po.getTime(), po.getExp(), 9, po.getExtFlag(), po.getType())).toList();
+                        po.getTime(), po.getExp(), 9, po.getExtFlag(),po.getExtFlag1(), po.getType())).toList();
     }
 
     private XpackShareManage proxy() {

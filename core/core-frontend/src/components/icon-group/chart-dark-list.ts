@@ -43,6 +43,7 @@ import waterfallDark from '@/assets/svg/waterfall-dark.svg'
 import wordCloudDark from '@/assets/svg/word-cloud-dark.svg'
 import tHeatmapDark from '@/assets/svg/t-heatmap-dark.svg'
 import circlePackingDark from '@/assets/svg/circle-packing-dark.svg'
+import bulletGraphDark from '@/assets/svg/bullet-graph-dark.svg'
 
 const iconChartDarkMap = {
   'area-dark': areaDark,
@@ -89,7 +90,8 @@ const iconChartDarkMap = {
   'waterfall-dark': waterfallDark,
   'word-cloud-dark': wordCloudDark,
   't-heatmap-dark': tHeatmapDark,
-  'circle-packing-dark': circlePackingDark
+  'circle-packing-dark': circlePackingDark,
+  'bullet-graph-dark': bulletGraphDark
 }
 
 export { iconChartDarkMap }

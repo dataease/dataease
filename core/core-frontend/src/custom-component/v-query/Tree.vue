@@ -66,50 +66,58 @@ const placeholderText = computed(() => {
   return ' '
 })
 const { config } = toRefs(props)
-
+const fromTreeSelectConfirm = ref(false)
 const multiple = ref(false)
-
 const treeSelectConfirm = val => {
   treeValue.value = val
   handleValueChange()
 }
 
 const handleValueChange = () => {
+  fromTreeSelectConfirm.value = true
   const value = Array.isArray(treeValue.value) ? [...treeValue.value] : treeValue.value
   if (!props.isConfig) {
     config.value.selectValue = Array.isArray(treeValue.value)
       ? [...treeValue.value]
       : treeValue.value
     nextTick(() => {
+      fromTreeSelectConfirm.value = false
       isConfirmSearch(config.value.id)
     })
     return
   }
   config.value.defaultValue = value
+  fromTreeSelectConfirm.value = false
 }
 
+const changeFromId = ref(false)
 watch(
-  () => config.value.defaultValue,
-  val => {
-    if (config.value.multiple) {
-      treeValue.value = Array.isArray(val) ? [...val] : val
-    }
+  () => config.value.id,
+  () => {
+    changeFromId.value = true
+    init()
     nextTick(() => {
-      multiple.value = config.value.multiple
+      changeFromId.value = false
     })
   }
 )
-
+let oldId
 watch(
   () => config.value.treeFieldList,
-  () => {
+  val => {
+    let idStr = val.map(ele => ele.id).join('-')
+    if (changeFromId.value || idStr === oldId) return
+    oldId = idStr
     treeValue.value = config.value.multiple ? [] : undefined
+    config.value.defaultValue = config.value.multiple ? [] : undefined
+    config.value.selectValue = config.value.multiple ? [] : undefined
     showOrHide.value = false
     getTreeOption()
   }
 )
 
 const init = () => {
+  loading.value = true
   const { defaultValueCheck, multiple: plus, defaultValue } = config.value
   if (defaultValueCheck) {
     config.value.selectValue = Array.isArray(defaultValue)
@@ -121,17 +129,12 @@ const init = () => {
     treeValue.value = plus ? [] : undefined
   }
   nextTick(() => {
+    oldId = config.value.treeFieldList?.map(ele => ele.id).join('-')
     multiple.value = config.value.multiple
   })
   getTreeOption()
 }
 
-watch(
-  () => config.value.id,
-  () => {
-    init()
-  }
-)
 const showOrHide = ref(true)
 const queryConditionWidth = inject('com-width', Function, true)
 const isConfirmSearch = inject('is-confirm-search', Function, true)
@@ -148,12 +151,27 @@ onMounted(() => {
 })
 
 watch(
-  () => config.value.selectValue,
+  () => config.value.defaultValue,
   val => {
     if (props.isConfig) return
     if (config.value.multiple) {
       treeValue.value = Array.isArray(val) ? [...val] : val
     }
+    nextTick(() => {
+      multiple.value = config.value.multiple
+    })
+  }
+)
+
+watch(
+  () => config.value.selectValue,
+  val => {
+    if (props.isConfig || fromTreeSelectConfirm.value) return
+
+    if (config.value.multiple) {
+      treeValue.value = Array.isArray(val) ? [...val] : val
+    }
+
     nextTick(() => {
       multiple.value = config.value.multiple
       if (!config.value.multiple) {
@@ -164,11 +182,12 @@ watch(
     })
   }
 )
+
 const showWholePath = ref(false)
 watch(
   () => config.value.multiple,
   val => {
-    if (!props.isConfig) return
+    if (!props.isConfig || changeFromId.value) return
     showWholePath.value = false
     if (val) {
       treeValue.value = []
@@ -253,6 +272,7 @@ const selectStyle = computed(() => {
     :render-after-expand="false"
     show-checkbox
     showBtn
+    @change="handleValueChange"
     :placeholder="placeholderText"
     collapse-tags
     :filter-node-method="filterMethod"

@@ -19,6 +19,7 @@ import AppExportForm from '@/components/de-app/AppExportForm.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useI18n } from '@/hooks/web/useI18n'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const userStore = useUserStoreWithOut()
 
 const userName = computed(() => userStore.getName)
@@ -37,7 +38,11 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0
+  curPreviewGap: 0,
+  showOffset: {
+    top: 110,
+    left: 280
+  }
 })
 
 const { fullscreenFlag, canvasViewDataInfo } = storeToRefs(dvMainStore)
@@ -55,10 +60,15 @@ const props = defineProps({
     required: false,
     type: Boolean,
     default: false
+  },
+  resourceTable: {
+    required: false,
+    type: String,
+    default: 'core'
   }
 })
 
-const { showPosition } = toRefs(props)
+const { showPosition, resourceTable } = toRefs(props)
 
 const resourceTreeRef = ref()
 
@@ -93,7 +103,7 @@ const loadCanvasData = (dvId, weight?) => {
   dataInitState.value = false
   initMethod(
     dvId,
-    'dashboard',
+    { busiFlag: 'dashboard', resourceTable: 'core' },
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -221,13 +231,18 @@ const downLoadApp = appAttachInfo => {
   fileDownload('app', appAttachInfo)
 }
 
+const freezeStyle = computed(() => [
+  { '--top-show-offset': state.showOffset.top },
+  { '--left-show-offset': state.showOffset.left }
+])
+
 defineExpose({
   getPreviewStateInfo
 })
 </script>
 
 <template>
-  <div class="dv-preview dv-teleport-query">
+  <div class="dv-preview dv-teleport-query" :style="freezeStyle">
     <ArrowSide
       v-if="!noClose"
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
@@ -253,12 +268,13 @@ defineExpose({
         v-show="slideShow"
         :cur-canvas-type="'dashboard'"
         :show-position="showPosition"
+        :resource-table="resourceTable"
         @node-click="resourceNodeClick"
       />
     </el-aside>
     <el-container
       class="preview-area"
-      :class="{ 'no-data': !hasTreeData }"
+      :class="{ 'no-data': !state.dvInfo?.id }"
       v-loading="!dataInitState"
     >
       <div
@@ -283,6 +299,11 @@ defineExpose({
           id="de-preview-content"
           :class="{ 'de-screen-full': fullscreenFlag }"
         >
+          <canvas-opt-bar
+            canvas-id="canvas-main"
+            :canvas-style-data="state.canvasStylePreview || {}"
+            :component-data="state.canvasDataPreview || []"
+          ></canvas-opt-bar>
           <de-preview
             ref="dashboardPreview"
             v-if="state.canvasStylePreview && dataInitState"
@@ -293,6 +314,7 @@ defineExpose({
             :canvas-view-info="state.canvasViewInfoPreview"
             :show-position="showPosition"
             :download-status="downloadStatus"
+            :show-linkage-button="false"
           ></de-preview>
         </div>
       </template>
@@ -354,6 +376,7 @@ defineExpose({
     }
 
     .content {
+      position: relative;
       display: flex;
       width: 100%;
       height: 100%;

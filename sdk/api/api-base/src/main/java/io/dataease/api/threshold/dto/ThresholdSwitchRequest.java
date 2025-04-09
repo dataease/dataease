@@ -1,5 +1,6 @@
 package io.dataease.api.threshold.dto;
 
+import io.dataease.constant.CommonConstants;
 import lombok.Data;
 
 import java.io.Serial;
@@ -13,4 +14,6 @@ public class ThresholdSwitchRequest implements Serializable {
     private Long id;
 
     private Boolean enable;
+
+    private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
 }

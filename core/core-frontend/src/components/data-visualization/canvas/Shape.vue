@@ -1,7 +1,11 @@
 <template>
   <div
     class="shape"
-    :class="{ 'shape-group-area': isGroupArea }"
+    :class="{
+      'shape-group-area': isGroupArea,
+      'freeze-component': freezeFlag,
+      'freeze-component-fullscreen': freezeFlag && fullscreenFlag
+    }"
     ref="shapeInnerRef"
     :id="domId"
     v-loading="downLoading"
@@ -177,7 +181,8 @@ const {
   tabMoveOutComponentId,
   mobileInPc,
   mainScrollTop,
-  hiddenListStatus
+  hiddenListStatus,
+  fullscreenFlag
 } = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emit = defineEmits([
@@ -326,6 +331,14 @@ const initialAngle = {
 }
 const cursors = ref({})
 
+const freezeFlag = computed(() => {
+  return (
+    isMainCanvas(canvasId.value) &&
+    element.value.freeze &&
+    mainScrollTop.value - defaultStyle.value.top > 0
+  )
+})
+
 const showCheck = computed(() => {
   return mobileInPc.value && element.value.canvasId === 'canvas-main'
 })
@@ -386,7 +399,7 @@ const getPointList = () => {
 }
 
 const isActive = () => {
-  return active.value && !element.value['isLock'] && isEditMode.value
+  return active.value && !element.value['isLock'] && isEditMode.value && !freezeFlag.value
 }
 
 const userViewEnlargeOpen = opt => {
@@ -538,7 +551,8 @@ const handleMouseDownOnShape = e => {
   // }
 
   e.stopPropagation()
-  if (element.value['isLock'] || !isEditMode.value) return
+  // 锁定 非编辑状态 冻结状态 不进行移动
+  if (element.value['isLock'] || !isEditMode.value || freezeFlag.value) return
 
   cursors.value = getCursor() // 根据旋转角度获取光标位置
 
@@ -1317,5 +1331,15 @@ onMounted(() => {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
+}
+
+.freeze-component {
+  position: fixed;
+  z-index: 1;
+  top: 66px !important;
+}
+
+.freeze-component-fullscreen {
+  top: 5px !important;
 }
 </style>
