@@ -66,8 +66,8 @@ const state = reactive({
   fileList: []
 })
 const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
-const changeBasicStyle = (prop?: string, requestData = false) => {
-  emit('onBasicStyleChange', { data: state.basicStyleForm, requestData }, prop)
+const changeBasicStyle = (prop?: string, requestData = false, render = true) => {
+  emit('onBasicStyleChange', { data: state.basicStyleForm, requestData, render }, prop)
 }
 const onAlphaChange = v => {
   const _v = parseInt(v)
@@ -138,6 +138,14 @@ const init = () => {
         name = t('chart.level_label', { num: numberToChineseUnderHundred(i) })
       }
       tableExpandLevelOptions.push({ name, value: i })
+    }
+  }
+  const lastPageInfo = dvMainStore.getViewPageInfo(props.chart.id)
+  if (lastPageInfo) {
+    if (lastPageInfo.pageSize && lastPageInfo.pageSize !== state.basicStyleForm.tablePageSize) {
+      state.basicStyleForm.tablePageSize = lastPageInfo.pageSize
+      changeBasicStyle('tablePageSize', false, false)
+      return
     }
   }
   initTableColumnWidth()
@@ -260,6 +268,8 @@ const changeFieldColumnWidth = () => {
 const pageSizeOptions = [
   { name: '10' + t('chart.table_page_size_unit'), value: 10 },
   { name: '20' + t('chart.table_page_size_unit'), value: 20 },
+  { name: '30' + t('chart.table_page_size_unit'), value: 30 },
+  { name: '40' + t('chart.table_page_size_unit'), value: 40 },
   { name: '50' + t('chart.table_page_size_unit'), value: 50 },
   { name: '100' + t('chart.table_page_size_unit'), value: 100 }
 ]
@@ -853,7 +863,7 @@ onMounted(() => {
       <el-radio-group
         :effect="themes"
         v-model="state.basicStyleForm.tablePageStyle"
-        @change="changeBasicStyle('tablePageStyle', true)"
+        @change="changeBasicStyle('tablePageStyle', false)"
       >
         <el-radio :effect="themes" label="simple">{{ t('chart.page_pager_simple') }}</el-radio>
         <el-radio :effect="themes" label="general">{{ t('chart.page_pager_general') }}</el-radio>

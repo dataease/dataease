@@ -103,6 +103,10 @@ const { emitter } = useEmitt({
   name: 'set-table-column-width',
   callback: args => onTableColumnWidthChange(args)
 })
+useEmitt({
+  name: 'set-page-size',
+  callback: args => onTablePageSizeChange(args)
+})
 const props = defineProps({
   view: {
     type: Object as PropType<ChartObj>,
@@ -1034,12 +1038,13 @@ const onTypeChange = (render, type) => {
 }
 
 const onBasicStyleChange = (chartForm: ChartEditorForm<ChartBasicStyle>, prop: string) => {
-  const { data, requestData } = chartForm
+  const { data, requestData, render } = chartForm
   const val = get(data, prop)
   set(view.value.customAttr.basicStyle, prop, val)
   if (requestData) {
     calcData(view.value)
-  } else {
+  }
+  if (render !== false) {
     renderChart(view.value)
   }
 }
@@ -1255,6 +1260,14 @@ const onTableColumnWidthChange = val => {
     return
   }
   view.value.customAttr.basicStyle.tableFieldWidth = val
+  snapshotStore.recordSnapshotCache('renderChart', view.value.id)
+}
+
+const onTablePageSizeChange = val => {
+  if (editMode.value !== 'edit') {
+    return
+  }
+  view.value.customAttr.basicStyle.tablePageSize = val
   snapshotStore.recordSnapshotCache('renderChart', view.value.id)
 }
 

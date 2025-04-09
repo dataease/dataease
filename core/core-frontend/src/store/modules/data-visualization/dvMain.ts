@@ -199,7 +199,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       multiplexingStyleAdapt: true, //复用样式跟随主题
       mainScrollTop: 0, //主画布运动量
       isIframe: false, // 当前是否在iframe中
-      isPopWindow: false // 当前是否在iframe弹框中
+      isPopWindow: false, // 当前是否在iframe弹框中
+      viewPageInfo: {} //表格分页信息
     }
   },
   actions: {
@@ -1658,6 +1659,12 @@ export const dvMainStore = defineStore('dataVisualization', {
           this.deleteComponentById(ele.id, curComponentData)
         })
       }
+    },
+    setViewPageInfo(viewId, pageInfo) {
+      this.canvasViewInfo[viewId].pageInfo = pageInfo
+    },
+    getViewPageInfo(viewId) {
+      return this.canvasViewInfo[viewId]?.pageInfo
     }
   }
 })

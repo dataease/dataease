@@ -138,6 +138,9 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
   if (view.customAttr.basicStyle.tablePageStyle === 'general') {
     if (state.currentPageSize !== 0) {
       view.chartExtRequest.pageSize = state.currentPageSize
+      state.pageInfo.pageSize = state.currentPageSize
+    } else {
+      view.chartExtRequest.pageSize = state.pageInfo.pageSize
     }
   } else {
     delete view.chartExtRequest.pageSize
@@ -255,13 +258,7 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
   const pageInfo = state.pageInfo
   state.pageStyle = customAttr.basicStyle.tablePageStyle
-  if (state.pageStyle === 'general') {
-    if (state.currentPageSize === 0) {
-      state.currentPageSize = pageInfo.pageSize
-    } else {
-      pageInfo.pageSize = state.currentPageSize
-    }
-  } else {
+  if (state.pageStyle !== 'general') {
     pageInfo.pageSize = customAttr.basicStyle.tablePageSize ?? 20
   }
   if (state.totalItems > state.pageInfo.pageSize || state.pageStyle === 'general') {
@@ -273,6 +270,7 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   if (resetPageInfo) {
     state.pageInfo.currentPage = 1
   }
+  dvMainStore.setViewPageInfo(chart.id, state.pageInfo)
 }
 
 const mouseMove = () => {
@@ -357,6 +355,7 @@ const handleCurrentChange = pageNum => {
 const handlePageSizeChange = pageSize => {
   if (state.pageStyle === 'general') {
     state.currentPageSize = pageSize
+    emitter.emit('set-page-size', pageSize)
   }
   let extReq = { pageSize: pageSize }
   if (chartExtRequest.value) {
@@ -745,7 +744,7 @@ const tablePageClass = computed(() => {
           v-else
           class="table-page-content"
           layout="prev, pager, next, sizes, jumper"
-          v-model:page-size="state.currentPageSize"
+          v-model:page-size="state.pageInfo.pageSize"
           v-model:current-page="state.pageInfo.currentPage"
           :pager-count="5"
           :total="state.pageInfo.total"
