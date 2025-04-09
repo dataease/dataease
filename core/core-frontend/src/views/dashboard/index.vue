@@ -112,7 +112,7 @@ const checkPer = async resourceId => {
   if (!window.DataEaseBi || !resourceId) {
     return true
   }
-  const request = { busiFlag: 'dashboard' }
+  const request = { busiFlag: 'dashboard', resourceTable: 'core' }
   await interactiveStore.setInteractive(request)
   return check(wsCache.get('panel-weight'), resourceId, 4)
 }

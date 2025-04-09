@@ -349,7 +349,7 @@ const checkPer = async resourceId => {
   if (!window.DataEaseBi || !resourceId) {
     return true
   }
-  const request = { busiFlag: 'dataV' }
+  const request = { busiFlag: 'dataV', resourceTable: 'core' }
   await interactiveStore.setInteractive(request)
   return check(wsCache.get('screen-weight'), resourceId, 4)
 }
