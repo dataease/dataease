@@ -82,6 +82,8 @@ const state = reactive({
 })
 
 const schemas = ref([])
+const targetCharset = ref(['GBK', 'UTF-8', 'Default'])
+
 const loading = ref(false)
 const dsForm = ref<FormInstance>()
 
@@ -1207,6 +1209,16 @@ defineExpose({
               @change="validatorSchema"
               @blur="validatorSchema"
             />
+          </el-form-item>
+          <el-form-item v-if="form.type == 'oracle'" :label="$t('datasource.targetCharset')">
+            <el-select
+              v-model="form.configuration.targetCharset"
+              filterable
+              :placeholder="$t('datasource.please_choose_targetCharset')"
+              class="de-select"
+            >
+              <el-option v-for="item in targetCharset" :key="item" :label="item" :value="item" />
+            </el-select>
           </el-form-item>
           <el-form-item
             :label="t('datasource.extra_params')"

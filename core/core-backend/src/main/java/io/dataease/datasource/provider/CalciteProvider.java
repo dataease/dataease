@@ -604,14 +604,10 @@ public class CalciteProvider extends Provider {
     }
 
     private List<String[]> getData(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
-        String charset = null;
-        String targetCharset = "UTF-8";
+        String targetCharset = null;
         if (datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
             DatasourceConfiguration jdbcConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
 
-            if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
-                charset = jdbcConfiguration.getCharset();
-            }
             if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset()) && !jdbcConfiguration.getTargetCharset().equalsIgnoreCase("Default")) {
                 targetCharset = jdbcConfiguration.getTargetCharset();
             }
@@ -639,13 +635,11 @@ public class CalciteProvider extends Provider {
                     default:
                         if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
                             row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
+                        }
+                        if (targetCharset != null && StringUtils.isNotEmpty(rs.getString(j + 1)) && (columnType != Types.NVARCHAR && columnType != Types.NCHAR)) {
+                            row[j] = new String(rs.getBytes(j + 1), targetCharset);
                         } else {
-                            if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
-                                String originStr = new String(rs.getString(j + 1).getBytes(charset), targetCharset);
-                                row[j] = new String(originStr.getBytes("UTF-8"), "UTF-8");
-                            } else {
-                                row[j] = rs.getString(j + 1);
-                            }
+                            row[j] = rs.getString(j + 1);
                         }
 
                         break;
