@@ -145,7 +145,9 @@ watch(
 )
 
 const handleValueChange = () => {
-  selectValue.value = selectValue.value.map(ele => dayjs(ele).format('YYYY/MM/DD HH:mm:ss'))
+  selectValue.value = Array.isArray(selectValue.value)
+    ? selectValue.value.map(ele => dayjs(ele).format('YYYY/MM/DD HH:mm:ss'))
+    : dayjs(selectValue.value).format('YYYY/MM/DD HH:mm:ss')
   const value = Array.isArray(selectValue.value) ? [...selectValue.value] : selectValue.value
   if (!props.isConfig) {
     config.value.selectValue = Array.isArray(selectValue.value)
