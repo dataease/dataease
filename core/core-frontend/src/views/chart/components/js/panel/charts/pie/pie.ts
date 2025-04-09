@@ -27,7 +27,6 @@ import type { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
 import { cloneDeep } from 'lodash-es'
-import { Chart } from '@antv/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -133,7 +132,9 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     const options = this.setupOptions(chart, initOptions)
     const { Pie: G2Pie } = await import('@antv/g2plot/esm/plots/pie')
     const newChart = new G2Pie(container, options)
-    newChart.on('interval:click', action)
+    newChart.on('interval:click', d => {
+      d.data?.data?.field !== customAttr.basicStyle.topNLabel && action(d)
+    })
     configPlotTooltipEvent(chart, newChart)
     return newChart
   }
