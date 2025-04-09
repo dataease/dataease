@@ -1661,7 +1661,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
     setViewPageInfo(viewId, pageInfo) {
-      this.canvasViewInfo[viewId].pageInfo = pageInfo
+      if (this.canvasViewInfo[viewId]) {
+        this.canvasViewInfo[viewId].pageInfo = pageInfo
+      }
     },
     getViewPageInfo(viewId) {
       return this.canvasViewInfo[viewId]?.pageInfo
