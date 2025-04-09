@@ -5,7 +5,7 @@ import icon_rightAlign_outlined from '@/assets/svg/icon_right-align_outlined.svg
 import icon_topAlign_outlined from '@/assets/svg/icon_top-align_outlined.svg'
 import icon_verticalAlign_outlined from '@/assets/svg/icon_vertical-align_outlined.svg'
 import icon_bottomAlign_outlined from '@/assets/svg/icon_bottom-align_outlined.svg'
-import { computed, onMounted, reactive, watch } from 'vue'
+import { computed, onMounted, reactive, watch, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
@@ -102,7 +102,9 @@ const changeMisc = prop => {
   emit('onMiscChange', { data: state.legendForm.miscForm, requestData: true }, prop)
 }
 
+const legendSort = ref()
 const init = () => {
+  legendSort.value?.blur()
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customStyle) {
     let customStyle = null
@@ -716,6 +718,7 @@ onMounted(() => {
         size="small"
         :effect="themes"
         :disabled="!chart.xAxisExt?.length"
+        ref="legendSort"
         @change="changeLegendSort"
       >
         <el-option :label="t('chart.none')" value="none" />
