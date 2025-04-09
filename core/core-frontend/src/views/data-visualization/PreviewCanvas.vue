@@ -33,6 +33,7 @@ const state = reactive({
   dvInfo: null,
   curPreviewGap: 0,
   initState: true,
+  editPreview: false,
   showPosition: null,
   showOffset: {
     top: 3,
@@ -117,7 +118,7 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
 
   await initCanvasData(
     dvId,
-    { busiFlag: dvType, resourceTable: 'core' },
+    { busiFlag: dvType, resourceTable: state.editPreview ? 'snapshot' : 'core' },
     async function ({
       canvasDataResult,
       canvasStyleResult,
@@ -129,6 +130,9 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
+      if (state.editPreview) {
+        state.dvInfo.status = 1
+      }
       state.curPreviewGap = curPreviewGap
       if (state.dvInfo.status) {
         if (jumpParam || (!ignoreParams && attachParam)) {
@@ -196,6 +200,7 @@ onMounted(async () => {
   const ignoreParams = router.currentRoute.value.query.ignoreParams === 'true'
   const isPopWindow = router.currentRoute.value.query.popWindow === 'true'
   const isFrameFlag = window.self !== window.top
+  state.editPreview = router.currentRoute.value.query.editPreview === 'true'
   dvMainStore.setIframeFlag(isFrameFlag)
   dvMainStore.setIsPopWindow(isPopWindow)
   const { dvType, callBackFlag, taskId, showWatermark } = router.currentRoute.value.query
