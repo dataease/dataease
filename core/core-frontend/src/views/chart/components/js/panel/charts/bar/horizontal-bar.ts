@@ -101,6 +101,17 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     const newChart = new Bar(container, options)
 
     newChart.on('interval:click', action)
+    if (options.label) {
+      newChart.on('label:click', e => {
+        action({
+          x: e.x,
+          y: e.y,
+          data: {
+            data: e.target.attrs.data
+          }
+        })
+      })
+    }
     configPlotTooltipEvent(chart, newChart)
     configAxisLabelLengthLimit(chart, newChart)
     return newChart
@@ -237,6 +248,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
           attrs: {
             x: 0,
             y: 0,
+            data,
             text: value,
             textAlign: 'start',
             textBaseline: 'top',
@@ -319,8 +331,24 @@ export class HorizontalStackBar extends HorizontalBar {
     baseOptions.label.style.fill = labelAttr.color
     const label = {
       ...baseOptions.label,
-      formatter: function (param: Datum) {
-        return valueFormatter(param.value, labelAttr.labelFormatter)
+      formatter: function (data: Datum) {
+        const value = valueFormatter(data.value, labelAttr.formatter)
+        const group = new Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            data,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelAttr.fontSize,
+            fontFamily: chart.fontFamily,
+            fill: labelAttr.color
+          }
+        })
+        return group
       }
     }
     return {
@@ -438,11 +466,29 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
     const l = parseJson(customAttr).label
     const label = {
       ...baseOptions.label,
-      formatter: function (param: Datum) {
-        if (!param.value) {
-          return '0%'
+      formatter: function (data: Datum) {
+        let value = data.value
+        if (value) {
+          value = (Math.round(value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
+        } else {
+          value = '0%'
         }
-        return (Math.round(param.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
+        const group = new Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            data,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: l.fontSize,
+            fontFamily: chart.fontFamily,
+            fill: l.color
+          }
+        })
+        return group
       }
     }
     return {
