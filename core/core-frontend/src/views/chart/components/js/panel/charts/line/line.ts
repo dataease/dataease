@@ -325,17 +325,30 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       if (sort?.length) {
         // 用值域限定排序，有可能出现新数据但是未出现在图表上，所以这边要遍历一下子维度，加到后面，让新数据显示出来
         const data = optionTmp.data
-        data?.forEach(d => {
-          const cat = d['category']
-          if (cat && !sort.includes(cat)) {
-            sort.push(cat)
+        const cats =
+          data?.reduce((p, n) => {
+            const cat = n['category']
+            if (cat && !p.includes(cat)) {
+              p.push(cat)
+            }
+            return p
+          }, []) || []
+        const values = sort.reduce((p, n) => {
+          if (cats.includes(n)) {
+            const index = cats.indexOf(n)
+            if (index !== -1) {
+              cats.splice(index, 1)
+            }
+            p.push(n)
           }
-        })
+          return p
+        }, [])
+        cats.length > 0 && values.push(...cats)
         optionTmp.meta = {
           ...optionTmp.meta,
           category: {
             type: 'cat',
-            values: sort
+            values
           }
         }
       }
