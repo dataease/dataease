@@ -145,6 +145,7 @@ watch(
 )
 
 const handleValueChange = () => {
+  selectValue.value = selectValue.value.map(ele => dayjs(ele).format('YYYY/MM/DD HH:mm:ss'))
   const value = Array.isArray(selectValue.value) ? [...selectValue.value] : selectValue.value
   if (!props.isConfig) {
     config.value.selectValue = Array.isArray(selectValue.value)
@@ -412,8 +413,9 @@ const selectSecond = ref(false)
 
 const setArrValue = () => {
   currentDate.value = currentDate.value.slice(0, getIndex() + 1)
-  const timeFormat =
-    currentDate.value.length === 2 ? currentDate.value.concat(['01']) : currentDate.value
+  const timeFormat = [1, 2].includes(currentDate.value.length)
+    ? currentDate.value.concat(Array([0, 2, 1][currentDate.value.length]).fill('01'))
+    : currentDate.value
   if (isRange.value) {
     const [start, end] = selectValue.value || []
     if (selectSecond.value) {

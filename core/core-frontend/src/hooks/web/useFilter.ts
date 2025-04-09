@@ -9,7 +9,7 @@ const { componentData, canvasStyleData } = storeToRefs(dvMainStore)
 const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMultiple: string) => {
   const timeType = (timeGranularityMultiple || '').split('range')[0]
 
-  if (timeGranularityMultiple === 'datetimerange' || type === 1 || !timeType) {
+  if (['datetimerange', 'yearrange'].includes(timeGranularityMultiple) || type === 1 || !timeType) {
     return selectValue.map(ele => +new Date(ele))
   }
 
