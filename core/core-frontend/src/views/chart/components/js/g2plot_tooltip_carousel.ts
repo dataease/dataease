@@ -46,7 +46,7 @@ export function isMix(chartType: string) {
   return CHART_CATEGORY.MIX.includes(chartType)
 }
 
-const isSupport = (chartType: string) => {
+export function isSupport(chartType: string) {
   return Object.values(CHART_CATEGORY).some(category => category.includes(chartType))
 }
 
@@ -142,7 +142,7 @@ class ChartCarouselTooltip {
    * 关闭放大图表弹窗，销毁对应实例
    * 重启图表自身轮播
    * */
-  static closeEnlargeDialogDestroy(id: string) {
+  static closeEnlargeDialogDestroy(id?: string) {
     // 首先，暂停并删除包含 'viewDialog' 的实例
     CAROUSEL_MANAGER_INSTANCES?.forEach((instance, key) => {
       if (instance.chart.id === id && instance.chart.container.includes('viewDialog')) {
@@ -172,7 +172,7 @@ class ChartCarouselTooltip {
         setTimeout(() => instance.paused(), 200)
       }
       if (!id) {
-        instance.paused()
+        setTimeout(() => instance.paused(), 200)
       }
     })
   }
@@ -180,11 +180,14 @@ class ChartCarouselTooltip {
   /**
    * @param id
    */
-  static resume(id: string) {
+  static resume(id?: string) {
     CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
       if (instance.chart.id === id) {
         instance.paused()
         setTimeout(() => instance.resume(), 500)
+      }
+      if (!id) {
+        setTimeout(() => instance.resume(), 200)
       }
     })
   }
@@ -219,10 +222,7 @@ class ChartCarouselTooltip {
    * */
   private startCarousel() {
     if (!this.shouldStart()) {
-      // 如果未启用轮播功能，则停止当前轮播，并解绑相关鼠标事件
       this.stop()
-      this.plot.chart.off('plot:mouseenter')
-      this.plot.chart.off('plot:mouseleave')
       return
     }
     // 定义启动嵌套定时器的函数
@@ -463,6 +463,10 @@ class ChartCarouselTooltip {
         instance.resume()
       })
     }, 50)
+    // 定义 touchmove 事件处理函数（移动端）
+    const handleTouchMove = (event: TouchEvent) => {
+      handleMouseWheel(event)
+    }
     // 获取目标元素，优先全屏预览
     const targetDiv =
       document.getElementById('de-preview-content') ||
@@ -475,6 +479,9 @@ class ChartCarouselTooltip {
     if (targetDiv) {
       targetDiv.removeEventListener('wheel', handleMouseWheel)
       targetDiv.addEventListener('wheel', handleMouseWheel)
+      //移除和添加 touchmove 事件监听器（移动端）
+      targetDiv.removeEventListener('touchmove', handleTouchMove)
+      targetDiv.addEventListener('touchmove', handleTouchMove)
     }
     // 页面可见性控制
     document.addEventListener('visibilitychange', () => {
@@ -513,7 +520,7 @@ class ChartCarouselTooltip {
           new IntersectionObserver(
             entries => {
               entries.forEach(entry => {
-                if (entry.intersectionRatio < 1) {
+                if (entry.intersectionRatio < 0.7) {
                   this.paused()
                   this.chartIsVisible = false
                 } else {
@@ -523,7 +530,7 @@ class ChartCarouselTooltip {
                 }
               })
             },
-            { threshold: [1] }
+            { threshold: [0.7] }
           )
         )
         this.observers.get(this.plot.chart.ele.id).observe(this.plot.chart.ele)

@@ -46,7 +46,8 @@ import ChartCarouselTooltip, {
   isPie,
   isLine,
   isColumn,
-  isMix
+  isMix,
+  isSupport
 } from '@/views/chart/components/js/g2plot_tooltip_carousel'
 
 const { t: tI18n } = useI18n()
@@ -1699,15 +1700,18 @@ export function getTooltipContainer(id) {
  * @param chart
  */
 function configCarouselTooltip(plot, chart) {
-  // 启用轮播
-  plot.once('afterrender', () => {
-    const carousel = chart.customAttr?.tooltip?.carousel
-    ChartCarouselTooltip.manage(plot, chart, {
-      xField: 'field',
-      duration: carousel.enable ? carousel?.stayTime * 1000 : 2000,
-      interval: carousel.enable ? carousel?.intervalTime * 1000 : 2000
+  const start = isSupport(chart.type) && !document.getElementById('multiplexingDrawer')
+  if (start) {
+    // 启用轮播
+    plot.once('afterrender', () => {
+      const carousel = chart.customAttr?.tooltip?.carousel
+      ChartCarouselTooltip.manage(plot, chart, {
+        xField: 'field',
+        duration: carousel.enable ? carousel?.stayTime * 1000 : 2000,
+        interval: carousel.enable ? carousel?.intervalTime * 1000 : 2000
+      })
     })
-  })
+  }
 }
 /**
  * 计算 Tooltip 的位置
