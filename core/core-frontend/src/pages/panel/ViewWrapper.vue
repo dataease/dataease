@@ -11,6 +11,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
+import exeRequest from '@/config/axios'
 const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
@@ -69,6 +70,13 @@ onBeforeMount(async () => {
   state.suffixId = embeddedParams.suffixId || 'common'
   window.addEventListener('message', winMsgHandle)
 
+  let tokenInfo = null
+  if (embeddedStore.getToken && !Object.keys((tokenInfo = embeddedStore.getTokenInfo)).length) {
+    const res = await exeRequest.get({ url: '/embedded/getTokenArgs' })
+    embeddedStore.setTokenInfo(res.data)
+    tokenInfo = embeddedStore.getTokenInfo
+  }
+
   // 添加外部参数
   let attachParams
   await getOuterParamsInfo(embeddedParams.dvId).then(rsp => {
@@ -86,6 +94,9 @@ onBeforeMount(async () => {
       ElMessage.error(t('visualization.outer_param_decode_error'))
       return
     }
+  }
+  if (tokenInfo && Object.keys(tokenInfo).length) {
+    attachParams = Object.assign({}, attachParams, tokenInfo)
   }
   const chartId = embeddedParams?.chartId
 
