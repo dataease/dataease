@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.chart.dao.ext.mapper.ExtChartViewMapper">
+  <select id="queryChart" resultType="io.dataease.chart.dao.ext.entity.ChartBasePO">
+        select
+                            ccv.id as chart_id,
+                            ccv.title as chart_name,
+                            ccv.type as chart_type,
+                            ccv.table_id,
+                            dvi.id as resource_id,
+                            dvi.name as resource_name,
+                            dvi.type as resource_type,
+                            ccv.x_axis,
+                            ccv.x_axis_ext,
+                            ccv.y_axis,
+                            ccv.y_axis_ext,
+                            ccv.ext_stack,
+                            ccv.ext_bubble,
+                            ccv.ext_label,
+                            ccv.ext_tooltip,
+                            ccv.flow_map_start_name,
+                            ccv.flow_map_end_name,
+                            ccv.ext_color
+                            <choose>
+                               <when test="resourceTable == 'snapshot'">
+                                    from snapshot_core_chart_view ccv
+                                         left join snapshot_data_visualization_info dvi on dvi.id = ccv.scene_id
+                               </when>
+                               <otherwise>
+                                    from core_chart_view ccv
+                                         left join data_visualization_info dvi on dvi.id = ccv.scene_id
+                               </otherwise>
+                            </choose>
+                        where ccv.id = #{id}
+    </select>
+
+
+  <select id="selectListCustom" resultType="io.dataease.chart.dao.auto.entity.CoreChartView">
+        select * from
+    <choose>
+            <when test="resourceTable == 'snapshot'">
+                snapshot_core_chart_view
+            </when>
+            <otherwise>
+                core_chart_view
+            </otherwise>
+    </choose>
+        where scene_id = #{sceneId}
+    </select>
+    <delete id="deleteViewsBySceneId">
+          delete from
+    <choose>
+            <when test="resourceTable == 'snapshot'">
+                snapshot_core_chart_view
+            </when>
+            <otherwise>
+                core_chart_view
+            </otherwise>
+    </choose>
+          where scene_id = #{sceneId}
+      </delete>
+</mapper>

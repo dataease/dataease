@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { iconChartMap } from '@/components/icon-group/chart-list'
-import { reactive, ref, toRefs } from 'vue'
+import { computed, reactive, ref, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import Icon from '@/components/icon-custom/src/Icon.vue'
@@ -62,6 +62,36 @@ const handleDragEnd = e => {
   commonHandleDragEnd(e, dvModel.value)
 }
 
+const chartGroupListScroll = computed(() => {
+  return state.chartGroupList.reduce(
+    (pre, next) => {
+      if (next.display !== 'hidden') {
+        const height = (Math.floor((next.details.length - 1) / 3) + 1) * 88 + 20
+        if (pre.top === 0) {
+          pre.top += height
+          pre[0] = next.category
+        } else {
+          pre[pre.top] = next.category
+          pre.top += height
+        }
+        return pre
+      }
+      return pre
+    },
+    { top: 0 }
+  )
+})
+
+const handleScroll = val => {
+  let scrollTop: string | number = 0
+  for (const key in chartGroupListScroll.value) {
+    if (val.scrollTop > key) {
+      scrollTop = key
+    }
+  }
+  state.curCategory = chartGroupListScroll.value[scrollTop]
+}
+
 const groupActiveChange = category => {
   state.curCategory = category
   anchorPosition('#' + category)
@@ -118,7 +148,7 @@ const loadPluginCategory = data => {
         </li>
       </ul>
     </div>
-    <el-scrollbar ref="userViewGroup" class="group-right" height="392px">
+    <el-scrollbar ref="userViewGroup" @scroll="handleScroll" class="group-right" height="392px">
       <el-row
         :id="chartGroupInfo.category"
         v-for="chartGroupInfo in state.chartGroupList"

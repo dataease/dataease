@@ -18,6 +18,7 @@ import { isLink, setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { useRoute } from 'vue-router'
 import { filterEnumMapSync } from '@/utils/componentUtils'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const routeWatch = useRoute()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -32,7 +33,12 @@ const state = reactive({
   dvInfo: null,
   curPreviewGap: 0,
   initState: true,
-  showPosition: null
+  editPreview: false,
+  showPosition: null,
+  showOffset: {
+    top: 3,
+    left: 3
+  }
 })
 
 const props = defineProps({
@@ -112,7 +118,7 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
 
   await initCanvasData(
     dvId,
-    dvType,
+    { busiFlag: dvType, resourceTable: state.editPreview ? 'snapshot' : 'core' },
     async function ({
       canvasDataResult,
       canvasStyleResult,
@@ -120,20 +126,28 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
-      if (jumpParam) {
-        await filterEnumMapSync(canvasDataResult)
-        dvMainStore.addViewTrackFilter(jumpParam)
-      }
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
-      state.curPreviewGap = curPreviewGap
-      if (!ignoreParams) {
-        state.initState = false
-        dvMainStore.addOuterParamsFilter(attachParam)
-        state.initState = true
+      if (state.editPreview) {
+        state.dvInfo.status = 1
       }
+      state.curPreviewGap = curPreviewGap
+      if (state.dvInfo.status) {
+        if (jumpParam || (!ignoreParams && attachParam)) {
+          await filterEnumMapSync(canvasDataResult)
+        }
+        if (jumpParam) {
+          dvMainStore.addViewTrackFilter(jumpParam)
+        }
+        if (!ignoreParams) {
+          state.initState = false
+          dvMainStore.addOuterParamsFilter(attachParam)
+          state.initState = true
+        }
+      }
+
       if (props.publicLinkStatus) {
         // 设置浏览器title为当前仪表板名称
         document.title = dvInfo.name
@@ -186,6 +200,7 @@ onMounted(async () => {
   const ignoreParams = router.currentRoute.value.query.ignoreParams === 'true'
   const isPopWindow = router.currentRoute.value.query.popWindow === 'true'
   const isFrameFlag = window.self !== window.top
+  state.editPreview = router.currentRoute.value.query.editPreview === 'true'
   dvMainStore.setIframeFlag(isFrameFlag)
   dvMainStore.setIsPopWindow(isPopWindow)
   const { dvType, callBackFlag, taskId, showWatermark } = router.currentRoute.value.query
@@ -204,6 +219,11 @@ const dataVKeepSize = computed(() => {
   return state.canvasStylePreview?.screenAdaptor === 'keep'
 })
 
+const freezeStyle = computed(() => [
+  { '--top-show-offset': state.showOffset.top },
+  { '--left-show-offset': state.showOffset.left }
+])
+
 defineExpose({
   loadCanvasDataAsync
 })
@@ -215,7 +235,14 @@ defineExpose({
     v-loading="!state.initState"
     :class="{ 'canvas_keep-size': dataVKeepSize }"
     ref="previewCanvasContainer"
+    :style="freezeStyle"
   >
+    <canvas-opt-bar
+      style="position: fixed"
+      canvas-id="canvas-main"
+      :canvas-style-data="state.canvasStylePreview || {}"
+      :component-data="state.canvasDataPreview || []"
+    ></canvas-opt-bar>
     <de-preview
       ref="dvPreview"
       v-if="state.canvasStylePreview && state.initState"
@@ -227,6 +254,7 @@ defineExpose({
       :is-selector="props.isSelector"
       :download-status="downloadStatus"
       :show-pop-bar="true"
+      :show-linkage-button="false"
     ></de-preview>
     <empty-background
       v-if="!state.initState"
@@ -252,6 +280,7 @@ defineExpose({
   display: none;
 }
 .content {
+  position: relative;
   background-color: #ffffff;
   width: 100%;
   height: 100vh;

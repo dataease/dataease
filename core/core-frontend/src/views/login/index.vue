@@ -242,7 +242,7 @@ onMounted(async () => {
     } else {
       preheat.value = false
     }
-  } else if (getQueryString('state')?.includes('de-oauth2-')) {
+  } else if (getQueryString('state')?.includes('fit2clouddeoauth2')) {
     preheat.value = true
   }
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {

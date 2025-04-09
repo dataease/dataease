@@ -24,6 +24,7 @@ const DashboardPanel = defineAsyncComponent(
 )
 
 const Copilot = defineAsyncComponent(() => import('@/views/copilot/index.vue'))
+const TemplateManage = defineAsyncComponent(() => import('@/views/template/indexInject.vue'))
 
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const DashboardEmpty = defineAsyncComponent(() => import('@/views/mobile/panel/DashboardEmpty.vue'))
@@ -48,7 +49,8 @@ const componentMap = {
   DashboardPanel,
   DatasetEditor,
   DashboardEmpty,
-  Copilot
+  Copilot,
+  TemplateManage
 }
 
 const isDataFilling = ref(false)

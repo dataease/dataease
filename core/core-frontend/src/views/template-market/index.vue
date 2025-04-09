@@ -119,6 +119,7 @@
           v-show="state.networkStatus && state.hasResult"
           id="template-show-area"
           class="template-right"
+          style="padding-top: 16px"
         >
           <el-row v-if="state.marketActiveTab === null"
             ><TemplateSkeleton :width="state.templateCurWidth"
@@ -141,6 +142,9 @@
             <el-row v-show="state.marketActiveTab === t('work_branch.recommend')">
               <el-row
                 style="display: inline; width: 100%; margin-bottom: 32px"
+                :style="{
+                  marginBottom: categoryItem.label !== t('work_branch.recent') ? '32px' : 0
+                }"
                 v-for="(categoryItem, index) in categoriesComputed"
                 :key="index"
               >

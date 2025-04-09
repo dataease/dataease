@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -51,6 +52,7 @@ public class PieHandler extends YoyChartHandler {
                     .stream()
                     .filter(item -> {
                         if (clazz == AxisChartDataAntVDTO.class) {
+                            if (Objects.isNull(((AxisChartDataAntVDTO) item).getValue())) return false;
                             return ((AxisChartDataAntVDTO) item).getValue().compareTo(BigDecimal.ZERO) >= 0;
                         } else if (clazz == Map.class) {
                             return isPositive(((Map<String, Object>) item).get("value"));

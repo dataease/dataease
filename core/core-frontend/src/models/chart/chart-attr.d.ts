@@ -109,6 +109,14 @@ declare interface ChartBasicStyle {
    */
   defaultExpandLevel: number | 'all'
   /**
+   * 表格指标展示位置
+   */
+  quotaPosition: 'col' | 'row'
+  /**
+   * 行头指标列名称
+   */
+  quotaColLabel: string
+  /**
    * 仪表盘样式
    */
   gaugeStyle: string
@@ -293,6 +301,12 @@ declare interface ChartBasicStyle {
    * 汇总表总计标签
    */
   summaryLabel: string
+
+  seriesSummary?: Array<{
+    show: boolean
+    field: string
+    summary: string
+  }>
   /**
    * 符号地图符号大小最小值
    */
@@ -623,11 +637,18 @@ declare interface CalcTotals {
  */
 declare interface CalcTotalCfg extends Axis {
   dataeaseName: string
+  /**
+   * 聚合方式
+   */
   aggregation: 'MIN' | 'MAX' | 'AVG' | 'SUM' | 'CUSTOM' | ''
   /**
    * 自定义汇总表达式
    */
   originName: string
+  /**
+   * 别名
+   */
+  label: string
 }
 
 /**
@@ -883,6 +904,10 @@ declare interface ChartMiscAttr {
      */
     fieldId: string
   }
+  /**
+   * 子弹图
+   */
+  bullet: BulletAtt
 }
 /**
  * 动态极值配置
@@ -1313,3 +1338,47 @@ declare interface ColumnNode {
 }
 
 declare type Columns = Array<ColumnNode>
+
+declare interface BulletAtt {
+  bar: BulletAttr<BulletBarAtt>
+}
+declare interface BulletBarAtt {
+  /**
+   * 背景区间类型
+   */
+  showType?: 'dynamic' | 'fixed'
+  /**
+   * 自定义子弹背景区间
+   */
+  fixedRange?: BulletBarAtt[]
+  /**
+   * 自定义区间个数
+   */
+  fixedRangeNumber?: number
+  /**
+   * 自定义子弹背景区间分界值
+   */
+  fixedRangeValue?: number
+  /**
+   * 显示名称
+   */
+  name?: string
+  /**
+   * 当目标值为固定值时，显示目标值
+   */
+  value?: number
+  /**
+   * 子弹图形形状
+   */
+  symbol?: 'circle' | 'square' | 'line' | 'diamond' | 'triangle'
+  symbolSize?: number
+  fill?: string | string[]
+  fillOpacity?: number
+  radius?: number | number[]
+  size?: number
+}
+declare interface BulletAttr<T> {
+  measures?: T
+  target?: T
+  ranges?: T
+}

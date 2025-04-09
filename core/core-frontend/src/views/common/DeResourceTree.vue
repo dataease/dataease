@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
+import dvDashboardSpineMobileDisabled from '@/assets/svg/dv-dashboard-spine-mobile-disabled.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvCopyDark from '@/assets/svg/dv-copy-dark.svg'
 import dvDelete from '@/assets/svg/dv-delete.svg'
 import dvMove from '@/assets/svg/dv-move.svg'
+import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { treeDraggbleChart } from '@/utils/treeDraggbleChart'
 import { debounce } from 'lodash-es'
 import dvRename from '@/assets/svg/dv-rename.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
+import dvDashboardSpineDisabled from '@/assets/svg/dv-dashboard-spine-disabled.svg'
 import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
 import dvNewFolder from '@/assets/svg/dv-new-folder.svg'
 import icon_fileAdd_outlined from '@/assets/svg/icon_file-add_outlined.svg'
@@ -23,7 +26,8 @@ import {
   copyResource,
   deleteLogic,
   ResourceOrFolder,
-  queryShareBaseApi
+  queryShareBaseApi,
+  updateBase
 } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -67,11 +71,17 @@ const props = defineProps({
     required: false,
     type: String,
     default: 'preview'
+  },
+  resourceTable: {
+    required: false,
+    type: String,
+    default: 'core'
   }
 })
 const defaultProps = {
   children: 'children',
-  label: 'name'
+  label: 'name',
+  disabled: (data: any) => data.extraFlag1 === 0
 }
 const mounted = ref(false)
 const rootManage = ref(false)
@@ -171,9 +181,15 @@ const menuListWeight = id => {
 }
 const menuListWithCopy = [
   {
+    label: t('visualization.cancel_publish'), //取消发布
+    command: 'cancelPublish',
+    svgName: dvCancelPublish
+  },
+  {
     label: t('visualization.copy'), //'复制',
     command: 'copy',
-    svgName: dvCopyDark
+    svgName: dvCopyDark,
+    divided: true
   },
   {
     label: t('visualization.move_to'), //'移动到',
@@ -194,9 +210,15 @@ const menuListWithCopy = [
 ]
 const menuList = [
   {
+    label: t('visualization.cancel_publish'), //取消发布
+    command: 'cancelPublish',
+    svgName: dvCancelPublish
+  },
+  {
     label: t('visualization.move_to'), //'移动到',
     command: 'move',
-    svgName: dvMove
+    svgName: dvMove,
+    divided: true
   },
   {
     label: t('visualization.rename'), //'重命名',
@@ -243,18 +265,56 @@ const cancelPreRequest = () => {
   cancelRequestBatch('/linkJump/queryVisualizationJumpInfo/**')
 }
 
-const nodeClick = (data: BusiTreeNode) => {
-  cancelPreRequest()
-  selectedNodeKey.value = data.id
-  if (data.leaf) {
-    emit('nodeClick', data)
+const nodeClick = (data: BusiTreeNode, node) => {
+  dvMainStore.setCurComponent({ component: null, index: null })
+  if (node.disabled) {
+    nextTick(() => {
+      // 找到当前高亮的节点，移除高亮样式
+      const currentNode = resourceListTree.value.$el.querySelector('.is-current')
+      if (currentNode) {
+        currentNode.classList.remove('is-current')
+      }
+      return // 阻止后续逻辑
+    })
   } else {
-    resourceListTree.value.setCurrentKey(null)
+    cancelPreRequest()
+    selectedNodeKey.value = data.id
+    if (data.leaf) {
+      if (!embeddedStore.baseUrl) {
+        let url = window.location.href
+        const paramName = 'dvId'
+        const paramValue = data.id
+        // 检查是否已经有查询参数（在哈希部分）
+        if (url.includes('?')) {
+          const regex = new RegExp(`([?&])${paramName}=[^&]*`)
+          if (regex.test(url)) {
+            url = url.replace(regex, `$1${paramName}=${paramValue}`)
+          } else {
+            url += `&${paramName}=${paramValue}`
+          }
+        } else {
+          url += `?${paramName}=${paramValue}`
+        }
+        window.history.replaceState(
+          {
+            path: url
+          },
+          '',
+          url
+        )
+      }
+      emit('nodeClick', data)
+    } else {
+      resourceListTree.value.setCurrentKey(null)
+    }
   }
 }
 
 const getTree = async () => {
-  const request = { busiFlag: curCanvasType.value } as BusiTreeRequest
+  const request = {
+    busiFlag: curCanvasType.value,
+    resourceTable: props.resourceTable
+  } as BusiTreeRequest
   const isDashboard = curCanvasType.value == 'dashboard'
   await interactiveStore.setInteractive(request)
   const interactiveData = isDashboard ? interactiveStore.getPanel : interactiveStore.getScreen
@@ -307,13 +367,10 @@ const afterTreeInit = () => {
   }
   nextTick(() => {
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
-    nextTick(() => {
-      if (selectedNodeKey.value) {
-        const nodeDom = document.querySelector('.is-current')
-        nodeDom && nodeDom.click()
-      }
-    })
     resourceListTree.value.filter(filterText.value)
+    nextTick(() => {
+      document.querySelector('.is-current')?.firstChild?.click()
+    })
   })
 }
 
@@ -336,6 +393,22 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         ElMessage.success(t('visualization.delete_success'))
         getTree()
       })
+    })
+  } else if (cmd === 'cancelPublish') {
+    const params = {
+      id: data.id,
+      nodeType: 'leaf',
+      name: data.name,
+      type: curCanvasType.value,
+      mobileLayout: data?.extraFlag,
+      status: 0
+    }
+    updateBase(params).then(() => {
+      data['extraFlag1'] = 0
+      if (dvInfo.value.id === data.id) {
+        dvMainStore.updateDvInfoCall(0)
+      }
+      ElMessage.warning(t('visualization.cancel_publish_tips'))
     })
   } else if (cmd === 'edit') {
     resourceEdit(data.id)
@@ -613,7 +686,7 @@ defineExpose({
             </el-icon>
           </el-tooltip>
 
-          <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
+          <el-tooltip :content="newResourceLabel" placement="top">
             <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
               <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
                 <Icon name="icon_file-add_outlined"
@@ -703,23 +776,43 @@ defineExpose({
         draggable
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node">
+          <span class="custom-tree-node" :class="{ 'node-disabled-custom': data.extraFlag1 === 0 }">
             <el-icon style="font-size: 18px" v-if="!data.leaf">
               <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
-              <Icon
+              <Icon v-if="data.extraFlag1"
                 ><component
                   :is="data.extraFlag ? dvDashboardSpineMobile : dvDashboardSpine"
                 ></component
               ></Icon>
+              <Icon v-if="!data.extraFlag1"
+                ><component
+                  :is="data.extraFlag ? dvDashboardSpineMobileDisabled : dvDashboardSpineDisabled"
+                ></component
+              ></Icon>
             </el-icon>
-            <el-icon class="icon-screen-new color-dataV" style="font-size: 18px" v-else>
+            <el-icon
+              class="icon-screen-new color-dataV"
+              :class="{ 'color-dataV': data.extraFlag1, 'color-dataV-disabled': !data.extraFlag1 }"
+              style="font-size: 18px"
+              v-else
+            >
               <Icon name="icon_operation-analysis_outlined"
                 ><icon_operationAnalysis_outlined class="svg-icon"
               /></Icon>
             </el-icon>
-            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+            <span :title="node.label" class="label-tooltip">
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="t('visualization.publish_tips1')"
+                :disabled="data.extraFlag1"
+                placement="top-start"
+              >
+                {{ node.label }}
+              </el-tooltip>
+            </span>
             <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
               <el-icon
                 v-on:click.stop
@@ -902,7 +995,7 @@ defineExpose({
 
 <style lang="less">
 .menu-outer-dv_popper {
-  width: 140px;
+  min-width: 140px;
   margin-top: -2px !important;
 
   .ed-icon {
@@ -921,5 +1014,14 @@ defineExpose({
   i {
     display: block;
   }
+}
+
+.node-disabled-custom {
+  color: rgba(187, 191, 196, 1);
+  cursor: not-allowed;
+}
+
+.color-dataV-disabled {
+  background: #bbbfc4 !important;
 }
 </style>

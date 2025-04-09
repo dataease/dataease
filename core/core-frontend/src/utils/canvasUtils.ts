@@ -32,8 +32,14 @@ import { deepCopy, nameTrim } from '@/utils/utils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 const dvMainStore = dvMainStoreWithOut()
-const { inMobile, dvInfo, canvasStyleData, componentData, canvasViewInfo, appData } =
-  storeToRefs(dvMainStore)
+const {
+  inMobile,
+  dvInfo: curDvInfo,
+  canvasStyleData,
+  componentData,
+  canvasViewInfo,
+  appData
+} = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
@@ -141,6 +147,9 @@ export function historyItemAdaptor(
   canvasInfo
 ) {
   componentItem['canvasActive'] = false
+  if (componentItem.component === 'VQuery') {
+    componentItem['freeze'] = componentItem['freeze'] || false // 冻结字段适配
+  }
   // 定时报告过滤组件适配 如果当前是定时报告默认切有设置对应的过滤组件默认值，则替换过滤组件
   if (
     componentItem.component === 'VQuery' &&
@@ -239,6 +248,12 @@ export function historyAdaptor(
   attachInfo,
   canvasVersion
 ) {
+  // 防止出现主画布canvasId 不一致情况
+  if (attachInfo?.resourceTable === 'snapshot') {
+    canvasDataResult.forEach(componentItem => {
+      componentItem.canvasId = 'canvas-main'
+    })
+  }
   const curVersion = wsCache.get('x-de-execute-version')
   // 含有定时报告过滤项每次都需要匹配
   const reportFilterInfo = canvasInfo?.reportFilterInfo
@@ -251,6 +266,7 @@ export function historyAdaptor(
   canvasStyleResult['fontFamily'] = canvasStyleResult['fontFamily'] || 'PingFang'
   canvasStyleResult.dashboard['showGrid'] = canvasStyleResult.dashboard['showGrid'] || false
   canvasStyleResult.dashboard['matrixBase'] = canvasStyleResult.dashboard['matrixBase'] || 4
+  canvasStyleResult.dashboard['gapMode'] = canvasStyleResult.dashboard['gapMode'] || 'middle'
   canvasStyleResult.component['seniorStyleSetting'] =
     canvasStyleResult.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
   canvasStyleResult['suspensionButtonAvailable'] =
@@ -318,7 +334,8 @@ export function refreshOtherComponent(dvId, busiFlag) {
   }
 }
 
-export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
+export function initCanvasDataPrepare(dvId, params, callBack) {
+  const busiFlag = params.busiFlag
   const copyFlag = busiFlag != null && busiFlag.includes('-copy')
   const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
   const method = copyFlag ? findCopyResource : findById
@@ -334,7 +351,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       attachInfo['showWatermark'] = enable
     }
   }
-
+  attachInfo['resourceTable'] = params.resourceTable ? params.resourceTable : 'core'
   method(dvId, busiFlagCustom, attachInfo).then(res => {
     const canvasInfo = res.data
     const watermarkInfo = {
@@ -378,21 +395,21 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   })
 }
 
-export async function initCanvasData(dvId, busiFlag, callBack) {
+export async function initCanvasData(dvId, params, callBack) {
   initCanvasDataPrepare(
     dvId,
-    busiFlag,
+    params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       dvMainStore.setComponentData(canvasDataResult)
       dvMainStore.setCanvasStyle(canvasStyleResult)
       dvMainStore.updateCurDvInfo(dvInfo)
       dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
       // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
+      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
         dvMainStore.setNowPanelTrackInfo(rsp.data)
       })
       // 刷新跳转信息
-      queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
+      queryVisualizationJumpInfo(dvInfo.id, params.resourceTable).then(rsp => {
         dvMainStore.setNowPanelJumpInfo(rsp.data)
       })
       callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
@@ -403,7 +420,7 @@ export async function initCanvasData(dvId, busiFlag, callBack) {
 export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
   initCanvasDataPrepare(
     dvId,
-    busiFlag,
+    { busiFlag },
     function ({ canvasDataResult, canvasStyleResult, canvasViewInfoPreview }) {
       const componentDataCopy = canvasDataResult.filter(ele => !!ele.inMobile)
       const componentDataId = componentDataCopy.map(ele => ele.id)
@@ -450,10 +467,10 @@ export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
   )
 }
 
-export function initCanvasDataMobile(dvId, busiFlag, callBack) {
+export function initCanvasDataMobile(dvId, params, callBack) {
   initCanvasDataPrepare(
     dvId,
-    busiFlag,
+    params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       const componentData = canvasDataResult.filter(ele => !!ele.inMobile)
       canvasDataResult.forEach(ele => {
@@ -504,7 +521,7 @@ export function initCanvasDataMobile(dvId, busiFlag, callBack) {
       dvMainStore.updateCurDvInfo(dvInfo)
       dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
       // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
+      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
         dvMainStore.setNowPanelTrackInfo(rsp.data)
       })
       // 刷新跳转信息
@@ -523,12 +540,12 @@ export function initCanvasDataMobile(dvId, busiFlag, callBack) {
 
 export function checkCanvasChangePre(callBack) {
   // do pre
-  const isUpdate = dvInfo.value.id && dvInfo.value.optType !== 'copy'
+  const isUpdate = curDvInfo.value.id && curDvInfo.value.optType !== 'copy'
   // 桌面版为单人模式不需要检查
   if (isUpdate && !isDesktop()) {
-    const params = { ...dvInfo.value, watermarkInfo: null }
+    const params = { ...curDvInfo.value, watermarkInfo: null }
     const tips =
-      (dvInfo.value.type === 'dashboard'
+      (curDvInfo.value.type === 'dashboard'
         ? t('work_branch.dashboard')
         : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips')
     checkCanvasChange(params).then(rsp => {
@@ -574,7 +591,7 @@ export async function canvasSave(callBack) {
     componentData: JSON.stringify(componentDataToSave),
     canvasViewInfo: canvasViewInfo.value,
     appData: appData.value,
-    ...dvInfo.value,
+    ...curDvInfo.value,
     checkVersion: wsCache.get('x-de-execute-version'),
     contentId: newContentId,
     watermarkInfo: null
@@ -593,19 +610,25 @@ export async function canvasSave(callBack) {
     ElMessage.error('数据集分组名称已存在')
     return
   }
-  nameTrim(dvInfo.value, t('components.length_1_64_characters'))
-  const method = dvInfo.value.id && dvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
+  nameTrim(curDvInfo.value, t('components.length_1_64_characters'))
+  const method =
+    curDvInfo.value.id && curDvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
   if (method === updateCanvas) {
     await dvNameCheck({
       opt: 'edit',
       nodeType: 'leaf',
-      name: dvInfo.value.name,
-      type: dvInfo.value.type,
-      id: dvInfo.value.id
+      name: curDvInfo.value.name,
+      type: curDvInfo.value.type,
+      id: curDvInfo.value.id
     })
   }
   method(canvasInfo).then(res => {
-    dvMainStore.updateDvInfoId(res.data, newContentId)
+    if (method === updateCanvas) {
+      // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2
+      dvMainStore.updateDvInfoCall(res.data?.status, null, newContentId)
+    } else {
+      dvMainStore.updateDvInfoCall(0, res.data, newContentId)
+    }
     snapshotStore.resetStyleChangeTimes()
     callBack(res)
   })
@@ -896,12 +919,18 @@ export async function decompressionPre(params, callBack) {
     .catch(e => {
       console.error(e)
     })
-  historyAdaptor(deTemplateData.canvasStyleData, deTemplateData.componentData, null, null, null)
+  historyAdaptor(
+    deTemplateData.canvasStyleData,
+    deTemplateData.componentData,
+    null,
+    { resourceTable: 'snapshot' },
+    null
+  )
   callBack(deTemplateData)
 }
 
 export function isDashboard() {
-  return dvInfo.value.type === 'dashboard'
+  return curDvInfo.value.type === 'dashboard'
 }
 
 export function trackBarStyleCheck(element, trackbarStyle, _scale, trackMenuNumber) {

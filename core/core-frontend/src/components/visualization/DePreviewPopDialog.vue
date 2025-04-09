@@ -49,7 +49,7 @@ const previewInit = params => {
   if (params.url.includes('?')) {
     state.url = `${params.url}&popWindow=true`
   } else {
-    state.url = `${params.url}&popWindow=true`
+    state.url = `${params.url}?popWindow=true`
   }
   if (params.size === 'large') {
     state.fullscreen = true

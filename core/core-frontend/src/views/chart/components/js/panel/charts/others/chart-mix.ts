@@ -42,6 +42,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import type { Options } from '@antv/g2plot/esm'
 import { Group } from '@antv/g-canvas'
+import { extremumEvt } from '@/views/chart/components/js/extremumUitl'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -56,7 +57,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axis: AxisType[] = [...CHART_MIX_AXIS_TYPE, 'xAxisExtRight', 'yAxisExt']
@@ -94,6 +96,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
 
   async drawChart(drawOptions: G2PlotDrawOptions<DualAxes>): Promise<DualAxes> {
     const { chart, action, container } = drawOptions
+    chart.container = container
     if (!chart.data?.left?.data?.length && !chart.data?.right?.data?.length) {
       return
     }
@@ -127,6 +130,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       geometryOptions: [
         {
           geometry: data1Type,
+          marginRatio: 0,
           color: [],
           isGroup: isGroup,
           isStack: isStack,
@@ -174,6 +178,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
 
     newChart.on('point:click', action)
     newChart.on('interval:click', action)
+    extremumEvt(newChart, chart, options, container)
     configPlotTooltipEvent(chart, newChart)
     return newChart
   }
@@ -670,7 +675,8 @@ export class GroupColumnLineMix extends ColumnLineMix {
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axisConfig = {
@@ -782,7 +788,8 @@ export class StackColumnLineMix extends ColumnLineMix {
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axisConfig = {
@@ -895,7 +902,8 @@ export class DualLineMix extends ColumnLineMix {
     'label-selector': ['seriesLabelFormatter'],
     'tooltip-selector': [
       ...CHART_MIX_EDITOR_PROPERTY_INNER['tooltip-selector'],
-      'seriesTooltipFormatter'
+      'seriesTooltipFormatter',
+      'carousel'
     ]
   }
   axisConfig = {

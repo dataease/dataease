@@ -11,7 +11,9 @@ import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import icon_undo_outlined from '@/assets/svg/icon_undo_outlined.svg'
 import icon_redo_outlined from '@/assets/svg/icon_redo_outlined.svg'
-import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import dvRecoverOutlined from '@/assets/svg/dv-recover_outlined.svg'
+import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { ref, nextTick, computed, toRefs, onBeforeUnmount, onMounted } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -26,7 +28,13 @@ import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
-import { canvasSave, checkCanvasChangePre, initCanvasData } from '@/utils/canvasUtils'
+import {
+  canvasSave,
+  checkCanvasChangePre,
+  cleanUrlAndSetDvId,
+  findAllViewsId,
+  initCanvasData
+} from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
 import { XpackComponent } from '@/components/plugin'
@@ -42,6 +50,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { updatePublishStatus } from '@/api/visualization/dataVisualization'
+
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -60,6 +70,7 @@ const outerParamsSetRef = ref(null)
 const fullScreeRef = ref(null)
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
+const emits = defineEmits(['recoverToPublished'])
 
 const props = defineProps({
   createType: {
@@ -67,9 +78,6 @@ const props = defineProps({
     default: 'create'
   }
 })
-
-const { createType } = toRefs(props)
-
 const closeEditCanvasName = () => {
   nameEdit.value = false
   if (!inputName.value || !inputName.value.trim()) {
@@ -85,6 +93,10 @@ const closeEditCanvasName = () => {
   }
   dvInfo.value.name = inputName.value
   inputName.value = ''
+}
+
+const recoverToPublished = () => {
+  emits('recoverToPublished')
 }
 
 const undo = () => {
@@ -115,11 +127,11 @@ const resourceOptFinish = param => {
     dvInfo.value.dataState = 'ready'
     dvInfo.value.pid = param.pid
     dvInfo.value.name = param.name
-    saveCanvasWithCheck()
+    saveCanvasWithCheck(param.withPublish, param.status)
   }
 }
 
-const saveCanvasWithCheck = () => {
+const saveCanvasWithCheck = (withPublish = false, status?) => {
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
     ElMessageBox.confirm('已切换至新组织，无权保存其他组织的资源', {
       confirmButtonType: 'primary',
@@ -149,26 +161,29 @@ const saveCanvasWithCheck = () => {
         resourceAppOpt.value.init(params)
       })
     } else {
-      const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid || '0' }
-      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+      const params = {
+        name: dvInfo.value.name,
+        leaf: true,
+        id: dvInfo.value.pid || '0'
+      }
+      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
     }
     return
   }
   checkCanvasChangePre(() => {
-    saveResource()
+    saveResource({ withPublish, status })
   })
 }
 
-const saveResource = () => {
-  if (styleChangeTimes.value > 0) {
+const saveResource = (checkParams?) => {
+  if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     eventBus.emit('hideArea-canvas-main')
     nextTick(() => {
       canvasSave(() => {
         snapshotStore.resetStyleChangeTimes()
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-        ElMessage.success(t('commons.save_success'))
         let url = window.location.href
-        url = url.replace(/\?opt=create/, `?dvId=${dvInfo.value.id}`)
+        url = url.replace(/(#\/[^?]*)(?:\?[^#]*)?/, `$1?dvId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
           window.history.replaceState(
             {
@@ -179,13 +194,18 @@ const saveResource = () => {
           )
         }
         if (appData.value) {
-          initCanvasData(dvInfo.value.id, 'dataV', () => {
+          initCanvasData(dvInfo.value.id, { busiFlag: 'dataV', resourceTable: 'snapshot' }, () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
             resourceAppOpt.value.close()
             dvMainStore.setAppDataInfo(null)
             useEmitt().emitter.emit('calcData-all')
             snapshotStore.resetSnapshot()
           })
+        }
+        if (checkParams.withPublish) {
+          publishStatusChange(checkParams.status)
+        } else {
+          ElMessage.success(t('commons.save_success'))
         }
       })
     })
@@ -285,7 +305,7 @@ const openOuterParamsSet = () => {
     ElMessage.warning(t('components.add_components_first'))
     return
   }
-  if (!dvInfo.value.id) {
+  if (!dvInfo.value.id || dvInfo.value.dataState === 'prepare') {
     ElMessage.warning(t('components.current_page_first'))
     return
   }
@@ -297,6 +317,25 @@ const openOuterParamsSet = () => {
 
 const multiplexingCanvasOpen = () => {
   multiplexingRef.value.dialogInit('dataV')
+}
+
+const publishStatusChange = status => {
+  const targetViewIds = []
+  findAllViewsId(componentData.value, targetViewIds)
+  // do update
+  updatePublishStatus({
+    id: dvInfo.value.id,
+    name: dvInfo.value.name,
+    mobileLayout: dvInfo.value.mobileLayout,
+    status,
+    activeViewIds: targetViewIds,
+    type: 'dataV'
+  }).then(() => {
+    dvMainStore.updateDvInfoCall(status)
+    status
+      ? ElMessage.success(t('visualization.published_success'))
+      : ElMessage.success(t('visualization.cancel_publish_tips'))
+  })
 }
 
 const isIframe = computed(() => appStore.getIsIframe)
@@ -319,9 +358,9 @@ const fullScreenPreview = () => {
       </template>
       <template v-else>
         <el-icon class="custom-el-icon back-icon" @click="backToMain()">
-          <Icon name="icon_left_outlined"
-            ><icon_left_outlined class="svg-icon toolbar-icon"
-          /></Icon>
+          <Icon name="icon_left_outlined">
+            <icon_left_outlined class="svg-icon toolbar-icon" />
+          </Icon>
         </el-icon>
         <div class="left-area">
           <span id="dv-canvas-name" class="name-area" @dblclick="editCanvasName">
@@ -334,7 +373,9 @@ const fullScreenPreview = () => {
                 :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
                 @click="undo()"
               >
-                <Icon name="icon_undo_outlined"><icon_undo_outlined class="svg-icon" /></Icon>
+                <Icon name="icon_undo_outlined">
+                  <icon_undo_outlined class="svg-icon" />
+                </Icon>
               </el-icon>
             </el-tooltip>
             <el-tooltip effect="ndark" :content="$t('commons.reduction')" placement="bottom">
@@ -345,7 +386,9 @@ const fullScreenPreview = () => {
                 }"
                 @click="redo()"
               >
-                <Icon name="icon_redo_outlined"><icon_redo_outlined class="svg-icon" /></Icon>
+                <Icon name="icon_redo_outlined">
+                  <icon_redo_outlined class="svg-icon" />
+                </Icon>
               </el-icon>
             </el-tooltip>
           </div>
@@ -453,6 +496,42 @@ const fullScreenPreview = () => {
         >
           {{ t('visualization.save') }}
         </el-button>
+        <el-dropdown
+          :disabled="dvInfo.status === 0"
+          popper-class="menu-outer-dv_popper"
+          trigger="hover"
+        >
+          <el-button
+            @click="saveCanvasWithCheck(true, 1)"
+            style="float: right; margin: 0 12px 0 0"
+            type="primary"
+          >
+            {{ t('visualization.publish') }}
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="recoverToPublished" v-if="dvInfo.status === 2">
+                <el-icon class="handle-icon">
+                  <Icon name="icon_left_outlined">
+                    <dv-recover-outlined class="svg-icon toolbar-icon" />
+                  </Icon>
+                </el-icon>
+                {{ t('visualization.publish_recover') }}
+              </el-dropdown-item>
+              <el-dropdown-item
+                @click.stop="publishStatusChange(0)"
+                v-if="[1, 2].includes(dvInfo.status)"
+              >
+                <el-icon class="handle-icon">
+                  <Icon name="icon_left_outlined">
+                    <dv-cancel-publish class="svg-icon toolbar-icon" />
+                  </Icon>
+                </el-icon>
+                {{ t('visualization.cancel_publish') }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">
@@ -484,7 +563,7 @@ const fullScreenPreview = () => {
   </div>
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>
   <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
-  <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
+  <outer-params-set ref="outerParamsSetRef"></outer-params-set>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
@@ -492,18 +571,21 @@ const fullScreenPreview = () => {
 .toolbar-main {
   position: relative;
 }
+
 .preview-state-head {
   height: 0px !important;
   overflow: hidden;
   padding: 0;
   margin: 0;
 }
+
 .edit-button {
   right: 10px;
   top: 10px;
   position: absolute;
   z-index: 10;
 }
+
 .toolbar {
   height: @top-bar-height;
   white-space: nowrap;
@@ -513,17 +595,20 @@ const fullScreenPreview = () => {
   box-shadow: 0px 2px 4px 0px rgba(31, 35, 41, 0.12);
   display: flex;
   transition: 0.5s;
+
   .back-icon {
     margin-left: 20px;
     margin-top: 22px;
     font-size: 20px;
   }
+
   .left-area {
     margin-top: 8px;
     margin-left: 14px;
     width: 300px;
     display: flex;
     flex-direction: column;
+
     .name-area {
       position: relative;
       line-height: 24px;
@@ -533,6 +618,7 @@ const fullScreenPreview = () => {
       overflow: hidden;
       cursor: pointer;
       color: @dv-canvas-main-font-color;
+
       input {
         position: absolute;
         left: 0;
@@ -546,6 +632,7 @@ const fullScreenPreview = () => {
         height: 100%;
       }
     }
+
     .opt-area {
       width: 300px;
       text-align: left;
@@ -556,24 +643,28 @@ const fullScreenPreview = () => {
       }
     }
   }
+
   .middle-area {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   .right-area {
     width: 400px;
     display: flex;
     align-items: center;
     justify-content: right;
   }
+
   .custom-el-icon {
     margin-left: 15px;
     color: #ffffff;
     cursor: pointer;
     vertical-align: -0.2em;
   }
+
   .toolbar-icon {
     width: 20px;
     height: 20px;
@@ -584,6 +675,7 @@ const fullScreenPreview = () => {
   border-color: rgba(255, 255, 255, 0.3);
   color: #ffffff;
   background-color: transparent;
+
   &:hover,
   &:focus {
     background-color: #121a2c;
@@ -602,5 +694,21 @@ const fullScreenPreview = () => {
   height: 18px;
   margin-right: 20px;
   margin-left: 10px;
+}
+</style>
+
+<style lang="less">
+.menu-outer-dv_popper {
+  border: 1px solid rgba(67, 67, 67, 1) !important;
+  background-color: rgba(41, 41, 41, 1) !important;
+  .ed-dropdown-menu {
+    background-color: rgba(41, 41, 41, 1) !important;
+  }
+  .ed-dropdown-menu__item {
+    color: rgba(235, 235, 235, 1) !important;
+  }
+  .handle-icon {
+    color: rgba(166, 166, 166, 1) !important;
+  }
 }
 </style>

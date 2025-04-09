@@ -30,4 +30,6 @@ public class XpackSharePO implements Serializable {
 
     private Integer extFlag;
 
+    private Integer extFlag1;
+
 }

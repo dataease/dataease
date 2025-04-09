@@ -150,12 +150,28 @@ public class TableInfoHandler extends DefaultChartHandler {
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
                 req.setDsList(dsMap);
-                var assistSql = assistSQL(querySql, assistFields, dsMap);
-                req.setQuery(assistSql);
-                logger.debug("calcite assistSql sql: " + assistSql);
-                var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
-                calcResult.setAssistData(assistData);
-                calcResult.setDynamicAssistFields(dynamicAssistFields);
+
+                List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                if (ObjectUtils.isNotEmpty(assists)) {
+                    var assistSql = assistSQL(originSql, assistFields, dsMap);
+                    var tmpSql = provider.rebuildSQL(assistSql, sqlMeta, crossDs, dsMap);
+                    req.setQuery(tmpSql);
+                    logger.debug("calcite assistSql sql: " + tmpSql);
+                    var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
+                    calcResult.setAssistData(assistData);
+                    calcResult.setDynamicAssistFields(assists);
+                }
+
+                List<ChartSeniorAssistDTO> assistsOriginList = dynamicAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                if (ObjectUtils.isNotEmpty(assistsOriginList)) {
+                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
+                    var tmpSql = provider.rebuildSQL(assistSqlOriginList, sqlMeta, crossDs, dsMap);
+                    req.setQuery(tmpSql);
+                    logger.debug("calcite assistSql sql origin list: " + tmpSql);
+                    var assistDataOriginList = (List<String[]>) provider.fetchResultField(req).get("data");
+                    calcResult.setAssistDataOriginList(assistDataOriginList);
+                    calcResult.setDynamicAssistFieldsOriginList(assistsOriginList);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

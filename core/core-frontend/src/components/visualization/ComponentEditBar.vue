@@ -171,6 +171,7 @@
 
           <xpack-component
             :chart="element"
+            resource-table="snapshot"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
             @close-item="closeItem"
           />

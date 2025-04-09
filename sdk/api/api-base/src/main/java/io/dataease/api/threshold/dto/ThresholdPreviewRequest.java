@@ -1,5 +1,6 @@
 package io.dataease.api.threshold.dto;
 
+import io.dataease.constant.CommonConstants;
 import lombok.Data;
 
 import java.io.Serial;
@@ -15,4 +16,6 @@ public class ThresholdPreviewRequest implements Serializable {
     private String thresholdRules;
 
     private String msgContent;
+
+    private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
 }

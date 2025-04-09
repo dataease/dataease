@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import icon_admin_outlined from '@/assets/svg/icon_admin_outlined.svg'
 import { ElSelect } from 'element-plus-secondary'
-import { computed, ref, toRefs } from 'vue'
+import { computed, nextTick, ref, toRefs, watch } from 'vue'
 import RangeFilterTime from '@/custom-component/v-query/RangeFilterTime.vue'
 import FilterTime from '@/custom-component/v-query/FilterTime.vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -56,9 +56,19 @@ const props = defineProps({
 })
 
 const showFlag = computed(() => props.showPosition === 'main')
-
 const { curComponent } = toRefs(props)
-
+const loadingDefault = ref(true)
+watch(
+  () => curComponent.value.id,
+  val => {
+    if (!val) return
+    loadingDefault.value = false
+    nextTick(() => {
+      loadingDefault.value = true
+    })
+  },
+  { immediate: true }
+)
 const relativeToCurrentTypeList = computed(() => {
   if (!curComponent.value) return []
   let index = ['year', 'month', 'date', 'datetime'].indexOf(curComponent.value.timeGranularity) + 1
@@ -201,6 +211,10 @@ const relativeToCurrentListRange = computed(() => {
           value: 'lastMonth'
         },
         {
+          label: t('dynamic_time.tquarter'),
+          value: 'thisQuarter'
+        },
+        {
           label: t('v_query.last_3_months'),
           value: 'LastThreeMonths'
         },
@@ -224,6 +238,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('dynamic_time.yesterday'),
           value: 'yesterday'
+        },
+        {
+          label: t('dynamic_time.cweek'),
+          value: 'thisWeek'
         },
         {
           label: t('v_query.last_3_days'),
@@ -638,7 +656,11 @@ defineExpose({
         </div>
       </template>
     </div>
-    <div v-if="curComponent.defaultValueCheck" class="parameters" :class="dynamicTime && 'setting'">
+    <div
+      v-if="curComponent.defaultValueCheck && loadingDefault"
+      class="parameters"
+      :class="dynamicTime && 'setting'"
+    >
       <div class="setting-label" v-if="dynamicTime">{{ t('template_manage.preview') }}</div>
       <div :class="dynamicTime ? 'setting-value' : 'w100'">
         <component :config="curComponent" isConfig ref="inputCom" :is="filterTypeCom"></component>

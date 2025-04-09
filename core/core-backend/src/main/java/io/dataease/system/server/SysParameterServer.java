@@ -38,7 +38,12 @@ public class SysParameterServer implements SysParameterApi {
 
     @Override
     public OnlineMapEditor queryOnlineMap() {
-        return sysParameterManage.queryOnlineMap();
+        return sysParameterManage.queryOnlineMap(null);
+    }
+
+    @Override
+    public OnlineMapEditor queryOnlineMapByMapType(String type) {
+        return sysParameterManage.queryOnlineMap(type);
     }
 
     @Override

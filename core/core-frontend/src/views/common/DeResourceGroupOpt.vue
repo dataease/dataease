@@ -31,7 +31,8 @@ const { t } = useI18n()
 const state = reactive({
   tData: [],
   nameList: [],
-  targetInfo: null
+  targetInfo: null,
+  attachParams: null
 })
 
 const showParentSelected = ref(false)
@@ -135,9 +136,10 @@ const getDialogTitle = exec => {
 }
 const placeholder = ref('')
 
-const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
+const optInit = (type, data: BusiTreeNode, exec, parentSelect = false, attachParams?) => {
   showParentSelected.value = parentSelect
   state.targetInfo = data
+  state.attachParams = attachParams
   nodeType.value = type
   const optSource = data.leaf || type === 'leaf' ? sourceLabel.value : t('visualization.folder')
   const placeholderLabel =
@@ -150,7 +152,7 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   filterText.value = ''
   dialogTitle.value = getDialogTitle(exec) + ('rename' === exec ? optSource : '')
   resourceFormNameLabel.value = (exec === 'move' ? '' : optSource) + t('visualization.name')
-  const request = { busiFlag: curCanvasType.value, leaf: false, weight: 7 }
+  const request = { busiFlag: curCanvasType.value, leaf: false, resourceTable: 'core', weight: 7 }
   if (['newFolder'].includes(exec)) {
     resourceForm.name = ''
   } else if ('copy' === exec) {
@@ -256,7 +258,8 @@ const saveResource = () => {
         nodeType: nodeType.value as 'folder' | 'leaf',
         name: resourceForm.name,
         type: curCanvasType.value,
-        mobileLayout: state.targetInfo?.extraFlag
+        mobileLayout: state.targetInfo?.extraFlag,
+        status: state.targetInfo?.extraFlag1
       }
 
       switch (cmd.value) {
@@ -285,7 +288,7 @@ const saveResource = () => {
       }
       if (cmd.value === 'newLeaf') {
         resourceDialogShow.value = false
-        emits('finish', { opt: 'newLeaf', ...params })
+        emits('finish', { opt: 'newLeaf', ...params, ...state.attachParams })
       } else {
         loading.value = true
         const method = methodMap[cmd.value] ? methodMap[cmd.value] : updateBase

@@ -45,6 +45,7 @@ function usage() {
    echo "  backup                备份 DATAEASE 服务"
    echo "  restore xxx.tar.gz    还原 DATAEASE 服务"
    echo "  clear-images          清理 DATAEASE 旧版本的相关镜像"
+   echo "  clear-logs            清理 DATAEASE 历史日志"
    echo "  version               查看 DATAEASE 版本"
 }
 function _generate_compose_file_args() {
@@ -319,6 +320,14 @@ function clear_images() {
       echo "清理完毕"
    fi
 }
+function clear_logs() {
+   echo "开始清理 DataEase 历史日志"
+   rm -rf ${DE_RUNNING_BASE}/logs/dataease/*.????-??-??.*.log
+   rm -rf ${DE_RUNNING_BASE}/logs/dataease/sync-task/task-handler-log/*
+   echo "" > ${DE_RUNNING_BASE}/logs/dataease/info.log
+   echo "" > ${DE_RUNNING_BASE}/logs/dataease/error.log
+   echo "清理完毕"
+}
 function backup() {
    need_stop=0
    if [[ -z $1 ]];then
@@ -407,6 +416,9 @@ function main() {
          ;;
       clear-images)
          clear_images
+         ;;
+      clear-logs)
+         clear_logs
          ;;
       version)
          version

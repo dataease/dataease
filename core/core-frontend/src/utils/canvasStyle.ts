@@ -295,7 +295,14 @@ export const THEME_ATTR_TRANS_MAIN = {
     color: 'color',
     proportionSeriesFormatter: ['color']
   },
-  tooltip: ['color']
+  tooltip: ['color'],
+  misc: {
+    bullet: {
+      bar: {
+        target: ['fill']
+      }
+    }
+  }
 }
 
 export const THEME_ATTR_TRANS_MAIN_SYMBOL = {

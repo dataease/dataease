@@ -14,6 +14,8 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaults, isEmpty } from 'lodash-es'
 import { DEFAULT_LEGEND_STYLE } from '@/views/chart/components/editor/util/chart'
+import { type Datum } from '@antv/g2plot/esm'
+import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 /**
@@ -144,6 +146,17 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const { Scatter: G2Scatter } = await import('@antv/g2plot/esm/plots/scatter')
     const newChart = new G2Scatter(container, options)
     newChart.on('point:click', action)
+    if (options.label) {
+      newChart.on('label:click', e => {
+        action({
+          x: e.x,
+          y: e.y,
+          data: {
+            data: e.target.attrs.data
+          }
+        })
+      })
+    }
     configPlotTooltipEvent(chart, newChart)
     return newChart
   }
@@ -275,6 +288,41 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       }
     }
     return optionTmp
+  }
+
+  protected configLabel(chart: Chart, options: ScatterOptions): ScatterOptions {
+    const tmpOption = super.configLabel(chart, options)
+    if (!tmpOption.label) {
+      return options
+    }
+    const { label: labelAttr } = parseJson(chart.customAttr)
+    tmpOption.label.style.fill = labelAttr.color
+    const label = {
+      ...tmpOption.label,
+      formatter: function (data: Datum) {
+        const value = valueFormatter(data.value, labelAttr.formatter)
+        const group = new Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            data,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelAttr.fontSize,
+            fontFamily: chart.fontFamily,
+            fill: labelAttr.color
+          }
+        })
+        return group
+      }
+    }
+    return {
+      ...tmpOption,
+      label
+    }
   }
 
   protected setupOptions(chart: Chart, options: ScatterOptions) {

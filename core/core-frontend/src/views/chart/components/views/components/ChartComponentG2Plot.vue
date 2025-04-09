@@ -19,7 +19,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { parseJson } from '@/views/chart/components/js/util'
-import { defaultsDeep, cloneDeep } from 'lodash-es'
+import { defaultsDeep, cloneDeep, concat } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
@@ -76,6 +76,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'inherit'
+  },
+  active: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 
@@ -185,8 +190,11 @@ const checkSelected = param => {
   // 获取当前视图的所有联动字段ID
   const mappingFieldIds = Array.from(
     new Set(
-      chartData.value?.fields
-        .map(item => item.id)
+      (view.value.type.includes('chart-mix')
+        ? concat(chartData.value?.left?.fields, chartData.value?.right?.fields)
+        : chartData.value?.fields
+      )
+        .map(item => item?.id)
         .filter(id =>
           Object.keys(nowPanelTrackInfo.value).some(
             key => key.startsWith(view.value.id) && key.split('#')[1] === id
@@ -555,7 +563,7 @@ const trackClick = trackAction => {
     }
   }
   let quotaList = state.pointParam.data.quotaList
-  if (['bar-range'].includes(curView.type)) {
+  if (['bar-range', 'bullet-graph'].includes(curView.type)) {
     quotaList = state.pointParam.data.dimensionList
   } else {
     quotaList[0]['value'] = state.pointParam.data.value
@@ -690,7 +698,7 @@ const canvas2Picture = (pictureData, online) => {
   mapDom.appendChild(imgDom)
 }
 const preparePicture = id => {
-  if (id !== curView.id) {
+  if (id !== curView?.id) {
     return
   }
   const chartView = chartViewManager.getChartView(curView.render, curView.type)
@@ -714,7 +722,7 @@ const preparePicture = id => {
   }
 }
 const unPreparePicture = id => {
-  if (id !== curView.id) {
+  if (id !== curView?.id) {
     return
   }
   const chartView = chartViewManager.getChartView(curView.render, curView.type)
@@ -779,6 +787,15 @@ onMounted(() => {
   useEmitt({ name: 'l7-prepare-picture', callback: preparePicture })
   useEmitt({ name: 'l7-unprepare-picture', callback: unPreparePicture })
 })
+const MAP_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 'symbolic-map']
+const onWheel = (e: WheelEvent) => {
+  if (!MAP_CHARTS.includes(view.value.type)) {
+    return
+  }
+  if (!props.active) {
+    e.stopPropagation()
+  }
+}
 onBeforeUnmount(() => {
   try {
     myChart?.destroy()
@@ -801,7 +818,13 @@ onBeforeUnmount(() => {
       :style="state.trackBarStyle"
       @trackClick="trackClick"
     />
-    <div v-if="!isError" ref="chartContainer" class="canvas-content" :id="containerId"></div>
+    <div
+      @wheel.capture="onWheel"
+      v-if="!isError"
+      ref="chartContainer"
+      class="canvas-content"
+      :id="containerId"
+    ></div>
     <chart-error v-else :err-msg="errMsg" />
   </div>
 </template>

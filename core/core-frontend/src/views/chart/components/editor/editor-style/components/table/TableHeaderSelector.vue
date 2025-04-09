@@ -158,7 +158,7 @@ onMounted(() => {
       "
       class="form-item"
       :class="'form-item-' + themes"
-      v-if="showProperty('tableHeaderBgColor')"
+      v-if="showProperty('tableHeaderBgColor') && state.tableHeaderForm.tableHeaderBgColor"
     >
       <el-color-picker
         :effect="themes"

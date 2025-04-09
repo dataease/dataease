@@ -81,7 +81,7 @@ onBeforeMount(async () => {
 
   req(
     embeddedParams.dvId,
-    embeddedParams.busiFlag,
+    { busiFlag: embeddedParams.busiFlag },
     function ({
       canvasDataResult,
       canvasStyleResult,

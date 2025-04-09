@@ -201,6 +201,9 @@ export function deepCopyTabItemHelper(newCanvasId, tabComponentData, idMap) {
 
 function deepCopyHelper(data, idMap) {
   const result = deepCopy(data)
+  if (result.freeze) {
+    result.freeze = false
+  }
   const newComponentId = generateID()
   idMap[data.id] = newComponentId
   result.id = newComponentId

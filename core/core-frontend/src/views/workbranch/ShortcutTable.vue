@@ -8,7 +8,7 @@ import icon_database_outlined from '@/assets/svg/icon_database_outlined.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
 import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
-import icon_cancel_store from '@/assets/svg/icon_cancel_store.svg'
+import dvDashboardSpineMobileDisabled from '@/assets/svg/dv-dashboard-spine-mobile-disabled.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import type { TabsPaneContext } from 'element-plus-secondary'
@@ -61,6 +61,7 @@ const iconMap = {
   panelMobile: dvDashboardSpineMobile,
   dashboard: icon_dashboard_outlined,
   dashboardMobile: dvDashboardSpineMobile,
+  dashboardMobileDisabled: dvDashboardSpineMobileDisabled,
   screen: icon_operationAnalysis_outlined,
   dataV: icon_operationAnalysis_outlined,
   dataset: icon_app_outlined,
@@ -198,7 +199,7 @@ const sortChange = param => {
 }
 
 const handleCellClick = row => {
-  if (row) {
+  if (row && !checkDisabled(row)) {
     const sourceId = activeName.value === 'recent' ? row.id : row.resourceId
     if (['dashboard', 'panel'].includes(row.type)) {
       window.open('#/panel/index?dvId=' + sourceId, '_self')
@@ -236,6 +237,10 @@ const executeStore = rowInfo => {
   storeApi(param).then(() => {
     rowInfo.favorite = !rowInfo.favorite
   })
+}
+
+const checkDisabled = row => {
+  return activeName.value === 'store' && !row.extFlag1
 }
 
 const executeCancelStore = rowInfo => {
@@ -352,18 +357,32 @@ const getEmptyDesc = (): string => {
                   <Icon
                     ><component
                       class="svg-icon"
-                      :is="iconMap[scope.row.type + 'Mobile']"
+                      :is="
+                        iconMap[
+                          scope.row.type + 'Mobile' + (checkDisabled(scope.row) ? 'Disabled' : '')
+                        ]
+                      "
                     ></component
                   ></Icon>
                 </el-icon>
-                <el-icon v-else :class="`main-color color-${scope.row.type}`">
+                <el-icon
+                  v-else
+                  :class="`main-color color-${scope.row.type} custom-color${
+                    checkDisabled(scope.row) ? '-disabled' : ''
+                  }`"
+                >
                   <Icon
                     ><component class="svg-icon" :is="iconMap[scope.row.type]"></component
                   ></Icon>
                 </el-icon>
                 <el-tooltip placement="top">
                   <template #content>{{ scope.row.name }}</template>
-                  <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>
+                  <span
+                    class="ellipsis"
+                    :class="{ 'color-disabled': checkDisabled(scope.row) }"
+                    style="max-width: 250px"
+                    >{{ scope.row.name }}</span
+                  >
                 </el-tooltip>
                 <el-icon
                   v-if="activeName === 'recent' && ['screen', 'panel'].includes(scope.row.type)"
@@ -567,6 +586,14 @@ const getEmptyDesc = (): string => {
 
 .jump-active {
   cursor: pointer;
+}
+
+.color-disabled {
+  color: #bbbfc4;
+}
+
+.custom-color-disabled {
+  background: #bbbfc4 !important;
 }
 </style>
 <style lang="less">

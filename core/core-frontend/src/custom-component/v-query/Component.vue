@@ -2,7 +2,10 @@
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import eventBus from '@/utils/eventBus'
+import colorFunctions from 'less/lib/less/functions/color.js'
+import colorTree from 'less/lib/less/tree/color.js'
 import { isISOMobile, isMobile } from '@/utils/utils'
+import { cloneDeep } from 'lodash-es'
 import { ElMessage } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
@@ -96,8 +99,6 @@ const snapshotStore = snapshotStoreWithOut()
 
 const btnStyle = computed(() => {
   const style = {
-    backgroundColor: customStyle.btnColor,
-    borderColor: customStyle.btnColor,
     color: customStyle.labelColorBtn
   } as CSSProperties
   if (customStyle.fontSizeBtn) {
@@ -113,6 +114,49 @@ const btnStyle = computed(() => {
   }
 
   return style
+})
+
+const btnHoverStyle = computed(() => {
+  return {
+    rawColor: customStyle.btnColor ?? '#3370ff',
+    hoverColor: customStyle.btnColor
+      ? colorFunctions
+          .mix(new colorTree('ffffff'), new colorTree(customStyle.btnColor.substr(1)), {
+            value: 15
+          })
+          .toRGB()
+      : '#5285FF',
+    activeColor: customStyle.btnColor
+      ? colorFunctions
+          .mix(new colorTree('000000'), new colorTree(customStyle.btnColor.substr(1)), {
+            value: 15
+          })
+          .toRGB()
+      : '#2B5FD9'
+  }
+})
+
+const btnPrimaryColor = computed(() => {
+  return btnHoverStyle.value.rawColor
+})
+
+const btnPrimaryHoverColor = computed(() => {
+  return btnHoverStyle.value.hoverColor
+})
+
+const btnPrimaryActiveColor = computed(() => {
+  return btnHoverStyle.value.activeColor
+})
+
+const tagColor = computed(() => {
+  if (customStyle.background && !customStyle.background.toLowerCase().includes('#ffffff')) {
+    return colorFunctions
+      .mix(new colorTree('ffffff'), new colorTree(customStyle.background.substr(1)), {
+        value: 15
+      })
+      .toRGB()
+  }
+  return '#f0f2f5'
 })
 
 const btnPlainStyle = computed(() => {
@@ -251,6 +295,66 @@ const releaseSelect = id => {
   unMountSelect.value = unMountSelect.value.filter(ele => ele !== id)
 }
 
+const getKeyList = next => {
+  let checkedFieldsMapArr = Object.entries(next.checkedFieldsMap).filter(ele =>
+    next.checkedFields.includes(ele[0])
+  )
+  if (next.displayType === '9') {
+    checkedFieldsMapArr = (
+      next.treeCheckedList?.length
+        ? next.treeCheckedList.filter((_, index) => index < next.treeFieldList.length)
+        : next.treeFieldList.map(() => {
+            return {
+              checkedFields: [...next.checkedFields],
+              checkedFieldsMap: cloneDeep(next.checkedFieldsMap)
+            }
+          })
+    )
+      .map(item =>
+        Object.entries(item.checkedFieldsMap).filter(ele => item.checkedFields.includes(ele[0]))
+      )
+      .flat()
+  }
+  return checkedFieldsMapArr.filter(ele => !!ele[1]).map(ele => ele[0])
+}
+
+const fillRequireVal = arr => {
+  element.value.propValue.forEach(next => {
+    if (arr.some(itx => next.checkedFields.includes(itx)) && next.required) {
+      if (next.displayType === '8') {
+        const { conditionValueF, conditionValueS, conditionType } = next
+        if (conditionType === 0 && conditionValueF === '') {
+          next.conditionValueF = next.defaultConditionValueF
+        } else if (conditionValueF === '' || conditionValueS === '') {
+          next.conditionValueF = next.defaultConditionValueF
+          next.conditionValueS = next.defaultConditionValueS
+        }
+      } else if (next.displayType === '22') {
+        if (
+          (next.numValueStart !== 0 && !next.numValueStart) ||
+          (next.numValueEnd !== 0 && !next.numValueEnd)
+        ) {
+          next.numValueStart = next.defaultNumValueStart
+          next.numValueEnd = next.defaultNumValueEnd
+        }
+      } else if (
+        (Array.isArray(next.selectValue) && !next.selectValue.length) ||
+        (next.selectValue !== 0 && !next.selectValue)
+      ) {
+        if (
+          next.optionValueSource === 1 &&
+          (next.defaultMapValue?.length || next.displayId) &&
+          ![1, 7].includes(+next.displayType)
+        ) {
+          next.mapValue = next.defaultMapValue
+          next.selectValue = next.multiple ? next.defaultMapValue : next.defaultMapValue[0]
+        } else {
+          next.selectValue = next.defaultValue
+        }
+      }
+    }
+  })
+}
 const queryDataForId = id => {
   let requiredName = ''
   let numName = ''
@@ -302,10 +406,8 @@ const queryDataForId = id => {
           requiredName = next.name
         }
       }
-      const keyList = Object.entries(next.checkedFieldsMap)
-        .filter(ele => next.checkedFields.includes(ele[0]))
-        .filter(ele => !!ele[1])
-        .map(ele => ele[0])
+
+      const keyList = getKeyList(next)
       pre = [...new Set([...keyList, ...pre])]
       return pre
     }, [])
@@ -318,6 +420,7 @@ const queryDataForId = id => {
     return
   }
   if (!emitterList.length) return
+  fillRequireVal(emitterList)
   emitterList.forEach(ele => {
     emitter.emit(`query-data-${ele}`)
   })
@@ -490,11 +593,7 @@ const resetData = () => {
         }
       })
     })
-
-    const keyList = Object.entries(next.checkedFieldsMap)
-      .filter(ele => next.checkedFields.includes(ele[0]))
-      .filter(ele => !!ele[1])
-      .map(ele => ele[0])
+    const keyList = getKeyList(next)
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
@@ -525,10 +624,7 @@ const clearData = () => {
       next.numValueEnd = undefined
       next.numValueStart = undefined
     }
-    const keyList = Object.entries(next.checkedFieldsMap)
-      .filter(ele => next.checkedFields.includes(ele[0]))
-      .filter(ele => !!ele[1])
-      .map(ele => ele[0])
+    const keyList = getKeyList(next)
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
@@ -607,10 +703,7 @@ const queryData = () => {
         requiredName = next.name
       }
     }
-    const keyList = Object.entries(next.checkedFieldsMap)
-      .filter(ele => next.checkedFields.includes(ele[0]))
-      .filter(ele => !!ele[1])
-      .map(ele => ele[0])
+    const keyList = getKeyList(next)
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
@@ -657,15 +750,19 @@ const labelStyle = computed(() => {
   return style
 })
 
+const comLayout = computed(() => {
+  return customStyle.labelShow ? customStyle.layout : 'horizontal'
+})
+
 const paddingTop = computed<CSSProperties>(() => {
   return {
-    paddingTop: customStyle.layout !== 'horizontal' ? customStyle.nameboxSpacing + 22 + 'px' : '0'
+    paddingTop: comLayout.value !== 'horizontal' ? customStyle.nameboxSpacing + 22 + 'px' : '0'
   }
 })
 
 const marginRight = computed<CSSProperties>(() => {
   return {
-    marginRight: customStyle.layout === 'horizontal' ? customStyle.nameboxSpacing + 'px' : '8px'
+    marginRight: comLayout.value === 'horizontal' ? customStyle.nameboxSpacing + 'px' : '8px'
   }
 })
 
@@ -691,11 +788,7 @@ const autoStyle = computed(() => {
       {{ customStyle.title }}
     </p>
     <div
-      :class="[
-        'v-query',
-        customStyle.layout,
-        customStyle.titleShow && !!customStyle.title && 'title-show'
-      ]"
+      :class="['v-query', comLayout, customStyle.titleShow && !!customStyle.title && 'title-show']"
       @dragover.prevent.stop="dragover"
       @drop.prevent.stop="drop"
     >
@@ -812,6 +905,28 @@ const autoStyle = computed(() => {
   overflow: auto;
   position: relative;
   --ed-font-size-base: v-bind(boxWidth);
+
+  :deep(.ed-select-v2 .ed-select-v2__selection .ed-tag) {
+    background-color: v-bind(tagColor);
+  }
+
+  .ed-button--primary {
+    --ed-button-bg-color: v-bind(btnHoverStyle.rawColor);
+    --ed-button-border-color: v-bind(btnHoverStyle.rawColor);
+    --ed-button-hover-border-color: v-bind(btnHoverStyle.hoverColor);
+    --ed-button-hover-bg-color: v-bind(btnHoverStyle.hoverColor);
+    background-color: v-bind(btnPrimaryColor);
+  }
+
+  .ed-button--primary.ed-button--primary.ed-button--primary:hover,
+  .ed-button--primary.ed-button--primary.ed-button--primary:focus {
+    background-color: v-bind(btnPrimaryHoverColor);
+  }
+
+  .ed-button--primary.ed-button--primary.ed-button--primary:active {
+    background-color: v-bind(btnPrimaryActiveColor);
+    border-color: v-bind(btnPrimaryHoverColor);
+  }
 
   :deep(.ed-tag) {
     --ed-tag-font-size: v-bind(boxWidth);

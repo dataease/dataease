@@ -799,7 +799,7 @@ init()
             <span
               class="set-text-info"
               :class="{ 'set-text-info-dark': themes === 'dark' }"
-              v-if="state.thresholdForm?.tableThreshold?.length > 0"
+              v-if="state.thresholdForm?.lineThresholdArr?.length > 0"
             >
               $t('visualization.already_setting')
             </span>

@@ -81,6 +81,7 @@ import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/cont
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
+import bulletGraphOrigin from '@/assets/svg/bullet-graph-origin.svg'
 import { checkJoinGroup, syncViewTitle } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dropdownMore = ref(null)
@@ -242,6 +243,7 @@ const unlock = () => {
 const hideComponent = () => {
   setTimeout(() => {
     layerStore.hideComponent()
+    layerStore.pausedTooltipCarousel(curComponent.value.id)
     snapshotStore.recordSnapshotCache('realTime-hideComponent')
   })
 }
@@ -249,6 +251,7 @@ const hideComponent = () => {
 const showComponent = () => {
   setTimeout(() => {
     layerStore.showComponent()
+    layerStore.resumeTooltipCarousel(curComponent.value.id)
     snapshotStore.recordSnapshotCache('showComponent')
   })
 }
@@ -333,7 +336,8 @@ const iconMap = {
   't-heatmap-origin': tHeatmapOrigin,
   'picture-group-origin': pictureGroupOrigin,
   group: group,
-  'circle-packing-origin': circlePackingOrigin
+  'circle-packing-origin': circlePackingOrigin,
+  'bullet-graph-origin': bulletGraphOrigin
 }
 const getIconName = item => {
   if (item.component === 'UserView') {

@@ -12,7 +12,6 @@ import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.TaskStatus;
-import io.dataease.constant.DataSourceType;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
@@ -63,6 +62,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -645,7 +645,7 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void delete(Long datasourceId) throws DEException {
-        Objects.requireNonNull(CommonBeanFactory.getBean(DatasourceServer.class)).recursionDel(datasourceId);
+        Objects.requireNonNull(io.dataease.utils.CommonBeanFactory.getBean(DatasourceServer.class)).recursionDel(datasourceId);
     }
 
     public void recursionDel(Long datasourceId) throws DEException {
@@ -1007,6 +1007,7 @@ public class DatasourceServer implements DatasourceApi {
 
     public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
+        apiDefinition.setType("table");
         if (request.keySet().contains("type") && request.get("type").equals("apiStructure")) {
             apiDefinition.setShowApiStructure(true);
         }
@@ -1445,11 +1446,6 @@ public class DatasourceServer implements DatasourceApi {
         Object resObj = null;
         try {
             Method method = getMethod(dsType, methodName, classes);
-            if (object instanceof DatasourceRequest && dsType.equals(DataSourceType.APILark.name())) {
-                Class<?> clazz = Class.forName(DatasourceRequest.class.getName());
-                Method setToken = clazz.getMethod("setToken", String.class);
-                setToken.invoke(object, dataSourceManage.getTenantAccessToken());
-            }
             resObj = method.invoke(null, object);
         } catch (Exception e) {
             DEException.throwException(msg(e));
@@ -1463,7 +1459,7 @@ public class DatasourceServer implements DatasourceApi {
             if (exception.getCause() == null) {
                 return exception.getMessage();
             }
-            if (exception instanceof DEException && !(exception.getCause() instanceof DEException)) {
+            if (exception instanceof DEException && (!(exception.getCause() instanceof DEException) && !(exception.getCause() instanceof InvocationTargetException))) {
                 return exception.getMessage();
             }
             exception = exception.getCause();

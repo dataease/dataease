@@ -9,7 +9,7 @@ import Threshold from '@/views/chart/components/editor/editor-senior/components/
 import MapMapping from '@/views/chart/components/editor/editor-senior/components/MapMapping.vue'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { computed, PropType, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, PropType, ref, toRefs, watch } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
@@ -334,6 +334,7 @@ const removeJumpSenior = () => {
             :chart="chart"
             :themes="themes"
             :is-screen="dvInfo.type === 'dataV'"
+            :resource-table="'snapshot'"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9TZW5pb3JIYW5kbGVy"
           />
 
@@ -524,6 +525,9 @@ span {
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
   }
+  :deep(.style-collapse) {
+    border-bottom: none;
+  }
 }
 
 .label-dark {
@@ -573,6 +577,14 @@ span {
       color: #a6a6a6;
       background: rgba(235, 235, 235, 0.1);
     }
+  }
+}
+</style>
+
+<style>
+.senior-dark {
+  .label-dark {
+    color: #a6a6a6 !important;
   }
 }
 </style>

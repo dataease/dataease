@@ -74,7 +74,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     // options
     const initOptions: GaugeOptions = {
       percent: 0,
-      appendPadding: getPadding(chart),
+      appendPadding: [0, 10, 15, 10],
       axis: {
         tickInterval: 0.2,
         label: {

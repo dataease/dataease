@@ -345,7 +345,7 @@ loadShareBase()
               v-if="!ele['menuAuth'] || !ele['anyManage']"
               class="box-item"
               effect="dark"
-              :content="t('work_branch.template_market_official')"
+              :content="t('work_branch.permission_to_create')"
               placement="top"
             >
               <div class="empty-tooltip-container" />

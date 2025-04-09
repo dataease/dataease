@@ -269,6 +269,7 @@ onMounted(() => {
             <el-option key="avg" value="avg" label="平均值" />
             <el-option key="max" value="max" :label="t('chart.max')" />
             <el-option key="min" value="min" :label="t('chart.min')" />
+            <el-option key="last_item" value="last_item" :label="t('chart.last_item')" />
           </el-select>
         </el-col>
         <el-col :span="useQuotaExt ? 2 : 3">

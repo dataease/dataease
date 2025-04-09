@@ -125,6 +125,7 @@ const state = reactive({
   imgEnlarge: false,
   imgSrc: ''
 })
+const PAGE_CHARTS = ['table-info', 'table-normal']
 // 图表数据不用全响应式
 let chartData = shallowRef<Partial<Chart['data']>>({
   fields: []
@@ -137,6 +138,9 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
   if (view.customAttr.basicStyle.tablePageStyle === 'general') {
     if (state.currentPageSize !== 0) {
       view.chartExtRequest.pageSize = state.currentPageSize
+      state.pageInfo.pageSize = state.currentPageSize
+    } else {
+      view.chartExtRequest.pageSize = state.pageInfo.pageSize
     }
   } else {
     delete view.chartExtRequest.pageSize
@@ -248,19 +252,13 @@ const debounceRender = debounce(resetPageInfo => {
 
 const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   const customAttr = chart.customAttr
-  if (chart.type !== 'table-info' || customAttr.basicStyle.tablePageMode !== 'page') {
+  if (!PAGE_CHARTS.includes(chart.type) || customAttr.basicStyle.tablePageMode !== 'page') {
     state.showPage = false
     return
   }
   const pageInfo = state.pageInfo
   state.pageStyle = customAttr.basicStyle.tablePageStyle
-  if (state.pageStyle === 'general') {
-    if (state.currentPageSize === 0) {
-      state.currentPageSize = pageInfo.pageSize
-    } else {
-      pageInfo.pageSize = state.currentPageSize
-    }
-  } else {
+  if (state.pageStyle !== 'general') {
     pageInfo.pageSize = customAttr.basicStyle.tablePageSize ?? 20
   }
   if (state.totalItems > state.pageInfo.pageSize || state.pageStyle === 'general') {
@@ -272,6 +270,7 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   if (resetPageInfo) {
     state.pageInfo.currentPage = 1
   }
+  dvMainStore.setViewPageInfo(chart.id, state.pageInfo)
 }
 
 const mouseMove = () => {
@@ -293,7 +292,8 @@ const initScroll = () => {
       myChart &&
       senior?.scrollCfg?.open &&
       chartData.value.tableRow?.length &&
-      (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
+      PAGE_CHARTS.includes(props.view.type) &&
+      !state.showPage
     ) {
       // 防止多次渲染
       myChart.facet.timer?.stop()
@@ -337,7 +337,7 @@ const initScroll = () => {
 }
 
 const showPage = computed(() => {
-  if (view.value.type !== 'table-info') {
+  if (!PAGE_CHARTS.includes(view.value.type)) {
     return false
   }
   return state.showPage
@@ -355,6 +355,7 @@ const handleCurrentChange = pageNum => {
 const handlePageSizeChange = pageSize => {
   if (state.pageStyle === 'general') {
     state.currentPageSize = pageSize
+    emitter.emit('set-page-size', pageSize)
   }
   let extReq = { pageSize: pageSize }
   if (chartExtRequest.value) {
@@ -743,7 +744,7 @@ const tablePageClass = computed(() => {
           v-else
           class="table-page-content"
           layout="prev, pager, next, sizes, jumper"
-          v-model:page-size="state.currentPageSize"
+          v-model:page-size="state.pageInfo.pageSize"
           v-model:current-page="state.pageInfo.currentPage"
           :pager-count="5"
           :total="state.pageInfo.total"

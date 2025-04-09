@@ -34,6 +34,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -369,9 +370,15 @@ public class HttpClientUtil {
     }
 
     public static Map<String, String> downloadFile(String url, HttpClientConfig config, String path) {
+        String encodeUIl = url;
         Map<String, String> name = new HashMap<>();
-        try (CloseableHttpClient httpClient = buildHttpClient(url)) {
-            HttpGet httpGet = new HttpGet(url);
+        if (!url.contains("%")) {
+            String[] http = url.split("://");
+            String[] server = http[1].split("/");
+            encodeUIl = http[0] + "://" + server[0] + "/" + URLEncoder.encode(http[1].substring(server[0].length() + 1, http[1].length()));
+        }
+        try (CloseableHttpClient httpClient = buildHttpClient(encodeUIl.replace("+", "%20"))) {
+            HttpGet httpGet = new HttpGet(encodeUIl.replace("+", "%20"));
             // 设置请求配置
             httpGet.setConfig(config.buildRequestConfig());
             // 设置请求头

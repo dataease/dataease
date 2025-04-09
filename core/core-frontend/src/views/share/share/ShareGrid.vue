@@ -5,6 +5,8 @@ import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
 import icon_database_outlined from '@/assets/svg/icon_database_outlined.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
+import dvDashboardSpineMobileDisabled from '@/assets/svg/dv-dashboard-spine-mobile-disabled.svg'
+import dvDashboardSpineDisabled from '@/assets/svg/dv-dashboard-spine-disabled.svg'
 import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, watch, computed } from 'vue'
@@ -117,7 +119,7 @@ const getEmptyDesc = (): string => {
 }
 
 const handleCellClick = row => {
-  if (row) {
+  if (row && row.extFlag1) {
     const sourceId = row.resourceId
     if (['dashboard', 'panel'].includes(row.type)) {
       window.open('#/panel/index?dvId=' + sourceId, '_self')
@@ -131,9 +133,11 @@ const iconMap = {
   panel: icon_dashboard_outlined,
   panelMobile: dvDashboardSpineMobile,
   dashboard: icon_dashboard_outlined,
+  dashboardDisabled: icon_dashboard_outlined,
   dashboardMobile: dvDashboardSpineMobile,
   screen: icon_operationAnalysis_outlined,
   dataV: icon_operationAnalysis_outlined,
+  dataVDisabled: icon_operationAnalysis_outlined,
   dataset: icon_app_outlined,
   datasource: icon_database_outlined
 }
@@ -201,16 +205,34 @@ watch(
         <template v-slot:default="scope">
           <div class="name-content">
             <el-icon style="margin-right: 12px; font-size: 18px" v-if="scope.row.extFlag">
-              <Icon name="dv-dashboard-spine-mobile"
+              <Icon v-if="scope.row.extFlag1" name="dv-dashboard-spine-mobile"
                 ><dvDashboardSpineMobile class="svg-icon"
               /></Icon>
+              <Icon v-if="!scope.row.extFlag1" name="dv-dashboard-spine-mobile"
+                ><dvDashboardSpineMobileDisabled class="svg-icon"
+              /></Icon>
             </el-icon>
-            <el-icon v-else :class="`main-color color-${scope.row.type}`">
-              <Icon><component class="svg-icon" :is="iconMap[scope.row.type]"></component></Icon>
+            <el-icon
+              v-else
+              :class="`main-color color-${scope.row.type} custom-color${
+                scope.row.extFlag1 ? '' : '-disabled'
+              }`"
+            >
+              <Icon
+                ><component
+                  class="svg-icon"
+                  :is="iconMap[scope.row.type + (scope.row.extFlag1 ? '' : 'Disabled')]"
+                ></component
+              ></Icon>
             </el-icon>
             <el-tooltip placement="top">
               <template #content>{{ scope.row.name }}</template>
-              <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>
+              <span
+                class="ellipsis"
+                :class="{ 'color-disabled': !scope.row.extFlag1 }"
+                style="max-width: 250px"
+                >{{ scope.row.name }}</span
+              >
             </el-tooltip>
           </div>
         </template>
@@ -284,6 +306,7 @@ watch(
     color: #fff;
     background: #3370ff;
   }
+
   .name-star {
     font-size: 15px;
     padding-left: 5px;
@@ -295,5 +318,12 @@ watch(
     margin-top: 0px;
     line-height: 20px !important;
   }
+}
+.color-disabled {
+  color: #bbbfc4;
+}
+
+.custom-color-disabled {
+  background: #bbbfc4 !important;
 }
 </style>

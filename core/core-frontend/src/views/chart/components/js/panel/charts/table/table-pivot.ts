@@ -101,7 +101,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'tableScrollBarColor',
       'alpha',
       'tableLayoutMode',
-      'showHoverStyle'
+      'showHoverStyle',
+      'quotaPosition',
+      'quotaColLabel'
     ]
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'yAxis', 'filter']
@@ -286,7 +288,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       fields: {
         rows: r,
         columns: c,
-        values: v
+        values: v,
+        valueInCols: !(basicStyle.quotaPosition === 'row')
       },
       meta: meta,
       data: newData,
@@ -296,6 +299,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       totals: tableTotal as Totals,
+      cornerExtraFieldText: basicStyle.quotaColLabel ?? t('dataset.value'),
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom
@@ -326,6 +330,47 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       }
       if (!defaultExpandLevel) {
         s2Options.style.hierarchyCollapse = true
+      }
+    }
+    // 列汇总别名
+    if (!(basicStyle.quotaPosition === 'row' && basicStyle.tableLayoutMode === 'tree')) {
+      if (
+        basicStyle.quotaPosition !== 'row' &&
+        chart.xAxisExt?.length &&
+        chart.yAxis?.length > 1 &&
+        tableTotal.col.showGrandTotals &&
+        tableTotal.col.calcTotals?.cfg?.length
+      ) {
+        const colTotalCfgMap = tableTotal.col.calcTotals.cfg.reduce((p, n) => {
+          p[n.dataeaseName] = n
+          return p
+        }, {})
+        s2Options.layoutCoordinate = (_, __, col) => {
+          if (col?.isGrandTotals) {
+            if (colTotalCfgMap[col.value]?.label) {
+              col.label = colTotalCfgMap[col.value].label
+            }
+          }
+        }
+      }
+      if (
+        basicStyle.quotaPosition === 'row' &&
+        chart.xAxisExt?.length &&
+        chart.yAxis?.length > 1 &&
+        tableTotal.row.showGrandTotals &&
+        tableTotal.row.calcTotals?.cfg?.length
+      ) {
+        const rowTotalCfgMap = tableTotal.row.calcTotals.cfg.reduce((p, n) => {
+          p[n.dataeaseName] = n
+          return p
+        }, {})
+        s2Options.layoutCoordinate = (_, row, __) => {
+          if (row?.isGrandTotals) {
+            if (rowTotalCfgMap[row.value]?.label) {
+              row.label = rowTotalCfgMap[row.value].label
+            }
+          }
+        }
       }
     }
     // tooltip
@@ -770,11 +815,17 @@ function getTreeCustomCalcResult(query, axisMap, status: TotalStatus, customCalc
   // 列小计
   if (status.isColSubTotal && !status.isRowTotal && !status.isRowSubTotal) {
     const { colSubTotal } = customCalc
-    const subLevel = getSubLevel(query, col)
+    const subColLevel = getSubLevel(query, col)
+    const subRowLevel = getSubLevel(query, row)
     const rowPath = getTreePath(query, row)
     const colPath = getTreePath(query, col)
     const path = [...rowPath, ...colPath]
-    const data = colSubTotal?.[subLevel]?.data
+    let data = colSubTotal?.[subColLevel]?.data
+    // 列小计里面的行小计
+    if (rowPath.length < row.length) {
+      const { rowSubInColSub } = customCalc
+      data = rowSubInColSub?.[subRowLevel]?.[subColLevel]?.data
+    }
     let val
     if (path.length && data) {
       path.push(quotaField)
@@ -841,22 +892,6 @@ function getTreeCustomCalcResult(query, axisMap, status: TotalStatus, customCalc
     const path = getTreePath(query, row)
     let val
     if (path.length && rowSubInColTotal) {
-      path.push(quotaField)
-      val = get(data, path)
-    }
-    return val
-  }
-  // 列小计里面的行小计
-  if (status.isColSubTotal && status.isRowSubTotal) {
-    const { rowSubInColSub } = customCalc
-    const rowSubLevel = getSubLevel(query, row)
-    const colSubLevel = getSubLevel(query, col)
-    const data = rowSubInColSub?.[rowSubLevel]?.[colSubLevel]?.data
-    const rowPath = getTreePath(query, row)
-    const colPath = getTreePath(query, col)
-    const path = [...rowPath, ...colPath]
-    let val
-    if (path.length && rowSubInColSub) {
       path.push(quotaField)
       val = get(data, path)
     }

@@ -50,8 +50,6 @@ import { rsaEncryp } from '@/utils/encryption'
 import { useCache } from '@/hooks/web/useCache'
 import { queryDekey } from '@/api/login'
 import { CustomPassword } from '@/components/custom-password'
-import { useRoute } from 'vue-router'
-const route = useRoute()
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 
@@ -59,6 +57,7 @@ const { t } = useI18n()
 const msg = ref('')
 const loading = ref(true)
 const pwdForm = ref<FormInstance>()
+const vid = ref('')
 const form = ref({
   password: ''
 })
@@ -78,7 +77,7 @@ const refresh = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      const uuid = route.params.uuid
+      const uuid = vid.value
       const pwd = form.value.password
       const text = `${uuid},${pwd}`
       const ciphertext = rsaEncryp(text)
@@ -95,17 +94,44 @@ const refresh = async (formEl: FormInstance | undefined) => {
     }
   })
 }
+const prepare = () => {
+  const curLocation = window.location.href
+  const pmIndex = curLocation.lastIndexOf('?')
+  const uuidObj = curLocation.substring(
+    curLocation.lastIndexOf('de-link/') + 8,
+    pmIndex > 0 ? pmIndex : curLocation.length
+  )
+  let uuid = null
+  let pwd = null
+  if (uuidObj?.includes(',')) {
+    const index = uuidObj.indexOf(',')
+    uuid = uuidObj.substring(0, index)
+    if (uuidObj.length > index + 1) {
+      pwd = uuidObj.substring(index + 1)
+    }
+  } else {
+    uuid = uuidObj
+  }
+  vid.value = uuid
+  if (pwd) {
+    form.value.password = pwd
+    refresh(pwdForm.value)
+  }
+}
 onMounted(() => {
   if (!wsCache.get(appStore.getDekey)) {
     queryDekey()
       .then(res => {
         wsCache.set(appStore.getDekey, res.data)
+        prepare()
       })
       .finally(() => {
         loading.value = false
       })
+  } else {
+    prepare()
+    loading.value = false
   }
-  loading.value = false
 })
 </script>
 

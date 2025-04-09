@@ -77,6 +77,7 @@ import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 import RealTimeTab from '@/components/data-visualization/RealTimeTab.vue'
+import bulletGraphOrigin from '@/assets/svg/bullet-graph-origin.svg'
 import { syncViewTitle } from '@/utils/canvasUtils'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
@@ -245,7 +246,8 @@ const iconMap = {
   'word-cloud-origin': wordCloudOrigin,
   't-heatmap-origin': tHeatmapOrigin,
   group: group,
-  'circle-packing-origin': circlePackingOrigin
+  'circle-packing-origin': circlePackingOrigin,
+  'bullet-graph-origin': bulletGraphOrigin
 }
 const getIconName = item => {
   if (item.component === 'UserView') {

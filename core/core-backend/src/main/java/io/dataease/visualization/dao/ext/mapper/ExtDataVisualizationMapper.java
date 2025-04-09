@@ -32,10 +32,10 @@ public interface ExtDataVisualizationMapper {
     String findDvType(@Param("dvId") Long dvId);
 
     void dvCopy(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
-    void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
+    void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId,@Param("resourceTable") String resourceTable);
     List<CoreChartView> findViewInfoByCopyId(@Param("copyId") Long copyId);
 
-    DataVisualizationVO findDvInfo(@Param("dvId") Long dvId,@Param("dvType") String dvType);
+    DataVisualizationVO findDvInfo(@Param("dvId") Long dvId,@Param("dvType") String dvType,@Param("resourceTable") String resourceTable);
 
     IPage<VisualizationResourcePO> findRecent(IPage<VisualizationResourcePO> page, @Param("uid") Long uid, @Param("keyword") String keyword, @Param("ew") Map ew);
 
@@ -53,9 +53,52 @@ public interface ExtDataVisualizationMapper {
 
     List<VisualizationReportFilterVO> queryReportFilter(@Param("dvId") Long dvId,@Param("taskId") Long taskId);
 
-    void deleteDataVBatch(@Param("ids") Set<Long> ids);
+    void deleteDataVBatch(@Param("ids") Set<Long> ids,@Param("resourceTable") String resourceTable);
 
-    void deleteViewsBatch(@Param("ids") Set<Long> ids);
+    void deleteViewsBatch(@Param("ids") Set<Long> ids,@Param("resourceTable") String resourceTable);
 
     UserFormVO queryInnerUserInfo(@Param("id") Long id);
+
+    void snapshotDataV(@Param("dvId") Long dvId);
+
+    void snapshotViews(@Param("dvId") Long dvId);
+
+    void snapshotLinkJumpTargetViewInfo(@Param("dvId") Long dvId);
+
+    void snapshotLinkJumpInfo(@Param("dvId") Long dvId);
+
+    void snapshotLinkJump(@Param("dvId") Long dvId);
+
+    void snapshotLinkageField(@Param("dvId") Long dvId);
+
+    void snapshotLinkage(@Param("dvId") Long dvId);
+
+    void snapshotOuterParamsTargetViewInfo(@Param("dvId") Long dvId);
+
+    void snapshotOuterParamsInfo(@Param("dvId") Long dvId);
+
+    void snapshotOuterParams(@Param("dvId") Long dvId);
+
+    void restoreDataV(@Param("dvId") Long dvId);
+
+    void restoreViews(@Param("dvId") Long dvId);
+
+    void restoreLinkJumpTargetViewInfo(@Param("dvId") Long dvId);
+
+    void restoreLinkJumpInfo(@Param("dvId") Long dvId);
+
+    void restoreLinkJump(@Param("dvId") Long dvId);
+
+    void restoreLinkageField(@Param("dvId") Long dvId);
+
+    void restoreLinkage(@Param("dvId") Long dvId);
+
+    void restoreOuterParamsTargetViewInfo(@Param("dvId") Long dvId);
+
+    void restoreOuterParamsInfo(@Param("dvId") Long dvId);
+
+    void restoreOuterParams(@Param("dvId") Long dvId);
+
+    @Select("select status from data_visualization_info where id = #{dvId}")
+    Integer findDvInfoStats(@Param("dvId") Long dvId);
 }

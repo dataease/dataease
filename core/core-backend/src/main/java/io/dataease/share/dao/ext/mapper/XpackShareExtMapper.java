@@ -18,6 +18,7 @@ public interface XpackShareExtMapper {
             s.id as share_id,
             v.id as resource_id,
             v.mobile_layout as ext_flag,
+            v.status as ext_flag1,
             v.type,
             s.creator,
             s.time,

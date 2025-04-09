@@ -2,10 +2,12 @@
   <div
     v-if="existLinkage && (!dvMainStore.mobileInPc || isMobile())"
     class="bar-main-right"
-    :class="{ 'bar-main-edit-right': dvEditMode }"
+    :class="{
+      'bar-main-preview-fixed': dvPreviewMode
+    }"
     @mousedown="handOptBarMousedown"
   >
-    <el-button size="mini" type="warning" @click="clearAllLinkage"
+    <el-button type="warning" @click="clearAllLinkage"
       ><el-icon class="bar-base-icon">
         <Icon name="dv-bar-unLinkage"><dvBarUnLinkage class="svg-icon" /></Icon></el-icon
       >{{ $t('visualization.remove_all_linkage') }}</el-button
@@ -35,6 +37,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas-main'
+  },
+  isFixed: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -48,9 +54,10 @@ const clearAllLinkage = () => {
   useEmitt().emitter.emit('clearPanelLinkage', { viewId: 'all' })
 }
 
-const dvEditMode = computed(() => {
-  return dvMainStore.dvInfo.type === 'dataV' && dvMainStore.editMode === 'preview' && !isMobile()
+const dvPreviewMode = computed(() => {
+  return dvMainStore.dvInfo.type === 'dataV' && props.isFixed
 })
+
 const existLinkage = computed(() => {
   if (isMainCanvas(props.canvasId)) {
     let linkageFiltersCount = 0
@@ -103,5 +110,11 @@ const existLinkage = computed(() => {
   &:hover {
     opacity: 0.8;
   }
+}
+
+.bar-main-preview-fixed {
+  position: fixed;
+  top: 120px;
+  right: 5px;
 }
 </style>

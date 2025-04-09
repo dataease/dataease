@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { toRefs, computed, PropType } from 'vue'
+import { toRefs, computed, PropType, watch } from 'vue'
 import { type TimeRange } from './time-format'
 import { useI18n } from '@/hooks/web/useI18n'
 import DynamicTime from './DynamicTimeFiltering.vue'
 import DynamicTimeRange from './DynamicTimeRangeFiltering.vue'
+import { ManipulateType } from 'dayjs'
 const props = defineProps({
   timeRange: {
     type: Object as PropType<TimeRange>,
@@ -264,6 +265,40 @@ const relativeToCurrentListRange = computed(() => {
     }
   ]
 })
+
+watch(
+  () => relativeToCurrentListRange.value,
+  val => {
+    if (!val.some(ele => ele.value === timeRange.value.relativeToCurrentRange)) {
+      timeRange.value.relativeToCurrentRange = val[0].value
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => relativeToCurrentList.value,
+  val => {
+    if (!val.some(ele => ele.value === timeRange.value.relativeToCurrent)) {
+      timeRange.value.relativeToCurrent = val[0].value
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => relativeToCurrentTypeList.value,
+  val => {
+    if (!val.some(ele => ele.value === timeRange.value.relativeToCurrentType)) {
+      timeRange.value.relativeToCurrentType = val[0].value as ManipulateType
+    }
+
+    if (!val.some(ele => ele.value === timeRange.value.relativeToCurrentTypeRange)) {
+      timeRange.value.relativeToCurrentTypeRange = val[0].value as ManipulateType
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

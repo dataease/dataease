@@ -466,12 +466,14 @@ const validateItem = () => {
   }
   cancelMap['/datasource/checkApiDatasource']?.()
   const params = Base64.encode(JSON.stringify(paramsList))
+  formLoading.value = true
   checkApiItem({
     dsType: dsType.value,
     data: Base64.encode(JSON.stringify(apiItem)),
     paramsList: params
   })
     .then(response => {
+      formLoading.value = false
       apiItem.jsonFields = response.data.jsonFields
       apiItem.fields = []
       apiItem.name = response.data.name
@@ -480,6 +482,7 @@ const validateItem = () => {
       ElMessage.success(t('datasource.validate_success'))
     })
     .catch(() => {
+      formLoading.value = false
       ElMessage.error(t('data_source.verification_failed'))
     })
 }
@@ -1001,7 +1004,7 @@ defineExpose({
     </el-row>
     <template #footer>
       <el-button secondary @click="closeEditItem">{{ t('common.cancel') }}</el-button>
-      <el-button v-show="active === 0" secondary @click="validate"
+      <el-button v-show="active === 0" :disabled="formLoading" secondary @click="validate"
         >{{ t('commons.validate') }}
       </el-button>
       <el-button type="primary" v-show="active === 0" :disabled="disabledNext" @click="next"
