@@ -259,7 +259,7 @@ const goBack = () => {
 }
 
 const initData = () => {
-  const request = { busiFlag: curCanvasType.value, leaf: false, weight: 7 }
+  const request = { busiFlag: curCanvasType.value, resourceTable: 'core', leaf: false, weight: 7 }
   queryTreeApi(request).then(res => {
     filterFreeFolder(res, curCanvasType.value)
     const resultTree = res || []
