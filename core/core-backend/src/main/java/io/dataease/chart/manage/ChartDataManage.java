@@ -77,7 +77,6 @@ public class ChartDataManage {
     private static final Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
 
     public ChartViewDTO calcData(ChartViewDTO view) throws Exception {
-        DatasetUtils.viewDecode(view);
         ChartExtRequest chartExtRequest = view.getChartExtRequest();
         if (chartExtRequest == null) {
             chartExtRequest = new ChartExtRequest();
@@ -419,10 +418,7 @@ public class ChartDataManage {
         }
 
         ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
-        ChartViewDTO chartViewDTO = chartHandler.buildChart(view, calcResult, formatResult, filterResult);
-        DatasetUtils.viewEncode(chartViewDTO);
-        encodeData(chartViewDTO);
-        return chartViewDTO;
+        return chartHandler.buildChart(view, calcResult, formatResult, filterResult);
     }
 
     private List<ChartViewFieldDTO> getSizeField(ChartViewDTO view) throws Exception {
