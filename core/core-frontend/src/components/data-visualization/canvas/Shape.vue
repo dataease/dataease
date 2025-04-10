@@ -59,6 +59,7 @@
         :element="element"
         :show-position="showPosition"
         :canvas-id="canvasId"
+        @componentImageDownload="htmlToImage"
         @userViewEnlargeOpen="userViewEnlargeOpen"
         @datasetParamsInit="datasetParamsInit"
         @linkJumpSetOpen="linkJumpSetOpen"
@@ -1124,7 +1125,8 @@ const htmlToImage = () => {
   useEmitt().emitter.emit('l7-prepare-picture', element.value.id)
   setTimeout(() => {
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value)
-    downloadCanvas2('img', componentInnerRef.value, '图表', () => {
+    const dom = document.getElementById(viewDemoInnerId.value)
+    downloadCanvas2('img', dom, '图表', () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false

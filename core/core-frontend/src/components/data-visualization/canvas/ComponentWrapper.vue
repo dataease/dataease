@@ -181,12 +181,6 @@ const handleInnerMouseDown = e => {
 
 onMounted(() => {
   currentInstance = getCurrentInstance()
-  const methodName = 'componentImageDownload-' + config.value.id
-  if (!useEmitt().emitter.all.get(methodName)?.length) {
-    useEmitt().emitter.on(methodName, () => {
-      htmlToImage()
-    })
-  }
 })
 
 const onClick = e => {
@@ -417,6 +411,7 @@ const commonParams = computed(() => {
       :element="config"
       :show-position="showPosition"
       :class="{ 'wrapper-edit-bar-active': active }"
+      @componentImageDownload="htmlToImage"
       @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
       @datasetParamsInit="() => emits('datasetParamsInit')"
     ></component-edit-bar>

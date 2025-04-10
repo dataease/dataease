@@ -268,7 +268,8 @@ const emits = defineEmits([
   'showViewDetails',
   'amRemoveItem',
   'linkJumpSetOpen',
-  'linkageSetOpen'
+  'linkageSetOpen',
+  'componentImageDownload'
 ])
 const { t } = useI18n()
 const { emitter } = useEmitt()
@@ -485,8 +486,7 @@ const exportAsExcel = () => {
   })
 }
 const exportAsImage = () => {
-  // do export
-  useEmitt().emitter.emit('componentImageDownload-' + element.value.id)
+  emits('componentImageDownload')
 }
 const deleteComponent = () => {
   eventBus.emit('removeMatrixItem-' + canvasId.value, index.value)
