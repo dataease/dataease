@@ -97,8 +97,8 @@ public abstract class Provider {
 
     }
 
-    public int executeUpdate(DatasourceRequest datasourceRequest) {
-        return 0;
+    public ExecuteResult executeUpdate(DatasourceRequest datasourceRequest, boolean autoIncrement) {
+        return new ExecuteResult();
     }
 
 

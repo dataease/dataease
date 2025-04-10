@@ -23,6 +23,7 @@ public class TableField implements Serializable {
     private int extField;
     private String jsonPath;
     private boolean primary;
+    private boolean autoIncrement;
     List<Object> value;
 
     private int inCount;
