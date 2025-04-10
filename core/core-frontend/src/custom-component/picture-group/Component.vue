@@ -35,7 +35,7 @@ import { storeToRefs } from 'pinia'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasViewInfo, editMode, mobileInPc, canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasViewInfo, mobileInPc, fullscreenFlag } = storeToRefs(dvMainStore)
 const state = reactive({
   emptyValue: '-',
   data: null,
@@ -77,7 +77,9 @@ const dataRowFiledName = ref([])
 let carouselTimer = null
 const { element, view, showPosition } = toRefs(props)
 
-const isEditMode = computed(() => showPosition.value.includes('canvas') && !mobileInPc.value)
+const isEditMode = computed(
+  () => showPosition.value.includes('canvas') && !mobileInPc.value && !fullscreenFlag.value
+)
 
 watch(
   () => isEditMode.value,

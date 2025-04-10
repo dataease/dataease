@@ -72,7 +72,6 @@ const handleInput = value => {
           <span style="font-size: 12px">{{ t('visualization.carousel_time') }}</span>
           <el-tooltip class="item" :effect="themes" placement="top">
             <template #content>
-              <div>{{ t('visualization.carousel_tips') }}</div>
               <div v-if="element.innerType === 'picture-group'">
                 {{ t('visualization.carousel_tips2') }}
               </div>
