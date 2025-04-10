@@ -10,6 +10,7 @@ import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
+import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
@@ -44,7 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -77,6 +77,7 @@ public class ChartDataManage {
     private static final Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
 
     public ChartViewDTO calcData(ChartViewDTO view) throws Exception {
+        DatasetUtils.viewDecode(view);
         ChartExtRequest chartExtRequest = view.getChartExtRequest();
         if (chartExtRequest == null) {
             chartExtRequest = new ChartExtRequest();
@@ -418,7 +419,10 @@ public class ChartDataManage {
         }
 
         ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
-        return chartHandler.buildChart(view, calcResult, formatResult, filterResult);
+        ChartViewDTO chartViewDTO = chartHandler.buildChart(view, calcResult, formatResult, filterResult);
+        DatasetUtils.viewEncode(chartViewDTO);
+        encodeData(chartViewDTO);
+        return chartViewDTO;
     }
 
     private List<ChartViewFieldDTO> getSizeField(ChartViewDTO view) throws Exception {
@@ -838,5 +842,14 @@ public class ChartDataManage {
         List<String[]> sqlData = sqlData(view, view.getChartExtRequest(), fieldId);
         List<String[]> result = customSort(Optional.ofNullable(targetField.getCustomSort()).orElse(new ArrayList<>()), sqlData, 0);
         return result.stream().map(i -> i[0]).distinct().collect(Collectors.toList());
+    }
+
+    public void encodeData(ChartViewDTO chartViewDTO) {
+        if (chartViewDTO.getType().startsWith("chart-mix")) {
+            DatasetUtils.listEncode((List<ChartViewFieldDTO>) ((Map<String, Object>) chartViewDTO.getData().get("left")).get("sourceFields"));
+            DatasetUtils.listEncode((List<ChartViewFieldDTO>) ((Map<String, Object>) chartViewDTO.getData().get("right")).get("sourceFields"));
+        } else {
+            DatasetUtils.listEncode((List<ChartViewFieldDTO>) chartViewDTO.getData().get("sourceFields"));
+        }
     }
 }

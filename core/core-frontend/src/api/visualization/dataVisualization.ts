@@ -1,5 +1,7 @@
 import request from '@/config/axios'
 import type { BusiTreeRequest } from '@/models/tree/TreeNode'
+import { originNameHandleWithArr } from '@/utils/CalculateFields'
+import { cloneDeep } from 'lodash-es'
 export interface ResourceOrFolder {
   name: string
   id?: number | string
@@ -73,8 +75,24 @@ export const appCanvasNameCheck = async data =>
 
 export const updateBase = data => request.post({ url: '/dataVisualization/updateBase', data })
 
-export const updateCanvas = data =>
-  request.post({ url: '/dataVisualization/updateCanvas', data, loading: true })
+export const updateCanvas = data => {
+  const copyData = cloneDeep(data)
+  const fields = [
+    'xAxis',
+    'xAxisExt',
+    'yAxis',
+    'yAxisExt',
+    'extBubble',
+    'extLabel',
+    'extStack',
+    'extTooltip'
+  ]
+
+  for (const key in copyData.canvasViewInfo) {
+    originNameHandleWithArr(copyData.canvasViewInfo[key], fields)
+  }
+  return request.post({ url: '/dataVisualization/updateCanvas', data: copyData, loading: true })
+}
 
 export const moveResource = data => request.post({ url: '/dataVisualization/move', data })
 

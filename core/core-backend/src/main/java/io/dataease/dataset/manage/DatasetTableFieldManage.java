@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
+import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
@@ -277,6 +278,7 @@ public class DatasetTableFieldManage {
                 .sorted(Comparator.comparing(DatasetTableFieldDTO::getGroupType))
                 .toList();
         tmp.forEach(ele -> ele.setDesensitized(desensitizationList.containsKey(ele.getDataeaseName())));
+        DatasetUtils.listEncode(tmp);
         return tmp;
     }
 

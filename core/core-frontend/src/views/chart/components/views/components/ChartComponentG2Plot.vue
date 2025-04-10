@@ -494,7 +494,7 @@ const action = param => {
       state.trackBarStyle.top = trackBarY + 'px'
     }
 
-    viewTrack.value.trackButtonClick()
+    viewTrack.value.trackButtonClick(view.value.id)
   }
 }
 

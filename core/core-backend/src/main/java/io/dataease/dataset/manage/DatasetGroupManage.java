@@ -602,6 +602,8 @@ public class DatasetGroupManage {
                     List<DatasetTableFieldDTO> dimensionList = fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).toList();
                     List<DatasetTableFieldDTO> quotaList = fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).toList();
                     Map<String, List<DatasetTableFieldDTO>> map = new LinkedHashMap<>();
+                    DatasetUtils.listEncode(dimensionList);
+                    DatasetUtils.listEncode(quotaList);
                     map.put("dimensionList", dimensionList);
                     map.put("quotaList", quotaList);
                     dto.setFields(map);

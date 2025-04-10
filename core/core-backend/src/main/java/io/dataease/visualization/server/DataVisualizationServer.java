@@ -28,6 +28,7 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetGroupManage;
+import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.provider.ExcelUtils;
@@ -497,6 +498,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public DataVisualizationVO updateCanvas(DataVisualizationBaseRequest request) {
+        for (Map.Entry<Long, ChartViewDTO> ele : request.getCanvasViewInfo().entrySet()) {
+            DatasetUtils.viewDecode(ele.getValue());
+        }
         Long dvId = request.getId();
         if (dvId == null) {
             DEException.throwException("ID can not be null");
