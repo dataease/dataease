@@ -25,6 +25,18 @@ export const comInfo = () => {
               com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
             )
           ]
+
+          itx.componentData.forEach(element => {
+            if (element.component === 'Group') {
+              arr = [
+                ...arr,
+                element.propValue.filter(
+                  coms =>
+                    !['VQuery', 'DeTabs'].includes(coms.innerType) && coms.component !== 'Group'
+                )
+              ]
+            }
+          })
         })
       } else if (ele.component === 'Group') {
         arr = [
