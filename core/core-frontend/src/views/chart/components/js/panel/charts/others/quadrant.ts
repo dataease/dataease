@@ -13,7 +13,8 @@ import {
   configPlotTooltipEvent,
   configYaxisTitleLengthLimit,
   getTooltipContainer,
-  TOOLTIP_TPL
+  TOOLTIP_TPL,
+  getPadding
 } from '../../common/common_antv'
 import { DEFAULT_LEGEND_STYLE } from '@/views/chart/components/editor/util/chart'
 
@@ -209,7 +210,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       data: data,
       xField: 'yAxis',
       yField: 'yAxisExt',
-      appendPadding: 30,
+      appendPadding: getPadding(chart),
       pointStyle: {
         fillOpacity: 0.8,
         stroke: '#bbb'

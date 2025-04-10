@@ -2098,10 +2098,12 @@ export function configYaxisTitleLengthLimit(chart, plot) {
           ? wrappedTitle.slice(0, wrappedTitle.length - 2) + '...'
           : wrappedTitle + '...'
     }
-
     // 更新Y轴标题的原始文本和截断后的文本
-    ev.view.options.axes.yAxisExt.title.originalText = yAxis.name
-    ev.view.options.axes.yAxisExt.title.text = wrappedTitle
+    const { title } = ev.view.options.axes.yAxisExt
+    if (title) {
+      title.originalText = yAxis.name
+      title.text = wrappedTitle
+    }
   })
 }
 
