@@ -314,11 +314,20 @@ const eventEnable = computed(
       ['indicator', 'rich-text'].includes(config.value.innerType)) &&
     config.value.events &&
     config.value.events.checked &&
-    (isDashboard() || (!isDashboard() && !isMobile()))
+    (isDashboard() || (!isDashboard() && !isMobile())) &&
+    showPosition.value !== 'canvas-multiplexing'
 )
 
+const onWrapperClickCur = e => {
+  // 指标卡为内部触发
+  if (['indicator'].includes(config.value.innerType)) {
+    return
+  }
+  onWrapperClick(e)
+}
+
 const onWrapperClick = e => {
-  if (eventEnable.value && showPosition.value !== 'canvas-multiplexing') {
+  if (eventEnable.value) {
     if (config.value.events.type === 'showHidden') {
       // 打开弹框区域
       nextTick(() => {
@@ -349,8 +358,8 @@ const onWrapperClick = e => {
     } else if (config.value.events.type === 'download') {
       useEmitt().emitter.emit('canvasDownload')
     }
-    e.preventDefault()
-    e.stopPropagation()
+    e?.preventDefault()
+    e?.stopPropagation()
   }
 }
 
@@ -373,6 +382,13 @@ const freezeFlag = computed(() => {
     config.value.freeze &&
     scrollMain.value - config.value.style?.top > 0
   )
+})
+
+const commonParams = computed(() => {
+  return {
+    eventEnable: eventEnable.value,
+    eventType: config.value.events.type
+  }
 })
 </script>
 
@@ -422,7 +438,7 @@ const freezeFlag = computed(() => {
         class="wrapper-inner-adaptor"
         :style="slotStyle"
         :class="{ 'pop-wrapper-inner': showActive, 'event-active': eventEnable }"
-        @mousedown="onWrapperClick"
+        @mousedown="onWrapperClickCur"
       >
         <component
           :is="findComponent(config['component'])"
@@ -447,7 +463,9 @@ const freezeFlag = computed(() => {
           :suffix-id="suffixId"
           :font-family="fontFamily"
           :active="active"
+          :common-params="commonParams"
           @onPointClick="onPointClick"
+          @onComponentEvent="onWrapperClick"
         />
       </div>
       <!--边框背景-->

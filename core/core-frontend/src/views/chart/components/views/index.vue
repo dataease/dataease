@@ -68,7 +68,7 @@ const appearanceStore = useAppearanceStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const isIframe = computed(() => appStore.getIsIframe)
 
-const emit = defineEmits(['onPointClick'])
+const emit = defineEmits(['onPointClick', 'onComponentEvent'])
 
 const {
   nowPanelJumpInfo,
@@ -78,11 +78,15 @@ const {
   canvasStyleData,
   mobileInPc,
   inMobile,
-  editMode,
-  hiddenListStatus
+  editMode
 } = storeToRefs(dvMainStore)
 
 const props = defineProps({
+  // 公共参数集
+  commonParams: {
+    type: Object,
+    required: false
+  },
   active: {
     type: Boolean,
     default: false
@@ -1189,11 +1193,13 @@ const clearG2Tooltip = () => {
         :show-position="showPosition"
         :suffixId="suffixId"
         :font-family="fontFamily"
+        :common-params="commonParams"
         @touchstart="clearG2Tooltip"
         @onChartClick="chartClick"
         @onPointClick="onPointClick"
         @onDrillFilters="onDrillFilters"
         @onJumpClick="jumpClick"
+        @onComponentEvent="() => emit('onComponentEvent')"
       />
       <chart-component-g2-plot
         :scale="scale"

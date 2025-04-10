@@ -3008,7 +3008,7 @@ export default {
     board_width: '线宽',
     board_radius: '圆角',
     enable_event_binding: '开启事件绑定',
-    event_binding_tips: '事件绑定需退出编辑模式后生效,富文本、指标卡开启绑定事件则内部点击事件失效',
+    event_binding_tips: '事件绑定需退出编辑模式后生效,富文本开启绑定事件则内部点击事件失效',
     input_url_tips: '请输入跳转地址',
     edit_title: '编辑标题',
     custom_sort: '自定义排序',

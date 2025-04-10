@@ -4,6 +4,11 @@ import Chart from '@/views/chart/components/views/index.vue'
 import { isISOMobile } from '@/utils/utils'
 
 const props = defineProps({
+  // 公共参数集
+  commonParams: {
+    type: Object,
+    required: false
+  },
   active: {
     type: Boolean,
     default: false
@@ -90,7 +95,7 @@ const autoStyle = computed(() => {
     return {}
   }
 })
-const emits = defineEmits(['onPointClick'])
+const emits = defineEmits(['onPointClick', 'onComponentEvent'])
 
 const onPointClick = param => {
   emits('onPointClick', param)
@@ -109,7 +114,9 @@ const onPointClick = param => {
       :disabled="disabled"
       :suffixId="suffixId"
       :font-family="fontFamily"
+      :common-params="commonParams"
       @onPointClick="onPointClick"
+      @onComponentEvent="() => emits('onComponentEvent')"
       :opt-type="optType"
     ></chart>
   </div>

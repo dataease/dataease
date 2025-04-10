@@ -12,6 +12,7 @@
             <el-dropdown-item
               v-for="(item, key) in trackMenu"
               :key="key"
+              @mousedown.stop
               @click="trackMenuClick(item)"
               ><span class="menu-item">{{ state.i18n_map[item] }}</span></el-dropdown-item
             >
@@ -52,7 +53,14 @@ const state = reactive({
     linkage: t('visualization.linkage'),
     linkageAndDrill: t('visualization.linkage_and_drill'),
     jump: t('visualization.jump'),
-    enlarge: t('visualization.enlarge')
+    enlarge: t('visualization.enlarge'),
+    event_jump: t('visualization.jump'),
+    event_download: t('visualization.download'),
+    event_share: t('visualization.share'),
+    event_fullScreen: t('visualization.fullscreen'),
+    event_showHidden: t('visualization.pop_area'),
+    event_refreshDataV: t('visualization.refresh'),
+    event_refreshView: t('visualization.refresh_view')
   }
 })
 const visibleChange = isVisible => {

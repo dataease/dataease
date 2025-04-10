@@ -17,6 +17,11 @@ import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 
 const props = defineProps({
+  // 公共参数集
+  commonParams: {
+    type: Object,
+    required: false
+  },
   element: {
     type: Object,
     default() {
@@ -60,7 +65,7 @@ const props = defineProps({
   }
 })
 
-const { view, scale, terminal, showPosition } = toRefs(props)
+const { view, scale, terminal, showPosition, commonParams } = toRefs(props)
 
 const dvMainStore = dvMainStoreWithOut()
 const dataVMobile = !isDashboard() && isMobile()
@@ -76,8 +81,8 @@ const state = reactive({
   totalItems: 0,
   trackBarStyle: {
     position: 'absolute',
-    left: '50px',
-    top: '50px'
+    left: '50%',
+    top: '50%'
   }
 })
 
@@ -200,7 +205,13 @@ const formattedResult = computed(() => {
   return _result
 })
 
-const emit = defineEmits(['onPointClick', 'onChartClick', 'onDrillFilters', 'onJumpClick'])
+const emit = defineEmits([
+  'onPointClick',
+  'onChartClick',
+  'onDrillFilters',
+  'onJumpClick',
+  'onComponentEvent'
+])
 const contentStyle = ref<CSSProperties>({
   display: 'flex',
   'flex-direction': 'column',
@@ -279,7 +290,7 @@ const renderChart = async view => {
   recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
 
   if (chart.customAttr) {
-    const { indicator, indicatorName, basicStyle } = chart.customAttr
+    const { indicator, indicatorName } = chart.customAttr
 
     if (indicator) {
       switch (indicator.hPosition) {
@@ -442,6 +453,15 @@ const trackClick = trackAction => {
       if (mobileInPc.value && !inMobile.value) return
       emit('onJumpClick', jumpParam)
       break
+    case 'event_jump':
+    case 'event_download':
+    case 'event_share':
+    case 'event_fullScreen':
+    case 'event_showHidden':
+    case 'event_refreshDataV':
+    case 'event_refreshView':
+      emit('onComponentEvent', jumpParam)
+      break
     default:
       break
   }
@@ -479,6 +499,9 @@ const trackMenu = computed(() => {
   ) {
     trackMenuInfo = ['linkageAndDrill']
   }
+  if (commonParams.value?.eventEnable) {
+    trackMenuInfo.push('event_' + commonParams.value?.eventType)
+  }
   return trackMenuInfo
 })
 
@@ -501,29 +524,31 @@ const action = param => {
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
   } else {
-    // 图表关联多个事件
-    const barStyleTemp = {
-      left: param.x - 50,
-      top: param.y + 10
-    }
-    trackBarStyleCheck(props.element, barStyleTemp, props.scale, trackMenu.value.length)
-    if (dataVMobile) {
-      state.trackBarStyle.left = barStyleTemp.left + 40 + 'px'
-      state.trackBarStyle.top = barStyleTemp.top + 70 + 'px'
-    } else {
-      state.trackBarStyle.left = barStyleTemp.left + 'px'
-      state.trackBarStyle.top = barStyleTemp.top + 'px'
-    }
-
-    viewTrack.value.trackButtonClick()
+    setTimeout(() => {
+      const barStyleTemp = {
+        left: param.x - 50,
+        top: param.y + 10
+      }
+      trackBarStyleCheck(props.element, barStyleTemp, props.scale, trackMenu.value.length)
+      if (dataVMobile) {
+        state.trackBarStyle.left = barStyleTemp.left + 40 + 'px'
+        state.trackBarStyle.top = barStyleTemp.top + 70 + 'px'
+      } else {
+        state.trackBarStyle.left = barStyleTemp.left + 'px'
+        state.trackBarStyle.top = barStyleTemp.top + 'px'
+      }
+      viewTrack.value.trackButtonClick()
+    }, 200)
   }
 }
 
-const onPointClick = () => {
+const onPointClick = e => {
   if (view.value?.yAxis?.length) {
     const axis = view.value.yAxis[0]
     // 模拟点击
     const params = {
+      x: e.offsetX,
+      y: e.offsetY,
       data: {
         name: axis.name,
         dimensionList: view.value.xAxis,
@@ -542,7 +567,7 @@ defineExpose({
 </script>
 
 <template>
-  <div :class="{ 'menu-point': showCursor }" :style="contentStyle" @click="onPointClick">
+  <div :class="{ 'menu-point': showCursor }" :style="contentStyle" @mousedown="onPointClick">
     <view-track-bar
       ref="viewTrack"
       :track-menu="trackMenu"
