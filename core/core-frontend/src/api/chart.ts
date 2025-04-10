@@ -1,5 +1,6 @@
 import request from '@/config/axios'
-
+import { originNameHandleWithArr, originNameHandleBackWithArr } from '@/utils/CalculateFields'
+import { cloneDeep } from 'lodash-es'
 export interface Field {
   id: number | string
   datasourceId: number | string
@@ -28,6 +29,7 @@ export interface ComponentInfo {
 
 export const getFieldByDQ = async (id, chartId, data): Promise<IResponse> => {
   return request.post({ url: `/chart/listByDQ/${id}/${chartId}`, data: data }).then(res => {
+    originNameHandleBackWithArr(res?.data, ['dimensionList', 'quotaList'])
     return res?.data
   })
 }
@@ -53,10 +55,27 @@ export const deleteChartFieldByChartId = async (chartId): Promise<IResponse> => 
 // 通过图表对象获取数据
 export const getData = async (data): Promise<IResponse> => {
   delete data.data
-  return request.post({ url: '/chartData/getData', data }).then(res => {
+  const copyData = cloneDeep(data)
+  const fields = [
+    'xAxis',
+    'xAxisExt',
+    'yAxis',
+    'yAxisExt',
+    'extBubble',
+    'extLabel',
+    'extStack',
+    'extTooltip'
+  ]
+  const dataFields = ['fields', 'sourceFields']
+  originNameHandleWithArr(copyData, fields)
+  return request.post({ url: '/chartData/getData', data: copyData }).then(res => {
     if (res.code === 0) {
+      originNameHandleBackWithArr(res?.data, fields)
+      originNameHandleBackWithArr(res?.data?.data, dataFields)
       return res?.data
     } else {
+      originNameHandleBackWithArr(res, fields)
+      originNameHandleBackWithArr(res?.data, dataFields)
       return res
     }
   })
