@@ -66,6 +66,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 
 如你有更多问题，可以查看在线文档，或者通过论坛与我们交流。
 
+-   [视频介绍](https://www.bilibili.com/video/BV1Y8dAYLErb/)
 -   [在线文档](https://dataease.io/docs/)
 -   [社区论坛](https://bbs.fit2cloud.com/c/de/6)
 -   [案例研究](/docs/use-cases.md)
