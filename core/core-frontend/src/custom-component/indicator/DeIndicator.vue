@@ -72,6 +72,7 @@ const dataVMobile = !isDashboard() && isMobile()
 const { embeddedCallBack, nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, inMobile } =
   storeToRefs(dvMainStore)
 const viewTrack = ref(null)
+const indicatorRef = ref(null)
 const errMsg = ref('')
 const isError = ref(false)
 const state = reactive({
@@ -542,13 +543,25 @@ const action = param => {
   }
 }
 
-const onPointClick = e => {
+const onPointClick = event => {
   if (view.value?.yAxis?.length) {
     const axis = view.value.yAxis[0]
+    // 获取鼠标的全局坐标
+    const mouseX = event.clientX
+    const mouseY = event.clientY
+
+    // 获取最外层 div 的偏移量
+    const rect = indicatorRef.value.getBoundingClientRect()
+    const offsetX = rect.left
+    const offsetY = rect.top
+
+    // 计算鼠标相对于最外层 div 的坐标
+    const left = mouseX - offsetX
+    let top = mouseY - offsetY
     // 模拟点击
     const params = {
-      x: e.offsetX,
-      y: e.offsetY,
+      x: left,
+      y: top,
       data: {
         name: axis.name,
         dimensionList: view.value.xAxis,
@@ -567,7 +580,12 @@ defineExpose({
 </script>
 
 <template>
-  <div :class="{ 'menu-point': showCursor }" :style="contentStyle" @mousedown="onPointClick">
+  <div
+    ref="indicatorRef"
+    :class="{ 'menu-point': showCursor }"
+    :style="contentStyle"
+    @mousedown="onPointClick"
+  >
     <view-track-bar
       ref="viewTrack"
       :track-menu="trackMenu"
