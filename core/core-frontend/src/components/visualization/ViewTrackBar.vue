@@ -56,21 +56,16 @@ const state = reactive({
   }
 })
 const visibleChange = isVisible => {
-  const tooltips = document.querySelectorAll('.g2-tooltip')
-  if (tooltips) {
-    tooltips.forEach(tooltip => {
-      if (isVisible) {
-        // 当下拉菜单显示时，添加隐藏样式
-        tooltip.classList.add('hidden-tooltip')
-      } else {
-        // 当下拉菜单隐藏时，移除隐藏样式
-        tooltip.classList.remove('hidden-tooltip')
-      }
-    })
-  }
+  document.querySelectorAll('.g2-tooltip')?.forEach(tooltip => {
+    if (tooltip.id?.includes(chartId.value)) {
+      tooltip.classList.toggle('hidden-tooltip', isVisible)
+    }
+  })
 }
-
-const trackButtonClick = () => {
+// 添加图表标识，用于区分不同图表的 tooltip
+const chartId = ref(null)
+const trackButtonClick = (id?: string) => {
+  chartId.value = id
   setTimeout(() => {
     trackButton.value.click()
   }, 50)

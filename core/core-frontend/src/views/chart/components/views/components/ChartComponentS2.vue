@@ -402,7 +402,7 @@ const action = param => {
       state.trackBarStyle.top = barStyleTemp.top + 'px'
     }
 
-    viewTrack.value.trackButtonClick()
+    viewTrack.value.trackButtonClick(view.value.id)
   }
 }
 const appStore = useAppStoreWithOut()
