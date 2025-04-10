@@ -72,10 +72,14 @@ export const getData = async (data): Promise<IResponse> => {
     if (res.code === 0) {
       originNameHandleBackWithArr(res?.data, fields)
       originNameHandleBackWithArr(res?.data?.data, dataFields)
+      originNameHandleBackWithArr(res?.data?.data?.left, ['fields'])
+      originNameHandleBackWithArr(res?.data?.data?.right, ['fields'])
       return res?.data
     } else {
       originNameHandleBackWithArr(res, fields)
       originNameHandleBackWithArr(res?.data, dataFields)
+      originNameHandleBackWithArr(res?.data?.left, ['fields'])
+      originNameHandleBackWithArr(res?.data?.right, ['fields'])
       return res
     }
   })
