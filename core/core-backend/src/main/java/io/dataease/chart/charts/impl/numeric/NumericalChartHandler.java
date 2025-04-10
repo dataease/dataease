@@ -74,7 +74,8 @@ public class NumericalChartHandler extends DefaultChartHandler {
                 }
                 ChartViewFieldDTO dto = new ChartViewFieldDTO();
                 BeanUtils.copyBean(dto, datasetTableField);
-                dto.setSummary(summary);
+                // 计算字段不支持汇总操作
+                dto.setSummary(dto.getExtField() == 2 ? "" : summary);
                 return dto;
             } else {
                 DEException.throwException(Translator.get("i18n_gauge_field_delete"));
