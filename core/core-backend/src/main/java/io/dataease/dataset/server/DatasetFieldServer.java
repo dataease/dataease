@@ -6,6 +6,7 @@ import io.dataease.api.dataset.engine.SQLFunctionDTO;
 import io.dataease.api.dataset.engine.SQLFunctionsEnum;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
+import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +41,9 @@ public class DatasetFieldServer implements DatasetTableApi {
 
     @Override
     public List<DatasetTableFieldDTO> listByDatasetGroup(Long id) {
-        return datasetTableFieldManage.selectByDatasetGroupId(id);
+        List<DatasetTableFieldDTO> datasetTableFieldDTOS = datasetTableFieldManage.selectByDatasetGroupId(id);
+        DatasetUtils.listEncode(datasetTableFieldDTOS);
+        return datasetTableFieldDTOS;
     }
 
     @Override
