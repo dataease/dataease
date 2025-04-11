@@ -38,6 +38,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
@@ -480,7 +482,12 @@ public class CalciteProvider extends Provider {
                                 valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
                             }
                         }
-                        ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                        if (valueObject instanceof String && datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB) && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+                            Reader reader = new StringReader((String) valueObject);
+                            ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
+                        } else {
+                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                        }
                         LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "](" + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName() + "): " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                     } catch (SQLException e) {
                         throw new SQLException(e.getMessage() + ". VALUE: " + datasourceRequest.getTableFieldWithValues().get(i).getValue().toString() + " , TARGET TYPE: " + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName());
@@ -541,7 +548,12 @@ public class CalciteProvider extends Provider {
                                 valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
                             }
                         }
-                        ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                        if (valueObject instanceof String && datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB) && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+                            Reader reader = new StringReader((String) valueObject);
+                            ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
+                        } else {
+                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                        }
                         LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "](" + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName() + "): " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                     } catch (SQLException e) {
                         throw new SQLException(e.getMessage() + ". VALUE: " + datasourceRequest.getTableFieldWithValues().get(i).getValue().toString() + " , TARGET TYPE: " + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName());
@@ -599,7 +611,12 @@ public class CalciteProvider extends Provider {
                                 valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
                             }
                         }
-                        ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                        if (valueObject instanceof String && datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB) && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+                            Reader reader = new StringReader((String) valueObject);
+                            ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
+                        } else {
+                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                        }
                         LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "](" + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName() + "): " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                     } catch (SQLException e) {
                         throw new SQLException(e.getMessage() + ". VALUE: " + datasourceRequest.getTableFieldWithValues().get(i).getValue().toString() + " , TARGET TYPE: " + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName());
@@ -663,9 +680,13 @@ public class CalciteProvider extends Provider {
 
     private List<String[]> getData(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
         String targetCharset = null;
+        String originCharset = null;
         if (datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
             DatasourceConfiguration jdbcConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
 
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset())) {
+                originCharset = jdbcConfiguration.getCharset();
+            }
             if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset())) {
                 targetCharset = jdbcConfiguration.getTargetCharset();
             }
@@ -694,7 +715,14 @@ public class CalciteProvider extends Provider {
                         if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
                             row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
                         }
-                        if (targetCharset != null && StringUtils.isNotEmpty(rs.getString(j + 1)) && (columnType != Types.NVARCHAR && columnType != Types.NCHAR)) {
+                        if (targetCharset != null && StringUtils.isNotEmpty(rs.getString(j + 1)) && columnType == Types.CLOB) {
+                            Clob c = rs.getClob(j + 1);
+                            if (originCharset == null) {
+                                row[j] = new String((c.getSubString(1, (int) c.length())).getBytes(), targetCharset);
+                            } else {
+                                row[j] = new String((c.getSubString(1, (int) c.length())).getBytes(originCharset), targetCharset);
+                            }
+                        } else if (targetCharset != null && StringUtils.isNotEmpty(rs.getString(j + 1)) && (columnType != Types.NVARCHAR && columnType != Types.NCHAR)) {
                             row[j] = new String(rs.getBytes(j + 1), targetCharset);
                         } else {
                             row[j] = rs.getString(j + 1);
