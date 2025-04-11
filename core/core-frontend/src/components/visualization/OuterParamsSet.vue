@@ -50,7 +50,7 @@
                           style="width: 100%"
                           v-model="data.paramName"
                           :placeholder="$t('visualization.input_param_name')"
-                          @blur="closeEdit"
+                          @blur="closeEdit(data)"
                         />
                       </div>
                       <span class="tree-select-field" v-else-if="data.paramName">
@@ -468,7 +468,18 @@ const viewSelectedField = computed(() =>
   state.outerParamsInfo?.targetViewInfoList?.map(targetViewInfo => targetViewInfo.targetViewId)
 )
 
-const closeEdit = () => {
+const closeEdit = params => {
+  if (!params.paramName || params.paramName.length < 2 || params.paramName.length > 25) {
+    ElMessage({
+      message: t('commons.params_value') + t('common.input_limit', [2, 25]),
+      type: 'warning',
+      showClose: true
+    })
+    if (params.paramName.length > 25) {
+      params.paramName = params.paramName.splice(0.25)
+    }
+    return
+  }
   curEditDataId.value = null
 }
 
