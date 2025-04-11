@@ -201,15 +201,32 @@
 
       <select id="queryDsWithVisualizationId"  resultMap="BaseDsResultMapDTO">
           SELECT DISTINCT
-          	cdg.*,#{visualizationId} as visualizationId
+          	cdg.`id`,
+          	cdg.`name`,
+          	cdg.`pid`,
+          	cdg.`level`,
+          	cdg.`node_type`,
+          	cdg.`type`,
+          	cdg.`mode`,
+          	cdg.`info`,
+          	cdg.`create_by`,
+          	cdg.`create_time`,
+          	cdg.`qrtz_instance`,
+          	cdg.`sync_status`,
+          	cdg.`update_by`,
+          	cdg.`last_update_time`,
+          	#{visualizationId} as visualizationId
           FROM
           	core_dataset_group cdg
-          	INNER JOIN snapshot_core_chart_view ccv ON cdg.id = ccv.table_id and ccv.type != 'VQuery'
+          	INNER JOIN snapshot_core_chart_view ccv ON cdg.id = ccv.table_id
+          	AND ccv.type != 'VQuery'
           	INNER JOIN snapshot_data_visualization_info dvi ON ccv.scene_id = dvi.id
           WHERE
           	ccv.scene_id = #{visualizationId}
           	AND dvi.id = #{visualizationId}
-          	AND LOCATE(ccv.id, dvi.component_data)
+          	AND LOCATE(
+          	ccv.id,
+          	dvi.component_data)
       </select>
 
        <select id="getDsFieldInfo"  resultType="io.dataease.api.dataset.vo.CoreDatasetTableFieldVO">
