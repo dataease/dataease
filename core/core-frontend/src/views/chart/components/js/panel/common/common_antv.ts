@@ -1788,6 +1788,8 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     if (!tooltipCtl) {
       return
     }
+    // 处理 tooltip 与下拉菜单的显示冲突问题
+    const viewTrackBarElement = document.getElementById('view-track-bar-' + chart.id)
     const event = plot.chart.interactions.tooltip?.context?.event
     // 是否时轮播模式
     const isCarousel =
@@ -1801,6 +1803,10 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     if (tooltipCtl.tooltip) {
       // 处理视图放大后再关闭 tooltip 的 dom 被清除
       const container = tooltipCtl.tooltip.cfg.container
+      // 当下拉菜单不显示时，移除tooltip的hidden-tooltip样式
+      if (viewTrackBarElement?.getAttribute('aria-expanded') === 'false') {
+        container.classList.toggle('hidden-tooltip', false)
+      }
       container.style.display = 'block'
       const dom = document.getElementById(container.id)
       if (!dom) {

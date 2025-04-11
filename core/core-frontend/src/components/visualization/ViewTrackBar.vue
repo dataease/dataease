@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-dropdown :teleported="false" trigger="click" @visible-change="visibleChange">
+    <el-dropdown
+      :id="'view-track-bar-' + chartId"
+      :teleported="false"
+      trigger="click"
+      @visible-change="visibleChange"
+    >
       <input id="input" ref="trackButton" type="button" hidden />
       <template #dropdown>
         <div :class="{ 'data-mobile': isDataVMobile }">
@@ -63,10 +68,10 @@ const state = reactive({
     event_refreshView: t('visualization.refresh_view')
   }
 })
-const visibleChange = isVisible => {
+const visibleChange = _isVisible => {
   document.querySelectorAll('.g2-tooltip')?.forEach(tooltip => {
     if (tooltip.id?.includes(chartId.value)) {
-      tooltip.classList.toggle('hidden-tooltip', isVisible)
+      tooltip.classList.toggle('hidden-tooltip', true)
     }
   })
 }
