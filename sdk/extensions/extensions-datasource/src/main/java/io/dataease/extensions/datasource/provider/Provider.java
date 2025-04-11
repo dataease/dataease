@@ -97,7 +97,7 @@ public abstract class Provider {
 
     }
 
-    public ExecuteResult executeUpdate(DatasourceRequest datasourceRequest, boolean autoIncrement) {
+    public ExecuteResult executeUpdate(DatasourceRequest datasourceRequest, String autoIncrementPkName) {
         return new ExecuteResult();
     }
 
