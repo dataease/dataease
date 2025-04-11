@@ -127,6 +127,7 @@ public class ChartDataServer implements ChartDataApi {
             } else {
                 viewDTO.setResultCount(viewLimit);
             }
+            DatasetUtils.viewDecode(viewDTO);
             chartViewInfo = getData(viewDTO);
             List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
             if ("dataset".equals(request.getDownloadType())) {
