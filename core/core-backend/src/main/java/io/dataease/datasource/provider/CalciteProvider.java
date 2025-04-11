@@ -459,7 +459,9 @@ public class CalciteProvider extends Provider {
         ResultSet resultSet = null;
         try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
             if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                if (!CollectionUtils.isNotEmpty(datasourceRequest.getTableFieldWithValues())) {
+                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                }
             }
 
             if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
@@ -509,7 +511,9 @@ public class CalciteProvider extends Provider {
         ResultSet resultSet = null;
         try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
             if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                if (!CollectionUtils.isNotEmpty(datasourceRequest.getTableFieldWithValues())) {
+                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                }
             }
             if (CollectionUtils.isNotEmpty(datasourceRequest.getTableFieldWithValues())) {
                 LogUtil.info("execWithPreparedStatement sql: " + datasourceRequest.getQuery());
@@ -550,7 +554,9 @@ public class CalciteProvider extends Provider {
         ResultSet resultSet = null;
         try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues())) {
             if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                if (!CollectionUtils.isNotEmpty(datasourceRequest.getTableFieldWithValues())) {
+                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                }
             }
 
             int count = 0;
@@ -776,7 +782,13 @@ public class CalciteProvider extends Provider {
         } catch (Exception e) {
         }
         try {
-            tableField.setAutoIncrement(resultSet.getInt(5) > 0);
+            if (StringUtils.endsWithIgnoreCase(datasourceRequest.getDatasource().getType(), "oracle")) {
+                if (StringUtils.contains(resultSet.getString(5), "nextval") || StringUtils.equalsIgnoreCase(resultSet.getString(5), "GENERATED ALWAYS AS IDENTITY")) {
+                    tableField.setAutoIncrement(true);
+                }
+            } else {
+                tableField.setAutoIncrement(resultSet.getInt(5) > 0);
+            }
         } catch (Exception e) {
         }
         try {
@@ -1111,7 +1123,35 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("SELECT a.COLUMN_NAME, a.DATA_TYPE, b.COMMENTS , 0, 0 FROM all_tab_columns a LEFT JOIN all_col_comments b ON a.owner = b.owner AND a.table_name = b.table_name AND a.column_name = b.column_name WHERE a.owner = '%s' AND a.table_name = '%s' ORDER BY a.table_name, a.column_id", configuration.getSchema(), datasourceRequest.getTable());
+                sql = String.format("""
+                        SELECT tc.COLUMN_NAME AS ColumnName,
+                               tc.DATA_TYPE,
+                               cc.COMMENTS,
+                               CASE
+                                   WHEN ac.COLUMN_NAME IS NOT NULL THEN 1
+                                   ELSE 0
+                                   END,
+                               tc.DATA_DEFAULT
+                        FROM ALL_TAB_COLUMNS tc
+                                 LEFT JOIN (SELECT cols.OWNER,
+                                                   cols.TABLE_NAME,
+                                                   cols.COLUMN_NAME
+                                            FROM ALL_CONSTRAINTS cons
+                                                     JOIN
+                                                 ALL_CONS_COLUMNS cols
+                                                 ON cons.OWNER = cols.OWNER
+                                                     AND cons.CONSTRAINT_NAME = cols.CONSTRAINT_NAME
+                                            WHERE cons.TABLE_NAME = '%s'
+                                              AND cons.CONSTRAINT_TYPE = 'P') ac
+                                           ON tc.OWNER = ac.OWNER
+                                               AND tc.TABLE_NAME = ac.TABLE_NAME
+                                               AND tc.COLUMN_NAME = ac.COLUMN_NAME
+                                 LEFT JOIN ALL_COL_COMMENTS cc
+                                           ON tc.owner = cc.owner AND tc.table_name = cc.table_name AND tc.column_name = cc.column_name
+                        WHERE tc.TABLE_NAME = '%s'
+                          AND tc.OWNER = '%s'
+                        ORDER BY tc.TABLE_NAME, tc.COLUMN_ID
+                        """, datasourceRequest.getTable(), datasourceRequest.getTable(), configuration.getSchema());
                 break;
             case db2:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
@@ -1133,32 +1173,30 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("SELECT\n" +
-                        "    a.attname AS ColumnName,\n" +
-                        "    t.typname,\n" +
-                        "    b.description AS ColumnDescription,\n" +
-                        "    CASE\n" +
-                        "        WHEN d.indisprimary THEN 1\n" +
-                        "        ELSE 0\n" +
-                        "    END,\n" +
-                        "    CASE\n" +
-                        "        WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval%%' THEN 1\n" +
-                        "        ELSE 0\n" +
-                        "    END\n" +
-                        "FROM\n" +
-                        "    pg_class c\n" +
-                        "        JOIN pg_attribute a ON a.attrelid = c.oid\n" +
-                        "        LEFT JOIN pg_attrdef ad ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum\n" +
-                        "        LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" +
-                        "        JOIN pg_type t ON a.atttypid = t.oid\n" +
-                        "        LEFT JOIN pg_index d ON d.indrelid = a.attrelid AND d.indisprimary AND a.attnum = ANY(d.indkey)\n" +
-                        "where\n" +
-                        "        c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '%s')\n" +
-                        "  AND c.relname = '%s'\n" +
-                        "  AND a.attnum > 0\n" +
-                        "  AND NOT a.attisdropped\n" +
-                        "ORDER BY\n" +
-                        "    a.attnum;", configuration.getSchema(), datasourceRequest.getTable());
+                sql = String.format("""
+                        SELECT a.attname     AS ColumnName,
+                               t.typname,
+                               b.description AS ColumnDescription,
+                               CASE
+                                   WHEN d.indisprimary THEN 1
+                                   ELSE 0
+                                   END,
+                               CASE
+                                   WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval%%' THEN 1
+                                   ELSE 0
+                                   END
+                        FROM pg_class c
+                                 JOIN pg_attribute a ON a.attrelid = c.oid
+                                 LEFT JOIN pg_attrdef ad ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum
+                                 LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid
+                                 JOIN pg_type t ON a.atttypid = t.oid
+                                 LEFT JOIN pg_index d ON d.indrelid = a.attrelid AND d.indisprimary AND a.attnum = ANY (d.indkey)
+                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '%s')
+                          AND c.relname = '%s'
+                          AND a.attnum > 0
+                          AND NOT a.attisdropped
+                        ORDER BY a.attnum;
+                        """, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
