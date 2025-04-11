@@ -4,7 +4,7 @@ import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
-import { loginApi, queryDekey, loginCategoryApi } from '@/api/login'
+import { loginApi, queryDekey } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { CustomPassword } from '@/components/custom-password'
@@ -17,7 +17,7 @@ import { XpackComponent } from '@/components/plugin'
 import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { checkPlatform, cleanPlatformFlag, getQueryString } from '@/utils/utils'
+import { cleanPlatformFlag } from '@/utils/utils'
 import xss from 'xss'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -133,7 +133,7 @@ const invalidPwdCb = cbParam => {
   }
 }
 const xpackLoadFail = ref(false)
-const loadingText = ref('登录中...')
+const loadingText = ref('加载中...')
 const loginContainer = ref()
 const loginContainerWidth = ref(0)
 const showLoginImage = computed<boolean>(() => {
@@ -211,40 +211,24 @@ const loadArrearance = () => {
 const switchTab = (name: string) => {
   activeName.value = name || 'simple'
 }
+const autoCallback = (param: any) => {
+  console.log(param)
+  activeName.value = param.activeName || 'simple'
+  preheat.value = param.preheat
+  if (param.loadingText) {
+    loadingText.value = param.loadingText
+  }
+}
+const handlerFail = () => {
+  const param = {
+    activeName: 'simple',
+    preheat: false
+  }
+  autoCallback(param)
+}
 onMounted(async () => {
   loadArrearance()
   duringLogin.value = false
-  if (!checkPlatform()) {
-    const res = await loginCategoryApi()
-    const adminLogin = router.currentRoute?.value?.name === 'admin-login'
-    if (adminLogin && (!res.data || res.data === 1)) {
-      router.push('/401')
-      return
-    }
-    if (res.data && !adminLogin) {
-      if (res.data === 1) {
-        activeName.value = 'ldap'
-        preheat.value = false
-      } else {
-        loadingText.value = '加载中...'
-        document.getElementsByClassName('ed-loading-text')?.length &&
-          (document.getElementsByClassName('ed-loading-text')[0]['innerText'] = loadingText.value)
-      }
-      nextTick(() => {
-        const param = { methodName: 'ssoLogin', args: res.data }
-        const timer = setInterval(() => {
-          if (xpackLoginHandler?.value.invokeMethod) {
-            xpackLoginHandler?.value.invokeMethod(param)
-            clearInterval(timer)
-          }
-        }, 1000)
-      })
-    } else {
-      preheat.value = false
-    }
-  } else if (getQueryString('state')?.includes('fit2clouddeoauth2')) {
-    preheat.value = true
-  }
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
     const msg = localStorage.getItem('DE-GATEWAY-FLAG')
     loginErrorMsg.value = decodeURIComponent(msg)
@@ -357,6 +341,8 @@ onMounted(async () => {
                 ref="xpackLoginHandler"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy"
                 @switch-tab="switchTab"
+                @auto-callback="autoCallback"
+                @load-fail="handlerFail"
               />
               <XpackComponent
                 ref="xpackInvalidPwd"
