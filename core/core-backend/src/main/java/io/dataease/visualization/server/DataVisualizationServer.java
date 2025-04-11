@@ -471,6 +471,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         QueryWrapper<CoreDatasetGroup> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", datasetFolderName);
         queryWrapper.eq("pid", datasetFolderPid);
+        queryWrapper.eq("node_type", DataVisualizationConstants.NODE_TYPE.FOLDER);
         if (coreDatasetGroupMapper.exists(queryWrapper)) {
             return "repeat";
         } else {
