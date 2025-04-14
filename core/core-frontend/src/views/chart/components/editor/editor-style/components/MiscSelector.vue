@@ -99,25 +99,25 @@ const initField = () => {
   state.quotaData = props.quotaFields.filter(ele => ele.id !== '-1')
   if (!isEmpty(state.miscForm.gaugeMinField.id)) {
     state.minField = getQuotaField(state.miscForm.gaugeMinField.id)
-    calcField(state.miscForm.gaugeMinField)
+    setSummaryByDataType(state.miscForm.gaugeMinField)
   }
   if (!isEmpty(state.miscForm.gaugeMaxField.id)) {
     state.maxField = getQuotaField(state.miscForm.gaugeMaxField.id)
-    calcField(state.miscForm.gaugeMaxField)
+    setSummaryByDataType(state.miscForm.gaugeMaxField)
   }
   if (!isEmpty(state.miscForm.liquidMaxField.id)) {
     state.liquidMaxField = getQuotaField(state.miscForm.liquidMaxField.id)
-    calcField(state.miscForm.liquidMaxField)
+    setSummaryByDataType(state.miscForm.liquidMaxField)
   }
 }
-const NUMBER_DE_TYPE = [1, 2, 3]
+const NUMBER_DE_TYPE = [2, 3]
 
 const getDynamicFieldId = () => {
   // 返回yAxis字段ID
   const curFieldObj = quotaData.value?.find(item => item.id === props.chart.yAxis?.[0]?.id)
   if (curFieldObj) return curFieldObj.id
-  // 返回第一个数字类型字段ID
-  return quotaData.value?.filter(item => NUMBER_DE_TYPE.includes(item.deType))?.[0]?.id
+  // 返回第一个字段ID
+  return quotaData.value?.[0]?.id
 }
 
 const changeQuotaField = (type: string, resetSummary?: boolean) => {
@@ -137,7 +137,7 @@ const changeQuotaField = (type: string, resetSummary?: boolean) => {
       } else {
         state.miscForm.gaugeMax = state.miscForm.gaugeMax || cloneDeep(defaultMaxValue.gaugeMax)
       }
-      calcField(state.miscForm.gaugeMaxField)
+      setSummaryByDataType(state.miscForm.gaugeMaxField)
       changeMisc('gaugeMaxField', true)
     }
     if (type === 'min') {
@@ -155,7 +155,7 @@ const changeQuotaField = (type: string, resetSummary?: boolean) => {
       } else {
         state.miscForm.gaugeMin = state.miscForm.gaugeMin ?? 0
       }
-      calcField(state.miscForm.gaugeMinField)
+      setSummaryByDataType(state.miscForm.gaugeMinField)
       changeMisc('gaugeMinField', true)
     }
   }
@@ -172,14 +172,14 @@ const changeQuotaField = (type: string, resetSummary?: boolean) => {
     } else {
       state.miscForm.liquidMax = state.miscForm.liquidMax || cloneDeep(defaultMaxValue.liquidMax)
     }
-    calcField(state.miscForm.liquidMaxField)
+    setSummaryByDataType(state.miscForm.liquidMaxField)
     changeMisc(`${maxValueKey}Field`, true)
   }
 }
 
 const setDynamicFieldId = fieldObj => {
   const yAxisField = props.chart.yAxis?.[0]
-  if (yAxisField?.id === '-1' || !NUMBER_DE_TYPE.includes(yAxisField?.deType)) {
+  if (yAxisField?.id === '-1') {
     fieldObj.id = getDynamicFieldId()
   } else {
     fieldObj.id = yAxisField?.id
@@ -244,16 +244,13 @@ const initAxis = yAxisId => {
     ]
     const maxTypeKey = isLiquid.value ? 'liquidMaxType' : 'gaugeMaxType'
     const maxValueKey = isLiquid.value ? 'liquidMax' : 'gaugeMax'
-    if (
-      state.quotaData.length &&
-      state.quotaData.find(item => item.id === yAxisId && NUMBER_DE_TYPE.includes(item.deType))
-    ) {
+    if (state.quotaData.length && state.quotaData.find(item => item.id === yAxisId)) {
       if (isLiquid.value) {
         state.miscForm[maxTypeKey] = 'dynamic'
         state.miscForm[maxValueKey + 'Field']['id'] = getDynamicFieldId() ?? state.quotaData[0]?.id
         state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
         state.liquidMaxField = getQuotaField(state.miscForm[maxValueKey + 'Field']['id'])
-        calcField(state.miscForm[maxValueKey + 'Field'])
+        setSummaryByDataType(state.miscForm[maxValueKey + 'Field'])
         changeMisc(`${maxValueKey}Field`, true)
       }
       if (isGauge.value) {
@@ -262,7 +259,7 @@ const initAxis = yAxisId => {
         state.miscForm[maxValueKey + 'Field']['id'] = getDynamicFieldId() ?? state.quotaData[0]?.id
         state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
         state.maxField = getQuotaField(state.miscForm[maxValueKey + 'Field']['id'])
-        calcField(state.miscForm[maxValueKey + 'Field'])
+        setSummaryByDataType(state.miscForm[maxValueKey + 'Field'])
         changeMisc(`${maxValueKey}Field`, true)
         // min
         state.miscForm.gaugeMinType = 'fix'
@@ -312,7 +309,7 @@ const initStateForm = () => {
         state.miscForm[maxValueKey + 'Field']['id'] = state.quotaData[0]?.id ?? ''
         state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
         state.liquidMaxField = getQuotaField(state.miscForm[maxValueKey + 'Field']['id'])
-        calcField(state.miscForm[maxValueKey + 'Field'])
+        setSummaryByDataType(state.miscForm[maxValueKey + 'Field'])
         changeMisc(`${maxValueKey}Field`, true)
       } else if (state.miscForm[maxTypeKey] === 'fix' && !hasFixValue && hasFixValue !== 0) {
         state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
@@ -329,7 +326,7 @@ const initStateForm = () => {
         state.miscForm[maxValueKey + 'Field']['id'] = state.quotaData[0]?.id ?? ''
         state.miscForm[maxValueKey + 'Field']['summary'] = 'sum'
         state.maxField = getQuotaField(state.miscForm[maxValueKey + 'Field']['id'])
-        calcField(state.miscForm[maxValueKey + 'Field'])
+        setSummaryByDataType(state.miscForm[maxValueKey + 'Field'])
         changeMisc(`${maxValueKey}Field`, true)
       } else if (state.miscForm[maxTypeKey] === 'fix' && !hasFixValue && hasFixValue !== 0) {
         state.miscForm[maxValueKey] = cloneDeep(defaultMaxValue[maxValueKey]) ?? 0
@@ -344,7 +341,7 @@ const initStateForm = () => {
         state.miscForm.gaugeMinField.id = state.quotaData[0]?.id ?? ''
         state.miscForm.gaugeMinField.summary = 'sum'
         state.minField = getQuotaField(state.miscForm.gaugeMinField.id)
-        calcField(state.miscForm.gaugeMinField)
+        setSummaryByDataType(state.miscForm.gaugeMinField)
         changeMisc('gaugeMinField', true)
       }
     }
@@ -399,21 +396,37 @@ onMounted(() => {
 })
 
 /**
- * 不包含记录数字段以及计算字段
+ * 不包含记录数字段
  */
 const quotaData = computed(() => {
-  return state.quotaData.filter(item => NUMBER_DE_TYPE.includes(item.deType))
+  return state.quotaData
 })
 const isLiquid = computed(() => props.chart.type === 'liquid')
 const isGauge = computed(() => props.chart.type === 'gauge')
 
 /*
- * 计算字段不支持汇总
+ * 根据字段数据类型设置汇总字段
  */
-const calcField = fieldObj => {
-  if (quotaData.value?.find(item => item.id === fieldObj.id)?.extField === 2) {
-    fieldObj.summary = ''
+const setSummaryByDataType = fieldObj => {
+  const quotaField = quotaData.value?.find(item => item.id === fieldObj.id)
+  if (!quotaField) return
+  // 计算字段以及不是数字类型字段，默认count
+  if (quotaField.extField === 2 || !NUMBER_DE_TYPE.includes(quotaField.deType)) {
+    fieldObj.summary = 'count'
+    fieldObj.disabled = true
+    return
   }
+  fieldObj.disabled = false
+}
+/**
+ * 禁用汇总选项
+ * @param field
+ */
+const isDisabledSummaryField = field => {
+  const quotaField = quotaData.value?.find(item => item.id === field.id)
+  return quotaField
+    ? quotaField.extField === 2 || !NUMBER_DE_TYPE.includes(quotaField.deType)
+    : false
 }
 </script>
 
@@ -492,7 +505,7 @@ const calcField = fieldObj => {
         :gutter="8"
         v-if="showProperty('gaugeMinField') && state.miscForm.gaugeMinType === 'dynamic'"
       >
-        <el-col :span="state.miscForm.gaugeMinField.summary ? 12 : 24">
+        <el-col :span="isDisabledSummaryField(state.miscForm.gaugeMinField) ? 24 : 12">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
@@ -522,7 +535,7 @@ const calcField = fieldObj => {
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12" v-if="state.miscForm.gaugeMinField.summary">
+        <el-col :span="12" v-if="!isDisabledSummaryField(state.miscForm.gaugeMinField)">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
@@ -591,7 +604,7 @@ const calcField = fieldObj => {
         :gutter="8"
         v-if="showProperty('gaugeMaxField') && state.miscForm.gaugeMaxType === 'dynamic'"
       >
-        <el-col :span="state.miscForm.gaugeMaxField.summary ? 12 : 24">
+        <el-col :span="isDisabledSummaryField(state.miscForm.gaugeMaxField) ? 24 : 12">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
@@ -621,7 +634,7 @@ const calcField = fieldObj => {
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12" v-if="state.miscForm.gaugeMaxField.summary">
+        <el-col :span="12" v-if="!isDisabledSummaryField(state.miscForm.gaugeMaxField)">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
@@ -742,7 +755,7 @@ const calcField = fieldObj => {
       :gutter="8"
       v-if="showProperty('liquidMaxField') && state.miscForm.liquidMaxType === 'dynamic'"
     >
-      <el-col :span="state.miscForm.liquidMaxField.summary ? 12 : 24">
+      <el-col :span="isDisabledSummaryField(state.miscForm.liquidMaxField) ? 24 : 12">
         <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-select
             :effect="themes"
@@ -772,7 +785,7 @@ const calcField = fieldObj => {
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="12" v-if="state.miscForm.liquidMaxField.summary">
+      <el-col :span="12" v-if="!isDisabledSummaryField(state.miscForm.liquidMaxField)">
         <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-select
             :effect="themes"
