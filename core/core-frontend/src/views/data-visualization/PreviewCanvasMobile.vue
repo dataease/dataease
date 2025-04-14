@@ -110,14 +110,16 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
         return
       }
       state.dvInfo = dvInfo
+      if (state.dvInfo.status) {
+        if (jumpParam || attachParam) {
+          await filterEnumMapSync(canvasDataResult)
+        }
+      }
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.curPreviewGap = curPreviewGap
       if (state.dvInfo.status) {
-        if (jumpParam || attachParam) {
-          await filterEnumMapSync(canvasDataResult)
-        }
         if (jumpParam) {
           dvMainStore.addViewTrackFilter(jumpParam)
         }
