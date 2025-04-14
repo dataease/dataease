@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import io.dataease.extensions.datasource.dto.ApiDefinition;
 import io.dataease.extensions.datasource.dto.ApiDefinitionRequest;
 import io.dataease.exception.DEException;
@@ -26,7 +28,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ApiUtils {
-
+    private static Configuration jsonPathConf = Configuration.builder()
+            .options(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.ALWAYS_RETURN_LIST)
+            .build();
     private static String path = "['%s']";
     public static ObjectMapper objectMapper = CommonBeanFactory.getBean(ObjectMapper.class);
 
@@ -782,9 +786,15 @@ public class ApiUtils {
             List<List<String>> columnDataList = new ArrayList<>();
             for (int i = 0; i < jsonPaths.size(); i++) {
                 List<String> data = new ArrayList<>();
-                Object object = JsonPath.read(result, jsonPaths.get(i));
+                Object object = JsonPath.using(jsonPathConf).parse(result).read(jsonPaths.get(i));
                 if (object instanceof List && jsonPaths.get(i).contains("[*]")) {
-                    data = (List<String>) object;
+                    for (Object o : (List<String>) object) {
+                        if (Objects.isNull(o)) {
+                            data.add("");
+                        } else {
+                            data.add(o.toString());
+                        }
+                    }
                 } else {
                     if (object != null) {
                         data.add(object.toString());
