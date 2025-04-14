@@ -2,6 +2,8 @@ package io.dataease.exportCenter.manage;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
@@ -31,6 +33,7 @@ import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskMapper;
+import io.dataease.exportCenter.dao.ext.mapper.ExportTaskExtMapper;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -85,6 +88,8 @@ import java.util.stream.Collectors;
 public class ExportCenterManage implements BaseExportApi {
     @Resource
     private CoreExportTaskMapper exportTaskMapper;
+    @Resource
+    private ExportTaskExtMapper exportTaskExtMapper;
     @Resource
     private DatasetGroupManage datasetGroupManage;
     @Resource
@@ -263,27 +268,58 @@ public class ExportCenterManage implements BaseExportApi {
         }
     }
 
-    public List<ExportTaskDTO> exportTasks(String status) {
+    public IPage<ExportTaskDTO> pager(Page<ExportTaskDTO> page, String status) {
         if (!STATUS.contains(status)) {
             DEException.throwException("Invalid status: " + status);
         }
+
         QueryWrapper<CoreExportTask> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        if (!status.equalsIgnoreCase("ALL")) {
+            queryWrapper.eq("export_status", status);
+        }
         queryWrapper.orderByDesc("export_time");
-        List<CoreExportTask> exportTasks = exportTaskMapper.selectList(queryWrapper);
-        List<ExportTaskDTO> result = new ArrayList<>();
-        exportTasks.forEach(exportTask -> {
-            ExportTaskDTO exportTaskDTO = new ExportTaskDTO();
-            BeanUtils.copyBean(exportTaskDTO, exportTask);
-            if (status.equalsIgnoreCase("ALL") || status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
-                setExportFromAbsName(exportTaskDTO);
+        IPage<ExportTaskDTO> pager = exportTaskExtMapper.pager(page, queryWrapper);
+
+        List<ExportTaskDTO> records = pager.getRecords();
+        records.forEach(exportTask -> {
+            if (status.equalsIgnoreCase("ALL") || status.equalsIgnoreCase(exportTask.getExportStatus())) {
+                setExportFromAbsName(exportTask);
             }
-            if (status.equalsIgnoreCase("ALL") || status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
-                proxy().setOrg(exportTaskDTO);
+            if (status.equalsIgnoreCase("ALL") || status.equalsIgnoreCase(exportTask.getExportStatus())) {
+                proxy().setOrg(exportTask);
             }
-            result.add(exportTaskDTO);
         });
 
+        return pager;
+    }
+
+
+    public Map<String, Long> exportTasks() {
+        Map<String, Long> result = new HashMap<>();
+        QueryWrapper<CoreExportTask> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("export_status", "IN_PROGRESS");
+        result.put("IN_PROGRESS", exportTaskMapper.selectCount(queryWrapper));
+
+        queryWrapper.clear();
+        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("export_status", "SUCCESS");
+        result.put("SUCCESS", exportTaskMapper.selectCount(queryWrapper));
+
+        queryWrapper.clear();
+        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("export_status", "FAILED");
+        result.put("FAILED", exportTaskMapper.selectCount(queryWrapper));
+
+        queryWrapper.clear();
+        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("export_status", "PENDING");
+        result.put("PENDING", exportTaskMapper.selectCount(queryWrapper));
+
+        queryWrapper.clear();
+        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        result.put("ALL", exportTaskMapper.selectCount(queryWrapper));
         return result;
     }
 

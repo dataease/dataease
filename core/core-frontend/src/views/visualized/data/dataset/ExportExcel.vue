@@ -3,7 +3,7 @@ import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import deDelete from '@/assets/svg/de-delete.svg'
 import icon_fileExcel_colorful from '@/assets/svg/icon_file-excel_colorful.svg'
 import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
-import { ref, h, onUnmounted, computed } from 'vue'
+import { ref, h, onUnmounted, computed, reactive } from 'vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { ElButton, ElMessage, ElMessageBox, ElTabPane, ElTabs } from 'element-plus-secondary'
 import { RefreshLeft } from '@element-plus/icons-vue'
@@ -12,7 +12,8 @@ import {
   exportRetry,
   exportDelete,
   exportDeleteAll,
-  exportDeletePost
+  exportDeletePost,
+  exportTasksRecords
 } from '@/api/dataset'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -22,6 +23,13 @@ import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useAppStoreWithOut } from '@/store/modules/app'
 
 const { t } = useI18n()
+const state = reactive({
+  paginationConfig: {
+    currentPage: 1,
+    pageSize: 10,
+    total: 0
+  }
+})
 const tableData = ref([])
 const drawerLoading = ref(false)
 const drawer = ref(false)
@@ -77,46 +85,29 @@ const handleClick = tab => {
     description.value = t('data_export.no_task')
   }
   drawerLoading.value = true
-  exportTasks(activeName.value)
-    .then(res => {
-      tabList.value.forEach(item => {
-        if (item.name === 'ALL') {
-          item.label = t('data_set.all') + '(' + res.data.length + ')'
-        }
-        if (item.name === 'IN_PROGRESS') {
-          item.label =
-            t('data_set.exporting') +
-            '(' +
-            res.data.filter(task => task.exportStatus === 'IN_PROGRESS').length +
-            ')'
-        }
-        if (item.name === 'SUCCESS') {
-          item.label =
-            t('data_set.success') +
-            '(' +
-            res.data.filter(task => task.exportStatus === 'SUCCESS').length +
-            ')'
-        }
-        if (item.name === 'FAILED') {
-          item.label =
-            t('data_set.fail') +
-            '(' +
-            res.data.filter(task => task.exportStatus === 'FAILED').length +
-            ')'
-        }
-        if (item.name === 'PENDING') {
-          item.label =
-            t('data_set.waiting') +
-            '(' +
-            res.data.filter(task => task.exportStatus === 'PENDING').length +
-            ')'
-        }
-      })
-      if (activeName.value === 'ALL') {
-        tableData.value = res.data
-      } else {
-        tableData.value = res.data.filter(task => task.exportStatus === activeName.value)
+  exportTasksRecords().then(res => {
+    tabList.value.forEach(item => {
+      if (item.name === 'ALL') {
+        item.label = t('data_set.all') + '(' + res.data.ALL + ')'
       }
+      if (item.name === 'IN_PROGRESS') {
+        item.label = t('data_set.exporting') + '(' + res.data.IN_PROGRESS + ')'
+      }
+      if (item.name === 'SUCCESS') {
+        item.label = t('data_set.success') + '(' + res.data.SUCCESS + ')'
+      }
+      if (item.name === 'FAILED') {
+        item.label = t('data_set.fail') + '(' + res.data.FAILED + ')'
+      }
+      if (item.name === 'PENDING') {
+        item.label = t('data_set.waiting') + '(' + res.data.PENDING + ')'
+      }
+    })
+  })
+  exportTasks(state.paginationConfig.currentPage, state.paginationConfig.pageSize, activeName.value)
+    .then(res => {
+      state.paginationConfig.total = res.data.total
+      tableData.value = res.data.records
     })
     .finally(() => {
       drawerLoading.value = false
@@ -131,45 +122,32 @@ const init = params => {
   handleClick()
   timer = setInterval(() => {
     if (activeName.value === 'IN_PROGRESS') {
-      exportTasks(activeName.value).then(res => {
+      exportTasksRecords().then(res => {
         tabList.value.forEach(item => {
           if (item.name === 'ALL') {
-            item.label = t('data_set.all') + '(' + res.data.length + ')'
+            item.label = t('data_set.all') + '(' + res.data.ALL + ')'
           }
           if (item.name === 'IN_PROGRESS') {
-            item.label =
-              t('data_set.exporting') +
-              '(' +
-              res.data.filter(task => task.exportStatus === 'IN_PROGRESS').length +
-              ')'
+            item.label = t('data_set.exporting') + '(' + res.data.IN_PROGRESS + ')'
           }
           if (item.name === 'SUCCESS') {
-            item.label =
-              t('data_set.success') +
-              '(' +
-              res.data.filter(task => task.exportStatus === 'SUCCESS').length +
-              ')'
+            item.label = t('data_set.success') + '(' + res.data.SUCCESS + ')'
           }
           if (item.name === 'FAILED') {
-            item.label =
-              t('data_set.fail') +
-              '(' +
-              res.data.filter(task => task.exportStatus === 'FAILED').length +
-              ')'
+            item.label = t('data_set.fail') + '(' + res.data.FAILED + ')'
           }
           if (item.name === 'PENDING') {
-            item.label =
-              t('data_set.waiting') +
-              '(' +
-              res.data.filter(task => task.exportStatus === 'PENDING').length +
-              ')'
+            item.label = t('data_set.waiting') + '(' + res.data.PENDING + ')'
           }
         })
-        if (activeName.value === 'ALL') {
-          tableData.value = res.data
-        } else {
-          tableData.value = res.data.filter(task => task.exportStatus === activeName.value)
-        }
+      })
+      exportTasks(
+        state.paginationConfig.currentPage,
+        state.paginationConfig.pageSize,
+        activeName.value
+      ).then(res => {
+        state.paginationConfig.total = res.data.total
+        tableData.value = res.data.records
       })
     }
   }, 5000)
@@ -262,6 +240,7 @@ const timestampFormatDate = value => {
   return new Date(value).toLocaleString()
 }
 import { PATH_URL } from '@/config/axios/service'
+import GridTable from '../../../../components/grid-table/src/GridTable.vue'
 const downloadClick = item => {
   window.open(PATH_URL + '/exportCenter/download/' + item.id, openType)
 }
@@ -292,6 +271,19 @@ const deleteField = item => {
 
 const handleSelectionChange = val => {
   multipleSelection.value = val
+}
+
+const pageChange = index => {
+  if (typeof index !== 'number') {
+    return
+  }
+  state.paginationConfig.currentPage = index
+  handleClick()
+}
+const sizeChange = size => {
+  state.paginationConfig.currentPage = 1
+  state.paginationConfig.pageSize = size
+  handleClick()
 }
 
 const delAll = () => {
@@ -386,11 +378,13 @@ defineExpose({
       >{{ $t('commons.delete') }}
     </el-button>
     <div class="table-container" :class="!tableData.length && 'hidden-bottom'">
-      <el-table
+      <GridTable
         ref="multipleTable"
-        :data="tableData"
-        height="100%"
-        style="width: 100%"
+        :pagination="state.paginationConfig"
+        :table-data="tableData"
+        class="popper-max-width"
+        @current-change="pageChange"
+        @size-change="sizeChange"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="50" />
@@ -482,7 +476,7 @@ defineExpose({
         <template #empty>
           <empty-background :description="description" img-type="noneWhite" />
         </template>
-      </el-table>
+      </GridTable>
     </div>
   </el-drawer>
 

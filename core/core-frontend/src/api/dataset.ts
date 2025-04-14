@@ -336,11 +336,11 @@ export const getFunction = async (): Promise<DatasetDetail[]> => {
   })
 }
 
-export const exportTasks = async (type): Promise<IResponse> => {
-  return request.post({ url: '/exportCenter/exportTasks/' + type, data: {} }).then(res => {
-    return res
-  })
-}
+export const exportTasksRecords = () =>
+  request.post({ url: `/exportCenter/exportTasks/records`, data: {} })
+
+export const exportTasks = (page: number, limit: number, status: string) =>
+  request.post({ url: `/exportCenter/exportTasks/${status}/${page}/${limit}`, data: {} })
 
 export const exportRetry = async (id): Promise<IResponse> => {
   return request.post({ url: '/exportCenter/retry/' + id, data: {} }).then(res => {
