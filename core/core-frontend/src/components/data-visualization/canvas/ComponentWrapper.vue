@@ -16,7 +16,9 @@ import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
+import Icon from '../../icon-custom/src/Icon.vue'
 const appStore = useAppStoreWithOut()
+import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -168,14 +170,14 @@ const handleInnerMouseDown = e => {
   // do setCurComponent
   if (showPosition.value.includes('multiplexing')) {
     componentEditBarRef.value.multiplexingCheckOut()
-    e.stopPropagation()
-    e.preventDefault()
+    e?.stopPropagation()
+    e?.preventDefault()
   }
   if (['popEdit', 'preview'].includes(showPosition.value) || dvMainStore.mobileInPc) {
     onClick(e)
     if (e.target?.className?.includes('ed-input__inner')) return
-    e.stopPropagation()
-    e.preventDefault()
+    e?.stopPropagation()
+    e?.preventDefault()
   }
 }
 
@@ -384,6 +386,21 @@ const commonParams = computed(() => {
     eventType: config.value.events.type
   }
 })
+
+const showCheck = computed(() => {
+  return dvMainStore.mobileInPc && showPosition.value === 'edit'
+})
+
+const updateFromMobile = (e, type) => {
+  if (type === 'syncPcDesign') {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+  useEmitt().emitter.emit('onMobileStatusChange', {
+    type: type,
+    value: config.value.id
+  })
+}
 </script>
 
 <template>
@@ -402,6 +419,16 @@ const commonParams = computed(() => {
     element-loading-text="导出中..."
     element-loading-background="rgba(255, 255, 255, 1)"
   >
+    <div
+      :title="$t('visualization.sync_pc_design')"
+      v-if="showCheck"
+      class="refresh-from-pc"
+      @click="updateFromMobile($event, 'syncPcDesign')"
+    >
+      <el-icon>
+        <Icon name="icon_replace_outlined"><replaceOutlined class="svg-icon" /></Icon>
+      </el-icon>
+    </div>
     <component-edit-bar
       v-if="!showPosition.includes('canvas') && !props.isSelector"
       class="wrapper-edit-bar"
@@ -485,6 +512,15 @@ const commonParams = computed(() => {
 }
 .wrapper-outer {
   position: absolute;
+  .refresh-from-pc {
+    position: absolute;
+    right: 38px;
+    top: 12px;
+    z-index: 2;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--ed-color-primary);
+  }
 }
 .wrapper-inner {
   width: 100%;
