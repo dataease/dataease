@@ -2392,7 +2392,9 @@ export default {
     support: '取得技術支援',
     update_success: '更新成功',
     serial_no: '序號',
-    remark: '備註'
+    remark: '備註',
+    back_community: '還原至社區版',
+    confirm_tips: '确定還原至社區版？'
   },
   cron: {
     second: '秒',

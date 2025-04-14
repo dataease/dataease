@@ -17,4 +17,7 @@ public interface LicenseApi {
 
     @GetMapping("/version")
     String version();
+
+    @PostMapping("/revert")
+    void revert();
 }

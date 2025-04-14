@@ -2461,7 +2461,9 @@ export default {
     support: 'Get technical support',
     update_success: 'Update successful',
     serial_no: 'Serial number',
-    remark: 'Remark'
+    remark: 'Remark',
+    back_community: 'Revert to Community Edition',
+    confirm_tips: 'Are you sure you want to restore to the community edition? '
   },
   cron: {
     second: 'Seconds',

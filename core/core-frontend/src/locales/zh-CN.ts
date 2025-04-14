@@ -2398,7 +2398,9 @@ export default {
     support: '获取技术支持',
     update_success: '更新成功',
     serial_no: '序列号',
-    remark: '备注'
+    remark: '备注',
+    back_community: '还原至社区版',
+    confirm_tips: '确定还原至社区版？'
   },
   cron: {
     second: '秒',
