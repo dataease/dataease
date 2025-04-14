@@ -230,6 +230,7 @@ export const composeStore = defineStore('compose', {
       const editorRect = editor.getBoundingClientRect()
       const isInTab = isTabCanvas(canvasId)
       let decomposeComponentData = componentData.value
+      let parentGroupStyle = null
       if (isInTab) {
         const pathMap = {}
         componentData.value.forEach(componentItem => {
@@ -242,10 +243,11 @@ export const composeStore = defineStore('compose', {
         if (pComponentTarget && pComponentTarget.length > 0) {
           decomposeComponentData = pComponentTarget[0].componentData
         }
+        parentGroupStyle = curComponent.value.groupStyle
       }
       dvMainStore.deleteComponentById(curComponent.value.id, decomposeComponentData)
       components.forEach(component => {
-        decomposeComponent(component, editorRect, parentStyle, canvasId)
+        decomposeComponent(component, editorRect, parentStyle, canvasId, parentGroupStyle)
         dvMainStore.addComponent({
           component: component,
           index: undefined,
