@@ -731,6 +731,11 @@ public class CalciteProvider extends Provider {
                             row[j] = rs.getDate(j + 1).toString();
                         }
                         break;
+                    case Types.TIMESTAMP:
+                        if (rs.getTimestamp(j + 1) != null) {
+                            row[j] = rs.getTimestamp(j + 1).toString();
+                        }
+                        break;
                     case Types.BOOLEAN:
                         row[j] = rs.getBoolean(j + 1) ? "1" : "0";
                         break;
