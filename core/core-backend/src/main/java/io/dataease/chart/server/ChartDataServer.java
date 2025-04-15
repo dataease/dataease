@@ -130,7 +130,7 @@ public class ChartDataServer implements ChartDataApi {
             if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(viewDTO.getDataFrom())) {
                 chartViewInfo = extendDataManage.getChartDataInfo(viewDTO.getId(), viewDTO);
             } else {
-                chartViewInfo = chartDataManage.calcData(chartViewInfo);
+                chartViewInfo = chartDataManage.calcData(viewDTO);
             }
             List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
             if ("dataset".equals(request.getDownloadType())) {
