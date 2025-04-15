@@ -1943,6 +1943,7 @@ export default {
     radiusColumnBar: 'Column',
     rightAngle: 'Right angle',
     roundAngle: 'Rounded angle',
+    topRoundAngle: 'Top rounded angle',
     table_layout_mode: 'Display form',
     table_layout_grid: 'Tile display',
     table_layout_tree: 'Tree display',

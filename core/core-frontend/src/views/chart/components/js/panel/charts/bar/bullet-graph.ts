@@ -140,23 +140,42 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
     const { radiusColumnBar, columnBarRightAngleRadius, layout } = basicStyle
     let radiusValue = 0
     let rangeLength = 1
-    if (radiusColumnBar === 'roundAngle') {
+    if (radiusColumnBar === 'roundAngle' || radiusColumnBar === 'topRoundAngle') {
       radiusValue = columnBarRightAngleRadius
       rangeLength = options.data[0]?.ranges?.length
     }
-    const barRadiusStyle = { radius: Array(4).fill(radiusValue) }
+    const barRadiusStyle = { radius: Array(2).fill(radiusValue) }
+    const baseRadius = [...barRadiusStyle.radius, ...barRadiusStyle.radius]
     options = {
       ...options,
       bulletStyle: {
         range: datum => {
           if (!datum.rKey) return { fill: 'rgba(0, 0, 0, 0)' }
-          if (rangeLength === 1) return barRadiusStyle
-          if (rangeLength > 1 && datum.rKey === 'ranges_0')
-            return { radius: [0, 0, radiusValue, radiusValue] }
-          if (rangeLength > 1 && datum.rKey === 'ranges_' + (rangeLength - 1))
-            return { radius: [radiusValue, radiusValue, 0, 0] }
+          if (rangeLength === 1) {
+            return {
+              radius:
+                radiusColumnBar === 'topRoundAngle' ? [...barRadiusStyle.radius, 0, 0] : baseRadius
+            }
+          }
+          if (rangeLength > 1 && datum.rKey === 'ranges_0') {
+            return {
+              radius: radiusColumnBar === 'topRoundAngle' ? [] : [0, 0, ...barRadiusStyle.radius]
+            }
+          }
+          if (rangeLength > 1 && datum.rKey === 'ranges_' + (rangeLength - 1)) {
+            return { radius: [...barRadiusStyle.radius, 0, 0] }
+          }
         },
-        measure: datum => (datum.measures ? barRadiusStyle : undefined),
+        measure: datum => {
+          if (datum.measures) {
+            return {
+              radius:
+                radiusColumnBar === 'topRoundAngle' ? [...barRadiusStyle.radius, 0, 0] : baseRadius
+            }
+          } else {
+            return undefined
+          }
+        },
         target: datum => (datum.tKey === 'target' ? { lineWidth: 2 } : undefined)
       }
     }

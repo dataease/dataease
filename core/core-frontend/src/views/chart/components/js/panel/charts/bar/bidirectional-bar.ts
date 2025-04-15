@@ -12,8 +12,7 @@ import {
   getYAxis,
   getYAxisExt,
   setGradientColor,
-  TOOLTIP_TPL,
-  addConditionsStyleColorToData
+  TOOLTIP_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
 import type {
   BidirectionalBar as G2BidirectionalBar,
@@ -213,18 +212,16 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       ...options,
       layout: basicStyle.layout
     }
-    if (basicStyle.radiusColumnBar === 'roundAngle') {
-      const barStyle = {
-        radius: [
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius
-        ]
-      }
+    if (['roundAngle', 'topRoundAngle'].includes(basicStyle.radiusColumnBar)) {
+      const valueField = basicStyle.layout === 'vertical' ? 'valueExt' : 'value'
+      const radius = Array(basicStyle.radiusColumnBar === 'roundAngle' ? 4 : 2).fill(
+        basicStyle.columnBarRightAngleRadius
+      )
       options = {
         ...options,
-        barStyle
+        barStyle: datum => ({
+          radius: datum[valueField] && radius.length === 2 ? [0, 0, ...radius] : radius
+        })
       }
     }
     return options

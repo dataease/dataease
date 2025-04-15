@@ -1892,6 +1892,7 @@ export default {
     radiusColumnBar: '柱形',
     rightAngle: '直角',
     roundAngle: '圓角',
+    topRoundAngle: '頂部圓角',
     table_layout_mode: '展示形式',
     table_layout_grid: '平鋪展示',
     table_layout_tree: '樹形展示',

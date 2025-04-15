@@ -490,9 +490,11 @@ onMounted(() => {
         :effect="themes"
         v-model="state.basicStyleForm.radiusColumnBar"
         @change="changeBasicStyle('radiusColumnBar')"
+        class="radius-class"
       >
         <el-radio label="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
         <el-radio label="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
+        <el-radio label="topRoundAngle" :effect="themes">{{ t('chart.topRoundAngle') }}</el-radio>
       </el-radio-group>
     </el-form-item>
 
@@ -1740,5 +1742,8 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+.radius-class {
+  flex-wrap: nowrap !important;
 }
 </style>

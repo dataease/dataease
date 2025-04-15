@@ -182,9 +182,9 @@ declare interface ChartBasicStyle {
    */
   barWidth: number
   /**
-   * 柱子形状：直角｜圆角
+   * 柱子形状：直角｜圆角｜顶部圆角
    */
-  radiusColumnBar?: 'rightAngle' | 'roundAngle'
+  radiusColumnBar?: 'rightAngle' | 'roundAngle' | 'topRoundAngle'
   /**
    * 圆角柱倒角
    */

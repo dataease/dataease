@@ -7,7 +7,6 @@ import {
 import {
   flow,
   hexColorToRGBA,
-  hexToRgba,
   parseJson,
   setUpGroupSeriesColor,
   setUpStackSeriesColor
@@ -21,6 +20,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/bar/common'
 import {
   configPlotTooltipEvent,
+  configRadius,
   getLabel,
   getPadding,
   getTooltipContainer,
@@ -181,19 +181,9 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         color
       }
     }
-    if (basicStyle.radiusColumnBar === 'roundAngle') {
-      const columnStyle = {
-        radius: [
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius
-        ]
-      }
-      options = {
-        ...options,
-        columnStyle
-      }
+    options = {
+      ...options,
+      ...configRadius(options.data, basicStyle, 'columnStyle', options.xField, options.seriesField)
     }
     let columnWidthRatio
     const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio

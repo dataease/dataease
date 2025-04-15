@@ -33,7 +33,7 @@ import { PositionType } from '@antv/l7-core'
 import { centroid } from '@turf/centroid'
 import type { Plot } from '@antv/g2plot'
 import type { PickOptions } from '@antv/g2plot/lib/core/plot'
-import { defaults, find } from 'lodash-es'
+import { defaults, find, groupBy, map, uniq } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isMobile } from '@/utils/utils'
 import { GaodeMap, TMap, TencentMap } from '@antv/l7-maps'
@@ -2205,7 +2205,7 @@ const getColorByConditions = (quotaList: [], values: number | number[], chart) =
  * @param chart
  * @param options
  */
-export function handleConditionsStyle(chart: Chart, options: O) {
+export function handleConditionsStyle(chart: Chart, options) {
   const { threshold } = parseJson(chart.senior)
   if (!threshold.enable) return options
   const { basicStyle } = parseJson(chart.customAttr)
@@ -2393,4 +2393,78 @@ export const numberToChineseUnderHundred = (num: number): string => {
 
   // 处理其他两位数
   return tens === 1 ? '十' + digits[ones] : digits[tens] + '十' + digits[ones]
+}
+
+/**
+ * 配置柱条图的圆角
+ * @param data
+ * @param basicStyle
+ * @param styleName
+ * @param xField
+ * @param seriesField
+ * @param isHorizontalBar 条形图
+ */
+export const configRadius = (
+  data: Record<string, any>[],
+  basicStyle: DeepPartial<ChartBasicStyle>,
+  styleName: string,
+  xField: string,
+  seriesField: string,
+  isHorizontalBar?: boolean
+) => {
+  if (['roundAngle', 'topRoundAngle'].includes(basicStyle.radiusColumnBar)) {
+    // 根据维度分组
+    const grouped = groupBy(data, xField)
+    // 分组下的堆叠项
+    const result = map(grouped, (items, field) => ({
+      field,
+      seriesFields: uniq(map(items, seriesField))
+    }))
+    const radius = Array(2).fill(basicStyle.columnBarRightAngleRadius)
+    // 分组下堆叠项索引
+    const groupIndex = new Map()
+    // 配置柱条样式
+    const style = datum => {
+      const group = result.find(item => item.field === datum[xField])
+      // 未找到分组直接返回
+      if (!group) return { radius }
+      // 分组下堆叠项索引，每遇到一个索引+1
+      if (groupIndex.has(group.field)) {
+        groupIndex.set(group.field, groupIndex.get(group.field) + 1)
+      } else {
+        groupIndex.set(group.field, 0)
+      }
+      // 分组下堆叠项长度
+      const seriesFieldLength = group.seriesFields.length
+      // 只有一个柱子时
+      if (seriesFieldLength === 1) {
+        return {
+          radius: [
+            ...radius,
+            ...(seriesFieldLength === 1 && basicStyle.radiusColumnBar === 'topRoundAngle'
+              ? [0, 0]
+              : radius)
+          ]
+        }
+      }
+      // 获取当前分组的索引
+      const groupIdx = groupIndex.get(group.field)
+      // 判断是否为第一个或最后一个堆叠项
+      const isStart = isHorizontalBar ? groupIdx === seriesFieldLength - 1 : groupIdx === 0
+      const isEnd = isHorizontalBar ? groupIdx === 0 : groupIdx === seriesFieldLength - 1
+      return {
+        radius: isStart
+          ? [...radius, 0, 0]
+          : isEnd
+          ? basicStyle.radiusColumnBar === 'topRoundAngle'
+            ? []
+            : [0, 0, ...radius]
+          : []
+      }
+    }
+    return {
+      [styleName]: style
+    }
+  }
+  return {}
 }

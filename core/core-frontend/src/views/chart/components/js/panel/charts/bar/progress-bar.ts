@@ -4,7 +4,6 @@ import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
   getTooltipContainer,
-  getTooltipItemConditionColor,
   setGradientColor,
   TOOLTIP_TPL
 } from '../../common/common_antv'
@@ -184,18 +183,13 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
         }
       }
     }
-    if (basicStyle.radiusColumnBar === 'roundAngle') {
-      const barStyle = {
-        radius: [
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius
-        ]
-      }
+    if (['roundAngle', 'topRoundAngle'].includes(basicStyle.radiusColumnBar)) {
+      const radius = Array(basicStyle.radiusColumnBar === 'roundAngle' ? 4 : 2).fill(
+        basicStyle.columnBarRightAngleRadius
+      )
       options = {
         ...options,
-        barStyle
+        barStyle: { radius }
       }
     }
 

@@ -321,18 +321,24 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
         }
       }
     }
-    if (basicStyle.radiusColumnBar === 'roundAngle') {
-      const barStyle = {
-        radius: [
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius,
-          basicStyle.columnBarRightAngleRadius
-        ]
-      }
+    if (['roundAngle', 'topRoundAngle'].includes(basicStyle.radiusColumnBar)) {
+      const radius = Array(2).fill(basicStyle.columnBarRightAngleRadius)
       options = {
         ...options,
-        barStyle
+        barStyle: datum => {
+          const isTopRound = basicStyle.radiusColumnBar === 'topRoundAngle'
+          const baseRadius = [...radius, ...radius]
+          return {
+            radius:
+              datum.values[0] < datum.values[1]
+                ? isTopRound
+                  ? [...radius, 0, 0]
+                  : baseRadius
+                : isTopRound
+                ? [0, 0, ...radius]
+                : baseRadius
+          }
+        }
       }
     }
     let barWidthRatio
