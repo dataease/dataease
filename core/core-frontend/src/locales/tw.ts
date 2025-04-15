@@ -2820,6 +2820,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    support_query: '僅可新增查詢元件',
     publish_update_tips: '有更新',
     filter_freeze_tips: '已存在置頂查詢組件，確定切換該組件？',
     query_position: '查詢組件位置',

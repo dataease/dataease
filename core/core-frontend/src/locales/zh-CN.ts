@@ -2826,6 +2826,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    support_query: '仅支持添加查询组件',
     publish_update_tips: '有更新',
     filter_freeze_tips: '已存在置顶查询组件,确定切换该组件？',
     query_position: '查询组件位置',

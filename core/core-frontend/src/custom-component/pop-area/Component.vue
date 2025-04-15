@@ -142,7 +142,7 @@ const handleDrop = e => {
         adaptCurThemeCommonStyle(component)
         snapshotStore.recordSnapshotCache('renderChart', component.id)
       } else {
-        ElMessage.error('及支持添加查询组件')
+        ElMessage.error(t('visualization.support_query'))
       }
     }
   }
