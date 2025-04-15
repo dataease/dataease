@@ -19,8 +19,9 @@ import {
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
 import {
+  assembleOptionsDataForRoundAngle,
   configPlotTooltipEvent,
-  configRadius,
+  configRoundAngle,
   getLabel,
   getPadding,
   getTooltipContainer,
@@ -58,7 +59,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     yField: 'value',
     seriesField: 'category',
     isGroup: true,
-    data: []
+    data: [],
+    rawFields: ['isFirst', 'isLast']
   }
 
   axis: AxisType[] = [...BAR_AXIS_TYPE]
@@ -81,11 +83,13 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       clearExtremum(chart)
       return
     }
+    const isGroup = 'bar-group' === this.name && chart.xAxisExt?.length > 0
+    const isStack = 'bar-group-stack' === this.name && chart.extStack?.length > 0
     const data = cloneDeep(drawOptions.chart.data?.data)
     const initOptions: ColumnOptions = {
       ...this.baseOptions,
       appendPadding: getPadding(chart),
-      data
+      data: assembleOptionsDataForRoundAngle(data, isGroup, isStack)
     }
     const options: ColumnOptions = this.setupOptions(chart, initOptions)
     let newChart = null
@@ -183,7 +187,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     }
     options = {
       ...options,
-      ...configRadius(options.data, basicStyle, 'columnStyle', options.xField, options.seriesField)
+      ...configRoundAngle(basicStyle, 'columnStyle')
     }
     let columnWidthRatio
     const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio

@@ -2397,69 +2397,37 @@ export const numberToChineseUnderHundred = (num: number): string => {
 
 /**
  * 配置柱条图的圆角
- * @param data
  * @param basicStyle
  * @param styleName
- * @param xField
- * @param seriesField
- * @param isHorizontalBar 条形图
+ * @param isStackHorizontalBar 堆叠条形图、百分比条形图
  */
-export const configRadius = (
-  data: Record<string, any>[],
+export const configRoundAngle = (
   basicStyle: DeepPartial<ChartBasicStyle>,
   styleName: string,
-  xField: string,
-  seriesField: string,
-  isHorizontalBar?: boolean
+  isStackHorizontalBar?: boolean
 ) => {
   if (['roundAngle', 'topRoundAngle'].includes(basicStyle.radiusColumnBar)) {
-    // 根据维度分组
-    const grouped = groupBy(data, xField)
-    // 分组下的堆叠项
-    const result = map(grouped, (items, field) => ({
-      field,
-      seriesFields: uniq(map(items, seriesField))
-    }))
     const radius = Array(2).fill(basicStyle.columnBarRightAngleRadius)
-    // 分组下堆叠项索引
-    const groupIndex = new Map()
+    const isTopRound = basicStyle.radiusColumnBar === 'topRoundAngle'
     // 配置柱条样式
     const style = datum => {
-      const group = result.find(item => item.field === datum[xField])
-      // 未找到分组直接返回
-      if (!group) return { radius }
-      // 分组下堆叠项索引，每遇到一个索引+1
-      if (groupIndex.has(group.field)) {
-        groupIndex.set(group.field, groupIndex.get(group.field) + 1)
-      } else {
-        groupIndex.set(group.field, 0)
+      if (isTopRound && datum.isFirst && datum.isLast) {
+        return { radius }
       }
-      // 分组下堆叠项长度
-      const seriesFieldLength = group.seriesFields.length
-      // 只有一个柱子时
-      if (seriesFieldLength === 1) {
-        return {
-          radius: [
-            ...radius,
-            ...(seriesFieldLength === 1 && basicStyle.radiusColumnBar === 'topRoundAngle'
-              ? [0, 0]
-              : radius)
-          ]
+      if (!isTopRound && datum.isFirst && datum.isLast) {
+        return { radius: [...radius, ...radius] }
+      }
+      // 堆叠条形图、百分比条形图第一个和最后一个反转
+      if (isStackHorizontalBar) {
+        if (datum.isLast || (!isTopRound && datum.isFirst)) {
+          return {
+            radius: datum.isFirst ? [0, 0, ...radius] : radius
+          }
         }
-      }
-      // 获取当前分组的索引
-      const groupIdx = groupIndex.get(group.field)
-      // 判断是否为第一个或最后一个堆叠项
-      const isStart = isHorizontalBar ? groupIdx === seriesFieldLength - 1 : groupIdx === 0
-      const isEnd = isHorizontalBar ? groupIdx === 0 : groupIdx === seriesFieldLength - 1
-      return {
-        radius: isStart
-          ? [...radius, 0, 0]
-          : isEnd
-          ? basicStyle.radiusColumnBar === 'topRoundAngle'
-            ? []
-            : [0, 0, ...radius]
-          : []
+      } else if (datum.isFirst || (!isTopRound && datum.isLast)) {
+        return {
+          radius: datum.isLast ? [0, 0, ...radius] : radius
+        }
       }
     }
     return {
@@ -2467,4 +2435,40 @@ export const configRadius = (
     }
   }
   return {}
+}
+
+/**
+ * 为圆角组装options.data，
+ * 添加 isFirst 和 isLast 属性
+ * 不会影响原始数据排序
+ * @param data
+ * @param isGroup
+ * @param isStack
+ */
+export const assembleOptionsDataForRoundAngle = (
+  data: Record<string, any>[],
+  isGroup: boolean,
+  isStack?: boolean
+) => {
+  // column数据分组
+  const groupedByField = data.reduce((acc, item) => {
+    let groupField = item.field
+    if (isGroup || isStack) {
+      groupField = `${item.field}-${isStack ? item.group : item.category}`
+    }
+    if (!acc[groupField]) {
+      acc[groupField] = []
+    }
+    acc[groupField].push(item)
+    return acc
+  }, {})
+  // 遍历每个分组，添加 isFirst 和 isLast 属性
+  Object.values(groupedByField).forEach(group => {
+    const firstItem = group[0]
+    const lastItem = group[group.length - 1]
+    firstItem.isFirst = true
+    lastItem.isLast = true
+  })
+  // 将分组后的数据重新展开为一个数组
+  return Object.values(groupedByField).flat()
 }

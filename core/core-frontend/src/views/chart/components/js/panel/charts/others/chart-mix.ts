@@ -4,6 +4,8 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import type { DualAxes, DualAxesOptions } from '@antv/g2plot/esm/plots/dual-axes'
 import {
+  assembleOptionsDataForRoundAngle,
+  configRoundAngle,
   configPlotTooltipEvent,
   getAnalyse,
   getLabel,
@@ -120,27 +122,9 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
         valueExt: d.value
       }
     })
-    // column数据分组
-    const groupedByField = data1.reduce((acc, item) => {
-      const groupField = isGroup ? `${item.field}-${item.category}` : item.field
-      if (!acc[groupField]) {
-        acc[groupField] = []
-      }
-      acc[groupField].push(item)
-      return acc
-    }, {})
-    // 遍历每个分组，添加 isFirst 和 isLast 属性
-    Object.values(groupedByField).forEach(group => {
-      const firstItem = group[0]
-      const lastItem = group[group.length - 1]
-      firstItem.isFirst = true
-      lastItem.isLast = true
-    })
-    // 将分组后的数据重新展开为一个数组
-    const result = Object.values(groupedByField).flat()
     // options
     const initOptions: DualAxesOptions = {
-      data: [result, data2],
+      data: [assembleOptionsDataForRoundAngle(data1, isGroup), data2],
       xField: 'field',
       yField: ['value', 'valueExt'], //这里不能设置成一样的
       appendPadding: getPadding(chart),
@@ -315,21 +299,9 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       tempOption.geometryOptions[1].smooth = smooth
       tempOption.geometryOptions[1].point = point
       tempOption.geometryOptions[1].lineStyle = lineStyle
-
-      if (['roundAngle', 'topRoundAngle'].includes(s.radiusColumnBar)) {
-        const radius = Array(2).fill(s.columnBarRightAngleRadius)
-        const isTopRound = s.radiusColumnBar === 'topRoundAngle'
-        tempOption.geometryOptions[0].columnStyle = datum => {
-          if (isTopRound && datum.isFirst && datum.isLast) {
-            return { radius }
-          }
-          if (!isTopRound && datum.isFirst && datum.isLast) {
-            return { radius: [...radius, ...radius] }
-          }
-          if (datum.isFirst || (!isTopRound && datum.isLast)) {
-            return { radius: datum.isLast ? [0, 0, ...radius] : radius }
-          }
-        }
+      tempOption.geometryOptions[0] = {
+        ...tempOption.geometryOptions[0],
+        ...configRoundAngle(s, 'columnStyle')
       }
     }
 
