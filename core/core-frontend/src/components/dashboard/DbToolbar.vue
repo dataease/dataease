@@ -41,6 +41,7 @@ import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import {
   canvasSave,
+  canvasSaveWithParams,
   checkCanvasChangePre,
   findAllViewsId,
   initCanvasData
@@ -259,7 +260,7 @@ const saveResource = (checkParams?) => {
       useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
     })
     try {
-      canvasSave(() => {
+      canvasSaveWithParams(checkParams, () => {
         snapshotStore.resetStyleChangeTimes()
         let url = window.location.href
         url = url.replace(/(#\/[^?]*)(?:\?[^#]*)?/, `$1?resourceId=${dvInfo.value.id}`)

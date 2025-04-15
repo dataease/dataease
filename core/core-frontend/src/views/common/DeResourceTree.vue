@@ -687,7 +687,7 @@ defineExpose({
             </el-icon>
           </el-tooltip>
 
-          <el-tooltip :content="newResourceLabel" placement="top">
+          <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
             <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
               <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
                 <Icon name="icon_file-add_outlined"

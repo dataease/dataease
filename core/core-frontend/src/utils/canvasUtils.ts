@@ -568,6 +568,10 @@ export function checkCanvasChangePre(callBack) {
 }
 
 export async function canvasSave(callBack) {
+  await canvasSaveWithParams(null, callBack)
+}
+
+export async function canvasSaveWithParams(params, callBack) {
   dvMainStore.removeGroupArea()
   const componentDataToSave = cloneDeep(componentData.value)
   componentDataToSave.forEach(item => {
@@ -624,8 +628,9 @@ export async function canvasSave(callBack) {
   }
   method(canvasInfo).then(res => {
     if (method === updateCanvas) {
-      // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2
-      dvMainStore.updateDvInfoCall(res.data?.status, null, newContentId)
+      // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2 当存在传入状态时，则修改对应的传入状态
+      const status = params?.status ? params?.status : res.data?.status
+      dvMainStore.updateDvInfoCall(status, null, newContentId)
     } else {
       dvMainStore.updateDvInfoCall(0, res.data, newContentId)
     }

@@ -30,6 +30,7 @@ import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import {
   canvasSave,
+  canvasSaveWithParams,
   checkCanvasChangePre,
   cleanUrlAndSetDvId,
   findAllViewsId,
@@ -179,7 +180,7 @@ const saveResource = (checkParams?) => {
   if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     eventBus.emit('hideArea-canvas-main')
     nextTick(() => {
-      canvasSave(() => {
+      canvasSaveWithParams(checkParams, () => {
         snapshotStore.resetStyleChangeTimes()
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         let url = window.location.href
@@ -498,7 +499,7 @@ const fullScreenPreview = () => {
         </el-button>
         <el-dropdown
           :disabled="dvInfo.status === 0"
-          popper-class="menu-outer-dv_popper"
+          popper-class="menu-outer-dv_popper-toolbar"
           trigger="hover"
         >
           <el-button
@@ -698,7 +699,7 @@ const fullScreenPreview = () => {
 </style>
 
 <style lang="less">
-.menu-outer-dv_popper {
+.menu-outer-dv_popper-toolbar {
   border: 1px solid rgba(67, 67, 67, 1) !important;
   background-color: rgba(41, 41, 41, 1) !important;
   .ed-dropdown-menu {
