@@ -3,7 +3,7 @@ import { Base64 } from 'js-base64'
 const originNameHandle = (arr = []) => {
   arr.forEach(ele => {
     if (ele.extField === 2) {
-      ele.originName = Base64.encodeURI(ele.originName)
+      ele.originName = Base64.encode(ele.originName)
     }
   })
 }

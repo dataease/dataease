@@ -63,7 +63,7 @@ const sqlNode = ref<SqlNode>()
 const allfields = inject('allfields') as Ref
 
 const getNodeField = ({ datasourceId, id, info, tableName, type, currentDsFields }) => {
-  return getTableField({ datasourceId, id, info, tableName, type })
+  return getTableField({ datasourceId, id, info, tableName, type, isCross: isCross.value })
     .then(res => {
       const idOriginNameMap = allfields.value.reduce((pre, next) => {
         pre[`${next.datasetTableId}${next.originName}`] = next.id

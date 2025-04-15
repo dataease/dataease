@@ -218,6 +218,7 @@ service.interceptors.response.use(
     if (!error?.response) {
       return Promise.reject(error)
     }
+
     if (error?.response.status === 413) {
       ElMessage({
         type: 'error',
@@ -256,6 +257,9 @@ service.interceptors.response.use(
     }
     if (header.has('DE-FORBIDDEN-FLAG')) {
       showMsg('当前用户权限配置已变更，请刷新页面', '-changed-')
+    }
+    if (error?.response.status === 400) {
+      return Promise.reject(error)
     }
     return Promise.resolve()
   }
