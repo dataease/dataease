@@ -69,17 +69,10 @@ public class NumericalChartHandler extends DefaultChartHandler {
             String summary = (String) maxField.get("summary");
             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(id);
             if (ObjectUtils.isNotEmpty(datasetTableField)) {
-                boolean isText = datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5;
-                if (isText && !StringUtils.containsIgnoreCase(summary, "count")) {
-                    DEException.throwException(Translator.get("i18n_gauge_field_change"));
-                }
                 ChartViewFieldDTO dto = new ChartViewFieldDTO();
                 BeanUtils.copyBean(dto, datasetTableField);
-                // 文本类型的计算字段时，判断originName是否包含表达式，如果包含，这里取消汇总，后续sql中会有默认表达式count,否则将会套一层count导致报错
-                if (isText) {
-                    String textSummary = (dto.getExtField() == 2 && StringUtils.isNotEmpty(dto.getOriginName()) &&
-                            Pattern.compile("^(.*?)\\(\\[").matcher(dto.getOriginName()).find()) ? "" : "count";
-                    dto.setSummary(textSummary);
+                if (StringUtils.isEmpty(dto.getSummary())) {
+                    dto.setSummary(summary);
                 }
                 return dto;
             } else {
