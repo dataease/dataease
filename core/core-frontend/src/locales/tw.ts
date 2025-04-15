@@ -2992,7 +2992,7 @@ export default {
     query: '查詢',
     carousel: '輪播',
     carousel_time: '輪播時間（秒）',
-    carousel_tips: '輪播退出編輯模式才開生效',
+    carousel_tips: '輪播退出編輯模式開始生效',
     carousel_tips2: '啟用條件樣式後，輪播失效',
     background: '背景',
     tab_title: 'Tab標籤',

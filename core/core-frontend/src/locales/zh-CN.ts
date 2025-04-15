@@ -2999,7 +2999,7 @@ export default {
     query: '查询',
     carousel: '轮播',
     carousel_time: '轮播时间（秒）',
-    carousel_tips: '轮播退出编辑模式才开生效',
+    carousel_tips: '轮播退出编辑模式开始生效',
     carousel_tips2: '启用条件样式后，轮播失效',
     background: '背景',
     tab_title: 'Tab标签',

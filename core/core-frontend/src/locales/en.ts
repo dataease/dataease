@@ -3076,7 +3076,7 @@ export default {
     query: 'Query',
     carousel: 'Carousel',
     carousel_time: 'Carousel Time(s)',
-    carousel_tips: 'Carousel will only take effect after exiting edit mode',
+    carousel_tips: 'Carousel takes effect after exiting edit mode',
     carousel_tips2: 'Carousel will be disabled after enabling conditional styling',
     background: 'Background',
     tab_title: 'Tab Title',
