@@ -127,7 +127,6 @@ public class ChartDataServer implements ChartDataApi {
             } else {
                 viewDTO.setResultCount(viewLimit);
             }
-            chartViewInfo = getData(viewDTO);
             if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(viewDTO.getDataFrom())) {
                 chartViewInfo = extendDataManage.getChartDataInfo(viewDTO.getId(), viewDTO);
             } else {
