@@ -289,6 +289,11 @@ const { emitter } = useEmitt()
 const unMountSelect = shallowRef([])
 onBeforeMount(() => {
   unMountSelect.value = list.value.map(ele => ele.id)
+  ;(props.element.cascade || []).forEach(ele => {
+    ele.forEach(item => {
+      item.currentSelectValue = item.selectValue
+    })
+  })
 })
 
 const releaseSelect = id => {
