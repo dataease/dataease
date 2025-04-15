@@ -511,7 +511,7 @@ public class ExportCenterManage implements BaseExportApi {
                     dsList.add(next.getValue().getType());
                 }
                 boolean needOrder = Utils.isNeedOrder(dsList);
-                boolean crossDs = Utils.isCrossDs(dsMap);
+                boolean crossDs = dto.getIsCross();
                 if (!crossDs) {
                     if (datasetDataManage.notFullDs.contains(dsMap.entrySet().iterator().next().getValue().getType()) && (boolean) sqlMap.get("isFullJoin")) {
                         DEException.throwException(Translator.get("i18n_not_full"));

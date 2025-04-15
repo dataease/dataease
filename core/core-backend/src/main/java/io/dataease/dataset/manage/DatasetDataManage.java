@@ -461,34 +461,45 @@ public class DatasetDataManage {
 
         // sql 作为临时表，外层加上limit
         String sql;
-
-        if (Utils.isNeedOrder(List.of(datasourceSchemaDTO.getType()))) {
-            // 先根据sql获取表字段
-            String sqlField = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
-
-            sqlField = provider.transSqlDialect(sqlField, datasourceRequest.getDsList());
-            // replace placeholder
-            sqlField = provider.replaceTablePlaceHolder(sqlField, originSql);
-            datasourceRequest.setQuery(sqlField);
-
-            // 获取数据源表的原始字段
-            List<TableField> list = provider.fetchTableField(datasourceRequest);
-            if (ObjectUtils.isEmpty(list)) {
-                return null;
-            }
-            sql = SQLUtils.buildOriginPreviewSqlWithOrderBy(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0, String.format(SQLConstants.FIELD_DOT_FIX, list.get(0).getOriginName()) + " ASC ");
-        } else {
-            sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0);
-        }
         if (dto.getIsCross()) {
             DatasetTableDTO currentDs = new DatasetTableDTO();
             BeanUtils.copyBean(currentDs, dto);
             currentDs.setType("sql");
-
-            // get datasource and schema,put map
             String tableSchema = datasetSQLManage.putObj2Map(dsMap, currentDs, dto.getIsCross());
-            sql = SqlUtils.addSchema(sql, tableSchema);
+            sql = SqlUtils.addSchema(originSql, tableSchema);
+            if (Utils.isNeedOrder(List.of(datasourceSchemaDTO.getType()))) {
+                // 先根据sql获取表字段
+                String sqlField = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
+                datasourceRequest.setQuery(sqlField);
+
+                // 获取数据源表的原始字段
+                List<TableField> list = provider.fetchTableField(datasourceRequest);
+                if (ObjectUtils.isEmpty(list)) {
+                    return null;
+                }
+                sql = SQLUtils.buildOriginPreviewSqlWithOrderBy(sql, 100, 0, String.format(SQLConstants.FIELD_DOT_FIX, list.get(0).getOriginName()) + " ASC ");
+            } else {
+                sql = SQLUtils.buildOriginPreviewSql(sql, 100, 0);
+            }
         } else {
+            if (Utils.isNeedOrder(List.of(datasourceSchemaDTO.getType()))) {
+                // 先根据sql获取表字段
+                String sqlField = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
+
+                sqlField = provider.transSqlDialect(sqlField, datasourceRequest.getDsList());
+                // replace placeholder
+                sqlField = provider.replaceTablePlaceHolder(sqlField, originSql);
+                datasourceRequest.setQuery(sqlField);
+
+                // 获取数据源表的原始字段
+                List<TableField> list = provider.fetchTableField(datasourceRequest);
+                if (ObjectUtils.isEmpty(list)) {
+                    return null;
+                }
+                sql = SQLUtils.buildOriginPreviewSqlWithOrderBy(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0, String.format(SQLConstants.FIELD_DOT_FIX, list.get(0).getOriginName()) + " ASC ");
+            } else {
+                sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0);
+            }
             sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             // replace placeholder
             sql = provider.replaceTablePlaceHolder(sql, originSql);
