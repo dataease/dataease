@@ -43,6 +43,7 @@ const props = defineProps({
 const primaryColor = computed(() => {
   return appearanceStore.themeColor === 'custom' ? appearanceStore.customColor : '#3370FF'
 })
+const isCross = inject<Ref>('isCross')
 
 const iconName = {
   left: icon_leftAssociation,
@@ -230,7 +231,8 @@ const saveSqlNode = (val: SqlNode, cb) => {
         id: id,
         info: state.visualNode.info,
         tableName,
-        type: 'sql'
+        type: 'sql',
+        isCross: isCross.value
       }).then(res => {
         nodeField.value = res as unknown as Field[]
         nodeField.value.forEach(ele => {
@@ -273,7 +275,8 @@ const closeSqlNode = () => {
       id,
       info,
       tableName,
-      type: 'sql'
+      type: 'sql',
+      isCross: isCross.value
     }).then(res => {
       const idOriginNameMap = allfields.value.reduce((pre, next) => {
         pre[`${next.datasetTableId}${next.originName}`] = next.id
@@ -914,6 +917,7 @@ const drop_handler = ev => {
       id: currentNode.value.id,
       info: currentNode.value.info,
       tableName,
+      isCross: isCross.value,
       type
     })
       .then(res => {

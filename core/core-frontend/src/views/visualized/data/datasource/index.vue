@@ -205,7 +205,7 @@ const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
   dsTableDataLoading.value = true
-  getTableField({ tableName: row.tableName, datasourceId: nodeInfo.id })
+  getTableField({ tableName: row.tableName, datasourceId: nodeInfo.id, isCross: false })
     .then(res => {
       state.dsTableData = res.data
     })

@@ -24,7 +24,9 @@ import {
   onBeforeUnmount,
   shallowRef,
   computed,
-  h
+  inject,
+  h,
+  Ref
 } from 'vue'
 import { debounce } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -100,7 +102,7 @@ const state = reactive({
 })
 
 const datasourceTableData = shallowRef([])
-
+const isCross = inject<Ref>('isCross')
 const paginationConfig = reactive({
   currentPage: 1,
   pageSize: 10,
@@ -260,7 +262,13 @@ const getNodeField = ({ datasourceId, tableName }) => {
     table: tableName,
     sql: ''
   }
-  getTableField({ datasourceId, info: JSON.stringify(info), tableName, type: 'db' })
+  getTableField({
+    datasourceId,
+    info: JSON.stringify(info),
+    tableName,
+    type: 'db',
+    isCross: isCross.value
+  })
     .then(res => {
       gridData.value = res as unknown as Field[]
     })
@@ -418,6 +426,7 @@ const getSQLPreview = () => {
   parseVariable()
   dataPreviewLoading.value = true
   getPreviewSql({
+    isCross: isCross.value,
     sql: Base64.encode((sql = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString()))),
     datasourceId: sqlNode.value.datasourceId,
     sqlVariableDetails: JSON.stringify(state.variables)

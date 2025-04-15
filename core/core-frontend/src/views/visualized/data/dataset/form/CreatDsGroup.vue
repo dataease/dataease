@@ -18,6 +18,7 @@ import nothingTree from '@/assets/img/nothing-tree.png'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { filterFreeFolder } from '@/utils/utils'
 export interface Tree {
+  isCross: boolean
   name: string
   value?: string | number
   id: string | number
@@ -47,6 +48,7 @@ const treeRef = ref()
 const filterText = ref('')
 let union = []
 let allfields = []
+let isCross = false
 const datasetForm = reactive({
   pid: '',
   name: ''
@@ -156,6 +158,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   if (type === 'dataset') {
     union = data.union
     allfields = data.allfields
+    isCross = data.isCross
   }
   if (data.id) {
     const request = { leaf: false, weight: 7 } as BusiTreeRequest
@@ -264,6 +267,7 @@ const saveDataset = () => {
       if (nodeType.value === 'dataset') {
         params.union = union
         params.allFields = allfields
+        params.isCross = isCross
       }
       if (cmd.value === 'move' && !checkPid(params.pid)) {
         return

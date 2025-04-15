@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, inject, type Ref } from 'vue'
 import UnionFieldList from './UnionFieldList.vue'
 import UnionItemEdit from './UnionItemEdit.vue'
 import type { Field, NodeType, UnionType, Node } from './util'
 import { getTableField } from '@/api/dataset'
 import { cloneDeep } from 'lodash-es'
+
+const isCross = inject<Ref>('isCross')
 
 const changeParentFields = val => {
   parent.currentDsFields = val
@@ -69,10 +71,15 @@ const initState = () => {
 }
 
 const getParams = (obj: Node) => {
-  return ['datasourceId', 'id', 'info', 'tableName', 'type'].reduce((pre, next) => {
-    pre[next] = obj[next]
-    return pre
-  }, {})
+  return ['datasourceId', 'id', 'info', 'tableName', 'type'].reduce(
+    (pre, next) => {
+      pre[next] = obj[next]
+      return pre
+    },
+    {
+      isCross: isCross.value
+    }
+  )
 }
 const getFields = async () => {
   const [n, p] = props.editArr as Node[]

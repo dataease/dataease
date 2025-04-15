@@ -11,6 +11,7 @@ import { nameTrim } from '@/utils/utils'
 export interface DatasetOrFolder {
   name: string
   action?: string
+  isCross?: boolean
   id?: number | string
   pid?: number | string
   nodeType: 'folder' | 'dataset'
@@ -63,6 +64,7 @@ export interface Dataset {
   id: string
   pid: string
   name: string
+  isCross?: boolean
   union?: Array<{}>
   allFields?: Array<{}>
 }
