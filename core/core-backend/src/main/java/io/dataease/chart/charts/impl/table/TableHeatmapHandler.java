@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl.table;
 
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.DefaultChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.engine.sql.SQLProvider;
@@ -55,6 +56,7 @@ public class TableHeatmapHandler extends DefaultChartHandler {
         boolean needOrder = Utils.isNeedOrder(dsList);
         boolean crossDs = Utils.isCrossDs(dsMap);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setIsCross(((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross());
         datasourceRequest.setDsList(dsMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);

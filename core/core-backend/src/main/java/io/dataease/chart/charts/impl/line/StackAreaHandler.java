@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl.line;
 
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.engine.utils.Utils;
@@ -90,7 +91,7 @@ public class StackAreaHandler extends YoyChartHandler {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         var result = (T) super.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
         try {
             //如果有同环比过滤,应该用原始sql
@@ -100,11 +101,12 @@ public class StackAreaHandler extends YoyChartHandler {
             var assistFields = getAssistFields(dynamicAssistFields, yAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
+                req.setIsCross(crossDs);
                 req.setDsList(dsMap);
 
                 List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
-                    var assistSql = assistSQL(originSql, assistFields, dsMap);
+                    var assistSql = assistSQL(originSql, assistFields, dsMap, crossDs);
                     req.setQuery(assistSql);
                     logger.debug("calcite assistSql sql: " + assistSql);
                     var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
@@ -114,7 +116,7 @@ public class StackAreaHandler extends YoyChartHandler {
 
                 List<ChartSeniorAssistDTO> assistsOriginList = dynamicAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assistsOriginList)) {
-                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
+                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap, crossDs);
                     req.setQuery(assistSqlOriginList);
                     logger.debug("calcite assistSql sql origin list: " + assistSqlOriginList);
                     var assistDataOriginList = (List<String[]>) provider.fetchResultField(req).get("data");

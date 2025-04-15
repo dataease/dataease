@@ -158,7 +158,7 @@ public class CalciteProvider extends Provider {
     @Override
     public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
         // 不跨数据源
-        if (datasourceRequest.getDsList().size() == 1) {
+        if (datasourceRequest.getIsCross() == null || !datasourceRequest.getIsCross()) {
             return jdbcFetchResultField(datasourceRequest);
         }
 
@@ -275,6 +275,33 @@ public class CalciteProvider extends Provider {
 
     @Override
     public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
+        if (datasourceRequest.getIsCross() != null && datasourceRequest.getIsCross()) {
+            List<TableField> datasetTableFields = new ArrayList<>();
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            Connection connection = take();
+            try {
+                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+                statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
+                resultSet = statement.executeQuery();
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    TableField tableField = new TableField();
+                    tableField.setOriginName(metaData.getColumnLabel(i));
+                    tableField.setType(metaData.getColumnTypeName(i));
+                    tableField.setPrecision(metaData.getPrecision(i));
+                    int deType = FieldUtils.transType2DeType(tableField.getType());
+                    tableField.setDeExtractType(deType);
+                    tableField.setDeType(deType);
+                    tableField.setScale(metaData.getScale(i));
+                    datasetTableFields.add(tableField);
+                }
+            } catch (Exception e) {
+                throw DEException.getException(e.getMessage());
+            }
+            return datasetTableFields;
+        }
         List<TableField> datasetTableFields = new ArrayList<>();
         DatasourceSchemaDTO datasourceSchemaDTO = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
         datasourceRequest.setDatasource(datasourceSchemaDTO);

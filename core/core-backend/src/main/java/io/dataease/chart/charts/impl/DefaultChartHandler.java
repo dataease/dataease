@@ -1,6 +1,7 @@
 package io.dataease.chart.charts.impl;
 
 import com.beust.jcommander.Strings;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
@@ -109,8 +110,9 @@ public class DefaultChartHandler extends AbstractChartPlugin {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setIsCross(crossDs);
         datasourceRequest.setDsList(dsMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
@@ -384,7 +386,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         return conditionField;
     }
 
-    protected String assistSQL(String sql, List<ChartViewFieldDTO> assistFields, Map<Long, DatasourceSchemaDTO> dsMap) {
+    protected String assistSQL(String sql, List<ChartViewFieldDTO> assistFields, Map<Long, DatasourceSchemaDTO> dsMap, boolean crossDs) {
         // get datasource prefix and suffix
         String dsType = dsMap.entrySet().iterator().next().getValue().getType();
         String prefix = "";
@@ -407,7 +409,6 @@ public class DefaultChartHandler extends AbstractChartPlugin {
             }
         }
 
-        boolean crossDs = Utils.isCrossDs(dsMap);
         List<String> fieldList = new ArrayList<>();
         for (int i = 0; i < assistFields.size(); i++) {
             ChartViewFieldDTO dto = assistFields.get(i);
@@ -423,7 +424,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         return "SELECT " + Strings.join(",", fieldList) + " FROM (" + sql + ") tmp";
     }
 
-    protected String assistSQLOriginList(String sql, List<ChartViewFieldDTO> assistFields, Map<Long, DatasourceSchemaDTO> dsMap) {
+    protected String assistSQLOriginList(String sql, List<ChartViewFieldDTO> assistFields, Map<Long, DatasourceSchemaDTO> dsMap, boolean crossDs) {
         // get datasource prefix and suffix
         String dsType = dsMap.entrySet().iterator().next().getValue().getType();
         String prefix = "";
@@ -446,7 +447,6 @@ public class DefaultChartHandler extends AbstractChartPlugin {
             }
         }
 
-        boolean crossDs = Utils.isCrossDs(dsMap);
         List<String> fieldList = new ArrayList<>();
         for (int i = 0; i < assistFields.size(); i++) {
             ChartViewFieldDTO dto = assistFields.get(i);

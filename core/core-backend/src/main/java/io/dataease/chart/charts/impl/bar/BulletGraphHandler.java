@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl.bar;
 
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -44,6 +45,7 @@ public class BulletGraphHandler extends YoyChartHandler {
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         return ChartDataBuild.transChartData(xAxis, yAxis, view, data, isDrill);
     }
+
     @Override
     public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
@@ -60,8 +62,9 @@ public class BulletGraphHandler extends YoyChartHandler {
             var assistFields = getAssistFields(dynamicAssistFields, yAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
+                req.setIsCross(((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross());
                 req.setDsList(dsMap);
-                var assistSql = assistSQL(originSql, assistFields, dsMap);
+                var assistSql = assistSQL(originSql, assistFields, dsMap, ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross());
                 req.setQuery(assistSql);
                 logger.debug("calcite assistSql sql: " + assistSql);
                 var assistData = (List<String[]>) provider.fetchResultField(req).get("data");

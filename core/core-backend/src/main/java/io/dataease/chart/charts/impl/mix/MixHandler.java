@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl.mix;
 
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.engine.trans.ExtWhere2Str;
@@ -83,7 +84,7 @@ public class MixHandler extends YoyChartHandler {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         var leftResult = (T) super.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
         var dynamicAssistFields = getDynamicAssistFields(view);
         try {
@@ -94,11 +95,12 @@ public class MixHandler extends YoyChartHandler {
             var assistFields = getAssistFields(leftAssistFields, yAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
+                req.setIsCross(crossDs);
                 req.setDsList(dsMap);
 
                 List<ChartSeniorAssistDTO> assists = leftAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
-                    var assistSql = assistSQL(originSql, assistFields, dsMap);
+                    var assistSql = assistSQL(originSql, assistFields, dsMap, crossDs);
                     req.setQuery(assistSql);
                     logger.debug("calcite assistSql sql: " + assistSql);
                     var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
@@ -108,7 +110,7 @@ public class MixHandler extends YoyChartHandler {
 
                 List<ChartSeniorAssistDTO> assistsOriginList = leftAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assistsOriginList)) {
-                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
+                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap, crossDs);
                     req.setQuery(assistSqlOriginList);
                     logger.debug("calcite assistSql sql origin list: " + assistSqlOriginList);
                     var assistDataOriginList = (List<String[]>) provider.fetchResultField(req).get("data");
@@ -175,11 +177,12 @@ public class MixHandler extends YoyChartHandler {
             var assistFields = getAssistFields(rightAssistFields, yAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
+                req.setIsCross(crossDs);
                 req.setDsList(dsMap);
 
                 List<ChartSeniorAssistDTO> assists = rightAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
-                    var assistSql = assistSQL(originSql, assistFields, dsMap);
+                    var assistSql = assistSQL(originSql, assistFields, dsMap, crossDs);
                     req.setQuery(assistSql);
                     logger.debug("calcite assistSql sql: " + assistSql);
                     var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
@@ -189,7 +192,7 @@ public class MixHandler extends YoyChartHandler {
 
                 List<ChartSeniorAssistDTO> assistsOriginList = rightAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assistsOriginList)) {
-                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
+                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap, crossDs);
                     req.setQuery(assistSqlOriginList);
                     logger.debug("calcite assistSql sql origin list: " + assistSqlOriginList);
                     var assistDataOriginList = (List<String[]>) provider.fetchResultField(req).get("data");

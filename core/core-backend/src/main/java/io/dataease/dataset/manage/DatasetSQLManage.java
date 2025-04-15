@@ -7,6 +7,8 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
 import io.dataease.dataset.constant.DatasetTableType;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.utils.DatasetTableTypeConstants;
 import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
@@ -69,6 +71,10 @@ public class DatasetSQLManage {
     private RowPermissionsApi rowPermissionsApi;
     @Resource
     private DataSourceManage dataSourceManage;
+    @Resource
+    private DatasetGroupManage datasetGroupManage;
+    @Resource
+    private CoreDatasetGroupMapper coreDatasetGroupMapper;
 
     private RowPermissionsApi getRowPermissionsApi() {
         return rowPermissionsApi;
@@ -129,8 +135,7 @@ public class DatasetSQLManage {
         if (ObjectUtils.isEmpty(union)) {
             return null;
         }
-        Set<Long> allDs = getAllDs(union);
-        boolean isCross = allDs.size() > 1;
+        boolean isCross = dataTableInfoDTO.getIsCross();
 
         DatasetTableDTO currentDs = union.get(0).getCurrentDs();
 
@@ -493,7 +498,7 @@ public class DatasetSQLManage {
         return tableObj;
     }
 
-    private String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, boolean isCross) throws Exception {
+    public String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, boolean isCross) {
         // 通过datasource id校验数据源权限
         BusiPerCheckDTO dto = new BusiPerCheckDTO();
         dto.setId(ds.getDatasourceId());
@@ -547,5 +552,17 @@ public class DatasetSQLManage {
             }
         }
         return schemaAlias;
+    }
+
+    public void datasetCrossDefault() {
+        List<DatasetGroupInfoDTO> allList = datasetGroupManage.getAllList();
+        for (DatasetGroupInfoDTO ele : allList) {
+            Set<Long> allDs = getAllDs(ele.getUnion());
+            boolean isCross = allDs.size() > 1;
+            ele.setIsCross(isCross);
+            CoreDatasetGroup record = new CoreDatasetGroup();
+            BeanUtils.copyBean(record, ele);
+            coreDatasetGroupMapper.updateById(record);
+        }
     }
 }

@@ -11,4 +11,5 @@ public class PreviewSqlDTO {
     private String sql;
     private Long datasourceId;
     private String sqlVariableDetails;
+    private Boolean isCross;
 }

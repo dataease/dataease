@@ -1,6 +1,7 @@
 package io.dataease.chart.charts.impl.table;
 
 import io.dataease.api.chart.dto.PageInfo;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.DefaultChartHandler;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
@@ -73,8 +74,9 @@ public class TableInfoHandler extends DefaultChartHandler {
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
             dsList.add(next.getValue().getType());
         }
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setIsCross(crossDs);
         datasourceRequest.setDsList(dsMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
@@ -153,7 +155,7 @@ public class TableInfoHandler extends DefaultChartHandler {
 
                 List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
-                    var assistSql = assistSQL(originSql, assistFields, dsMap);
+                    var assistSql = assistSQL(originSql, assistFields, dsMap, crossDs);
                     var tmpSql = provider.rebuildSQL(assistSql, sqlMeta, crossDs, dsMap);
                     req.setQuery(tmpSql);
                     logger.debug("calcite assistSql sql: " + tmpSql);
@@ -164,7 +166,7 @@ public class TableInfoHandler extends DefaultChartHandler {
 
                 List<ChartSeniorAssistDTO> assistsOriginList = dynamicAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assistsOriginList)) {
-                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap);
+                    var assistSqlOriginList = assistSQLOriginList(originSql, assistFields, dsMap, crossDs);
                     var tmpSql = provider.rebuildSQL(assistSqlOriginList, sqlMeta, crossDs, dsMap);
                     req.setQuery(tmpSql);
                     logger.debug("calcite assistSql sql origin list: " + tmpSql);

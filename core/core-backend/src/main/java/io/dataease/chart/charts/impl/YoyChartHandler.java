@@ -2,6 +2,7 @@ package io.dataease.chart.charts.impl;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.utils.Utils;
@@ -74,7 +75,7 @@ public class YoyChartHandler extends DefaultChartHandler {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         // 这里拿到的可能有一年前的数据
         var expandedResult = (T) super.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
         // 检查同环比过滤，拿到实际数据
@@ -86,6 +87,7 @@ public class YoyChartHandler extends DefaultChartHandler {
             var originSql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             originSql = provider.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
             var request = new DatasourceRequest();
+            request.setIsCross(crossDs);
             request.setDsList(dsMap);
             request.setQuery(originSql);
             logger.debug("calcite yoy sql: " + originSql);

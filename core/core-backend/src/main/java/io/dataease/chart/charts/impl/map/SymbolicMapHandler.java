@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl.map;
 
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.GroupChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.dataset.manage.DatasetDataManage;
@@ -60,6 +61,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
         boolean needOrder = Utils.isNeedOrder(dsList);
         boolean crossDs = Utils.isCrossDs(dsMap);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setIsCross(((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross());
         datasourceRequest.setDsList(dsMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
@@ -102,6 +104,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
             logger.debug("calcite data preview sql: " + querySQL);
             // 调用数据源的calcite获得data
             DatasourceRequest datasourceRequest1 = new DatasourceRequest();
+            datasourceRequest1.setIsCross(((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross());
             datasourceRequest1.setQuery(querySQL);
             datasourceRequest1.setDsList(dsMap);
             detailData = (List<String[]>) provider.fetchResultField(datasourceRequest1).get("data");

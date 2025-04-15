@@ -613,4 +613,38 @@ public class DatasetGroupManage {
         }
         return result;
     }
+
+    public List<DatasetGroupInfoDTO> getAllList() {
+        List<CoreDatasetGroup> coreDatasetGroupList = coreDatasetGroupMapper.selectList(new QueryWrapper<>());
+        if (CollectionUtils.isEmpty(coreDatasetGroupList)) {
+            return new ArrayList<>();
+        }
+        List<DatasetGroupInfoDTO> list = new ArrayList<>();
+        for (CoreDatasetGroup coreDatasetGroup : coreDatasetGroupList) {
+            DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
+            BeanUtils.copyBean(dto, coreDatasetGroup);
+            dto.setUnionSql(null);
+            if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
+                List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
+                });
+                dto.setUnion(unionDTOList);
+
+                // 获取field
+                List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(coreDatasetGroup.getId());
+                List<DatasetTableFieldDTO> allFields = dsFields.stream().map(ele -> {
+                    DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
+                    BeanUtils.copyBean(datasetTableFieldDTO, ele);
+                    datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
+                    return datasetTableFieldDTO;
+                }).collect(Collectors.toList());
+
+                DatasetUtils.listEncode(allFields);
+
+                dto.setAllFields(allFields);
+
+                list.add(dto);
+            }
+        }
+        return list;
+    }
 }

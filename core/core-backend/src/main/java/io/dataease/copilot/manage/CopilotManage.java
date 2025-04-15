@@ -191,6 +191,7 @@ public class CopilotManage {
         // 调用数据源的calcite获得data
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
+        datasourceRequest.setIsCross(coreDatasetGroup.getIsCross());
         String s = "";
         Map<String, Object> data;
         try {

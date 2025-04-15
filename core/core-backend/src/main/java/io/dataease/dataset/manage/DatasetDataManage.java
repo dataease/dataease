@@ -16,6 +16,7 @@ import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.FieldUtils;
+import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -115,6 +116,7 @@ public class DatasetDataManage {
             Provider provider = ProviderFactory.getProvider(coreDatasource.getType());
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setIsCross(datasetTableDTO.getIsCross());
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             String sql;
             if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
@@ -122,12 +124,18 @@ public class DatasetDataManage {
                 sql = TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0";
                 // replace schema alias, trans dialect
                 Map map = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Map.class);
-                if (ObjectUtils.isNotEmpty(map.get("schema"))) {
-                    sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, map.get("schema").toString());
+                if (!datasourceRequest.getIsCross()) {
+                    if (ObjectUtils.isNotEmpty(map.get("schema"))) {
+                        sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, map.get("schema").toString());
+                    } else {
+                        sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
+                    }
+                    sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
                 } else {
                     sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
+                    String tableSchema = datasetSQLManage.putObj2Map(datasourceRequest.getDsList(), datasetTableDTO, datasourceRequest.getIsCross());
+                    sql = SqlUtils.addSchema(sql, tableSchema);
                 }
-                sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             } else {
                 // parser sql params and replace default value
                 String s = new String(Base64.getDecoder().decode(tableInfoDTO.getSql()));
@@ -135,10 +143,15 @@ public class DatasetDataManage {
                 originSql = provider.replaceComment(originSql);
                 // add sql table schema
 
-                sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
-                sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
-                // replace placeholder
-                sql = provider.replaceTablePlaceHolder(sql, originSql);
+                if (!datasourceRequest.getIsCross()) {
+                    sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
+                    sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
+                    // replace placeholder
+                    sql = provider.replaceTablePlaceHolder(sql, originSql);
+                } else {
+                    String tableSchema = datasetSQLManage.putObj2Map(datasourceRequest.getDsList(), datasetTableDTO, datasourceRequest.getIsCross());
+                    sql = SqlUtils.addSchema(originSql, tableSchema);
+                }
             }
             datasourceRequest.setQuery(sql.replaceAll("\r\n", " ")
                     .replaceAll("\n", " "));
@@ -225,7 +238,7 @@ public class DatasetDataManage {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = datasetGroupInfoDTO.getIsCross();
         if (!crossDs) {
             if (notFullDs.contains(dsMap.entrySet().iterator().next().getValue().getType()) && (boolean) sqlMap.get("isFullJoin")) {
                 DEException.throwException(Translator.get("i18n_not_full"));
@@ -264,6 +277,7 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
+        datasourceRequest.setIsCross(crossDs);
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
 
         Map<String, Object> map = new LinkedHashMap<>();
@@ -349,7 +363,7 @@ public class DatasetDataManage {
     public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO, String s, ChartExtRequest request) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, request);
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = datasetGroupInfoDTO.getIsCross();
         String sql;
         if (StringUtils.isEmpty(s)) {
             sql = (String) sqlMap.get("sql");
@@ -367,6 +381,7 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
+        datasourceRequest.setIsCross(crossDs);
 
         Provider provider;
         if (crossDs) {
@@ -435,6 +450,7 @@ public class DatasetDataManage {
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
+        datasourceRequest.setIsCross(dto.getIsCross());
         Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
 
         // parser sql params and replace default value
@@ -464,9 +480,19 @@ public class DatasetDataManage {
         } else {
             sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0);
         }
-        sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
-        // replace placeholder
-        sql = provider.replaceTablePlaceHolder(sql, originSql);
+        if (dto.getIsCross()) {
+            DatasetTableDTO currentDs = new DatasetTableDTO();
+            BeanUtils.copyBean(currentDs, dto);
+            currentDs.setType("sql");
+
+            // get datasource and schema,put map
+            String tableSchema = datasetSQLManage.putObj2Map(dsMap, currentDs, dto.getIsCross());
+            sql = SqlUtils.addSchema(sql, tableSchema);
+        } else {
+            sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
+            // replace placeholder
+            sql = provider.replaceTablePlaceHolder(sql, originSql);
+        }
 
         logger.debug("calcite data preview sql: " + sql);
         datasourceRequest.setQuery(sql);
@@ -568,7 +594,7 @@ public class DatasetDataManage {
         allFields.addAll(datasetGroupInfoDTO.getAllFields());
 
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = datasetGroupInfoDTO.getIsCross();
         if (!crossDs) {
             sql = Utils.replaceSchemaAlias(sql, dsMap);
         }
@@ -613,6 +639,7 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
+        datasourceRequest.setIsCross(crossDs);
 
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         List<String[]> dataList = (List<String[]>) data.get("data");
@@ -675,7 +702,7 @@ public class DatasetDataManage {
             allFields.addAll(datasetGroupInfoDTO.getAllFields());
 
             Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-            boolean crossDs = Utils.isCrossDs(dsMap);
+            boolean crossDs = datasetGroupInfoDTO.getIsCross();
             if (!crossDs) {
                 sql = Utils.replaceSchemaAlias(sql, dsMap);
             }
@@ -735,6 +762,7 @@ public class DatasetDataManage {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setQuery(querySQL);
             datasourceRequest.setDsList(dsMap);
+            datasourceRequest.setIsCross(crossDs);
 
             Map<String, Object> data = provider.fetchResultField(datasourceRequest);
             List<String[]> dataList = (List<String[]>) data.get("data");
@@ -800,7 +828,7 @@ public class DatasetDataManage {
         DatasetGroupInfoDTO datasetGroupInfoDTO = null;
         List<DatasetTableFieldDTO> fields = new ArrayList<>();
         Map<String, Object> sqlMap = null;
-        boolean crossDs = false;
+        boolean crossDs = datasetGroupInfoDTO.getIsCross();
         Map<Long, DatasourceSchemaDTO> dsMap = null;
 
         if (ObjectUtils.isNotEmpty(request.getSortId())) {
@@ -997,6 +1025,7 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
+        datasourceRequest.setIsCross(crossDs);
 
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         List<String[]> dataList = (List<String[]>) data.get("data");
@@ -1071,7 +1100,7 @@ public class DatasetDataManage {
         allFields.addAll(datasetGroupInfoDTO.getAllFields());
 
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = datasetGroupInfoDTO.getIsCross();
         if (!crossDs) {
             sql = Utils.replaceSchemaAlias(sql, dsMap);
         }
@@ -1132,6 +1161,7 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
+        datasourceRequest.setIsCross(crossDs);
 
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         List<String[]> rows = (List<String[]>) data.get("data");

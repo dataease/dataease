@@ -135,6 +135,7 @@ public class ChartDataManage {
         //计数字段
         dataeaseNames.add("*");
         AxisFormatResult formatResult = chartHandler.formatAxis(view);
+        formatResult.getContext().put("dataset", table);
         formatResult.getContext().put("desensitizationList", desensitizationList);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
@@ -372,7 +373,7 @@ public class ChartDataManage {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table, chartExtRequest);
         String sql = (String) sqlMap.get("sql");
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = table.getIsCross();
         if (!crossDs) {
             sql = Utils.replaceSchemaAlias(sql, dsMap);
         }
@@ -717,7 +718,7 @@ public class ChartDataManage {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
-        boolean crossDs = Utils.isCrossDs(dsMap);
+        boolean crossDs = table.getIsCross();
         if (!crossDs) {
             sql = Utils.replaceSchemaAlias(sql, dsMap);
         }
@@ -725,6 +726,7 @@ public class ChartDataManage {
         // 调用数据源的calcite获得data
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
+        datasourceRequest.setIsCross(crossDs);
 
         Provider provider;
         if (crossDs) {

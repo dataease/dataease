@@ -27,6 +27,7 @@ public class DatasourceRequest implements Serializable {
     private Map<Long, DatasourceSchemaDTO> dsList;
     private List<TableFieldWithValue> tableFieldWithValues;
     private  String token;
+    private Boolean isCross;
 
     public DatasourceRequest() {
     }
