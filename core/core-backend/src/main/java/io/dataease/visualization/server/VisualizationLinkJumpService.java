@@ -81,12 +81,12 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @DeLinkPermit
     //获取仪表板的跳转信息
     @Override
-    public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId,String resourceTable) {
+    public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId, String resourceTable) {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
         List<VisualizationLinkJumpDTO> resultLinkJumpList = null;
-        if(CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)){
+        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
             resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvIdSnapshot(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
-        }else{
+        } else {
             resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
         }
         Optional.ofNullable(resultLinkJumpList).orElse(new ArrayList<>()).forEach(resultLinkJump -> {
@@ -155,7 +155,12 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @DeLinkPermit("#p0.targetDvId")
     @Override
     public VisualizationLinkJumpBaseResponse queryTargetVisualizationJumpInfo(VisualizationLinkJumpBaseRequest request) {
-        List<VisualizationLinkJumpDTO> result = extVisualizationLinkJumpMapper.getTargetVisualizationJumpInfo(request);
+        List<VisualizationLinkJumpDTO> result = null;
+        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
+            result = extVisualizationLinkJumpMapper.getTargetVisualizationJumpInfoSnapshot(request);
+        } else {
+            result = extVisualizationLinkJumpMapper.getTargetVisualizationJumpInfo(request);
+        }
         return new VisualizationLinkJumpBaseResponse(null, Optional.ofNullable(result).orElse(new ArrayList<>()).stream().filter(item -> StringUtils.isNotEmpty(item.getSourceInfo())).collect(Collectors.toMap(VisualizationLinkJumpDTO::getSourceInfo, VisualizationLinkJumpDTO::getTargetInfoList)));
     }
 
@@ -174,7 +179,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             outParamsJumpInfo = new ArrayList<>();
             componentData = "[]";
         }
-        return new VisualizationComponentDTO(componentData,result,outParamsJumpInfo);
+        return new VisualizationComponentDTO(componentData, result, outParamsJumpInfo);
 
     }
 

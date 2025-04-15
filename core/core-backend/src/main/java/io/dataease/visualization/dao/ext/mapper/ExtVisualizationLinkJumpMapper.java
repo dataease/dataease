@@ -38,6 +38,8 @@ public interface ExtVisualizationLinkJumpMapper {
 
     List<VisualizationLinkJumpDTO> getTargetVisualizationJumpInfo(@Param("request") VisualizationLinkJumpBaseRequest request);
 
+    List<VisualizationLinkJumpDTO> getTargetVisualizationJumpInfoSnapshot(@Param("request") VisualizationLinkJumpBaseRequest request);
+
     void copyLinkJump(@Param("copyId")Long copyId);
 
     void copyLinkJumpInfo(@Param("copyId")Long copyId);

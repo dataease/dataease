@@ -2,6 +2,7 @@ package io.dataease.api.visualization.request;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.constant.CommonConstants;
 import lombok.Data;
 
 /**
@@ -25,6 +26,8 @@ public class VisualizationLinkJumpBaseRequest {
     private Long linkJumpId;
 
     private Boolean activeStatus;
+
+    private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
 
     public VisualizationLinkJumpBaseRequest() {
     }

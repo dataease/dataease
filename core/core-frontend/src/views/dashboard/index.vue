@@ -162,19 +162,23 @@ const doUseCache = flag => {
 const initLocalCanvasData = callBack => {
   const { resourceId, opt, sourcePid } = state
   const busiFlag = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
-  initCanvasData(resourceId, { busiFlag, resourceTable: 'snapshot' }, function () {
-    dataInitState.value = true
-    if (dvInfo.value && opt === 'copy') {
-      dvInfo.value.dataState = 'prepare'
-      dvInfo.value.optType = 'copy'
-      dvInfo.value.pid = sourcePid
-      setTimeout(() => {
-        snapshotStore.recordSnapshotCache('initLocalCanvasData')
-      }, 1500)
+  initCanvasData(
+    resourceId,
+    { busiFlag, resourceTable: 'snapshot', source: 'main-edit' },
+    function () {
+      dataInitState.value = true
+      if (dvInfo.value && opt === 'copy') {
+        dvInfo.value.dataState = 'prepare'
+        dvInfo.value.optType = 'copy'
+        dvInfo.value.pid = sourcePid
+        setTimeout(() => {
+          snapshotStore.recordSnapshotCache('initLocalCanvasData')
+        }, 1500)
+      }
+      onInitReady({ resourceId: resourceId })
+      callBack && callBack()
     }
-    onInitReady({ resourceId: resourceId })
-    callBack && callBack()
-  })
+  )
 }
 onMounted(async () => {
   dvMainStore.setCurComponent({ component: null, index: null })

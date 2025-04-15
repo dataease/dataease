@@ -35,7 +35,7 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
 
     private List<Long> activeViewIds;
 
-    // 查询来源 main=主工程 report=定时报告
+    // 查询来源 main-edit= 主工程编辑区 main=主工程 report=定时报告
     private String source;
 
     // 定时报告id

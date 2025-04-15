@@ -357,6 +357,24 @@
         </if>
     </select>
 
+    <select id="getTargetVisualizationJumpInfoSnapshot" resultMap="AllJumpMap">
+            SELECT DISTINCT
+            concat( lj.source_view_id, '#', jtvi.source_field_active_id ) AS sourceInfo,
+            concat( jtvi.target_view_id, '#', jtvi.target_field_id ) AS targetInfo
+            FROM
+            snapshot_visualization_link_jump_target_view_info jtvi
+            LEFT JOIN snapshot_visualization_link_jump_info lji ON jtvi.link_jump_info_id = lji.id
+            LEFT JOIN snapshot_visualization_link_jump lj ON lji.link_jump_id = lj.id
+            WHERE
+            lji.checked = 1
+            and lj.source_dv_id = #{request.sourceDvId}
+            AND lj.source_view_id = #{request.sourceViewId}
+            AND lji.target_dv_id = #{request.targetDvId}
+            <if test="request.sourceFieldId != null">
+                AND lji.source_field_id = #{request.sourceFieldId}
+            </if>
+        </select>
+
     <insert id="copyLinkJump">
         insert into visualization_link_jump (id, source_dv_id, source_view_id, link_jump_info, `checked`, copy_from,
                                              copy_id)

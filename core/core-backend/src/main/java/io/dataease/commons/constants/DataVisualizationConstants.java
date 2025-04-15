@@ -10,6 +10,9 @@ public class DataVisualizationConstants {
 
         // 主工程
         public static final String MAIN = "main";
+
+        // 主工程编辑区
+        public static final String MAIN_EDIT = "main-edit";
     }
 
     //新建仪表板来源

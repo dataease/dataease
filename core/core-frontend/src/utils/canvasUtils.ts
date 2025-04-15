@@ -339,7 +339,7 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
   const copyFlag = busiFlag != null && busiFlag.includes('-copy')
   const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
   const method = copyFlag ? findCopyResource : findById
-  let attachInfo = { source: 'main' }
+  let attachInfo = { source: params.source ? params.source : 'main' }
   if (dvMainStore.canvasAttachInfo && !!dvMainStore.canvasAttachInfo.taskId) {
     attachInfo = { source: 'report', taskId: dvMainStore.canvasAttachInfo.taskId }
     const showWatermarkExist =

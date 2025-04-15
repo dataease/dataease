@@ -303,24 +303,28 @@ const doUseCache = flag => {
 const initLocalCanvasData = async callback => {
   const { opt, sourcePid, resourceId } = state
   const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
-  await initCanvasData(resourceId, { busiFlag, resourceTable: 'snapshot' }, function () {
-    state.canvasInitStatus = true
-    // afterInit
-    nextTick(() => {
-      dvMainStore.setDataPrepareState(true)
-      snapshotStore.recordSnapshotCache('renderChart')
-      if (dvInfo.value && opt === 'copy') {
-        dvInfo.value.dataState = 'prepare'
-        dvInfo.value.optType = 'copy'
-        dvInfo.value.pid = sourcePid
-        setTimeout(() => {
-          snapshotStore.recordSnapshotCache('renderChart')
-        }, 1500)
-      }
-      onInitReady({ resourceId: resourceId })
-      callback && callback()
-    })
-  })
+  await initCanvasData(
+    resourceId,
+    { busiFlag, resourceTable: 'snapshot', source: 'main-edit' },
+    function () {
+      state.canvasInitStatus = true
+      // afterInit
+      nextTick(() => {
+        dvMainStore.setDataPrepareState(true)
+        snapshotStore.recordSnapshotCache('renderChart')
+        if (dvInfo.value && opt === 'copy') {
+          dvInfo.value.dataState = 'prepare'
+          dvInfo.value.optType = 'copy'
+          dvInfo.value.pid = sourcePid
+          setTimeout(() => {
+            snapshotStore.recordSnapshotCache('renderChart')
+          }, 1500)
+        }
+        onInitReady({ resourceId: resourceId })
+        callback && callback()
+      })
+    }
+  )
 }
 
 const previewScaleChange = () => {

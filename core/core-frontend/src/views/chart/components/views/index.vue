@@ -470,9 +470,11 @@ const jumpClick = param => {
     const jumpInfoParam = `&jumpInfoParam=${encodeURIComponent(
       Base64.encode(JSON.stringify(param))
     )}`
+
     // 内部仪表板跳转
     if (jumpInfo.linkType === 'inner') {
       if (jumpInfo.targetDvId) {
+        const editPreviewParams = showPosition.value === 'canvas' ? '&editPreview=true' : ''
         const filterOuterParams = {}
         const curFilter = dvMainStore.getLastViewRequestInfo(param.viewId)
         const targetViewInfoList = jumpInfo.targetViewInfoList
@@ -507,9 +509,9 @@ const jumpClick = param => {
           if (jumpInfo.publicJumpId) {
             let url = `${embeddedBaseUrl}#/de-link/${jumpInfo.publicJumpId}?fromLink=true&dvType=${jumpInfo.targetDvType}`
             if (attachParamsInfo) {
-              url = url + attachParamsInfo + jumpInfoParam
+              url = url + attachParamsInfo + jumpInfoParam + editPreviewParams
             } else {
-              url = url + '&ignoreParams=true' + jumpInfoParam
+              url = url + '&ignoreParams=true' + jumpInfoParam + editPreviewParams
             }
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
@@ -520,9 +522,9 @@ const jumpClick = param => {
         } else {
           let url = `${embeddedBaseUrl}#/preview?dvId=${jumpInfo.targetDvId}&fromLink=true&dvType=${jumpInfo.targetDvType}`
           if (attachParamsInfo) {
-            url = url + attachParamsInfo + jumpInfoParam
+            url = url + attachParamsInfo + jumpInfoParam + editPreviewParams
           } else {
-            url = url + '&ignoreParams=true' + jumpInfoParam
+            url = url + '&ignoreParams=true' + jumpInfoParam + editPreviewParams
           }
           const currentUrl = window.location.href
           localStorage.setItem('beforeJumpUrl', currentUrl)

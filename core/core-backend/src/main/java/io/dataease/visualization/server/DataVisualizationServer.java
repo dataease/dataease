@@ -170,7 +170,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         String busiFlag = request.getBusiFlag();
         String resourceTable = request.getResourceTable();
         // 如果是编辑查询 则进行镜像检查
-        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
+        if (DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT.equals(request.getSource())) {
             QueryWrapper<SnapshotDataVisualizationInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", dvId);
             queryWrapper.in("status", Arrays.asList(CommonConstants.DV_STATUS.UNPUBLISHED, CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)); // 状态为0 未发布 和 2 已保存未发布的 不需要重置镜像
