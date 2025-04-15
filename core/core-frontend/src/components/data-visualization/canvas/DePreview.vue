@@ -483,6 +483,8 @@ const scrollPreview = () => {
   state.scrollMain = previewCanvas.value.scrollTop
 }
 
+const showUnpublishFlag = computed(() => dvInfo.value?.status === 0 && isMainCanvas(canvasId.value))
+
 defineExpose({
   restore
 })
@@ -496,7 +498,7 @@ defineExpose({
     :class="{
       'de-download-custom': downloadStatus,
       'datav-preview': dataVPreview,
-      'datav-preview-unpublish': dvInfo.status === 0
+      'datav-preview-unpublish': showUnpublishFlag
     }"
     ref="previewCanvas"
     @mousedown="handleMouseDown"
@@ -524,7 +526,7 @@ defineExpose({
       :component-data="baseComponentData"
       :is-fixed="isOverSize"
     ></canvas-opt-bar>
-    <template v-if="renderReady && dvInfo?.status !== 0">
+    <template v-if="renderReady && !showUnpublishFlag">
       <component-wrapper
         v-for="(item, index) in baseComponentData"
         v-show="item.isShow"
@@ -550,7 +552,7 @@ defineExpose({
       />
     </template>
     <empty-background
-      v-if="dvInfo?.status === 0"
+      v-if="showUnpublishFlag"
       :description="t('visualization.resource_not_published')"
       img-type="none"
     >
