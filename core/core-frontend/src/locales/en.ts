@@ -4,7 +4,7 @@ export default {
     cross_source: 'Cross-source',
     single_source: 'Single-source',
     source_tips:
-      'The data set is cross-source. Please check the syntax of other SQL nodes to confirm whether the type should be changed to cross-source?',
+      'The data set is cross-source. Please check the syntax of other SQL nodes to confirm whether the type should be changed to single-source?',
     associated_chart: 'Associated chart',
     associated_chart_first: 'First level associated chart',
     changing_the_display:

@@ -3,7 +3,7 @@ export default {
     empty: '',
     cross_source: '跨源',
     single_source: '单源',
-    source_tips: '数据集存在跨源情况，请检查其他 SQL 节点的语法，是否确认将类型改为跨源?',
+    source_tips: '数据集存在跨源情况，请检查其他 SQL 节点的语法，是否确认将类型改为单源?',
     other_levels: '除层级一外,其他层级无需进行查询条件配置',
     tree_structure: '下拉树的结构不能为空',
     associated_chart: '关联图表',
