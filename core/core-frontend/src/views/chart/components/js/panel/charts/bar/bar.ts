@@ -280,7 +280,14 @@ export class StackBar extends Bar {
       'totalFormatter',
       'showStackQuota'
     ],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'show']
+    'tooltip-selector': [
+      'fontSize',
+      'color',
+      'backgroundColor',
+      'tooltipFormatter',
+      'show',
+      'carousel'
+    ]
   }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
     let label = getLabel(chart)
@@ -679,7 +686,7 @@ export class PercentageStackBar extends GroupStackBar {
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': ['color', 'fontSize', 'vPosition', 'reserveDecimalCount'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show', 'carousel']
   }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configLabel(chart, options)
