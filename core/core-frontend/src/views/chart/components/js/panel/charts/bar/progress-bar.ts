@@ -3,6 +3,7 @@ import { flow, hexColorToRGBA, parseJson } from '../../../util'
 import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
+  configRoundAngle,
   getTooltipContainer,
   setGradientColor,
   TOOLTIP_TPL
@@ -183,14 +184,9 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
         }
       }
     }
-    if (['roundAngle', 'topRoundAngle'].includes(basicStyle.radiusColumnBar)) {
-      const radius = Array(basicStyle.radiusColumnBar === 'roundAngle' ? 4 : 2).fill(
-        basicStyle.columnBarRightAngleRadius
-      )
-      options = {
-        ...options,
-        barStyle: { radius }
-      }
+    options = {
+      ...options,
+      ...configRoundAngle(chart, 'barStyle')
     }
 
     let barWidthRatio

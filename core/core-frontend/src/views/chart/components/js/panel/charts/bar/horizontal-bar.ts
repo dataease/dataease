@@ -176,11 +176,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     }
     options = {
       ...options,
-      ...configRoundAngle(
-        basicStyle,
-        'barStyle',
-        ['bar-stack-horizontal', 'percentage-bar-stack-horizontal'].includes(this.name)
-      )
+      ...configRoundAngle(chart, 'barStyle')
     }
 
     let barWidthRatio

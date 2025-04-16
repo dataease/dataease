@@ -187,7 +187,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     }
     options = {
       ...options,
-      ...configRoundAngle(basicStyle, 'columnStyle')
+      ...configRoundAngle(chart, 'columnStyle')
     }
     let columnWidthRatio
     const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio

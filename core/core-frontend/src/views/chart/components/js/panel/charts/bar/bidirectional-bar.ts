@@ -6,6 +6,7 @@ import { cloneDeep, defaultTo, isEmpty, map } from 'lodash-es'
 import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
+  configRoundAngle,
   getPadding,
   getTooltipContainer,
   getTooltipItemConditionColor,
@@ -212,17 +213,9 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       ...options,
       layout: basicStyle.layout
     }
-    if (['roundAngle', 'topRoundAngle'].includes(basicStyle.radiusColumnBar)) {
-      const valueField = basicStyle.layout === 'vertical' ? 'valueExt' : 'value'
-      const radius = Array(basicStyle.radiusColumnBar === 'roundAngle' ? 4 : 2).fill(
-        basicStyle.columnBarRightAngleRadius
-      )
-      options = {
-        ...options,
-        barStyle: datum => ({
-          radius: datum[valueField] && radius.length === 2 ? [0, 0, ...radius] : radius
-        })
-      }
+    options = {
+      ...options,
+      ...configRoundAngle(chart, 'barStyle')
     }
     return options
   }

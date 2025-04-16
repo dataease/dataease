@@ -2217,8 +2217,6 @@ export function handleConditionsStyle(chart: Chart, options) {
   // 辅助函数：配置柱条样式颜色，条形图为barStyle,柱形图为columnStyle
   const columnStyle = data => {
     return {
-      ...options.columnStyle,
-      ...options.barStyle,
       ...(data[colorField]?.[0] ? { fill: data[colorField][0] } : {})
     }
   }
@@ -2232,8 +2230,8 @@ export function handleConditionsStyle(chart: Chart, options) {
   const tmpOption = {
     ...options,
     rawFields,
-    columnStyle: columnStyle,
-    barStyle: columnStyle,
+    ...configRoundAngle(chart, 'columnStyle', columnStyle),
+    ...configRoundAngle(chart, 'barStyle', columnStyle),
     tooltip: {
       ...options.tooltip,
       ...(options.tooltip['customItems']
@@ -2397,36 +2395,80 @@ export const numberToChineseUnderHundred = (num: number): string => {
 
 /**
  * 配置柱条图的圆角
- * @param basicStyle
  * @param styleName
- * @param isStackHorizontalBar 堆叠条形图、百分比条形图
+ * @param callBack 自定义其他属性函数
  */
-export const configRoundAngle = (
-  basicStyle: DeepPartial<ChartBasicStyle>,
-  styleName: string,
-  isStackHorizontalBar?: boolean
-) => {
+export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (datum) => {}) => {
+  const { basicStyle } = parseJson(chart.customAttr)
   if (['roundAngle', 'topRoundAngle'].includes(basicStyle.radiusColumnBar)) {
     const radius = Array(2).fill(basicStyle.columnBarRightAngleRadius)
+    const topRadius = [0, 0, ...radius]
+    const bottomRadius = [...radius, 0, 0]
+    const finalRadius = [...radius, ...radius]
     const isTopRound = basicStyle.radiusColumnBar === 'topRoundAngle'
+    // 对称条形图
+    if (chart.type === 'bidirectional-bar') {
+      const valueField = basicStyle.layout === 'vertical' ? 'valueExt' : 'value'
+      return {
+        [styleName]: datum => ({
+          radius: datum[valueField] && isTopRound ? topRadius : isTopRound ? radius : finalRadius,
+          ...(callBack ? callBack(datum) : {})
+        })
+      }
+    }
+    // 进度条
+    if (chart.type === 'progress-bar') {
+      return {
+        [styleName]: datum => {
+          return {
+            radius: isTopRound ? bottomRadius : finalRadius,
+            ...(callBack ? callBack(datum) : {})
+          }
+        }
+      }
+    }
+    // 区间条形图
+    if (chart.type === 'bar-range') {
+      return {
+        [styleName]: datum => {
+          return {
+            radius:
+              datum.values[0] < datum.values[1]
+                ? isTopRound
+                  ? bottomRadius
+                  : finalRadius
+                : isTopRound
+                ? topRadius
+                : finalRadius,
+            ...(callBack ? callBack(datum) : {})
+          }
+        }
+      }
+    }
+    // 堆叠条形图、百分比条形图第一个和最后一个反转
+    const isStackHorizontalBar = [
+      'bar-stack-horizontal',
+      'percentage-bar-stack-horizontal'
+    ].includes(chart.type)
     // 配置柱条样式
     const style = datum => {
       if (isTopRound && datum.isFirst && datum.isLast) {
-        return { radius }
+        return { radius, ...(callBack ? callBack(datum) : {}) }
       }
       if (!isTopRound && datum.isFirst && datum.isLast) {
-        return { radius: [...radius, ...radius] }
+        return { radius: finalRadius, ...(callBack ? callBack(datum) : {}) }
       }
-      // 堆叠条形图、百分比条形图第一个和最后一个反转
       if (isStackHorizontalBar) {
         if (datum.isLast || (!isTopRound && datum.isFirst)) {
           return {
-            radius: datum.isFirst ? [0, 0, ...radius] : radius
+            radius: datum.isFirst ? topRadius : radius,
+            ...(callBack ? callBack(datum) : {})
           }
         }
       } else if (datum.isFirst || (!isTopRound && datum.isLast)) {
         return {
-          radius: datum.isLast ? [0, 0, ...radius] : radius
+          radius: datum.isLast ? topRadius : radius,
+          ...(callBack ? callBack(datum) : {})
         }
       }
     }
@@ -2434,13 +2476,16 @@ export const configRoundAngle = (
       [styleName]: style
     }
   }
-  return {}
+  return {
+    [styleName]: datum => {
+      return { ...(callBack ? callBack(datum) : {}) }
+    }
+  }
 }
 
 /**
  * 为圆角组装options.data，
  * 添加 isFirst 和 isLast 属性
- * 不会影响原始数据排序
  * @param data
  * @param isGroup
  * @param isStack
