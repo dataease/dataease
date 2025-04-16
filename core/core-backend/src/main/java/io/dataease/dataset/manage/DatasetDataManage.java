@@ -326,7 +326,7 @@ public class DatasetDataManage {
             for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
                 dsList.add(next.getValue().getType());
             }
-            boolean crossDs = Utils.isCrossDs(dsMap);
+            boolean crossDs = datasetGroupInfoDTO.getIsCross();
             if (!crossDs) {
                 if (notFullDs.contains(dsMap.entrySet().iterator().next().getValue().getType()) && (boolean) sqlMap.get("isFullJoin")) {
                     DEException.throwException(Translator.get("i18n_not_full"));

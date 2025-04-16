@@ -1094,6 +1094,7 @@ public class DatasourceServer implements DatasourceApi {
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
         previewSqlDTO.setSql(sql);
         previewSqlDTO.setDatasourceId(id);
+        previewSqlDTO.setIsCross(false);
         return datasetDataManage.previewSql(previewSqlDTO);
     }
 
