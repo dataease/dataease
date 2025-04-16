@@ -186,6 +186,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 
     // 解析合计、小计排序
     const sortParams = []
+    let rowTotalSort = false
     if (
       tableTotal.row.totalSort &&
       tableTotal.row.totalSort !== 'none' &&
@@ -204,7 +205,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         }
         sortParams.push(sort)
       })
+      rowTotalSort = true
     }
+    let colTotalSort = false
     if (
       tableTotal.col.totalSort &&
       tableTotal.col.totalSort !== 'none' &&
@@ -223,6 +226,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         }
         sortParams.push(sort)
       })
+      colTotalSort = true
     }
     //列维度为空，行排序按照指标列来排序，取第一个有排序设置的指标
     if (!columnFields?.length) {
@@ -283,6 +287,80 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     })
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
+    // 行列维度排序
+    if (!rowTotalSort) {
+      c?.forEach((f, i) => {
+        if (valueFieldMap[f]?.sort === 'none') {
+          return
+        }
+        const sort = {
+          sortFieldId: f
+        }
+        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase()
+        if (sortMethod === 'CUSTOM_SORT') {
+          sort.sortBy = valueFieldMap[f].customSort
+        } else {
+          if (i === 0) {
+            sort.sortMethod = sortMethod
+          } else {
+            const fieldValues = newData.map(item => item[f])
+            const uniqueValues = [...new Set(fieldValues)]
+
+            // 根据配置动态决定排序顺序
+            uniqueValues.sort((a, b) => {
+              if (!a && !b) {
+                return 0
+              }
+              if (!a) {
+                return sortMethod === 'ASC' ? -1 : 1
+              }
+              if (!b) {
+                return sortMethod === 'ASC' ? 1 : -1
+              }
+              return sortMethod === 'ASC' ? a.localeCompare(b) : b.localeCompare(a)
+            })
+            sort.sortBy = uniqueValues
+          }
+        }
+        sortParams.push(sort)
+      })
+    }
+    if (!colTotalSort) {
+      r?.forEach((f, i) => {
+        if (valueFieldMap[f]?.sort === 'none') {
+          return
+        }
+        const sort = {
+          sortFieldId: f
+        }
+        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase()
+        if (sortMethod === 'CUSTOM_SORT') {
+          sort.sortBy = valueFieldMap[f].customSort
+        } else {
+          if (i === 0) {
+            sort.sortMethod = sortMethod
+          } else {
+            const fieldValues = newData.map(item => item[f])
+            const uniqueValues = [...new Set(fieldValues)]
+            // 根据配置动态决定排序顺序
+            uniqueValues.sort((a, b) => {
+              if (!a && !b) {
+                return 0
+              }
+              if (!a) {
+                return sortMethod === 'ASC' ? -1 : 1
+              }
+              if (!b) {
+                return sortMethod === 'ASC' ? 1 : -1
+              }
+              return sortMethod === 'ASC' ? a.localeCompare(b) : b.localeCompare(a)
+            })
+            sort.sortBy = uniqueValues
+          }
+        }
+        sortParams.push(sort)
+      })
+    }
     // data config
     const s2DataConfig: S2DataConfig = {
       fields: {
