@@ -1097,7 +1097,7 @@ const handleFieldschange = val => {
   const arr = []
   const allfieldsCopy = cloneDeep(unref(allfields))
   dfsNodeList(arr, datasetDrag.value.getNodeList())
-  enumValueDs({ dataset: { union: arr, allFields: allfieldsCopy }, field })
+  enumValueDs({ dataset: { union: arr, allFields: allfieldsCopy, isCross: isCross.value }, field })
     .then(res => {
       enumValue.value = res || []
     })
