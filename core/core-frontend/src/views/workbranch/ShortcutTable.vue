@@ -100,12 +100,14 @@ const triggerFilterPanel = () => {
   loadTableData()
 }
 const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
-const preview = id => {
-  const routeUrl = resolve({
-    path: '/preview',
-    query: { dvId: id }
-  })
-  window.open(routeUrl.href, '_blank')
+const preview = (id, disabled = false) => {
+  if (!disabled) {
+    const routeUrl = resolve({
+      path: '/preview',
+      query: { dvId: id }
+    })
+    window.open(routeUrl.href, '_blank')
+  }
 }
 
 const openDataset = id => {
@@ -244,13 +246,15 @@ const checkDisabled = row => {
 }
 
 const executeCancelStore = rowInfo => {
-  const param = {
-    id: rowInfo.resourceId,
-    type: rowInfo.type === 'dataV' ? 'screen' : 'panel'
+  if (!checkDisabled(rowInfo)) {
+    const param = {
+      id: rowInfo.resourceId,
+      type: rowInfo.type === 'dataV' ? 'screen' : 'panel'
+    }
+    storeApi(param).then(() => {
+      loadTableData()
+    })
   }
-  storeApi(param).then(() => {
-    loadTableData()
-  })
 }
 
 const imgType = ref()
@@ -425,17 +429,24 @@ const getEmptyDesc = (): string => {
 
           <el-table-column width="100" fixed="right" key="_operation" :label="$t('common.operate')">
             <template #default="scope">
-              <div style="display: flex; flex-direction: row; align-items: center">
+              <div
+                style="display: flex; flex-direction: row; align-items: center"
+                :class="{ 'opt-disabled': checkDisabled(scope.row) }"
+              >
                 <template v-if="['dashboard', 'dataV', 'panel', 'screen'].includes(scope.row.type)">
                   <el-tooltip
                     effect="dark"
                     :content="t('work_branch.new_page_preview')"
+                    :disabled="checkDisabled(scope.row)"
                     placement="top"
                   >
                     <el-icon
                       class="hover-icon hover-icon-in-table"
                       @click.stop="
-                        preview(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
+                        preview(
+                          activeName === 'recent' ? scope.row.id : scope.row.resourceId,
+                          checkDisabled(scope.row)
+                        )
                       "
                     >
                       <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
@@ -444,6 +455,7 @@ const getEmptyDesc = (): string => {
                   <ShareHandler
                     v-if="!shareDisable"
                     :in-grid="true"
+                    :disabled="checkDisabled(scope.row)"
                     :weight="scope.row.weight"
                     :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
                     :resource-type="scope.row.type"
@@ -451,6 +463,7 @@ const getEmptyDesc = (): string => {
                   <el-tooltip
                     v-if="activeName === 'store'"
                     effect="dark"
+                    :disabled="checkDisabled(scope.row)"
                     :content="t('work_branch.cancel_favorites')"
                     placement="top"
                   >
@@ -590,6 +603,11 @@ const getEmptyDesc = (): string => {
 
 .color-disabled {
   color: #bbbfc4;
+}
+
+.opt-disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
 }
 
 .custom-color-disabled {

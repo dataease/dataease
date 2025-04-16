@@ -47,9 +47,11 @@ const handleCommand = (command: string) => {
 const triggerFilterPanel = () => {
   loadTableData()
 }
-const preview = id => {
-  const routeUrl = `/#/preview?dvId=${id}`
-  window.open(routeUrl, '_blank')
+const preview = (id, disabled = false) => {
+  if (!disabled) {
+    const routeUrl = `/#/preview?dvId=${id}`
+    window.open(routeUrl, '_blank')
+  }
 }
 const formatterTime = (_, _column, cellValue) => {
   if (!cellValue) {
@@ -255,16 +257,30 @@ watch(
 
       <el-table-column width="96" fixed="right" key="_operation" :label="t('common.operate')">
         <template #default="scope">
-          <el-tooltip effect="dark" :content="t('work_branch.new_page_preview')" placement="top">
-            <el-icon class="hover-icon hover-icon-in-table" @click="preview(scope.row.resourceId)">
-              <Icon><icon_pc_outlined class="svg-icon" /></Icon>
-            </el-icon>
-          </el-tooltip>
-          <ShareHandler
-            :in-grid="true"
-            :resource-id="scope.row.resourceId"
-            :weight="scope.row.weight"
-          />
+          <div
+            style="display: flex; flex-direction: row; align-items: center"
+            :class="{ 'opt-disabled': !scope.row.extFlag1 }"
+          >
+            <el-tooltip
+              :disabled="!scope.row.extFlag1"
+              effect="dark"
+              :content="t('work_branch.new_page_preview')"
+              placement="top"
+            >
+              <el-icon
+                class="hover-icon hover-icon-in-table"
+                @click="preview(scope.row.resourceId, !scope.row.extFlag1)"
+              >
+                <Icon><icon_pc_outlined class="svg-icon" /></Icon>
+              </el-icon>
+            </el-tooltip>
+            <ShareHandler
+              :in-grid="true"
+              :disabled="!scope.row.extFlag1"
+              :resource-id="scope.row.resourceId"
+              :weight="scope.row.weight"
+            />
+          </div>
         </template>
       </el-table-column>
     </GridTable>
@@ -325,5 +341,10 @@ watch(
 
 .custom-color-disabled {
   background: #bbbfc4 !important;
+}
+
+.opt-disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
 }
 </style>

@@ -2,6 +2,7 @@
   <el-tooltip
     v-if="props.weight >= 7 && props.inGrid"
     effect="dark"
+    :disabled="disabled"
     :content="t('visualization.share')"
     placement="top"
   >
@@ -237,6 +238,7 @@ const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const props = defineProps({
   inGrid: propTypes.bool.def(false),
+  disabled: propTypes.bool.def(false),
   resourceId: propTypes.string.def(''),
   resourceType: propTypes.string.def(''),
   weight: propTypes.number.def(0),
@@ -381,8 +383,10 @@ const closeLoading = () => {
 }
 
 const share = () => {
-  dialogVisible.value = true
-  loadShareInfo(validatePeRequire)
+  if (!props.disabled) {
+    dialogVisible.value = true
+    loadShareInfo(validatePeRequire)
+  }
 }
 
 const loadShareInfo = cb => {

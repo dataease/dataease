@@ -356,7 +356,9 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
     const canvasInfo = res.data
     const watermarkInfo = {
       ...canvasInfo.watermarkInfo,
-      settingContent: JSON.parse(canvasInfo.watermarkInfo.settingContent)
+      settingContent: canvasInfo.watermarkInfo?.settingContent
+        ? JSON.parse(canvasInfo.watermarkInfo.settingContent)
+        : {}
     }
 
     const dvInfo = {
