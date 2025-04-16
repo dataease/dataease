@@ -839,7 +839,7 @@ public class DatasetDataManage {
         DatasetGroupInfoDTO datasetGroupInfoDTO = null;
         List<DatasetTableFieldDTO> fields = new ArrayList<>();
         Map<String, Object> sqlMap = null;
-        boolean crossDs = datasetGroupInfoDTO.getIsCross();
+        boolean crossDs = false;
         Map<Long, DatasourceSchemaDTO> dsMap = null;
 
         if (ObjectUtils.isNotEmpty(request.getSortId())) {
@@ -880,7 +880,7 @@ public class DatasetDataManage {
             allFields.addAll(datasetGroupInfoDTO.getAllFields());
 
             dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-            crossDs = Utils.isCrossDs(dsMap);
+            crossDs = datasetGroupInfoDTO.getIsCross();
             if (!crossDs) {
                 sql = Utils.replaceSchemaAlias(sql, dsMap);
             }
