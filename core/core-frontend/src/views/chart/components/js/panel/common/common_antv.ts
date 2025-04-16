@@ -2433,7 +2433,7 @@ export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (da
         [styleName]: datum => {
           return {
             radius:
-              datum.values[0] < datum.values[1]
+              datum?.values[0] < datum?.values[1]
                 ? isTopRound
                   ? bottomRadius
                   : finalRadius
