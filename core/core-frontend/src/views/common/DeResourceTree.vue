@@ -267,7 +267,9 @@ const cancelPreRequest = () => {
 
 const nodeClick = (data: BusiTreeNode, node) => {
   dvMainStore.setCurComponent({ component: null, index: null })
-  dvMainStore.setEditMode('preview')
+  if (showPosition.value !== 'multiplexing') {
+    dvMainStore.setEditMode('preview')
+  }
   if (node.disabled) {
     nextTick(() => {
       // 找到当前高亮的节点，移除高亮样式
