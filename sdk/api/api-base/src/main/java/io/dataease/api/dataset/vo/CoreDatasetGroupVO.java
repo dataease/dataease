@@ -88,6 +88,11 @@ public class CoreDatasetGroupVO implements Serializable {
      */
     private String unionSql;
 
+    /**
+     * 是否跨源
+     */
+    private Boolean isCross;
+
     private List<CoreDatasetTableFieldVO> datasetFields = new ArrayList<>();
 
     private List<ChartBaseVO> datasetViews = new ArrayList<>();

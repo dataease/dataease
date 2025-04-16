@@ -2,7 +2,9 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
@@ -29,6 +31,7 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetGroupManage;
+import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -155,6 +158,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private SnapshotDataVisualizationInfoMapper snapshotMapper;
     @Resource
     private ExtChartViewMapper extChartViewMapper;
+    @Resource
+    private DatasetSQLManage datasetSQLManage;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -381,6 +386,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         dsGroup.setName(dsGroup.getName() + "-" + UUID.randomUUID().toString());
                     }
                     dsGroupNameSave.add(dsGroup.getName());
+                    if(dsGroup.getIsCross() == null){
+                        if(dsGroup.getUnion() == null){
+                            dsGroup.setUnion(JsonUtil.parseList(dsGroup.getInfo(), new TypeReference<>() {
+                            }));
+                        }
+                        datasetSQLManage.mergeDatasetCrossDefault(dsGroup);
+                    }
                     datasetGroupManage.innerSave(dsGroup);
                 });
 

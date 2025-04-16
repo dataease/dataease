@@ -557,12 +557,16 @@ public class DatasetSQLManage {
     public void datasetCrossDefault() {
         List<DatasetGroupInfoDTO> allList = datasetGroupManage.getAllList();
         for (DatasetGroupInfoDTO ele : allList) {
-            Set<Long> allDs = getAllDs(ele.getUnion());
-            boolean isCross = allDs.size() > 1;
-            ele.setIsCross(isCross);
+            mergeDatasetCrossDefault(ele);
             CoreDatasetGroup record = new CoreDatasetGroup();
             BeanUtils.copyBean(record, ele);
             coreDatasetGroupMapper.updateById(record);
         }
+    }
+
+    public void mergeDatasetCrossDefault(DatasetGroupInfoDTO ele) {
+        Set<Long> allDs = getAllDs(ele.getUnion());
+        boolean isCross = allDs.size() > 1;
+        ele.setIsCross(isCross);
     }
 }
