@@ -3,6 +3,7 @@ package io.dataease.visualization.dao.auto.mapper;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * <p>
@@ -15,4 +16,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface VisualizationWatermarkMapper extends BaseMapper<VisualizationWatermark> {
 
+    @Update("""
+    UPDATE `visualization_watermark` set `setting_content` = REPLACE(`setting_content`,'"enable":true','"enable":false')
+    """)
+    void disable();
 }
