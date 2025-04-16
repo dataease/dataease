@@ -14,6 +14,7 @@ import io.dataease.api.visualization.vo.*;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
@@ -55,6 +56,7 @@ import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
+import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewMapper;
 import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
@@ -134,7 +136,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
-    @Autowired
+
+    @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
 
     @Resource
@@ -150,6 +153,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private SnapshotDataVisualizationInfoMapper snapshotMapper;
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -856,10 +861,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public List<VisualizationViewTableDTO> detailList(Long dvId) {
         List<VisualizationViewTableDTO> result = extDataVisualizationMapper.getVisualizationViewDetails(dvId);
-        DataVisualizationInfo dvInfo = visualizationInfoMapper.selectById(dvId);
+        SnapshotDataVisualizationInfo dvInfo = snapshotMapper.selectById(dvId);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
             String componentData = dvInfo.getComponentData();
-            return result.stream().filter(item -> componentData.indexOf(String.valueOf(item.getId())) > 0).toList();
+            return result.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).toList();
         } else {
             return result;
         }
@@ -971,4 +976,16 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
     }
 
+    public List<Long> getEnabledViewIds(Long dvId, String resourceTable) {
+        List<Long> result = new ArrayList<>();
+        DataVisualizationVO dvInfo = extDataVisualizationMapper.findDvInfo(dvId, null, resourceTable);
+        List<CoreChartView> views = extChartViewMapper.selectListCustom(dvId, resourceTable);
+        if (CollectionUtils.isNotEmpty(views) && dvInfo != null) {
+            String componentData = dvInfo.getComponentData();
+            result = views.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).map(CoreChartView::getId)
+                    .collect(Collectors.toList());
+
+        }
+        return result;
+    }
 }
