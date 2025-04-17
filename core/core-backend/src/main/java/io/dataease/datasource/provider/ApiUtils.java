@@ -787,7 +787,7 @@ public class ApiUtils {
             for (int i = 0; i < jsonPaths.size(); i++) {
                 List<String> data = new ArrayList<>();
                 Object object = JsonPath.using(jsonPathConf).parse(result).read(jsonPaths.get(i));
-                if (object instanceof List && jsonPaths.get(i).contains("[*]")) {
+                if (object instanceof List) {
                     for (Object o : (List<String>) object) {
                         if (Objects.isNull(o)) {
                             data.add("");
