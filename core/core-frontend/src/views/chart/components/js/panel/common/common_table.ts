@@ -1077,7 +1077,14 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
     if (cells.length === 1) {
       const curCell = cells[0]
       if (cell.getMeta().id === curCell.id) {
-        copyString(cellMeta.value + '', true)
+        const cellMeta = cell.getMeta()
+        const value = cellMeta.data?.[cellMeta.valueField]
+        const metaObj = find(fieldMeta, m => m.field === cellMeta.valueField)
+        let fieldVal = value?.toString()
+        if (metaObj) {
+          fieldVal = metaObj.formatter(value)
+        }
+        copyString(fieldVal, true)
       }
       s2Instance.interaction.clearState()
       return
