@@ -32,7 +32,6 @@ import {
   canvasSave,
   canvasSaveWithParams,
   checkCanvasChangePre,
-  cleanUrlAndSetDvId,
   findAllViewsId,
   initCanvasData
 } from '@/utils/canvasUtils'

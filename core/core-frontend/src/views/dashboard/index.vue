@@ -303,6 +303,9 @@ const cancelHidden = item => {
 const doRecoverToPublished = () => {
   recoverToPublished({ id: dvInfo.value.id, type: 'dashboard', name: dvInfo.value.name }).then(
     () => {
+      state.resourceId = dvInfo.value.id
+      state.sourcePid = dvInfo.value.pid
+      state.opt = null
       initLocalCanvasData(() => {
         nextTick(() => {
           deCanvasRef.value.canvasInit(false)

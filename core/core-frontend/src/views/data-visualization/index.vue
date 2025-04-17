@@ -372,6 +372,12 @@ const winMsgWebParamsHandle = msgInfo => {
   dvMainStore.addWebParamsFilter(params)
 }
 
+const afterSave = () => {
+  state.resourceId = dvInfo.value.id
+  state.sourcePid = dvInfo.value.id
+  state.opt = null
+}
+
 const loadFinish = ref(false)
 const newWindowFromDiv = ref(false)
 let p = null
@@ -510,6 +516,9 @@ const popComponentData = computed(() =>
 
 const doRecoverToPublished = () => {
   recoverToPublished({ id: dvInfo.value.id, type: 'dataV', name: dvInfo.value.name }).then(() => {
+    state.resourceId = dvInfo.value.id
+    state.sourcePid = dvInfo.value.pid
+    state.opt = null
     initLocalCanvasData(() => {
       dvMainStore.updateDvInfoCall(1)
     })
