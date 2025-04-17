@@ -683,6 +683,7 @@ eventBus.on('tabSort', tabSort)
     v-if="fullscreenFlag"
     style="z-index: 10"
     ref="dvPreviewRef"
+    show-position="edit-preview"
     :canvas-data-preview="componentData"
     :canvas-style-preview="canvasStyleData"
     :canvas-view-info-preview="canvasViewInfo"

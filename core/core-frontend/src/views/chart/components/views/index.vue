@@ -474,7 +474,9 @@ const jumpClick = param => {
     // 内部仪表板跳转
     if (jumpInfo.linkType === 'inner') {
       if (jumpInfo.targetDvId) {
-        const editPreviewParams = showPosition.value === 'canvas' ? '&editPreview=true' : ''
+        const editPreviewParams = ['canvas', 'edit-preview'].includes(showPosition.value)
+          ? '&editPreview=true'
+          : ''
         const filterOuterParams = {}
         const curFilter = dvMainStore.getLastViewRequestInfo(param.viewId)
         const targetViewInfoList = jumpInfo.targetViewInfoList
