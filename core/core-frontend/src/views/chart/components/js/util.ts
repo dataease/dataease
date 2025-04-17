@@ -1,4 +1,4 @@
-import { isEmpty, isNumber } from 'lodash-es'
+import { cloneDeep, isEmpty, isNumber } from 'lodash-es'
 import { DEFAULT_TITLE_STYLE } from '../editor/util/chart'
 import { equalsAny, includesAny } from '../editor/util/StringUtils'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -286,17 +286,23 @@ export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, opt
     }
     return options
   }
-  const { yAxis, xAxisExt, extStack } = chart
+  const { yAxis, xAxisExt, extStack, extBubble } = chart
   const multiDimension = yAxis?.length >= 2 || xAxisExt?.length > 0 || extStack?.length > 0
   switch (strategy) {
     case 'breakLine': {
-      if (multiDimension) {
-        // 多维度保持空
-        if (isChartMix) {
-          for (let i = 0; i < data.length; i++) {
-            handleBreakLineMultiDimension(data[i] as Record<string, any>[])
+      if (isChartMix) {
+        if (data[0]) {
+          if (xAxisExt?.length > 0 || extStack?.length > 0) {
+            handleBreakLineMultiDimension(data[0] as Record<string, any>[])
           }
-        } else {
+        }
+        if (data[1]) {
+          if (extBubble?.length > 0) {
+            handleBreakLineMultiDimension(data[1] as Record<string, any>[])
+          }
+        }
+      } else {
+        if (multiDimension) {
           handleBreakLineMultiDimension(data)
         }
       }
@@ -306,22 +312,27 @@ export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, opt
       }
     }
     case 'setZero': {
-      if (multiDimension) {
-        // 多维度置0
-        if (isChartMix) {
-          for (let i = 0; i < data.length; i++) {
-            handleSetZeroMultiDimension(data[i] as Record<string, any>[])
+      if (isChartMix) {
+        if (data[0]) {
+          if (xAxisExt?.length > 0 || extStack?.length > 0) {
+            handleSetZeroMultiDimension(data[0] as Record<string, any>[])
+          } else {
+            handleSetZeroSingleDimension(data[0] as Record<string, any>[])
           }
-        } else {
-          handleSetZeroMultiDimension(data)
+        }
+        if (data[1]) {
+          if (extBubble?.length > 0) {
+            handleSetZeroMultiDimension(data[1] as Record<string, any>[], true)
+          } else {
+            handleSetZeroSingleDimension(data[1] as Record<string, any>[], true)
+          }
         }
       } else {
-        // 单维度置0
-        if (isChartMix) {
-          for (let i = 0; i < data.length; i++) {
-            handleSetZeroSingleDimension(data[i] as Record<string, any>[])
-          }
+        if (multiDimension) {
+          // 多维度置0
+          handleSetZeroMultiDimension(data)
         } else {
+          // 单维度置0
           handleSetZeroSingleDimension(data)
         }
       }
@@ -367,7 +378,7 @@ function handleBreakLineMultiDimension(data) {
   })
 }
 
-function handleSetZeroMultiDimension(data: Record<string, any>[]) {
+function handleSetZeroMultiDimension(data: Record<string, any>[], isExt = false) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
   const quotaMap = new Map<string, { id: string }[]>()
@@ -375,6 +386,9 @@ function handleSetZeroMultiDimension(data: Record<string, any>[]) {
     const item = data[i]
     if (item.value === null) {
       item.value = 0
+      if (isExt) {
+        item.valueExt = 0
+      }
     }
     const dimensionInfo = dimensionInfoMap.get(item.field)
     if (dimensionInfo) {
@@ -391,12 +405,17 @@ function handleSetZeroMultiDimension(data: Record<string, any>[]) {
       let subInsertIndex = 0
       subDimensionSet.forEach(dimension => {
         if (!dimensionInfo.set.has(dimension)) {
-          data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
+          const _temp = {
             field,
             value: 0,
             category: dimension,
             quotaList: quotaMap.get(dimension as string)
-          })
+          } as any
+          if (isExt) {
+            _temp.valueExt = 0
+          }
+
+          data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, _temp)
         }
         subInsertIndex++
       })
@@ -405,10 +424,14 @@ function handleSetZeroMultiDimension(data: Record<string, any>[]) {
   })
 }
 
-function handleSetZeroSingleDimension(data: Record<string, any>[]) {
+function handleSetZeroSingleDimension(data: Record<string, any>[], isExt = false) {
   data.forEach(item => {
     if (item.value === null) {
-      item.value = 0
+      if (!isExt) {
+        item.value = 0
+      } else {
+        item.valueExt = 0
+      }
     }
   })
 }
