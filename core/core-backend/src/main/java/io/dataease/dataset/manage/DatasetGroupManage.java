@@ -145,7 +145,9 @@ public class DatasetGroupManage {
                     DatasetUtils.dsEncode(datasetGroupInfoDTO);
                 }
             }
-            datasetGroupInfoDTO.setUnionSql(DatasetUtils.getEncode(datasetGroupInfoDTO.getUnionSql()));
+            if (StringUtils.isNotEmpty(datasetGroupInfoDTO.getUnionSql())) {
+                datasetGroupInfoDTO.setUnionSql(DatasetUtils.getEncode(datasetGroupInfoDTO.getUnionSql()));
+            }
             return datasetGroupInfoDTO;
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
