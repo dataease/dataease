@@ -149,6 +149,12 @@ const init = () => {
     }
   }
   initTableColumnWidth()
+  if (
+    props.chart.type.includes('-stack') &&
+    state.basicStyleForm.radiusColumnBar === 'topRoundAngle'
+  ) {
+    state.basicStyleForm.radiusColumnBar = 'roundAngle'
+  }
 }
 const debouncedInit = debounce(init, 500)
 watch(
@@ -494,7 +500,12 @@ onMounted(() => {
       >
         <el-radio label="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
         <el-radio label="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
-        <el-radio label="topRoundAngle" :effect="themes">{{ t('chart.topRoundAngle') }}</el-radio>
+        <el-radio
+          v-if="!props.chart.type.includes('-stack')"
+          label="topRoundAngle"
+          :effect="themes"
+          >{{ t('chart.topRoundAngle') }}</el-radio
+        >
       </el-radio-group>
     </el-form-item>
 

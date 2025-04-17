@@ -84,7 +84,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       return
     }
     const isGroup = 'bar-group' === this.name && chart.xAxisExt?.length > 0
-    const isStack = 'bar-group-stack' === this.name && chart.extStack?.length > 0
+    const isStack =
+      ['bar-stack', 'bar-group-stack'].includes(this.name) && chart.extStack?.length > 0
     const data = cloneDeep(drawOptions.chart.data?.data)
     const initOptions: ColumnOptions = {
       ...this.baseOptions,

@@ -2405,6 +2405,14 @@ export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (da
     const topRadius = [0, 0, ...radius]
     const bottomRadius = [...radius, 0, 0]
     const finalRadius = [...radius, ...radius]
+    if (chart.type.includes('-stack')) {
+      return {
+        [styleName]: datum => {
+          if (!datum.value) return { radius: [], ...(callBack ? callBack(datum) : {}) }
+          return { radius: finalRadius, ...(callBack ? callBack(datum) : {}) }
+        }
+      }
+    }
     const isTopRound = basicStyle.radiusColumnBar === 'topRoundAngle'
     // 对称条形图
     if (chart.type === 'bidirectional-bar') {
