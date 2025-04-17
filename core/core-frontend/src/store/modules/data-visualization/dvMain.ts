@@ -1290,6 +1290,22 @@ export const dvMainStore = defineStore('dataVisualization', {
                   // 8 文本搜索
                   filterItem['conditionValueF'] = parmaValueSource + ''
                   filterItem['defaultConditionValueF'] = parmaValueSource + ''
+                } else if (filterItem.displayType === '9') {
+                  // 9 下拉树
+                  if (filterItem.multiple) {
+                    // multiple === true 多选
+                    filterItem['selectValue'] = queryParams
+                    filterItem['defaultValue'] = queryParams
+                  } else {
+                    // 单选
+                    filterItem['selectValue'] = queryParams[0]
+                    filterItem['defaultValue'] = queryParams[0]
+                  }
+                } else if (filterItem.displayType === '22') {
+                  filterItem['defaultNumValueStart'] = queryParams[0]
+                  filterItem['defaultNumValueEnd'] = queryParams[1]
+                  filterItem['numValueStart'] = queryParams[0]
+                  filterItem['numValueEnd'] = queryParams[1]
                 }
                 if ('DE_EMPTY' === paramValueStr) {
                   filterItem['selectValue'] = null
