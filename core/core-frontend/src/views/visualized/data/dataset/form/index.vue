@@ -2137,6 +2137,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                           :class="
                             !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
                           "
+                          v-if="scope.row.extField !== 3"
                           popper-class="cascader-panel"
                           v-model="scope.row.deTypeArr"
                           @change="val => cascaderChange(scope.row, val)"
@@ -2157,6 +2158,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             <span>{{ data.label }}</span>
                           </template>
                         </el-cascader>
+                        <div style="padding-left: 30px" v-else>{{ $t('data_set.text') }}</div>
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
@@ -2180,7 +2182,13 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span class="flex-align-center icon" v-if="scope.row.extField === 0">
+                          <span style="color: #8d9199" v-if="scope.row.extField === 2">{{
+                            t('dataset.calc_field')
+                          }}</span>
+                          <span style="color: #8d9199" v-else-if="scope.row.extField === 3">{{
+                            t('dataset.grouping_field')
+                          }}</span>
+                          <span class="flex-align-center icon" v-else-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon className="primary-color"
                                 ><component
@@ -2191,7 +2199,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             </el-icon>
                             {{ fieldTypes(scope.row.deExtractType) }}
                           </span>
-                          <span v-else style="color: #8d9199">{{ t('dataset.calc_field') }}</span>
                         </div>
                       </template>
                     </el-table-column>
@@ -2374,7 +2381,13 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span class="flex-align-center icon" v-if="scope.row.extField === 0">
+                          <span style="color: #8d9199" v-if="scope.row.extField === 2">{{
+                            t('dataset.calc_field')
+                          }}</span>
+                          <span style="color: #8d9199" v-else-if="scope.row.extField === 3">{{
+                            t('dataset.grouping_field')
+                          }}</span>
+                          <span class="flex-align-center icon" v-else-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon className="green-color"
                                 ><component
@@ -2385,7 +2398,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             </el-icon>
                             {{ fieldTypes(scope.row.deExtractType) }}
                           </span>
-                          <span v-else style="color: #8d9199">{{ t('dataset.calc_field') }}</span>
                         </div>
                       </template>
                     </el-table-column>
