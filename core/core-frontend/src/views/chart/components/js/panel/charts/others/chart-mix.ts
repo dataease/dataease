@@ -301,7 +301,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       tempOption.geometryOptions[1].lineStyle = lineStyle
       tempOption.geometryOptions[0] = {
         ...tempOption.geometryOptions[0],
-        ...configRoundAngle(s, 'columnStyle')
+        ...configRoundAngle(chart, 'columnStyle')
       }
     }
 
