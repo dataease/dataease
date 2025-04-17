@@ -3,6 +3,8 @@ import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { ref } from 'vue'
 import { ipInfoApi } from '@/api/user'
+import { isISOMobile } from '@/utils/utils'
+
 const dvMainStore = dvMainStoreWithOut()
 
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -233,7 +235,7 @@ export function activeWatermark(
     watermark_color: watermarkForm.watermark_color,
     watermark_x_space: watermarkForm.watermark_x_space * scale,
     watermark_y_space: watermarkForm.watermark_y_space * scale,
-    watermark_fontsize: watermarkForm.watermark_fontsize * scale + 'px'
+    watermark_fontsize: watermarkForm.watermark_fontsize * scale * (isISOMobile() ? 2.5 : 1) + 'px'
   }
   watermark(settings, domId)
 }
