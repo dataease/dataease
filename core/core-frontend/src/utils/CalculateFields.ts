@@ -18,13 +18,13 @@ const originNameHandleBack = (arr = []) => {
 
 const originNameHandleWithArr = (obj = {}, fields) => {
   fields.forEach(ele => {
-    originNameHandle(obj[ele])
+    originNameHandle(obj?.[ele] || [])
   })
 }
 
 const originNameHandleBackWithArr = (obj = {}, fields) => {
   fields.forEach(ele => {
-    originNameHandleBack(obj[ele])
+    originNameHandleBack(obj?.[ele] || [])
   })
 }
 
