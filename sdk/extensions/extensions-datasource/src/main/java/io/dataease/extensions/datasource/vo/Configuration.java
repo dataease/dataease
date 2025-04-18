@@ -13,7 +13,7 @@ public class Configuration {
     private String keywordSuffix = "";
     private String aliasPrefix = "";
     private String aliasSuffix = "";
-    private String jdbc;
+    protected String jdbc;
     private String host;
     private String jdbcUrl;
     private String urlType;
