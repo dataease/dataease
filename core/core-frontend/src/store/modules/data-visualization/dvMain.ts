@@ -1421,7 +1421,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             }
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }
-          if (element.component === 'VQuery') {
+          if (element.component === 'VQuery' && Array.isArray(element.propValue)) {
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
