@@ -843,11 +843,13 @@ public class ChartDataManage {
     }
 
     public void encodeData(ChartViewDTO chartViewDTO) {
-        if (chartViewDTO.getType().startsWith("chart-mix")) {
-            DatasetUtils.listEncode((List<ChartViewFieldDTO>) ((Map<String, Object>) chartViewDTO.getData().get("left")).get("sourceFields"));
-            DatasetUtils.listEncode((List<ChartViewFieldDTO>) ((Map<String, Object>) chartViewDTO.getData().get("right")).get("sourceFields"));
-        } else {
-            DatasetUtils.listEncode((List<ChartViewFieldDTO>) chartViewDTO.getData().get("sourceFields"));
+        if (chartViewDTO.getData() != null) {
+            if (chartViewDTO.getType().startsWith("chart-mix")) {
+                DatasetUtils.listEncode((List<ChartViewFieldDTO>) ((Map<String, Object>) chartViewDTO.getData().get("left")).get("sourceFields"));
+                DatasetUtils.listEncode((List<ChartViewFieldDTO>) ((Map<String, Object>) chartViewDTO.getData().get("right")).get("sourceFields"));
+            } else {
+                DatasetUtils.listEncode((List<ChartViewFieldDTO>) chartViewDTO.getData().get("sourceFields"));
+            }
         }
     }
 }
