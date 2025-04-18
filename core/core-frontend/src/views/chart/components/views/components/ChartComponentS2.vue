@@ -134,20 +134,20 @@ let chartData = shallowRef<Partial<Chart['data']>>({
 const containerId = 'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
 const viewTrack = ref(null)
 
-const calcData = (view: Chart, callback, resetPageInfo = true) => {
-  if (view.customAttr.basicStyle.tablePageStyle === 'general') {
+const calcData = (viewInfo: Chart, callback, resetPageInfo = true) => {
+  if (viewInfo.customAttr.basicStyle.tablePageStyle === 'general') {
     if (state.currentPageSize !== 0) {
-      view.chartExtRequest.pageSize = state.currentPageSize
+      viewInfo.chartExtRequest.pageSize = state.currentPageSize
       state.pageInfo.pageSize = state.currentPageSize
     } else {
-      view.chartExtRequest.pageSize = state.pageInfo.pageSize
+      viewInfo.chartExtRequest.pageSize = state.pageInfo.pageSize
     }
   } else {
-    delete view.chartExtRequest.pageSize
+    delete viewInfo.chartExtRequest?.pageSize
   }
-  if (view.tableId || view['dataFrom'] === 'template') {
+  if (viewInfo.tableId || viewInfo['dataFrom'] === 'template') {
     isError.value = false
-    const v = JSON.parse(JSON.stringify(view))
+    const v = JSON.parse(JSON.stringify(viewInfo))
     getData(v)
       .then(res => {
         if (res.code && res.code !== 0) {
@@ -156,7 +156,7 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
         } else {
           chartData.value = res?.data as Partial<Chart['data']>
           state.totalItems = res?.totalItems
-          dvMainStore.setViewDataDetails(view.id, res)
+          dvMainStore.setViewDataDetails(viewInfo.id, res)
           emit('onDrillFilters', res?.drillFilters)
           renderChart(res as unknown as Chart, resetPageInfo)
         }
