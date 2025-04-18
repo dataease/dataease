@@ -94,6 +94,7 @@ public class ChartViewManege {
         SnapshotCoreChartView coreChartView = snapshotCoreChartViewMapper.selectById(id);
         SnapshotCoreChartView record = transDTO2Record(chartViewDTO);
         if (ObjectUtils.isEmpty(coreChartView)) {
+            snapshotCoreChartViewMapper.deleteById(record.getId());
             snapshotCoreChartViewMapper.insert(record);
         } else {
             UpdateWrapper<SnapshotCoreChartView> updateWrapper = new UpdateWrapper<>();

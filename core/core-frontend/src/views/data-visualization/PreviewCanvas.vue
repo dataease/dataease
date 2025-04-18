@@ -34,7 +34,7 @@ const state = reactive({
   curPreviewGap: 0,
   initState: true,
   editPreview: false,
-  showPosition: null,
+  showPosition: 'preview',
   showOffset: {
     top: 3,
     left: 3
@@ -206,6 +206,7 @@ onMounted(async () => {
   state.editPreview = router.currentRoute.value.query.editPreview === 'true'
   dvMainStore.setIframeFlag(isFrameFlag)
   dvMainStore.setIsPopWindow(isPopWindow)
+  state.showPosition = state.editPreview ? 'edit-preview' : 'preview'
   const { dvType, callBackFlag, taskId, showWatermark } = router.currentRoute.value.query
   if (!!taskId) {
     dvMainStore.setCanvasAttachInfo({ taskId, showWatermark })
@@ -257,6 +258,7 @@ defineExpose({
       :is-selector="props.isSelector"
       :download-status="downloadStatus"
       :show-pop-bar="true"
+      :show-position="state.showPosition"
       :show-linkage-button="false"
     ></de-preview>
     <empty-background
