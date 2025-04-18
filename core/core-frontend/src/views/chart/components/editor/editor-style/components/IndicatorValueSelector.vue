@@ -61,10 +61,15 @@ const state = reactive({
   indicatorValueForm: JSON.parse(JSON.stringify(DEFAULT_INDICATOR_STYLE)),
   basicStyleForm: {} as ChartBasicStyle
 })
-
 const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 60; i = i + 2) {
+    arr.push({
+      name: i + '',
+      value: i
+    })
+  }
+  for (let i = 70; i <= 210; i += 10) {
     arr.push({
       name: i + '',
       value: i

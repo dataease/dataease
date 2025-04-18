@@ -64,6 +64,12 @@ const fontSizeList = computed(() => {
       value: i
     })
   }
+  for (let i = 70; i <= 210; i += 10) {
+    arr.push({
+      name: i + '',
+      value: i
+    })
+  }
   return arr
 })
 
