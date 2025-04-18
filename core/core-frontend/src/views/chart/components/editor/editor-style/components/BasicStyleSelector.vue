@@ -1755,6 +1755,11 @@ onMounted(() => {
   align-items: center;
 }
 .radius-class {
-  flex-wrap: nowrap !important;
+  :deep(.ed-radio) {
+    margin-right: 30px !important;
+  }
+  .ed-radio:last-child {
+    margin-right: 0px !important;
+  }
 }
 </style>
