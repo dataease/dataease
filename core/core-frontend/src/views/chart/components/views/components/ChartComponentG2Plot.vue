@@ -615,37 +615,38 @@ const trackMenu = computed(() => {
   let trackMenuInfo = []
   // 复用、放大状态的仪表板不进行联动、跳转和下钻的动作
   if (!['multiplexing', 'viewDialog'].includes(showPosition.value)) {
+    let drillFields =
+      curView?.drill && curView?.drillFilters?.length
+        ? curView.drillFilters.map(item => item.fieldId)
+        : []
     let linkageCount = 0
     let jumpCount = 0
     if (curView?.type?.includes('chart-mix')) {
-      chartData.value?.left?.fields?.forEach(item => {
-        const sourceInfo = view.value.id + '#' + item.id
-        if (nowPanelTrackInfo.value[sourceInfo]) {
-          linkageCount++
-        }
-        if (nowPanelJumpInfo.value[sourceInfo]) {
-          jumpCount++
-        }
-      })
-      chartData.value?.right?.fields?.forEach(item => {
-        const sourceInfo = view.value.id + '#' + item.id
-        if (nowPanelTrackInfo.value[sourceInfo]) {
-          linkageCount++
-        }
-        if (nowPanelJumpInfo.value[sourceInfo]) {
-          jumpCount++
-        }
+      Array.of('left', 'right').forEach(side => {
+        chartData.value?.[side]?.fields
+          ?.filter(item => !drillFields.includes(item.id))
+          .forEach(item => {
+            const sourceInfo = view.value.id + '#' + item.id
+            if (nowPanelTrackInfo.value[sourceInfo]) {
+              linkageCount++
+            }
+            if (nowPanelJumpInfo.value[sourceInfo]) {
+              jumpCount++
+            }
+          })
       })
     } else {
-      chartData.value?.fields?.forEach(item => {
-        const sourceInfo = view.value.id + '#' + item.id
-        if (nowPanelTrackInfo.value[sourceInfo]) {
-          linkageCount++
-        }
-        if (nowPanelJumpInfo.value[sourceInfo]) {
-          jumpCount++
-        }
-      })
+      chartData.value?.fields
+        ?.filter(item => !drillFields.includes(item.id))
+        .forEach(item => {
+          const sourceInfo = view.value.id + '#' + item.id
+          if (nowPanelTrackInfo.value[sourceInfo]) {
+            linkageCount++
+          }
+          if (nowPanelJumpInfo.value[sourceInfo]) {
+            jumpCount++
+          }
+        })
     }
     jumpCount &&
       view.value?.jumpActive &&
