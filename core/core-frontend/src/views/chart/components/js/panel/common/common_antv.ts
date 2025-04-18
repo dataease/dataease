@@ -489,7 +489,8 @@ export function getXAxis(chart: Chart) {
               style: {
                 fill: a.axisLabel.color,
                 fontSize: a.axisLabel.fontSize,
-                textAlign: textAlign
+                textAlign: textAlign,
+                fontFamily: chart.fontFamily
               },
               formatter: value => {
                 return chart.type === 'bidirectional-bar' && value.length > a.axisLabel.lengthLimit
@@ -594,7 +595,8 @@ export function getYAxis(chart: Chart) {
           fill: yAxis.axisLabel.color,
           fontSize: yAxis.axisLabel.fontSize,
           textBaseline,
-          textAlign
+          textAlign,
+          fontFamily: chart.fontFamily
         },
         formatter: value => {
           return value.length > yAxis.axisLabel.lengthLimit
@@ -695,7 +697,8 @@ export function getYAxisExt(chart: Chart) {
           fill: yAxis.axisLabel.color,
           fontSize: yAxis.axisLabel.fontSize,
           textBaseline,
-          textAlign
+          textAlign,
+          fontFamily: chart.fontFamily
         }
       }
     : null
