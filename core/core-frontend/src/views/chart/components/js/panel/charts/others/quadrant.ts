@@ -477,7 +477,6 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configAnalyse,
       this.configSlider,
       this.configBasicStyle
     )(chart, options, {}, this)
