@@ -698,7 +698,7 @@ public class ExportCenterManage implements BaseExportApi {
                 List<Object[]> details = new ArrayList<>();
                 Sheet detailsSheet;
                 Integer sheetIndex = 1;
-                if ("dataset".equals(request.getDownloadType()) || request.getViewInfo().getType().equalsIgnoreCase("table-info")) {
+                if ("dataset".equals(request.getDownloadType()) || request.getViewInfo().getType().equalsIgnoreCase("table-info") || request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
                     request.getViewInfo().getChartExtRequest().setPageSize(Long.valueOf(extractPageSize));
                     ChartViewDTO chartViewDTO = chartDataServer.findExcelData(request);
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
