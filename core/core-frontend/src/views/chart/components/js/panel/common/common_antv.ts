@@ -152,15 +152,17 @@ export function getTheme(chart: Chart) {
           'g2-tooltip-list-item': {
             display: 'flex',
             'align-items': 'flex-start',
+            'justify-content': 'space-between',
             'line-height': tooltipFontsize + 'px'
           },
           'g2-tooltip-name': {
             display: 'inline-block',
-            'line-height': tooltipFontsize + 'px',
-            flex: 1
+            'line-height': tooltipFontsize + 'px'
           },
           'g2-tooltip-value': {
+            flex: 1,
             display: 'inline-block',
+            'text-align': 'end',
             'line-height': tooltipFontsize + 'px'
           },
           'g2-tooltip-marker': {
