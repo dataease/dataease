@@ -947,6 +947,7 @@ public class CalciteProvider extends Provider {
             commonThreadPool.addTask(() -> {
                 try {
                     BasicDataSource dataSource = new BasicDataSource();
+                    dataSource.setMaxWaitMillis(5 * 1000);
                     Schema schema = null;
                     DatasourceConfiguration configuration = null;
                     DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(ds.getType());
@@ -1690,6 +1691,7 @@ public class CalciteProvider extends Provider {
             }
             JdbcSchema jdbcSchema = rootSchema.getSubSchema(String.format(SQLConstants.SCHEMA, dsId)).unwrap(JdbcSchema.class);
             BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
+            basicDataSource.setMaxWaitMillis(5 * 1000);
             return basicDataSource.getConnection();
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_invalid_connection") + e.getMessage());
