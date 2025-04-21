@@ -173,7 +173,11 @@ const handleInnerMouseDown = e => {
     e?.stopPropagation()
     e?.preventDefault()
   }
-  if (['popEdit', 'preview'].includes(showPosition.value) || dvMainStore.mobileInPc) {
+  if (
+    (!['rich-text'].includes(config.value.innerType) &&
+      ['popEdit', 'preview'].includes(showPosition.value)) ||
+    dvMainStore.mobileInPc
+  ) {
     onClick(e)
     if (e.target?.className?.includes('ed-input__inner')) return
     e?.stopPropagation()
