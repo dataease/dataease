@@ -2394,7 +2394,7 @@ export default {
     Professional: '專業版',
     Embedded: '嵌入式版',
     support: '取得技術支援',
-    update_success: '更新成功',
+    update_success: '更新成功，請重新登錄',
     serial_no: '序號',
     remark: '備註',
     back_community: '還原至社區版',

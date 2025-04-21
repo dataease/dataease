@@ -2464,7 +2464,7 @@ export default {
     Professional: 'Professional Edition',
     Embedded: 'Embedded Edition',
     support: 'Get technical support',
-    update_success: 'Update successful',
+    update_success: 'Update successful, please log in again',
     serial_no: 'Serial number',
     remark: 'Remark',
     back_community: 'Revert to Community Edition',

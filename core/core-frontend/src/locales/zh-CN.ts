@@ -2400,7 +2400,7 @@ export default {
     Professional: '专业版',
     Embedded: '嵌入式版',
     support: '获取技术支持',
-    update_success: '更新成功',
+    update_success: '更新成功，请重新登录',
     serial_no: '序列号',
     remark: '备注',
     back_community: '还原至社区版',
