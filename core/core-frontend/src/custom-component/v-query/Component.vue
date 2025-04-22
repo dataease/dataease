@@ -96,6 +96,9 @@ const defaultStyle = {
 }
 const customStyle = reactive({ ...defaultStyle })
 const snapshotStore = snapshotStoreWithOut()
+const userAgent = navigator.userAgent.toLowerCase()
+// 判断是否为飞书内置浏览器
+const isFeiShu = /lark/i.test(userAgent)
 
 const btnStyle = computed(() => {
   const style = {
@@ -772,7 +775,7 @@ const marginRight = computed<CSSProperties>(() => {
 })
 
 const autoStyle = computed(() => {
-  if (isISOMobile()) {
+  if (isISOMobile() || isFeiShu) {
     return {
       position: 'absolute',
       height: 100 / scale.value + '%!important',
