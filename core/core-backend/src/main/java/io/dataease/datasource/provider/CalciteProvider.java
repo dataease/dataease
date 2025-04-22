@@ -1284,6 +1284,8 @@ public class CalciteProvider extends Provider {
                                    END,
                                CASE
                                    WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval%%' THEN 1
+                                   WHEN a.attidentity = 'd' THEN 1
+                                   WHEN a.attidentity = 'a' THEN 1
                                    ELSE 0
                                    END
                         FROM pg_class c
