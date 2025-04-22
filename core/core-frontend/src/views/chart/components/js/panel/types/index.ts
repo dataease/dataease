@@ -10,6 +10,7 @@ export enum ChartRenderType {
 
 export enum ChartLibraryType {
   G2_PLOT = 'g2plot',
+  G2 = 'g2',
   L7_PLOT = 'l7plot',
   L7 = 'l7',
   ECHARTS = 'echarts',
