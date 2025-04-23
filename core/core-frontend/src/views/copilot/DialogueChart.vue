@@ -7,7 +7,6 @@ import copilot from '@/assets/svg/copilot.svg'
 import chartTable from '@/assets/svg/chart-table.svg'
 import chartDownload from '@/assets/svg/chart-download.svg'
 import { PropType, computed, onMounted, shallowRef, ref, nextTick, watch } from 'vue'
-import { Column, Line, Pie } from '@antv/g2plot'
 import { useElementSize } from '@vueuse/core'
 import { downloadCanvas } from '@/utils/imgUtils'
 import ExcelJS from 'exceljs'
@@ -53,7 +52,7 @@ const chartRef = ref()
 const { width } = useElementSize(chartRef)
 onMounted(() => {
   const { chart, msgType, msgStatus, chartData, id } = props.copilotInfo
-  if (msgStatus === 1 && msgType === 'api' && chartData) {
+  /* if (msgStatus === 1 && msgType === 'api' && chartData) {
     if (['bar', 'line'].includes(chart.type)) {
       activeCommand.value = chart.type
       const chartType = chart.type === 'bar' ? Column : Line
@@ -94,7 +93,7 @@ onMounted(() => {
       })
       renderTableLocal.value = true
     }
-  }
+  } */
   nextTick(() => {
     ;(chartTypeList.value || content.value).scrollIntoView({
       block: 'end',
@@ -134,7 +133,7 @@ const changeChartType = () => {
 }
 const switchChartType = type => {
   renderTableLocal.value = false
-  nextTick(() => {
+  /* nextTick(() => {
     if (columnPlot?.chart && !columnPlot.chart.wrapperElement) {
       columnPlot.chart.wrapperElement = document.querySelector(
         `#de-${props.copilotInfo.id}-ed > div`
@@ -193,7 +192,7 @@ const switchChartType = type => {
 
       renderTableLocal.value = true
     }
-  })
+  }) */
 }
 const chartTypeRef = ref()
 const downloadChart = () => {

@@ -26,7 +26,7 @@ export default {
           vue: ['vue', 'vue-router', 'pinia', 'vue-i18n', 'mitt'],
           lodash: ['lodash-es', 'lodash'],
           library: ['jspdf', '@tinymce/tinymce-vue', 'screenfull'],
-          antv: ['@antv/g2', '@antv/g2plot', '@antv/l7', '@antv/l7plot', '@antv/s2'],
+          antv: ['@antv/g2', '@antv/l7', '@antv/l7plot', '@antv/s2'],
           tinymce: ['tinymce'],
           axios: ['axios'],
           'vuedraggable-es': ['vuedraggable']

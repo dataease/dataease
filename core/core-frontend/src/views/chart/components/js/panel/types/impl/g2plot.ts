@@ -1,5 +1,3 @@
-import type { PickOptions } from '@antv/g2plot/esm/core/plot'
-import type { Plot } from '@antv/g2plot/esm/core/plot'
 import {
   getAnalyse,
   getAnalyseHorizontal,
@@ -31,7 +29,6 @@ import {
   handleEmptyDataStrategy,
   setupSeriesColor
 } from '../../../util'
-import { Options } from '@antv/g2plot'
 
 export interface G2PlotDrawOptions<O> extends AntVDrawOptions<O> {
   /**
