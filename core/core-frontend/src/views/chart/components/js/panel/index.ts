@@ -19,9 +19,10 @@ class ChartViewManager {
 
 const chartViewManager = new ChartViewManager()
 // 批量自动注册图表，只要是 AbstractChartView 的子类都初始化然后存起来
-const charts = import.meta.glob(['./charts/map/*.ts', './charts/table/*.ts', '!**/common.ts'], {
-  eager: true
-})
+const charts = import.meta.glob(
+  ['./charts/map/*.ts', './charts/table/*.ts', './charts/g2/**/*.ts', '!**/common.ts'],
+  { eager: true }
+)
 for (const chart in charts) {
   const chartModule = charts[chart]
   Object.getOwnPropertyNames(chartModule).forEach(prop => {
