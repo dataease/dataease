@@ -16,7 +16,8 @@ import {
 import {
   handleGeoJson,
   mapRendered,
-  mapRendering
+  mapRendering,
+  substitute
 } from '@/views/chart/components/js/panel/common/common_antv'
 import type { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
@@ -35,7 +36,6 @@ import {
   ITEM_TPL,
   LIST_CLASS
 } from '@antv/l7plot-component/dist/esm/legend/category/constants'
-import substitute from '@antv/util/esm/substitute'
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { getCustomGeoArea } from '@/api/map'
 import { centroid } from '@turf/centroid'

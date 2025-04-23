@@ -1,7 +1,7 @@
 import type { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot/esm/plots/waterfall'
-import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
-import { flow, hexColorToRGBA, parseJson } from '../../../util'
-import { valueFormatter } from '../../../formatter'
+import { G2PlotChartView, G2PlotDrawOptions } from '../../../types/impl/g2plot'
+import { flow, hexColorToRGBA, parseJson } from '../../../../util'
+import { valueFormatter } from '../../../../formatter'
 import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
@@ -11,7 +11,7 @@ import {
   getTooltipSeriesTotalMap,
   setGradientColor,
   TOOLTIP_TPL
-} from '../../common/common_antv'
+} from '../../../common/common_antv'
 import { isEmpty } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'

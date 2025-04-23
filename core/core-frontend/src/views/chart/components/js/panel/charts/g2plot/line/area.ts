@@ -24,7 +24,7 @@ import {
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/line/common'
+} from '@/views/chart/components/js/panel/charts/g2plot/line/common'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'

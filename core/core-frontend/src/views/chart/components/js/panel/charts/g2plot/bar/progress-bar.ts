@@ -1,5 +1,5 @@
-import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
-import { flow, hexColorToRGBA, parseJson } from '../../../util'
+import { G2PlotChartView, G2PlotDrawOptions } from '../../../types/impl/g2plot'
+import { flow, hexColorToRGBA, parseJson } from '../../../../util'
 import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
@@ -7,13 +7,13 @@ import {
   getTooltipContainer,
   setGradientColor,
   TOOLTIP_TPL
-} from '../../common/common_antv'
+} from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { Bar as G2Progress, BarOptions } from '@antv/g2plot/esm/plots/bar'
 import {
   BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/bar/common'
+} from '@/views/chart/components/js/panel/charts/g2plot/bar/common'
 import { cloneDeep, defaultTo } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { Options } from '@antv/g2plot/esm'

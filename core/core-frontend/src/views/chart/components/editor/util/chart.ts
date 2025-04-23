@@ -1732,7 +1732,7 @@ export const BASE_VIEW_CONFIG = {
   title: t('data_set.view'),
   sceneId: 0, // 仪表板id
   tableId: '', // 数据集id
-  type: 'bar',
+  type: 'map',
   render: 'antv',
   resultCount: 1000,
   resultMode: 'custom',

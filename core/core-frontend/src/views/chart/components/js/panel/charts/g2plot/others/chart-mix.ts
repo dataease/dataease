@@ -15,7 +15,7 @@ import {
   getYAxisExt,
   setGradientColor,
   TOOLTIP_TPL
-} from '../../common/common_antv'
+} from '../../../common/common_antv'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import {
   cloneDeep,

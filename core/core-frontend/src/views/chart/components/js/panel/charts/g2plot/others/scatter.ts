@@ -3,14 +3,14 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import type { ScatterOptions, Scatter as G2Scatter } from '@antv/g2plot/esm/plots/scatter'
-import { flow, parseJson } from '../../../util'
-import { valueFormatter } from '../../../formatter'
+import { flow, parseJson } from '../../../../util'
+import { valueFormatter } from '../../../../formatter'
 import {
   configPlotTooltipEvent,
   getPadding,
   getTooltipContainer,
   TOOLTIP_TPL
-} from '../../common/common_antv'
+} from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaults, isEmpty } from 'lodash-es'
 import { DEFAULT_LEGEND_STYLE } from '@/views/chart/components/editor/util/chart'

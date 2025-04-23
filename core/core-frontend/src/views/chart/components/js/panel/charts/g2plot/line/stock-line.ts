@@ -4,7 +4,7 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import type { Mix, MixOptions } from '@antv/g2plot/esm/plots/mix'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { LINE_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/line/common'
+import { LINE_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/g2plot/line/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import type { Options } from '@antv/g2plot/esm'

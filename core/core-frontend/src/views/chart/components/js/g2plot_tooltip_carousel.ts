@@ -1,5 +1,3 @@
-import { DualAxes, Plot } from '@antv/g2plot'
-
 /**
  * 使用 Map 来存储实例，键为 chart.container 对象
  */

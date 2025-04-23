@@ -10,7 +10,7 @@ import {
   BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/bar/common'
+} from '@/views/chart/components/js/panel/charts/g2plot/bar/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { BulletOptions } from '@antv/g2plot'

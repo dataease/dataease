@@ -14,7 +14,7 @@ import {
   SANKEY_AXIS_TYPE,
   SANKEY_EDITOR_PROPERTY,
   SANKEY_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/others/sankey-common'
+} from '@/views/chart/components/js/panel/charts/g2plot/others/sankey-common'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []

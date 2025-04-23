@@ -10,8 +10,6 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { AreaOptions, LabelOptions } from '@antv/l7plot'
 import { TooltipOptions } from '@antv/l7plot/dist/lib/types/tooltip'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
-import { Datum } from '@antv/g2plot/esm/types/common'
-import { Tooltip } from '@antv/g2plot/esm'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
 import _ from 'lodash'
@@ -23,7 +21,6 @@ import {
   ITEM_TPL,
   LIST_CLASS
 } from '@antv/l7plot-component/dist/esm/legend/category/constants'
-import substitute from '@antv/util/esm/substitute'
 import type { Plot as L7Plot, PlotOptions } from '@antv/l7plot/dist/esm'
 import { Zoom } from '@antv/l7'
 import { DOM } from '@antv/l7-utils'
@@ -31,8 +28,6 @@ import { Scene } from '@antv/l7-scene'
 import { type IZoomControlOption } from '@antv/l7-component'
 import { PositionType } from '@antv/l7-core'
 import { centroid } from '@turf/centroid'
-import type { Plot } from '@antv/g2plot'
-import type { PickOptions } from '@antv/g2plot/lib/core/plot'
 import { defaults, find, groupBy, map, uniq } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isMobile } from '@/utils/utils'
@@ -2529,4 +2524,20 @@ export const assembleOptionsDataForRoundAngle = (
   })
   // 将分组后的数据重新展开为一个数组
   return Object.values(groupedByField).flat()
+}
+
+interface ObjectType<T> {
+  [key: string]: T
+}
+
+export function substitute<T>(str: string, o: ObjectType<T>) {
+  if (!str || !o) {
+    return str
+  }
+  return str.replace(/\\?\{([^{}]+)\}/g, (match, name): any => {
+    if (match.charAt(0) === '\\') {
+      return match.slice(1)
+    }
+    return o[name] === undefined ? '' : o[name]
+  })
 }

@@ -3,7 +3,7 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import type { ScatterOptions, Scatter as G2Scatter } from '@antv/g2plot/esm/plots/scatter'
-import { flow, parseJson, setUpSingleDimensionSeriesColor } from '../../../util'
+import { flow, parseJson, setUpSingleDimensionSeriesColor } from '../../../../util'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaults, isEmpty, map } from 'lodash-es'
@@ -15,7 +15,7 @@ import {
   getTooltipContainer,
   TOOLTIP_TPL,
   getPadding
-} from '../../common/common_antv'
+} from '../../../common/common_antv'
 import { DEFAULT_LEGEND_STYLE } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()

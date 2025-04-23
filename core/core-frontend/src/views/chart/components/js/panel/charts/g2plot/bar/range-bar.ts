@@ -19,7 +19,7 @@ import {
   BAR_AXIS_TYPE,
   BAR_RANGE_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/bar/common'
+} from '@/views/chart/components/js/panel/charts/g2plot/bar/common'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'

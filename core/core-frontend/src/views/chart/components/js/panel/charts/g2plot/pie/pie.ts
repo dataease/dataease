@@ -22,7 +22,7 @@ import {
   PIE_AXIS_TYPE,
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/pie/common'
+} from '@/views/chart/components/js/panel/charts/g2plot/pie/common'
 import type { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'

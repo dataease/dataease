@@ -1,4 +1,4 @@
-import { AbstractChartView, ChartLibraryType, ChartRenderType } from '../../types'
+import { AbstractChartView, ChartLibraryType, ChartRenderType } from '../../../types'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_CASES } from '@/views/chart/components/editor/util/chart'
 

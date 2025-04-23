@@ -8,7 +8,7 @@ import {
   getPadding,
   getTooltipContainer,
   TOOLTIP_TPL
-} from '../../common/common_antv'
+} from '../../../common/common_antv'
 import {
   convertToAlphaColor,
   flow,
@@ -25,7 +25,7 @@ import {
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/line/common'
+} from '@/views/chart/components/js/panel/charts/g2plot/line/common'
 import type { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_LABEL, DEFAULT_LEGEND_STYLE } from '@/views/chart/components/editor/util/chart'

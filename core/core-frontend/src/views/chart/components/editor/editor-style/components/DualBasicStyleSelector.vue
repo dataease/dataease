@@ -13,7 +13,7 @@ import { storeToRefs } from 'pinia'
 import {
   CHART_MIX_DEFAULT_BASIC_STYLE,
   MixChartBasicStyle
-} from '@/views/chart/components/js/panel/charts/others/chart-mix-common'
+} from '@/views/chart/components/js/panel/charts/g2plot/others/chart-mix-common'
 
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
