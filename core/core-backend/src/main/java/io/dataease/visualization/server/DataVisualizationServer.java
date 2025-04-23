@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
@@ -38,6 +39,7 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.i18n.Translator;
@@ -257,11 +259,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<Long, Long> datasourceIdMap = new HashMap<>();
         Map<Long, Map<String, String>> dsTableNamesMap = new HashMap<>();
         List<Long> newDatasourceId = new ArrayList<>();
+        List<Long> excelDatasourceId = new ArrayList<>();
+        Map<String, String> excelTableNamesMap = new HashMap<>();
         if (appData != null) {
             isAppSave = true;
             try {
                 List<AppCoreDatasourceVO> appCoreDatasourceVO = appData.getDatasourceInfo();
-
                 //  app 数据源 excel 表名映射
                 appCoreDatasourceVO.forEach(datasourceOld -> {
                     newDatasourceId.add(datasourceOld.getSystemDatasourceId());
@@ -283,6 +286,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     if (StringUtils.isNotEmpty(datasourceNew.getConfiguration())) {
                         if (datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
                             dsTableNamesMap.put(datasourceNew.getId(), ExcelUtils.getTableNamesMap(datasourceNew.getType(), datasourceNew.getConfiguration()));
+                            excelDatasourceId.add(datasourceNew.getId());
                         } else if (datasourceNew.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                             dsTableNamesMap.put(datasourceNew.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceNew.getType(), "getTableNamesMap", String.class, datasourceNew.getConfiguration()));
                         }
@@ -375,6 +379,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                             appDsTableNamesMap.forEach((keyName, valueName) -> {
                                 if (MapUtils.isNotEmpty(systemDsTableNamesMap) && StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
                                     dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, systemDsTableNamesMap.get(keyName)));
+                                    excelTableNamesMap.put(valueName, systemDsTableNamesMap.get(keyName));
                                 } else {
                                     dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, "excel_can_not_find"));
                                 }
@@ -393,6 +398,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         }
                         datasetSQLManage.mergeDatasetCrossDefault(dsGroup);
                     }
+                    excelAdaptor(dsGroup,excelTableNamesMap,excelDatasourceId);
                     datasetGroupManage.innerSave(dsGroup);
                 });
 
@@ -479,6 +485,26 @@ public class DataVisualizationServer implements DataVisualizationApi {
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, canvasViews);
         return newDvId.toString();
+    }
+
+    private void excelAdaptor(DatasetGroupInfoDTO dsInfo,Map<String, String> excelTableNamesMap ,List<Long> excelDsId) {
+        List<UnionDTO> unionDTOList = JsonUtil.parseList(dsInfo.getInfo(), new TypeReference<>() {
+        });
+        if(CollectionUtils.isNotEmpty(excelDsId) && MapUtils.isNotEmpty(excelTableNamesMap)){
+            for(UnionDTO unionDTO : unionDTOList) {
+                DatasetTableDTO tableDTO =unionDTO.getCurrentDs();
+                if(excelDsId.contains(tableDTO.getDatasourceId())){
+                    DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(tableDTO.getInfo(), DatasetTableInfoDTO.class);
+                    String s = new String(Base64.getDecoder().decode(infoDTO.getSql()));
+                    excelTableNamesMap.forEach((key, value) -> {
+                        infoDTO.setSql(Base64.getEncoder().encodeToString(s.replaceAll(key, value).getBytes()));
+                    });
+                    tableDTO.setInfo((String)JsonUtil.toJSONString(infoDTO));
+                }
+
+            }
+        }
+        dsInfo.setInfo((String)JsonUtil.toJSONString(unionDTOList));
     }
 
     @Override
