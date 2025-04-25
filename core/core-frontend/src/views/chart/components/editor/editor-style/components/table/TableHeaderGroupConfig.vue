@@ -19,7 +19,8 @@ import {
   TableSheet,
   TooltipShowOptions,
   ColCell,
-  Node
+  Node,
+  LayoutResult
 } from '@antv/s2'
 import { ElMessageBox } from 'element-plus-secondary'
 import { cloneDeep, debounce, isEqual, isNumber } from 'lodash-es'
@@ -170,7 +171,12 @@ const renderTable = (chart: ChartObj) => {
       }
     },
     interaction: {
-      rangeSelection: false
+      rangeSelection: false,
+      resize: {
+        colCellHorizontal: false,
+        colCellVertical: false,
+        rowCellVertical: false
+      }
     }
   }
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
@@ -326,7 +332,7 @@ const renderTable = (chart: ChartObj) => {
     //如果有多个cell都在同一个层级，并且parent相同，那就是可以进行合并分组操作
     if (activeColumns?.length > 1) {
       const sameParent = activeCells.every(
-        cell => cell.getMeta().parent === curCell.getMeta().parent
+        cell => cell.getMeta().parent.id === curCell.getMeta().parent.id
       )
       if (!sameParent) {
         return
@@ -484,6 +490,21 @@ const renderTable = (chart: ChartObj) => {
       })
     }
   })
+  s2.once(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (e: LayoutResult) => {
+    const initialized = s2.store.get('initialized')
+    if (!initialized) {
+      s2.store.set('initialized', true)
+      s2.changeSheetSize(e.colsHierarchy.width)
+      const length = s2.dataCfg.data?.length || 0
+      const headerHeight = e.colsHierarchy.height
+      const rowHeight = s2.options.style.cellCfg.height
+      const totalHeight = headerHeight + rowHeight * length
+      if (containerDom.offsetHeight > totalHeight) {
+        containerDom.style.height = totalHeight + 'px'
+      }
+      s2.render(false)
+    }
+  })
   s2.render()
 }
 
@@ -527,9 +548,14 @@ const getTreesMaxDepth = (nodes: Array<ColumnNode>): number => {
   return Math.max(...rootDepths)
 }
 
-const resize = debounce((width, height) => {
+const resize = debounce(height => {
   if (s2) {
-    s2.changeSheetSize(width, height)
+    const tableHeight = s2.container.cfg.height
+    if (height > tableHeight) {
+      const dom = document.getElementById(containerId.value)
+      dom.style.height = tableHeight + 'px'
+    }
+    s2.changeSheetSize(undefined, height)
     s2.render(false)
   }
 }, 500)
@@ -545,14 +571,13 @@ onMounted(() => {
       preSize[0] = size.inlineSize
       preSize[1] = size.blockSize
     }
-    const widthOffset = Math.abs(size.inlineSize - preSize[0])
     const heightOffset = Math.abs(size.blockSize - preSize[1])
-    if (widthOffset < TOLERANCE && heightOffset < TOLERANCE) {
+    if (heightOffset < TOLERANCE) {
       return
     }
     preSize[0] = size.inlineSize
     preSize[1] = size.blockSize
-    resize(size.inlineSize, Math.round(size.blockSize))
+    resize(Math.round(size.blockSize))
   })
   resizeObserver.observe(document.getElementById(containerId.value))
 })
@@ -577,6 +602,8 @@ class GroupMenu extends BaseTooltip {
   position: relative;
   width: 100%;
   height: 40vh;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .group-menu {
@@ -597,5 +624,6 @@ class GroupMenu extends BaseTooltip {
 .button-group {
   display: flex;
   justify-content: end;
+  margin-top: 4vh;
 }
 </style>
