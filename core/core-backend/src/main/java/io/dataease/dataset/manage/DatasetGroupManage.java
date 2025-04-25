@@ -88,7 +88,6 @@ public class DatasetGroupManage {
 
     @Transactional
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO, boolean rename, boolean encode) throws Exception {
-        lock.lock();
         try {
             boolean isCreate;
             // 用于重命名获取pid
@@ -151,8 +150,6 @@ public class DatasetGroupManage {
             return datasetGroupInfoDTO;
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
-        } finally {
-            lock.unlock();
         }
         return null;
     }
