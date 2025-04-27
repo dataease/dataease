@@ -151,6 +151,7 @@ onMounted(() => {
     :disabled="!state.tableHeaderForm.showTableHeader"
     ref="tableHeaderForm"
     label-position="top"
+    size="small"
   >
     <el-form-item
       :label="

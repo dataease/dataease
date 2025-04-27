@@ -127,7 +127,6 @@ defineExpose({
 <template>
   <div class="flex-table" :class="!tableData.length && 'no-data'">
     <el-table
-      header-cell-class-name="header-cell"
       ref="table"
       :border="border"
       v-bind="state.tableAttrs"

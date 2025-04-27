@@ -267,6 +267,7 @@ onMounted(() => {
     :disabled="!state.legendForm.show"
     :model="state.legendForm"
     label-position="top"
+    size="small"
   >
     <el-row :gutter="8">
       <el-col :span="12">
