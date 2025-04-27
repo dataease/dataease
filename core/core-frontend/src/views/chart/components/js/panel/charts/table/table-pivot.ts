@@ -585,6 +585,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       s2.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(s2, event, meta))
       s2.on(S2Event.ROW_CELL_HOVER, event => this.showTooltip(s2, event, meta))
       s2.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(s2, event, meta))
+      // touch
+      this.configTouchEvent(s2, drawOption, meta)
     }
     // empty data tip
     configEmptyDataStyle(s2, newData)
@@ -594,8 +596,6 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     s2.on(S2Event.COL_CELL_CLICK, ev => this.headerCellClickAction(chart, ev, s2, action))
     // right click
     s2.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(s2, event, meta))
-    // touch
-    this.configTouchEvent(s2, drawOption, meta)
     // theme
     const customTheme = this.configTheme(chart)
     s2.setThemeCfg({ theme: customTheme })

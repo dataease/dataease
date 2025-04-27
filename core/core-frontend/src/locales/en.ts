@@ -2090,7 +2090,8 @@ export default {
     quota_position_row: 'Row',
     quota_col_label: 'Quota Column Label',
     table_grand_total_label: 'Total Alias',
-    table_field_total_label: 'Field Alias'
+    table_field_total_label: 'Field Alias',
+    table_row_header_freeze: 'Row Header Freeze'
   },
   dataset: {
     field_value: 'Field Value',
