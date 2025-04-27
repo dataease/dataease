@@ -766,6 +766,20 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
     <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('rowHeaderFreeze')"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableHeaderForm.rowHeaderFreeze"
+        @change="changeTableHeader('rowHeaderFreeze')"
+      >
+        {{ t('chart.table_row_header_freeze') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
       v-if="!batchOptStatus && showProperty('headerGroup')"
       class="form-item"
       :class="'form-item-' + themes"
