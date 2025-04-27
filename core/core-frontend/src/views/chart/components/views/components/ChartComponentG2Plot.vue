@@ -357,7 +357,7 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
       myChart = await chartView.drawChart({
         chartObj: myChart,
         container: containerId,
-        chart: chart,
+        chart: { ...chart, container: containerId },
         scale: 1,
         action,
         quadrantDefaultBaseline
