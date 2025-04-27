@@ -1259,7 +1259,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                 filterItem.mapValue = []
                 filterItem.defaultValueCheck = true
                 filterItem.timeType = 'fixed'
-                if (['0', '2'].includes(filterItem.displayType)) {
+                if (['0', '2', '9'].includes(filterItem.displayType)) {
                   const { optionValueSource, field, displayId } = filterItem
                   const queryMapFlag = optionValueSource === 1 && field.id !== displayId
                   let queryMapParams = queryParams
@@ -1431,7 +1431,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                 }
                 filterItem.defaultValueCheck = true
                 filterItem.timeType = 'fixed'
-                if (['0', '2'].includes(filterItem.displayType)) {
+                if (['0', '2', '9'].includes(filterItem.displayType)) {
                   const { optionValueSource, field, displayId } = filterItem
                   const queryMapFlag = optionValueSource === 1 && field.id !== displayId
                   let queryMapParams = queryParams
