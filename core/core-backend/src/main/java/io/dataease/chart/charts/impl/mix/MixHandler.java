@@ -255,7 +255,7 @@ public class MixHandler extends YoyChartHandler {
         var isDrill = CollectionUtils.isNotEmpty(drillFilters);
         view.setDrillFilters(drillFilters);
         view.setDrill(isDrill);
-        view.setSql(leftCalcResult.getQuerySql());
+        view.setSql(Base64.getEncoder().encodeToString(leftCalcResult.getQuerySql().getBytes()));
         view.setData(chartData);
         return view;
     }
