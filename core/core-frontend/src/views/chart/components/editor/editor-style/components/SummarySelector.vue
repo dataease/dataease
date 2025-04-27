@@ -123,6 +123,7 @@ onMounted(() => {
       ref="summaryForm"
       :disabled="!state.basicStyleForm.showSummary"
       :model="state.basicStyleForm"
+      size="small"
       label-position="top"
     >
       <el-form-item

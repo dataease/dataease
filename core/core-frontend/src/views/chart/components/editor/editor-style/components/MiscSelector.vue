@@ -305,7 +305,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form :model="state.miscForm">
+  <el-form size="small" :model="state.miscForm">
     <el-row :gutter="8">
       <el-col :span="12" v-show="showProperty('gaugeStartAngle')">
         <el-form-item

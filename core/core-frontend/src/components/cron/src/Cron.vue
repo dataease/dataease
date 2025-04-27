@@ -121,7 +121,6 @@ const emits = defineEmits(['update:modelValue'])
     </el-tabs>
     <!-- table -->
     <el-table
-      header-cell-class-name="header-cell"
       :data="tableData"
       size="mini"
       border
