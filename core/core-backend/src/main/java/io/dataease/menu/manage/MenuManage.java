@@ -3,6 +3,7 @@ package io.dataease.menu.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.menu.vo.MenuMeta;
 import io.dataease.api.menu.vo.MenuVO;
+import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.menu.bo.MenuTreeNode;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
@@ -80,7 +81,7 @@ public class MenuManage {
         MenuVO menuVO = new MenuVO();
         BeanUtils.copyBean(menuVO, coreMenu, "children");
         MenuMeta meta = new MenuMeta();
-        meta.setTitle(I18N_PREFIX + coreMenu.getName());
+        meta.setTitle(Translator.get(I18N_PREFIX + coreMenu.getName()));
         meta.setIcon(coreMenu.getIcon());
         menuVO.setMeta(meta);
 
