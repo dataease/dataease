@@ -2249,30 +2249,6 @@ export function getSummaryRow(data, axis, sumCon = []) {
   return summaryObj
 }
 
-/**
- * 汇总行样式,紧贴在单元格后面
- * @param newChart
- * @param newData
- * @param tableCell
- * @param tableHeader
- * @param showSummary
- */
-export const summaryRowStyle = (newChart, newData, tableCell, tableHeader, showSummary) => {
-  if (!showSummary || !newData.length) return
-  newChart.on(S2Event.LAYOUT_BEFORE_RENDER, () => {
-    const showHeader = tableHeader.showTableHeader === true
-    // 不显示表头时，减少一个表头的高度
-    const headerAndSummaryHeight = showHeader ? 2 : 1
-    const totalHeight =
-      tableHeader.tableTitleHeight * headerAndSummaryHeight +
-      tableCell.tableItemHeight * (newData.length - 1)
-    if (totalHeight < newChart.container.cfg.height) {
-      newChart.options.height =
-        totalHeight < newChart.container.cfg.height - 8 ? totalHeight + 8 : totalHeight
-    }
-  })
-}
-
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
     const textStyle = cloneDeep(this.theme.colCell.bolderText)

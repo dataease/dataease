@@ -22,7 +22,6 @@ import {
   getRowIndex,
   calculateHeaderHeight,
   SortTooltip,
-  summaryRowStyle,
   configEmptyDataStyle,
   getLeafNodes,
   getColumns,
@@ -230,7 +229,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     // 总计紧贴在单元格后面
-    summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
+    this.summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
     // 开启自动换行
     if (basicStyle.autoWrap && !tableCell.mergeCells) {
       // 调整表头宽度时，计算表头高度
@@ -513,6 +512,23 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
   }
 
+  protected summaryRowStyle(newChart: TableSheet, newData, tableCell, tableHeader, showSummary) {
+    if (!showSummary || !newData.length) return
+    const columns = newChart.dataCfg.fields.columns
+    const showHeader = tableHeader.showTableHeader === true
+    // 不显示表头时，减少一个表头的高度
+    const headerAndSummaryHeight = showHeader ? getMaxTreeDepth(columns) + 1 : 1
+    newChart.on(S2Event.LAYOUT_BEFORE_RENDER, () => {
+      const totalHeight =
+        tableHeader.tableTitleHeight * headerAndSummaryHeight +
+        tableCell.tableItemHeight * (newData.length - 1)
+      if (totalHeight < newChart.container.cfg.height) {
+        newChart.options.height =
+          totalHeight < newChart.container.cfg.height - 8 ? totalHeight + 8 : totalHeight
+      }
+    })
+  }
+
   constructor() {
     super('table-info', [])
   }
@@ -532,4 +548,18 @@ function getStartPosition(node) {
     return node.x
   }
   return getStartPosition(node.children[0])
+}
+
+function getMaxTreeDepth(nodes) {
+  if (!nodes?.length) {
+    return 0
+  }
+  return Math.max(
+    ...nodes.map(node => {
+      if (!node.children?.length) {
+        return 1
+      }
+      return getMaxTreeDepth(node.children) + 1
+    })
+  )
 }

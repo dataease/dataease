@@ -6,8 +6,7 @@ import {
   CustomDataCell,
   getSummaryRow,
   SortTooltip,
-  SummaryCell,
-  summaryRowStyle
+  SummaryCell
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -187,7 +186,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     // 总计紧贴在单元格后面
-    summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
+    this.summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
     // 自适应铺满
     if (basicStyle.tableColumnMode === 'adapt') {
       newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
@@ -331,6 +330,22 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
       return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
     }
+  }
+
+  protected summaryRowStyle(newChart, newData, tableCell, tableHeader, showSummary) {
+    if (!showSummary || !newData.length) return
+    newChart.on(S2Event.LAYOUT_BEFORE_RENDER, () => {
+      const showHeader = tableHeader.showTableHeader === true
+      // 不显示表头时，减少一个表头的高度
+      const headerAndSummaryHeight = showHeader ? 2 : 1
+      const totalHeight =
+        tableHeader.tableTitleHeight * headerAndSummaryHeight +
+        tableCell.tableItemHeight * (newData.length - 1)
+      if (totalHeight < newChart.container.cfg.height) {
+        newChart.options.height =
+          totalHeight < newChart.container.cfg.height - 8 ? totalHeight + 8 : totalHeight
+      }
+    })
   }
 
   constructor() {

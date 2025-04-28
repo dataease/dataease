@@ -490,6 +490,7 @@ watch(
             />
           </collapse-switch-item>
           <collapse-switch-item
+            v-if="showProperties('tooltip-selector')"
             v-model="chart.customAttr.tooltip.show"
             :themes="themes"
             :change-model="chart.customAttr.tooltip"
