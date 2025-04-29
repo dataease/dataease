@@ -638,6 +638,14 @@ onMounted(() => {
     Boolean(document.querySelector('.datav-preview'))
 })
 
+const tagWidth = computed(() => {
+  return Math.min(getCustomWidth() / 3, 40) + 'px'
+})
+
+const tagTextWidth = computed(() => {
+  return Math.min(getCustomWidth() / 3, 50) - 25 + 'px'
+})
+
 defineExpose({
   displayTypeChange,
   mult,
@@ -727,6 +735,18 @@ defineExpose({
   .ed-scrollbar__thumb {
     background: #bbbfc4 !important;
     opacity: 1 !important;
+  }
+}
+</style>
+
+<style lang="less" scoped>
+:deep(.ed-select-v2__selection) {
+  .ed-tag {
+    max-width: v-bind(tagWidth);
+  }
+
+  .ed-select__tags-text {
+    max-width: v-bind(tagTextWidth) !important;
   }
 }
 </style>
