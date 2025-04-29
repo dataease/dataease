@@ -914,7 +914,8 @@ const autoStyle = computed(() => {
   position: relative;
   --ed-font-size-base: v-bind(boxWidth);
 
-  :deep(.ed-select-v2 .ed-select-v2__selection .ed-tag) {
+  :deep(.ed-select-v2 .ed-select-v2__selection .ed-tag),
+  :deep(.select-trigger .ed-select__tags .ed-tag) {
     background-color: v-bind(tagColor);
   }
 
