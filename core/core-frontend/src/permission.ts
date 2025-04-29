@@ -53,7 +53,11 @@ router.beforeEach(async (to, from, next) => {
       pathname = pathname.replace('oidc/', '')
       pathname = pathname.substring(0, pathname.length - 1)
       const prefix = window.origin + pathname
-      window.location.href = prefix + '/mobile.html#' + to.path + linkQuery
+      let toPath = to.fullPath
+      if (toPath.includes('?')) {
+        toPath = to.fullPath.substring(0, to.fullPath.lastIndexOf('?'))
+      }
+      window.location.href = prefix + '/mobile.html#' + toPath + linkQuery
     } else if (
       wsCache.get('user.token') ||
       isDesktop ||
