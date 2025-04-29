@@ -2025,9 +2025,8 @@ const isProgressBar = computed(() => {
 }
 
 .series-select {
-  :deep(.ed-select__prefix--light) {
-    padding-right: unset;
-    border-right: unset;
+  :deep(.ed-select__prefix::after) {
+    display: none;
   }
 
   :deep(.ed-select__prefix--dark) {

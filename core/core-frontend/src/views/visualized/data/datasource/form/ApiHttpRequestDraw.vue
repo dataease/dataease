@@ -1021,10 +1021,11 @@ defineExpose({
 <style lang="less">
 .api-datasource-drawer {
   .select-type {
-    .ed-select__prefix--light {
-      border-right: none;
-      padding: 0;
+    .ed-select__prefix {
       font-size: 16px;
+      &::after {
+        display: none;
+      }
     }
   }
   .ed-drawer__body {
