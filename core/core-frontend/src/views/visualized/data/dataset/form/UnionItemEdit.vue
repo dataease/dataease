@@ -223,10 +223,11 @@ init()
 }
 .union-selector {
   width: 180px;
-  :deep(.ed-select__prefix--light) {
-    border-right: none;
+  :deep(.ed-select__prefix) {
     font-size: 22px;
-    padding: 0;
+    &::after {
+      display: none;
+    }
   }
 }
 .union-add {

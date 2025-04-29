@@ -995,13 +995,8 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .series-select {
-  :deep(.ed-select__prefix--light) {
-    padding-right: unset;
-    border-right: unset;
-  }
-  :deep(.ed-select__prefix--dark) {
-    padding-right: unset;
-    border-right: unset;
+  :deep(.ed-select__prefix::after) {
+    display: none;
   }
 }
 

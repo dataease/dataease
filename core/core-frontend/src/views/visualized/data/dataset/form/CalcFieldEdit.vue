@@ -650,10 +650,8 @@ initFunction()
   .mr0 {
     margin-right: 0;
 
-    :deep(.ed-select__prefix--light) {
-      padding: 0;
-      border: none;
-      margin: 0;
+    :deep(.ed-select__prefix::after) {
+      display: none;
     }
   }
 
