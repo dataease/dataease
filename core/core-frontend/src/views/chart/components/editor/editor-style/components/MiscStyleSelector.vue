@@ -83,7 +83,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form size="small" ref="miscForm" :model="state.miscForm">
+  <el-form ref="miscForm" :model="state.miscForm">
     <el-form-item
       v-if="showProperty('showName')"
       class="form-item form-item-checkbox"

@@ -290,7 +290,9 @@ const onComponentNameChange = () => {
 :deep(.ed-collapse) {
   border-top: unset;
 }
-
+:deep(.ed-collapse-item__header.is-active) {
+  border-bottom-color: rgba(31, 35, 41, 0.15);
+}
 :deep(.ed-collapse-item.ed-collapse--dark .ed-collapse-item__header) {
   border-color: rgba(255, 255, 255, 0.15);
   border-top: unset;

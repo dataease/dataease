@@ -472,7 +472,6 @@ onMounted(() => {
     :disabled="!state.tooltipForm.show"
     :model="state.tooltipForm"
     label-position="top"
-    size="small"
   >
     <el-form-item
       :label="t('chart.background') + t('chart.color')"

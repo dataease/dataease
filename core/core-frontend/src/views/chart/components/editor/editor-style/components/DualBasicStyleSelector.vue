@@ -155,7 +155,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <el-form size="small" style="width: 100%">
+  <div style="width: 100%">
     <el-tabs v-model="activeName" id="axis-tabs" stretch>
       <el-tab-pane :label="t('chart.yAxisLeft')" name="left">
         <template v-if="showProperty('colors')">
@@ -476,7 +476,7 @@ onMounted(() => {
         </el-form-item>
       </el-tab-pane>
     </el-tabs>
-  </el-form>
+  </div>
 </template>
 <style scoped lang="less">
 .form-item {

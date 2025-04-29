@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%" ref="bgForm">
-    <el-form size="small" label-position="top" style="width: 100%; margin-bottom: 16px">
+    <el-form label-position="top" style="width: 100%; margin-bottom: 16px">
       <el-form-item
         class="form-item no-margin-bottom"
         :class="'form-item-' + themes"

@@ -1,5 +1,5 @@
 <template>
-  <el-form size="small" label-position="left" :label-width="14">
+  <el-form label-position="left" :label-width="14">
     <el-row :gutter="8" v-for="(x, i) in positionKeysGroup" :key="i">
       <el-col :span="12" v-for="({ key, label, min, max, step }, j) in x" :key="j">
         <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">

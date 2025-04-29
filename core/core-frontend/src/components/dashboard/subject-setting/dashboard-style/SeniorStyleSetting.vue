@@ -12,7 +12,6 @@
             >
               <el-color-picker
                 :effect="themes"
-                size="small"
                 v-model="seniorStyleSetting.linkageIconColor"
                 :trigger-width="100"
                 is-custom
@@ -32,7 +31,6 @@
                 v-model="seniorStyleSetting.drillLayerColor"
                 :effect="themes"
                 :trigger-width="100"
-                size="small"
                 is-custom
                 :predefine="state.predefineColors"
                 @change="themeChange"

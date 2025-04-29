@@ -83,7 +83,7 @@ watch(
 
 <template>
   <el-row class="custom-row" style="padding-bottom: 8px">
-    <el-form size="small" label-position="top">
+    <el-form label-position="top">
       <template v-if="isSvgComponent">
         <el-row style="display: flex">
           <el-form-item

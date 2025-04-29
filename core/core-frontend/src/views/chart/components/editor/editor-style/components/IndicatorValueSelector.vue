@@ -131,7 +131,6 @@ defineExpose({ getFormData })
       :disabled="!state.indicatorValueForm.show"
       :model="state.indicatorValueForm"
       label-position="top"
-      size="small"
     >
       <el-form-item
         class="form-item"
