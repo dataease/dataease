@@ -176,10 +176,6 @@ onUnmounted(() => {
   .scale-area {
     display: flex;
     align-items: center;
-
-    :deep(.ed-input-number__decrease) {
-      --ed-input-number-controls-height: 12px;
-    }
   }
 }
 :deep(.ed-input--dark .ed-input__wrapper),

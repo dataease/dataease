@@ -292,7 +292,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form size="small" ref="tableTotalForm" :model="state.tableTotalForm" label-position="top">
+  <el-form ref="tableTotalForm" :model="state.tableTotalForm" label-position="top">
     <el-divider
       v-if="showProperty('row')"
       content-position="center"

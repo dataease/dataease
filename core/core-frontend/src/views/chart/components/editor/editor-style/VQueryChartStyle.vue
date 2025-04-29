@@ -293,7 +293,7 @@ const onTitleChange = () => {
     <el-row class="de-collapse-style">
       <el-collapse v-model="styleActiveNames" class="style-collapse">
         <el-collapse-item :effect="themes" name="basicStyle" :title="t('chart.basic_style')">
-          <el-form size="small" @keydown.stop.prevent.enter label-position="top">
+          <el-form @keydown.stop.prevent.enter label-position="top">
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox
                 :effect="themes"
@@ -360,12 +360,7 @@ const onTitleChange = () => {
           </el-form>
         </el-collapse-item>
         <el-collapse-item :effect="themes" name="addition" :title="t('v_query.query_condition')">
-          <el-form
-            size="small"
-            @keydown.stop.prevent.enter
-            label-position="top"
-            style="padding-bottom: 8px"
-          >
+          <el-form @keydown.stop.prevent.enter label-position="top" style="padding-bottom: 8px">
             <el-row :gutter="8">
               <el-col :span="12">
                 <el-form-item
@@ -433,7 +428,6 @@ const onTitleChange = () => {
                 <el-color-picker
                   :effect="themes"
                   :trigger-width="56"
-                  style="max-width: 56px; min-width: 56px"
                   is-custom
                   show-alpha
                   v-model="chart.customStyle.component.text"
@@ -510,7 +504,6 @@ const onTitleChange = () => {
             :class="!chart.customStyle.component.labelShow && 'is-disabled'"
             :disabled="!chart.customStyle.component.labelShow"
             label-position="top"
-            size="small"
             style="padding-bottom: 8px"
           >
             <el-form-item
@@ -537,7 +530,6 @@ const onTitleChange = () => {
                 :effect="themes"
                 is-custom
                 show-alpha
-                style="width: 50px"
                 v-model="chart.customStyle.component.labelColor"
                 :predefine="predefineColors"
               /><el-tooltip
@@ -616,12 +608,7 @@ const onTitleChange = () => {
           </el-form>
         </collapse-switch-item>
         <el-collapse-item :effect="themes" name="button" :title="t('commons.button')">
-          <el-form
-            size="small"
-            @keydown.stop.prevent.enter
-            label-position="top"
-            style="padding-bottom: 8px"
-          >
+          <el-form @keydown.stop.prevent.enter label-position="top" style="padding-bottom: 8px">
             <el-form-item
               :effect="themes"
               class="form-item"

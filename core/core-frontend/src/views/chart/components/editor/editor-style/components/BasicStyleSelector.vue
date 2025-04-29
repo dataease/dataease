@@ -367,7 +367,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <el-form size="small" style="width: 100%">
+  <div style="width: 100%">
     <template v-if="showProperty('colors')">
       <custom-color-style-select
         v-model="state"
@@ -1580,7 +1580,7 @@ onMounted(() => {
       </el-row>
     </div>
     <!-- circle-packing end -->
-  </el-form>
+  </div>
 </template>
 <style scoped lang="less">
 .color-picker-style {

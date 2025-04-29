@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%">
-    <el-form label-position="top" size="small" style="width: 100%">
+    <el-form label-position="top" style="width: 100%">
       <div style="width: 100%; padding: 16px 8px 0">
         <el-row :gutter="8">
           <el-col :span="12">

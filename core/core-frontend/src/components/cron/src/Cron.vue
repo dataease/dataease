@@ -120,7 +120,13 @@ const emits = defineEmits(['update:modelValue'])
       </el-tab-pane>
     </el-tabs>
     <!-- table -->
-    <el-table :data="tableData" size="mini" border style="width: 100%">
+    <el-table
+      header-cell-class-name="header-cell"
+      :data="tableData"
+      size="mini"
+      border
+      style="width: 100%"
+    >
       <el-table-column prop="sVal" :label="t('cron.second')" width="70" />
       <el-table-column prop="mVal" :label="t('cron.minute')" width="70" />
       <el-table-column prop="hVal" :label="t('cron.hour')" width="70" />

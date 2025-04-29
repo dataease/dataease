@@ -3515,7 +3515,7 @@ defineExpose({
   min-width: 210px !important;
 }
 .ed-select-dropdown__header {
-  padding: 0 8px !important;
+  padding: 0 8px;
   .params-select--header {
     --ed-tabs-header-height: 32px;
     .ed-tabs__item {

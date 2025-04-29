@@ -70,7 +70,6 @@
         :title="t('visualization.table_color_matching')"
         name="table_color_matching"
         class="inner-collapse"
-        effect="dark"
         :class="`inner-collapse_${themes}`"
       >
         <div style="padding: 0 8px 8px">
@@ -426,7 +425,7 @@ span {
     max-width: 192px;
   }
   :deep(.custom-color-setting-btn) {
-    margin-top: 28px;
+    margin-top: 31px;
   }
 }
 

@@ -4,13 +4,12 @@ import icon_expandDown_filled from '@/assets/svg/icon_expand-down_filled.svg'
 import { ElMenuItem, ElSubMenu } from 'element-plus-secondary'
 
 const title = props => {
-  const { title } = props?.menu?.meta || {}
+  const { title } = props.menu?.meta || {}
   return [h('span', null, { default: () => title })]
 }
 
 const HeaderMenuItem = props => {
-  if (!props) return null
-  const { children = [], hidden, path } = props?.menu || {}
+  const { children = [], hidden, path } = props.menu
   if (hidden) {
     return null
   }
@@ -47,7 +46,7 @@ export default HeaderMenuItem
 .popper-class-menu {
   --active-color: #1f2329;
   &.is-light {
-    border: none !important;
+    border: none;
     margin-top: -2px;
   }
   .popper-class-menu {

@@ -185,7 +185,7 @@ onMounted(() => {
 .custom-color-selector {
   :deep(.ed-input__prefix) {
     width: calc(100% - 22px);
-    .ed-input__prefix {
+    .ed-input__prefix-inner {
       width: 100%;
     }
   }

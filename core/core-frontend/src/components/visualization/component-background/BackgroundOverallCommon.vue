@@ -13,7 +13,7 @@
       "
       @change="reUpload"
     />
-    <el-form size="small" label-position="top" style="width: 100%">
+    <el-form label-position="top" style="width: 100%">
       <el-row :gutter="8">
         <el-col :span="12">
           <el-form-item
@@ -25,6 +25,7 @@
               style="width: 100%"
               :effect="themes"
               controls-position="right"
+              size="middle"
               :min="0"
               :max="100"
               v-model="state.commonBackground.innerPadding"
@@ -42,6 +43,7 @@
               style="width: 100%"
               :effect="themes"
               controls-position="right"
+              size="middle"
               :min="0"
               :max="100"
               v-model="state.commonBackground.borderRadius"
@@ -68,6 +70,7 @@
                 style="width: 100%"
                 :effect="themes"
                 controls-position="right"
+                size="middle"
                 :min="0"
                 :max="30"
                 :disabled="!state.commonBackground.backdropFilterEnable"
@@ -145,6 +148,7 @@
               :disabled="!state.commonBackground.backgroundImageEnable"
               :effect="themes"
               :title="t('visualization.border_color_setting')"
+              style="position: absolute; top: -3px; left: 60px"
               is-custom
               show-alpha
               class="color-picker-style"
@@ -160,6 +164,7 @@
             <el-select
               :style="{ width: computedBackgroundBorderSelectWidth + 'px' }"
               v-model="state.commonBackground.innerImage"
+              size="middle"
               popper-class="board-select"
               :effect="themes"
               :disabled="!state.commonBackground.backgroundImageEnable"
