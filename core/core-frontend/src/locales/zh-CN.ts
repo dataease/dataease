@@ -2721,7 +2721,8 @@ export default {
       no_children_text: '没有子节点',
       no_options_text: '没有可用选项',
       no_results_text: '没有匹配的结果'
-    }
+    },
+    char_count_limit: '不能超过{count}字符'
   },
   sql_variable: {
     variable_mgm: '参数设置'

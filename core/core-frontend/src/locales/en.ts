@@ -2785,7 +2785,8 @@ export default {
       no_children_text: 'No child nodes',
       no_options_text: 'No available options',
       no_results_text: 'No matching results'
-    }
+    },
+    char_count_limit: 'Cannot exceed {count} characters'
   },
   sql_variable: {
     variable_mgm: 'Parameter settings'
