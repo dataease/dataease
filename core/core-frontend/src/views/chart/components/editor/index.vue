@@ -211,7 +211,7 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi || appStore.getIsIf
 const itemFormRules = reactive<FormRules>({
   chartShowName: [
     { required: true, message: t('commons.input_content'), trigger: 'change' },
-    { max: 50, message: t('commons.char_can_not_more_50'), trigger: 'change' }
+    { max: 200, message: t('commons.char_count_limit', { count: 200 }), trigger: 'change' }
   ]
 })
 
