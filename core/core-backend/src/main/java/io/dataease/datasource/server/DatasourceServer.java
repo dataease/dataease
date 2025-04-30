@@ -18,9 +18,9 @@ import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.*;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDsFinishPageMapper;
 import io.dataease.datasource.dao.auto.mapper.QrtzSchedulerStateMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
 import io.dataease.datasource.manage.DataSourceManage;
@@ -54,6 +54,8 @@ import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +63,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.print.Pageable;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -74,8 +77,6 @@ import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RI
 @RestController
 @RequestMapping("/datasource")
 public class DatasourceServer implements DatasourceApi {
-    @Resource
-    private CoreDatasourceMapper datasourceMapper;
     @Resource
     private EngineManage engineManage;
     @Resource
@@ -105,6 +106,9 @@ public class DatasourceServer implements DatasourceApi {
     private PluginManageApi pluginManage;
     @Autowired(required = false)
     private RelationApi relationManage;
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
+
 
     public enum UpdateType {
         all_scope, add_scope
@@ -138,10 +142,8 @@ public class DatasourceServer implements DatasourceApi {
         if (CollectionUtils.isEmpty(ids)) {
             return false;
         }
-        QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
-        wrapper.in("id", ids);
 
-        List<CoreDatasource> datasources = datasourceMapper.selectList(wrapper);
+        List<CoreDatasource> datasources = coreDatasourceRepository.findInIds(ids);
         if (CollectionUtils.isEmpty(datasources)) {
             return false;
         }
@@ -566,11 +568,13 @@ public class DatasourceServer implements DatasourceApi {
     public List<DatasourceDTO> innerList(List<Long> ids, List<String> types) throws DEException {
         List<DatasourceDTO> list = new ArrayList<>();
         LambdaQueryWrapper<CoreDatasource> queryWrapper = new LambdaQueryWrapper<>();
+        List<CoreDatasource> dsList = new ArrayList<>();
         if (ids != null) {
             if (ids.isEmpty()) {
                 return list;
             } else {
                 queryWrapper.in(CoreDatasource::getId, ids);
+                dsList = coreDatasourceRepository.findInIds(ids);
             }
         }
         if (types != null) {
@@ -578,9 +582,9 @@ public class DatasourceServer implements DatasourceApi {
                 return list;
             } else {
                 queryWrapper.in(CoreDatasource::getType, types);
+                dsList = coreDatasourceRepository.findInTypes(types);
             }
         }
-        List<CoreDatasource> dsList = datasourceMapper.selectList(queryWrapper);
 
         for (CoreDatasource datasource : dsList) {
             DatasourceDTO datasourceDTO = new DatasourceDTO();
@@ -684,15 +688,13 @@ public class DatasourceServer implements DatasourceApi {
 
             datasourceTaskServer.deleteByDSId(datasourceId);
         }
-        datasourceMapper.deleteById(datasourceId);
+        coreDatasourceRepository.deleteById(datasourceId);
         if (notFullDs.stream().allMatch(e -> !coreDatasource.getType().contains(e))) {
             calciteProvider.delete(coreDatasource);
         }
 
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
-            QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
-            wrapper.eq("pid", datasourceId);
-            List<CoreDatasource> coreDatasources = datasourceMapper.selectList(wrapper);
+            List<CoreDatasource> coreDatasources = coreDatasourceRepository.findByPid(datasourceId);
             if (ObjectUtils.isNotEmpty(coreDatasources)) {
                 for (CoreDatasource record : coreDatasources) {
                     delete(record.getId());
@@ -1101,11 +1103,10 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public List<String> latestUse() {
         List<String> types = new ArrayList<>();
-        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("create_by", AuthUtils.getUser().getUserId());
-        queryWrapper.orderByDesc("create_time");
-        queryWrapper.last(" limit 5");
-        List<CoreDatasource> coreDatasources = datasourceMapper.selectList(queryWrapper);
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        org.springframework.data.domain.Pageable pageableWithSort = PageRequest.of(0, 5, sort);
+
+        List<CoreDatasource> coreDatasources = coreDatasourceRepository.findCoreDatasourcesByCreateBy(AuthUtils.getUser().getUserId(), pageableWithSort);
         if (CollectionUtils.isEmpty(coreDatasources)) {
             return types;
         }
@@ -1144,9 +1145,7 @@ public class DatasourceServer implements DatasourceApi {
 
 
     public void updateDatasourceStatus() {
-        QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
-        wrapper.notIn("type", Arrays.asList("Excel", "folder"));
-        List<CoreDatasource> datasources = datasourceMapper.selectList(wrapper);
+        List<CoreDatasource> datasources = coreDatasourceRepository.findTypeNotIn(Arrays.asList("Excel", "folder"));
         datasources.forEach(datasource -> {
             if (!syncDsIds.contains(datasource.getId())) {
                 syncDsIds.add(datasource.getId());
@@ -1183,9 +1182,7 @@ public class DatasourceServer implements DatasourceApi {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectList(null);
         List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurrentTimestamp() * 1000).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
 
-        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("task_status", TaskStatus.UnderExecution.name());
-        List<CoreDatasource> datasources = datasourceMapper.selectList(queryWrapper);
+        List<CoreDatasource> datasources = coreDatasourceRepository.findByTaskStatus(TaskStatus.UnderExecution.name());
 
         List<CoreDatasource> syncCoreDatasources = new ArrayList<>();
         List<CoreDatasource> jobStoppedCoreDatasources = new ArrayList<>();
@@ -1200,12 +1197,7 @@ public class DatasourceServer implements DatasourceApi {
         if (CollectionUtils.isEmpty(jobStoppedCoreDatasources)) {
             return;
         }
-
-        queryWrapper.clear();
-        queryWrapper.in("id", jobStoppedCoreDatasources.stream().map(CoreDatasource::getId).collect(Collectors.toList()));
-        CoreDatasource record = new CoreDatasource();
-        record.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        datasourceMapper.update(record, queryWrapper);
+        coreDatasourceRepository.updateTaskStatusByIds(jobStoppedCoreDatasources.stream().map(CoreDatasource::getId).collect(Collectors.toList()), TaskStatus.WaitingForExecution.name());
         //Task
         datasourceTaskServer.updateByDsIds(jobStoppedCoreDatasources.stream().map(CoreDatasource::getId).collect(Collectors.toList()));
     }

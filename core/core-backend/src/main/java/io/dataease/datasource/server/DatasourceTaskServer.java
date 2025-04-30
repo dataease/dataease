@@ -6,15 +6,17 @@ import io.dataease.commons.constants.TaskStatus;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceTaskLogMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceTaskMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dto.CoreDatasourceTaskDTO;
 import io.dataease.datasource.dao.ext.mapper.ExtDatasourceTaskMapper;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -26,8 +28,8 @@ public class DatasourceTaskServer {
 
     @Resource
     private CoreDatasourceTaskMapper datasourceTaskMapper;
-    @Resource
-    private CoreDatasourceMapper coreDatasourceMapper;
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
     private ExtDatasourceTaskMapper extDatasourceTaskMapper;
     @Resource
@@ -131,15 +133,15 @@ public class DatasourceTaskServer {
     }
 
     public synchronized boolean existUnderExecutionTask(Long datasourceId, Long taskId) {
-        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", datasourceId);
-        updateWrapper.ne("task_status", TaskStatus.UnderExecution.name());
         CoreDatasource coreDatasource = new CoreDatasource();
+        coreDatasource.setId(datasourceId);
         coreDatasource.setTaskStatus(TaskStatus.UnderExecution.name());
-        Boolean existSyncTask = coreDatasourceMapper.update(coreDatasource, updateWrapper) == 0;
+        Example<CoreDatasource> example = Example.of(coreDatasource);
+
+        boolean existSyncTask = coreDatasourceRepository.exists(example);
         if (!existSyncTask) {
             UpdateWrapper<CoreDatasourceTask> updateTaskWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", taskId);
+            updateTaskWrapper.eq("id", taskId);
             CoreDatasourceTask record = new CoreDatasourceTask();
             record.setTaskStatus(TaskStatus.UnderExecution.name());
             record.setLastExecTime(System.currentTimeMillis());

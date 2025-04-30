@@ -3,8 +3,8 @@ package io.dataease.datasource.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.exception.DEException;
@@ -19,8 +19,10 @@ import io.dataease.utils.JsonUtil;
 import io.dataease.utils.ModelUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -40,9 +42,8 @@ public class EngineManage {
     private Environment env;
     @Resource
     private CoreDeEngineMapper deEngineMapper;
-
-    @Resource
-    private CoreDatasourceMapper datasourceMapper;
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
 
     @Value("${dataease.path.engine:jdbc:h2:/opt/dataease2.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE}")
     private String engineUrl;
@@ -167,13 +168,14 @@ public class EngineManage {
     }
 
     public void initLocalDataSource() {
-        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", 985188400292302848L);
-        queryWrapper.ne("create_time", 1715053684176L);
+        CoreDatasource coreDatasource = new CoreDatasource();
+        coreDatasource.setId(985188400292302848L);
+        coreDatasource.setCreateTime(1715053684176L);
+        Example<CoreDatasource> example = Example.of(coreDatasource);
         // 版本检查
         QueryWrapper<DeTemplateVersion> queryVersionWrapper = new QueryWrapper<>();
         queryVersionWrapper.eq("version", "985188400292302848");
-        if (!datasourceMapper.exists(queryWrapper) && !deTemplateVersionMapper.exists(queryVersionWrapper) && !ModelUtils.isDesktop()) {
+        if (!coreDatasourceRepository.exists(example) && !deTemplateVersionMapper.exists(queryVersionWrapper) && !ModelUtils.isDesktop()) {
             Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)\\?(.*)");
             Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
             if (!matcher.find()) {
@@ -199,8 +201,8 @@ public class EngineManage {
             initDatasource.setUpdateBy(1L);
             initDatasource.setStatus("success");
             initDatasource.setTaskStatus("WaitingForExecution");
-            datasourceMapper.deleteById(985188400292302848L);
-            datasourceMapper.insert(initDatasource);
+            coreDatasourceRepository.deleteById(985188400292302848L);
+            coreDatasourceRepository.saveAndFlush(initDatasource);
 
             DeTemplateVersion version = new DeTemplateVersion();
             version.setVersion("985188400292302848");

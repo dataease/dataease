@@ -1,12 +1,11 @@
 package io.dataease.datasource.provider;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jcraft.jsch.Session;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.*;
@@ -33,6 +32,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -52,8 +52,8 @@ import java.util.stream.Collectors;
 @Component("calciteProvider")
 public class CalciteProvider extends Provider {
 
-    @Resource
-    protected CoreDatasourceMapper coreDatasourceMapper;
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
     private EngineManage engineManage;
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
@@ -1587,8 +1587,7 @@ public class CalciteProvider extends Provider {
 
     public void initConnectionPool() {
         LogUtil.info("Begin to init datasource pool...");
-        QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
-        List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel", "ExcelRemote").contains(coreDatasource.getType())).collect(Collectors.toList());
+        List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll().stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel", "ExcelRemote").contains(coreDatasource.getType())).collect(Collectors.toList());
         CoreDatasource engine = engineManage.deEngine();
         if (engine != null) {
             coreDatasources.add(engine);

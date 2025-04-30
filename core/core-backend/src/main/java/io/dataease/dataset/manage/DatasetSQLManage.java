@@ -13,7 +13,7 @@ import io.dataease.dataset.utils.DatasetTableTypeConstants;
 import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -56,15 +56,10 @@ import java.util.stream.Collectors;
  */
 @Component
 public class DatasetSQLManage {
-
-    @Resource
-    private CoreDatasourceMapper coreDatasourceMapper;
     @Resource
     private EngineManage engineManage;
-
     @Resource
     private CorePermissionManage corePermissionManage;
-
     @Autowired(required = false)
     private PluginManageApi pluginManage;
     @Autowired(required = false)

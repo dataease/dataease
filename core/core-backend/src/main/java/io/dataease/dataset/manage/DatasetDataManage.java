@@ -19,7 +19,7 @@ import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.utils.DatasourceUtils;
@@ -68,8 +68,8 @@ import static io.dataease.chart.manage.ChartDataManage.START_END_SEPARATOR;
 public class DatasetDataManage {
     @Resource
     private DatasetSQLManage datasetSQLManage;
-    @Resource
-    private CoreDatasourceMapper coreDatasourceMapper;
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource

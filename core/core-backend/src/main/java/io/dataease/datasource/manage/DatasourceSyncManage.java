@@ -7,7 +7,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.*;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.server.DatasourceServer;
@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -38,8 +39,8 @@ import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MA
 @Component
 public class DatasourceSyncManage {
 
-    @Resource
-    private CoreDatasourceMapper datasourceMapper;
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
     private EngineManage engineManage;
     @Resource
@@ -101,7 +102,7 @@ public class DatasourceSyncManage {
 
     public void extractData(Long datasourceId, Long taskId, JobExecutionContext context) {
         LicenseUtil.validate();
-        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        CoreDatasource coreDatasource = coreDatasourceRepository.findById(datasourceId).orElse(null);
         if (coreDatasource == null) {
             LogUtil.error("Can not find datasource: " + datasourceId);
             return;
@@ -123,11 +124,7 @@ public class DatasourceSyncManage {
         try {
             DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
             if (context != null) {
-                UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("id", datasourceId);
-                CoreDatasource record = new CoreDatasource();
-                record.setQrtzInstance(context.getFireInstanceId());
-                datasourceMapper.update(record, updateWrapper);
+                coreDatasourceRepository.updateQrtzInstanceById(context.getFireInstanceId(), datasourceId);
             }
             if (coreDatasource.getType().equalsIgnoreCase("ExcelRemote")) {
                 extractedExcelData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
@@ -138,7 +135,7 @@ public class DatasourceSyncManage {
             LogUtil.error(e);
         } finally {
             datasourceTaskServer.updateTaskStatus(coreDatasourceTask);
-            updateDsTaskStatus(datasourceId);
+            coreDatasourceRepository.updateTaskStatusByIds(Arrays.asList(datasourceId), TaskStatus.WaitingForExecution.name());
         }
     }
 
@@ -219,17 +216,9 @@ public class DatasourceSyncManage {
         }
     }
 
-    private void updateDsTaskStatus(Long datasourceId) {
-        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", datasourceId);
-        CoreDatasource record = new CoreDatasource();
-        record.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        datasourceMapper.update(record, updateWrapper);
-    }
-
     public void extractDataForTable(Long datasourceId, String name, String tableName, String type) {
         DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(type);
-        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        CoreDatasource coreDatasource = coreDatasourceRepository.findById(datasourceId).orElse(null);
         if (coreDatasource == null) {
             LogUtil.error("Can not find datasource: " + datasourceId);
             return;

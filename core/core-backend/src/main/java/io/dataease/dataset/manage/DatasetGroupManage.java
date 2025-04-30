@@ -17,8 +17,7 @@ import io.dataease.dataset.dto.DataSetNodeBO;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -69,18 +68,13 @@ public class DatasetGroupManage {
     @Resource
     private CoreDatasetTableMapper coreDatasetTableMapper;
     @Resource
-    private CoreDatasourceMapper coreDatasourceMapper;
-
-
-    @Resource
     private CoreUserManage coreUserManage;
-
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
-
     @Autowired(required = false)
     private RelationApi relationManage;
-
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
     private static final String leafType = "dataset";
 
     private Lock lock = new ReentrantLock();
@@ -273,15 +267,12 @@ public class DatasetGroupManage {
         QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", datasetId);
         List<CoreDatasetTable> coreDatasetTables = coreDatasetTableMapper.selectList(wrapper);
-        Set<Long> ids = new LinkedHashSet();
+        List<Long> ids = new ArrayList<>();
         coreDatasetTables.forEach(ele -> ids.add(ele.getDatasourceId()));
         if (CollectionUtils.isEmpty(ids)) {
             DEException.throwException(Translator.get("i18n_dataset_create_error"));
         }
-
-        QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper<>();
-        datasourceQueryWrapper.in("id", ids);
-        List<DatasourceDTO> datasourceDTOList = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().map(ele -> {
+        List<DatasourceDTO> datasourceDTOList = coreDatasourceRepository.findInIds(ids).stream().map(ele -> {
             DatasourceDTO dto = new DatasourceDTO();
             BeanUtils.copyBean(dto, ele);
             dto.setConfiguration(null);

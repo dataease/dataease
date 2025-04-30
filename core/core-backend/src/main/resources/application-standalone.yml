@@ -5,14 +5,14 @@ spring:
     password: 123456
   messages:
     basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
-  flyway:
-    enabled: true
-    table: de_standalone_version
-    validate-on-migrate: false
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    out-of-order: true
 
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 mybatis-plus:
   mapper-locations: classpath:mybatis/*.xml
 

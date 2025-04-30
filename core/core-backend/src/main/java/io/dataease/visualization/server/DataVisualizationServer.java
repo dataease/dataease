@@ -34,7 +34,7 @@ import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
@@ -140,8 +140,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
 
-    @Resource
-    private CoreDatasourceMapper coreDatasourceMapper;
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
 
     @Resource
     private CoreBusiManage coreBusiManage;
@@ -277,7 +277,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     }
                 });
 
-                List<CoreDatasource> systemDatasource = coreDatasourceMapper.selectBatchIds(newDatasourceId);
+                List<CoreDatasource> systemDatasource = coreDatasourceRepository.findInIds(newDatasourceId);
                 systemDatasource.forEach(datasourceNew -> {
                     // Excel 数据表明映射
                     if (StringUtils.isNotEmpty(datasourceNew.getConfiguration())) {

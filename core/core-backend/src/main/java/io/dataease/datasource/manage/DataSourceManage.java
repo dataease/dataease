@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.ext.mapper.CoreDatasourceExtMapper;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
@@ -22,19 +22,19 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.CommunityUtils;
-import io.dataease.utils.TreeUtils;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 
 @Component
@@ -42,10 +42,8 @@ public class DataSourceManage {
 
     @Resource
     private DataSourceExtMapper dataSourceExtMapper;
-
-    @Resource
-    private CoreDatasourceMapper coreDatasourceMapper;
-
+    @Autowired
+    private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
 
@@ -117,7 +115,7 @@ public class DataSourceManage {
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         checkName(dataSourceDTO);
-        coreDatasourceMapper.insert(coreDatasource);
+        coreDatasourceRepository.saveAndFlush(coreDatasource);
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.NEW);
     }
 
@@ -125,29 +123,32 @@ public class DataSourceManage {
         if (StringUtils.isEmpty(dto.getName()) || StringUtils.isEmpty(dto.getName().trim())) {
             DEException.throwException(Translator.get("i18n_df_name_can_not_empty"));
         }
-        QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
-        if (ObjectUtils.isNotEmpty(dto.getPid())) {
-            if (LicenseUtil.licenseValid() && dto.getPid().equals(0L)) {
-                wrapper.eq("pid", -100L);
-            } else {
-                wrapper.eq("pid", dto.getPid());
+        Specification<CoreDatasource> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (ObjectUtils.isNotEmpty(dto.getPid())) {
+                if (LicenseUtil.licenseValid() && dto.getPid().equals(0L)) {
+                    predicates.add(criteriaBuilder.equal(root.get("pid"), -100L));
+                } else {
+                    predicates.add(criteriaBuilder.equal(root.get("pid"), dto.getPid()));
+                }
             }
-        }
-        if (StringUtils.isNotEmpty(dto.getName())) {
-            wrapper.eq("name", dto.getName());
-        }
-        if (ObjectUtils.isNotEmpty(dto.getId())) {
-            wrapper.ne("id", dto.getId());
-        }
-        if (ObjectUtils.isNotEmpty(dto.getNodeType())) {
-            if (dto.getNodeType().equalsIgnoreCase("folder")) {
-                wrapper.eq("type", dto.getType());
-            } else {
-                wrapper.ne("type", "folder");
+            if (StringUtils.isNotEmpty(dto.getName())) {
+                predicates.add(criteriaBuilder.equal(root.get("name"), dto.getName()));
             }
+            if (ObjectUtils.isNotEmpty(dto.getId())) {
+                predicates.add(criteriaBuilder.notEqual(root.get("id"), dto.getId()));
+            }
+            if (ObjectUtils.isNotEmpty(dto.getNodeType())) {
+                if (dto.getNodeType().equalsIgnoreCase("folder")) {
+                    predicates.add(criteriaBuilder.equal(root.get("type"), dto.getType()));
+                } else {
+                    predicates.add(criteriaBuilder.notEqual(root.get("type"), "folder"));
+                }
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
 
-        }
-        List<CoreDatasource> list = coreDatasourceMapper.selectList(wrapper);
+        List<CoreDatasource> list = coreDatasourceRepository.findAll(spec);
         if (list.size() > 0) {
             DEException.throwException(Translator.get("i18n_ds_name_exists"));
         }
@@ -161,24 +162,20 @@ public class DataSourceManage {
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEdit(CoreDatasource coreDatasource) {
-        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", coreDatasource.getId());
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        coreDatasourceMapper.update(coreDatasource, updateWrapper);
+        coreDatasourceRepository.save(coreDatasource);
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEditName(CoreDatasource coreDatasource) {
-        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", coreDatasource.getId());
-        coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        coreDatasource.setUpdateTime(System.currentTimeMillis());
-        coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
-        coreDatasourceMapper.update(coreDatasource, updateWrapper);
+        Optional<CoreDatasource> optionalCoreDatasource = coreDatasourceRepository.findById(coreDatasource.getId());
+        if (optionalCoreDatasource.isPresent()) {
+            coreDatasourceRepository.move(coreDatasource.getId(), System.currentTimeMillis(), coreDatasource.getPid(), coreDatasource.getName(), AuthUtils.getUser().getUserId());
+        }
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 
@@ -187,7 +184,7 @@ public class DataSourceManage {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", coreDatasource.getId());
         updateWrapper.set("status", coreDatasource.getStatus());
-        coreDatasourceMapper.update(null, updateWrapper);
+        coreDatasourceRepository.updateStatusById(coreDatasource.getStatus(), coreDatasource.getId());
     }
 
 
@@ -199,31 +196,21 @@ public class DataSourceManage {
             DEException.throwException("resource not exist");
         }
         checkName(dataSourceDTO);
-
-        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", id);
-        updateWrapper.set("update_time", System.currentTimeMillis());
-        updateWrapper.set("pid", dataSourceDTO.getPid());
-        updateWrapper.set("name", dataSourceDTO.getName());
-        updateWrapper.set("update_by", AuthUtils.getUser().getUserId());
-        coreDatasourceMapper.update(null, updateWrapper);
-
+        coreDatasourceRepository.move(id, System.currentTimeMillis(), dataSourceDTO.getPid(), dataSourceDTO.getName(), AuthUtils.getUser().getUserId());
         coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 
 
     public void encryptDsConfig() {
-        coreDatasourceMapper.selectList(null).forEach(dataSource -> {
-            coreDatasourceMapper.updateById(dataSource);
-        });
+        coreDatasourceRepository.saveAll(coreDatasourceRepository.findAll());
     }
-
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public CoreDatasource getCoreDatasource(Long id) {
         if (id == -1L) {
             return engineManage.getDeEngine();
         }
-        return coreDatasourceMapper.selectById(id);
+        return coreDatasourceRepository.findById(id).get();
+
     }
 
     public List<Long> getPidList(Long pid) {
