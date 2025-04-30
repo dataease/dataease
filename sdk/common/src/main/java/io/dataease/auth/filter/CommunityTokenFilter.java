@@ -61,6 +61,7 @@ public class CommunityTokenFilter implements Filter {
                 String msg = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8).replace("+", "%20");
                 headers.add(headName, msg);
                 sendResponseEntity(res, new ResponseEntity<>(e.getMessage(), headers, HttpStatus.UNAUTHORIZED));
+                return;
             }
         }
 
