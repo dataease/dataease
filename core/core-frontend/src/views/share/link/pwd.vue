@@ -94,6 +94,13 @@ const refresh = async (formEl: FormInstance | undefined) => {
     }
   })
 }
+const formatPwd = (pwdText: string) => {
+  try {
+    return decodeURIComponent(pwdText)
+  } catch (e) {
+    return pwdText
+  }
+}
 const prepare = () => {
   const curLocation = window.location.href
   const pmIndex = curLocation.lastIndexOf('?')
@@ -114,6 +121,7 @@ const prepare = () => {
   }
   vid.value = uuid
   if (pwd) {
+    pwd = formatPwd(pwd)
     form.value.password = pwd
     refresh(pwdForm.value)
   }
