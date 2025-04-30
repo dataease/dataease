@@ -14,12 +14,12 @@ import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.SystemSettingUtils;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -167,15 +167,20 @@ public class SysParameterManage {
 
     @Transactional
     public void saveGroup(List<SettingItemVO> vos, String groupKey) {
-        QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
-        queryWrapper.likeRight("pkey", groupKey);
-        coreSysSettingMapper.delete(queryWrapper);
         List<CoreSysSetting> sysSettings = vos.stream().filter(vo -> !SystemSettingUtils.xpackSetting(vo.getPkey())).map(item -> {
             CoreSysSetting sysSetting = BeanUtils.copyBean(new CoreSysSetting(), item);
             sysSetting.setId(IDUtils.snowID());
             return sysSetting;
         }).collect(Collectors.toList());
-        extCoreSysSettingMapper.saveBatch(sysSettings);
+        if (CollectionUtils.isNotEmpty(sysSettings)) {
+            QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
+            sysSettings.forEach(sysSetting -> {
+                queryWrapper.clear();
+                queryWrapper.eq("pkey", sysSetting.getPkey());
+                coreSysSettingMapper.delete(queryWrapper);
+            });
+            extCoreSysSettingMapper.saveBatch(sysSettings);
+        }
         datasourceServer.addJob(sysSettings);
     }
 
