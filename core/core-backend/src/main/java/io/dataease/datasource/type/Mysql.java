@@ -27,22 +27,24 @@ public class Mysql extends DatasourceConfiguration {
             }
             return getJdbcUrl();
         }
+        String jdbcUrl = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
-            return "jdbc:mysql://HOSTNAME:PORT/DATABASE"
+            jdbcUrl =  "jdbc:mysql://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         } else {
-            for (String illegalParameter : illegalParameters) {
-                if (URLDecoder.decode(getExtraParams()).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
-                    DEException.throwException("Illegal parameter: " + illegalParameter);
-                }
-            }
-            return "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+            jdbcUrl =  "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
         }
+        for (String illegalParameter : illegalParameters) {
+            if (URLDecoder.decode(jdbcUrl).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(jdbcUrl).contains(illegalParameter.toLowerCase())) {
+                DEException.throwException("Illegal parameter: " + illegalParameter);
+            }
+        }
+        return jdbcUrl;
     }
 }

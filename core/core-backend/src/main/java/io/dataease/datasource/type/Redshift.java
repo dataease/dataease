@@ -26,9 +26,15 @@ public class Redshift extends DatasourceConfiguration {
             }
             return getJdbcUrl();
         }
-        return "jdbc:redshift://HOSTNAME:PORT/DATABASE"
+        String jdbcUrl =  "jdbc:redshift://HOSTNAME:PORT/DATABASE"
                 .replace("HOSTNAME", getLHost().trim())
                 .replace("PORT", getLPort().toString().trim())
                 .replace("DATABASE", getDataBase().trim());
+        for (String illegalParameter : illegalParameters) {
+            if (URLDecoder.decode(jdbcUrl).contains(illegalParameter)) {
+                DEException.throwException("Illegal parameter: " + illegalParameter);
+            }
+        }
+        return jdbcUrl;
     }
 }
