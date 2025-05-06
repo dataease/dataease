@@ -2,7 +2,7 @@ import { deepCopy } from './utils'
 import { divide, multiply } from 'mathjs'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { groupSizeStyleAdaptor } from '@/utils/style'
+import { groupItemStyleAdaptor, groupSizeStyleAdaptor } from '@/utils/style'
 import { nextTick } from 'vue'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -54,6 +54,16 @@ function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
 
     if (['Group'].includes(component.component)) {
       groupSizeStyleAdaptor(component)
+      const parentStyle = component.style
+      component.propValue.forEach(componentInner => {
+        if (['DeTabs'].includes(componentInner.component)) {
+          componentInner.propValue.forEach(tabItem => {
+            changeComponentsSizeWithScaleCircle(tabItem.componentData, scale)
+          })
+        } else {
+          groupItemStyleAdaptor(componentInner, parentStyle)
+        }
+      })
     } else if (['DeTabs'].includes(component.component)) {
       component.propValue.forEach(tabItem => {
         changeComponentsSizeWithScaleCircle(tabItem.componentData, scale)
