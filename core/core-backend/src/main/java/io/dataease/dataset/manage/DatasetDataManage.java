@@ -1202,7 +1202,9 @@ public class DatasetDataManage {
         List<String> parentPkList = new ArrayList<>();
         for (int i = 0; i < row.length; i++) {
             String text = row[i];
-
+            if (StringUtils.isEmpty(text)) {
+                continue;
+            }
             parentPkList.add(text);
             String val = String.join(TreeUtils.SEPARATOR, parentPkList);
             String parentVal = i == 0 ? TreeUtils.DEFAULT_ROOT : row[i - 1];
