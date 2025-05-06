@@ -274,7 +274,7 @@ function dataVTabSizeStyleAdaptor(tabComponent) {
   })
 }
 
-function groupItemStyleAdaptor(component, parentStyle) {
+export function groupItemStyleAdaptor(component, parentStyle) {
   // 分组还原逻辑
   // 当发上分组缩放是，要将内部组件按照比例转换
   const styleScale = component.groupStyle
