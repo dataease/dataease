@@ -200,7 +200,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
             //获取图表信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId, resourceTable);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
-                Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
+                // 增加过滤当前使用的图表信息
+                Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().filter(item -> result.getComponentData().indexOf("\"id\":\"" + item.getId()) > 0).collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
             }
             VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
