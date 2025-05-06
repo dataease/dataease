@@ -1181,13 +1181,16 @@ public class DatasetDataManage {
         Set<String> pkSet = new HashSet<>();
         rows = rows.stream().filter(row -> {
             boolean hasEmpty = false;
+            int emptyCount = 0;
             for (String s : row) {
                 if (StringUtils.isBlank(s)) {
-                    hasEmpty = true;
-                    break;
+                    emptyCount++;
+                    hasEmpty = true; // 标记已遇到第一个null
+                } else if (hasEmpty) {
+                    return false; // 在null后出现非null元素，不符合要求
                 }
             }
-            return !hasEmpty;
+            return emptyCount != row.length;
         }).toList();
         List<BaseTreeNodeDTO> treeNodes = rows.stream().map(row -> buildTreeNode(row, pkSet)).flatMap(Collection::stream).collect(Collectors.toList());
         List<BaseTreeNodeDTO> tree = DatasetUtils.mergeDuplicateTree(treeNodes, "root");
