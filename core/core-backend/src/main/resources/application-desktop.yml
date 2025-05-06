@@ -14,7 +14,7 @@ spring:
   messages:
     basename: i18n/core
   flyway:
-    enabled: true
+    enabled: false
     table: de_desktop_version
     validate-on-migrate: false
     locations: classpath:db/desktop

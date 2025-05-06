@@ -6,6 +6,9 @@ spring:
   messages:
     basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
 
+  flyway:
+    enabled: false
+
   jpa:
     properties:
       hibernate:
