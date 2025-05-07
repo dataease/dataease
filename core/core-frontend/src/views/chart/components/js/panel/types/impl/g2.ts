@@ -5,7 +5,7 @@ import {
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
-import { setupSeriesColor } from '../../../util'
+import { parseJson, setupSeriesColor } from '../../../util'
 
 export interface G2DrawOptions<O> extends AntVDrawOptions<O> {
   /**
@@ -24,6 +24,67 @@ export abstract class G2ChartView<
   P extends G2Chart = G2Chart
 > extends AntVAbstractChartView {
   public abstract drawChart(drawOptions: G2DrawOptions<P>): P | Promise<P>
+
+  protected getLegend = (chart: Chart) => {
+    let legend = {}
+    let customStyle: CustomStyle
+    if (chart.customStyle) {
+      customStyle = parseJson(chart.customStyle)
+      // legend
+      if (customStyle.legend) {
+        const l = JSON.parse(JSON.stringify(customStyle.legend))
+        if (l.show) {
+          let position
+          const orient = l.orient
+          const legendSymbol = l.icon
+          const legendSize = l.size
+          const legendFontSize = l.fontSize
+          const legendColor = l.color
+          // position 图例布局
+          // layoutJustifyContent 图例实例布局
+          let layoutJustifyContent = 'center'
+          // 根据图例方向和位置设置布局和位置
+          if (orient === 'horizontal') {
+            // 水平布局
+            position = l.vPosition === 'center' ? 'bottom' : l.vPosition
+            layoutJustifyContent =
+              l.hPosition === 'left' && l.vPosition !== 'center'
+                ? 'flex-start'
+                : l.hPosition === 'right' && l.vPosition !== 'center'
+                ? 'flex-end'
+                : 'center'
+          } else {
+            // 垂直布局
+            position = l.hPosition === 'center' ? 'left' : l.hPosition
+            layoutJustifyContent =
+              l.vPosition === 'top' && l.hPosition !== 'center'
+                ? 'flex-start'
+                : l.vPosition === 'bottom' && l.hPosition !== 'center'
+                ? 'flex-end'
+                : 'center'
+          }
+          legend = {
+            orientation: orient,
+            position,
+            layout: {
+              justifyContent: layoutJustifyContent
+            },
+            itemMarker: legendSymbol,
+            itemMarkerSize: legendSize,
+            itemLabelFontSize: legendFontSize,
+            itemLabelFill: legendColor,
+            navPageNumFontSize: legendSize,
+            navPageNumFill: legendColor,
+            navButtonSize: legendSize,
+            navOrientation: position === 'left' || position === 'right' ? 'vertical' : 'horizontal'
+          }
+        } else {
+          legend = false
+        }
+      }
+    }
+    return legend
+  }
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setupSeriesColor(chart, data)
