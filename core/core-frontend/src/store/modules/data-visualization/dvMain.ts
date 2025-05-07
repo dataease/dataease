@@ -1634,6 +1634,15 @@ export const dvMainStore = defineStore('dataVisualization', {
           : DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
 
       this.canvasStyleData = deepCopy(canvasStyleDataNew)
+      this.canvasStyleData.dvType = dvType
+      if (dvType === 'dataV') {
+        this.canvasStyleData.scale = 100
+        this.canvasStyleData.scaleWidth = 100
+        this.canvasStyleData.scaleHeight = 100
+        this.canvasStyleData.tScale = 0.6
+        this.canvasStyleData.tScaleWidth = 0.6
+        this.canvasStyleData.tScaleHeight = 0.6
+      }
       this.componentData = []
       this.canvasViewInfo = {}
     },

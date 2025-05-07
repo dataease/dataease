@@ -254,7 +254,17 @@ export function historyAdaptor(
       componentItem.canvasId = 'canvas-main'
     })
   }
+  canvasStyleResult.dvType = canvasInfo.type
+  if (canvasInfo.type === 'dataV') {
+    // 首次赋值
+    canvasStyleResult.tScale = canvasStyleResult.tScale || canvasStyleResult.scale / 100
+    canvasStyleResult.tScaleWidth =
+      canvasStyleResult.scaleWidth || canvasStyleResult.scaleWidth / 100
+    canvasStyleResult.tScaleHeight =
+      canvasStyleResult.scaleHeight || canvasStyleResult.scaleHeight / 100
+  }
   const curVersion = wsCache.get('x-de-execute-version')
+
   // 含有定时报告过滤项每次都需要匹配
   const reportFilterInfo = canvasInfo?.reportFilterInfo
   if (canvasInfo?.checkVersion === curVersion && !reportFilterInfo) {
@@ -1051,5 +1061,17 @@ export function syncViewTitle(element) {
       canvasViewInfo.value[element.id].title = element.name
       canvasViewInfo.value[element.id].customStyle.component.title = element.name
     }
+  }
+}
+
+export function getTransformParams() {
+  const tOffsetX = (canvasStyleData.value.width * (1 - canvasStyleData.value.tScale)) / 2
+  const tOffsetY = (dvMainStore.canvasStyleData.height * (1 - canvasStyleData.value.tScale)) / 2
+  const tOffsetSpeed = 1 / canvasStyleData.value.tScale
+  return {
+    tOffsetX,
+    tOffsetY,
+    tOffsetSpeed,
+    tScale: canvasStyleData.value.tScale
   }
 }

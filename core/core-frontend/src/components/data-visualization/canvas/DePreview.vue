@@ -122,6 +122,7 @@ const scaleWidthPoint = ref(100)
 const scaleHeightPoint = ref(100)
 const scaleMin = ref(100)
 const previewCanvas = ref(null)
+const previewCanvasInner = ref(null)
 const cellWidth = ref(10)
 const cellHeight = ref(10)
 const userViewEnlargeRef = ref(null)
@@ -169,6 +170,24 @@ const baseComponentData = computed(() =>
       (!ele?.dashboardHidden || (ele?.dashboardHidden && isMobile()))
   )
 )
+const canvasStyleInner = computed(() => {
+  if (
+    dvInfo.value.type === 'dataV' &&
+    ['keep', 'widthFirst', 'heightFirst'].includes(canvasStyleData.value?.screenAdaptor)
+  ) {
+    const curScale = scaleMin.value / 100
+    return {
+      position: 'absolute',
+      height: 100 / curScale + '%!important',
+      width: 100 / curScale + '%!important',
+      left: 50 * (1 - 1 / curScale) + '%', // 放大余量 除以 2
+      top: 50 * (1 - 1 / curScale) + '%', // 放大余量 除以 2
+      transform: 'scale(' + curScale + ') translateZ(0)'
+    }
+  } else {
+    return {}
+  }
+})
 const canvasStyle = computed(() => {
   let style = {}
   if (isMainCanvas(canvasId.value) && !isDashboard()) {
@@ -285,13 +304,26 @@ const resetLayout = () => {
         // 需要保持宽高比例时 高度伸缩和宽度伸缩保持一致 否则 高度伸缩单独计算
         // tip 当当前画布是tab时 使用的事 outerScale.value 因为 canvasStyleData.value为 {} 此处取数逻辑需进一步优化
         const scaleMinHeight = dataVKeepRadio.value ? scaleMin.value : scaleHeightPoint.value
-        changeRefComponentsSizeWithScalePoint(
-          baseComponentData.value,
-          canvasStyleData.value,
-          scaleMin.value || outerScale.value * 100,
-          scaleMinHeight || outerScale.value * 100,
-          outerScale.value * 100
-        )
+        if (
+          dvInfo.value.type === 'dataV' &&
+          ['keep', 'widthFirst', 'heightFirst'].includes(canvasStyleData.value?.screenAdaptor)
+        ) {
+          changeRefComponentsSizeWithScalePoint(
+            baseComponentData.value,
+            canvasStyleData.value,
+            100,
+            100,
+            100
+          )
+        } else {
+          changeRefComponentsSizeWithScalePoint(
+            baseComponentData.value,
+            canvasStyleData.value,
+            scaleMin.value || outerScale.value * 100,
+            scaleMinHeight || outerScale.value * 100,
+            outerScale.value * 100
+          )
+        }
         scaleMin.value = isMainCanvas(canvasId.value) ? scaleMin.value : outerScale.value * 100
       }
       renderReady.value = true
@@ -505,71 +537,76 @@ defineExpose({
     @scroll="scrollPreview"
     v-if="state.initState"
   >
-    <!--弹框触发区域-->
-    <canvas-filter-btn :is-fixed="isOverSize" v-if="filterBtnShow"></canvas-filter-btn>
-    <!-- 弹框区域 -->
-    <PopArea
-      v-if="popAreaAvailable"
-      :dv-info="dvInfo"
-      :canvas-id="canvasId"
-      :canvas-style-data="canvasStyleData"
-      :canvasViewInfo="canvasViewInfo"
-      :pop-component-data="popComponentData"
-      :scale="scaleMin"
-      :canvas-state="canvasState"
-      :show-position="'preview'"
-    ></PopArea>
-    <canvas-opt-bar
-      v-if="showLinkageButton"
-      :canvas-id="canvasId"
-      :canvas-style-data="canvasStyleData"
-      :component-data="baseComponentData"
-      :is-fixed="isOverSize"
-    ></canvas-opt-bar>
-    <template v-if="renderReady && !showUnpublishFlag">
-      <component-wrapper
-        v-for="(item, index) in baseComponentData"
-        v-show="item.isShow"
-        :active="item.id === (curComponent || {})['id']"
+    <div ref="previewCanvasInner" :style="canvasStyleInner">
+      <!--弹框触发区域-->
+      <canvas-filter-btn :is-fixed="isOverSize" v-if="filterBtnShow"></canvas-filter-btn>
+      <!-- 弹框区域 -->
+      <PopArea
+        v-if="popAreaAvailable"
+        :dv-info="dvInfo"
         :canvas-id="canvasId"
         :canvas-style-data="canvasStyleData"
-        :dv-info="dvInfo"
-        :canvas-view-info="canvasViewInfo"
-        :view-info="canvasViewInfo[item.id]"
-        :key="index"
-        :config="item"
-        :style="getShapeItemShowStyle(item)"
-        :show-position="showPosition"
-        :search-count="curSearchCount"
-        :scale="mobileInPc && isDashboard() ? 100 : scaleMin"
-        :is-selector="props.isSelector"
-        :font-family="canvasStyleData.fontFamily || fontFamily"
-        :scroll-main="state.scrollMain"
-        @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
-        @datasetParamsInit="datasetParamsInit(item)"
-        @onPointClick="onPointClick"
-        :index="index"
-      />
-    </template>
-    <empty-background
-      v-if="showUnpublishFlag"
-      :description="t('visualization.resource_not_published')"
-      img-type="none"
-    >
-    </empty-background>
-    <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
+        :canvasViewInfo="canvasViewInfo"
+        :pop-component-data="popComponentData"
+        :scale="scaleMin"
+        :canvas-state="canvasState"
+        :show-position="'preview'"
+      ></PopArea>
+      <canvas-opt-bar
+        v-if="showLinkageButton"
+        :canvas-id="canvasId"
+        :canvas-style-data="canvasStyleData"
+        :component-data="baseComponentData"
+        :is-fixed="isOverSize"
+      ></canvas-opt-bar>
+      <template v-if="renderReady && !showUnpublishFlag">
+        <component-wrapper
+          v-for="(item, index) in baseComponentData"
+          v-show="item.isShow"
+          :active="item.id === (curComponent || {})['id']"
+          :canvas-id="canvasId"
+          :canvas-style-data="canvasStyleData"
+          :dv-info="dvInfo"
+          :canvas-view-info="canvasViewInfo"
+          :view-info="canvasViewInfo[item.id]"
+          :key="index"
+          :config="item"
+          :style="getShapeItemShowStyle(item)"
+          :show-position="showPosition"
+          :search-count="curSearchCount"
+          :scale="mobileInPc && isDashboard() ? 100 : scaleMin"
+          :is-selector="props.isSelector"
+          :font-family="canvasStyleData.fontFamily || fontFamily"
+          :scroll-main="state.scrollMain"
+          @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+          @datasetParamsInit="datasetParamsInit(item)"
+          @onPointClick="onPointClick"
+          :index="index"
+        />
+      </template>
+      <empty-background
+        v-if="showUnpublishFlag"
+        :description="t('visualization.resource_not_published')"
+        img-type="none"
+      >
+      </empty-background>
+      <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
+    </div>
+    <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
+    <de-fullscreen ref="fullScreeRef"></de-fullscreen>
+    <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
+    <XpackComponent
+      ref="openHandler"
+      jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
+    />
+    <link-opt-bar
+      v-if="linkOptBarShow"
+      ref="link-opt-bar"
+      :terminal="'pc'"
+      :canvas-style-data="canvasStyleData"
+      @link-export-pdf="downloadAsPDF"
+    />
   </div>
-  <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
-  <de-fullscreen ref="fullScreeRef"></de-fullscreen>
-  <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
-  <link-opt-bar
-    v-if="linkOptBarShow"
-    ref="link-opt-bar"
-    :terminal="'pc'"
-    :canvas-style-data="canvasStyleData"
-    @link-export-pdf="downloadAsPDF"
-  />
 </template>
 
 <style lang="less" scoped>

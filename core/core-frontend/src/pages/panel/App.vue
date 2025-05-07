@@ -4,7 +4,7 @@ import { propTypes } from '@/utils/propTypes'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const VisualizationEditor = defineAsyncComponent(
-  () => import('@/views/data-visualization/index.vue')
+  () => import('@/views/data-visualization/indexV3.vue')
 )
 const DashboardEditor = defineAsyncComponent(() => import('@/views/dashboard/index.vue'))
 

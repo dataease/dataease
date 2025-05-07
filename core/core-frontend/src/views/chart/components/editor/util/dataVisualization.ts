@@ -98,6 +98,10 @@ export const DEFAULT_CANVAS_STYLE_DATA_BASE = {
   scale: 60,
   scaleWidth: 60,
   scaleHeight: 60,
+  dvType: 'dashboard', // screen
+  tScale: 0.6, // transformScale
+  tScaleWidth: 0.6,
+  tScaleHeight: 0.6,
   backgroundColorSelect: true,
   backgroundImageEnable: false,
   backgroundType: 'backgroundColor', // 废弃
