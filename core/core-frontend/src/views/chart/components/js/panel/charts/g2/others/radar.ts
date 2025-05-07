@@ -271,7 +271,9 @@ export class Radar extends G2ChartView {
       axis: {
         x: {
           grid: true,
-          tick: false,
+          tick: true,
+          tickLength: 10,
+          tickStrokeOpacity: 0,
           label: misc.showName,
           labelFill: misc.color,
           labelFontSize: misc.fontSize,
