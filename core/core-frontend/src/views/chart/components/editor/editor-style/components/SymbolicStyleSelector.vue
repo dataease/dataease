@@ -154,7 +154,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div style="width: 100%">
+  <el-form size="small" style="width: 100%">
     <div class="map-flow-style" v-if="showProperty('symbolicMapStyle')">
       <el-row style="flex: 1">
         <el-col>
@@ -303,7 +303,7 @@ onMounted(() => {
         </el-row>
       </div>
     </div>
-  </div>
+  </el-form>
 </template>
 
 <style scoped lang="less">

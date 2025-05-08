@@ -502,6 +502,7 @@ const isProgressBar = computed(() => {
     :disabled="!state.labelForm.show"
     :model="state.labelForm"
     label-position="top"
+    size="small"
   >
     <el-row v-show="showEmpty" style="margin-bottom: 12px">
       {{ t('chart.no_other_configurable_properties') }}</el-row

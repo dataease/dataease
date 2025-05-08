@@ -132,6 +132,7 @@ watch(
       :disabled="!state.titleForm.show"
       :model="state.titleForm"
       label-position="top"
+      size="small"
     >
       <el-form-item
         :label="t('chart.title')"
@@ -210,7 +211,7 @@ watch(
             @change="changeTitleStyle('letterSpace')"
           >
             <template #prefix>
-              <el-icon>
+              <el-icon size="16">
                 <Icon name="icon_letter-spacing_outlined"
                   ><icon_letterSpacing_outlined class="svg-icon"
                 /></Icon>

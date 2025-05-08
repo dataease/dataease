@@ -1,5 +1,5 @@
 <template>
-  <el-form label-position="top">
+  <el-form size="small" label-position="top">
     <el-form-item
       class="form-item"
       :class="'form-item-' + themes"
@@ -71,7 +71,6 @@
           v-model="canvasStyleData.dashboard.gapSize"
           :effect="themes"
           controls-position="right"
-          size="middle"
           :min="0"
           :max="10"
           @change="themeChange"
@@ -112,14 +111,12 @@
         type="number"
         :min="1"
         :max="3600"
-        size="middle"
         :disabled="!canvasStyleData.refreshViewEnable"
         @change="onRefreshChange"
       >
         <template #append>
           <el-select
             v-model="canvasStyleData.refreshUnit"
-            size="middle"
             :effect="themes"
             :disabled="!canvasStyleData.refreshViewEnable"
             style="width: 90px"
@@ -162,14 +159,12 @@
         type="number"
         :min="1"
         :max="3600"
-        size="middle"
         :disabled="!canvasStyleData.refreshBrowserEnable"
         @change="onRefreshChange"
       >
         <template #append>
           <el-select
             v-model="canvasStyleData.refreshBrowserUnit"
-            size="middle"
             :effect="themes"
             :disabled="!canvasStyleData.refreshBrowserEnable"
             style="width: 90px"
@@ -232,7 +227,6 @@
         v-model="canvasStyleData.dashboard.resultCount"
         :effect="themes"
         controls-position="right"
-        size="middle"
         :min="1"
         :max="10000"
         @change="themeChange"
