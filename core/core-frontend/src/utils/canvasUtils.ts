@@ -254,14 +254,18 @@ export function historyAdaptor(
       componentItem.canvasId = 'canvas-main'
     })
   }
-  canvasStyleResult.dvType = canvasInfo.type
-  if (canvasInfo.type === 'dataV') {
+  canvasStyleResult['dvType'] = attachInfo.dvType
+  if (attachInfo.dvType === 'dataV') {
     // 首次赋值
-    canvasStyleResult.tScale = canvasStyleResult.tScale || canvasStyleResult.scale / 100
-    canvasStyleResult.tScaleWidth =
-      canvasStyleResult.scaleWidth || canvasStyleResult.scaleWidth / 100
-    canvasStyleResult.tScaleHeight =
-      canvasStyleResult.scaleHeight || canvasStyleResult.scaleHeight / 100
+    canvasStyleResult['tScale'] = canvasStyleResult['tScale'] || canvasStyleResult.scale / 100
+    canvasStyleResult['tScaleWidth'] =
+      canvasStyleResult['tScaleWidth'] || canvasStyleResult.scaleWidth / 100
+    canvasStyleResult['tScaleHeight'] =
+      canvasStyleResult['tScaleHeight'] || canvasStyleResult.scaleHeight / 100
+  } else {
+    canvasStyleResult['tScale'] = 1
+    canvasStyleResult['tScaleWidth'] = 1
+    canvasStyleResult['tScaleHeight'] = 1
   }
   const curVersion = wsCache.get('x-de-execute-version')
 
@@ -388,6 +392,7 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
       contentId: canvasInfo.contentId,
       mobileLayout: canvasInfo.mobileLayout || false
     }
+    attachInfo['dvType'] = canvasInfo.type
     const canvasVersion = canvasInfo.version
 
     const canvasDataResult = JSON.parse(canvasInfo.componentData)
@@ -929,7 +934,8 @@ export async function decompressionPre(params, callBack) {
         canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
         appData: appData,
         baseInfo: {
-          preName: deTemplateDataTemp.name
+          preName: deTemplateDataTemp.name,
+          dvType: deTemplateDataTemp.type
         }
       }
     })
@@ -940,7 +946,7 @@ export async function decompressionPre(params, callBack) {
     deTemplateData.canvasStyleData,
     deTemplateData.componentData,
     null,
-    { resourceTable: 'snapshot' },
+    { resourceTable: 'snapshot', dvType: deTemplateData.baseInfo.dvType },
     null
   )
   callBack(deTemplateData)
