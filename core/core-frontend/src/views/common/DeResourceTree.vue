@@ -254,6 +254,9 @@ const nodeCollapse = data => {
 }
 
 const filterNode = (value: string, data: BusiTreeNode) => {
+  if (showPosition.value === 'multiplexing' && data.id === dvInfo.value?.id) {
+    return false
+  }
   if (!value) return true
   return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
 }
