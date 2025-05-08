@@ -6,11 +6,11 @@ services:
     container_name: apisix-dashboard
     restart: always
     volumes:
-    - ${DE_BASE}/dataease2.0/apisix/dashboard_conf/conf.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
+    - ${DE_BASE}/dataease3.0/apisix/dashboard_conf/conf.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
     ports:
     - ${DE_APISIX_DASHBOARD_PORT}:9000
     networks:
-      dataease-network:
+      dataease-network3:
 
   apisix:
     image: registry.cn-qingdao.aliyuncs.com/dataease/apisix:3.6.0-debian
@@ -19,26 +19,26 @@ services:
       - TZ=Asia/Shanghai
     restart: always
     volumes:
-      - ${DE_BASE}/dataease2.0/apisix/apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
-      - ${DE_BASE}/dataease2.0/apisix/logs:/usr/local/apisix/logs
-      - ${DE_BASE}/dataease2.0/apisix/plugins/cas-auth.lua:/usr/local/apisix/apisix/plugins/cas-auth.lua
-      - ${DE_BASE}/dataease2.0/apisix/plugins/openid-connect.lua:/usr/local/apisix/apisix/plugins/openid-connect.lua
+      - ${DE_BASE}/dataease3.0/apisix/apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
+      - ${DE_BASE}/dataease3.0/apisix/logs:/usr/local/apisix/logs
+      - ${DE_BASE}/dataease3.0/apisix/plugins/cas-auth.lua:/usr/local/apisix/apisix/plugins/cas-auth.lua
+      - ${DE_BASE}/dataease3.0/apisix/plugins/openid-connect.lua:/usr/local/apisix/apisix/plugins/openid-connect.lua
     depends_on:
       - etcd
     ports:
       - ${DE_APISIX_PORT}:9080
     networks:
-      dataease-network:
+      dataease-network3:
 
   etcd:
     image: registry.cn-qingdao.aliyuncs.com/dataease/etcd:3.5.10
     container_name: apisix-etcd
     restart: always
     volumes:
-      - ${DE_BASE}/dataease2.0/data/etcd_data:/bitnami/etcd
+      - ${DE_BASE}/dataease3.0/data/etcd_data:/bitnami/etcd
     environment:
       ETCD_ENABLE_V2: "true"
       ALLOW_NONE_AUTHENTICATION: "yes"
       ETCD_ADVERTISE_CLIENT_URLS: "http://apisix-etcd:2379"
     networks:
-      dataease-network:
+      dataease-network3:

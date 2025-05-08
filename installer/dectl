@@ -3,7 +3,7 @@ action=$1
 target=$2
 
 DE_BASE=/opt
-DE_RUNNING_BASE=${DE_BASE}/dataease2.0
+DE_RUNNING_BASE=${DE_BASE}/dataease3.0
 need_init_apisix=false
 compose_files="-f docker-compose.yml"
 compose_cmd="docker-compose"
@@ -153,7 +153,7 @@ import json
 import re
 
 latest_release=""
-release_pattern="v2\.\d+\.\d+$"
+release_pattern="v3\.\d+\.\d+$"
 
 def get_releases(page):
    try:

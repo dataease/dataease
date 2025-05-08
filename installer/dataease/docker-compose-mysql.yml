@@ -10,10 +10,10 @@ services:
       timeout: 3s
       retries: 10
     env_file:
-      - ${DE_BASE}/dataease2.0/conf/mysql.env
+      - ${DE_BASE}/dataease3.0/conf/mysql.env
     volumes:
-      - ${DE_BASE}/dataease2.0/conf/my.cnf:/etc/mysql/conf.d/my.cnf
-      - ${DE_BASE}/dataease2.0/bin/mysql:/docker-entrypoint-initdb.d/
-      - ${DE_BASE}/dataease2.0/data/mysql:/var/lib/mysql
+      - ${DE_BASE}/dataease3.0/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ${DE_BASE}/dataease3.0/bin/mysql:/docker-entrypoint-initdb.d/
+      - ${DE_BASE}/dataease3.0/data/mysql:/var/lib/mysql
     networks:
-      - dataease-network
+      - dataease-network3

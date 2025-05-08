@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Order(1000)
 public class DeI18nStarter implements ApplicationRunner {
 
-    @Value("${dataease.path.i18n:file:/opt/dataease2.0/data/i18n/custom}")
+    @Value("${dataease.path.i18n:file:/opt/dataease3.0/data/i18n/custom}")
     private String i18nPath;
 
     @Override

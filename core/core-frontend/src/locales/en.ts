@@ -974,7 +974,7 @@ export default {
     auth_method: 'Authentication Method',
     passwd: 'Username and Password',
     kerbers_info:
-      'Please make sure krb5.Conf, Keytab Key, have been added to the path: /opt/dataease2.0/conf',
+      'Please make sure krb5.Conf, Keytab Key, have been added to the path: /opt/dataease3.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     please_select_left: 'Please select from the left',
@@ -3843,7 +3843,7 @@ export default {
     auth_method: 'Authentication method',
     passwd: 'Username and password',
     kerbers_info:
-      'Please make sure krb5.Conf and Keytab Key have been added to the path: /opt/dataease2.0/conf',
+      'Please make sure krb5.Conf and Keytab Key have been added to the path: /opt/dataease3.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     data_base: 'Database name',

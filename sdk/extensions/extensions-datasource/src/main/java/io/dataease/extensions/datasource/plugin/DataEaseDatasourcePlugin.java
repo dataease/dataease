@@ -26,7 +26,7 @@ import java.util.jar.JarFile;
  * @Author Junjun
  */
 public abstract class DataEaseDatasourcePlugin extends Provider implements DataEasePlugin {
-    private final String DEFAULT_FILE_PATH = "/opt/dataease2.0/drivers/plugin";
+    private final String DEFAULT_FILE_PATH = "/opt/dataease3.0/drivers/plugin";
 
 
     @Override

@@ -16,4 +16,4 @@ services:
       - SE_NODE_MAX_SESSIONS=5
       - TZ=Asia/Shanghai
     networks:
-      - dataease-network
+      - dataease-network3

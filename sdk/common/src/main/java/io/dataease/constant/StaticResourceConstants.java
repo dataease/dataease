@@ -41,9 +41,9 @@ public class StaticResourceConstants {
 
     public static String getHomeData() {
         if (ModelUtils.isDesktop()) {
-            return ConfigUtils.getConfig("dataease.path.data", "/opt/dataease2.0/data");
+            return ConfigUtils.getConfig("dataease.path.data", "/opt/dataease3.0/data");
         } else {
-            return "/opt/dataease2.0/data";
+            return "/opt/dataease3.0/data";
         }
     }
 }

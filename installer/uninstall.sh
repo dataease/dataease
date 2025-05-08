@@ -55,6 +55,6 @@ if test -n "$(docker images | grep 'registry.cn-qingdao.aliyuncs.com/dataease')"
 fi
 
 # 清理 DataEase 运行目录及命令行工具 dectl
-rm -rf ${DE_BASE}/dataease2.0 /usr/bin/dectl
+rm -rf ${DE_BASE}/dataease3.0 /usr/bin/dectl
 
 echo "DataEase 服务卸载完成"

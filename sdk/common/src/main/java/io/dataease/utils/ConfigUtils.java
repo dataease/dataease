@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class ConfigUtils {
 
-    public static String configPath = "opt" + File.separator + "dataease2.0" + File.separator + "config" + File.separator + "application.yml";
+    public static String configPath = "opt" + File.separator + "dataease3.0" + File.separator + "config" + File.separator + "application.yml";
 
     public static String getConfig(String key, String defaultValue) {
         try {

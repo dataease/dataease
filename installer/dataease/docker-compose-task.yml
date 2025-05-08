@@ -4,6 +4,6 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease-sync-task:DE_TAG
     container_name: sync-task-actuator
     volumes:
-      - ${DE_BASE}/dataease2.0/logs:/opt/dataease2.0/logs
+      - ${DE_BASE}/dataease3.0/logs:/opt/dataease3.0/logs
     networks:
-      - dataease-network
+      - dataease-network3

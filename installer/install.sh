@@ -32,9 +32,9 @@ function check_and_prepare_env_params() {
 
    cd ${CURRENT_DIR}
    if [ -f /usr/bin/dectl ]; then
-      v2_version=$(dectl version | head -n 2 | grep "v2.")
+      v2_version=$(dectl version | head -n 2 | grep "v3.")
       if [[ -z $v2_version ]];then
-         echo "系统当前版本不是 DataEase v2 版本系列，不支持升级到 v2，请检查离线包版本。"
+         echo "系统当前版本不是 DataEase v3 版本系列，不支持升级到 v3，请检查离线包版本。"
          exit 1;
       fi
       # 获取已安装的 DataEase 的运行目录
@@ -59,8 +59,8 @@ function check_and_prepare_env_params() {
       DE_BASE=$DE_BASE_OLD
       export DE_BASE=$DE_BASE_OLD
    fi
-   if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
-      source $DE_BASE/dataease2.0/.env
+   if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease3.0/.env ]]; then
+      source $DE_BASE/dataease3.0/.env
       INSTALL_TYPE='upgrade'
 
       conf_install_mode=$(prop $CURRENT_DIR/install.conf DE_INSTALL_MODE)
@@ -86,7 +86,7 @@ function check_and_prepare_env_params() {
 
 function set_run_base_path() {
    log_title "设置运行目录"
-   DE_RUN_BASE=$DE_BASE/dataease2.0
+   DE_RUN_BASE=$DE_BASE/dataease3.0
    CONF_FOLDER=${DE_RUN_BASE}/conf
    TEMPLATES_FOLDER=${DE_RUN_BASE}/templates
    log_content "运行目录 $DE_RUN_BASE"
@@ -282,16 +282,6 @@ function load_de_images() {
 
 function set_de_service() {
    log_title "配置 DataEase 服务"
-   if [[ -f /etc/init.d/dataease ]];then
-      if which chkconfig >/dev/null 2>&1;then
-         chkconfig dataease >/dev/null
-         if [ $? -eq 0 ]; then
-            chkconfig --del dataease
-         fi
-      fi
-      rm -f /etc/init.d/dataease
-   fi
-
    if [[ ! -f /etc/systemd/system/dataease.service ]];then
       log_content "配置 dataease Service"
       cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/systemd/system/
