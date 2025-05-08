@@ -521,6 +521,7 @@ const doRecoverToPublished = () => {
     state.opt = null
     initLocalCanvasData(() => {
       dvMainStore.updateDvInfoCall(1)
+      useEmitt().emitter.emit('calcData-all')
     })
   })
 }

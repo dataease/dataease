@@ -310,6 +310,7 @@ const doRecoverToPublished = () => {
         nextTick(() => {
           deCanvasRef.value.canvasInit(false)
           dvMainStore.updateDvInfoCall(1)
+          useEmitt().emitter.emit('calcData-all')
         })
       })
     }
