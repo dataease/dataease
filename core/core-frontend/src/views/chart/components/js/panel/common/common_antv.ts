@@ -2541,3 +2541,14 @@ export function substitute<T>(str: string, o: ObjectType<T>) {
     return o[name] === undefined ? '' : o[name]
   })
 }
+
+export const TOOLTIP_ITEM_TPL = `
+        <li class="g2-tooltip-list-item" data-index="0" style="list-style-type: none; display: flex; line-height: 2em; align-items: center; justify-content: space-between; white-space: nowrap;">
+          <span class="g2-tooltip-list-item-name" style="display: flex; align-items: center; max-width: 216px;">
+            <span class="g2-tooltip-list-item-marker" style="background: {marker}; width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px;"></span>
+            <span class="g2-tooltip-list-item-name-label" title="value" style="flex: 1 1 0%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{label}</span>
+          </span>
+          <span class="g2-tooltip-list-item-value" style="display: inline-block; float: right; flex: 1 1 0%; text-align: right; min-width: 28px; margin-left: 30px; color: rgba(0, 0, 0, 0.85); overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{value}</span>
+        </li>
+`
+export const TOOLTIP_TITLE_TPL = `<div class="g2-tooltip-title" style="color: rgba(0, 0, 0, 0.45); overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{title}</div>`
