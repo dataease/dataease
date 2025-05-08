@@ -181,7 +181,8 @@ const handleInnerMouseDown = e => {
   .condition-type {
     display: flex;
     position: relative;
-    :deep(.ed-input__wrapper) {
+    :deep(.ed-input__wrapper),
+    :deep(.ed-select__wrapper) {
       border: none;
       border-radius: 0;
       box-shadow: none !important;

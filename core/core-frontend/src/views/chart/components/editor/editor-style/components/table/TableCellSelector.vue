@@ -99,7 +99,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form ref="tableCellForm" :model="state.tableCellForm" label-position="top">
+  <el-form size="small" ref="tableCellForm" :model="state.tableCellForm" label-position="top">
     <el-form-item
       :label="t('chart.backgroundColor')"
       class="form-item"

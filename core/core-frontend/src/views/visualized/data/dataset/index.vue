@@ -1040,7 +1040,6 @@ const proxyAllowDrop = debounce((arg1, arg2) => {
                     key="structPreview"
                     :columns="columns"
                     v-loading="dataPreviewLoading"
-                    header-class="header-cell"
                     :data="tableData"
                     :width="width"
                     :height="height"
@@ -1057,7 +1056,6 @@ const proxyAllowDrop = debounce((arg1, arg2) => {
                 <el-table
                   v-loading="dataPreviewLoading"
                   class="dataset-preview_table"
-                  header-class="header-cell"
                   :data="tableData"
                   @row-click="rowClick"
                   key="dataPreview"

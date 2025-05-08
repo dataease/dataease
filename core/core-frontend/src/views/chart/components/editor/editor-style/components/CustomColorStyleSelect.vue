@@ -307,7 +307,8 @@ const colorItemBorderColor = (index, state) => {
 </script>
 
 <template>
-  <div
+  <el-form
+    size="small"
     style="width: 100%"
     :style="{ 'margin-bottom': customColorExtendSettingOpened ? '16px' : 0 }"
   >
@@ -517,7 +518,7 @@ const colorItemBorderColor = (index, state) => {
         />
       </div>
     </teleport>
-  </div>
+  </el-form>
 </template>
 
 <style scoped lang="less">
@@ -530,7 +531,7 @@ const colorItemBorderColor = (index, state) => {
 .custom-color-selector {
   :deep(.ed-input__prefix) {
     width: calc(100% - 22px);
-    .ed-input__prefix-inner {
+    .ed-input__prefix {
       width: 100%;
     }
   }

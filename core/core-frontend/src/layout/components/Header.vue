@@ -130,17 +130,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-header class="header-flex" :class="{ 'header-light': navigateBg && navigateBg === 'light' }">
+  <el-header class="header-flex" :class="{ 'header-light': navigateBg === 'light' }">
     <img class="logo" v-if="navigate" :src="navigate" alt="" />
     <Icon v-else
       ><logo @click="handleIconClick" class="svg-icon logo" style="cursor: pointer"
     /></Icon>
     <el-menu
       :default-active="activeIndex"
-      class="el-menu-demo"
       mode="horizontal"
       :ellipsis="false"
       @select="handleSelect"
+      :effect="navigateBg === 'light' ? 'light' : 'dark'"
     >
       <HeaderMenuItem v-for="menu in routers" :key="menu.path" :menu="menu"></HeaderMenuItem>
     </el-menu>
@@ -277,65 +277,15 @@ onMounted(() => {
     }
   }
 
-  .ed-menu {
-    background-color: #050e21;
-    height: 56px;
-  }
-
-  .ed-menu--horizontal {
-    border: none;
-    .ed-menu-item,
-    :deep(.ed-sub-menu__title) {
-      color: rgba(255, 255, 255, 0.8);
-      line-height: 50px;
-      border-bottom: none;
-
-      &.is-active {
-        border-bottom: none;
-        color: #ffffff !important;
-        background-color: var(--ed-color-primary) !important;
-      }
-    }
-
-    > .is-active {
-      :deep(.ed-sub-menu__title) {
-        color: #ffffff !important;
-        background-color: var(--ed-color-primary);
-      }
-    }
-
-    .ed-menu-item:not(.is-disabled):hover,
-    :deep(.ed-sub-menu__title):not(.is-disabled):hover {
-      color: #ffffffcc;
-      background: #ffffff1a;
-    }
+  .ed-menu.ed-menu--horizontal {
+    border-bottom: none;
+    background: transparent;
   }
 }
 
 .header-light {
   background-color: #ffffff !important;
   box-shadow: 0px 0.5px 0px 0px #1f232926 !important;
-  .ed-menu {
-    background-color: #ffffff !important;
-  }
-  .ed-menu--horizontal {
-    .ed-menu-item {
-      color: var(--ed-color-black) !important;
-    }
-    :deep(.ed-sub-menu__title) {
-      color: var(--ed-color-black) !important;
-    }
-    .ed-menu-item:not(.is-disabled):hover,
-    :deep(.ed-sub-menu):not(.is-active) .ed-sub-menu__title:not(.is-disabled):hover {
-      color: #1f2329;
-      background: #1f23291a;
-    }
-    :deep(.ed-sub-menu).is-active .ed-sub-menu__title:not(.is-disabled):hover {
-      color: #ffffff !important;
-      background-color: var(--ed-color-primary);
-    }
-  }
-
   .logo {
     color: #3371ff !important;
   }

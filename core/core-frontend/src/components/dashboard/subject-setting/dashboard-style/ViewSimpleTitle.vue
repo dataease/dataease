@@ -11,6 +11,7 @@
             v-model="titleForm.color"
             class="color-picker-style"
             is-custom
+            size="small"
             :predefine="state.predefineColors"
             @change="changeTitleStyle('color')"
           />

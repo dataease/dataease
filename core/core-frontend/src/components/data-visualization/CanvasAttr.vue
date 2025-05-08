@@ -97,7 +97,7 @@ onMounted(() => {
               <el-form-item class="form-item form-item-dark" label="W">
                 <el-input-number
                   effect="dark"
-                  size="middle"
+                  size="small"
                   :min="600"
                   :max="50000"
                   v-model="canvasStyleData.width"
@@ -110,7 +110,7 @@ onMounted(() => {
               <el-form-item class="form-item form-item-dark" label="H">
                 <el-input-number
                   effect="dark"
-                  size="middle"
+                  size="small"
                   :min="600"
                   :max="50000"
                   v-model="canvasStyleData.height"
@@ -132,7 +132,7 @@ onMounted(() => {
                 </el-icon>
               </el-tooltip>
               <el-select
-                style="margin: 0 0 0 8px; flex: 1"
+                style="width: 139px; margin: 0 0 0 8px; flex: 1"
                 effect="dark"
                 v-model="canvasStyleData.screenAdaptor"
                 @change="onStyleChange"
@@ -401,7 +401,6 @@ onMounted(() => {
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  margin: 3px 0 !important;
 }
 :deep(.form-item-dark) {
   .ed-form-item__label {
