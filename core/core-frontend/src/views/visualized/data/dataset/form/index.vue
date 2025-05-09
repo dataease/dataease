@@ -2548,7 +2548,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     <el-drawer
       :title="t('dataset.edit_union_relation')"
       v-model="editUnion"
-      custom-class="union-dataset-drawer"
+      modal-class="union-dataset-drawer"
       size="840px"
       :before-close="closeEditUnion"
       direction="rtl"

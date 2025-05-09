@@ -5,7 +5,7 @@
     v-model="dialogShow"
     trigger="click"
     :title="t('visualization.multiplexing')"
-    custom-class="custom-drawer"
+    modal-class="custom-drawer"
     @closed="handleClose()"
   >
     <!-- 标识当前在复用页，用于作为轮播提示前缀 -->

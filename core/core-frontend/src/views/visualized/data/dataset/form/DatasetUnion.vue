@@ -1200,7 +1200,7 @@ const emits = defineEmits([
   <el-drawer
     :before-close="closeEditUnion"
     v-model="editUnion"
-    custom-class="union-item-drawer"
+    modal-class="union-item-drawer"
     size="600px"
     direction="rtl"
   >

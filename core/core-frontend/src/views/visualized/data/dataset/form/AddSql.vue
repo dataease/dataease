@@ -959,7 +959,7 @@ const mousedownDrag = () => {
   <el-drawer
     :title="dialogTitle"
     v-model="showVariableMgm"
-    custom-class="sql-dataset-drawer"
+    modal-class="sql-dataset-drawer"
     size="870px"
     direction="rtl"
   >

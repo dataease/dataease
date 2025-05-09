@@ -2,7 +2,7 @@
   <el-drawer
     :title="t('visualization.save_app')"
     v-model="state.appApplyDrawer"
-    custom-class="de-app-drawer"
+    modal-class="de-app-drawer"
     :show-close="false"
     size="500px"
     direction="rtl"

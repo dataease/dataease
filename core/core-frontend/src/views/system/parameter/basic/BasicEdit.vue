@@ -254,7 +254,7 @@ defineExpose({
   <el-drawer
     :title="title"
     v-model="dialogVisible"
-    custom-class="basic-param-drawer"
+    modal-class="basic-param-drawer"
     size="600px"
     direction="rtl"
   >

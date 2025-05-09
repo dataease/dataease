@@ -5137,7 +5137,9 @@ span {
   :deep(.ed-select__prefix) {
     padding: 0;
     margin: 0;
-    border: none;
+    &::after {
+      display: none;
+    }
     height: 20px;
     .chart-type-select-icon {
       width: 23px;
