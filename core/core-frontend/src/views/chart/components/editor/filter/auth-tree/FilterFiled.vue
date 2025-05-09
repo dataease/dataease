@@ -375,6 +375,7 @@ const emits = defineEmits(['update:item', 'del'])
           size="small"
           @change="filterTypeChange"
           v-model="item.filterType"
+          class="w181"
           :placeholder="t('auth.select')"
         >
           <el-option
@@ -586,11 +587,15 @@ const emits = defineEmits(['update:item', 'del'])
   }
 
   .w100.ed-select {
-    width: 100px;
+    width: 100px !important;
+  }
+
+  .w181.ed-select {
+    width: 181px !important;
   }
 
   .w70 {
-    width: 70px;
+    width: 70px !important;
   }
 
   .mar5 {
@@ -676,11 +681,12 @@ const emits = defineEmits(['update:item', 'del'])
     }
   }
 
-  :deep(.ed-input__wrapper) {
+  :deep(.ed-input__wrapper),
+  :deep(.ed-select__wrapper) {
     background-color: #f8f8fa;
     border: none;
     border-radius: 0;
-    box-shadow: none;
+    box-shadow: none !important;
     height: 26px;
     font-family: var(--de-custom_font, 'PingFang');
     word-wrap: break-word;

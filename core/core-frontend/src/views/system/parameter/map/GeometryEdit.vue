@@ -191,7 +191,7 @@ defineExpose({
   <el-drawer
     :title="t('system.geographic_information')"
     v-model="dialogVisible"
-    custom-class="geometry-info-drawer"
+    modal-class="geometry-info-drawer"
     size="600px"
     direction="rtl"
   >

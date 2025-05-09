@@ -670,35 +670,25 @@ defineExpose({
       activeName === 'table' ? t('datasource.data_table') : t('data_source.interface_parameters')
     "
     v-model="edit_api_item"
-    custom-class="api-datasource-drawer"
+    modal-class="api-datasource-drawer"
     size="1000px"
     :before-close="closeEditItem"
     direction="rtl"
   >
-    <div class="flex-center">
-      <el-steps :active="active" align-center>
+    <div class="flex-center" style="width: 100%">
+      <el-steps custom style="max-width: 400px; flex: 1" :active="active" align-center>
         <el-step>
-          <template #icon>
-            <div class="step-icon">
-              <span class="icon">
-                {{ active <= 0 ? '1' : '' }}
-              </span>
-              <span class="title">{{ t('datasource.api_step_1') }}</span>
-            </div>
+          <template #title>
+            {{ t('datasource.api_step_1') }}
           </template>
         </el-step>
         <el-step>
-          <template #icon>
-            <div class="step-icon">
-              <span class="icon">
-                {{ active <= 1 ? '2' : '' }}
-              </span>
-              <span class="title">{{
-                activeName === 'table'
-                  ? t('datasource.api_step_2')
-                  : t('data_source.extract_parameters')
-              }}</span>
-            </div>
+          <template #title>
+            {{
+              activeName === 'table'
+                ? t('datasource.api_step_2')
+                : t('data_source.extract_parameters')
+            }}
           </template>
         </el-step>
       </el-steps>
@@ -1034,70 +1024,6 @@ defineExpose({
   .flex-center {
     .ed-steps {
       width: 630px;
-    }
-    .ed-step.is-center .ed-step__line {
-      width: 208px;
-      right: 104px;
-      z-index: 5;
-      left: calc(100% - 104px);
-    }
-
-    .ed-step__icon.is-icon {
-      width: auto;
-      position: relative;
-      z-index: 0;
-    }
-
-    .ed-step__head.is-finish::after {
-      right: calc(100% - 133px);
-      top: 44%;
-    }
-
-    .ed-step__head.is-process .ed-step__icon {
-      background-color: transparent;
-      .step-icon {
-        .icon {
-          background: var(--ed-color-primary);
-        }
-      }
-    }
-
-    .ed-step__head.is-finish .ed-step__icon {
-      background-color: transparent;
-      .step-icon {
-        .icon {
-          border: 1px solid var(--ed-color-primary);
-        }
-      }
-    }
-
-    .ed-step__head.is-wait .ed-step__icon {
-      background-color: transparent;
-      .step-icon {
-        .icon {
-          color: #8f959e;
-          border: 1px solid #8f959e;
-        }
-      }
-    }
-
-    .step-icon {
-      display: flex;
-      padding: 0 48px;
-      align-items: center;
-      .icon {
-        width: 28px;
-        height: 28px;
-        line-height: 27px;
-        border-radius: 50%;
-      }
-      .title {
-        margin-left: 8px;
-        color: #1f2329;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 22px;
-      }
     }
   }
 

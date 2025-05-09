@@ -781,26 +781,16 @@ defineExpose({
   >
     <template #header="{ close }">
       <span>{{ drawTitle }}</span>
-      <div v-if="!editDs" class="editor-step flex-center">
-        <el-steps space="150px" :active="activeStep" align-center>
+      <div v-if="!editDs" class="flex-center" style="width: 100%">
+        <el-steps custom style="max-width: 500px; flex: 1" :active="activeStep" align-center>
           <el-step>
-            <template #icon>
-              <div class="step-icon">
-                <span class="icon">
-                  {{ activeStep <= 0 ? '1' : '' }}
-                </span>
-                <span class="title">{{ t('deDataset.select_data_source') }}</span>
-              </div>
+            <template #title>
+              {{ t('deDataset.select_data_source') }}
             </template>
           </el-step>
           <el-step>
-            <template #icon>
-              <div class="step-icon">
-                <span class="icon">
-                  {{ activeStep <= 1 ? '2' : '' }}
-                </span>
-                <span class="title">{{ t('data_source.configuration_information') }}</span>
-              </div>
+            <template #title>
+              {{ t('data_source.configuration_information') }}
             </template>
           </el-step>
         </el-steps>
@@ -1205,6 +1195,9 @@ defineExpose({
       padding-right: 24px;
       float: left;
       border-top: 1px solid rgba(31, 35, 41, 0.15);
+      position: relative;
+      z-index: 10;
+      background: #fff;
     }
   }
 }

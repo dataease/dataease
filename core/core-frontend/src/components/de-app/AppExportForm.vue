@@ -2,7 +2,7 @@
   <el-drawer
     :title="t('visualization.app_export')"
     v-model="state.applyDownloadDrawer"
-    custom-class="de-user-drawer"
+    modal-class="de-user-drawer"
     size="600px"
     direction="rtl"
   >

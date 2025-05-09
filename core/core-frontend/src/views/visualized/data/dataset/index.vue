@@ -1041,6 +1041,7 @@ const proxyAllowDrop = debounce((arg1, arg2) => {
                     :columns="columns"
                     v-loading="dataPreviewLoading"
                     :data="tableData"
+                    header-class="excel-header-cell"
                     :width="width"
                     :height="height"
                     fixed

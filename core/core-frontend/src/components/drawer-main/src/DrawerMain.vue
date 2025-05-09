@@ -119,7 +119,7 @@ defineExpose({
     :title="t('common.filter_condition')"
     v-model="userDrawer"
     size="600px"
-    custom-class="drawer-main-container"
+    modal-class="drawer-main-container"
     direction="rtl"
   >
     <div v-for="(component, index) in componentList" :key="index">

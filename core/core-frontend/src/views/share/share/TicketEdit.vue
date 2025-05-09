@@ -259,7 +259,7 @@ defineExpose({
   <el-drawer
     :title="`${t('commons.add')} Ticket`"
     v-model="dialogVisible"
-    custom-class="ticket-param-drawer"
+    modal-class="ticket-param-drawer"
     size="600px"
     direction="rtl"
   >
