@@ -78,7 +78,9 @@ const MenuItem = props => {
     { index: path },
     {
       title: h('span', null, { default: () => title }),
-      default: h(ElIcon, null, { default: () => h(iconMap[icon], { className: 'svg-icon logo' }) })
+      default: h(iconMap[icon] ? ElIcon : null, null, {
+        default: () => h(iconMap[icon], { className: 'svg-icon logo' })
+      })
     }
   )
 }
