@@ -141,8 +141,10 @@ const btnHoverStyle = computed(() => {
   let btnColor = customStyle.btnColor
   if (customStyle.btnColor.startsWith('rgb')) {
     btnColor = rgbaTo16color(customStyle.btnColor)
-  } else {
-    btnColor = customStyle.btnColor.substr(1)
+  }
+
+  if (btnColor.startsWith('#')) {
+    btnColor = btnColor.substr(1)
   }
 
   return {
