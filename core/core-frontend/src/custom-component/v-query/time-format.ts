@@ -1,20 +1,19 @@
 import type { ManipulateType } from 'dayjs'
 import dayjs from 'dayjs'
 function getThisYear() {
-  return new Date(`${new Date().getFullYear()}/1`)
+  return new Date(dayjs().startOf('year').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getLastYear() {
-  return new Date(`${new Date().getFullYear() - 1}/1`)
+  return new Date(dayjs().subtract(1, 'year').startOf('year').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getNextYear() {
-  return new Date(`${new Date().getFullYear() + 1}/1`)
+  return new Date(dayjs().add(1, 'year').startOf('year').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getThisMonth() {
-  const date = new Date()
-  return new Date(`${date.getFullYear()}/${date.getMonth() + 1}`)
+  return new Date(dayjs().startOf('month').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getLastStart(val = 'month' as ManipulateType) {
@@ -26,23 +25,19 @@ function getLastMonth() {
 }
 
 function getNextMonth() {
-  const date = getCustomTime(1, 'month', 'month', 'b')
-  return new Date(`${date.getFullYear()}/${date.getMonth() + 1}`)
+  return new Date(dayjs().add(1, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getToday() {
-  const date = new Date()
-  return new Date(`${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`)
+  return new Date(dayjs().startOf('day').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getYesterday() {
-  const date = new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
-  return new Date(`${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`)
+  return new Date(dayjs().subtract(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getMonthBeginning() {
-  const date = new Date()
-  return new Date(`${date.getFullYear()}/${date.getMonth() + 1}/1`)
+  return new Date(dayjs().startOf('month').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getMonthEnd() {
@@ -50,8 +45,7 @@ function getMonthEnd() {
 }
 
 function getYearBeginning() {
-  const date = new Date()
-  return new Date(`${date.getFullYear()}/1/1`)
+  return new Date(dayjs().startOf('year').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getYearMonthRange(result, sort) {
