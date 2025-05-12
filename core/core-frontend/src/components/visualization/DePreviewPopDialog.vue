@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     ref="previewPopDialog"
-    :custom-class="'preview_pop_custom'"
+    modal-class="preview_pop_custom"
     :append-to-body="true"
     :fullscreen="state.fullscreen"
     v-model="state.dialogShow"

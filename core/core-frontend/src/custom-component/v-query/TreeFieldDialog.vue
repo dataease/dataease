@@ -80,7 +80,7 @@ defineExpose({
   <el-dialog
     v-model="dialogVisible"
     width="600"
-    custom-class="tree-field_dialog"
+    modal-class="tree-field_dialog"
     :before-close="handleBeforeClose"
     @mousedown.stop
     @mousedup.stop

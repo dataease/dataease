@@ -2566,7 +2566,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     ref="creatDsFolder"
   ></creat-ds-group>
   <el-dialog
-    custom-class="calc-field-edit-dialog"
+    modal-class="calc-field-edit-dialog"
     v-model="editCalcField"
     width="1000px"
     :title="calcTitle"

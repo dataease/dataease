@@ -119,19 +119,44 @@ const btnStyle = computed(() => {
   return style
 })
 
+function rgbaTo16color(color) {
+  let val = color
+    .replace(/rgba?\(/, '')
+    .replace(/\)/, '')
+    .replace(/[\s+]/g, '')
+    .split(',')
+  let a = parseFloat(val[3] || 1),
+    r = Math.floor(a * parseInt(val[0]) + (1 - a) * 255),
+    g = Math.floor(a * parseInt(val[1]) + (1 - a) * 255),
+    b = Math.floor(a * parseInt(val[2]) + (1 - a) * 255)
+  return (
+    '#' +
+    ('0' + r.toString(16)).slice(-2) +
+    ('0' + g.toString(16)).slice(-2) +
+    ('0' + b.toString(16)).slice(-2)
+  )
+}
+
 const btnHoverStyle = computed(() => {
+  let btnColor = customStyle.btnColor
+  if (customStyle.btnColor.startsWith('rgb')) {
+    btnColor = rgbaTo16color(customStyle.btnColor)
+  } else {
+    btnColor = customStyle.btnColor.substr(1)
+  }
+
   return {
     rawColor: customStyle.btnColor ?? '#3370ff',
     hoverColor: customStyle.btnColor
       ? colorFunctions
-          .mix(new colorTree('ffffff'), new colorTree(customStyle.btnColor.substr(1)), {
+          .mix(new colorTree('ffffff'), new colorTree(btnColor), {
             value: 15
           })
           .toRGB()
       : '#5285FF',
     activeColor: customStyle.btnColor
       ? colorFunctions
-          .mix(new colorTree('000000'), new colorTree(customStyle.btnColor.substr(1)), {
+          .mix(new colorTree('000000'), new colorTree(btnColor), {
             value: 15
           })
           .toRGB()
