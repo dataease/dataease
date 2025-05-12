@@ -1,4 +1,4 @@
-import { Chart as G2Column, G2Spec } from '@antv/g2'
+import { Chart as G2Column } from '@antv/g2'
 import { G2ChartView, G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import {
   BAR_AXIS_TYPE,
@@ -15,10 +15,10 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import _ from 'lodash'
+import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
-export type ViewSpec = { children?: G2Spec[] } & G2Spec
 
 /**
  * 柱状图
@@ -74,6 +74,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         shared: true
       }
     },
+    transform: [{ type: 'dodgeX' }],
     data: []
   }
 
@@ -89,7 +90,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       children: [
         {
           ...this.intervalOptions,
-          transform: [{ type: 'dodgeX' }],
+          transform: [].concat(this.intervalOptions.transform),
           data
         }
       ]
@@ -531,7 +532,6 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         item['conditionColor'] = []
         const quotaList = item.quotaList.map(q => q.id) ?? []
         quotaList.forEach(q => {
-          // 定义后，在 handleConditionsStyle 函数中使用
           let currentValue = item['value']
           if (chart.type === 'progress-bar') {
             currentValue = item['originalValue']
