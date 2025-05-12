@@ -164,7 +164,6 @@ defineExpose({
 
 <style lang="less">
 .drawer-main-container {
-  width: 600px;
   .ed-drawer__body {
     padding: 16px 24px 80px !important;
   }
