@@ -48,15 +48,15 @@ function getYearBeginning() {
   return new Date(dayjs().startOf('year').format('YYYY/MM/DD HH:mm:ss'))
 }
 
-function getYearMonthRange(result, sort) {
+function getYearMonthRange(result, sort, type) {
   const [direction, scene] = (sort || '').split('-')
   if (direction === 'start') {
-    return new Date(result.startOf('day').format('YYYY/MM/DD HH:mm:ss'))
+    return new Date(result.startOf(type).format('YYYY/MM/DD HH:mm:ss'))
   } else if (direction === 'end') {
     if (scene === 'config') {
       return new Date(result.format('YYYY/MM/DD HH:mm:ss'))
     } else if (scene === 'panel') {
-      return new Date(dayjs(result).endOf('day').format('YYYY/MM/DD HH:mm:ss'))
+      return new Date(dayjs(result).endOf(type).format('YYYY/MM/DD HH:mm:ss'))
     }
   }
 }
@@ -75,7 +75,7 @@ function getCustomTime(
   const result = dayjs()[type](timeNum, timeType === 'date' ? 'day' : timeType)
 
   if (['monthrange', 'yearrange', 'daterange'].includes(timeGranularityMultiple)) {
-    return getYearMonthRange(result, sort)
+    return getYearMonthRange(result, sort, timeGranularityMultiple.split('range')[0])
   }
 
   if (!!arbitraryTime) {
