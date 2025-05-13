@@ -1335,8 +1335,12 @@ export const dvMainStore = defineStore('dataVisualization', {
                         itemInner['currentSelectValue'] = Array.isArray(curDefaultValue)
                           ? curDefaultValue
                           : [curDefaultValue]
+                        itemInner['selectValue'] = Array.isArray(curDefaultValue)
+                          ? curDefaultValue
+                          : [curDefaultValue]
                       } else {
                         itemInner['currentSelectValue'] = []
+                        itemInner['selectValue'] = []
                       }
                     })
                   }
