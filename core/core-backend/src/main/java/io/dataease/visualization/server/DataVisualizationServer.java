@@ -981,10 +981,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (viewDTO == null) {
             return null;
         }
-        if (viewDTO.getSceneId() == null) {
+        if (viewDTO.getPid() == null) {
             return viewDTO.getTitle();
         }
-        List<DataVisualizationInfo> parents = getParents(viewDTO.getSceneId());
+        List<DataVisualizationInfo> parents = getParents(viewDTO.getPid());
         StringBuilder stringBuilder = new StringBuilder();
         parents.forEach(ele -> {
             if (ObjectUtils.isNotEmpty(ele)) {

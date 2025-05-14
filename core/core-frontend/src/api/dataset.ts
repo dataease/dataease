@@ -362,6 +362,12 @@ export const exportDelete = async (id): Promise<IResponse> => {
   })
 }
 
+export const generateDownloadUri = async (id): Promise<IResponse> => {
+  return request.get({ url: '/exportCenter/generateDownloadUri/' + id }).then(res => {
+    return res?.data
+  })
+}
+
 export const exportDeleteAll = async (type, data): Promise<IResponse> => {
   return request.post({ url: '/exportCenter/deleteAll/' + type, data }).then(res => {
     return res?.data

@@ -54,6 +54,12 @@ public class ExportCenterServer implements ExportCenterApi {
     }
 
     @Override
+    public String generateDownloadUri(String id) throws Exception {
+        exportCenterManage.generateDownloadUri(id);
+        return "";
+    }
+
+    @Override
     public void retry(String id) {
         exportCenterManage.retry(id);
     }

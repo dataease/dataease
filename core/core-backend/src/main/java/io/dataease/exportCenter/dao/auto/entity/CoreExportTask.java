@@ -26,7 +26,7 @@ public class CoreExportTask implements Serializable {
 
     private String fileSizeUnit;
 
-    private String exportFrom;
+    private Long exportFrom;
 
     private String exportStatus;
 
@@ -88,11 +88,11 @@ public class CoreExportTask implements Serializable {
         this.fileSizeUnit = fileSizeUnit;
     }
 
-    public String getExportFrom() {
+    public Long getExportFrom() {
         return exportFrom;
     }
 
-    public void setExportFrom(String exportFrom) {
+    public void setExportFrom(Long exportFrom) {
         this.exportFrom = exportFrom;
     }
 
