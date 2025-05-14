@@ -119,10 +119,11 @@
                 v-if="!batchOptStatus"
                 v-show="showProperty('customColor')"
                 class="custom-color-style"
+                @scroll="handleScroll"
               >
                 <div
-                  v-for="(item,index) in colorForm.seriesColors"
-                  :key="index"
+                    v-for="(item,index) in showColorItems"
+                  :key="item.id"
                   style="display: flex;align-items: center;margin: 2px 0;"
                 >
                   <el-color-picker
@@ -547,7 +548,10 @@ export default {
         { name: this.$t('chart.map_style_macaron'), value: 'macaron' },
         { name: this.$t('chart.map_style_blue'), value: 'blue' },
         { name: this.$t('chart.map_style_wine'), value: 'wine' }
-      ]
+      ],
+      maxVisibleCount: 20,
+      maxVisableHeight: 50,
+      startColorIndex: 0,
     }
   },
   computed: {
@@ -566,6 +570,12 @@ export default {
         return customAttr.size.mapLineAnimate && equalsAny(customAttr.size.mapLineType, 'line', 'arc')
       }
       return false
+    },
+    showColorItems() {
+      return this.colorForm.seriesColors.slice(
+        this.startColorIndex,
+        this.startColorIndex + this.maxVisibleCount
+      )
     },
     ...mapState([
       'batchOptStatus',
@@ -706,7 +716,16 @@ export default {
           })
         }
       }
-    }
+    },
+    handleScroll(event) {
+      const container = event.target
+      const { scrollTop, scrollHeight, clientHeight } = container
+      if (scrollHeight - (scrollTop + clientHeight) < this.maxVisableHeight) {
+        this.maxVisibleCount = Math.min(
+          this.maxVisibleCount + 20,
+          this.colorForm.seriesColors.length
+        )
+      }
   }
 }
 </script>
