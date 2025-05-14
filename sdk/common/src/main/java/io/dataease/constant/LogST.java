@@ -16,7 +16,8 @@ public enum LogST {
     DRIVER_FILE(11, "SOURCE_TYPE_DRIVER_FILE"),
     MENU(12, "SOURCE_TYPE_MENU"),
     APIKEY(13, "SOURCE_TYPE_APIKEY"),
-    DATA_FILLING(14, "SOURCE_TYPE_DATAFILLING");
+    DATA_FILLING(14, "SOURCE_TYPE_DATAFILLING"),
+    DATA(15, "SOURCE_TYPE_DATA");
     private Integer value;
 
     private String name;

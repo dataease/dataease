@@ -16,7 +16,8 @@ public enum LogOT {
     UPLOADFILE(11, "OPERATE_TYPE_UPLOADFILE"),
     BIND(12, "OPERATE_TYPE_BIND"),
     UNBIND(13, "OPERATE_TYPE_UNBIND"),
-    LOGIN(14, "OPERATE_TYPE_LOGIN");
+    LOGIN(14, "OPERATE_TYPE_LOGIN"),
+    DOWNLOAD(15, "OPERATE_TYPE_DOWNLOAD");
     private Integer value;
     private String name;
 
