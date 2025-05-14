@@ -47,6 +47,10 @@ public interface ExportCenterApi {
     @GetMapping("/download/{id}")
     public void download(@PathVariable String id, HttpServletResponse response) throws Exception;
 
+    @Operation(summary = "生成下载Url")
+    @GetMapping("/generateDownloadUri/{id}")
+    public String generateDownloadUri(@PathVariable String id) throws Exception;
+
     @Operation(summary = "重试")
     @PostMapping("/retry/{id}")
     public void retry(@PathVariable String id);

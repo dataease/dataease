@@ -309,7 +309,6 @@ public class ChartDataServer implements ChartDataApi {
             }
         } else {
             exportCenterManage.addTask(request.getViewId(), "chart", request);
-            return;
         }
     }
 
