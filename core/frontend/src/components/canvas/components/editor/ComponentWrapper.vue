@@ -2,6 +2,7 @@
   <div
     :style="getOutStyleDefault(config.style)"
     class="component component-outer"
+    :id="'wrapper_' + config.id"
     :class="{'component-active': filterActive, 'user-view': config.component === 'user-view'}"
     @click="handleClick"
     @mousedown="elementMouseDown"
@@ -17,14 +18,10 @@
       :series-id-map="seriesIdMap"
       @showViewDetails="showViewDetails"
     />
-    <div
-      :id="componentCanvasId"
-      :style="commonStyle"
-      class="main_view"
-    >
+    <div :id="componentCanvasId" :style="commonStyle" class="main_view">
       <svg-icon
         v-if="svgInnerEnable"
-        :style="{'color':config.commonBackground.innerImageColor}"
+        :style="{ color: config.commonBackground.innerImageColor }"
         class="svg-background"
         :icon-class="mainSlotSvgInner"
       />
@@ -52,9 +49,10 @@
       />
       <component
         :is="config.component"
-        v-else
+        v-else-if="renderCom"
         ref="wrapperChild"
         class="component"
+        :is-active="isActive"
         :canvas-id="canvasId"
         :out-style="config.style"
         :style="getComponentStyleDefault(config.style)"
@@ -160,8 +158,44 @@ export default {
       previewVisible: false,
       seriesIdMap: {
         id: ''
-      }
+      },
+      renderCom: false,
+      isActive: false,
     }
+  },
+
+  created() {
+    const activeViewId = this.$router?.currentRoute?.query?.activeViewId
+    if (activeViewId) {
+      this.isActive = activeViewId === this.config?.propValue?.viewId
+      this.renderCom = activeViewId === this.config?.propValue?.viewId
+      return
+    }
+    this.$nextTick(() => {
+      const that = this
+      function handleIntersection(entries, observer) {
+        entries.forEach((entry) => {
+          if (entry.intersectionRatio > 0.1) {
+            that.renderCom = true
+            that.isActive = true
+          } else {
+            that.isActive = false
+          }
+        })
+      }
+      const root = document.querySelector('#preview-main-canvas-main')
+
+      // 创建一个IntersectionObserver实例
+      const observer = new IntersectionObserver(handleIntersection, {
+        root: root, // 使用视口作为根
+        rootMargin: '0px',
+        threshold: 0.1 // 元素进入视口的10%时触发回调
+      })
+
+      // 选择需要观察的元素
+      const targetElement = document.querySelector(`#wrapper_${this.config.id}`)
+      observer.observe(targetElement)
+    })
   },
   computed: {
     filterActive() {

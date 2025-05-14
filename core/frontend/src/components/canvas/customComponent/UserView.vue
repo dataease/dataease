@@ -364,6 +364,10 @@ export default {
     userId: {
       type: String,
       require: false
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -590,6 +594,15 @@ export default {
   },
 
   watch: {
+    'isActive': {
+      immediate: true,
+      handler(newVal) {
+        if (newVal && this.needUpdate) {
+          this.getData(this.element.propValue.viewId)
+          this.needUpdate = false
+        }
+      }
+    },
     'innerPadding': {
       handler: function(val1, val2) {
         if (val1 !== val2) {
@@ -632,6 +645,11 @@ export default {
           return
         }
         if (this.requestStatus === 'waiting') {
+          return
+        }
+        if (!this.isActive) {
+          this.needUpdate = true
+          this.getDataLoading = false
           return
         }
         if (newVal !== oldVal && this.$refs[this.element.propValue.id]) {
