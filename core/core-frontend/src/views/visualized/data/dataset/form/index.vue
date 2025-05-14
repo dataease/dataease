@@ -86,7 +86,12 @@ const appStore = useAppStoreWithOut()
 const embeddedStore = useEmbedded()
 const { t } = useI18n()
 const route = useRoute()
-const { push } = useRouter()
+const { push } = useRouter() || {
+  push: val => {
+    if (embeddedStore.getToken) return
+    window.location.href = val as string
+  }
+}
 const quotaTableHeight = ref(238)
 const creatDsFolder = ref()
 const editCalcField = ref(false)
