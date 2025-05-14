@@ -325,7 +325,7 @@ export class HorizontalStackBar extends HorizontalBar {
     const label = {
       ...baseOptions.label,
       formatter: function (data: Datum) {
-        const value = valueFormatter(data.value, labelAttr.formatter)
+        const value = valueFormatter(data.value, labelAttr.labelFormatter)
         const group = new Group({})
         group.addShape({
           type: 'text',
