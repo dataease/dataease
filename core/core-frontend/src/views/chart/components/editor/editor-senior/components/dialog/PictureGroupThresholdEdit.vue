@@ -303,7 +303,11 @@ init()
       >
         <el-row style="margin-top: 6px; align-items: center; justify-content: space-between">
           <el-form-item class="form-item">
-            <el-select v-model="fieldItem.fieldId" @change="addField(fieldItem)">
+            <el-select
+              style="width: 181px"
+              v-model="fieldItem.fieldId"
+              @change="addField(fieldItem)"
+            >
               <el-option
                 class="series-select-option"
                 v-for="fieldOption in state.fields"
@@ -437,6 +441,7 @@ init()
                 <el-select
                   v-model="item.url"
                   @change="changeThreshold"
+                  style="width: 181px"
                   popper-class="picture-group-select"
                 >
                   <template v-if="item.url" #prefix>

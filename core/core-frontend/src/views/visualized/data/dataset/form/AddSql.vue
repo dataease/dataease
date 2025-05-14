@@ -1611,6 +1611,7 @@ const mousedownDrag = () => {
   }
   .ed-input-group__prepend {
     padding: 0 11px;
+    width: 163px;
   }
   .de-group__prepend {
     .ed-date-editor {
@@ -1625,7 +1626,6 @@ const mousedownDrag = () => {
 
   .ed-date-editor {
     width: 100%;
-    display: inline-block;
   }
 
   .select-type {
@@ -1637,7 +1637,7 @@ const mousedownDrag = () => {
   .select-svg-icon {
     position: absolute;
     left: 24px;
-    top: 15px;
+    top: 19px;
   }
 
   .content {
@@ -1646,6 +1646,7 @@ const mousedownDrag = () => {
     border-radius: 4px;
     background: #e1eaff;
     position: relative;
+    line-height: 22px;
     padding: 9px 0 9px 40px;
     font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;

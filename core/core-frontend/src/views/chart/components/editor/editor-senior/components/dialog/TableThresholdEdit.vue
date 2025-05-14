@@ -397,7 +397,11 @@ init()
       >
         <el-row style="margin-top: 6px; align-items: center; justify-content: space-between">
           <el-form-item class="form-item">
-            <el-select v-model="fieldItem.fieldId" @change="addField(fieldItem)">
+            <el-select
+              style="width: 181px"
+              v-model="fieldItem.fieldId"
+              @change="addField(fieldItem)"
+            >
               <el-option
                 class="series-select-option"
                 v-for="fieldOption in state.fields"
@@ -735,9 +739,9 @@ init()
               <el-form-item class="form-item" :label="t('chart.textColor')">
                 <el-color-picker
                   is-custom
-                  size="large"
                   v-model="item.color"
                   show-alpha
+                  :trigger-width="68"
                   class="color-picker-style"
                   :predefine="predefineColors"
                   @change="changeThreshold"
@@ -748,8 +752,9 @@ init()
               <el-form-item class="form-item" :label="t('chart.backgroundColor')">
                 <el-color-picker
                   is-custom
-                  size="large"
+                  size="default"
                   v-model="item.backgroundColor"
+                  :trigger-width="68"
                   show-alpha
                   class="color-picker-style"
                   :predefine="predefineColors"
@@ -856,18 +861,12 @@ span {
   font-size: 12px;
 }
 
-.color-picker-style {
+:deep(.color-picker-style) {
   cursor: pointer;
   z-index: 1003;
-  width: 28px;
-  height: 28px;
+  height: 32px;
+  line-height: 32px;
 }
-
-.color-picker-style :deep(.el-color-picker__trigger) {
-  width: 28px;
-  height: 28px;
-}
-
 .color-title {
   color: #646a73;
   font-size: 14px;
