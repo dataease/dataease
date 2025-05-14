@@ -672,6 +672,7 @@ onMounted(() => {
                     class="menu-item-padding"
                     :disabled="state.disableEditCompare"
                     :command="beforeQuickCalc('setting')"
+                    v-if="!(chart.type.includes('chart-mix') && type === 'quotaExt')"
                   >
                     <div
                       class="sub-menu-content"
