@@ -1051,7 +1051,7 @@ onMounted(() => {
   loadInit()
   listDs()
   setSupportSetKey()
-  const { opt } = router.currentRoute.value.query
+  const { opt } = router?.currentRoute?.value?.query || {}
   if (opt && opt === 'create') {
     datasourceEditor.value.init(null, null, null, isSupportSetKey.value)
   }
