@@ -15,7 +15,7 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import _ from 'lodash'
-import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import { Transform, ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -74,9 +74,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         shared: true
       }
     },
-    transform: [{ type: 'dodgeX' }],
+    transform: [{ type: 'dodgeX' } as Transform],
     data: []
-  }
+  } as ViewSpec
 
   async drawChart(drawOptions: G2DrawOptions<G2Column>): Promise<G2Column> {
     const { chart, container, action } = drawOptions

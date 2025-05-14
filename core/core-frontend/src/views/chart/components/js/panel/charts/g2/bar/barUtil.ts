@@ -1,7 +1,11 @@
 import { parseJson } from '@/views/chart/components/js/util'
 import { G2Spec } from '@antv/g2'
 
-export type ViewSpec = { children?: G2Spec[] } & G2Spec
+export type ViewSpec = { children?: G2Spec[]; [key: string]: any } & G2Spec
+export type Transform = {
+  type: string
+  [key: string]: any
+}
 
 export function handleEmptyDataStrategy<O extends ViewSpec>(chart: Chart, options: O): O {
   const { data } = options.children[0]
