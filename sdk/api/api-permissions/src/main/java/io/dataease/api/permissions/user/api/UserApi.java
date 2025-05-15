@@ -52,6 +52,10 @@ public interface UserApi {
     @GetMapping("/personInfo")
     UserFormVO personInfo();
 
+    @Operation(summary = "查询用户系统变量信息")
+    @GetMapping("/personSysVariableInfo/{id}")
+    UserGridVO personSysVariableInfo(@PathVariable("id") Long id);
+
     @Operation(summary = "查询客户端IP信息")
     @GetMapping("/ipInfo")
     CurIpVO ipInfo();
