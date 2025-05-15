@@ -18,6 +18,9 @@ export const userSelectedForRoleApi = (page: number, limit: number, data) =>
 export const userPageApi = (page: number, limit: number, data) =>
   request.post({ url: `/user/pager/${page}/${limit}`, data })
 
+export const personSysVariableInfoApi = uid =>
+  request.get({ url: `/user/personSysVariableInfo/${uid}` })
+
 export const userCreateApi = data => request.post({ url: '/user/create', data })
 
 export const userEditApi = data => request.post({ url: '/user/edit', data })
