@@ -4711,8 +4711,7 @@ span {
     justify-content: space-between;
     padding: 0 8px;
     line-height: 22px;
-    
-
+  
     span {
       width: calc(100% - 24px);
       overflow-x: hidden;
