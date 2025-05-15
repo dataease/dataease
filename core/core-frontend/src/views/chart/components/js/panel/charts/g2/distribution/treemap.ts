@@ -1,7 +1,5 @@
 import {
-  filterChartDataByRange,
   flow,
-  getMaxAndMinValueByData,
   hexColorToRGBA,
   parseJson,
   setUpSingleDimensionSeriesColor
@@ -9,7 +7,6 @@ import {
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, isEmpty } from 'lodash-es'
-import { DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
@@ -228,6 +225,7 @@ export class Treemap extends G2ChartView {
     }
     return defaultsDeep(options, tooltipOptions)
   }
+
   protected configLabel(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const labelAttr = customAttr.label
