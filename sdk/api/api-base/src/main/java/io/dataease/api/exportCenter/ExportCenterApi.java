@@ -20,7 +20,6 @@ import static io.dataease.constant.AuthResourceEnum.DATASOURCE;
 
 @Tag(name = "数据导出中心")
 @ApiSupport(order = 971)
-@DeApiPath(value = "/exportCenter", rt = DATASOURCE)
 public interface ExportCenterApi {
 
 
