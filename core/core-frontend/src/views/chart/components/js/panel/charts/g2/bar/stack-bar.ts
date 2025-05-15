@@ -7,9 +7,16 @@ import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { groupBy } from 'lodash'
 import {
+  createTooltipWrapper,
   handleEmptyDataStrategy,
+  tooltipCss,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import {
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '@/views/chart/components/js/panel/common/common_antv'
+import { defaultsDeep, isEmpty } from 'lodash-es'
 
 /**
  * 堆叠柱状图
@@ -98,7 +105,57 @@ export class StackBar extends Bar {
     }
   }
 
-  protected configTooltip(_chart: Chart, options: ViewSpec): ViewSpec {
+  protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
+    const { tooltip } = parseJson(chart.customAttr)
+    if (!tooltip.show) {
+      return {
+        ...options,
+        tooltip: false
+      }
+    }
+    const tooltipMap = function (a) {
+      return a
+    }
+    tooltipMap.title = undefined
+
+    const tooltipOptions: ViewSpec = {
+      tooltip: tooltipMap,
+      interaction: {
+        tooltip: {
+          mount: createTooltipWrapper(chart),
+          css: tooltipCss(tooltip),
+          enterable: true,
+          bounding: {
+            x: 0,
+            y: 0
+          },
+          position: 'top-right',
+          render: (_, { title, items: originalItems }) => {
+            const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
+            const tooltipItems = originalItems
+            const result = []
+            tooltipItems.forEach(item => {
+              const value = valueFormatter(item.value, tooltip.tooltipFormatter)
+              const name = isEmpty(item.category) ? item.field : item.category
+              result.push({ ...item, name, value })
+            })
+            const itemsHtml = result
+              .map(item => {
+                const marker = item.color
+                const label = item.name
+                const value = item.value
+                return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
+                  .replace('{label}', label)
+                  .replace('{value}', value)
+              })
+              .join('')
+            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            return `${titleHtml}${listHtml}`
+          }
+        }
+      }
+    }
+    defaultsDeep(options.children[0], tooltipOptions)
     return options
   }
 

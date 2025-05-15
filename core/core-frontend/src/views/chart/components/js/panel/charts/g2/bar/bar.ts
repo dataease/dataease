@@ -7,15 +7,26 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, hexToRgba, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { getLineDash, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  getLineDash,
+  setGradientColor,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '@/views/chart/components/js/panel/common/common_antv'
 import {
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import _ from 'lodash'
-import { Transform, ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import {
+  configTooltip,
+  createTooltipWrapper,
+  tooltipCss,
+  Transform,
+  ViewSpec
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -99,6 +110,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const newChart = new G2Column({ container, autoFit: true })
     newChart.options(options)
     newChart.on('interval:click', action)
+    configTooltip(newChart, chart)
     return newChart
   }
 
@@ -121,10 +133,6 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       dy: l.position === 'top' ? -10 : 0,
       dx: 0
     }
-    // contrastReverse 标签颜色在图形背景上对比度低的情况下，从指定色板选择一个对比度最优的颜色
-    // overlapDodgeY 对位置碰撞的标签在 y 方向上进行调整，防止标签重叠
-    // exceedAdjust 自动对标签做溢出检测和矫正，即当标签超出视图区域时，会对标签自动做反方向的位移
-    // overlapHide 对位置碰撞的标签进行隐藏，默认保留前一个，隐藏后一个
     const transform = {
       transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }]
     }
@@ -177,7 +185,77 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     }
   }
 
-  protected configTooltip(_chart: Chart, options: ViewSpec): ViewSpec {
+  protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const tooltipAttr = customAttr.tooltip
+    const yAxis = chart.yAxis
+    if (!tooltipAttr.show) {
+      return {
+        ...options,
+        tooltip: false
+      }
+    }
+    const formatterMap = tooltipAttr.seriesTooltipFormatter
+      ?.filter(i => i.show)
+      .reduce((pre, next) => {
+        pre[next.id] = next
+        return pre
+      }, {}) as Record<string, SeriesFormatter>
+    const tooltipOptions: ViewSpec = {
+      tooltip: d => d,
+      interaction: {
+        tooltip: {
+          mount: createTooltipWrapper(chart),
+          css: tooltipCss(tooltipAttr),
+          enterable: true,
+          bounding: {
+            x: 0,
+            y: 0
+          },
+          position: 'top-right',
+          render: (_, { title, items: originalItems }) => {
+            const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
+            let tooltipItems = originalItems
+            if (tooltipAttr.seriesTooltipFormatter?.length) {
+              tooltipItems = originalItems.filter(item => formatterMap[item.quotaList[0].id])
+            }
+            const result = []
+            const head = originalItems[0]
+            tooltipItems.forEach(item => {
+              const formatter = formatterMap[item.quotaList[0].id] ?? yAxis[0]
+              const value = valueFormatter(item.value, formatter.formatterCfg)
+              const name = isEmpty(formatter.chartShowName)
+                ? formatter.name
+                : formatter.chartShowName
+              result.push({ ...item, name, value })
+            })
+            head.dynamicTooltipValue?.forEach(item => {
+              const formatter = formatterMap[item.fieldId]
+              if (formatter) {
+                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const name = isEmpty(formatter.chartShowName)
+                  ? formatter.name
+                  : formatter.chartShowName
+                result.push({ color: 'grey', name, value })
+              }
+            })
+            const itemsHtml = result
+              .map(item => {
+                const marker = item.color
+                const label = item.name
+                const value = item.value
+                return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
+                  .replace('{label}', label)
+                  .replace('{value}', value)
+              })
+              .join('')
+            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            return `${titleHtml}${listHtml}`
+          }
+        }
+      }
+    }
+    defaultsDeep(options.children[0], tooltipOptions)
     return options
   }
 
@@ -300,7 +378,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
               navPageNumFill: legendColor,
               navButtonSize: legendSize,
               navOrientation:
-                position === 'left' || position === 'right' ? 'vertical' : 'horizontal'
+                position === 'left' || position === 'right' ? 'vertical' : 'horizontal',
+              maxRows: 1,
+              navControllerSpacing: 20
             }
           }
         } else {

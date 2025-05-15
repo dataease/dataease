@@ -1,16 +1,11 @@
-import {
-  BAR_AXIS_TYPE,
-  BAR_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/g2/bar/common'
+import { BAR_AXIS_TYPE } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { flow, parseJson } from '@/views/chart/components/js/util'
-import { StackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-bar'
 import {
   createTooltipWrapper,
   tooltipCss,
-  Transform,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { GroupStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/group-stack-bar'
 import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
@@ -18,12 +13,13 @@ import {
 import { defaultsDeep, isEmpty } from 'lodash-es'
 
 /**
- * 分组堆叠柱状图
+ * 百分比堆叠柱状图
  */
-export class GroupStackBar extends StackBar {
+export class PercentageStackBar extends GroupStackBar {
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition']
+    'label-selector': ['color', 'fontSize', 'vPosition', 'reserveDecimalCount'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show', 'carousel']
   }
 
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
@@ -48,7 +44,16 @@ export class GroupStackBar extends StackBar {
       fill: labelAttr.color,
       fontSize: labelAttr.fontSize,
       ...position,
-      formatter: (value, _data) => valueFormatter(value, labelAttr.labelFormatter),
+      formatter: (value, _data, _, o) => {
+        // 计算与当前数据相同 field 的 value 总和
+        const sum =
+          o?.reduce(
+            (acc, item) => (item.field === _data.field ? acc + (item.value || 0) : acc),
+            0
+          ) || 1
+        // 返回百分比格式化结果
+        return `${((value / sum) * 100).toFixed(labelAttr.reserveDecimalCount)}%`
+      },
       ...transform
     }
     return {
@@ -62,6 +67,7 @@ export class GroupStackBar extends StackBar {
       ]
     }
   }
+
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
     const { tooltip } = parseJson(chart.customAttr)
     if (!tooltip.show) {
@@ -90,9 +96,16 @@ export class GroupStackBar extends StackBar {
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             const tooltipItems = originalItems
+            const sum = tooltipItems?.reduce(
+              (acc, { value = 0 }: { value: number }) => acc + value,
+              0
+            )
             const result = []
             tooltipItems.forEach(item => {
-              const value = valueFormatter(item.value, tooltip.tooltipFormatter)
+              const itemValue = item.value ? (item.value as number) : 0
+              const value = `${((itemValue / sum) * 100).toFixed(
+                tooltip.tooltipFormatter.decimalCount
+              )}%`
               const name = `${isEmpty(item.category) ? item.field : item.category}${
                 item.group ? '-' + item.group : ''
               }`
@@ -134,13 +147,13 @@ export class GroupStackBar extends StackBar {
     )(chart, options, {}, this)
   }
 
-  constructor(name = 'bar-group-stack') {
+  constructor(name = 'percentage-bar-stack') {
     super(name)
     this.intervalOptions.encode = {
       ...this.intervalOptions.encode,
       series: d => d.group
     }
-    this.intervalOptions.transform = [{ type: 'stackY', groupBy: ['x', 'series'] } as Transform]
-    this.axis = [...BAR_AXIS_TYPE, 'xAxisExt', 'extStack']
+    this.intervalOptions.transform = [{ type: 'stackY' }, { type: 'normalizeY' }]
+    this.axis = [...BAR_AXIS_TYPE, 'extStack']
   }
 }
