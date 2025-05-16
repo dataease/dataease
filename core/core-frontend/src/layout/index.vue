@@ -1,9 +1,6 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import Header from './components/Header.vue'
-import HeaderSystem from './components/HeaderSystem.vue'
+import { computed, ref, defineAsyncComponent } from 'vue'
 import Sidebar from './components/Sidebar.vue'
-import Menu from './components/Menu.vue'
 import Main from './components/Main.vue'
 import CollapseBar from './components/CollapseBar.vue'
 import { ElContainer } from 'element-plus-secondary'
@@ -21,6 +18,9 @@ const setCollapse = () => {
   isCollapse.value = !isCollapse.value
 }
 const { t } = useI18n()
+const Header = defineAsyncComponent(() => import('./components/Header.vue'))
+const HeaderSystem = defineAsyncComponent(() => import('./components/HeaderSystem.vue'))
+const Menu = defineAsyncComponent(() => import('./components/Menu.vue'))
 </script>
 
 <template>

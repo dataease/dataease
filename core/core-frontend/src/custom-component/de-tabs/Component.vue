@@ -154,7 +154,8 @@ import {
   reactive,
   ref,
   toRefs,
-  watch
+  watch,
+  defineAsyncComponent
 } from 'vue'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -168,7 +169,6 @@ import {
   isDashboard
 } from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
-import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
 import { deepCopyTabItemHelper } from '@/store/modules/data-visualization/copy'
@@ -242,6 +242,9 @@ const {
   searchCount
 } = toRefs(props)
 
+const DePreview = defineAsyncComponent(
+  () => import('@/components/data-visualization/canvas/DePreview.vue')
+)
 const titleBackgroundActiveSvgInner = computed(() => {
   return element.value.titleBackground.active.innerImage.replace('board/', '').replace('.svg', '')
 })

@@ -2,7 +2,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
-import { nextTick, onMounted, reactive, ref } from 'vue'
+import { nextTick, onMounted, reactive, ref, defineAsyncComponent } from 'vue'
 import { DEFAULT_COLOR_CASE } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import DeSlider from '@/components/dashboard/subject-setting/pre-subject/Slider.vue'
@@ -11,11 +11,9 @@ import ComponentColorSelector from '@/components/dashboard/subject-setting/dashb
 import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
 import ViewSimpleTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewSimpleTitle.vue'
 import FilterStyleSimpleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSimpleSelector.vue'
-import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { merge } from 'lodash-es'
-import CanvasBackground from '@/components/visualization/component-background/CanvasBackground.vue'
 import SeniorStyleSetting from '@/components/dashboard/subject-setting/dashboard-style/SeniorStyleSetting.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -23,15 +21,31 @@ const { canvasStyleData, componentData, canvasViewInfo } = storeToRefs(dvMainSto
 const { t } = useI18n()
 let canvasAttrInit = false
 const canvasAttrActiveNames = ref(['style'])
+const BackgroundOverallCommon = defineAsyncComponent(
+  () => import('@/components/visualization/component-background/BackgroundOverallCommon.vue')
+)
 
+const CanvasBackground = defineAsyncComponent(
+  () => import('@/components/visualization/component-background/CanvasBackground.vue')
+)
 const state = reactive({
   colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
   customColor: null,
   colorIndex: 0,
   sliderShow: true,
-  collapseShow: true
+  collapseShow: true,
+  dashboardShow: false,
+  backgroundShow: false
 })
+const handleChange = val => {
+  if (val.includes('componentStyle')) {
+    state.dashboardShow = true
+  }
 
+  if (val.includes('background')) {
+    state.backgroundShow = true
+  }
+}
 const onSubjectChange = () => {
   state.collapseShow = false
   nextTick(() => {
@@ -105,7 +119,7 @@ const saveSelfSubject = () => {
 <template>
   <div class="attr-container">
     <el-row>
-      <el-collapse v-model="canvasAttrActiveNames">
+      <el-collapse @change="handleChange" v-model="canvasAttrActiveNames">
         <el-collapse-item :title="t('components.dashboard_style')" name="style">
           <de-slider ref="slider" />
           <el-button class="button-panel__style" text size="small" @click="saveSelfSubject">
@@ -121,7 +135,7 @@ const saveSelfSubject = () => {
           name="background"
           class="content-no-padding-bottom"
         >
-          <canvas-background themes="light"></canvas-background>
+          <canvas-background v-if="state.backgroundShow" themes="light"></canvas-background>
         </el-collapse-item>
         <el-collapse-item
           :title="t('visualization.view_style')"
@@ -132,6 +146,7 @@ const saveSelfSubject = () => {
             :common-background-pop="canvasStyleData.component.chartCommonStyle"
             component-position="'dashboard'"
             themes="light"
+            v-if="state.dashboardShow"
             @onBackgroundChange="componentBackgroundChange"
             :background-color-picker-width="197"
             :background-border-select-width="197"
