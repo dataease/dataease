@@ -64,7 +64,7 @@ const { element, view, scale } = toRefs(props)
 const { t } = useI18n()
 const vQueryRef = ref()
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap } = storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap, editMode } = storeToRefs(dvMainStore)
 const canEdit = ref(false)
 const queryConfig = ref()
 const defaultStyle = {
@@ -831,7 +831,7 @@ const autoStyle = computed(() => {
         <div class="container flex-align-center">
           {{ t('v_query.here_or_click') }}
           <el-button
-            :disabled="showPosition === 'preview' || mobileInPc"
+            :disabled="showPosition === 'preview' || mobileInPc || editMode === 'preview'"
             @click="addCriteriaConfigOut"
             style="font-family: inherit"
             text
@@ -865,7 +865,7 @@ const autoStyle = computed(() => {
               </div>
               <div
                 class="label-wrapper-tooltip"
-                v-if="showPosition !== 'preview' && !dvMainStore.mobileInPc"
+                v-if="showPosition !== 'preview' && !dvMainStore.mobileInPc && editMode !== 'preview'"
               >
                 <el-tooltip
                   effect="dark"
