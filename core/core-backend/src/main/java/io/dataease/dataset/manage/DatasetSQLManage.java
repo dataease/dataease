@@ -131,21 +131,12 @@ public class DatasetSQLManage {
         List<UnionParamDTO> unionList = new ArrayList<>();
         List<DatasetTableFieldDTO> checkedFields = new ArrayList<>();
         String sql = "";
-
         if (ObjectUtils.isEmpty(union)) {
             return null;
         }
         boolean isCross = dataTableInfoDTO.getIsCross();
-
         DatasetTableDTO currentDs = union.get(0).getCurrentDs();
-
-        // get datasource and schema,put map
-        String tableSchema = putObj2Map(dsMap, currentDs, isCross);
-        // get table
-        DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(currentDs.getInfo(), DatasetTableInfoDTO.class);
-
-        SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0, filterParameters(chartExtRequest, currentDs.getId()), chartExtRequest == null, isCross, dsMap);
-
+        SQLObj tableName = null;
         for (int i = 0; i < union.size(); i++) {
             UnionDTO unionDTO = union.get(i);
             DatasetTableDTO datasetTable = unionDTO.getCurrentDs();
@@ -158,7 +149,9 @@ public class DatasetSQLManage {
                 schema = putObj2Map(dsMap, datasetTable, isCross);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i, filterParameters(chartExtRequest, currentDs.getId()), chartExtRequest == null, isCross, dsMap);
-
+            if (i == 0) {
+                tableName = table;
+            }
             // 获取前端传过来选中的字段
             List<DatasetTableFieldDTO> fields = unionDTO.getCurrentDsFields();
             fields = fields.stream().filter(DatasetTableFieldDTO::getChecked).collect(Collectors.toList());
@@ -171,7 +164,6 @@ public class DatasetSQLManage {
                         } else {
                             alias = f.getDataeaseName();
                         }
-
                         f.setFieldShortName(alias);
                         f.setDataeaseName(f.getFieldShortName());
                         f.setDatasetTableId(datasetTable.getId());
