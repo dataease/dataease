@@ -1,25 +1,20 @@
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  reactive,
-  ref,
-  defineAsyncComponent,
-  watch
-} from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { findComponentAttr } from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
 import router from '@/router'
+import MobileConfigPanel from './MobileConfigPanel.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import DbToolbar from '@/components/dashboard/DbToolbar.vue'
+import ViewEditor from '@/views/chart/components/editor/index.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
 import { decompressionPre, initCanvasData, onInitReady } from '@/utils/canvasUtils'
+import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
@@ -30,17 +25,18 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 import { XpackComponent } from '@/components/plugin'
 import { Base64 } from 'js-base64'
+import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { deepCopy } from '@/utils/utils'
 const interactiveStore = interactiveStoreWithOut()
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
+import DashboardHiddenComponent from '@/components/dashboard/DashboardHiddenComponent.vue'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
-const canvasCacheOutRefShow = ref(false)
 const deCanvasRef = ref(null)
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
@@ -85,21 +81,7 @@ const initDataset = () => {
     state.datasetTree = (res as unknown as Tree[]) || []
   })
 }
-const ViewEditor = defineAsyncComponent(() => import('@/views/chart/components/editor/index.vue'))
 
-const ChartStyleBatchSet = defineAsyncComponent(
-  () => import('@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue')
-)
-
-const MobileConfigPanel = defineAsyncComponent(() => import('./MobileConfigPanel.vue'))
-
-const CanvasCacheDialog = defineAsyncComponent(
-  () => import('@/components/visualization/CanvasCacheDialog.vue')
-)
-
-const DashboardHiddenComponent = defineAsyncComponent(
-  () => import('@/components/dashboard/DashboardHiddenComponent.vue')
-)
 const otherEditorShow = computed(() => {
   return Boolean(
     curComponent.value &&
@@ -110,21 +92,6 @@ const otherEditorShow = computed(() => {
       !hiddenListStatus.value
   )
 })
-
-watch(
-  () => otherEditorShow.value,
-  val => {
-    if (val && curComponent.value) {
-      findComponentAttr(curComponent.value)
-    }
-  }
-)
-const currentAttr = ref()
-const findComponentAttr = type => {
-  import('../../utils/componentsAttr').then(res => {
-    currentAttr.value = res.findComponentAttr(type)
-  })
-}
 
 const otherEditorTitle = computed(() => {
   return curComponent.value?.component === 'UserView'
@@ -249,10 +216,7 @@ onMounted(async () => {
     dataInitState.value = false
     const canvasCache = wsCache.get('DE-DV-CATCH-' + resourceId)
     if (canvasCache) {
-      canvasCacheOutRefShow.value = true
-      nextTick(() => {
-        canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
-      })
+      canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
     } else {
       initLocalCanvasData(() => {
         // do init
@@ -397,7 +361,7 @@ onUnmounted(() => {
         :element="curComponent"
         class="left-sidebar"
       >
-        <component :is="currentAttr" :themes="'light'" />
+        <component :is="findComponentAttr(curComponent)" :themes="'light'" />
       </dv-sidebar>
       <dv-sidebar
         v-show="!curComponent && !batchOptStatus && !hiddenListStatus"
@@ -410,7 +374,7 @@ onUnmounted(() => {
       >
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
-      <div v-if="viewEditorShow" style="height: 100%">
+      <div v-show="viewEditorShow" style="height: 100%">
         <view-editor
           :themes="'light'"
           :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
@@ -450,11 +414,7 @@ onUnmounted(() => {
     @load-fail="XpackLoaded"
   />
   <xpack-component jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9UaHJlc2hvbGREaWFsb2c=" />
-  <canvas-cache-dialog
-    v-if="canvasCacheOutRefShow"
-    ref="canvasCacheOutRef"
-    @doUseCache="doUseCache"
-  ></canvas-cache-dialog>
+  <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
 </template>
 
 <style lang="less">

@@ -83,6 +83,10 @@ const init = () => {
   }
 }
 
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
+
 watch(
   () => curComponent.value.propValue.url,
   () => {

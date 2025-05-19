@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { findComponentAttr } from '@/utils/componentsAttr'
+import { findComponentAttr } from '@/utils/components'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewEditor from '@/views/chart/components/editor/index.vue'

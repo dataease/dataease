@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Shape from './Shape.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import {
   getStyle,
@@ -9,25 +10,19 @@ import {
 } from '@/utils/style'
 import $ from 'jquery'
 import { _$, isPreventDrop } from '@/utils/utils'
+import ContextMenu from './ContextMenu.vue'
+import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import { changeStyleWithScale } from '@/utils/translate'
-import {
-  ref,
-  onMounted,
-  computed,
-  toRefs,
-  nextTick,
-  onBeforeUnmount,
-  watch,
-  defineAsyncComponent
-} from 'vue'
+import { ref, onMounted, computed, toRefs, nextTick, onBeforeUnmount, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
 import _ from 'lodash'
+import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
 import {
   canvasSave,
   componentPreSort,
@@ -41,8 +36,19 @@ import {
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
+import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
+import LinkageSet from '@/components/visualization/LinkageSet.vue'
+import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
+import DragInfo from '@/components/visualization/common/DragInfo.vue'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
+import PopArea from '@/custom-component/pop-area/Component.vue'
+import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
+import DeGrid from '@/components/data-visualization/DeGrid.vue'
+import DeGridScreen from '@/components/data-visualization/DeGridScreen.vue'
+import GroupAreaShadow from '@/custom-component/group-area/ComponentShadow.vue'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -175,41 +181,6 @@ const props = defineProps({
     default: 'inherit'
   }
 })
-// const currentItem = ref()
-// const findComponent = () => {
-//   console.log(123);
-// }
-const Shape = defineAsyncComponent(() => import('./Shape.vue'))
-const DragInfo = defineAsyncComponent(
-  () => import('@/components/visualization/common/DragInfo.vue')
-)
-const CanvasOptBar = defineAsyncComponent(
-  () => import('@/components/visualization/CanvasOptBar.vue')
-)
-const PopArea = defineAsyncComponent(() => import('@/custom-component/pop-area/Component.vue'))
-const DeGrid = defineAsyncComponent(() => import('@/components/data-visualization/DeGrid.vue'))
-const DeGridScreen = defineAsyncComponent(
-  () => import('@/components/data-visualization/DeGridScreen.vue')
-)
-const DragShadow = defineAsyncComponent(
-  () => import('@/components/data-visualization/canvas/DragShadow.vue')
-)
-const GroupAreaShadow = defineAsyncComponent(
-  () => import('@/custom-component/group-area/ComponentShadow.vue')
-)
-const PointShadow = defineAsyncComponent(
-  () => import('@/components/data-visualization/canvas/PointShadow.vue')
-)
-const ContextMenu = defineAsyncComponent(() => import('./ContextMenu.vue'))
-const MarkLine = defineAsyncComponent(() => import('./MarkLine.vue'))
-const UserViewEnlarge = defineAsyncComponent(
-  () => import('@/components/visualization/UserViewEnlarge.vue')
-)
-const LinkJumpSet = defineAsyncComponent(() => import('@/components/visualization/LinkJumpSet.vue'))
-const LinkageSet = defineAsyncComponent(() => import('@/components/visualization/LinkageSet.vue'))
-const DatasetParamsComponent = defineAsyncComponent(
-  () => import('@/custom-component/group-area/ComponentShadow.vue')
-)
 
 const {
   baseWidth,
@@ -268,10 +239,6 @@ const commonFilterAttrsFilterBorder = [
   'borderColor'
 ]
 const userViewEnlargeRef = ref(null)
-const userViewEnlargeRefShow = ref(false)
-const linkJumpRefShow = ref(false)
-const linkageRefShow = ref(false)
-const customDatasetParamsRefShow = ref(false)
 const customDatasetParamsRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
@@ -1445,23 +1412,17 @@ const getMoveItem = () => {
 }
 
 const userViewEnlargeOpen = (opt, item) => {
-  userViewEnlargeRefShow.value = true
-  nextTick(() => {
-    userViewEnlargeRef.value.dialogInit(
-      canvasStyleData.value,
-      canvasViewInfo.value[item.id],
-      item,
-      opt,
-      { scale: curBaseScale.value }
-    )
-  })
+  userViewEnlargeRef.value.dialogInit(
+    canvasStyleData.value,
+    canvasViewInfo.value[item.id],
+    item,
+    opt,
+    { scale: curBaseScale.value }
+  )
 }
 
 const datasetParamsInit = item => {
-  customDatasetParamsRefShow.value = true
-  nextTick(() => {
-    customDatasetParamsRef.value?.optInit(item)
-  })
+  customDatasetParamsRef.value?.optInit(item)
 }
 
 const initSnapshotTimer = () => {
@@ -1473,19 +1434,13 @@ const initSnapshotTimer = () => {
 const linkJumpSetOpen = item => {
   //跳转设置需要先触发保存
   canvasSave(() => {
-    linkJumpRefShow.value = true
-    nextTick(() => {
-      linkJumpRef.value.dialogInit(item)
-    })
+    linkJumpRef.value.dialogInit(item)
   })
 }
 const linkageSetOpen = item => {
   //跳转设置需要先触发保存
   canvasSave(() => {
-    linkageRefShow.value = true
-    nextTick(() => {
-      linkageRef.value.dialogInit(item)
-    })
+    linkageRef.value.dialogInit(item)
   })
 }
 
@@ -1679,104 +1634,99 @@ defineExpose({
     ></GroupAreaShadow>
 
     <!--页面组件列表展示-->
-    <template v-if="componentData.length">
-      <Shape
-        v-for="(item, index) in componentData"
-        v-show="itemShow(item)"
-        :canvas-id="canvasId"
-        :scale="curScale"
-        :key="item.id"
-        :default-style="item.style"
-        :style="getShapeItemShowStyle(item)"
+    <Shape
+      v-for="(item, index) in componentData"
+      v-show="itemShow(item)"
+      :canvas-id="canvasId"
+      :scale="curScale"
+      :key="item.id"
+      :default-style="item.style"
+      :style="getShapeItemShowStyle(item)"
+      :element="item"
+      :index="index"
+      :class="{ lock: item.isLock && editMode === 'edit' }"
+      :base-cell-info="baseCellInfo"
+      :canvas-active="canvasActive"
+      :is-tab-move-check="mainCanvasFlag"
+      @onStartResize="onStartResize($event, item, index)"
+      @onStartMove="onStartMove($event, item, index)"
+      @onMouseUp="onMouseUp($event)"
+      @onDragging="onDragging($event, item)"
+      @onResizing="onResizing($event, item)"
+      @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+      @datasetParamsInit="datasetParamsInit(item)"
+      @linkJumpSetOpen="linkJumpSetOpen(item)"
+      @linkageSetOpen="linkageSetOpen(item)"
+    >
+      <component
+        :is="findComponent(item.component)"
+        v-if="item.component === 'UserView' || item['isPlugin']"
+        class="component"
+        :id="'component' + item.id"
+        :active="item.id === curComponentId"
+        :dv-type="dvInfo.type"
+        :scale="curBaseScale"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :is-edit="true"
+        :view="canvasViewInfo[item.id]"
         :element="item"
-        :index="index"
-        :class="{ lock: item.isLock && editMode === 'edit' }"
-        :base-cell-info="baseCellInfo"
+        :request="item.request"
+        @input="handleInput"
+        :dv-info="dvInfo"
         :canvas-active="canvasActive"
-        :is-tab-move-check="mainCanvasFlag"
-        @onStartResize="onStartResize($event, item, index)"
-        @onStartMove="onStartMove($event, item, index)"
-        @onMouseUp="onMouseUp($event)"
-        @onDragging="onDragging($event, item)"
-        @onResizing="onResizing($event, item)"
-        @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
-        @datasetParamsInit="datasetParamsInit(item)"
-        @linkJumpSetOpen="linkJumpSetOpen(item)"
-        @linkageSetOpen="linkageSetOpen(item)"
-      >
-        <component
-          :is="findComponent(item.component)"
-          v-if="item.component === 'UserView' || item['isPlugin']"
-          class="component"
-          :id="'component' + item.id"
-          :active="item.id === curComponentId"
-          :dv-type="dvInfo.type"
-          :scale="curBaseScale"
-          :style="getComponentStyle(item.style)"
-          :prop-value="item.propValue"
-          :is-edit="true"
-          :view="canvasViewInfo[item.id]"
-          :element="item"
-          :request="item.request"
-          @input="handleInput"
-          :dv-info="dvInfo"
-          :canvas-active="canvasActive"
-          :show-position="'canvas'"
-          :font-family="fontFamily"
-        />
-        <component
-          v-else-if="item.component.includes('Svg')"
-          :is="findComponent(item.component)"
-          :id="'component' + item.id"
-          :scale="curBaseScale"
-          class="component"
-          :is-edit="true"
-          :style="getSvgComponentStyle(item.style)"
-          :prop-value="item.propValue"
-          :element="item"
-          :request="item.request"
-          :canvas-style-data="canvasStyleData"
-          :canvas-view-info="canvasViewInfo"
-          :dv-info="dvInfo"
-          :active="item.id === curComponentId"
-          :canvas-active="canvasActive"
-          :show-position="'edit'"
-          :font-family="fontFamily"
-        />
-        <component
-          v-else
-          :is="findComponent(item.component)"
-          :id="'component' + item.id"
-          :scale="curBaseScale"
-          class="component"
-          :is-edit="true"
-          :style="getComponentStyle(item.style)"
-          :prop-value="item.propValue"
-          :element="item"
-          :request="item.request"
-          :canvas-style-data="canvasStyleData"
-          :canvas-view-info="canvasViewInfo"
-          :dv-info="dvInfo"
-          :active="item.id === curComponentId"
-          :canvas-active="canvasActive"
-          :show-position="'edit'"
-          :font-family="fontFamily"
-        />
-      </Shape>
-    </template>
+        :show-position="'canvas'"
+        :font-family="fontFamily"
+      />
+      <component
+        v-else-if="item.component.includes('Svg')"
+        :is="findComponent(item.component)"
+        :id="'component' + item.id"
+        :scale="curBaseScale"
+        class="component"
+        :is-edit="true"
+        :style="getSvgComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :request="item.request"
+        :canvas-style-data="canvasStyleData"
+        :canvas-view-info="canvasViewInfo"
+        :dv-info="dvInfo"
+        :active="item.id === curComponentId"
+        :canvas-active="canvasActive"
+        :show-position="'edit'"
+        :font-family="fontFamily"
+      />
+      <component
+        v-else
+        :is="findComponent(item.component)"
+        :id="'component' + item.id"
+        :scale="curBaseScale"
+        class="component"
+        :is-edit="true"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :request="item.request"
+        :canvas-style-data="canvasStyleData"
+        :canvas-view-info="canvasViewInfo"
+        :dv-info="dvInfo"
+        :active="item.id === curComponentId"
+        :canvas-active="canvasActive"
+        :show-position="'edit'"
+        :font-family="fontFamily"
+      />
+    </Shape>
     <!-- 右击菜单 -->
     <ContextMenu v-if="contextMenuShow" show-position="canvasCore" />
     <!-- 标线 -->
     <MarkLine v-if="markLineShow" />
     <!-- 选中区域 -->
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
-    <user-view-enlarge v-if="userViewEnlargeRefShow" ref="userViewEnlargeRef"></user-view-enlarge>
-    <link-jump-set v-if="linkJumpRefShow" ref="linkJumpRef"></link-jump-set>
-    <linkage-set v-if="linkageRefShow" ref="linkageRef"></linkage-set>
-    <dataset-params-component
-      v-if="customDatasetParamsRefShow"
-      ref="customDatasetParamsRef"
-    ></dataset-params-component>
+    <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
+    <link-jump-set ref="linkJumpRef"></link-jump-set>
+    <linkage-set ref="linkageRef"></linkage-set>
+    <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
   </div>
 </template>
 

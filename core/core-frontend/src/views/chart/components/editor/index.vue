@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import dvInfoSvg from '@/assets/svg/dv-info.svg'
+import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import iconFilter from '@/assets/svg/icon-filter.svg'
@@ -20,8 +21,7 @@ import {
   provide,
   unref,
   onBeforeUnmount,
-  onMounted,
-  defineAsyncComponent
+  onMounted
 } from 'vue'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
@@ -36,6 +36,9 @@ import { fieldType } from '@/utils/attr'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterTree from './filter/FilterTree.vue'
+import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
+import VQueryChartStyle from '@/views/chart/components/editor/editor-style/VQueryChartStyle.vue'
+import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
 import { ElIcon } from 'element-plus-secondary'
@@ -43,6 +46,7 @@ import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
+import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
 import { useRouter, useRoute } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
 import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/components/ValueFormatterEdit.vue'
@@ -62,6 +66,7 @@ import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/cha
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
 import { XpackComponent } from '@/components/plugin'
 import { useEmbedded } from '@/store/modules/embedded'
+import { iconChartMap } from '@/components/icon-group/chart-list'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import {
   iconFieldCalculatedMap,
@@ -87,21 +92,6 @@ const router = useRouter()
 let componentNameEdit = ref(false)
 let inputComponentName = ref({ id: null, name: null })
 let componentNameInput = ref(null)
-const VQueryChartStyle = defineAsyncComponent(
-  () => import('@/views/chart/components/editor/editor-style/VQueryChartStyle.vue')
-)
-
-const ChartStyle = defineAsyncComponent(
-  () => import('@/views/chart/components/editor/editor-style/ChartStyle.vue')
-)
-
-const Senior = defineAsyncComponent(
-  () => import('@/views/chart/components/editor/editor-senior/Senior.vue')
-)
-
-const ChartTypeSelect = defineAsyncComponent(
-  () => import('@/views/chart/components/editor/chart-type/ChartTypeSelect.vue')
-)
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -2115,12 +2105,55 @@ const deleteChartFieldItem = id => {
                         class="drag-data padding-lr"
                       >
                         <span class="data-area-label">{{ t('chart.switch_chart') }}</span>
-                        <ChartTypeSelect
-                          @onTypeChange="onTypeChange"
-                          :type="view.type"
-                          :themes="themes"
-                          :state="state"
-                        ></ChartTypeSelect>
+                        <el-popover
+                          :offset="4"
+                          placement="bottom-end"
+                          width="434"
+                          trigger="click"
+                          :append-to-body="true"
+                          :popper-class="'chart-type-style-' + themes"
+                          :persistent="false"
+                        >
+                          <template #reference>
+                            <el-select
+                              v-model="state.useless"
+                              popper-class="chart-type-hide-options"
+                              class="chart-type-select"
+                              :suffix-icon="icon_down_outlined1"
+                              :effect="themes"
+                              size="small"
+                            >
+                              <template #prefix>
+                                <Icon
+                                  class-name="chart-type-select-icon"
+                                  v-if="state.chartTypeOptions[0]?.isPlugin"
+                                  :static-content="state.chartTypeOptions[0]?.icon"
+                                />
+                                <Icon v-else class-name="chart-type-select-icon">
+                                  <component
+                                    class="svg-icon chart-type-select-icon"
+                                    :is="iconChartMap[state.chartTypeOptions[0].icon]"
+                                  ></component>
+                                </Icon>
+                              </template>
+                              <template #default>
+                                <el-option
+                                  v-for="item in state.chartTypeOptions"
+                                  :key="item.value"
+                                  :label="item.title"
+                                  :value="item.value"
+                                />
+                              </template>
+                            </el-select>
+                          </template>
+                          <template #default>
+                            <chart-type
+                              :themes="themes"
+                              :type="view.type"
+                              @on-type-change="onTypeChange"
+                            />
+                          </template>
+                        </el-popover>
                       </el-row>
                       <template v-if="view.plugin?.isPlugin">
                         <plugin-component
@@ -5099,6 +5132,25 @@ span {
   }
 }
 
+.chart-type-select {
+  width: 100%;
+  margin-top: 8px;
+  :deep(.ed-select__prefix) {
+    padding: 0;
+    margin: 0;
+    &::after {
+      display: none;
+    }
+    height: 20px;
+    .chart-type-select-icon {
+      width: 23px;
+      height: 16px;
+    }
+  }
+  :deep(.ed-input) {
+    height: 28px;
+  }
+}
 .name-edit-form {
   margin-bottom: 16px !important;
 
