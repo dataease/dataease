@@ -538,7 +538,7 @@ export default {
       rootAuth: '',
       rootDefaultAuth: 'view',
       originResourceTree: [],
-      curSortType: 'time_desc',
+      curSortType: 'name_asc',
       localSortParams: null,
       lastActiveDefaultPanelId: null, // 激活的节点 在这个节点下面动态放置子节点
       responseSource: 'panelQuery',
