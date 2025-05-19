@@ -513,6 +513,16 @@ export default {
     bus.$on('set-panel-show-type', this.setPanelShowType)
     bus.$on('set-panel-share-user', this.setPanelShareUser)
     this.initPdfTemplate()
+
+    window.downloadPanelAsImage = (callback) => {
+      if (limit.activeCount) {
+        setTimeout(() => {
+          window.downloadPanelAsImage(callback)
+        }, 2000)
+        return
+      }
+      this.downloadAsImage(callback)
+    }
   },
   beforeDestroy() {
     bus.$off('set-panel-show-type', this.setPanelShowType)
@@ -717,7 +727,7 @@ export default {
       }
     },
 
-    downloadAsImage() {
+    downloadAsImage(callback) {
       this.dataLoading = true
       // 保存原始的设备像素比值
       const originalDPR = window.devicePixelRatio
@@ -730,6 +740,11 @@ export default {
           toPngUrl(canvasID, (pngUrl) => {
             try {
               this.exporting = false
+              if (typeof callback === 'function') {
+                callback(pngUrl)
+                this.dataLoading = false
+                return
+              }
               const a = document.createElement('a')
               a.setAttribute('download', this.$store.state.panel.panelInfo.name + '.png')
               a.href = pngUrl
