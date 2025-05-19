@@ -710,9 +710,22 @@ export default {
     bus.$off('clear_panel_linkage', this.clearPanelLinkage)
     bus.$off('tab-canvas-change', this.tabSwitch)
     bus.$off('resolve-wait-condition', this.resolveWaitCondition)
+
+    window.removeEventListener('exportChart', this.onExportChart)
   },
   created() {
     this.refId = uuid.v1
+    window.exportChartToImage = (viewId, pixel, callback) => {
+      const event = document.createEvent('HTMLEvents');
+      event.initEvent('exportChart', false, true);
+      event.data = {
+        viewId,
+        pixel,
+        callback
+      }
+      window.dispatchEvent(event)
+    }
+    window.addEventListener('exportChart', this.onExportChart)
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
       const group = this.groupFilter(this.filters)
       this.unReadyList = group.unReady
@@ -728,6 +741,30 @@ export default {
     }
   },
   methods: {
+    onExportChart(e) {
+      const { viewId, pixel, callback } = e.data
+      if (viewId !== this.element.propValue.viewId) return
+      if (this.getDataLoading) {
+        setTimeout(() => {
+          this.onExportChart(e)
+        }, 200)
+        return
+      }
+      this.$store.commit('setClickComponentStatus', true)
+      setTimeout(() => {
+        this.$store.commit('setCurComponent', { component: this.element, index: undefined })
+        this.$nextTick(() => {
+          this.openChartDetailsDialog({ openType: "enlarge" })
+          this.$nextTick(() => {
+            this.imageDownloading = true
+            this.$refs['userViewDialog'].exportViewImg(pixel || this.pixel, (url) => {
+              this.imageDownloading = false
+              if (callback) callback(url)
+            })
+          })
+        })
+      }, 200)
+    },
     resolveWaitCondition(p) {
       this.unReadyList.filter(f => f instanceof Promise && f.componentId === p.componentId).map(f => {
         f.cacheObj.cb(p)

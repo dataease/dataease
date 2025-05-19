@@ -273,7 +273,7 @@ export function exportImgNew(imgName, callback) {
       a.click()
       document.body.removeChild(a)
       window.devicePixelRatio = originalDPR
-      callback()
+      callback(pngUrl)
     } catch (e) {
       window.devicePixelRatio = originalDPR
       callback()
