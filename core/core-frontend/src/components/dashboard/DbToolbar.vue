@@ -22,20 +22,26 @@ import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { useEmbedded } from '@/store/modules/embedded'
 import { deepCopy } from '@/utils/utils'
-import { nextTick, reactive, ref, computed, toRefs, onBeforeUnmount, onMounted } from 'vue'
+import {
+  nextTick,
+  reactive,
+  ref,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  defineAsyncComponent
+} from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
-import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
 import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabel.vue'
-import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
@@ -49,13 +55,10 @@ import {
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
-import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
-import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import { XpackComponent } from '@/components/plugin'
 import DbMoreComGroup from '@/custom-component/component-group/DbMoreComGroup.vue'
 import { useCache } from '@/hooks/web/useCache'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
-import DeAppApply from '@/views/common/DeAppApply.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 const { t } = useI18n()
@@ -64,6 +67,7 @@ const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const resourceAppOpt = ref(null)
+const resourceAppOptShow = ref(false)
 const {
   linkageSettingStatus,
   curLinkageView,
@@ -74,10 +78,28 @@ const {
   batchOptStatus,
   targetLinkageInfo,
   curBatchOptComponents,
-  appData,
-  hiddenListStatus
+  appData
 } = storeToRefs(dvMainStore)
 const dvModel = 'dashboard'
+const MultiplexingCanvasShow = ref(false)
+const MultiplexingCanvas = defineAsyncComponent(
+  () => import('@/views/common/MultiplexingCanvas.vue')
+)
+
+const OuterParamsSet = defineAsyncComponent(
+  () => import('@/components/visualization/OuterParamsSet.vue')
+)
+
+const UserViewGroup = defineAsyncComponent(
+  () => import('@/custom-component/component-group/UserViewGroup.vue')
+)
+
+const DeResourceGroupOpt = defineAsyncComponent(
+  () => import('@/views/common/DeResourceGroupOpt.vue')
+)
+
+const DeAppApply = defineAsyncComponent(() => import('@/views/common/DeAppApply.vue'))
+
 const multiplexingRef = ref(null)
 const fullScreeRef = ref(null)
 let nameEdit = ref(false)
@@ -88,21 +110,14 @@ const state = reactive({
   preBatchCanvasViewInfo: {}
 })
 const resourceGroupOpt = ref(null)
+const resourceGroupOptShow = ref(false)
 const outerParamsSetRef = ref(null)
+const outerParamsSetShow = ref(false)
 const { wsCache } = useCache('localStorage')
 const userStore = useUserStoreWithOut()
 const isIframe = computed(() => appStore.getIsIframe)
 const desktop = wsCache.get('app.desktop')
 const emits = defineEmits(['recoverToPublished'])
-
-const props = defineProps({
-  createType: {
-    type: String,
-    default: 'create'
-  }
-})
-
-const { createType } = toRefs(props)
 
 const editCanvasName = () => {
   nameEdit.value = true
@@ -238,12 +253,16 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
         },
         appData: appData.value
       }
+      resourceAppOptShow.value = true
       nextTick(() => {
         resourceAppOpt.value.init(params)
       })
     } else {
       const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid || '0' }
-      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
+      resourceGroupOptShow.value = true
+      nextTick(() => {
+        resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
+      })
       return
     }
   }
@@ -280,7 +299,10 @@ const saveResource = (checkParams?) => {
             () => {
               useEmitt().emitter.emit('refresh-dataset-selector')
               useEmitt().emitter.emit('calcData-all')
-              resourceAppOpt.value.close()
+              resourceAppOptShow.value = true
+              nextTick(() => {
+                resourceAppOpt.value.close()
+              })
               dvMainStore.setAppDataInfo(null)
               snapshotStore.resetSnapshot()
             }
@@ -351,7 +373,10 @@ const backHandler = (url: string) => {
 }
 
 const multiplexingCanvasOpen = () => {
-  multiplexingRef.value.dialogInit()
+  MultiplexingCanvasShow.value = true
+  nextTick(() => {
+    multiplexingRef.value.dialogInit()
+  })
 }
 onMounted(() => {
   eventBus.on('preview', previewInner)
@@ -451,7 +476,10 @@ const openOuterParamsSet = () => {
   }
   //设置需要先触发保存
   canvasSave(() => {
-    outerParamsSetRef.value.optInit()
+    outerParamsSetShow.value = true
+    nextTick(() => {
+      outerParamsSetRef.value.optInit()
+    })
   })
 }
 
@@ -523,6 +551,7 @@ const initOpenHandler = newWindow => {
     openHandler.value.invokeMethod(pm)
   }
 }
+const userGroupShow = ref(false)
 </script>
 
 <template>
@@ -584,8 +613,13 @@ const initOpenHandler = newWindow => {
             :icon-name="dvView"
             themes="light"
             :title="t('chart.datalist')"
+            @show="userGroupShow = true"
           >
-            <user-view-group themes="light" :dv-model="dvModel"></user-view-group>
+            <user-view-group
+              v-if="userGroupShow"
+              themes="light"
+              :dv-model="dvModel"
+            ></user-view-group>
           </component-group>
           <component-group
             :base-width="115"
@@ -834,13 +868,14 @@ const initOpenHandler = newWindow => {
       />
     </Teleport>
 
-    <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
+    <multiplexing-canvas v-if="MultiplexingCanvasShow" ref="multiplexingRef"></multiplexing-canvas>
     <de-resource-group-opt
       @finish="resourceOptFinish"
       cur-canvas-type="dashboard"
+      v-if="resourceGroupOptShow"
       ref="resourceGroupOpt"
     />
-    <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
+    <outer-params-set v-if="outerParamsSetShow" ref="outerParamsSetRef"> </outer-params-set>
   </div>
   <de-fullscreen show-position="edit" ref="fullScreeRef"></de-fullscreen>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
@@ -850,6 +885,7 @@ const initOpenHandler = newWindow => {
     :dv-info="dvInfo"
     :canvas-view-info="canvasViewInfo"
     cur-canvas-type="dashboard"
+    v-if="resourceAppOptShow"
     @saveAppCanvas="saveCanvasWithCheck"
   ></de-app-apply>
 </template>

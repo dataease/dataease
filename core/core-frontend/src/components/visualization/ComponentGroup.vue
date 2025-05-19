@@ -25,6 +25,10 @@ const props = defineProps({
 })
 
 const { title, iconName, baseWidth, themes } = toRefs(props)
+const emits = defineEmits(['show'])
+const handleVisibleChange = () => {
+  emits('show')
+}
 </script>
 
 <template>
@@ -33,6 +37,7 @@ const { title, iconName, baseWidth, themes } = toRefs(props)
     :width="baseWidth"
     trigger="click"
     :show-arrow="false"
+    @show="handleVisibleChange"
     :popper-class="'custom-popover-' + themes"
   >
     <template #reference>
