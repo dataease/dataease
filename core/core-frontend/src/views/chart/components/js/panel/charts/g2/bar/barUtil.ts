@@ -208,8 +208,7 @@ export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
       background: tooltipAttr.backgroundColor,
       'max-height': '50vh',
       'overflow-y': 'auto',
-      position: 'fixed',
-      top: '0px'
+      position: 'fixed'
     },
     '.g2-tooltip-title': {
       color: tooltipAttr.color,

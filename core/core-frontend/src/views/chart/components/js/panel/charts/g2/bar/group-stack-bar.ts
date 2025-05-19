@@ -82,6 +82,7 @@ export class GroupStackBar extends StackBar {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
           enterable: true,
+          shared: true,
           bounding: {
             x: 0,
             y: 0
@@ -114,8 +115,16 @@ export class GroupStackBar extends StackBar {
         }
       }
     }
-    defaultsDeep(options.children[0], tooltipOptions)
-    return options
+    return {
+      ...options,
+      children: [
+        {
+          ...options.children[0],
+          ...tooltipOptions
+        },
+        ...options.children.slice(1)
+      ]
+    }
   }
 
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {

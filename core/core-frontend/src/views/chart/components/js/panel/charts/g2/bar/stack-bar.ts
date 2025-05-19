@@ -125,6 +125,7 @@ export class StackBar extends Bar {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
           enterable: true,
+          shared: true,
           bounding: {
             x: 0,
             y: 0
@@ -155,8 +156,16 @@ export class StackBar extends Bar {
         }
       }
     }
-    defaultsDeep(options.children[0], tooltipOptions)
-    return options
+    return {
+      ...options,
+      children: [
+        {
+          ...options.children[0],
+          ...tooltipOptions
+        },
+        ...options.children.slice(1)
+      ]
+    }
   }
 
   protected configColor(_chart: Chart, options: ViewSpec): ViewSpec {

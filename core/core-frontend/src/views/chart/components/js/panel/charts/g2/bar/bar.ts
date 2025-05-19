@@ -208,6 +208,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
           enterable: true,
+          shared: true,
           bounding: {
             x: 0,
             y: 0
@@ -255,8 +256,16 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         }
       }
     }
-    defaultsDeep(options.children[0], tooltipOptions)
-    return options
+    return {
+      ...options,
+      children: [
+        {
+          ...options.children[0],
+          ...tooltipOptions
+        },
+        ...options.children.slice(1)
+      ]
+    }
   }
 
   protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {
@@ -572,7 +581,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         ...grid,
         // 刻度值
         ...label,
-        transform: [labelTransform]
+        labelAutoHide: true,
+        labelAutoRotate: false,
+        ...(rotate === 0 ? {} : { transform: [labelTransform] })
       }
       return x
     }
