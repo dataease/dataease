@@ -451,7 +451,7 @@ onUnmounted(() => {
   />
   <xpack-component jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9UaHJlc2hvbGREaWFsb2c=" />
   <canvas-cache-dialog
-    v-if="canvasCacheOutRefShow"
+    v-show="canvasCacheOutRefShow"
     ref="canvasCacheOutRef"
     @doUseCache="doUseCache"
   ></canvas-cache-dialog>
