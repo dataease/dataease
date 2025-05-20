@@ -1,4 +1,4 @@
-import { AbstractChartView, ChartLibraryType, ChartRenderType } from '../../../types'
+import { AbstractChartView, ChartLibraryType, ChartRenderType } from '../../types'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
@@ -6,6 +6,7 @@ const { t } = useI18n()
  * 富文本图表
  */
 export class RichTextChartView extends AbstractChartView {
+  selectorSpec: EditorSelectorSpec
   properties: EditorProperty[] = [
     'background-overall-component',
     'border-style',
