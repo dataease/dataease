@@ -1,7 +1,6 @@
 export default {
   common: {
     empty: '',
-    first_item: '首项',
     cross_source: '跨源',
     single_source: '单源',
     source_tips: '数据集存在跨源情况，请检查其他 SQL 节点的语法，是否确认将类型改为单源?',
@@ -943,7 +942,7 @@ export default {
     data_source_table: '数据源表',
     auth_method: '认证方式',
     passwd: '用户名密码',
-    kerbers_info: '请确保 krb5.Conf、Keytab Key，已经添加到路径：/opt/dataease3.0/conf',
+    kerbers_info: '请确保 krb5.Conf、Keytab Key，已经添加到路径：/opt/dataease2.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     please_select_left: '请从左侧选择',
@@ -1354,7 +1353,6 @@ export default {
     table_title_fontsize: '表头字体大小',
     table_item_fontsize: '表格字体大小',
     table_header_bg: '表头背景',
-    table_header_row_bg: '表头/行背景',
     table_item_bg: '表格背景',
     table_header_font_color: '表头字体',
     table_item_font_color: '表格字体',
@@ -1455,7 +1453,6 @@ export default {
     axis_type_dashed: '虚线',
     axis_type_dotted: '点',
     axis_label_show: '标签显示',
-    axis_tick_show: '刻度显示',
     axis_label_color: '标签颜色',
     axis_label_fontsize: '标签大小',
     text_style: '字体样式',
@@ -2041,8 +2038,7 @@ export default {
     quota_col_label: '指标列名',
     table_grand_total_label: '总计别名',
     table_field_total_label: '字段别名',
-    table_row_header_freeze: '行头冻结',
-    value_formatter_total_out_percent: '显示占比'
+    table_row_header_freeze: '行头冻结'
   },
   dataset: {
     field_value: '字段值',
@@ -2058,7 +2054,7 @@ export default {
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
     sql_variable_limit_2:
-      "2、示例: select * from table where $DE_PARAM{'{'} name = substring('$[PARAM1]',1,5){'}'} and $DE_PARAM{'{'} name in ($[PARAM2]) {'}'}",
+      "2、示例: select * from table where $DE_PARAM{ name = '$[PARAM1]' } and $DE_PARAM{ name in ($[PARAM2]) }",
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',
@@ -2833,15 +2829,6 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
-    select_resource: '请选择{0}',
-    change_screen_page: '更换{0}',
-    new_screen_page: '新建分页',
-    screen_page: '分页',
-    color_setting: '配色{0}',
-    decoration_name: '装饰{0}',
-    decoration: '装饰',
-    dynamic_background_name: '背景{0}',
-    dynamic_background: '动图',
     support_query: '仅支持添加查询组件',
     publish_update_tips: '有更新',
     filter_freeze_tips: '已存在置顶查询组件,确定切换该组件？',
@@ -2913,7 +2900,6 @@ export default {
       '如果展示查询按钮，需要点击该按钮后才能触发图表查询；如果不展示查询按钮，选择完查询条件后立即触发图表查询',
     custom_query_bg_color: '自定义查询条件背景',
     query_condition_space: '查询条件间距',
-    query_condition_height: '查询条件高度',
     query_condition_name: '查询条件名称',
     condition_left: '左侧',
     condition_top: '上侧',
@@ -3053,7 +3039,6 @@ export default {
     external_parameter_settings: '外部参数设置',
     screen_config: '大屏配置',
     screen_adaptor: '缩放方式',
-    screen_adaptor_keep_proportion: '保持比例填充',
     screen_adaptor_width_first: '宽度优先',
     screen_adaptor_height_first: '高度优先',
     screen_adaptor_full: '铺满全屏',
@@ -3112,7 +3097,7 @@ export default {
     required: '必填',
     default_value: '默认值',
     default_value_tips1: '请使用JSON数组格式 示例:',
-    default_value_tips2: '单值 ["name1"], 多值 ["name1","name2"]; 绑定SQL自定义参数，不支持多值；',
+    default_value_tips2: '单值 ["name1"], 多值 ["name1","name2"]',
     default_value_tips3: '请输入参数,如:["name1"]',
     time_year_widget: '年份过滤组件',
     time_month_widget: '年月过滤组件',
@@ -3229,7 +3214,8 @@ export default {
     template_preview: '预览模板',
     apply: '应用',
     apply_this_template: '应用此模板',
-    market_network_tips: `查看模板市场模板需要服务器与模板市场({0})连通，请检查网络...`,
+    market_network_tips:
+      '查看模板市场模板需要服务器与模板市场(https://templates.dataease.cn)连通，请检查网络...',
     enter_name_tips: '请输入仪表板名称',
     apply_template: '应用模板',
     style_template: '样式模板',
@@ -3754,7 +3740,7 @@ export default {
     data_source_table: '数据源表',
     auth_method: '认证方式',
     passwd: '用户名密码',
-    kerbers_info: '请确保 krb5.Conf、Keytab Key，已经添加到路径：/opt/dataease3.0/conf',
+    kerbers_info: '请确保 krb5.Conf、Keytab Key，已经添加到路径：/opt/dataease2.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     data_base: '数据库名称',
@@ -4015,11 +4001,7 @@ export default {
     dynamic_partition_enable: '动态分区',
     time_end: '结束',
     es_query_param_formatter_error: '查询参数格式错误，请输入正确的JSON格式，请检查',
-    show_task_id: '查看任务ID',
-    offset: '偏移量',
-    offset_tip: '偏移量，负数为前向偏移，正数为后向偏移',
-    millisecond: '毫秒',
-    units: '单位'
+    show_task_id: '查看任务ID'
   },
   watermark: {
     support_params: '当前支持的参数：',

@@ -1,7 +1,6 @@
 export default {
   common: {
     empty: ' ',
-    first_item: 'First Item',
     cross_source: 'Cross-source',
     single_source: 'Single-source',
     source_tips:
@@ -975,7 +974,7 @@ export default {
     auth_method: 'Authentication Method',
     passwd: 'Username and Password',
     kerbers_info:
-      'Please make sure krb5.Conf, Keytab Key, have been added to the path: /opt/dataease3.0/conf',
+      'Please make sure krb5.Conf, Keytab Key, have been added to the path: /opt/dataease2.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     please_select_left: 'Please select from the left',
@@ -1387,7 +1386,6 @@ export default {
     table_title_fontsize: 'Header font size',
     table_item_fontsize: 'Table font size',
     table_header_bg: 'Header Bg',
-    table_header_row_bg: 'Header&Row Bg',
     table_item_bg: 'Table Bg',
     table_header_font_color: 'Header font',
     table_item_font_color: 'Table font',
@@ -1491,7 +1489,6 @@ export default {
     axis_label_show: 'Label display',
     axis_label_color: 'Label color',
     axis_label_fontsize: 'Label size',
-    axis_tick_show: 'Show tick',
     text_style: 'Font style',
     bolder: 'Bold',
     change_ds: 'Change Dataset',
@@ -2094,8 +2091,7 @@ export default {
     quota_col_label: 'Quota Column Label',
     table_grand_total_label: 'Total Alias',
     table_field_total_label: 'Field Alias',
-    table_row_header_freeze: 'Row Header Freeze',
-    value_formatter_total_out_percent: 'Show percentage'
+    table_row_header_freeze: 'Row Header Freeze'
   },
   dataset: {
     field_value: 'Field Value',
@@ -2111,7 +2107,7 @@ export default {
     select_year: 'Select year',
     sql_variable_limit_1: '1. SQL variables can only be used in WHERE conditions',
     sql_variable_limit_2:
-      "2. select * from table where $DE_PARAM{'{'} name = substring('$[PARAM1]',1,5){'}'} and $DE_PARAM{'{'} name in ($[PARAM2]) {'}'}",
+      "2. Example: select * from table where $DE_PARAM{ name = '$[PARAM1]' } and $DE_PARAM{ name in ($[PARAM2]) }",
     select_month: 'Select month',
     select_date: 'Select date',
     select_time: 'Select time',
@@ -2908,15 +2904,6 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
-    select_resource: 'Select {0}',
-    change_screen_page: 'Change {0}',
-    new_screen_page: 'New page',
-    screen_page: 'Page',
-    color_setting: 'Color{0}',
-    decoration_name: 'Decoration {0}',
-    decoration: 'Decoration',
-    dynamic_background_name: 'Animated {0}',
-    dynamic_background: 'Animated Image',
     support_query: 'Only query components can be added',
     publish_update_tips: 'Update available',
     filter_freeze_tips:
@@ -2990,7 +2977,6 @@ export default {
       'If the query button is displayed, the chart query will be triggered only after clicking the button. If not displayed, the query is triggered immediately after selecting the query conditions.',
     custom_query_bg_color: 'Custom Query Background Color',
     query_condition_space: 'Query Condition Spacing',
-    query_condition_height: 'Query condition height',
     query_condition_name: 'Query Condition Name',
     condition_left: 'Left Side',
     condition_top: 'Top Side',
@@ -3136,7 +3122,6 @@ export default {
     screen_adaptor_width_first: 'Width First',
     screen_adaptor_height_first: 'Height First',
     screen_adaptor_full: 'Full Screen',
-    screen_adaptor_keep_proportion: 'Keep Proportion:',
     screen_adaptor_keep: 'No Scaling',
     effective_during_preview: 'Effective during preview',
     base_config: 'Base Configuration',
@@ -3192,8 +3177,7 @@ export default {
     required: 'Required',
     default_value: 'Default Value',
     default_value_tips1: 'Please use JSON array format Example:',
-    default_value_tips2:
-      'Single value ["name1"], multiple values ["name1","name2"]; Bind SQL custom parameters, multiple values not supported;',
+    default_value_tips2: 'Single value ["name1"], Multiple values ["name1","name2"]',
     default_value_tips3: 'Please enter parameters, e.g.: ["name1"]',
     time_year_widget: 'Year Filter Widget',
     time_month_widget: 'Month Filter Widget',
@@ -3281,6 +3265,7 @@ export default {
     space_left: 'Left',
     space_width: 'Width',
     space_height: 'Height',
+    to_top: 'Move to Top',
     down: 'Download',
     mobile_style_setting: 'Style Setting',
     mobile_style_setting_tips: 'Customize mobile background',
@@ -3319,7 +3304,7 @@ export default {
     apply: 'Apply',
     apply_this_template: 'Apply This Template',
     market_network_tips:
-      'To view templates from the template market, your server must be connected to the template market ({0}). Please check your network connection...',
+      'To view templates from the template market, your server must be connected to the template market (https://templates.dataease.cn). Please check your network connection...',
     enter_name_tips: 'Please enter the dashboard name.',
     apply_template: 'App Template',
     style_template: 'Style Template',
@@ -3860,7 +3845,7 @@ export default {
     auth_method: 'Authentication method',
     passwd: 'Username and password',
     kerbers_info:
-      'Please make sure krb5.Conf and Keytab Key have been added to the path: /opt/dataease3.0/conf',
+      'Please make sure krb5.Conf and Keytab Key have been added to the path: /opt/dataease2.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     data_base: 'Database name',
@@ -4128,11 +4113,7 @@ export default {
     time_end: 'End',
     es_query_param_formatter_error:
       'Query parameter format error, please enter the correct JSON format, please check',
-    show_task_id: 'View Task ID',
-    offset: 'Offset',
-    offset_tip: 'Offset: negative for backward, positive for forward',
-    millisecond: 'Millisecond',
-    units: 'Unit'
+    show_task_id: 'View Task ID'
   },
   watermark: {
     support_params: 'Currently supported parameters:',
