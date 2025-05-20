@@ -258,6 +258,7 @@ export class TableG2Chart extends G2ChartView {
       const quotaLegendOption = {
         scale: {
           color: {
+            type: 'linear',
             interpolate: () => {
               return c => colors[Math.floor(c * (colors.length - 1))]
             }
