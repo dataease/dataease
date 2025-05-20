@@ -506,37 +506,75 @@ const mouseupDrag = () => {
 
 const parseVariable = () => {
   state.variablesTmp = []
-  const reg = new RegExp('\\${(.*?)}', 'gim')
-  const match = codeCom.value.state.doc.toString().match(reg)
-  const names = []
-  if (match !== null) {
-    for (let index = 0; index < match.length; index++) {
-      let name = match[index].substring(2, match[index].length - 1)
-      if (names.indexOf(name) < 0) {
-        names.push(name)
-        // eslint-disable-next-line
-        let obj = undefined
-        for (let i = 0; i < state.variables?.length; i++) {
-          if (state.variables[i].variableName === name) {
-            obj = state.variables[i]
-            if (!obj.hasOwnProperty('defaultValueScope')) {
-              obj.defaultValueScope = 'EDIT'
+  const variableReg = new RegExp('\\$DE_PARAM{(.*?)}', 'gim')
+  const variableMatch = codeCom.value.state.doc.toString().match(variableReg)
+  if (variableMatch !== null) {
+    const names = []
+    const reg = new RegExp('\\$\\[[^\\]]+\\]', 'gim')
+    for (let index = 0; index < variableMatch.length; index++) {
+      let sqlItem = variableMatch[index].substring(10, variableMatch[index].length - 1)
+      const match = sqlItem.match(reg)
+      if (match !== null) {
+        let name = match[0].substring(2, match[0].length - 1)
+        if (names.indexOf(name) < 0) {
+          names.push(name)
+          let obj = undefined
+          for (let i = 0; i < state.variables?.length; i++) {
+            if (state.variables[i].variableName === name) {
+              obj = state.variables[i]
+              if (!obj.hasOwnProperty('defaultValueScope')) {
+                obj.defaultValueScope = 'EDIT'
+              }
             }
           }
-        }
-        if (obj === undefined) {
-          obj = {
-            variableName: name,
-            alias: '',
-            type: [],
-            required: false,
-            defaultValue: '',
-            details: '',
-            defaultValueScope: 'EDIT'
+          if (obj === undefined) {
+            obj = {
+              variableName: name,
+              alias: '',
+              type: [],
+              required: false,
+              defaultValue: '',
+              details: '',
+              defaultValueScope: 'EDIT'
+            }
+            obj.type.push('TEXT')
           }
-          obj.type.push('TEXT')
+          state.variablesTmp.push(obj)
         }
-        state.variablesTmp.push(obj)
+      }
+    }
+  } else {
+    const reg = new RegExp('\\${(.*?)}', 'gim')
+    const match = codeCom.value.state.doc.toString().match(reg)
+    const names = []
+    if (match !== null) {
+      for (let index = 0; index < match.length; index++) {
+        let name = match[index].substring(2, match[index].length - 1)
+        if (names.indexOf(name) < 0) {
+          names.push(name)
+          let obj = undefined
+          for (let i = 0; i < state.variables?.length; i++) {
+            if (state.variables[i].variableName === name) {
+              obj = state.variables[i]
+              if (!obj.hasOwnProperty('defaultValueScope')) {
+                obj.defaultValueScope = 'EDIT'
+              }
+            }
+          }
+          if (obj === undefined) {
+            obj = {
+              variableName: name,
+              alias: '',
+              type: [],
+              required: false,
+              defaultValue: '',
+              details: '',
+              defaultValueScope: 'EDIT'
+            }
+            obj.type.push('TEXT')
+          }
+          state.variablesTmp.push(obj)
+        }
       }
     }
   }
