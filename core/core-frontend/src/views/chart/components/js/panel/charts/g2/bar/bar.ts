@@ -7,7 +7,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, hexToRgba, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
+import { cloneDeep, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   getLineDash,
@@ -171,7 +171,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         }
         return valueFormatter(value, labelCfg.formatterCfg)
       },
-      ...(l.fullDisplay ? {} : transform)
+      ...(l.fullDisplay ? { transform: [{ type: 'exceedAdjust' }] } : transform)
     }
     return {
       ...options,
