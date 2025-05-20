@@ -2,6 +2,7 @@
 import { iconChartMap } from '@/components/icon-group/chart-list'
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import { toRefs } from 'vue'
+import ChartType from './ChartType.vue'
 
 const props = defineProps({
   propValue: {
@@ -74,7 +75,7 @@ const onTypeChange = (render, type) => {
       </el-select>
     </template>
     <template #default>
-      <chart-type :themes="themes" :type="type" @on-type-change="onTypeChange" />
+      <ChartType :themes="themes" :type="type" @on-type-change="onTypeChange" />
     </template>
   </el-popover>
 </template>
