@@ -2048,7 +2048,7 @@ export default {
     select_year: '選擇年',
     sql_variable_limit_1: '1、SQL 變數只能在WHERE 條件中使用',
     sql_variable_limit_2:
-      "2、範例:select * from table_name where col_name1='${'{'}param_name1{'}'}' and col_name2 in (${'{'}param_name2{'}'})",
+      "2、範例: select * from table where $DE_PARAM{ name = '$[PARAM1]' } and $DE_PARAM{ name in ($[PARAM2]) }",
     select_month: '選擇月',
     select_date: '選擇日期',
     select_time: '選擇時間',

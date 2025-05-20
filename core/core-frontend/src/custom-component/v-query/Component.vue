@@ -64,7 +64,8 @@ const { element, view, scale } = toRefs(props)
 const { t } = useI18n()
 const vQueryRef = ref()
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap, editMode } = storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap, editMode } =
+  storeToRefs(dvMainStore)
 const canEdit = ref(false)
 const queryConfig = ref()
 const defaultStyle = {
@@ -865,7 +866,9 @@ const autoStyle = computed(() => {
               </div>
               <div
                 class="label-wrapper-tooltip"
-                v-if="showPosition !== 'preview' && !dvMainStore.mobileInPc && editMode !== 'preview'"
+                v-if="
+                  showPosition !== 'preview' && !dvMainStore.mobileInPc && editMode !== 'preview'
+                "
               >
                 <el-tooltip
                   effect="dark"
