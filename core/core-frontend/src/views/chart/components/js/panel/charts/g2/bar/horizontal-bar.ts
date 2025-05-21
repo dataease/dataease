@@ -3,11 +3,11 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
-import { flow, parseJson } from '@/views/chart/components/js/util'
+import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
-import { getLineDash } from '@/views/chart/components/js/panel/common/common_antv'
+import { getLineDash, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { Chart } from '@antv/g2'
 
@@ -51,6 +51,28 @@ export class HorizontalBar extends Bar {
     ]
   }
   axis: AxisType[] = [...BAR_AXIS_TYPE]
+
+  protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {
+    const { children } = options
+    const { basicStyle } = parseJson(chart.customAttr) || {}
+    const colors =
+      basicStyle?.colors?.map(ele =>
+        basicStyle.gradient
+          ? setGradientColor(hexColorToRGBA(ele, basicStyle.alpha), true)
+          : hexColorToRGBA(ele, basicStyle.alpha)
+      ) || []
+    const scale = { color: { range: colors }, y: { nice: true } }
+    const style =
+      basicStyle?.radiusColumnBar === 'topRoundAngle'
+        ? {
+            radiusTopLeft: basicStyle.columnBarRightAngleRadius,
+            radiusTopRight: basicStyle.columnBarRightAngleRadius
+          }
+        : basicStyle?.radiusColumnBar === 'roundAngle'
+        ? { radius: basicStyle.columnBarRightAngleRadius }
+        : { radius: 0 }
+    return { ...options, children: [{ ...children[0], scale, style }, ...children.slice(1)] }
+  }
 
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
     const tmpOptions = super.configLabel(chart, options)
