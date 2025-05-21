@@ -443,6 +443,86 @@ public class ChartDataBuild {
         return map;
     }
 
+    public static Map<String, Object> transQuadrantData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, List<ChartViewFieldDTO> extBubble, boolean isDrill) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] row = data.get(i1);
+
+            StringBuilder a = new StringBuilder();
+            if (isDrill) {
+                a.append(row[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(row[i]);
+                    } else {
+                        a.append(row[i]).append("\n");
+                    }
+                }
+            }
+
+            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+            int size = xAxis.size() + yAxis.size() + extBubble.size();
+            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+            AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+            axisChartDataDTO.setField(a.toString());
+            axisChartDataDTO.setName(a.toString());
+            List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+            for (int j = 0; j < xAxis.size(); j++) {
+                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                chartDimensionDTO.setId(xAxis.get(j).getId());
+                chartDimensionDTO.setValue(row[j]);
+                dimensionList.add(chartDimensionDTO);
+            }
+            axisChartDataDTO.setDimensionList(dimensionList);
+
+            List<ChartQuotaDTO> quotaList = new ArrayList<>();
+            axisChartDataDTO.setQuotaList(quotaList);
+            // 横轴
+            var hIndex = xAxis.size();
+            var hAxis = yAxis.getFirst();
+            ChartQuotaDTO hQuota = new ChartQuotaDTO();
+            hQuota.setId(hAxis.getId());
+            quotaList.add(hQuota);
+            try {
+                axisChartDataDTO.setValue(StringUtils.isEmpty(row[hIndex]) ? null : new BigDecimal(row[hIndex]));
+            } catch (Exception e) {
+                axisChartDataDTO.setValue(new BigDecimal(0));
+            }
+            // 纵轴
+            var vIndex = xAxis.size() + 1;
+            var vAxis = yAxis.get(1);
+            ChartQuotaDTO vQuota = new ChartQuotaDTO();
+            vQuota.setId(vAxis.getId());
+            quotaList.add(vQuota);
+            try {
+                axisChartDataDTO.setExtValue(StringUtils.isEmpty(row[vIndex]) ? null : new BigDecimal(row[vIndex]));
+            } catch (Exception e) {
+                axisChartDataDTO.setExtValue(new BigDecimal(0));
+            }
+            // 气泡大小
+            if (ObjectUtils.isNotEmpty(extBubble)) {
+                var popIndex = vIndex + 1;
+                var popAxis = extBubble.getFirst();
+                try {
+                    axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[popIndex]) ? null : new BigDecimal(row[popIndex]));
+                    ChartQuotaDTO bubbleQuotaDTO = new ChartQuotaDTO();
+                    bubbleQuotaDTO.setId(popAxis.getId());
+                    quotaList.add(bubbleQuotaDTO);
+                } catch (Exception e) {
+                    axisChartDataDTO.setPopSize(new BigDecimal(0));
+                }
+            }
+            buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
+            dataList.add(axisChartDataDTO);
+        }
+        map.put("data", dataList);
+        return map;
+    }
+
     // antv radar
     public static Map<String, Object> transRadarChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();

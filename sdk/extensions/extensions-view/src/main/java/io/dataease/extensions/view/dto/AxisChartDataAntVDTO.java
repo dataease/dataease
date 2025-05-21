@@ -17,6 +17,7 @@ public class AxisChartDataAntVDTO {
     private String name;
     private String category;
     private BigDecimal popSize;
+    private BigDecimal extValue;
     private String group;
     private List<DynamicValueDTO> dynamicLabelValue;
     private List<DynamicValueDTO> dynamicTooltipValue;

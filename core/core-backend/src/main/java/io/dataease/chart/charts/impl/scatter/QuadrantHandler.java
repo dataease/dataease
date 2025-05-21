@@ -23,9 +23,9 @@ public class QuadrantHandler extends YoyChartHandler {
         yAxis.addAll(view.getExtBubble());
         yAxis.addAll(view.getExtTooltip());
         result.getAxisMap().put(ChartAxis.yAxis, yAxis);
+        result.getAxisMap().put(ChartAxis.yAxisExt, view.getYAxisExt());
         result.getAxisMap().put(ChartAxis.extBubble, view.getExtBubble());
         result.getAxisMap().put(ChartAxis.extTooltip, view.getExtTooltip());
-        result.getAxisMap().put(ChartAxis.yAxisExt, view.getYAxisExt());
         return result;
     }
 
@@ -34,7 +34,8 @@ public class QuadrantHandler extends YoyChartHandler {
         boolean isDrill = filterResult.getFilterList().stream().anyMatch(ele -> ele.getFilterType() == 1);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        Map<String, Object> result = ChartDataBuild.transMixChartDataAntV(xAxis, xAxis, new ArrayList<>(), yAxis, view, data, isDrill);
+        var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
+        Map<String, Object> result = ChartDataBuild.transQuadrantData(xAxis, yAxis, view, data, extBubble, isDrill);
         return result;
     }
 }

@@ -31,13 +31,13 @@ const isDashboard = dvMainStore.dvInfo.type === 'dashboard'
 for (let i = 0; i < 4; i++) {
   regionStyle.push({
     fill: isDashboard ? '#ffffff' : 'rgb(2,4,8,1,1)',
-    fillOpacity: '1.0'
+    fillOpacity: 1.0
   })
   labels.push({
     content: '',
     style: {
       fill: isDashboard ? 'rgb(2,4,8,1,1)' : '#ffffff',
-      fillOpacity: '0.5',
+      fillOpacity: 0.5,
       fontSize: 14
     }
   })
@@ -84,8 +84,8 @@ const fillOpacityList = computed(() => {
   for (let i = 0; i <= 1; i = i + 0.1) {
     let c = i.toFixed(1)
     arr.push({
-      name: c + '',
-      value: c
+      name: c,
+      value: i
     })
   }
   return arr
