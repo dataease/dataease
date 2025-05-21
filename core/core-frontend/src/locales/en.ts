@@ -2107,7 +2107,7 @@ export default {
     select_year: 'Select year',
     sql_variable_limit_1: '1. SQL variables can only be used in WHERE conditions',
     sql_variable_limit_2:
-      "2. Example: select * from table where $DE_PARAM{ name = '$[PARAM1]' } and $DE_PARAM{ name in ($[PARAM2]) }",
+      "2. select * from table where $DE_PARAM{'{'} name = '$[PARAM1]' {'}'} and $DE_PARAM{'{'} name in ($[PARAM2]) {'}'}",
     select_month: 'Select month',
     select_date: 'Select date',
     select_time: 'Select time',
