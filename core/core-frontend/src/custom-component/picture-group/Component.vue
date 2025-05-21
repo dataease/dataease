@@ -26,7 +26,6 @@ import {
   onBeforeMount
 } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
-import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getData } from '@/api/chart'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -122,12 +121,6 @@ const imageAdapter = computed(() => {
   }
   return style as CSSProperties
 })
-
-const uploadImg = () => {
-  nextTick(() => {
-    eventBus.emit('uploadImg')
-  })
-}
 
 const initCurFields = chartDetails => {
   dataRowFiledName.value = []
@@ -253,7 +246,7 @@ const calcData = (viewCalc: Chart, callback) => {
 }
 
 // 初始化此处不必刷新
-const renderChart = viewInfo => {
+const renderChart = () => {
   //do renderView
 }
 

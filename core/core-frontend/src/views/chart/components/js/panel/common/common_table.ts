@@ -59,14 +59,14 @@ import {
   size,
   sum
 } from 'lodash-es'
-import {createVNode, render} from 'vue'
+import { createVNode, render } from 'vue'
 import TableTooltip from '@/views/chart/components/editor/common/TableTooltip.vue'
 import Exceljs from 'exceljs'
-import {saveAs} from 'file-saver'
-import {ElMessage} from 'element-plus-secondary'
-import {useI18n} from '@/hooks/web/useI18n'
+import { saveAs } from 'file-saver'
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 
-const {t: i18nt} = useI18n()
+const { t: i18nt } = useI18n()
 
 export function getCustomTheme(chart: Chart): S2Theme {
   const headerColor = hexColorToRGBA(
@@ -215,7 +215,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
   let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
     customAttr = parseJson(chart.customAttr)
-    const {basicStyle, tableHeader, tableCell} = customAttr
+    const { basicStyle, tableHeader, tableCell } = customAttr
     // basic
     if (basicStyle) {
       const tableBorderColor = basicStyle.tableBorderColor
@@ -267,7 +267,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
       }
       const fontStyle = tableHeader.isItalic ? 'italic' : 'normal'
       const fontWeight = tableHeader.isBolder === false ? 'normal' : 'bold'
-      const {tableHeaderAlign, tableTitleFontSize} = tableHeader
+      const { tableHeaderAlign, tableTitleFontSize } = tableHeader
       const tmpTheme: S2Theme = {
         cornerCell: {
           cell: {
@@ -382,7 +382,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
       }
       const fontStyle = tableCell.isItalic ? 'italic' : 'normal'
       const fontWeight = tableCell.isBolder === false ? 'normal' : 'bold'
-      const {tableItemAlign, tableItemFontSize, enableTableCrossBG} = tableCell
+      const { tableItemAlign, tableItemFontSize, enableTableCrossBG } = tableCell
       const tmpTheme: S2Theme = {
         rowCell: {
           cell: {
@@ -492,7 +492,7 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
   let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
     customAttr = parseJson(chart.customAttr)
-    const {basicStyle, tableHeader, tableCell} = customAttr
+    const { basicStyle, tableHeader, tableCell } = customAttr
     style.colCfg = {
       height: tableHeader.tableTitleHeight
     }
@@ -513,7 +513,7 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
           }, {}) || {}
         // 下钻字段使用入口字段的宽度
         if (chart.drill) {
-          const {xAxis} = parseJson(chart)
+          const { xAxis } = parseJson(chart)
           const curDrillField = chart.drillFields[chart.drillFilters.length]
           const drillEnterFieldIndex = xAxis.findIndex(
             item => item.id === chart.drillFilters[0].fieldId
@@ -605,7 +605,7 @@ export function getCurrentField(valueFieldList: Axis[], field: ChartViewField) {
 }
 
 export function getConditions(chart: Chart) {
-  const {threshold} = parseJson(chart.senior)
+  const { threshold } = parseJson(chart.senior)
   if (!threshold.enable) {
     return
   }
@@ -617,17 +617,20 @@ export function getConditions(chart: Chart) {
 
   const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
   if (conditions?.length > 0) {
-    const {tableCell, basicStyle, tableHeader} = parseJson(chart.customAttr)
+    const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
     // 合并单元格时斑马纹失效
-    const enableTableCrossBG = chart.type === 'table-info' ? tableCell.enableTableCrossBG && !tableCell.mergeCells : tableCell.enableTableCrossBG
+    const enableTableCrossBG =
+      chart.type === 'table-info'
+        ? tableCell.enableTableCrossBG && !tableCell.mergeCells
+        : tableCell.enableTableCrossBG
     const valueColor = isAlphaColor(tableCell.tableFontColor)
       ? tableCell.tableFontColor
       : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
     const valueBgColor = enableTableCrossBG
       ? null
       : isAlphaColor(tableCell.tableItemBgColor)
-        ? tableCell.tableItemBgColor
-        : hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
+      ? tableCell.tableItemBgColor
+      : hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
     const headerValueColor = tableHeader.tableHeaderFontColor
     const headerValueBgColor = isAlphaColor(tableHeader.tableHeaderBgColor)
       ? tableHeader.tableHeaderBgColor
@@ -678,7 +681,7 @@ export function getConditions(chart: Chart) {
           if (isTransparent(fill)) {
             return null
           }
-          return {fill}
+          return { fill }
         }
       })
     }
@@ -895,7 +898,7 @@ export function handleTableEmptyStrategy(chart: Chart) {
 
 export class SortTooltip extends BaseTooltip {
   show(showOptions) {
-    const {iconName} = showOptions
+    const { iconName } = showOptions
     if (iconName) {
       this.showSortTooltip(showOptions)
       return
@@ -904,9 +907,9 @@ export class SortTooltip extends BaseTooltip {
   }
 
   showSortTooltip(showOptions) {
-    const {position, options, meta, event} = showOptions
-    const {enterable} = getTooltipDefaultOptions(options)
-    const {autoAdjustBoundary, adjustPosition} = this.spreadsheet.options.tooltip || {}
+    const { position, options, meta, event } = showOptions
+    const { enterable } = getTooltipDefaultOptions(options)
+    const { autoAdjustBoundary, adjustPosition } = this.spreadsheet.options.tooltip || {}
     this.visible = true
     this.options = showOptions
     const container = this['getContainer']()
@@ -920,14 +923,14 @@ export class SortTooltip extends BaseTooltip {
     this.spreadsheet.tooltip.container.appendChild(childElement)
     render(vNode, childElement)
 
-    const {x, y} = getAutoAdjustPosition({
+    const { x, y } = getAutoAdjustPosition({
       spreadsheet: this.spreadsheet,
       position,
       tooltipContainer: container,
       autoAdjustBoundary
     })
 
-    this.position = adjustPosition?.({position: {x, y}, event}) ?? {
+    this.position = adjustPosition?.({ position: { x, y }, event }) ?? {
       x,
       y
     }
@@ -960,7 +963,7 @@ function svg2Base64(svg) {
 }
 
 export function configHeaderInteraction(chart: Chart, option: S2Options) {
-  const {tableHeaderFontColor, tableHeaderSort} = parseJson(chart.customAttr).tableHeader
+  const { tableHeaderFontColor, tableHeaderSort } = parseJson(chart.customAttr).tableHeader
   if (!tableHeaderSort) {
     return
   }
@@ -1012,7 +1015,7 @@ export function configHeaderInteraction(chart: Chart, option: S2Options) {
         return iconName === `customSortDefault${randomSuffix}`
       },
       onClick: props => {
-        const {meta, event} = props
+        const { meta, event } = props
         meta.spreadsheet.showTooltip({
           position: {
             x: event.clientX,
@@ -1040,7 +1043,7 @@ export function configHeaderInteraction(chart: Chart, option: S2Options) {
 }
 
 export function configTooltip(chart: Chart, option: S2Options) {
-  const {tooltip} = parseJson(chart.customAttr)
+  const { tooltip } = parseJson(chart.customAttr)
   const textFontFamily = chart.fontFamily ? chart.fontFamily : FONT_FAMILY
   option.tooltip = {
     ...option.tooltip,
@@ -1055,7 +1058,7 @@ export function configTooltip(chart: Chart, option: S2Options) {
       opacity: 0.95,
       position: 'absolute'
     },
-    adjustPosition: ({event}) => {
+    adjustPosition: ({ event }) => {
       return getTooltipPosition(event)
     }
   }
@@ -1070,7 +1073,7 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
   let content = ''
   // 多选
   if (selectState.stateName === InteractionStateName.SELECTED) {
-    const {cells} = selectState
+    const { cells } = selectState
     if (!cells?.length) {
       return
     }
@@ -1172,13 +1175,13 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
 
 function getTooltipPosition(event) {
   const s2Instance = event.s2Instance
-  const {x, y} = event
-  const result = {x: x + 15, y}
+  const { x, y } = event
+  const result = { x: x + 15, y }
   if (!s2Instance) {
     return result
   }
-  const {height, width} = s2Instance.getCanvasElement().getBoundingClientRect()
-  const {offsetHeight, offsetWidth} = s2Instance.tooltip.getContainer()
+  const { height, width } = s2Instance.getCanvasElement().getBoundingClientRect()
+  const { offsetHeight, offsetWidth } = s2Instance.tooltip.getContainer()
   if (offsetWidth > width) {
     result.x = 0
   }
@@ -1206,8 +1209,8 @@ function getTooltipPosition(event) {
 }
 
 export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
-  const {layoutResult} = instance.facet
-  const {meta, fields} = instance.dataCfg
+  const { layoutResult } = instance.facet
+  const { meta, fields } = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
   const colLength = fields?.columns?.length || 0
   const colNums = layoutResult.colLeafNodes.length + rowLength
@@ -1227,27 +1230,27 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   fields.columns?.forEach((column, index) => {
     const cell = worksheet.getCell(index + 1, 1)
     cell.value = metaMap[column]?.name ?? column
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (rowLength >= 2) {
       worksheet.mergeCells(index + 1, 1, index + 1, rowLength)
     }
     cell.border = {
-      right: {style: 'thick', color: {argb: '00000000'}}
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   fields?.rows?.forEach((row, index) => {
     const cell = worksheet.getCell(colLength + 1, index + 1)
     cell.value = metaMap[row]?.name ?? row
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     cell.border = {
-      bottom: {style: 'thick', color: {argb: '00000000'}}
+      bottom: { style: 'thick', color: { argb: '00000000' } }
     }
     if (index === fields.rows.length - 1) {
-      cell.border.right = {style: 'thick', color: {argb: '00000000'}}
+      cell.border.right = { style: 'thick', color: { argb: '00000000' } }
     }
   })
   // 行头
-  const {rowLeafNodes, rowsHierarchy, rowNodes} = layoutResult
+  const { rowLeafNodes, rowsHierarchy, rowNodes } = layoutResult
   const maxColIndex = rowsHierarchy.maxLevel + 1
   const notLeafNodeHeightMap: Record<string, number> = {}
   rowLeafNodes.forEach(node => {
@@ -1258,17 +1261,17 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       notLeafNodeHeightMap[curNode.id] = height + 1
       curNode = curNode.parent
     }
-    const {rowIndex} = node
+    const { rowIndex } = node
     const writeRowIndex = rowIndex + 1 + colLength + 1
     const writeColIndex = node.level + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     cell.value = node.label
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (writeColIndex < maxColIndex) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, maxColIndex)
     }
     cell.border = {
-      right: {style: 'thick', color: {argb: '00000000'}}
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
   })
 
@@ -1290,7 +1293,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
     const value = node.label
     const cell = worksheet.getCell(writeRowIndex, node.level + 1)
     cell.value = value
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (mergeColCount > 1 || height > 1) {
       worksheet.mergeCells(
         writeRowIndex,
@@ -1302,7 +1305,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   })
 
   // 列头
-  const {colLeafNodes, colNodes, colsHierarchy} = layoutResult
+  const { colLeafNodes, colNodes, colsHierarchy } = layoutResult
   const maxColHeight = colsHierarchy.maxLevel + 1
   const notLeafNodeWidthMap: Record<string, number> = {}
   colLeafNodes.forEach(node => {
@@ -1313,7 +1316,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       notLeafNodeWidthMap[curNode.id] = width + 1
       curNode = curNode.parent
     }
-    const {colIndex} = node
+    const { colIndex } = node
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + 1 + rowLength
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
@@ -1322,12 +1325,12 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       value = metaMap[value].name
     }
     cell.value = value
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (writeRowIndex < maxColHeight) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, maxColHeight, writeColIndex)
     }
     cell.border = {
-      bottom: {style: 'thick', color: {argb: '00000000'}}
+      bottom: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   const getNodeStartColIndex = (node: Node) => {
@@ -1349,7 +1352,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
     const writeColIndex = colIndex + rowLength
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     cell.value = value
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (mergeRowCount > 1 || width > 1) {
       worksheet.mergeCells(
         writeRowIndex,
@@ -1363,12 +1366,12 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
-      const {fieldValue} = dataCellMeta
+      const { fieldValue } = dataCellMeta
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 1)
         const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
-        cell.alignment = {vertical: 'middle', horizontal: 'center'}
+        cell.alignment = { vertical: 'middle', horizontal: 'center' }
         cell.value = value
       }
     }
@@ -1381,8 +1384,8 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
 }
 
 export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: ChartObj) {
-  const {layoutResult} = instance.facet
-  const {meta, fields} = instance.dataCfg
+  const { layoutResult } = instance.facet
+  const { meta, fields } = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
   const colNums = layoutResult.colLeafNodes.length + rowLength
   if (colNums > 16384) {
@@ -1402,28 +1405,28 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
   if (colHead) {
     const cell = worksheet.getCell(1, 1)
     cell.value = metaMap[colHead]?.name ?? colHead
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     cell.border = {
-      right: {style: 'thick', color: {argb: '00000000'}}
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
     worksheet.mergeCells(1, 1, 1, rowLength + 1)
   }
   fields?.rows?.forEach((row, index) => {
     const cell = worksheet.getCell(2, index + 1)
     cell.value = metaMap[row]?.name ?? row
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
-    cell.border = {bottom : {style: 'thick', color: {argb: '00000000'}}}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    cell.border = { bottom: { style: 'thick', color: { argb: '00000000' } } }
   })
   const quotaColLabel = chart.customAttr.basicStyle.quotaColLabel ?? t('dataset.value')
   const quotaColHeadCell = worksheet.getCell(2, rowLength + 1)
   quotaColHeadCell.value = quotaColLabel
-  quotaColHeadCell.alignment = {vertical: 'middle', horizontal: 'center'}
+  quotaColHeadCell.alignment = { vertical: 'middle', horizontal: 'center' }
   quotaColHeadCell.border = {
-    bottom: {style: 'thick', color: {argb: '00000000'}},
-    right: {style: 'thick', color: {argb: '00000000'}}
+    bottom: { style: 'thick', color: { argb: '00000000' } },
+    right: { style: 'thick', color: { argb: '00000000' } }
   }
   // 行头
-  const {rowLeafNodes, rowsHierarchy, rowNodes} = layoutResult
+  const { rowLeafNodes, rowNodes } = layoutResult
   const notLeafNodeHeightMap: Record<string, number> = {}
   rowLeafNodes.forEach(node => {
     // 行头的高度由子节点相加决定，也就是行头子节点中包含的叶子节点数量
@@ -1433,7 +1436,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       notLeafNodeHeightMap[curNode.id] = height + 1
       curNode = curNode.parent
     }
-    const {rowIndex} = node
+    const { rowIndex } = node
     const writeRowIndex = rowIndex + 3
     const writeColIndex = node.level + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
@@ -1442,9 +1445,9 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       value = metaMap[value].name
     }
     cell.value = value
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     cell.border = {
-      right: {style: 'thick', color: {argb: '00000000'}}
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
   })
 
@@ -1465,7 +1468,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     const mergeColCount = node.children[0].level - node.level
     const cell = worksheet.getCell(writeRowIndex, node.level + 1)
     cell.value = node.label
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (mergeColCount > 1 || height > 1) {
       worksheet.mergeCells(
         writeRowIndex,
@@ -1477,7 +1480,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
   })
 
   // 列头
-  const {colLeafNodes, colNodes, colsHierarchy} = layoutResult
+  const { colLeafNodes, colNodes, colsHierarchy } = layoutResult
   const maxColHeight = colsHierarchy.maxLevel + 1
   const notLeafNodeWidthMap: Record<string, number> = {}
   colLeafNodes.forEach(node => {
@@ -1488,18 +1491,18 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       notLeafNodeWidthMap[curNode.id] = width + 1
       curNode = curNode.parent
     }
-    const {colIndex} = node
+    const { colIndex } = node
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + rowLength + 2
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     const value = node.label
     cell.value = value
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (writeRowIndex < maxColHeight) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, maxColHeight, writeColIndex)
     }
     cell.border = {
-      bottom: {style: 'thick', color: {argb: '00000000'}}
+      bottom: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   const getNodeStartColIndex = (node: Node) => {
@@ -1520,26 +1523,21 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     const writeColIndex = colIndex + rowLength + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     cell.value = value
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (width > 1) {
-      worksheet.mergeCells(
-        writeRowIndex,
-        writeColIndex,
-        writeRowIndex,
-        writeColIndex + width - 1
-      )
+      worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, writeColIndex + width - 1)
     }
   })
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
-      const {fieldValue} = dataCellMeta
+      const { fieldValue } = dataCellMeta
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 2)
         const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
-        cell.alignment = {vertical: 'middle', horizontal: 'center'}
+        cell.alignment = { vertical: 'middle', horizontal: 'center' }
         cell.value = value
       }
     }
@@ -1557,7 +1555,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
     ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
     return
   }
-  const {meta, fields} = instance.dataCfg
+  const { meta, fields } = instance.dataCfg
   const colLength = fields?.columns?.length || 0
   const workbook = new Exceljs.Workbook()
   const worksheet = workbook.addWorksheet(i18nt('chart.chart_data'))
@@ -1572,33 +1570,33 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
   fields.columns?.forEach((column, index) => {
     const cell = worksheet.getCell(index + 1, 1)
     cell.value = metaMap[column]?.name ?? column
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     cell.border = {
-      right: {style: 'thick', color: {argb: '00000000'}}
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   const maxColHeight = layoutResult.colsHierarchy.maxLevel + 1
   const rowName = fields?.rows?.map(row => metaMap[row]?.name ?? row).join('/')
   const cell = worksheet.getCell(colLength + 1, 1)
   cell.value = rowName
-  cell.alignment = {vertical: 'middle', horizontal: 'center'}
+  cell.alignment = { vertical: 'middle', horizontal: 'center' }
   cell.border = {
-    right: {style: 'thick', color: {argb: '00000000'}},
-    bottom: {style: 'thick', color: {argb: '00000000'}}
+    right: { style: 'thick', color: { argb: '00000000' } },
+    bottom: { style: 'thick', color: { argb: '00000000' } }
   }
   //行头
-  const {rowLeafNodes} = layoutResult
+  const { rowLeafNodes } = layoutResult
   rowLeafNodes.forEach((node, index) => {
     const cell = worksheet.getCell(maxColHeight + index + 1, 1)
     cell.value = repeat('  ', node.level) + node.label
-    cell.alignment = {vertical: 'middle', horizontal: 'left'}
+    cell.alignment = { vertical: 'middle', horizontal: 'left' }
     cell.border = {
-      right: {style: 'thick', color: {argb: '00000000'}}
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   // 列头
   const notLeafNodeWidthMap: Record<string, number> = {}
-  const {colLeafNodes} = layoutResult
+  const { colLeafNodes } = layoutResult
   colLeafNodes.forEach(node => {
     let curNode = node.parent
     while (curNode) {
@@ -1606,7 +1604,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       notLeafNodeWidthMap[curNode.id] = width + 1
       curNode = curNode.parent
     }
-    const {colIndex} = node
+    const { colIndex } = node
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + 1 + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
@@ -1615,12 +1613,12 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       value = metaMap[value].name
     }
     cell.value = value
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (writeRowIndex < maxColHeight) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, maxColHeight, writeColIndex)
     }
     cell.border = {
-      bottom: {style: 'thick', color: {argb: '00000000'}}
+      bottom: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   const colNodes = layoutResult.colNodes
@@ -1642,7 +1640,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
     const writeColIndex = colIndex + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     cell.value = node.label
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (mergeRowCount > 1 || width > 1) {
       worksheet.mergeCells(
         writeRowIndex,
@@ -1656,12 +1654,12 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
-      const {fieldValue} = dataCellMeta
+      const { fieldValue } = dataCellMeta
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 1 + 1)
         const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
-        cell.alignment = {vertical: 'middle', horizontal: 'center'}
+        cell.alignment = { vertical: 'middle', horizontal: 'center' }
         cell.value = value
       }
     }
@@ -1679,7 +1677,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
     ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
     return
   }
-  const {meta, fields} = instance.dataCfg
+  const { meta, fields } = instance.dataCfg
   const colLength = fields?.columns?.length || 0
   const workbook = new Exceljs.Workbook()
   const worksheet = workbook.addWorksheet(i18nt('chart.chart_data'))
@@ -1697,23 +1695,26 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
     }
     const cell = worksheet.getCell(index + 1, 1)
     cell.value = metaMap[column]?.name ?? column
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     cell.border = {
-      right: {style: 'thick', color: {argb: '00000000'}}
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   const quotaColLabel = chart.customAttr.basicStyle.quotaColLabel ?? t('dataset.value')
   const maxColHeight = layoutResult.colsHierarchy.maxLevel + 1
-  const rowName = fields?.rows?.map(row => metaMap[row]?.name ?? row).concat(quotaColLabel).join('/')
+  const rowName = fields?.rows
+    ?.map(row => metaMap[row]?.name ?? row)
+    .concat(quotaColLabel)
+    .join('/')
   const cell = worksheet.getCell(colLength, 1)
   cell.value = rowName
-  cell.alignment = {vertical: 'middle', horizontal: 'center'}
+  cell.alignment = { vertical: 'middle', horizontal: 'center' }
   cell.border = {
-    right: {style: 'thick', color: {argb: '00000000'}},
-    bottom: {style: 'thick', color: {argb: '00000000'}}
+    right: { style: 'thick', color: { argb: '00000000' } },
+    bottom: { style: 'thick', color: { argb: '00000000' } }
   }
   //行头
-  const {rowLeafNodes} = layoutResult
+  const { rowLeafNodes } = layoutResult
   rowLeafNodes.forEach((node, index) => {
     const cell = worksheet.getCell(maxColHeight + index + 1, 1)
     let value = node.label
@@ -1721,14 +1722,14 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
       value = metaMap[value].name
     }
     cell.value = repeat('  ', node.level) + value
-    cell.alignment = {vertical: 'middle', horizontal: 'left'}
+    cell.alignment = { vertical: 'middle', horizontal: 'left' }
     cell.border = {
-      right: {style: 'thick', color: {argb: '00000000'}}
+      right: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   // 列头
   const notLeafNodeWidthMap: Record<string, number> = {}
-  const {colLeafNodes} = layoutResult
+  const { colLeafNodes } = layoutResult
   colLeafNodes.forEach(node => {
     let curNode = node.parent
     while (curNode) {
@@ -1736,17 +1737,17 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
       notLeafNodeWidthMap[curNode.id] = width + 1
       curNode = curNode.parent
     }
-    const {colIndex} = node
+    const { colIndex } = node
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + 2
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     cell.value = node.label
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (writeRowIndex < maxColHeight) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, maxColHeight, writeColIndex)
     }
     cell.border = {
-      bottom: {style: 'thick', color: {argb: '00000000'}}
+      bottom: { style: 'thick', color: { argb: '00000000' } }
     }
   })
   const colNodes = layoutResult.colNodes
@@ -1767,26 +1768,21 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
     const writeColIndex = colIndex + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     cell.value = node.label
-    cell.alignment = {vertical: 'middle', horizontal: 'center'}
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
     if (width > 1) {
-      worksheet.mergeCells(
-        writeRowIndex,
-        writeColIndex,
-        writeRowIndex,
-        writeColIndex + width - 1
-      )
+      worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, writeColIndex + width - 1)
     }
   })
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
-      const {fieldValue} = dataCellMeta
+      const { fieldValue } = dataCellMeta
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 2)
         const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
-        cell.alignment = {vertical: 'middle', horizontal: 'center'}
+        cell.alignment = { vertical: 'middle', horizontal: 'center' }
         cell.value = value
       }
     }
@@ -1799,7 +1795,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
 }
 
 export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
-  const {fields} = instance.dataCfg
+  const { fields } = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
   const valueLength = fields?.values?.length || 0
   if (!(rowLength && valueLength)) {
@@ -1823,8 +1819,8 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
 }
 
 export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S2DataConfig) {
-  const {mergeCells} = parseJson(chart.customAttr).tableCell
-  const {showIndex} = parseJson(chart.customAttr).tableHeader
+  const { mergeCells } = parseJson(chart.customAttr).tableCell
+  const { showIndex } = parseJson(chart.customAttr).tableHeader
   if (mergeCells) {
     options.frozenColCount = 0
     options.frozenRowCount = 0
@@ -1932,7 +1928,7 @@ class CustomMergedCell extends MergedCell {
     const allPoints = getPolygonPoints(this.cells)
     // 处理条件样式，这里没有用透明度
     // 因为合并的单元格是单独的图层，透明度降低的话会显示底下未合并的单元格，需要单独处理被覆盖的单元格
-    const {backgroundColor: fill, backgroundColorOpacity: fillOpacity} = this.getBackgroundColor()
+    const { backgroundColor: fill } = this.getBackgroundColor()
     const cellTheme = this.theme.dataCell.cell
     this.backgroundShape = renderPolygon(this, {
       points: allPoints,
@@ -2006,11 +2002,11 @@ const drawTextShape = (cell, isHeader) => {
   // 用户配置的最大行数
   const maxLines = cell.meta.maxLines ?? 1
   const {
-    options: {placeholder}
+    options: { placeholder }
   } = cell.spreadsheet
   const emptyPlaceholder = getEmptyPlaceholder(this, placeholder)
   // 单元格文本
-  const {formattedValue} = cell.getFormattedFieldValue()
+  const { formattedValue } = cell.getFormattedFieldValue()
   // 获取文本样式
   const textStyle = cell.getTextStyle()
   // 宽度能放几个字符，就放几个，放不下就换行
@@ -2090,7 +2086,7 @@ export const calculateHeaderHeight = (info, newChart, tableHeader, basicStyle, l
   if (tableHeader.showTableHeader === false) return
   const ev = layoutResult || newChart.facet.layoutResult
   const maxLines = basicStyle.maxLines ?? 1
-  const textStyle = {...newChart.theme.cornerCell.text}
+  const textStyle = { ...newChart.theme.cornerCell.text }
   const sourceText = info.info.meta.value
   let maxHeight = getWrapTextHeight(
     getWrapText(sourceText, textStyle, info.info.resizedWidth, ev.spreadsheet),
@@ -2111,10 +2107,10 @@ export const calculateHeaderHeight = (info, newChart, tableHeader, basicStyle, l
           maxLines
         )
         return wrapTextHeight > maxHeightNode.height
-          ? {height: wrapTextHeight, colIndex: currentNode.colIndex}
+          ? { height: wrapTextHeight, colIndex: currentNode.colIndex }
           : maxHeightNode
       },
-      {height: 0}
+      { height: 0 }
     )
 
   // 使用最大高度
@@ -2257,8 +2253,8 @@ export class SummaryCell extends CustomDataCell {
   }
 
   getBackgroundColor() {
-    const {backgroundColor, backgroundColorOpacity} = this.theme.colCell.cell
-    return {backgroundColor, backgroundColorOpacity}
+    const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
+    return { backgroundColor, backgroundColorOpacity }
   }
 }
 
@@ -2334,12 +2330,12 @@ export const getColumns = (fields, cols: Array<ColumnNode>) => {
 
 export function drawImage() {
   const img = new Image()
-  const {x, y, width, height, fieldValue} = this.meta
+  const { x, y, width, height, fieldValue } = this.meta
   img.src = fieldValue as string
   img.setAttribute('crossOrigin', 'anonymous')
   img.onload = () => {
     !this.cfg.children && (this.cfg.children = [])
-    const {width: imgWidth, height: imgHeight} = img
+    const { width: imgWidth, height: imgHeight } = img
     const ratio = Math.max(imgWidth / width, imgHeight / height)
     // 不铺满，部分留白
     const imgShowWidth = (imgWidth / ratio) * 0.8

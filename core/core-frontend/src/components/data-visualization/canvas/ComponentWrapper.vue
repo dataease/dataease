@@ -1,30 +1,26 @@
 <script setup lang="ts">
 import { getStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
-import { ref, onMounted, toRefs, getCurrentInstance, computed, nextTick } from 'vue'
+import { ref, toRefs, computed, nextTick } from 'vue'
 import findComponent from '@/utils/components'
 import { downloadCanvas2, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import ComponentSelector from '@/components/visualization/ComponentSelector.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { useCache } from '@/hooks/web/useCache'
 import Board from '@/components/de-board/Board.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { isMobile } from '@/utils/utils'
 import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
-import { useAppStoreWithOut } from '@/store/modules/app'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 import Icon from '../../icon-custom/src/Icon.vue'
-const appStore = useAppStoreWithOut()
 import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
 const dvMainStore = dvMainStoreWithOut()
 const downLoading = ref(false)
-const { wsCache } = useCache('localStorage')
 const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const dePreviewPopDialogRef = ref(null)
 const commonFilterAttrsFilterBorder = [
@@ -145,7 +141,6 @@ const {
   suffixId,
   scrollMain
 } = toRefs(props)
-let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen', 'datasetParamsInit', 'onPointClick'])
 const wrapperId = 'wrapper-outer-id-' + config.value.id
@@ -185,11 +180,7 @@ const handleInnerMouseDown = e => {
   }
 }
 
-onMounted(() => {
-  currentInstance = getCurrentInstance()
-})
-
-const onClick = e => {
+const onClick = () => {
   // 将当前点击组件的事件传播出去
   eventBus.emit('componentClick')
   dvMainStore.setInEditorStatus(true)

@@ -68,7 +68,7 @@ const state = reactive({
     event_refreshView: t('visualization.refresh_view')
   }
 })
-const visibleChange = _isVisible => {
+const visibleChange = () => {
   document.querySelectorAll('.g2-tooltip')?.forEach(tooltip => {
     if (tooltip.id?.includes(chartId.value)) {
       tooltip.classList.toggle('hidden-tooltip', true)

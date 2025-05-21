@@ -1077,7 +1077,7 @@ const onMiscChange = val => {
 }
 
 const onLabelChange = (chartForm: ChartEditorForm<ChartLabelAttr>, prop: string) => {
-  const { data, requestData, render } = chartForm
+  const { data, render } = chartForm
   let labelObj = data
   if (!data) {
     labelObj = chartForm as unknown as ChartLabelAttr
@@ -1859,7 +1859,7 @@ const setActiveShift = (ele, type = 'dimension') => {
 
 const isDrag = ref(false)
 
-const dragStartD = (e: DragEvent) => {
+const dragStartD = () => {
   isDrag.value = true
   setTimeout(() => {
     isDraggingItem.value = true
@@ -1876,7 +1876,7 @@ const singleDragStartD = (e: DragEvent, ele, type) => {
   startToMove(e, unref(activeDimension.value))
 }
 
-const dragStart = (e: DragEvent) => {
+const dragStart = () => {
   isDrag.value = true
   setTimeout(() => {
     isDraggingItem.value = true

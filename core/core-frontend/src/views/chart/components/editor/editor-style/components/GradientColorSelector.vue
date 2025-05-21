@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { COLOR_PANEL, COLOR_CASES } from '@/views/chart/components/editor/util/chart'
+import { COLOR_CASES } from '@/views/chart/components/editor/util/chart'
 import { ElPopover } from 'element-plus-secondary'
 import { getMapColorCases } from '@/views/chart/components/js/util'
 
@@ -22,7 +22,6 @@ const props = withDefaults(
   }
 )
 const colorCases = JSON.parse(JSON.stringify(COLOR_CASES))
-const predefineColors = JSON.parse(JSON.stringify(COLOR_PANEL))
 
 const emits = defineEmits(['update:modelValue', 'selectColorCase'])
 const state = computed({

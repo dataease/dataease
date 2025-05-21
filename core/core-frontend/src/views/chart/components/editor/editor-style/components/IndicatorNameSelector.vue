@@ -6,7 +6,6 @@ import { PropType, computed, onMounted, reactive, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
-  CHART_FONT_FAMILY,
   CHART_FONT_LETTER_SPACE,
   DEFAULT_INDICATOR_NAME_STYLE,
   DEFAULT_BASIC_STYLE,
@@ -14,14 +13,9 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import Icon from '@/components/icon-custom/src/Icon.vue'
-import { hexColorToRGBA } from '@/views/chart/components/js/util'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 
 const { t } = useI18n()
-const dvMainStore = dvMainStoreWithOut()
-const { batchOptStatus } = storeToRefs(dvMainStore)
 const appearanceStore = useAppearanceStoreWithOut()
 
 const props = defineProps({

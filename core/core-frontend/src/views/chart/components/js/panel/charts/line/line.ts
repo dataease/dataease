@@ -150,7 +150,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       fields: [],
       ...tmpOptions.label,
       layout: labelAttr.fullDisplay ? [{ type: 'limit-in-plot' }] : tmpOptions.label.layout,
-      formatter: (data: Datum, _point) => {
+      formatter: (data: Datum) => {
         if (data.EXTREME) {
           return ''
         }

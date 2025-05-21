@@ -372,12 +372,6 @@ const winMsgWebParamsHandle = msgInfo => {
   dvMainStore.addWebParamsFilter(params)
 }
 
-const afterSave = () => {
-  state.resourceId = dvInfo.value.id
-  state.sourcePid = dvInfo.value.id
-  state.opt = null
-}
-
 const loadFinish = ref(false)
 const newWindowFromDiv = ref(false)
 let p = null

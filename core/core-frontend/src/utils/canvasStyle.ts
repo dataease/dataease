@@ -1,10 +1,8 @@
 import { cos, sin } from '@/utils/translate'
 import {
-  CHART_FONT_FAMILY_MAP,
   CHART_FONT_FAMILY_MAP_TRANS,
   DEFAULT_COLOR_CASE,
-  DEFAULT_COLOR_CASE_DARK,
-  DEFAULT_INDICATOR_STYLE
+  DEFAULT_COLOR_CASE_DARK
 } from '@/views/chart/components/editor/util/chart'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

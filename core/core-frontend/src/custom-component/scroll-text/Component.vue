@@ -42,7 +42,7 @@ const props = defineProps({
 
 const { element, showPosition } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
-const { editMode, curComponent, canvasStyleData } = storeToRefs(dvMainStore)
+const { editMode, curComponent } = storeToRefs(dvMainStore)
 
 const onComponentClick = () => {
   if (curComponent.value.id !== element.value.id) {

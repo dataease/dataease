@@ -210,23 +210,12 @@ const beforeSort = type => {
   }
 }
 
-const switchChartType = param => {
-  item.value.chartType = param.type
-  emit('onQuotaItemChange', item.value)
-}
-
 const summary = param => {
   item.value.summary = param.type
   emit('onQuotaItemChange', item.value)
 }
 
 const beforeSummary = type => {
-  return {
-    type: type
-  }
-}
-
-const beforeSwitchType = type => {
   return {
     type: type
   }

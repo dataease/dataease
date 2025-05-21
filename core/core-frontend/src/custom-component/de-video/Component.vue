@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { VideoPlayer } from '@videojs-player/vue'
 import 'video.js/dist/video-js.css'
-import { computed, nextTick, reactive, toRefs, watch, onMounted, ref } from 'vue'
+import { computed, nextTick, reactive, toRefs, watch, onMounted } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()

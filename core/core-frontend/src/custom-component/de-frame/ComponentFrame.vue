@@ -32,10 +32,6 @@
 import { nextTick, onMounted, reactive, toRefs } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
-const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 
@@ -63,7 +59,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, isEdit, active, screenShot } = toRefs(props)
+const { element, isEdit, screenShot } = toRefs(props)
 
 const state = reactive({
   pOption: {},

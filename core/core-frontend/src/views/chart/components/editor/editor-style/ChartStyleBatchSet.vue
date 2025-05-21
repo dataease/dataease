@@ -62,7 +62,7 @@ const state = reactive({
   quotaData: []
 })
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     themes?: EditorTheme
   }>(),

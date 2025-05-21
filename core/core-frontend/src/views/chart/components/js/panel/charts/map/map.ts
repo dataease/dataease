@@ -352,11 +352,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     return listDom
   }
 
-  private customConfigLegend(
-    chart: Chart,
-    options: ChoroplethOptions,
-    context: Record<string, any>
-  ): ChoroplethOptions {
+  private customConfigLegend(chart: Chart, options: ChoroplethOptions): ChoroplethOptions {
     const { basicStyle, misc } = parseJson(chart.customAttr)
     const colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
     if (basicStyle.suspension === false && basicStyle.showZoom === undefined) {
@@ -433,7 +429,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           color: rangeColor
         })
       })
-      customLegend['customContent'] = (_: string, _items: CategoryLegendListItem[]) => {
+      customLegend['customContent'] = () => {
         if (items?.length) {
           return this.createLegendCustomContent(items)
         }

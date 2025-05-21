@@ -120,7 +120,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     const label = {
       fields: [],
       ...tmpOptions.label,
-      formatter: (data: Datum, _point) => {
+      formatter: (data: Datum) => {
         if (data.EXTREME) {
           return ''
         }
@@ -528,7 +528,7 @@ export class GroupBar extends StackBar {
     baseOptions.label.style.fill = labelAttr.color
     const label = {
       ...baseOptions.label,
-      formatter: function (param: Datum, _point) {
+      formatter: function (param: Datum) {
         if (param.EXTREME) {
           return ''
         }

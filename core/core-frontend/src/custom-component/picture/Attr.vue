@@ -5,7 +5,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch, PropType, reactive, toRefs, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, PropType } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
@@ -13,7 +13,7 @@ import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 
-const props = defineProps({
+defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
@@ -31,7 +31,6 @@ const dialogVisible = ref(false)
 const uploadDisabled = ref(false)
 const files = ref(null)
 const maxImageSize = 15000000
-const state = reactive({})
 
 const handlePictureCardPreview = file => {
   dialogImageUrl.value = file.url
@@ -82,10 +81,6 @@ const init = () => {
     fileList.value = []
   }
 }
-
-const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
-})
 
 watch(
   () => curComponent.value.propValue.url,

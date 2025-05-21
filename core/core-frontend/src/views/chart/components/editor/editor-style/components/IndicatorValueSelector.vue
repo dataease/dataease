@@ -20,12 +20,7 @@ import {
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { ElIcon, ElInput } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
-import { hexColorToRGBA } from '@/views/chart/components/js/util'
-import { storeToRefs } from 'pinia'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
-const dvMainStore = dvMainStoreWithOut()
-const { batchOptStatus } = storeToRefs(dvMainStore)
 const appearanceStore = useAppearanceStoreWithOut()
 
 const { t } = useI18n()

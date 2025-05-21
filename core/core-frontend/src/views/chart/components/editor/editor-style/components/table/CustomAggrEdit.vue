@@ -4,13 +4,12 @@ import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlin
 import icon_adjustment_outlined from '@/assets/svg/icon_adjustment_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
-import { ref, reactive, onMounted, onBeforeUnmount, watch, unref, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from '@/views/visualized/data/dataset/form/CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
 import { fieldType } from '@/utils/attr'
 import { cloneDeep } from 'lodash-es'
-import { guid } from '@/views/visualized/data/dataset/form/util'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 
 export interface CalcFieldType {

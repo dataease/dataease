@@ -326,7 +326,7 @@ import edit from '@/assets/svg/icon_rename_outlined.svg'
 import icon_more_vertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'
 import filterParams from '@/assets/svg/filter-params.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
-import { ref, reactive, computed, nextTick } from 'vue'
+import { ref, reactive, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ElCol, ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
@@ -464,10 +464,6 @@ const validateArgs = (val, id) => {
   }
 }
 
-const viewSelectedField = computed(() =>
-  state.outerParamsInfo?.targetViewInfoList?.map(targetViewInfo => targetViewInfo.targetViewId)
-)
-
 const closeEdit = params => {
   if (!params.paramName || params.paramName.length < 2 || params.paramName.length > 25) {
     ElMessage({
@@ -489,18 +485,6 @@ const outerParamsOperation = (cmd, node, data) => {
   } else if (cmd === 'delete') {
     removeOuterParamsInfo(node, data)
   }
-}
-
-const fieldIdDisabledCheck = targetViewInfo => {
-  return (
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId] &&
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 &&
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty'
-  )
-}
-
-const getFieldArray = id => {
-  return state.viewIdFieldArrayMap[id]
 }
 
 const initParams = async () => {
@@ -728,28 +712,6 @@ const getPanelViewList = dvId => {
       }
     })
   })
-}
-
-const addOuterParamsField = () => {
-  state.outerParamsInfo.targetViewInfoList.push({
-    targetViewId: '',
-    targetFieldId: ''
-  })
-}
-const deleteOuterParamsField = index => {
-  state.outerParamsInfo.targetViewInfoList.splice(index, 1)
-}
-
-const viewInfoOnChange = targetViewInfo => {
-  if (
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId] &&
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 &&
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty'
-  ) {
-    targetViewInfo.targetFieldId = 'empty'
-  } else {
-    targetViewInfo.targetFieldId = null
-  }
 }
 
 const initSelected = data => {

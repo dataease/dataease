@@ -45,7 +45,7 @@ export const copyStore = defineStore('copy', {
     ) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
-      const { width, height, scale } = canvasStyleData.value
+      const { scale } = canvasStyleData.value
       Object.keys(outerMultiplexingComponents).forEach(function (componentId, index) {
         const newComponent = deepCopy(outerMultiplexingComponents[componentId])
         newComponent.canvasId = 'canvas-main'
@@ -54,7 +54,6 @@ export const copyStore = defineStore('copy', {
         } else {
           // dashboard 平铺2个
           const xPositionOffset = index % 2
-          const yPositionOffset = index % 2
           if (!(copyFrom === 'multiplexing' && !multiplexingStyleAdapt.value)) {
             newComponent.sizeX = pcMatrixCount.value.x / 2
             newComponent.sizeY = 14

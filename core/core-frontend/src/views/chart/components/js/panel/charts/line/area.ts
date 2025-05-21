@@ -148,7 +148,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       fields: [],
       ...tmpOptions.label,
       layout: labelAttr.fullDisplay ? [{ type: 'limit-in-plot' }] : tmpOptions.label.layout,
-      formatter: (data: Datum, _point) => {
+      formatter: (data: Datum) => {
         if (data.EXTREME) {
           return ''
         }

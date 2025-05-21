@@ -15,7 +15,7 @@ import dvRecoverOutlined from '@/assets/svg/dv-recover_outlined.svg'
 import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { ref, nextTick, computed, toRefs, onBeforeUnmount, onMounted } from 'vue'
+import { ref, nextTick, computed, onBeforeUnmount, onMounted } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -72,7 +72,7 @@ const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 const emits = defineEmits(['recoverToPublished'])
 
-const props = defineProps({
+defineProps({
   createType: {
     type: String,
     default: 'create'
@@ -284,7 +284,6 @@ const getFullScale = () => {
   return (curWidth * 100) / canvasStyleData.value.width
 }
 const appStore = useAppStoreWithOut()
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const multiplexingRef = ref(null)
 
 onMounted(() => {

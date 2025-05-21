@@ -1155,7 +1155,6 @@ const initGroupField = val => {
 const confirmGroupField = () => {
   ruleGroupFieldRef.value.validate(val => {
     let count = 0
-    let flag = false
     let time
     refsForm.value.forEach(ele => {
       ele?.validate(val => {
@@ -1166,7 +1165,6 @@ const confirmGroupField = () => {
     })
     time = setTimeout(() => {
       clearTimeout(time)
-      flag = true
       time = null
       if (val && count === currentGroupField.groupList.length) {
         const groupList = []

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import icon_excel from '@/assets/svg/icon_excel.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
-const props = withDefaults(
+withDefaults(
   defineProps<{
     name?: string
     size?: number

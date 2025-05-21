@@ -75,23 +75,6 @@ const getSecondEnd = timestamp => {
   return [+new Date(timestamp), +new Date(timestamp) + 999]
 }
 
-const getYearBegin = timestamp => {
-  const time = new Date(timestamp)
-  return +new Date(time.getFullYear(), 0, 1)
-}
-
-const getMonthBegin = timestamp => {
-  const time = new Date(timestamp)
-  const date = new Date(time.getFullYear(), time.getMonth(), 1)
-  date.setDate(1)
-  date.setMonth(date.getMonth() + 1)
-  return +new Date(time.getFullYear(), time.getMonth(), 1)
-}
-
-const getDayBegin = timestamp => {
-  return +new Date(timestamp)
-}
-
 const getUtcTime = timestamp => {
   if (timestamp) {
     const time = new Date(timestamp)

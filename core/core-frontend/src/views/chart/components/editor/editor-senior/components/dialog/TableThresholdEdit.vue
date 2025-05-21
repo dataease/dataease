@@ -373,7 +373,7 @@ const changeConditionItemType = item => {
     item.dynamicMaxField.summary = 'value'
   }
 }
-const getFieldOptions = fieldItem => {
+const getFieldOptions = () => {
   return fieldOptions
 }
 

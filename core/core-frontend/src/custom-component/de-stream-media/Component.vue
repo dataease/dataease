@@ -55,7 +55,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, editMode } = toRefs(props)
+const { element } = toRefs(props)
 let currentInstance
 
 const state = reactive({

@@ -118,7 +118,7 @@ const handleDragOver = e => {
   e.dataTransfer.dropEffect = 'copy'
 }
 
-const handleDragLeave = e => {
+const handleDragLeave = () => {
   areaActive.value = false
 }
 

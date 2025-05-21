@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { toRefs } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
@@ -21,13 +21,11 @@ const props = defineProps({
   }
 })
 
-const selection = ref()
-
 const selectionChange = () => {
   // do selection
 }
 
-const { title, themes, actionSelection } = toRefs(props)
+const { actionSelection } = toRefs(props)
 </script>
 
 <template>

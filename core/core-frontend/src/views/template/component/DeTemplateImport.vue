@@ -200,7 +200,7 @@ const editTemplate = () => {
     if (response.data.indexOf('exist') > -1) {
       ElMessage.warning(t('template_manage.exists_name_hint'))
     } else {
-      save(state.templateInfo).then(response => {
+      save(state.templateInfo).then(() => {
         ElMessage.success(t('template_manage.edit_success'))
         emits('refresh', getRefreshPInfo())
         emits('closeEditTemplateDialog')
@@ -252,7 +252,7 @@ const importTemplate = () => {
         if (response.data.indexOf('exist') > -1) {
           ElMessage.warning(t('template_manage.exists_name_hint'))
         } else {
-          save(state.templateInfo).then(rsp => {
+          save(state.templateInfo).then(() => {
             ElMessage.success(t('template_manage.import_success'))
             emits('refresh', getRefreshPInfo())
             emits('closeEditTemplateDialog')

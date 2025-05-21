@@ -161,12 +161,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
-import {
-  canvasChangeAdaptor,
-  findComponentIndexById,
-  findComponentIndexByIdWithFilterHidden,
-  isDashboard
-} from '@/utils/canvasUtils'
+import { canvasChangeAdaptor, findComponentIndexById, isDashboard } from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'

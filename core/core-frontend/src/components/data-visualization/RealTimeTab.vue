@@ -75,23 +75,11 @@ const closeEditComponentName = () => {
   curEditComponent = null
 }
 
-const dragOnEnd = ({ oldIndex, newIndex }) => {
+const dragOnEnd = ({ newIndex }) => {
   const source = componentData.value[newIndex]
   dvMainStore.setCurTabName(source.title)
   eventBus.emit('onTabSortChange-' + tabElement.value?.id)
   snapshotStore.recordSnapshotCache('dragOnEnd')
-}
-
-const menuAsideClose = (param, index) => {
-  const iconDom = document.getElementById('close-button')
-  if (iconDom) {
-    iconDom.click()
-  }
-  if (param?.opt === 'rename') {
-    setTimeout(() => {
-      editComponentName(getComponent(index))
-    }, 200)
-  }
 }
 
 const handleContextMenu = e => {

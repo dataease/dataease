@@ -97,7 +97,7 @@ class ChartCarouselTooltip {
     const container = chart.container
     let instance = CAROUSEL_MANAGER_INSTANCES.get(container)
 
-    CAROUSEL_MANAGER_INSTANCES.forEach((instance, _key) => {
+    CAROUSEL_MANAGER_INSTANCES.forEach(instance => {
       if (container.includes('viewDialog')) {
         instance.paused()
       }

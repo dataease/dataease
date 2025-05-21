@@ -58,7 +58,7 @@ const onBackgroundChange = val => {
   emits('onAttrChange', { custom: 'commonBackground' })
 }
 
-const onTitleBackgroundEnableChange = val => {
+const onTitleBackgroundEnableChange = () => {
   snapshotStore.recordSnapshotCacheToMobile('titleBackground')
 }
 

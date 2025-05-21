@@ -1,16 +1,14 @@
 <script lang="tsx" setup>
-import { computed, onMounted, PropType, reactive, watch } from 'vue'
+import { onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
   DEFAULT_BASIC_STYLE,
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
-const dvMainStore = dvMainStoreWithOut()
 const props = defineProps({
   chart: {
     type: Object,
@@ -33,9 +31,6 @@ const flowLineTypeOptions = [
 const state = reactive({
   lineForm: {} as DeepPartial<ChartMiscAttr['flowMapConfig']['lineConfig']>,
   basicStyleForm: {}
-})
-const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
 })
 const emit = defineEmits(['onChangeFlowMapLineForm', 'onBasicStyleChange'])
 

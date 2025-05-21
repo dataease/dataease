@@ -1,16 +1,7 @@
 <script lang="ts" setup>
 import dvAi from '@/assets/svg/dv-ai.svg'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 const visible = ref(true)
-const emits = defineEmits(['confirm'])
-
-const confirm = () => {
-  emits('confirm')
-}
-
-onMounted(() => {
-  // do
-})
 </script>
 <template>
   <el-popover

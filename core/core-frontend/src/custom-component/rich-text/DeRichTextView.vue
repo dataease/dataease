@@ -218,7 +218,7 @@ const init = ref({
       })
 
       // 监听 mouseup 事件以结束调整
-      doc.addEventListener('mouseup', event => {
+      doc.addEventListener('mouseup', () => {
         if (cloneHandle) {
           // 显示原始手柄并移除克隆手柄
           originalHandle.style.display = ''

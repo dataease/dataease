@@ -69,7 +69,7 @@ export class CirclePacking extends G2PlotChartView<CirclePackingOptions, G2Circl
     if (chart?.data?.data?.length) {
       // data
       const data = chart.data.data
-      const { xAxis, yAxis, drillFields } = chart
+      const { yAxis } = chart
       const ySort = yAxis[0]?.sort ?? 'none'
       const sort = {
         sort: (a, b) =>
@@ -177,7 +177,7 @@ export class CirclePacking extends G2PlotChartView<CirclePackingOptions, G2Circl
       textAlign: 'center',
       offsetY: 5,
       layout: labelAttr.fullDisplay ? [{ type: 'limit-in-plot' }] : tmpOptions.label.layout,
-      formatter: (d: Datum, _point) => {
+      formatter: (d: Datum) => {
         return d.children.length === 0 ? d.name : ''
       }
     }

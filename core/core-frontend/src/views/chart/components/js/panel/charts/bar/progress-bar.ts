@@ -166,6 +166,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
       }
     })
     if (basicStyle.gradient) {
+      // eslint-disable-next-line
       color1 = color1.map((ele, _index) => {
         return setGradientColor(ele, true, 0)
       })

@@ -118,7 +118,7 @@ const currentSearch = ref({
   queryConditionWidth: 227
 })
 
-const onFreezeChange = newVal => {
+const onFreezeChange = () => {
   if (element.value.freeze) {
     let historyFreezeCount = 0
     dvMainStore.componentData.forEach(item => {

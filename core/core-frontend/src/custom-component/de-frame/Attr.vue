@@ -22,7 +22,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, mobileInPc } = storeToRefs(dvMainStore)
 const { t } = useI18n()
-const props = withDefaults(
+withDefaults(
   defineProps<{
     themes?: EditorTheme
   }>(),

@@ -420,9 +420,6 @@ const appendReplaceExcel = response => {
 const status = ref(false)
 const initMultipleTable = ref(false)
 const currentMode = ref('preview')
-const refreshData = () => {
-  currentMode.value = 'preview'
-}
 
 const deExtractTypeChange = item => {
   item.deType = item.deExtractType

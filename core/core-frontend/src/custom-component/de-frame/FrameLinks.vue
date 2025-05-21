@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
-import { reactive, ref, toRefs, watch, computed } from 'vue'
+import { reactive, toRefs, watch, computed } from 'vue'
 import { dvMainStoreWithOut } from '../../store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia/dist/pinia'
 import { checkAddHttp, deepCopy } from '../../utils/utils'
@@ -35,10 +35,8 @@ import { snapshotStoreWithOut } from '../../store/modules/data-visualization/sna
 import { useI18n } from '../../hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, curActiveTabInner } = storeToRefs(dvMainStore)
+const { curComponent } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
-const emits = defineEmits(['close'])
-const popover = ref(null)
 const { t } = useI18n()
 
 const props = defineProps({

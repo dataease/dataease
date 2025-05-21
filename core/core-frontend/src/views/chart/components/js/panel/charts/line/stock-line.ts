@@ -440,7 +440,6 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
 
   protected configTooltip(chart: Chart, options: MixOptions): MixOptions {
     const tooltipAttr = parseJson(chart.customAttr).tooltip
-    const xAxis = chart.xAxis
     const newPlots = []
     const linePlotList = options.plots.filter(item => item.type === 'line')
     linePlotList.forEach(item => {

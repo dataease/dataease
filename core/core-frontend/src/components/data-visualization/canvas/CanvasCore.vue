@@ -57,7 +57,6 @@ const contextmenuStore = contextmenuStoreWithOut()
 const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState, mainScrollTop } =
   storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
-const emits = defineEmits(['scrollCanvasAdjust'])
 const props = defineProps({
   themes: {
     type: String,
@@ -263,7 +262,7 @@ watch(
 
 watch(
   () => areaData.value.components.length,
-  (val, oldVal) => {
+  () => {
     groupAreaClickChange()
   }
 )

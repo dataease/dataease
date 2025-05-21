@@ -33,7 +33,7 @@ import { PositionType } from '@antv/l7-core'
 import { centroid } from '@turf/centroid'
 import type { Plot } from '@antv/g2plot'
 import type { PickOptions } from '@antv/g2plot/lib/core/plot'
-import { defaults, find, groupBy, map, uniq } from 'lodash-es'
+import { defaults, find } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isMobile } from '@/utils/utils'
 import { GaodeMap, TMap, TencentMap } from '@antv/l7-maps'
@@ -44,7 +44,6 @@ import {
 } from '@/views/chart/components/js/panel/charts/map/common'
 import ChartCarouselTooltip, {
   isPie,
-  isLine,
   isColumn,
   isMix,
   isSupport
@@ -848,10 +847,9 @@ export function getAnalyseHorizontal(chart: Chart) {
   const assistLineArr = senior.assistLineCfg.assistLine
   if (assistLineArr?.length > 0) {
     const customStyle = parseJson(chart.customStyle)
-    let xAxisPosition, axisFormatterCfg
+    let axisFormatterCfg
     if (customStyle.xAxis) {
       const a = JSON.parse(JSON.stringify(customStyle.xAxis))
-      xAxisPosition = transAxisPosition(a.position)
       axisFormatterCfg = a.axisLabelFormatter
         ? a.axisLabelFormatter
         : DEFAULT_XAXIS_STYLE.axisLabelFormatter
@@ -1728,14 +1726,7 @@ function configCarouselTooltip(plot, chart) {
  * @param {boolean} enlargeElement - 放大弹窗
  * @returns {{x: number, y: number}} - 计算后的 x 和 y 坐标
  */
-function calculateTooltipPosition(
-  chart,
-  isCarousel,
-  tooltipCtl,
-  chartElement,
-  event,
-  enlargeElement
-) {
+function calculateTooltipPosition(chart, isCarousel, tooltipCtl, chartElement, event) {
   // 辅助函数: 根据不同图表类型计算 Tooltip 的y位置
   const getTooltipY = () => {
     const top = Number(chartElement.getBoundingClientRect().top)
@@ -1788,7 +1779,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
   })
   // 手动处理 tooltip 的显示和隐藏事件，需配合源码理解
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#showTooltip
-  plot.on('tooltip:show', _d => {
+  plot.on('tooltip:show', () => {
     const tooltipCtl = plot.chart.getController('tooltip')
     if (!tooltipCtl) {
       return
@@ -2143,7 +2134,7 @@ export const addConditionsStyleColorToData = (chart: Chart, options) => {
       })
     } else if (item.quotaList?.length) {
       const quotaList = item.quotaList.map(q => q.id) ?? []
-      quotaList.forEach((q, index) => {
+      quotaList.forEach(q => {
         // 定义后，在 handleConditionsStyle 函数中使用
         let currentValue = item[valueField]
         if (chart.type === 'progress-bar') {

@@ -667,11 +667,6 @@ const selectSourceTips = t('visualization.select_target_resource')
 
 const targetSource = t('visualization.target_dashboard_dataV')
 
-const curSource =
-  dvInfo.value.type === 'dashboard'
-    ? t('visualization.cur_dashboard')
-    : t('visualization.cur_screen')
-
 const state = reactive({
   curDataVWeight: 0,
   activeCollapse: 'view',

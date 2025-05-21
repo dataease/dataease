@@ -68,7 +68,6 @@ const handleClose = () => {
 }
 const { wsCache } = useCache()
 const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
-const xpack = wsCache.get('xpack-model-distributed')
 const desktop = wsCache.get('app.desktop')
 
 onUnmounted(() => {
@@ -221,14 +220,14 @@ const callbackExportSuc = () => {
 const downLoadAll = () => {
   if (multipleSelection.value.length === 0) {
     tableData.value.forEach(item => {
-      generateDownloadUri(item.id).then(res => {
+      generateDownloadUri(item.id).then(() => {
         window.open(PATH_URL + '/exportCenter/download/' + item.id)
       })
     })
     return
   }
   multipleSelection.value.map(ele => {
-    generateDownloadUri(ele.id).then(res => {
+    generateDownloadUri(ele.id).then(() => {
       window.open(PATH_URL + '/exportCenter/download/' + ele.id)
     })
   })
@@ -247,7 +246,7 @@ const timestampFormatDate = value => {
 import { PATH_URL } from '@/config/axios/service'
 import GridTable from '../../../../components/grid-table/src/GridTable.vue'
 const downloadClick = item => {
-  generateDownloadUri(item.id).then(res => {
+  generateDownloadUri(item.id).then(() => {
     window.open(PATH_URL + '/exportCenter/download/' + item.id, openType)
   })
 }

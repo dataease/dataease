@@ -60,7 +60,7 @@ const seniorStyleSetting = computed<any>(() => {
   return dvMainStore.canvasStyleData.component.seniorStyleSetting
 })
 
-const props = defineProps({
+defineProps({
   themes: {
     type: String,
     default: 'light'

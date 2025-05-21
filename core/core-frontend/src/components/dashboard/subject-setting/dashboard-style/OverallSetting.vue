@@ -314,7 +314,6 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { isDesktop } from '@/utils/ModelUtil'
 import eventBus from '@/utils/eventBus'
-import { resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
 const appearanceStore = useAppearanceStoreWithOut()
 const isDesktopFlag = isDesktop()
 const snapshotStore = snapshotStoreWithOut()

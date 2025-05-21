@@ -326,7 +326,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    const { customAttr, senior } = chart
+    const { senior } = chart
     if (
       senior.functionCfg.emptyDataStrategy == undefined ||
       senior.functionCfg.emptyDataStrategy === 'ignoreData'

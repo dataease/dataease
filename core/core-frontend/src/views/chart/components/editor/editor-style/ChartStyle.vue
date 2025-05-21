@@ -201,7 +201,7 @@ const onBackgroundChange = (val, prop) => {
   state.initReady && emit('onBackgroundChange', val, prop)
 }
 
-const onActiveChange = val => {
+const onActiveChange = () => {
   snapshotStore.recordSnapshotCache('onActiveChange')
   state.initReady &&
     emit('onStyleAttrChange', {

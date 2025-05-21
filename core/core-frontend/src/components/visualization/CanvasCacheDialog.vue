@@ -33,12 +33,8 @@
 import warnTree from '@/assets/svg/warn-tree.svg'
 import { ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
 const { t } = useI18n()
-import { useCache } from '@/hooks/web/useCache'
-const { wsCache } = useCache()
 const emits = defineEmits(['doUseCache'])
 
 const dialogInfo = {

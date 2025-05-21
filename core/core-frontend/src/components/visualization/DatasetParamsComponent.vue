@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 import { computed, reactive, ref } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus-secondary'
-const { t } = useI18n()
 const loading = ref(false)
 const subject = ref()
 const subjectDialogShow = ref(false)
@@ -67,8 +65,6 @@ defineExpose({
   statesCheck,
   resetForm
 })
-
-const emits = defineEmits(['finish'])
 </script>
 
 <template>

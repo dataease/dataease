@@ -80,6 +80,7 @@ function getCustomTime(
 
   if (!!arbitraryTime) {
     const time = dayjs(arbitraryTime).format('YYYY/MM/DD HH:mm:ss')
+    // eslint-disable-next-line
     const [_, q] = time.split(' ')
     const [s] = result.format('YYYY/MM/DD HH:mm:ss').split(' ')
 

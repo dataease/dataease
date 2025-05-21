@@ -16,7 +16,6 @@ import {
 } from 'vue'
 import { getData } from '@/api/chart'
 import chartViewManager from '@/views/chart/components/js/panel'
-import { useAppStoreWithOut } from '@/store/modules/app'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
@@ -227,7 +226,7 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   nextTick(() => debounceRender(resetPageInfo))
 }
 
-const debounceRender = debounce(resetPageInfo => {
+const debounceRender = debounce(() => {
   myChart?.facet?.timer?.stop()
   myChart?.facet?.cancelScrollFrame()
   myChart?.destroy()
@@ -405,7 +404,6 @@ const action = param => {
     viewTrack.value.trackButtonClick(view.value.id)
   }
 }
-const appStore = useAppStoreWithOut()
 
 const trackClick = trackAction => {
   const param = state.pointParam
@@ -679,12 +677,6 @@ const autoStyle = computed(() => {
     } as CSSProperties
   } else {
     return { zoom: scale.value }
-  }
-})
-
-const autoHeightStyle = computed(() => {
-  return {
-    height: 20 * scale.value + 8 + 'px'
   }
 })
 

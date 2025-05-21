@@ -22,7 +22,7 @@ import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { useEmbedded } from '@/store/modules/embedded'
 import { deepCopy } from '@/utils/utils'
-import { nextTick, reactive, ref, computed, toRefs, onBeforeUnmount, onMounted } from 'vue'
+import { nextTick, reactive, ref, computed, onBeforeUnmount, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -74,8 +74,7 @@ const {
   batchOptStatus,
   targetLinkageInfo,
   curBatchOptComponents,
-  appData,
-  hiddenListStatus
+  appData
 } = storeToRefs(dvMainStore)
 const dvModel = 'dashboard'
 const multiplexingRef = ref(null)
@@ -95,14 +94,12 @@ const isIframe = computed(() => appStore.getIsIframe)
 const desktop = wsCache.get('app.desktop')
 const emits = defineEmits(['recoverToPublished'])
 
-const props = defineProps({
+defineProps({
   createType: {
     type: String,
     default: 'create'
   }
 })
-
-const { createType } = toRefs(props)
 
 const editCanvasName = () => {
   nameEdit.value = true

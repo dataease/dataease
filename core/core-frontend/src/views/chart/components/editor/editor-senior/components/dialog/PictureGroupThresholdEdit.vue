@@ -4,7 +4,6 @@ import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.s
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { PropType, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import PictureItem from '@/custom-component/picture-group/PictureItem.vue'
@@ -201,7 +200,6 @@ const valueOptions = [
     ]
   }
 ]
-const predefineColors = COLOR_PANEL
 
 const state = reactive({
   thresholdArr: [] as TableThreshold[],

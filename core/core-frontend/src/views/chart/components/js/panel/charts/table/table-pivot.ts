@@ -444,6 +444,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           p[n.dataeaseName] = n
           return p
         }, {})
+        // eslint-disable-next-line
         s2Options.layoutCoordinate = (_, row, __) => {
           if (row?.isGrandTotals) {
             if (rowTotalCfgMap[row.value]?.label) {

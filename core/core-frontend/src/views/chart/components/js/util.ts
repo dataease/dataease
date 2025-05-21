@@ -1,4 +1,4 @@
-import { cloneDeep, isEmpty, isNumber } from 'lodash-es'
+import { isNumber } from 'lodash-es'
 import { DEFAULT_TITLE_STYLE } from '../editor/util/chart'
 import { equalsAny, includesAny } from '../editor/util/StringUtils'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -12,8 +12,6 @@ import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { deepCopy } from '@/utils/utils'
 
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
@@ -808,7 +806,7 @@ export function getColor(chart: Chart) {
   }
 }
 
-export function setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+export function setupSeriesColor(chart: ChartObj): ChartBasicStyle['seriesColor'] {
   const result: ChartBasicStyle['seriesColor'] = []
   const seriesSet = new Set<string>()
   const colors = chart.customAttr.basicStyle.colors

@@ -158,7 +158,6 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { useCache } from '@/hooks/web/useCache'
 import { isDesktop } from '@/utils/ModelUtil'
 import { filterFreeFolder } from '@/utils/utils'
-const desktop = isDesktop()
 
 const { wsCache } = useCache('localStorage')
 const { t } = useI18n()
@@ -186,7 +185,7 @@ const props = defineProps({
   }
 })
 
-const { componentData, canvasViewInfo, curCanvasType, themes } = toRefs(props)
+const { curCanvasType } = toRefs(props)
 const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
 
 const dvPreName = computed(() =>

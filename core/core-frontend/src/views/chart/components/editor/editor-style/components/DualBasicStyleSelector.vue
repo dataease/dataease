@@ -1,22 +1,14 @@
 <script setup lang="ts">
 import { onMounted, PropType, reactive, watch, ref } from 'vue'
-import {
-  COLOR_PANEL,
-  DEFAULT_BASIC_STYLE,
-  DEFAULT_MISC
-} from '@/views/chart/components/editor/util/chart'
+import { DEFAULT_BASIC_STYLE, DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
 import {
   CHART_MIX_DEFAULT_BASIC_STYLE,
   MixChartBasicStyle
 } from '@/views/chart/components/js/panel/charts/others/chart-mix-common'
 
-const dvMainStore = dvMainStoreWithOut()
-const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const props = defineProps({
   chart: {
@@ -33,7 +25,6 @@ const props = defineProps({
 })
 
 const showProperty = prop => props.propertyInner?.includes(prop)
-const predefineColors = COLOR_PANEL
 const state = reactive({
   basicStyleForm: JSON.parse(JSON.stringify(CHART_MIX_DEFAULT_BASIC_STYLE)) as MixChartBasicStyle,
   miscForm: JSON.parse(JSON.stringify(DEFAULT_MISC)) as ChartMiscAttr,

@@ -3265,7 +3265,6 @@ export default {
     space_left: 'Left',
     space_width: 'Width',
     space_height: 'Height',
-    to_top: 'Move to Top',
     down: 'Download',
     mobile_style_setting: 'Style Setting',
     mobile_style_setting_tips: 'Customize mobile background',

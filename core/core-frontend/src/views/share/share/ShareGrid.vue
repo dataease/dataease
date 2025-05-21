@@ -6,7 +6,6 @@ import icon_database_outlined from '@/assets/svg/icon_database_outlined.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
 import dvDashboardSpineMobileDisabled from '@/assets/svg/dv-dashboard-spine-mobile-disabled.svg'
-import dvDashboardSpineDisabled from '@/assets/svg/dv-dashboard-spine-disabled.svg'
 import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, watch, computed } from 'vue'
@@ -16,13 +15,11 @@ import dayjs from 'dayjs'
 import { propTypes } from '@/utils/propTypes'
 import ShareHandler from './ShareHandler.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
-import { useCache } from '@/hooks/web/useCache'
 
 const props = defineProps({
   activeName: propTypes.string.def('')
 })
 
-const { wsCache } = useCache('localStorage')
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
 

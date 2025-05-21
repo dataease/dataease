@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onBeforeUnmount, onMounted, toRefs } from 'vue'
+import { onBeforeUnmount, onMounted } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -20,7 +20,6 @@ const props = defineProps({
     default: 'preview'
   }
 })
-const { themes } = toRefs(props)
 
 const fullscreenChange = () => {
   const isFullscreen = !!document.fullscreenElement

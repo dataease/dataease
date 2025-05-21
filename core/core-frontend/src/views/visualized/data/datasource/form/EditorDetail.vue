@@ -9,7 +9,7 @@ import deDelete from '@/assets/svg/de-delete.svg'
 import icon_warning_filled from '@/assets/svg/icon_warning_filled.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
-import { ref, reactive, h, computed, toRefs, nextTick, watch } from 'vue'
+import { ref, reactive, computed, toRefs, nextTick, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -24,7 +24,7 @@ import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
-import { PluginComponent, XpackComponent } from '@/components/plugin'
+import { XpackComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
 const { t } = useI18n()
@@ -109,8 +109,6 @@ const defaultRule = {
 const rule = ref<FormRules>(cloneDeep(defaultRule))
 const api_table_title = ref('')
 const editApiItem = ref()
-const xpack = ref()
-const visible = ref(false)
 const defaultApiItem = {
   name: '',
   deTableName: '',
@@ -449,35 +447,6 @@ const addApiItem = item => {
   })
 }
 
-const addLarkItem = item => {
-  let apiItem = null
-  let editItem = false
-  api_table_title.value = t('datasource.data_table')
-  if (item) {
-    apiItem = cloneDeep(item)
-    editItem = true
-  } else {
-    apiItem = cloneDeep(defaultApiItem)
-    apiItem.type = activeName.value
-    let serialNumber1 =
-      form.value.apiConfiguration.length > 0
-        ? form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
-        : 0
-    let serialNumber2 =
-      form.value.paramsConfiguration && form.value.paramsConfiguration.length > 0
-        ? form.value.paramsConfiguration[form.value.paramsConfiguration.length - 1].serialNumber + 1
-        : 0
-    apiItem.serialNumber = serialNumber1 + serialNumber2
-  }
-  visible.value = true
-  nextTick(() => {
-    xpack?.value?.invokeMethod({
-      methodName: 'initApiItem',
-      args: [apiItem, form.value, activeName.value, editItem, isSupportSetKey.value]
-    })
-  })
-}
-
 const activeName = ref('table')
 const showPriority = ref(false)
 const showSSH = ref(false)
@@ -659,7 +628,6 @@ const apiRule = {
 }
 const dialogEditParams = ref(false)
 const dialogRenameApi = ref(false)
-const dialogAddLarkItem = ref(false)
 const activeParamsName = ref('')
 const activeParamsID = ref(0)
 const paramsObj = ref({
@@ -774,21 +742,6 @@ const handleApiParams = (cmd: string, data) => {
   if (cmd === 'edit') {
     addApiItem(data)
   }
-}
-
-const editParams = data => {
-  dialogEditParams.value = true
-}
-
-const getPluginStatic = () => {
-  const arr = pluginDs.value.filter(ele => {
-    return ele.type === form.value.type
-  })
-  return pluginIndex.value
-    ? pluginIndex.value
-    : arr && arr.length > 0
-    ? arr[0].staticMap?.index
-    : null
 }
 
 const delParams = data => {

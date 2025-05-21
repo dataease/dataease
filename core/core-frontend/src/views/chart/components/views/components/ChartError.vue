@@ -4,7 +4,7 @@ import { ref } from 'vue'
 
 const { t } = useI18n()
 
-const props = defineProps({
+defineProps({
   errMsg: {
     type: String,
     required: true,

@@ -258,7 +258,7 @@ watch(
     }
   }
 )
-const fakeValue = ''
+const fakeValue = ref('')
 const treeValue = ref()
 const getCustomWidth = () => {
   if (placeholder?.value?.placeholderShow) {

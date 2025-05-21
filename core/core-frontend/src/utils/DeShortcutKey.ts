@@ -14,7 +14,7 @@ const composeStore = composeStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
-const { curComponent, isInEditor, editMode } = storeToRefs(dvMainStore)
+const { curComponent, editMode } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 
 const ctrlKey = 17,

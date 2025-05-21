@@ -53,8 +53,6 @@ const reposition = () => {
 }
 
 // 记录瞬时wheel值 防止放大操作和滚动操作冲突
-let lastWheelNum = 0
-
 // 检查当前页面是否有弹框
 const checkDialog = () => {
   let haveDialog = false

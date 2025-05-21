@@ -193,7 +193,7 @@ export const snapshotStore = defineStore('snapshot', {
       this.recordSnapshot()
     },
 
-    recordSnapshot(type) {
+    recordSnapshot() {
       // 移动端设计时暂不保存镜像
       if (dataPrepareState.value && !mobileInPc.value && Date.now() > this.snapshotDisableTime) {
         this.styleChangeTimes = ++this.styleChangeTimes

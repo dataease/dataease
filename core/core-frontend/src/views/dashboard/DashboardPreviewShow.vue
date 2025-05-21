@@ -9,7 +9,6 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { initCanvasData, initCanvasDataPrepare, onInitReady } from '@/utils/canvasUtils'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
 import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
@@ -29,7 +28,6 @@ const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
 const dashboardPreview = ref(null)
 const slideShow = ref(true)
-const permissionStore = usePermissionStoreWithOut()
 const appStore = useAppStoreWithOut()
 const dataInitState = ref(true)
 const downloadStatus = ref(false)

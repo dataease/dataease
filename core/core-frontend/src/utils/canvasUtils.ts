@@ -1,4 +1,4 @@
-import { cloneDeep, forEach } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import componentList, {
   ACTION_SELECTION,
   BASE_CAROUSEL,

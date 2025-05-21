@@ -11,7 +11,7 @@ import {
   getScaleValue
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import { setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { merge } from 'lodash-es'
 
