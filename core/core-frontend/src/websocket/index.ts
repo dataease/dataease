@@ -4,6 +4,7 @@ import { useCache } from '@/hooks/web/useCache'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const { wsCache } = useCache()
 let stompClient: Stomp.Client
+let timeInterval
 import dev from '../../config/dev'
 const env = import.meta.env
 const basePath = env.VITE_API_BASEPATH
