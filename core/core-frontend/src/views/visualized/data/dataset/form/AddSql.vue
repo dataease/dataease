@@ -515,31 +515,33 @@ const parseVariable = () => {
       let sqlItem = variableMatch[index].substring(10, variableMatch[index].length - 1)
       const match = sqlItem.match(reg)
       if (match !== null) {
-        let name = match[0].substring(2, match[0].length - 1)
-        if (names.indexOf(name) < 0) {
-          names.push(name)
-          let obj = undefined
-          for (let i = 0; i < state.variables?.length; i++) {
-            if (state.variables[i].variableName === name) {
-              obj = state.variables[i]
-              if (!obj.hasOwnProperty('defaultValueScope')) {
-                obj.defaultValueScope = 'EDIT'
+        for (let matchIndex = 0; matchIndex < match.length; matchIndex++) {
+          let name = match[matchIndex].substring(2, match[matchIndex].length - 1)
+          if (names.indexOf(name) < 0) {
+            names.push(name)
+            let obj = undefined
+            for (let i = 0; i < state.variables?.length; i++) {
+              if (state.variables[i].variableName === name) {
+                obj = state.variables[i]
+                if (!obj.hasOwnProperty('defaultValueScope')) {
+                  obj.defaultValueScope = 'EDIT'
+                }
               }
             }
-          }
-          if (obj === undefined) {
-            obj = {
-              variableName: name,
-              alias: '',
-              type: [],
-              required: false,
-              defaultValue: '',
-              details: '',
-              defaultValueScope: 'EDIT'
+            if (obj === undefined) {
+              obj = {
+                variableName: name,
+                alias: '',
+                type: [],
+                required: false,
+                defaultValue: '',
+                details: '',
+                defaultValueScope: 'EDIT'
+              }
+              obj.type.push('TEXT')
             }
-            obj.type.push('TEXT')
+            state.variablesTmp.push(obj)
           }
-          state.variablesTmp.push(obj)
         }
       }
     }
