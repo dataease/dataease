@@ -62,8 +62,9 @@ public class DeSqlparserUtils {
             boolean replaceParam = false;
             Pattern p = Pattern.compile(sqlParamsRegex);
             Matcher m = p.matcher(sqlItemWithParam);
-            if (m.find()) { // 替换sql参数
+            while (m.find()) {
                 String sqlVariable = m.group();
+                boolean replaceParamItem = false;
                 SqlVariableDetails defaultsSqlVariableDetail = null;
                 for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
                     if (sqlVariable.substring(2, sqlVariable.length() - 1).equalsIgnoreCase(sqlVariableDetail.getVariableName())) {
@@ -81,44 +82,56 @@ public class DeSqlparserUtils {
                 }
                 if (filterParameter != null) {
                     sqlItem = sqlItem.replace(sqlVariable, transFilter(filterParameter, dsMap));
-                    replaceParam = true;
+                    replaceParamItem = true;
                 } else {
                     if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                         if (!isEdit && isFromDataSet && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
                             sqlItem = sqlItem.replace(sqlVariable, defaultsSqlVariableDetail.getDefaultValue());
-                            replaceParam = true;
+                            replaceParamItem = true;
                         }
                         if (isEdit) {
                             sqlItem = sqlItem.replace(sqlVariable, defaultsSqlVariableDetail.getDefaultValue());
-                            replaceParam = true;
+                            replaceParamItem = true;
                         }
                     }
                 }
+                if (!replaceParamItem) {
+                    replaceParam = false;
+                    break;
+                } else {
+                    replaceParam = true;
+                }
+            }
+            p = Pattern.compile(sysVariableRegex);
+            m = p.matcher(sqlItemWithParam);
+            while (m.find()) {
+                boolean replaceParamItem = false;
 
-            } else {   //替换系统变量
-                p = Pattern.compile(sysVariableRegex);
-                m = p.matcher(sqlItemWithParam);
-                if (m.find()) {
-                    String sysVariableId = m.group().substring(7, m.group().length() - 1);
-                    if (!isParams(sysVariableId)) {
-                        continue;
+                String sysVariableId = m.group().substring(7, m.group().length() - 1);
+                if (!isParams(sysVariableId)) {
+                    continue;
+                }
+                sqlItem = sqlItem.replace(m.group(), SysParamsSubstitutedParams + sysVariableId);
+                try {
+                    Expression expression = CCJSqlParserUtil.parseCondExpression(sqlItem);
+                    String value = null;
+                    if (expression instanceof InExpression) {
+                        value = handleSubstitutedSqlForIn(sysVariableId);
+                    } else {
+                        value = handleSubstitutedSql(sysVariableId);
                     }
-                    sqlItem = sqlItem.replace(m.group(), SysParamsSubstitutedParams + sysVariableId);
-                    try {
-                        Expression expression = CCJSqlParserUtil.parseCondExpression(sqlItem);
-                        String value = null;
-                        if (expression instanceof InExpression) {
-                            value = handleSubstitutedSqlForIn(sysVariableId);
-                        } else {
-                            value = handleSubstitutedSql(sysVariableId);
-                        }
-                        if (value != null) {
-                            sqlItem = sqlItem.replace(SysParamsSubstitutedParams + sysVariableId, value);
-                            replaceParam = true;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (value != null) {
+                        sqlItem = sqlItem.replace(SysParamsSubstitutedParams + sysVariableId, value);
+                        replaceParamItem = true;
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (!replaceParamItem) {
+                    replaceParam = false;
+                    break;
+                } else {
+                    replaceParam = true;
                 }
             }
             if (!replaceParam) {
