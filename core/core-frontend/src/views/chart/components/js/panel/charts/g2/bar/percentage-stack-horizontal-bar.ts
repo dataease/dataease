@@ -1,7 +1,14 @@
 import { BAR_AXIS_TYPE } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { flow, parseJson } from '@/views/chart/components/js/util'
-import { createTooltipWrapper, tooltipCss, ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  createTooltipWrapper,
+  tooltipCss,
+  ViewSpec
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import {
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { isEmpty } from 'lodash-es'
 import { HorizontalStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-horizontal-bar'
 
