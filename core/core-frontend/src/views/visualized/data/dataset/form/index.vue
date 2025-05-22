@@ -260,16 +260,23 @@ const getDsName = (id: string) => {
 
 const pushDataset = () => {
   wsCache.set(`dataset-info-id`, nodeInfo.id)
-  if (appStore.isDataEaseBi || appStore.getIsIframe) {
+  console.log(
+    'appStore.isDataEaseBi',
+    appStore.isDataEaseBi,
+    appStore.getIsIframe,
+    embeddedStore.getToken
+  )
+  if (appStore.isDataEaseBi) {
     embeddedStore.clearState()
     useEmitt().emitter.emit('changeCurrentComponent', 'Dataset')
     return
   }
-  if (!!history.state.back) {
+  const routeName = embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded' : 'dataset'
+  if (!!history.state.back || !appStore.getIsIframe) {
     history.back()
   } else {
     push({
-      name: 'dataset',
+      name: routeName,
       params: {
         id: nodeInfo.id
       }
