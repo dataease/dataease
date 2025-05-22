@@ -690,6 +690,7 @@ public class ChartViewService {
                 || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
                 || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
                 || StringUtils.equalsIgnoreCase(view.getType(), "bar-time-range")
+                || StringUtils.equalsIgnoreCase(view.getType(), "pie")
         ) {
             xAxis.addAll(xAxisExt);
         }

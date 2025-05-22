@@ -10,6 +10,7 @@ import {
 import { Pie, Rose } from '@antv/g2plot'
 import { antVCustomColor } from '@/views/chart/chart/util'
 import { configTopN } from '@/views/chart/chart/common/common_antv'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export function basePieOptionAntV(container, chart, action) {
   // theme
@@ -21,10 +22,43 @@ export function basePieOptionAntV(container, chart, action) {
   const legend = getLegend(chart)
   // data
   const data = chart.data.data
+  // groupData
+  let hasXaxisExt = false
+  try {
+    const xaxisExtData = JSON.parse(chart.xaxisExt)
+    hasXaxisExt = Array.isArray(xaxisExtData) && xaxisExtData.length > 0
+  } catch (e) {
+    console.error('Failed to parse xaxisExt:', e)
+  }
+
+  const sanitizeField = (str) => str?.replace('\n', ' ') ?? ''
+
+  const groupData = hasXaxisExt
+    ? data.reduce((acc, item) => {
+        const type = item.dimensionList?.[0]?.value ?? null
+        if (!type) return acc
+
+        item.name = sanitizeField(item.name)
+        item.field = sanitizeField(item.field)
+
+        const lastGroup = acc[acc.length - 1]
+        if (!lastGroup || lastGroup.field !== type) {
+          acc.push({
+            ...deepCopy(item),
+            field: type,
+            name: type,
+            dimensionList: [item.dimensionList[0]]
+          })
+        } else {
+          lastGroup.value += item.value
+        }
+        return acc
+      }, [])
+    : data
   // options
   const options = {
     theme: theme,
-    data: data,
+    data: groupData,
     angleField: 'value',
     colorField: 'field',
     appendPadding: getPadding(chart),
@@ -89,7 +123,33 @@ export function basePieOptionAntV(container, chart, action) {
   configTopN(data, chart)
   const plot = new Pie(container, options)
 
-  plot.on('interval:click', action)
+  // handle click
+  let showDetail = false
+  function handleItemClick(evt) {
+    const field = evt?.data?.data?.field
+    if (!field || !hasXaxisExt || showDetail) return
+
+    // 过滤出当前分类下的所有子项
+    const filteredData = data.filter(datum => {
+      const type = datum.dimensionList?.[0]?.value
+      return type === field
+    })
+
+    plot.chart.changeData(filteredData)
+    showDetail = true
+  }
+  // click 
+  plot.on('interval:click', (evt) => {
+    handleItemClick(evt)
+    action(evt)
+  })
+  // dbclick
+  plot.on('interval:dblclick', () => {
+    if (hasXaxisExt) {
+      plot.chart.changeData(groupData)
+      showDetail = false
+    }
+  })
   // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot

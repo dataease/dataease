@@ -692,7 +692,8 @@
                         || view.type === 'bar-group-stack'
                         || (view.render === 'antv' && view.type === 'line')
                         || view.type === 'flow-map'
-                        || view.type === 'bar-time-range'"
+                        || view.type === 'bar-time-range'
+                        || (view.render === 'antv' && view.type === 'pie')"
                       class="padding-lr"
                     >
                       <span class="data-area-label">
@@ -700,8 +701,9 @@
                           <span v-if="view.type === 'bar-time-range'">{{ $t('chart.chart_bar_time') }}</span>
                           <span v-else-if="view.type !== 'flow-map'">{{ $t('chart.chart_group') }}</span>
                           <span v-else-if="view.type === 'flow-map'">{{ $t('chart.end_point') }}</span>
+                          <span v-else-if="view.type === 'pie'">子维度</span>
                           <span
-                            v-show="view.type !== 'line'"
+                            v-show="view.type !== 'line' && view.type !== 'pie'"
                             style="color:#F54A45;"
                           >*</span>
                         </span>
@@ -3422,7 +3424,7 @@ export default {
           this.view.xaxisExt = [this.view.xaxisExt[0], this.view.xaxisExt[1]]
         }
       }
-      if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'scatter') && this.view.xaxisExt.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'scatter' || this.view.type === 'pie') && this.view.xaxisExt.length > 1) {
         this.view.xaxisExt = [this.view.xaxisExt[0]]
       }
       this.calcData(true)
