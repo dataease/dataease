@@ -28,6 +28,7 @@
     "axios": "^1.3.3",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.9",
+    "decimal.js": "^10.5.0",
     "echarts": "^5.5.1",
     "element-plus-secondary": "^1.0.0",
     "element-resize-detector": "^1.2.4",

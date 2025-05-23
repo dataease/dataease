@@ -5,7 +5,9 @@ import {
   isAlphaColor,
   isTransparent,
   parseJson,
-  resetRgbOpacity
+  resetRgbOpacity,
+  safeDecimalSum,
+  safeDecimalMean
 } from '../..//util'
 import {
   DEFAULT_BASIC_STYLE,
@@ -65,6 +67,8 @@ import Exceljs from 'exceljs'
 import { saveAs } from 'file-saver'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import Decimal from 'decimal.js'
+
 
 const { t: i18nt } = useI18n()
 
@@ -2180,6 +2184,7 @@ const getWrapTextHeight = (wrapText, textStyle, spreadsheet, maxLines) => {
   return Math.min(lines, maxLines) * maxHeight
 }
 
+// 导出获取汇总行的函数
 export function getSummaryRow(data, axis, sumCon = []) {
   const summaryObj = { SUMMARY: true }
   for (let i = 0; i < axis.length; i++) {
@@ -2187,10 +2192,10 @@ export function getSummaryRow(data, axis, sumCon = []) {
     let savedAxis = find(sumCon, s => s.field === a)
     if (savedAxis) {
       if (savedAxis.summary == undefined) {
-        savedAxis.summary = 'sum'
+        savedAxis.summary = 'sum' // 默认汇总方式为求和
       }
       if (savedAxis.show == undefined) {
-        savedAxis.show = true
+        savedAxis.show = true // 默认显示汇总结果
       }
     } else {
       savedAxis = {
@@ -2199,51 +2204,75 @@ export function getSummaryRow(data, axis, sumCon = []) {
         show: true
       }
     }
+    // 如果配置为不显示，则跳过该字段
     if (!savedAxis.show) {
       continue
     }
+    // 根据汇总方式处理数据
     switch (savedAxis.summary) {
       case 'sum':
-        summaryObj[a] = sumBy(data, d => parseFloat(d[a]) || 0)
+        // 计算字段的总和
+        summaryObj[a] = safeDecimalSum(data, a)
         break
       case 'avg':
-        summaryObj[a] = meanBy(data, d => parseFloat(d[a]) || 0)
+        // 计算字段的平均值
+        summaryObj[a] = safeDecimalMean(data, a)
         break
       case 'max':
+        // 计算字段的最大值
         summaryObj[a] = maxBy(
           filter(data, d => parseFloat(d[a]) !== undefined),
-          d => parseFloat(d[a])
+          d => parseFloat(d[a]) // 提取数值
         )[a]
         break
       case 'min':
+        // 计算字段的最小值
         summaryObj[a] = minBy(
           filter(data, d => parseFloat(d[a]) !== undefined),
-          d => parseFloat(d[a])
+          d => parseFloat(d[a]) // 提取数值
         )[a]
         break
-      case 'var_pop': //方差
+      case 'var_pop':
+        // 计算总体方差（需要至少2个数据点）
         if (data.length < 2) {
           continue
         } else {
-          const mean = meanBy(data, d => parseFloat(d[a]) || 0) // 计算均值
-          const squaredDeviations = map(data, d => ((parseFloat(d[a]) || 0) - mean) ** 2) // 计算偏差平方
-          summaryObj[a] = sum(squaredDeviations) / (size(data) - 1) // 样本方差（分母n-1）
+          const mean = safeDecimalMean(data, a) // 计算平均值
+          // 计算每个数据点与平均值的差的平方
+          const squaredDeviations = map(data, d => {
+            const value = new Decimal(d[a] ?? 0) // 获取字段值，如果不存在则使用0
+            const dev = value.minus(mean) // 计算差值
+            return dev.times(dev) // 计算平方
+          })
+          // 计算方差（平方差的平均值）
+          const variance = squaredDeviations.reduce((acc, val) => acc.plus(val), new Decimal(0))
+          summaryObj[a] = variance.dividedBy(data.length - 1).toNumber() // 计算总体方差
         }
         break
-      case 'stddev_pop': //标准差
+      case 'stddev_pop':
+        // 计算总体标准差（需要至少2个数据点）
         if (data.length < 2) {
           continue
         } else {
-          const mean = meanBy(data, d => parseFloat(d[a]) || 0) // 计算均值
-          const squaredDeviations = map(data, d => ((parseFloat(d[a]) || 0) - mean) ** 2) // 计算偏差平方
-          const sampleVariance = sum(squaredDeviations) / (size(data) - 1) // 样本方差（分母n-1）
-          summaryObj[a] = Math.sqrt(sampleVariance) // 样本标准差
+          const mean = safeDecimalMean(data, a) // 计算平均值
+          // 计算每个数据点与平均值的差的平方
+          const squaredDeviations = map(data, d => {
+            const value = new Decimal(d[a] ?? 0) // 获取字段值，如果不存在则使用0
+            const dev = value.minus(mean) // 计算差值
+            return dev.times(dev) // 计算平方
+          })
+          // 计算方差（平方差的平均值）
+          const variance = squaredDeviations.reduce((acc, val) => acc.plus(val), new Decimal(0))
+          summaryObj[a] = variance.dividedBy(data.length - 1).sqrt().toNumber() // 计算总体标准差
         }
         break
     }
   }
+
+  // 返回汇总结果对象
   return summaryObj
 }
+
 
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
