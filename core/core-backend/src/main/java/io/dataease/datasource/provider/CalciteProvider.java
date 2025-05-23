@@ -696,7 +696,7 @@ public class CalciteProvider extends Provider {
         int columnCount = metaData.getColumnCount();
         for (int j = 0; j < columnCount; j++) {
             String f = metaData.getColumnName(j + 1);
-            if (StringUtils.equalsIgnoreCase(f, "DE_ROWNUM")) {
+            if (StringUtils.containsIgnoreCase(f, "ROWNUM")) {
                 continue;
             }
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
