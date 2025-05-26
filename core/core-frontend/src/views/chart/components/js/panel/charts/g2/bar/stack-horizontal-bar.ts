@@ -75,10 +75,8 @@ export class HorizontalStackBar extends HorizontalBar {
     const { children } = options
     const { tooltip } = parseJson(chart.customAttr)
     if (!tooltip.show) {
-      return {
-        ...options,
-        children: [{ ...children[0], tooltip: false }, ...children.slice(1)]
-      }
+      children[0].tooltip = false
+      return options
     }
 
     const tooltipOptions: ViewSpec = {
@@ -134,8 +132,7 @@ export class HorizontalStackBar extends HorizontalBar {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configAnalyse,
-      this.configBarConditions
+      this.configAnalyse
     )(chart, options, {}, this)
   }
 

@@ -54,24 +54,27 @@ export class HorizontalBar extends Bar {
 
   protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {
     const { children } = options
-    const { basicStyle } = parseJson(chart.customAttr) || {}
-    const colors =
-      basicStyle?.colors?.map(ele =>
-        basicStyle.gradient
-          ? setGradientColor(hexColorToRGBA(ele, basicStyle.alpha), true)
-          : hexColorToRGBA(ele, basicStyle.alpha)
-      ) || []
-    const scale = { color: { range: colors }, y: { nice: true } }
-    const style =
-      basicStyle?.radiusColumnBar === 'topRoundAngle'
-        ? {
-            radiusTopLeft: basicStyle.columnBarRightAngleRadius,
-            radiusTopRight: basicStyle.columnBarRightAngleRadius
-          }
-        : basicStyle?.radiusColumnBar === 'roundAngle'
-        ? { radius: basicStyle.columnBarRightAngleRadius }
-        : { radius: 0 }
-    return { ...options, children: [{ ...children[0], scale, style }, ...children.slice(1)] }
+    const { basicStyle = {} } = parseJson(chart.customAttr) || {}
+    const colors = (basicStyle.colors || []).map(ele =>
+      basicStyle.gradient
+        ? setGradientColor(hexColorToRGBA(ele, basicStyle.alpha), true)
+        : hexColorToRGBA(ele, basicStyle.alpha)
+    )
+    const style = {
+      ...(basicStyle.radiusColumnBar === 'topRoundAngle' && {
+        radiusTopLeft: basicStyle.columnBarRightAngleRadius,
+        radiusTopRight: basicStyle.columnBarRightAngleRadius
+      }),
+      ...(basicStyle.radiusColumnBar === 'roundAngle' && {
+        radius: basicStyle.columnBarRightAngleRadius
+      }),
+      ...(basicStyle.radiusColumnBar !== 'topRoundAngle' &&
+        basicStyle.radiusColumnBar !== 'roundAngle' && { radius: 0 })
+    }
+    children[0].scale.color.range = colors
+    children[0].scale.y.nice = true
+    children[0].style = { ...children[0].style, ...style }
+    return options
   }
 
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
@@ -98,7 +101,7 @@ export class HorizontalBar extends Bar {
       children: [
         {
           ...children[0],
-          axis: { ...children[0].axis, y: xAxis }
+          axis: { ...children[0].axis, y: { ...children[0].axis.y, ...xAxis } }
         },
         ...children.slice(1)
       ]
@@ -111,6 +114,7 @@ export class HorizontalBar extends Bar {
         scale: {
           ...options.scale,
           y: {
+            ...options.scale.y,
             nice: true,
             clamp: true,
             domain: [xAxisAtt.axisValue.min, xAxisAtt.axisValue.max],
@@ -130,7 +134,7 @@ export class HorizontalBar extends Bar {
       children: [
         {
           ...children[0],
-          axis: { ...children[0].axis, x: yAxis }
+          axis: { ...children[0].axis, x: { ...children[0].x, ...yAxis } }
         },
         ...children.slice(1)
       ]
@@ -225,7 +229,11 @@ export class HorizontalBar extends Bar {
   constructor(name = 'bar-horizontal') {
     super(name)
     Object.assign(this.intervalOptions, {
-      coordinate: { transform: [{ type: 'transpose' }] }
+      coordinate: { transform: [{ type: 'transpose' }] },
+      scale: {
+        color: { range: [] },
+        y: { nice: true }
+      }
     })
   }
 }

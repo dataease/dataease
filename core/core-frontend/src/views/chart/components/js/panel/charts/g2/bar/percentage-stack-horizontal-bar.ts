@@ -56,25 +56,16 @@ export class PercentageStackBar extends HorizontalStackBar {
       },
       ...transform
     }
-    return {
-      ...options,
-      children: [
-        {
-          ...children[0],
-          labels: [label]
-        },
-        ...children.slice(1)
-      ]
-    }
+    children[0].labels = [label]
+    return options
   }
 
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
     const { tooltip } = parseJson(chart.customAttr)
+    const { children } = options
     if (!tooltip.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
+      children[0].tooltip = false
+      return options
     }
     const tooltipMap = function (a) {
       return a
@@ -149,8 +140,7 @@ export class PercentageStackBar extends HorizontalStackBar {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configAnalyse,
-      this.configBarConditions
+      this.configAnalyse
     )(chart, options, {}, this)
   }
 

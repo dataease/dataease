@@ -19,7 +19,7 @@ import {
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
-import _ from 'lodash'
+import { filter, find } from 'lodash-es'
 import {
   configTooltip,
   createTooltipWrapper,
@@ -80,9 +80,6 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     interaction: {
       elementHighlight: {
         background: true
-      },
-      tooltip: {
-        shared: true
       }
     },
     transform: [{ type: 'dodgeX' } as Transform],
@@ -190,10 +187,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const tooltipAttr = customAttr.tooltip
     const yAxis = chart.yAxis
     if (!tooltipAttr.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
+      options.children[0].tooltip = false
+      return options
     }
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
@@ -480,13 +475,13 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       const dynamicLineFields = assistLineArr
         .filter(ele => ele.field === '1')
         .map(item => item.fieldId)
-      const quotaFields = _.filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
-      const quotaExtFields = _.filter(chart.yAxisExt, ele => ele.summary !== '' && ele.id !== '-1')
+      const quotaFields = filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
+      const quotaExtFields = filter(chart.yAxisExt, ele => ele.summary !== '' && ele.id !== '-1')
       const dynamicLines = chart.data.dynamicAssistLines?.filter(item => {
         return (
           dynamicLineFields?.includes(item.fieldId) &&
-          (!!_.find(quotaFields, d => d.id === item.fieldId) ||
-            (!!_.find(quotaExtFields, d => d.id === item.fieldId) &&
+          (!!find(quotaFields, d => d.id === item.fieldId) ||
+            (!!find(quotaExtFields, d => d.id === item.fieldId) &&
               chart.type.includes('chart-mix')))
         )
       })
