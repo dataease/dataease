@@ -1180,8 +1180,10 @@ export function getLineLabelColorByCondition(conditions, value, fieldId) {
   if (fieldConditions.length) {
     fieldConditions.some(item => {
       if (
-        (item.term === 'lt' && value <= item.value) ||
-        (item.term === 'gt' && value >= item.value) ||
+        (item.term === 'lt' && value < item.value) ||
+        (item.term === 'le' && value <= item.value) ||
+        (item.term === 'gt' && value > item.value) ||
+        (item.term === 'ge' && value >= item.value) ||
         (item.term === 'between' && value >= item.min && value <= item.max)
       ) {
         color = item.color
@@ -1236,14 +1238,15 @@ export const hexToRgba = (hex, alpha = 1) => {
   return `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
-
 // 安全计算数值字段的总和，使用 Decimal 避免浮点数精度问题
 export function safeDecimalSum(data, field) {
   // 使用 reduce 累加所有行的指定字段值
-  return data.reduce((acc, row) => {
-    // 将字段值转换为 Decimal 类型并累加到累加器
-    return acc.plus(new Decimal(row[field] ?? 0))
-  }, new Decimal(0)).toNumber() // 最终结果转换为普通数字返回
+  return data
+    .reduce((acc, row) => {
+      // 将字段值转换为 Decimal 类型并累加到累加器
+      return acc.plus(new Decimal(row[field] ?? 0))
+    }, new Decimal(0))
+    .toNumber() // 最终结果转换为普通数字返回
 }
 
 // 安全计算数值字段的平均值，使用 Decimal 避免浮点数精度问题

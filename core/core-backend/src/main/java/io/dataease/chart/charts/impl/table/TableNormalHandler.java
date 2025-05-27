@@ -1,10 +1,12 @@
 package io.dataease.chart.charts.impl.table;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.DefaultChartHandler;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
+import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -14,6 +16,7 @@ import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
+import io.dataease.utils.JsonUtil;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -38,15 +41,15 @@ public class TableNormalHandler extends DefaultChartHandler {
     public <T extends CustomFilterResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, AxisFormatResult formatResult) {
         var chartExtRequest = view.getChartExtRequest();
         Map<String, Object> mapAttr = view.getCustomAttr();
-        Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("basicStyle");
-        var tablePageMode = (String) mapSize.get("tablePageMode");
+        Map<String, Object> basicStyle = (Map<String, Object>) mapAttr.get("basicStyle");
+        var tablePageMode = (String) basicStyle.get("tablePageMode");
         formatResult.getContext().put("tablePageMode", tablePageMode);
         if (StringUtils.equalsIgnoreCase(tablePageMode, "page")) {
             if (chartExtRequest.getGoPage() == null) {
                 chartExtRequest.setGoPage(1L);
             }
             if (chartExtRequest.getPageSize() == null) {
-                int pageSize = (int) mapSize.get("tablePageSize");
+                int pageSize = (int) basicStyle.get("tablePageSize");
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
                     chartExtRequest.setPageSize(Math.min(pageSize, view.getResultCount().longValue()));
                 } else {
@@ -61,6 +64,15 @@ public class TableNormalHandler extends DefaultChartHandler {
                 chartExtRequest.setGoPage(null);
                 chartExtRequest.setPageSize(null);
             }
+        }
+        var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+        String originFilterJson = (String) JsonUtil.toJSONString(filterList);
+        List<ChartExtFilterDTO> originFilter = JsonUtil.parseList(originFilterJson, new TypeReference<>() {
+        });
+        boolean yoyFiltered = checkYoyFilter(originFilter, yAxis);
+        if (yoyFiltered) {
+            formatResult.getContext().put("expandedFilter", originFilter);
+            formatResult.getContext().put("yoyFiltered", true);
         }
         return (T) new CustomFilterResult(filterList, formatResult.getContext());
     }
@@ -90,7 +102,7 @@ public class TableNormalHandler extends DefaultChartHandler {
         }
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-        String originSql = SQLProvider.createQuerySQL(sqlMeta, true, !StringUtils.equalsIgnoreCase(dsMap.entrySet().iterator().next().getValue().getType(), "es"), view);// 分页强制加排序
+        String originSql = SQLProvider.createQuerySQL(sqlMeta, true, !StringUtils.equalsIgnoreCase(dsMap.values().iterator().next().getType(), "es"), view);// 分页强制加排序
         String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * chartExtRequest.getPageSize() : "");
         var querySql = originSql + limit;
 
@@ -117,7 +129,43 @@ public class TableNormalHandler extends DefaultChartHandler {
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         //自定义排序
         data = ChartDataUtil.resultCustomSort(xAxis, yAxis, view.getSortPriority(), data);
-        quickCalc(xAxis, yAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), data);
+
+        var yoyFiltered = filterResult.getContext().get("yoyFiltered") != null;
+        if (yoyFiltered) {
+            // 这里没加分页，因为加了分页参数可能会把原始数据挤出去
+            var expandedFilter = (List<ChartExtFilterDTO>) filterResult.getContext().get("expandedFilter");
+            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, expandedFilter, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+            var expandedSql = SQLProvider.createQuerySQL(sqlMeta, true, !StringUtils.equalsIgnoreCase(dsMap.values().iterator().next().getType(), "es"), view);
+            expandedSql = provider.rebuildSQL(expandedSql, sqlMeta, crossDs, dsMap);
+            var expandedReq = new DatasourceRequest();
+            expandedReq.setIsCross(crossDs);
+            expandedReq.setDsList(dsMap);
+            expandedReq.setQuery(expandedSql);
+            logger.debug("expanded sql: " + expandedSql);
+            var expandedData = (List<String[]>) provider.fetchResultField(expandedReq).get("data");
+            logger.debug("expanded data: " + expandedData);
+            quickCalc(xAxis, yAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), expandedData);
+            var resultData = new ArrayList<String[]>();
+            for (String[] originDataLine : data) {
+                var originDim = new StringBuilder();
+                for (int i = 0; i < xAxis.size(); i++) {
+                    originDim.append(originDataLine[i]);
+                }
+                for (String[] expandedDataLine : expandedData) {
+                    var expandedDim = new StringBuilder();
+                    for (int i = 0; i < xAxis.size(); i++) {
+                        expandedDim.append(expandedDataLine[i]);
+                    }
+                    if (StringUtils.equals(originDim, expandedDim)) {
+                        resultData.add(expandedDataLine);
+                        break;
+                    }
+                }
+            }
+            data = resultData;
+        } else {
+            quickCalc(xAxis, yAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), data);
+        }
         //数据重组逻辑可重载
         var result = this.buildResult(view, formatResult, filterResult, data);
         T calcResult = (T) new ChartCalcDataResult();
