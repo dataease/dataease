@@ -123,7 +123,8 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     const xFieldExt = xAxisExt[0].dataeaseName
     const extColorField = extColor[0].dataeaseName
     // data
-    const data = cloneDeep(chart.data.tableRow)
+    const tmpData = cloneDeep(chart.data.tableRow)
+    const data = tmpData.filter(cell => cell[xField] && cell[xFieldExt] && cell[extColorField])
     data.forEach(i => {
       Object.keys(i).forEach(key => {
         if (key === '*') {
