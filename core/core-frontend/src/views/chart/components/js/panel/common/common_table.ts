@@ -1391,6 +1391,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
   const { layoutResult } = instance.facet
   const { meta, fields } = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
+  const colLength = fields?.columns?.length || 0
   const colNums = layoutResult.colLeafNodes.length + rowLength
   if (colNums > 16384) {
     ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
@@ -1405,24 +1406,28 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     return p
   }, {})
   // 角头
-  const colHead = fields.columns?.[0]
-  if (colHead) {
-    const cell = worksheet.getCell(1, 1)
-    cell.value = metaMap[colHead]?.name ?? colHead
-    cell.alignment = { vertical: 'middle', horizontal: 'center' }
-    cell.border = {
-      right: { style: 'thick', color: { argb: '00000000' } }
-    }
-    worksheet.mergeCells(1, 1, 1, rowLength + 1)
+  if (colLength > 1) {
+    fields.columns.forEach((column: string, index) => {
+      if (index >= colLength - 1) {
+        return
+      }
+      const cell = worksheet.getCell(index + 1, 1)
+      cell.value = metaMap[column]?.name ?? column
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+      cell.border = {
+        right: { style: 'thick', color: { argb: '00000000' } }
+      }
+      worksheet.mergeCells(index + 1, 1, index + 1, rowLength + 1)
+    })
   }
   fields?.rows?.forEach((row, index) => {
-    const cell = worksheet.getCell(2, index + 1)
+    const cell = worksheet.getCell(colLength === 0 ? 1 : colLength, index + 1)
     cell.value = metaMap[row]?.name ?? row
     cell.alignment = { vertical: 'middle', horizontal: 'center' }
     cell.border = { bottom: { style: 'thick', color: { argb: '00000000' } } }
   })
   const quotaColLabel = chart.customAttr.basicStyle.quotaColLabel ?? t('dataset.value')
-  const quotaColHeadCell = worksheet.getCell(2, rowLength + 1)
+  const quotaColHeadCell = worksheet.getCell(colLength === 0 ? 1 : colLength, rowLength + 1)
   quotaColHeadCell.value = quotaColLabel
   quotaColHeadCell.alignment = { vertical: 'middle', horizontal: 'center' }
   quotaColHeadCell.border = {
@@ -1441,7 +1446,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       curNode = curNode.parent
     }
     const { rowIndex } = node
-    const writeRowIndex = rowIndex + 3
+    const writeRowIndex = rowIndex + 2 + (colLength === 0 ? 1 : colLength - 1)
     const writeColIndex = node.level + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     let value = node.label
@@ -1468,7 +1473,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     }
     const rowIndex = getNodeStartRowIndex(node)
     const height = notLeafNodeHeightMap[node.id]
-    const writeRowIndex = rowIndex + 2
+    const writeRowIndex = rowIndex + 1 + (colLength === 0 ? 1 : colLength - 1)
     const mergeColCount = node.children[0].level - node.level
     const cell = worksheet.getCell(writeRowIndex, node.level + 1)
     cell.value = node.label
