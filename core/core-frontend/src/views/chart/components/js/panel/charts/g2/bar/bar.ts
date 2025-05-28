@@ -620,7 +620,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         quotaList.forEach(q => {
           let currentValue = item['value']
           if (chart.type === 'progress-bar') {
-            currentValue = item['originalValue']
+            currentValue = item['progress']
           }
           const cColor = this.getColorByConditions([].concat(q), currentValue, chart)
           if (cColor) {
