@@ -249,7 +249,7 @@ public class ChartDataServer implements ChartDataApi {
                 //设置单元格填充样式(使用纯色背景颜色填充)
                 cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-                if ("dataset".equals(request.getDownloadType()) || request.getViewInfo().getType().equalsIgnoreCase("table-info")) {
+                if ("dataset".equals(request.getDownloadType()) || request.getViewInfo().getType().equalsIgnoreCase("table-info") || request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
                     List<Object[]> details = new ArrayList<>();
                     Sheet detailsSheet;
                     Integer sheetIndex = 1;
