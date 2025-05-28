@@ -483,6 +483,9 @@ watch(
     --ed-radio-input-height: 16px;
     --ed-radio-input-width: 16px;
   }
+  .ed-select {
+    --ed-select-width: 100px;
+  }
   .title {
     font-size: 14px;
     font-weight: 500;
