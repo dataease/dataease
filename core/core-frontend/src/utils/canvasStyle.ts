@@ -511,7 +511,8 @@ export function adaptCurThemeCommonStyle(component) {
       'Group',
       'SvgTriangle',
       'SvgStar',
-      'DeDecoration'
+      'RectShape',
+      'CircleShape'
     ].includes(component.component)
   ) {
     component.commonBackground['backgroundColorSelect'] = false
