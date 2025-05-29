@@ -170,7 +170,7 @@ init()
           <div class="color-title">{{ t('chart.textColor') }}</div>
           <el-color-picker
             is-custom
-            size="large"
+            :trigger-width="60"
             v-model="item.color"
             show-alpha
             class="color-picker-style"
