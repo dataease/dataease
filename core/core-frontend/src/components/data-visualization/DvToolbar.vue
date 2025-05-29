@@ -367,7 +367,7 @@ const fullScreenPreview = () => {
             {{ dvInfo.name }}
           </span>
           <div class="opt-area">
-            <el-tooltip effect="ndark" :content="$t('visualization.undo')" placement="bottom">
+            <el-tooltip effect="light" :content="$t('visualization.undo')" placement="bottom">
               <el-icon
                 class="toolbar-hover-icon"
                 :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
@@ -378,7 +378,7 @@ const fullScreenPreview = () => {
                 </Icon>
               </el-icon>
             </el-tooltip>
-            <el-tooltip effect="ndark" :content="$t('commons.reduction')" placement="bottom">
+            <el-tooltip effect="light" :content="$t('commons.reduction')" placement="bottom">
               <el-icon
                 class="toolbar-hover-icon opt-icon-redo"
                 :class="{

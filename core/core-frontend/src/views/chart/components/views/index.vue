@@ -918,7 +918,7 @@ function onTitleChange() {
 }
 
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
+  return props.themes === 'dark' ? 'light' : 'dark'
 })
 
 const marginBottom = computed<string | 0>(() => {
