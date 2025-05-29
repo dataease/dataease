@@ -164,7 +164,7 @@ onMounted(() => {
             ></Icon>
           </el-icon>
         </span>
-        <el-tooltip :effect="themes === 'dark' ? 'ndark' : 'dark'" placement="top">
+        <el-tooltip :effect="themes === 'dark' ? 'light' : 'dark'" placement="top">
           <template #content>
             <table>
               <tbody>

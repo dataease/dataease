@@ -143,7 +143,7 @@ onUnmounted(() => {
         v-model="scale"
         :min="10"
         :max="200"
-        tooltip-theme="ndark"
+        tooltip-theme="light"
         @change="handleScaleChange()"
         size="small"
       />
@@ -151,7 +151,7 @@ onUnmounted(() => {
         <Icon name="dv-max"><dvMax class="svg-icon"></dvMax></Icon
       ></el-icon>
       <el-divider direction="vertical" class="custom-divider_scale" />
-      <el-tooltip effect="ndark" :content="t('visualization.locate_tips')" placement="top">
+      <el-tooltip effect="light" :content="t('visualization.locate_tips')" placement="top">
         <el-icon @click="reposition" class="hover-icon-custom" style="margin-right: 12px">
           <Icon name="dv-reposition"><dvReposition class="svg-icon"></dvReposition></Icon
         ></el-icon>

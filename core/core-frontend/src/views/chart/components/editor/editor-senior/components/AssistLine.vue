@@ -224,7 +224,7 @@ onMounted(() => {
       <template #header>
         <div class="assist-line-cfg-header">
           <span class="ed-dialog__title">{{ t('chart.assist_line') }}</span>
-          <el-tooltip class="item" effect="ndark" placement="top">
+          <el-tooltip class="item" effect="light" placement="top">
             <template #content>
               <span> {{ t('chart.assist_line_tip') }}</span>
             </template>
