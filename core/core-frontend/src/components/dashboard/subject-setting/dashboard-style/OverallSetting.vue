@@ -331,7 +331,7 @@ const fontFamily = CHART_FONT_FAMILY_ORIGIN.concat(
 )
 
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
+  return props.themes === 'dark' ? 'light' : 'dark'
 })
 
 const resourceType = computed(() =>
