@@ -2500,24 +2500,34 @@ export const assembleOptionsDataForRoundAngle = (
   isStack?: boolean
 ) => {
   // column数据分组
-  const groupedByField = data.reduce((acc, item) => {
+  const groupedByField = new Map<string, Record<string, any>[]>()
+
+  data.forEach(item => {
     let groupField = item.field
     if (isGroup || isStack) {
       groupField = `${item.field}-${isStack ? item.group : item.category}`
     }
-    if (!acc[groupField]) {
-      acc[groupField] = []
+    if (!groupedByField.has(groupField)) {
+      groupedByField.set(groupField, [])
     }
-    acc[groupField].push(item)
-    return acc
-  }, {})
+    groupedByField.get(groupField)?.push(item)
+  })
+
   // 遍历每个分组，添加 isFirst 和 isLast 属性
-  Object.values(groupedByField).forEach(group => {
+  groupedByField.forEach(group => {
     const firstItem = group[0]
     const lastItem = group[group.length - 1]
-    firstItem.isFirst = true
-    lastItem.isLast = true
+    if (firstItem) firstItem.isFirst = true
+    if (lastItem) lastItem.isLast = true
   })
-  // 将分组后的数据重新展开为一个数组
-  return Object.values(groupedByField).flat()
+
+  // 按原始数据顺序重新组装
+  return data.map(item => {
+    let groupField = item.field
+    if (isGroup || isStack) {
+      groupField = `${item.field}-${isStack ? item.group : item.category}`
+    }
+    const group = groupedByField.get(groupField)
+    return group && group.length > 0 ? group.shift() : item
+  })
 }

@@ -24,6 +24,7 @@ import {
   qqMapStyleOptions,
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
 const localeStore = useLocaleStoreWithOut()
@@ -149,12 +150,6 @@ const init = () => {
     }
   }
   initTableColumnWidth()
-  if (
-    props.chart.type.includes('-stack') &&
-    state.basicStyleForm.radiusColumnBar === 'topRoundAngle'
-  ) {
-    state.basicStyleForm.radiusColumnBar = 'roundAngle'
-  }
 }
 const debouncedInit = debounce(init, 500)
 watch(
@@ -362,6 +357,15 @@ onMounted(() => {
   getMapKey().then(res => {
     if (res) {
       mapType.value = res.mapType
+    }
+  })
+  useEmitt({
+    name: 'chart-type-change',
+    callback: () => {
+      if (['topRoundAngle', 'roundAngle'].includes(state.basicStyleForm.radiusColumnBar)) {
+        state.basicStyleForm.radiusColumnBar = 'roundAngle'
+        changeBasicStyle('radiusColumnBar')
+      }
     }
   })
 })
