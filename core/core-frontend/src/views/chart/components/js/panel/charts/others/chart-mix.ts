@@ -4,7 +4,6 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import type { DualAxes, DualAxesOptions } from '@antv/g2plot/esm/plots/dual-axes'
 import {
-  assembleOptionsDataForRoundAngle,
   configRoundAngle,
   configPlotTooltipEvent,
   getAnalyse,
@@ -124,7 +123,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     })
     // options
     const initOptions: DualAxesOptions = {
-      data: [assembleOptionsDataForRoundAngle(data1, isGroup), data2],
+      data: [data1, data2],
       xField: 'field',
       yField: ['value', 'valueExt'], //这里不能设置成一样的
       appendPadding: getPadding(chart),
@@ -135,8 +134,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
           color: [],
           isGroup: isGroup,
           isStack: isStack,
-          seriesField: seriesField,
-          rawFields: ['isFirst', 'isLast']
+          seriesField: seriesField
         },
         {
           geometry: data2Type,

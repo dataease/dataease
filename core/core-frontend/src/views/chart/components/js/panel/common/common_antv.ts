@@ -2449,31 +2449,13 @@ export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (da
         }
       }
     }
-    // 堆叠条形图、百分比条形图第一个和最后一个反转
-    const isStackHorizontalBar = [
-      'bar-stack-horizontal',
-      'percentage-bar-stack-horizontal'
-    ].includes(chart.type)
     // 配置柱条样式
     const style = datum => {
-      if (isTopRound && datum.isFirst && datum.isLast) {
+      if (isTopRound) {
         return { radius, ...(callBack ? callBack(datum) : {}) }
       }
-      if (!isTopRound && datum.isFirst && datum.isLast) {
+      if (!isTopRound) {
         return { radius: finalRadius, ...(callBack ? callBack(datum) : {}) }
-      }
-      if (isStackHorizontalBar) {
-        if (datum.isLast || (!isTopRound && datum.isFirst)) {
-          return {
-            radius: datum.isFirst ? topRadius : radius,
-            ...(callBack ? callBack(datum) : {})
-          }
-        }
-      } else if (datum.isFirst || (!isTopRound && datum.isLast)) {
-        return {
-          radius: datum.isLast ? topRadius : radius,
-          ...(callBack ? callBack(datum) : {})
-        }
       }
     }
     return {
@@ -2485,49 +2467,4 @@ export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (da
       return { ...(callBack ? callBack(datum) : {}) }
     }
   }
-}
-
-/**
- * 为圆角组装options.data，
- * 添加 isFirst 和 isLast 属性
- * @param data
- * @param isGroup
- * @param isStack
- */
-export const assembleOptionsDataForRoundAngle = (
-  data: Record<string, any>[],
-  isGroup: boolean,
-  isStack?: boolean
-) => {
-  // column数据分组
-  const groupedByField = new Map<string, Record<string, any>[]>()
-
-  data.forEach(item => {
-    let groupField = item.field
-    if (isGroup || isStack) {
-      groupField = `${item.field}-${isStack ? item.group : item.category}`
-    }
-    if (!groupedByField.has(groupField)) {
-      groupedByField.set(groupField, [])
-    }
-    groupedByField.get(groupField)?.push(item)
-  })
-
-  // 遍历每个分组，添加 isFirst 和 isLast 属性
-  groupedByField.forEach(group => {
-    const firstItem = group[0]
-    const lastItem = group[group.length - 1]
-    if (firstItem) firstItem.isFirst = true
-    if (lastItem) lastItem.isLast = true
-  })
-
-  // 按原始数据顺序重新组装
-  return data.map(item => {
-    let groupField = item.field
-    if (isGroup || isStack) {
-      groupField = `${item.field}-${isStack ? item.group : item.category}`
-    }
-    const group = groupedByField.get(groupField)
-    return group && group.length > 0 ? group.shift() : item
-  })
 }

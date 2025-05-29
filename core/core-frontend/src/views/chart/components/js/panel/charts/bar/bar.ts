@@ -19,7 +19,6 @@ import {
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
 import {
-  assembleOptionsDataForRoundAngle,
   configPlotTooltipEvent,
   configRoundAngle,
   getLabel,
@@ -59,8 +58,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     yField: 'value',
     seriesField: 'category',
     isGroup: true,
-    data: [],
-    rawFields: ['isFirst', 'isLast']
+    data: []
   }
 
   axis: AxisType[] = [...BAR_AXIS_TYPE]
@@ -90,7 +88,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     const initOptions: ColumnOptions = {
       ...this.baseOptions,
       appendPadding: getPadding(chart),
-      data: assembleOptionsDataForRoundAngle(data, isGroup, isStack)
+      data
     }
     const options: ColumnOptions = this.setupOptions(chart, initOptions)
     let newChart = null

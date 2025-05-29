@@ -4,7 +4,6 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import type { Bar, BarOptions } from '@antv/g2plot/esm/plots/bar'
 import {
-  assembleOptionsDataForRoundAngle,
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
   configRoundAngle,
@@ -78,8 +77,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     xField: 'value',
     yField: 'field',
     seriesField: 'category',
-    isGroup: true,
-    rawFields: ['isFirst', 'isLast']
+    isGroup: true
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<Bar>): Promise<Bar> {
@@ -94,7 +92,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     const initOptions: BarOptions = {
       ...this.baseOptions,
       appendPadding: getPadding(chart),
-      data: assembleOptionsDataForRoundAngle(data, false)
+      data
     }
 
     const options = this.setupOptions(chart, initOptions)
