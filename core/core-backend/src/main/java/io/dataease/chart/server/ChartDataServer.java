@@ -308,7 +308,7 @@ public class ChartDataServer implements ChartDataApi {
                 DEException.throwException(e);
             }
         } else {
-            exportCenterManage.addTask(request.getViewId(), "chart", request);
+            exportCenterManage.addTask(request.getViewId(), "chart", request, request.getBusiFlag());
         }
     }
 
