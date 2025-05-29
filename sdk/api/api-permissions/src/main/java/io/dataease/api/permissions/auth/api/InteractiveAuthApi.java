@@ -76,8 +76,8 @@ public interface InteractiveAuthApi {
     @PostMapping("/queryAuth/{id}")
     PermissionValVO queryAuth(@PathVariable("id") Long id);
 
-    @GetMapping("/query2Root/{id}/{flag}")
-    List<ResourceNodeVO> query2Root(@PathVariable("id") Long id, @PathVariable("flag") Integer flag);
+    @GetMapping("/query2Root/{id}/{flag}/{logOT}")
+    List<ResourceNodeVO> query2Root(@PathVariable("id") Long id, @PathVariable("flag") Integer flag, Integer logOT);
 
     @GetMapping("/checkEmpty")
     boolean checkEmpty();

@@ -169,7 +169,7 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DRIVER_FILE)
+    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
     public void startDataFillingTask(CoreExportTask exportTask, HashMap<String, Object> request) {
         if (ObjectUtils.isEmpty(getDataFillingApi())) {
             return;
@@ -412,7 +412,17 @@ public class ExportCenterDownLoadManage {
         Running_Task.put(exportTask.getId(), future);
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.VIEW)
+    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.PANEL)
+    public void startPanelViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
+        startViewTask(exportTask, request);
+    }
+
+    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.SCREEN)
+    public void startDataVViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
+        startViewTask(exportTask, request);
+    }
+
+
     public void startViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);

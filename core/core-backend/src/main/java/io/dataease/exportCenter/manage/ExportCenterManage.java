@@ -246,7 +246,7 @@ public class ExportCenterManage implements BaseExportApi {
         return hostname;
     }
 
-    public void addTask(String exportFrom, String exportFromType, ChartExcelRequest request) {
+    public void addTask(String exportFrom, String exportFromType, ChartExcelRequest request, String busiFlag) {
         CoreExportTask exportTask = new CoreExportTask();
         exportTask.setId(IDUtils.snowID().toString());
         exportTask.setUserId(AuthUtils.getUser().getUserId());
@@ -259,7 +259,12 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
-        exportCenterDownLoadManage.startViewTask(exportTask, request);
+        if(busiFlag.equalsIgnoreCase("dashboard")){
+            exportCenterDownLoadManage.startPanelViewTask(exportTask, request);
+        }else {
+            exportCenterDownLoadManage.startDataVViewTask(exportTask, request);
+        }
+
     }
 
     public void addTask(Long exportFrom, String exportFromType, DataSetExportRequest request) throws Exception {
@@ -338,6 +343,7 @@ public class ExportCenterManage implements BaseExportApi {
             downLoadInfos.add(downLoadInfo);
         }
     }
+
     private List<DownLoadInfo> downLoadInfos = new ArrayList<>();
 
     @Scheduled(fixedRate = 10 * 1000)
