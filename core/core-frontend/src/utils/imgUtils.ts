@@ -174,7 +174,8 @@ function findStaticSourceInner(componentDataInfo, staticResource) {
     ) {
       staticResource.push(item.propValue['url'])
     } else if (
-      item.component === 'picture-group' &&
+      item.component === 'UserView' &&
+      item.innerType === 'picture-group' &&
       item.propValue['urlList'] &&
       item.propValue['urlList'].length > 0
     ) {
