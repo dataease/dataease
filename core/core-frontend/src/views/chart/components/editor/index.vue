@@ -178,7 +178,11 @@ const toolTip = computed(() => {
 })
 
 const templateStatusShow = computed(() => {
-  return view.value['dataFrom'] === 'template' && !mobileInPc.value
+  return (
+    view.value['dataFrom'] === 'template' &&
+    view.value.type !== 'picture-group' &&
+    !mobileInPc.value
+  )
 })
 
 const { view } = toRefs(props)
