@@ -675,7 +675,7 @@ defineExpose({
     :before-close="closeEditItem"
     direction="rtl"
   >
-    <div class="flex-center" style="width: 100%">
+    <div style="display: flex; width: 100%; justify-content: center">
       <el-steps custom style="max-width: 400px; flex: 1" :active="active" align-center>
         <el-step>
           <template #title>
@@ -1020,11 +1020,6 @@ defineExpose({
   }
   .ed-drawer__body {
     padding: 24px 24px 80px 24px !important;
-  }
-  .flex-center {
-    .ed-steps {
-      width: 630px;
-    }
   }
 
   .ed-form {
