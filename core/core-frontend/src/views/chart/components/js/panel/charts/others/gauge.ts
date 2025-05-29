@@ -109,7 +109,9 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
         }
       })
     })
-    const hasNoneData = chart.data?.series.some(s => !s.data?.[0])
+    const hasNoneData = chart.data?.series.some(
+      s => s.data?.[0] === undefined || s.data?.[0] === null
+    )
     this.configEmptyDataStyle(hasNoneData ? [] : [1], container, newChart)
     if (hasNoneData) {
       return
