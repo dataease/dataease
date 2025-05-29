@@ -579,5 +579,9 @@ watch(
   .ed-select-dropdown__item.selected {
     background-color: rgba(0, 0, 0, 0) !important;
   }
+
+  .is-selected::after {
+    display: none;
+  }
 }
 </style>
