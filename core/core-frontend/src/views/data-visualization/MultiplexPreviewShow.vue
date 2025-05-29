@@ -129,7 +129,7 @@ const init = () => {
   componentData.value?.forEach(item => {
     curMultiplexTargetComponentsInfo.value.push({
       id: item.id,
-      label: item.label,
+      label: item.name,
       icon: item.icon,
       multiplexActive: false,
       component: item.component
