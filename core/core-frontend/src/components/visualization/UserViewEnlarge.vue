@@ -376,7 +376,7 @@ const downloadViewDetails = (downloadType = 'view') => {
     busiFlag: dvInfo.value.type
   }
   exportLoading.value = true
-  exportExcelDownload(chart, () => {
+  exportExcelDownload(chart, dvInfo.value.name, () => {
     openMessageLoading(exportData)
   })
   exportLoading.value = false
