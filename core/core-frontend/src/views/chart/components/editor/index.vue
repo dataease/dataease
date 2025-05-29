@@ -184,7 +184,7 @@ const editComponentName = () => {
   })
 }
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
+  return props.themes === 'dark' ? 'light' : 'dark'
 })
 
 const templateStatusShow = computed(() => {

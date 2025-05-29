@@ -45,7 +45,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
 const predefineColors = COLOR_PANEL
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
+  return props.themes === 'dark' ? 'light' : 'dark'
 })
 const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})

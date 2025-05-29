@@ -50,7 +50,7 @@ const state = reactive({
   }
 })
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
+  return props.themes === 'dark' ? 'light' : 'dark'
 })
 const emit = defineEmits(['onChangeQuadrantForm'])
 

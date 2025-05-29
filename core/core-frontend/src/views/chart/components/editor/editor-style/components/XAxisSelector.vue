@@ -35,7 +35,7 @@ const state = reactive({
   axisForm: JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE))
 })
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
+  return props.themes === 'dark' ? 'light' : 'dark'
 })
 const emit = defineEmits(['onChangeXAxisForm'])
 

@@ -48,7 +48,7 @@ const props = defineProps({
 })
 const dvMainStore = dvMainStoreWithOut()
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'ndark' : 'dark'
+  return props.themes === 'dark' ? 'light' : 'dark'
 })
 const { batchOptStatus } = storeToRefs(dvMainStore)
 watch(
