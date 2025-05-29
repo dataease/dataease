@@ -236,7 +236,12 @@
                                 state.linkJumpInfo?.jumpType === 'newPop'
                             }"
                           >
-                            <el-scrollbar height="fit-content" max-height="178px">
+                            <el-scrollbar
+                              height="fit-content"
+                              :max-height="
+                                state.linkJumpInfo?.jumpType === 'newPop' ? '138px' : '178px'
+                              "
+                            >
                               <div
                                 style="display: flex; margin-bottom: 6px"
                                 v-for="(
