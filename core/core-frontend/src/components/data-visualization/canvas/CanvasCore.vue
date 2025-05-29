@@ -935,7 +935,7 @@ function removeItem(index) {
     dvMainStore.removeLinkageInfo(item['id'])
     if (isMainCanvas(canvasId.value)) {
       // 主画布中存在隐藏组件 直接从原始componentData中进行删除
-      dvMainStore.deleteComponentById(item.id)
+      dvMainStore.deleteComponentById(item.id, undefined, false)
     } else {
       componentData.value.splice(index, 1)
     }
