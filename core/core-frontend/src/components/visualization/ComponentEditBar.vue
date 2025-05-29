@@ -479,7 +479,7 @@ const exportAsExcel = () => {
   const chartExtRequest = dvMainStore.getLastViewRequestInfo(element.value.id)
   const viewInfo = dvMainStore.getViewDetails(element.value.id)
   const chart = { ...viewInfo, chartExtRequest, data: viewDataInfo, busiFlag: dvInfo.value.type }
-  exportExcelDownload(chart, () => {
+  exportExcelDownload(chart, dvInfo.value.name, () => {
     openMessageLoading(callbackExport)
   })
 }

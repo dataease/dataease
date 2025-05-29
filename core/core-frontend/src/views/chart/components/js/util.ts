@@ -547,8 +547,20 @@ const getExcelDownloadRequest = (data, type?) => {
   }
 }
 
-export const exportExcelDownload = (chart, callBack?) => {
-  const excelName = chart.title
+function getChartExcelTitle(preFix, viewTitle) {
+  const now = new Date()
+  const pad = n => n.toString().padStart(2, '0')
+  const year = now.getFullYear()
+  const month = pad(now.getMonth() + 1) // 月份从 0 开始
+  const day = pad(now.getDate())
+  const hour = pad(now.getHours())
+  const minute = pad(now.getMinutes())
+  const second = pad(now.getSeconds())
+  return `${preFix}_${viewTitle}_${year}${month}${day}_${hour}${minute}${second}`
+}
+
+export const exportExcelDownload = (chart, preFix, callBack?) => {
+  const excelName = getChartExcelTitle(preFix, chart.title)
   let request: any = {
     proxy: null,
     dvId: chart.sceneId,
