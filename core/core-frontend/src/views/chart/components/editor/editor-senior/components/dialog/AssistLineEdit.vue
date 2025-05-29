@@ -299,10 +299,10 @@ onMounted(() => {
             />
           </el-select>
         </el-col>
-        <el-col :span="2" style="text-align: center">
+        <el-col :span="2">
           <el-color-picker
             is-custom
-            size="large"
+            :trigger-width="60"
             v-model="item.color"
             class="color-picker-style"
             :predefine="state.predefineColors"
