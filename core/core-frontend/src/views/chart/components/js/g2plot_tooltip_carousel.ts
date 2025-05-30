@@ -460,9 +460,9 @@ class ChartCarouselTooltip {
         const rect = chartElement.getBoundingClientRect()
         // 判断鼠标位置是否在div内
         const isInside =
-          mouseX >= rect.left - 10 &&
+          mouseX >= rect.left + 10 &&
           mouseX <= rect.right - 10 &&
-          mouseY >= rect.top - 10 &&
+          mouseY >= rect.top + 10 &&
           mouseY <= rect.bottom - 10
         console.log(isInside)
         if (!isInside) {
