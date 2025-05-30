@@ -67,7 +67,7 @@ const emit = defineEmits([
 
 const { item } = toRefs(props)
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 const showValueFormatter = computed<boolean>(() => {
   return (
@@ -845,6 +845,7 @@ span {
     background-color: rgba(31, 35, 41, 0.1);
   }
   &.dark-dimension-quota {
+    background-color: #292929;
     .inner-dropdown-menu {
       color: rgba(235, 235, 235, 1);
     }

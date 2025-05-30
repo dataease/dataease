@@ -165,7 +165,7 @@ onMounted(() => {
             ></Icon>
           </el-icon>
         </span>
-        <el-tooltip :effect="themes === 'dark' ? 'light' : 'dark'" placement="top">
+        <el-tooltip :effect="themes || 'dark'" placement="top">
           <template #content>
             <table>
               <tbody>
@@ -531,6 +531,7 @@ span {
   }
 }
 .dark-dimension-quota {
+  background-color: #292929;
   span {
     color: #ebebeb;
   }
