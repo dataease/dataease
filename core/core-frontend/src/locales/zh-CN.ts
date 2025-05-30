@@ -2054,7 +2054,7 @@ export default {
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
     sql_variable_limit_2:
-      "2、示例: select * from table where $DE_PARAM{'{'} name = '$[PARAM1]' {'}'} and $DE_PARAM{'{'} name in ($[PARAM2]) {'}'}",
+      "2、示例: select * from table where $DE_PARAM{'{'} name = substring('$[PARAM1]',1,5){'}'} and $DE_PARAM{'{'} name in ($[PARAM2]) {'}'}",
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',

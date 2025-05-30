@@ -1681,7 +1681,7 @@ const mousedownDrag = () => {
   }
 
   .content {
-    height: 62px;
+    height: 80px;
     width: 822px;
     border-radius: 4px;
     background: #e1eaff;
