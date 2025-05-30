@@ -444,6 +444,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       customLegend['customContent'] = (_: string, items: CategoryLegendListItem[]) => {
         const showItems = items?.length > 30 ? items.slice(0, 30) : items
         if (showItems?.length) {
+          if (showItems.length === 1) {
+            showItems[0].value = options.color.scale.domain.slice(0, 2)
+          }
           return this.createLegendCustomContent(showItems)
         }
         return ''
