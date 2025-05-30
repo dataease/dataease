@@ -451,9 +451,25 @@ class ChartCarouselTooltip {
 
     // 绑定鼠标进入和离开事件
     chartElement?.addEventListener('mouseenter', () => this.paused())
-    chartElement?.addEventListener('mouseleave', () => {
-      this.paused()
-      this.resume()
+    chartElement?.addEventListener('mouseleave', ev => {
+      setTimeout(() => {
+        // 获取鼠标位置
+        const mouseX = ev.clientX
+        const mouseY = ev.clientY
+        // 获取div的边界信息
+        const rect = chartElement.getBoundingClientRect()
+        // 判断鼠标位置是否在div内
+        const isInside =
+          mouseX >= rect.left - 10 &&
+          mouseX <= rect.right - 10 &&
+          mouseY >= rect.top - 10 &&
+          mouseY <= rect.bottom - 10
+        console.log(isInside)
+        if (!isInside) {
+          this.paused()
+          this.resume()
+        }
+      }, 300)
     })
 
     // 定义鼠标滚轮事件处理函数
