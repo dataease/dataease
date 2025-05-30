@@ -300,7 +300,7 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const label = {
       ...tmpOption.label,
       formatter: function (data: Datum) {
-        const value = valueFormatter(data.value, labelAttr.formatter)
+        const value = valueFormatter(data.value, labelAttr.labelFormatter)
         const group = new Group({})
         group.addShape({
           type: 'text',
