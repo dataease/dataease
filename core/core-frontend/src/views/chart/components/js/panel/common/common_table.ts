@@ -802,6 +802,9 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
       }
     } else {
       // time
+      if (!tv || !value) {
+        break
+      }
       const fc = field.conditions[i]
       tv = new Date(tv.replace(/-/g, '/') + ' GMT+8').getTime()
       const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
