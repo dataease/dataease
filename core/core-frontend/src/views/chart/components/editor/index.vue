@@ -5137,6 +5137,9 @@ span {
 </style>
 
 <style lang="less">
+.ed-dropdown__popper.ed-popper.is-dark:has(.dark-dimension-quota) {
+  border: none;
+}
 :deep(.ed-select-dropdown__item) {
   display: flex;
   align-items: center;
