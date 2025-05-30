@@ -1164,6 +1164,6 @@ defineExpose({
   cursor: pointer;
   font-size: 14px;
   color: #646a73;
-  margin: 10px 0 0 4px;
+  margin: 3px 0 0 4px;
 }
 </style>
