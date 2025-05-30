@@ -16,7 +16,11 @@ const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMult
 
   if (timeGranularityMultiple.includes('range') && type === 7) {
     return [
-      +new Date(selectValue[0]),
+      +new Date(
+        dayjs(selectValue[0])
+          .startOf(timeType as 'month' | 'year' | 'date')
+          .format('YYYY-MM-DD HH:mm:ss')
+      ),
       +new Date(
         dayjs(selectValue[1])
           .endOf(timeType as 'month' | 'year' | 'date')

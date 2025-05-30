@@ -897,6 +897,11 @@ defineExpose({
       padding-left: 86px;
       justify-content: flex-end;
       align-items: center;
+      width: 100%;
+      .ed-select {
+        --ed-select-width: 100px;
+      }
+
       &.range {
         padding-left: 0px;
       }
