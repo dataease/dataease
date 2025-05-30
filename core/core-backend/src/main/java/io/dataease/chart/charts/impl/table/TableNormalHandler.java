@@ -23,10 +23,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author jianneng
@@ -75,6 +72,11 @@ public class TableNormalHandler extends DefaultChartHandler {
             formatResult.getContext().put("yoyFiltered", true);
         }
         return (T) new CustomFilterResult(filterList, formatResult.getContext());
+    }
+
+    @Override
+    public Map<String, Object> buildResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, List<String[]> data) {
+        return new HashMap<>();
     }
 
     @Override

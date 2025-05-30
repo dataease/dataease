@@ -76,6 +76,17 @@ public class TablePivotHandler extends GroupChartHandler {
         return result;
     }
 
+    @Override
+    public Map<String, Object> buildResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, List<String[]> data) {
+        var result = new HashMap<String, Object>();
+        var yoyFiltered = filterResult.getContext().get("yoyFiltered") != null;
+        // 带过滤同环比直接返回原始数据,再由视图重新组装
+        if (yoyFiltered) {
+            result.put("data", data);
+        }
+        return result;
+    }
+
     private Map<String, Object> calcCustomExpr(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         Object totalStr = JsonUtil.toJSONString(view.getCustomAttr().get("tableTotal"));
         TableTotal tableTotal = JsonUtil.parseObject((String) totalStr, TableTotal.class);

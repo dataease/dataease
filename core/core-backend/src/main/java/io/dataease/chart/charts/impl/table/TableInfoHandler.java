@@ -67,6 +67,11 @@ public class TableInfoHandler extends DefaultChartHandler {
     }
 
     @Override
+    public Map<String, Object> buildResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, List<String[]> data) {
+        return new HashMap<>();
+    }
+
+    @Override
     public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         var chartExtRequest = view.getChartExtRequest();
         var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
