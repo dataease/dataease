@@ -552,7 +552,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       })
     },
 
-    deleteComponentById(componentId, componentData = this.componentData, deep = true) {
+    deleteComponentById(componentId, componentData = this.componentData, deep = false) {
       if (componentId) {
         let indexResult
         componentData.forEach((component, index) => {
