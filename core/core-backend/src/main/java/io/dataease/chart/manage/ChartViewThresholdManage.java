@@ -20,6 +20,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -281,8 +282,15 @@ public class ChartViewThresholdManage {
                 if (ObjectUtils.isEmpty(fieldDTO)) continue;
                 String fieldDTOName = fieldDTO.getName();
                 String dataeaseName = fieldDTO.getDataeaseName();
-                List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : row.get(dataeaseName).toString()).collect(Collectors.toList());
-                String replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
+                String replacement = null;
+                if (fieldDTO.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                    List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : stripTrailingZeros2String(row.get(dataeaseName))).collect(Collectors.toList());
+                    replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
+                } else {
+                    List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : row.get(dataeaseName).toString()).collect(Collectors.toList());
+                    replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
+                }
+
                 // 替换文本
                 matcher.appendReplacement(sb, replacement);
             }
@@ -295,6 +303,14 @@ public class ChartViewThresholdManage {
             LogUtil.error(e.getMessage(), new Throwable(e));
             return new ThresholdCheckVO(false, null, e.getMessage(), null);
         }
+    }
+
+    private String stripTrailingZeros2String(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+        if (!(value instanceof BigDecimal)) return value.toString();
+        return ((BigDecimal) value).stripTrailingZeros().toString();
     }
 
     private void chartDynamicMap(List<Map<String, Object>> rows, FilterTreeObj conditionTree, Map<Long, DatasetTableFieldDTO> fieldMap) {
