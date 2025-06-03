@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -668,7 +669,7 @@ public class ExcelUtils {
             List<TableField> fields = new ArrayList<>();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String s = reader.readLine();// first line
-            if(StringUtils.isNotEmpty(s)){
+            if (StringUtils.isNotEmpty(s)) {
                 String[] split = s.split(",");
                 for (int i = 0; i < split.length; i++) {
                     String filedName = split[i];
@@ -765,10 +766,10 @@ public class ExcelUtils {
                 DEException.throwException(Translator.get("i18n_invalid_address"));
             }
         }
-        if(StringUtils.isNotEmpty(remoteExcelRequest.getUserName())){
+        if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName())) {
             username = remoteExcelRequest.getUserName();
         }
-        if(StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())){
+        if (StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
             password = remoteExcelRequest.getPasswd();
         }
         filePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
@@ -783,10 +784,10 @@ public class ExcelUtils {
 
         try {
             URL url;
-            if(StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password)){
-                url= new URL("ftp://" + username + ":" +password + "@" + serverAddress + "/" + filePath);
-            }else {
-                url= new URL("ftp://" + serverAddress + "/" + filePath);
+            if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password)) {
+                url = new URL("ftp://" + username + ":" + URLEncoder.encode(password, StandardCharsets.UTF_8) + "@" + serverAddress + "/" + filePath);
+            } else {
+                url = new URL("ftp://" + serverAddress + "/" + filePath);
             }
 
             URLConnection conn = url.openConnection();
