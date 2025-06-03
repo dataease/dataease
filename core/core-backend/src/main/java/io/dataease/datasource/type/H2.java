@@ -19,7 +19,7 @@ public class H2 extends DatasourceConfiguration {
 
     public String getJdbc() {
         for (String illegalParameter : illegalParameters) {
-            if (jdbc.toUpperCase().contains(illegalParameter)) {
+            if (jdbc.toUpperCase().replace("\\", "").contains(illegalParameter)) {
                 DEException.throwException("Has illegal parameter: " + jdbc);
             }
         }
