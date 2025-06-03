@@ -377,7 +377,22 @@ public class ExportCenterDownLoadManage {
                                 if (rowData != null) {
                                     for (int j = 0; j < rowData.size(); j++) {
                                         Cell cell = row.createCell(j);
-                                        cell.setCellValue(rowData.get(j));
+                                        if (i == 0) {
+                                            cell.setCellValue(rowData.get(j));
+                                            cell.setCellStyle(cellStyle);
+                                            detailsSheet.setColumnWidth(j, 255 * 20);
+                                        } else {
+                                            if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
+                                                try {
+                                                    cell.setCellValue(Double.valueOf(rowData.get(j)));
+                                                } catch (Exception e) {
+                                                    cell.setCellValue(rowData.get(j));
+                                                }
+                                            } else {
+                                                cell.setCellValue(rowData.get(j));
+                                            }
+                                        }
+
                                     }
                                 }
                             }
