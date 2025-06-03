@@ -24,7 +24,6 @@ import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.server.DataVisualizationServer;
-import io.dataease.websocket.WsMessage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;

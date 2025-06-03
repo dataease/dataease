@@ -150,9 +150,7 @@ public class ExportCenterDownLoadManage {
                     setExportFromName(exportTaskDTO);
                     WsMessage message = new WsMessage(exportTask.getUserId(), "/task-export-topic", exportTaskDTO);
                     wsService.releaseMessage(message);
-                } catch (Exception e) {
-
-                }
+                } catch (Exception e) {}
             }
         }
     }
@@ -165,7 +163,7 @@ public class ExportCenterDownLoadManage {
             exportTaskDTO.setExportFromName(coreDatasetGroupMapper.selectById(exportTaskDTO.getExportFrom()).getName());
         }
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("data_filling")) {
-            exportTaskDTO.setExportFromName(getDataFillingApi().get(Long.parseLong(exportTaskDTO.getExportFrom())).getName());
+            exportTaskDTO.setExportFromName(getDataFillingApi().get(exportTaskDTO.getExportFrom()).getName());
         }
     }
 

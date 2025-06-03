@@ -976,8 +976,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
     }
 
-    public String getAbsPath(String id) {
-        ChartViewDTO viewDTO = chartViewManege.findChartViewAround(id);
+    public String getAbsPath(Long id) {
+        ChartViewDTO viewDTO = chartViewManege.findChartViewAround(String.valueOf(id));
         if (viewDTO == null) {
             return null;
         }
