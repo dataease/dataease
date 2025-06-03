@@ -205,6 +205,8 @@ onUnmounted(() => {
       content: '%';
       right: 35px;
       top: 1px;
+      height: 24px;
+      line-height: 24px;
     }
   }
 }
