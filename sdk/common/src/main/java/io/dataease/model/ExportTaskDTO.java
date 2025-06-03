@@ -17,7 +17,7 @@ public class ExportTaskDTO  {
 
     private String fileSizeUnit;
 
-    private String exportFrom;
+    private Long exportFrom;
 
     private String exportStatus;
 
