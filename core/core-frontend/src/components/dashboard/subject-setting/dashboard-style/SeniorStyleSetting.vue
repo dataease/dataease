@@ -6,7 +6,7 @@
           <el-col :span="12">
             <el-form-item
               :effect="themes"
-              class="form-item"
+              class="form-item h-auto"
               :class="'form-item-' + themes"
               :label="t('components.jump_icon_color')"
             >
@@ -24,7 +24,7 @@
           <el-col :span="12">
             <el-form-item
               :effect="themes"
-              class="form-item"
+              class="form-item h-auto"
               :class="'form-item-' + themes"
               :label="t('components.level_display_color')"
             >
@@ -118,6 +118,12 @@ onMounted(() => {
     font-size: 12px;
     font-weight: 400;
     line-height: 20px;
+  }
+}
+
+.h-auto {
+  :deep(.ed-form-item__label) {
+    height: auto;
   }
 }
 .form-item-dark {
