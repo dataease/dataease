@@ -1,4 +1,4 @@
-import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
+import { G2ChartView, G2DrawOptions } from '../../../../types/impl/g2'
 import {
   flow,
   hexColorToRGBA,
@@ -15,7 +15,7 @@ import {
   getTooltipSeriesTotalMap,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
-} from '../../../common/common_antv'
+} from '../../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
