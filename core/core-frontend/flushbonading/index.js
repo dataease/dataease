@@ -1,6 +1,6 @@
 import { WritableStream } from 'htmlparser2/lib/WritableStream'
 import fs from 'node:fs'
-import pkg from '../package.json' assert { type: "json" };
+import pkg from '../package.json' with { type: "json" };
 const suffix = `${pkg.version}-${pkg.name}`
 
 const eleArr = []
