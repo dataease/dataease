@@ -139,7 +139,7 @@ public class DatasetDataManage {
             } else {
                 // parser sql params and replace default value
                 String s = new String(Base64.getDecoder().decode(tableInfoDTO.getSql()));
-                String originSql = new SqlparserUtils().handleVariableDefaultValue(s, datasetTableDTO.getSqlVariableDetails(), false, false, null, datasourceRequest.getIsCross(), datasourceRequest.getDsList(), pluginManage, getUserEntity());
+                String originSql = new SqlparserUtils().handleVariableDefaultValue(s, datasetTableDTO.getSqlVariableDetails(), true, false, null, datasourceRequest.getIsCross(), datasourceRequest.getDsList(), pluginManage, getUserEntity());
                 originSql = provider.replaceComment(originSql);
                 // add sql table schema
 

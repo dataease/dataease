@@ -269,14 +269,15 @@ const closeSqlNode = () => {
     changeSqlId.value.length === 1
   ) {
     currentNode.value = state.nodeList[0]
-    const { datasourceId, id, info, tableName } = currentNode.value
+    const { datasourceId, id, info, tableName, sqlVariableDetails } = currentNode.value
     getTableField({
       datasourceId,
       id,
       info,
       tableName,
       type: 'sql',
-      isCross: isCross.value
+      isCross: isCross.value,
+      sqlVariableDetails: sqlVariableDetails
     }).then(res => {
       const idOriginNameMap = allfields.value.reduce((pre, next) => {
         pre[`${next.datasetTableId}${next.originName}`] = next.id
