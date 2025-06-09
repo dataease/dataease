@@ -608,22 +608,22 @@ public class ChartDataServer implements ChartDataApi {
         if (formatter.getType().equals("auto")) {
             String[] valueSplit = String.valueOf(value).split(".");
             if (StringUtils.isEmpty(value) || !value.contains(".")) {
-                formatStr = "0";
+                formatStr = "General";
             } else {
                 formatStr = "0." + new String(new char[valueSplit.length]).replace('\0', '0');
             }
             switch (formatter.getUnit()) {
                 case 1000:
-                    formatStr = formatStr + "千";
+                    formatStr = formatStr + "\"千\"";
                     break;
                 case 10000:
-                    formatStr = formatStr + "万";
+                    formatStr = formatStr + "\"万\"";
                     break;
                 case 1000000:
-                    formatStr = formatStr + "百万";
+                    formatStr = formatStr + "\"百万\"";
                     break;
                 case 100000000:
-                    formatStr = formatStr + "'亿'";
+                    formatStr = formatStr + "\"亿\"";
                     break;
                 default:
                     break;
@@ -635,7 +635,7 @@ public class ChartDataServer implements ChartDataApi {
                 if (formatter.getSuffix().equals("%")) {
                     formatStr = formatStr + "\"%\"";
                 } else {
-                    formatStr = formatStr + formatter.getSuffix();
+                    formatStr = formatStr + "\"" + formatter.getSuffix() + "\"";
                 }
             }
         }
@@ -647,16 +647,16 @@ public class ChartDataServer implements ChartDataApi {
             }
             switch (formatter.getUnit()) {
                 case 1000:
-                    formatStr = formatStr + "千";
+                    formatStr = formatStr + "\"千\"";
                     break;
                 case 10000:
-                    formatStr = formatStr + "万";
+                    formatStr = formatStr + "\"万\"";
                     break;
                 case 1000000:
-                    formatStr = formatStr + "百万";
+                    formatStr = formatStr + "\"百万\"";
                     break;
                 case 100000000:
-                    formatStr = formatStr + "'亿'";
+                    formatStr = formatStr + "\"亿\"";
                     break;
                 default:
                     break;
@@ -668,7 +668,7 @@ public class ChartDataServer implements ChartDataApi {
                 if (formatter.getSuffix().equals("%")) {
                     formatStr = formatStr + "\"%\"";
                 } else {
-                    formatStr = formatStr + formatter.getSuffix();
+                    formatStr = formatStr + "\"" + formatter.getSuffix() + "\"";
                 }
             }
         } else if (formatter.getType().equals("percent")) {
