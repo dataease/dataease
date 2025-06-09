@@ -15,10 +15,10 @@ import java.util.List;
 public class Pg extends DatasourceConfiguration {
     private String driver = "org.postgresql.Driver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg");
+    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName");
 
     public String getJdbc() {
-        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
             for (String illegalParameter : illegalParameters) {
                 if (URLDecoder.decode(getJdbcUrl()).contains(illegalParameter)) {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
@@ -27,9 +27,9 @@ public class Pg extends DatasourceConfiguration {
             return getJdbcUrl();
         }
         String jdbcUrl = "";
-        if(StringUtils.isEmpty(extraParams.trim())){
+        if (StringUtils.isEmpty(extraParams.trim())) {
             if (StringUtils.isEmpty(getSchema())) {
-                jdbcUrl =  "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
+                jdbcUrl = "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
                         .replace("HOSTNAME", getLHost().trim())
                         .replace("PORT", getLPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim());
@@ -40,7 +40,7 @@ public class Pg extends DatasourceConfiguration {
                         .replace("DATABASE", getDataBase().trim())
                         .replace("SCHEMA", getSchema().trim());
             }
-        }else {
+        } else {
             jdbcUrl = "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
