@@ -15,10 +15,10 @@ import java.util.List;
 public class Redshift extends DatasourceConfiguration {
     private String driver = "com.amazon.redshift.jdbc42.Driver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg");
+    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName");
 
     public String getJdbc() {
-        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
             for (String illegalParameter : illegalParameters) {
                 if (URLDecoder.decode(getJdbcUrl()).contains(illegalParameter)) {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
@@ -26,7 +26,7 @@ public class Redshift extends DatasourceConfiguration {
             }
             return getJdbcUrl();
         }
-        String jdbcUrl =  "jdbc:redshift://HOSTNAME:PORT/DATABASE"
+        String jdbcUrl = "jdbc:redshift://HOSTNAME:PORT/DATABASE"
                 .replace("HOSTNAME", getLHost().trim())
                 .replace("PORT", getLPort().toString().trim())
                 .replace("DATABASE", getDataBase().trim());
