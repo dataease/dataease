@@ -948,6 +948,12 @@ public class CalciteProvider extends Provider {
                 try {
                     BasicDataSource dataSource = new BasicDataSource();
                     dataSource.setMaxWaitMillis(5 * 1000);
+                    dataSource.setTestWhileIdle(true);
+                    dataSource.setTestOnBorrow(true);
+                    dataSource.setTestOnReturn(true);
+                    dataSource.setTimeBetweenEvictionRunsMillis(60 * 1000);
+                    dataSource.setValidationQuery("select 1");
+                    dataSource.setValidationQueryTimeout(5);
                     Schema schema = null;
                     DatasourceConfiguration configuration = null;
                     DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(ds.getType());
@@ -1016,6 +1022,7 @@ public class CalciteProvider extends Provider {
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case oracle:
+                                dataSource.setValidationQuery("SELECT 1 FROM DUAL");
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Oracle.class);
                                 if (StringUtils.isNotBlank(configuration.getUsername())) {
                                     dataSource.setUsername(configuration.getUsername());
@@ -1034,6 +1041,7 @@ public class CalciteProvider extends Provider {
                                 break;
                             case db2:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Db2.class);
+                                dataSource.setValidationQuery("select 1 from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", configuration.getSchema()));
                                 if (StringUtils.isNotBlank(configuration.getUsername())) {
                                     dataSource.setUsername(configuration.getUsername());
                                 }
