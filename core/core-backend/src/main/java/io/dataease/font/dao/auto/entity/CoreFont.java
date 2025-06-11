@@ -6,11 +6,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
+@Data
 @Getter
 @Setter
 @Entity
@@ -58,9 +60,5 @@ public class CoreFont {
     @Size(max = 255)
     @Column(name = "size_type")
     private String sizeType;
-
-    @ColumnDefault("b'0'")
-    @Column(name = "is_built_in")
-    private Boolean isBuiltIn;
 
 }

@@ -1,6 +1,5 @@
 package io.dataease.datasource.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
@@ -18,7 +17,6 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.ModelUtils;
-import io.dataease.visualization.dao.auto.entity.VisualizationSubject;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -179,9 +177,6 @@ public class EngineManage {
         coreDatasource.setCreateTime(1715053684176L);
         Example<CoreDatasource> example = Example.of(coreDatasource);
         // 版本检查
-        QueryWrapper<DeTemplateVersion> queryVersionWrapper = new QueryWrapper<>();
-        queryVersionWrapper.eq("version", "985188400292302848");
-
         Specification<DeTemplateVersion> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("version"), "985188400292302848"));

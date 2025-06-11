@@ -1,7 +1,5 @@
 package io.dataease.datasource.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
@@ -9,9 +7,10 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskLogRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskRepository;
+import io.dataease.datasource.dao.auto.repository.QrtzTriggersRepository;
 import io.dataease.datasource.dto.CoreDatasourceTaskDTO;
-import io.dataease.datasource.dao.ext.mapper.ExtDatasourceTaskMapper;
 import io.dataease.datasource.manage.DatasourceSyncManage;
+import io.dataease.qrtz.dao.auto.repo.entity.QrtzTriggers;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
@@ -33,7 +32,7 @@ public class DatasourceTaskServer {
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
-    private ExtDatasourceTaskMapper extDatasourceTaskMapper;
+    private QrtzTriggersRepository qrtzTriggersRepository;
     @Resource
     private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
     @Resource
@@ -72,8 +71,6 @@ public class DatasourceTaskServer {
     }
 
     public void deleteByDSId(Long dsId) {
-        QueryWrapper<CoreDatasourceTask> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ds_id", dsId);
         List<CoreDatasourceTask> coreDatasourceTasks = coreDatasourceTaskRepository.findByDsId(dsId);
         if (!CollectionUtils.isEmpty(coreDatasourceTasks)) {
             datasourceSyncManage.deleteSchedule(coreDatasourceTasks.get(0));
@@ -95,8 +92,6 @@ public class DatasourceTaskServer {
             coreDatasourceTask.setId(IDUtils.snowID());
             coreDatasourceTaskRepository.saveAndFlush(coreDatasourceTask);
         } else {
-            UpdateWrapper<CoreDatasourceTask> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", coreDatasourceTask.getId());
             coreDatasourceTaskRepository.saveAndFlush(coreDatasourceTask);
         }
 
@@ -122,9 +117,18 @@ public class DatasourceTaskServer {
     }
 
     public List<CoreDatasourceTaskDTO> taskWithTriggers(Long taskId) {
-        QueryWrapper<CoreDatasourceTaskDTO> wrapper = new QueryWrapper<>();
-        wrapper.eq("QRTZ_TRIGGERS.TRIGGER_NAME", String.valueOf(taskId));
-        return extDatasourceTaskMapper.taskWithTriggers(wrapper);
+        Specification<QrtzTriggers> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("TRIGGER_NAME"), String.valueOf(taskId)));
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return qrtzTriggersRepository.findAll(spec).stream().map(qrtzTriggers -> {
+            CoreDatasourceTaskDTO coreDatasourceTaskDTO = new CoreDatasourceTaskDTO();
+            coreDatasourceTaskDTO.setId(taskId);
+            coreDatasourceTaskDTO.setNextExecTime(qrtzTriggers.getNextFireTime());
+            return coreDatasourceTaskDTO;
+        }).toList();
     }
 
     public synchronized boolean existUnderExecutionTask(Long datasourceId, Long taskId) {

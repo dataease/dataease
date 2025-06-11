@@ -33,10 +33,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        vt
-        .
-        id
-        , vt.`name`, vt.pid, vt.`level`,vt.`dv_type`, vt.node_type, vt.create_by, vt.create_time, vt.template_type, vt.snapshot
+        vt.id, vt.`name`, vt.pid, vt.`level`,vt.`dv_type`, vt.node_type, vt.create_by, vt.create_time, vt.template_type, vt.snapshot
     </sql>
     <sql id="Blob_Column_List">
         ,vt.template_style, vt.template_data, vt.dynamic_data

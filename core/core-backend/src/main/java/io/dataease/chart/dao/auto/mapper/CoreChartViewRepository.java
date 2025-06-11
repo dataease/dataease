@@ -31,4 +31,11 @@ public interface CoreChartViewRepository extends JpaRepository<CoreChartView, Lo
                     @Param("newXAxis") String newXAxis,
                     @Param("newXAxisExt") String newXAxisExt);
 
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM CoreChartView c WHERE c.sceneId = :sceneId ")
+    void deleteBySceneId(Long sceneId);
+
+    @Query("SELECT c FROM CoreChartView c WHERE c.sceneId = :sceneId")
+    List<CoreChartView> findBySceneId(Long sceneId);
 }

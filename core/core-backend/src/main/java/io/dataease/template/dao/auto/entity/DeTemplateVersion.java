@@ -12,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class DeTemplateVersion {
     @Id
     @Comment("主键")
     @Column(name = "installed_rank", nullable = false)
-    private Integer id;
+    private Long installedRank;
 
     @Size(max = 50)
     @Comment("版本")
@@ -58,7 +59,7 @@ public class DeTemplateVersion {
     @Comment("安装时间")
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "installed_on", nullable = false)
-    private Instant installedOn;
+    private LocalDateTime installedOn;
 
     @Comment("执行时间")
     @Column(name = "execution_time")

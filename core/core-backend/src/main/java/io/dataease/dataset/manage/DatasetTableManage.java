@@ -1,6 +1,5 @@
 package io.dataease.dataset.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.exception.DEException;

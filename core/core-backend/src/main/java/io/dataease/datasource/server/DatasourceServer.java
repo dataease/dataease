@@ -1,9 +1,6 @@
 package io.dataease.datasource.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,11 +15,8 @@ import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.*;
-import io.dataease.datasource.dao.auto.mapper.QrtzSchedulerStateMapper;
-import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
-import io.dataease.datasource.dao.auto.repository.CoreDsFinishPageRepository;
-import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
-import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
+import io.dataease.datasource.dao.auto.repository.*;
+
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
@@ -43,10 +37,13 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.model.ExportTaskDTO;
+import io.dataease.qrtz.dao.auto.repo.entity.QrtzSchedulerState;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,8 +51,11 @@ import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +67,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
@@ -84,15 +85,13 @@ public class DatasourceServer implements DatasourceApi {
     private CalciteProvider calciteProvider;
     @Resource
     private DatasourceSyncManage datasourceSyncManage;
-    @Resource
-    private TaskLogExtMapper taskLogExtMapper;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     @Resource
     private DataSourceManage dataSourceManage;
     @Resource
-    private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
+    private QrtzSchedulerStateRepository qrtzSchedulerStateRepository;
     @Resource
-    private DataSourceExtMapper dataSourceExtMapper;
+    private TimestampRepository timestampRepository;
     @Resource
     private CoreDsFinishPageRepository coreDsFinishPageRepository;
     @Resource
@@ -107,6 +106,8 @@ public class DatasourceServer implements DatasourceApi {
     private RelationApi relationManage;
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
+    @Autowired
+    private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
 
 
     public enum UpdateType {
@@ -566,13 +567,11 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public List<DatasourceDTO> innerList(List<Long> ids, List<String> types) throws DEException {
         List<DatasourceDTO> list = new ArrayList<>();
-        LambdaQueryWrapper<CoreDatasource> queryWrapper = new LambdaQueryWrapper<>();
         List<CoreDatasource> dsList = new ArrayList<>();
         if (ids != null) {
             if (ids.isEmpty()) {
                 return list;
             } else {
-                queryWrapper.in(CoreDatasource::getId, ids);
                 dsList = coreDatasourceRepository.findInIds(ids);
             }
         }
@@ -580,7 +579,6 @@ public class DatasourceServer implements DatasourceApi {
             if (types.isEmpty()) {
                 return list;
             } else {
-                queryWrapper.in(CoreDatasource::getType, types);
                 dsList = coreDatasourceRepository.findInTypes(types);
             }
         }
@@ -1118,12 +1116,22 @@ public class DatasourceServer implements DatasourceApi {
         return types;
     }
 
-    public IPage<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
-        QueryWrapper<CoreDatasourceTaskLogDTO> wrapper = new QueryWrapper<>();
-        wrapper.eq("ds_id", dsId);
-        wrapper.orderByDesc("start_time");
-        Page<CoreDatasourceTaskLogDTO> page = new Page<>(goPage, pageSize);
-        IPage<CoreDatasourceTaskLogDTO> pager = taskLogExtMapper.pager(page, wrapper);
+    private Function<CoreDatasourceTaskLog, CoreDatasourceTaskLogDTO> coreExportToDtoConverter = c -> {
+        CoreDatasourceTaskLogDTO dto = new CoreDatasourceTaskLogDTO();
+        BeanUtils.copyBean(dto, c);
+        return dto;
+    };
+
+    public Page<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
+        Pageable pageable = PageRequest.of(goPage - 1, pageSize, Sort.by(Sort.Direction.DESC, "startTime"));
+
+
+        Specification<CoreDatasourceTaskLog> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("dsId"), dsId));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        Page<CoreDatasourceTaskLogDTO> pager = coreDatasourceTaskLogRepository.findAll(spec, pageable).map(coreExportToDtoConverter);
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dsId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
@@ -1133,10 +1141,10 @@ public class DatasourceServer implements DatasourceApi {
         } else {
             datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
         }
-        for (int i = 0; i < pager.getRecords().size(); i++) {
+        for (int i = 0; i < pager.getContent().size(); i++) {
             for (int i1 = 0; i1 < datasetTableDTOS.size(); i1++) {
-                if (pager.getRecords().get(i).getTableName().equalsIgnoreCase(datasetTableDTOS.get(i1).getTableName())) {
-                    pager.getRecords().get(i).setName(datasetTableDTOS.get(i1).getName());
+                if (pager.getContent().get(i).getTableName().equalsIgnoreCase(datasetTableDTOS.get(i1).getTableName())) {
+                    pager.getContent().get(i).setName(datasetTableDTOS.get(i1).getName());
                 }
             }
         }
@@ -1179,8 +1187,9 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private void doUpdate() {
-        List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectList(null);
-        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurrentTimestamp() * 1000).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
+        List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateRepository.findAll();
+
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > timestampRepository.getCurrentTimestamp().getTime()).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
 
         List<CoreDatasource> datasources = coreDatasourceRepository.findByTaskStatus(TaskStatus.UnderExecution.name());
 

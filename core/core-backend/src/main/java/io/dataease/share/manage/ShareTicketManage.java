@@ -1,8 +1,6 @@
 package io.dataease.share.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import io.dataease.api.xpack.share.request.TicketCreator;
 import io.dataease.api.xpack.share.request.TicketDelRequest;
 import io.dataease.api.xpack.share.request.TicketSwitchRequest;
@@ -10,11 +8,10 @@ import io.dataease.api.xpack.share.vo.TicketVO;
 import io.dataease.api.xpack.share.vo.TicketValidVO;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.exception.DEException;
-import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.share.dao.auto.entity.CoreShareTicket;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.dao.auto.mapper.CoreShareTicketRepository;
-import io.dataease.share.dao.auto.mapper.XpackShareMapper;
+import io.dataease.share.dao.auto.mapper.XpackShareRepository;
 import io.dataease.share.dao.ext.mapper.XpackShareExtMapper;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
@@ -24,6 +21,9 @@ import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 @Component
 public class ShareTicketManage {
@@ -39,7 +40,7 @@ public class ShareTicketManage {
     private CoreShareTicketRepository coreShareTicketRepository;
 
     @Resource
-    private XpackShareMapper xpackShareMapper;
+    private XpackShareRepository xpackShareRepository;
 
     @Resource
     private XpackShareExtMapper xpackShareExtMapper;
@@ -100,34 +101,47 @@ public class ShareTicketManage {
     public void switchRequire(TicketSwitchRequest request) {
         String resourceId = request.getResourceId();
         Boolean require = request.getRequire();
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("resource_id", resourceId);
-        queryWrapper.eq("creator", AuthUtils.getUser().getUserId());
-        XpackShare xpackShare = xpackShareMapper.selectOne(queryWrapper);
+
+        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("resourceId"), resourceId));
+            predicates.add(cb.equal(root.get("creator"), AuthUtils.getUser().getUserId()));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
         xpackShare.setTicketRequire(require);
-        xpackShareMapper.updateById(xpackShare);
+        xpackShareRepository.saveAndFlush(xpackShare);
     }
 
-    public IPage<TicketVO> query(Long resourceId, Page<TicketVO> page) {
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("resource_id", resourceId);
-        queryWrapper.eq("creator", AuthUtils.getUser().getUserId());
-        XpackShare xpackShare = xpackShareMapper.selectOne(queryWrapper);
+    private Function<CoreShareTicket, TicketVO> dtoConverter = c -> {
+        TicketVO dto = new TicketVO();
+        BeanUtils.copyBean(dto, c);
+        return dto;
+    };
+
+    public Page<TicketVO> query(Long resourceId, int goPage, int pageSize) {
+
+        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("resourceId"), resourceId));
+            predicates.add(cb.equal(root.get("creator"), AuthUtils.getUser().getUserId()));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
         if (ObjectUtils.isEmpty(xpackShare)) return null;
         String uuid = xpackShare.getUuid();
         if (StringUtils.isBlank(uuid)) return null;
-        QueryWrapper<CoreShareTicket> ticketQueryWrapper = new QueryWrapper<>();
-        ticketQueryWrapper.eq("uuid", uuid);
-        IPage<CoreShareTicket> pager = xpackShareExtMapper.pager(page, ticketQueryWrapper);
-        List<CoreShareTicket> records = pager.getRecords();
-        IPage<TicketVO> iPage = new Page<>();
-        iPage.setPages(pager.getPages());
-        iPage.setTotal(pager.getTotal());
-        iPage.setCurrent(pager.getCurrent());
-        iPage.setSize(pager.getSize());
-        List<TicketVO> vos = records.stream().map(record -> BeanUtils.copyBean(new TicketVO(), record)).toList();
-        iPage.setRecords(vos);
-        return iPage;
+        Pageable pageable = PageRequest.of(goPage - 1, pageSize);
+        Specification<CoreShareTicket> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("uuid"), uuid));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<TicketVO> pager = coreShareTicketRepository.findAll(spec, pageable).map(dtoConverter);
+        ;
+        return pager;
     }
 
     @Transactional

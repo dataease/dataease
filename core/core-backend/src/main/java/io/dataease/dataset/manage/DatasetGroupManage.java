@@ -1,7 +1,9 @@
 package io.dataease.dataset.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
@@ -9,9 +11,9 @@ import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dataset.dao.auto.entity.QCoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
-import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
 import io.dataease.dataset.dto.DataSetNodeBO;
 import io.dataease.dataset.utils.DatasetUtils;
@@ -64,8 +66,6 @@ public class DatasetGroupManage {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
-    private CoreDataSetExtMapper coreDataSetExtMapper;
-    @Resource
     private CoreDatasetTableRepository coreDatasetTableRepository;
     @Resource
     private CoreUserManage coreUserManage;
@@ -75,6 +75,14 @@ public class DatasetGroupManage {
     private RelationApi relationManage;
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
+
+    private final JPAQueryFactory queryFactory;
+
+    @Autowired
+    public DatasetGroupManage(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
+
     private static final String leafType = "dataset";
 
     private Lock lock = new ReentrantLock();
@@ -227,17 +235,27 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-
-        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
-        if (ObjectUtils.isNotEmpty(request.getLeaf())) {
-            queryWrapper.eq("node_type", request.getLeaf() ? "dataset" : "folder");
-        }
         String info = CommunityUtils.getInfo();
         if (StringUtils.isNotBlank(info)) {
-            queryWrapper.notExists(String.format(info, "core_dataset_group.id"));
+            //TODO
+//            queryWrapper.notExists(String.format(info, "core_dataset_group.id"));
         }
-        queryWrapper.orderByDesc("create_time");
-        List<DataSetNodePO> pos = coreDataSetExtMapper.query(queryWrapper);
+        QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
+        JPAQuery<DataSetNodePO> jpaQuery = queryFactory.select(
+                        Projections.constructor(DataSetNodePO.class,
+                                coreDatasetGroup.id,
+                                coreDatasetGroup.name,
+                                coreDatasetGroup.nodeType,
+                                coreDatasetGroup.pid
+                        )
+                )
+                .from(coreDatasetGroup);
+        if (ObjectUtils.isNotEmpty(request.getLeaf()) && !request.getLeaf()) {
+            jpaQuery.where(coreDatasetGroup.nodeType.eq(request.getLeaf() ? "dataset" : "folder"));
+        }
+        jpaQuery.orderBy(coreDatasetGroup.createTime.desc());
+
+        List<DataSetNodePO> pos = jpaQuery.fetch();
         List<DataSetNodeBO> nodes = new ArrayList<>();
         if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         List<DataSetNodeBO> bos = pos.stream().map(this::convert).toList();
@@ -248,7 +266,11 @@ public class DatasetGroupManage {
     }
 
     public DataSetBarVO queryBarInfo(Long id) {
-        DataSetBarVO dataSetBarVO = coreDataSetExtMapper.queryBarInfo(id);
+        DataSetBarVO dataSetBarVO = new DataSetBarVO();
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
+        if (ObjectUtils.isEmpty(coreDatasetGroup)) {
+            BeanUtils.copyBean(dataSetBarVO, coreDatasetGroup);
+        }
         // get creator
         String userName = coreUserManage.getUserName(Long.valueOf(dataSetBarVO.getCreateBy()));
         if (StringUtils.isNotBlank(userName)) {

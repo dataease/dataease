@@ -1,16 +1,15 @@
 package io.dataease.datasource.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.dao.auto.entity.QCoreDatasource;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
-import io.dataease.datasource.dao.ext.mapper.CoreDatasourceExtMapper;
-import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
-import io.dataease.datasource.dao.ext.po.DsItem;
 import io.dataease.datasource.dto.DatasourceNodeBO;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
@@ -41,15 +40,17 @@ import java.util.Stack;
 @Component
 public class DataSourceManage {
 
-    @Resource
-    private DataSourceExtMapper dataSourceExtMapper;
+    private final JPAQueryFactory queryFactory;
+
+    @Autowired
+    public DataSourceManage(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
+
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
-
-    @Resource
-    private CoreDatasourceExtMapper coreDatasourceExtMapper;
 
     @Resource
     private EngineManage engineManage;
@@ -90,18 +91,30 @@ public class DataSourceManage {
 
     @XpackInteract(value = "datasourceResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-
-        QueryWrapper<DataSourceNodePO> queryWrapper = new QueryWrapper<>();
+        QCoreDatasource coreDatasource = QCoreDatasource.coreDatasource;
+        JPAQuery<DataSourceNodePO> jpaQuery = queryFactory.select(
+                        Projections.constructor(DataSourceNodePO.class,
+                                coreDatasource.id,
+                                coreDatasource.pid,
+                                coreDatasource.name,
+                                coreDatasource.type,
+                                coreDatasource.status,
+                                coreDatasource.createTime
+                        )
+                )
+                .from(coreDatasource);
         if (ObjectUtils.isNotEmpty(request.getLeaf()) && !request.getLeaf()) {
-            queryWrapper.eq("type", "folder");
+            jpaQuery.where(coreDatasource.type.eq("folder"));
         }
+
         String info = CommunityUtils.getInfo();
         if (StringUtils.isNotBlank(info)) {
-            queryWrapper.notExists(String.format(info, "core_datasource.id"));
+            //TODO
+//            queryWrapper.notExists(String.format(info, "core_datasource.id"));
         }
-        queryWrapper.orderByDesc("create_time");
+
         List<DatasourceNodeBO> nodes = new ArrayList<>();
-        List<DataSourceNodePO> pos = dataSourceExtMapper.selectList(queryWrapper);
+        List<DataSourceNodePO> pos = jpaQuery.fetch();
         if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         if (CollectionUtils.isNotEmpty(pos)) {
             nodes.addAll(pos.stream().map(this::convert).toList());
@@ -182,9 +195,6 @@ public class DataSourceManage {
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEditStatus(CoreDatasource coreDatasource) {
-        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", coreDatasource.getId());
-        updateWrapper.set("status", coreDatasource.getStatus());
         coreDatasourceRepository.updateStatusById(coreDatasource.getStatus(), coreDatasource.getId());
     }
 
@@ -223,14 +233,13 @@ public class DataSourceManage {
         stack.push(pid);
         while (!stack.isEmpty()) {
             Long cid = stack.pop();
-            DsItem item = coreDatasourceExtMapper.queryItem(cid);
-            if (ObjectUtils.isNotEmpty(item)) {
+            coreDatasourceRepository.findById(cid).ifPresent(coreDatasource -> {
                 result.add(cid);
                 Long cpid = null;
-                if (ObjectUtils.isNotEmpty(cpid = item.getPid()) && !cpid.equals(0L)) {
+                if (ObjectUtils.isNotEmpty(cpid = coreDatasource.getPid()) && !cpid.equals(0L)) {
                     stack.add(cpid);
                 }
-            }
+            });
         }
         return result;
     }

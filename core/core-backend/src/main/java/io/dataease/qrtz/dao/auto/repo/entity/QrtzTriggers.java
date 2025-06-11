@@ -1,10 +1,12 @@
 package io.dataease.qrtz.dao.auto.repo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.Comment;
 
 import java.sql.Blob;
 
+@Data
 @Entity
 @Table(name = "QRTZ_TRIGGERS")
 @IdClass(QrtzTriggersId.class)

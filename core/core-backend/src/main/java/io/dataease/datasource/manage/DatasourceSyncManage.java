@@ -1,6 +1,5 @@
 package io.dataease.datasource.manage;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;

@@ -1,5 +1,6 @@
 package io.dataease.visualization.server;
 
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
@@ -11,6 +12,7 @@ import io.dataease.api.visualization.request.VisualizationAppExportRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.*;
 import io.dataease.auth.DeLinkPermit;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.chart.manage.ChartDataManage;
@@ -55,6 +57,7 @@ import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
+import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewRepository;
 import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoRepository;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
@@ -68,6 +71,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,6 +88,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
 
+    @Resource
+    private CoreChartViewRepository coreChartViewRepository;
+    @Resource
+    private SnapshotCoreChartViewRepository snapshotCoreChartViewRepository;
     @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoRepository;
 
@@ -508,10 +516,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DEException.throwException("ID can not be null");
         }
         // 内容ID校验
-        QueryWrapper<DataVisualizationInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("content_id", request.getContentId());
-        queryWrapper.eq("id", dvId);
-
         Specification<DataVisualizationInfo> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("id"), dvId));
@@ -694,15 +698,15 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public List<VisualizationResourceVO> findRecent(@RequestBody VisualizationWorkbranchQueryRequest request) {
         request.setQueryFrom("recent");
-        IPage<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
-        List<VisualizationResourceVO> resourceVOS = result.getRecords();
+        Page<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
+        List<VisualizationResourceVO> resourceVOS = result.getContent();
         if (!CollectionUtils.isEmpty(resourceVOS)) {
             resourceVOS.forEach(item -> {
                 item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
                 item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? Translator.get("i18n_sys_admin") : item.getLastEditor());
             });
         }
-        return result.getRecords();
+        return resourceVOS;
     }
 
     /**
@@ -1021,7 +1025,17 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public List<Long> getEnabledViewIds(Long dvId, String resourceTable) {
         List<Long> result = new ArrayList<>();
         DataVisualizationVO dvInfo = extDataVisualizationMapper.findDvInfo(dvId, null, resourceTable);
-        List<CoreChartView> views = extChartViewMapper.selectListCustom(dvId, resourceTable);
+        List<CoreChartView> views;
+        if (resourceTable.equalsIgnoreCase("snapshot")) {
+            views = coreChartViewRepository.findBySceneId(dvId);
+        } else {
+            views = snapshotCoreChartViewRepository.findBySceneId(dvId).stream().map(ele -> {
+                CoreChartView coreChartView = new CoreChartView();
+                BeanUtils.copyBean(coreChartView, ele);
+                return coreChartView;
+            }).collect(Collectors.toList());
+        }
+
         if (CollectionUtils.isNotEmpty(views) && dvInfo != null) {
             String componentData = dvInfo.getComponentData();
             result = views.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).map(CoreChartView::getId).collect(Collectors.toList());

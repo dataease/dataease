@@ -19,18 +19,20 @@ import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.share.dao.auto.entity.XpackShare;
-import io.dataease.share.dao.auto.mapper.XpackShareMapper;
+import io.dataease.share.dao.auto.mapper.XpackShareRepository;
 import io.dataease.share.dao.ext.mapper.XpackShareExtMapper;
 import io.dataease.share.dao.ext.po.XpackSharePO;
 import io.dataease.share.util.LinkTokenUtil;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +47,8 @@ import java.util.stream.Collectors;
 @Component("xpackShareManage")
 public class XpackShareManage {
 
-    @Resource(name = "xpackShareMapper")
-    private XpackShareMapper xpackShareMapper;
+    @Resource
+    private XpackShareRepository xpackShareRepository;
 
     @Resource(name = "xpackShareExtMapper")
     private XpackShareExtMapper xpackShareExtMapper;
@@ -59,17 +61,25 @@ public class XpackShareManage {
 
     public XpackShare queryByResource(Long resourceId) {
         Long userId = AuthUtils.getUser().getUserId();
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("creator", userId);
-        queryWrapper.eq("resource_id", resourceId);
-        return xpackShareMapper.selectOne(queryWrapper);
+        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("creator"), userId));
+            predicates.add(cb.equal(root.get("resourceId"), resourceId));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return xpackShareRepository.findOne(xpackShareSpec).orElse(null);
     }
 
     public String queryPwd(Long resourceId, Long userId) {
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("creator", userId);
-        queryWrapper.eq("resource_id", resourceId);
-        XpackShare xpackShare = xpackShareMapper.selectOne(queryWrapper);
+        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("creator"), userId));
+            predicates.add(cb.equal(root.get("resourceId"), resourceId));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
         if (ObjectUtils.isEmpty(xpackShare)) return null;
         return xpackShare.getPwd();
     }
@@ -78,7 +88,7 @@ public class XpackShareManage {
     public void switcher(Long resourceId) {
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isNotEmpty(originData)) {
-            xpackShareMapper.deleteById(originData.getId());
+            xpackShareRepository.deleteById(originData.getId());
             shareTicketManage.deleteByShare(originData.getUuid());
             return;
         }
@@ -93,7 +103,7 @@ public class XpackShareManage {
         xpackShare.setOid(user.getDefaultOid());
         String dType = xpackShareExtMapper.visualizationType(resourceId);
         xpackShare.setType(StringUtils.equalsIgnoreCase("dataV", dType) ? 2 : 1);
-        xpackShareMapper.insert(xpackShare);
+        xpackShareRepository.saveAndFlush(xpackShare);
     }
 
     @Transactional
@@ -110,9 +120,14 @@ public class XpackShareManage {
         if (StringUtils.equals(uuid, originData.getUuid())) {
             return "";
         }
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("uuid", uuid);
-        if (xpackShareMapper.selectCount(queryWrapper) > 0) {
+
+        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("uuid"), uuid));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        if (xpackShareRepository.count(xpackShareSpec) > 0) {
             return "已存在相同的链接，请重新输入！";
         }
         String regex = "^[a-zA-Z0-9]{8,16}$";
@@ -123,7 +138,7 @@ public class XpackShareManage {
         }
         shareTicketManage.updateByUuidChange(originData.getUuid(), uuid);
         originData.setUuid(uuid);
-        xpackShareMapper.updateById(originData);
+        xpackShareRepository.saveAndFlush(originData);
         return "";
     }
 
@@ -136,7 +151,7 @@ public class XpackShareManage {
         if (ObjectUtils.isEmpty(exp)) {
             originData.setExp(0L);
         }
-        xpackShareMapper.updateById(originData);
+        xpackShareRepository.saveAndFlush(originData);
     }
 
     public void editPwd(Long resourceId, String pwd, Boolean autoPwd) {
@@ -146,7 +161,7 @@ public class XpackShareManage {
         }
         originData.setPwd(pwd);
         originData.setAutoPwd(ObjectUtils.isEmpty(autoPwd) || autoPwd);
-        xpackShareMapper.updateById(originData);
+        xpackShareRepository.saveAndFlush(originData);
     }
 
 
@@ -207,7 +222,7 @@ public class XpackShareManage {
         return pos.stream().map(po ->
                 new XpackShareGridVO(
                         po.getShareId(), po.getResourceId(), po.getName(), po.getCreator().toString(),
-                        po.getTime(), po.getExp(), 9, po.getExtFlag(),po.getExtFlag1(), po.getType())).toList();
+                        po.getTime(), po.getExp(), 9, po.getExtFlag(), po.getExtFlag1(), po.getType())).toList();
     }
 
     private XpackShareManage proxy() {
@@ -232,9 +247,12 @@ public class XpackShareManage {
         if (inIframeError) {
             return new XpackShareProxyVO();
         }
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("uuid", request.getUuid());
-        XpackShare xpackShare = xpackShareMapper.selectOne(queryWrapper);
+        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("uuid"), request.getUuid()));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
         if (ObjectUtils.isEmpty(xpackShare))
             return null;
         if (!peRequireValid(sharedBase, xpackShare)) {
@@ -284,16 +302,24 @@ public class XpackShareManage {
             pwd = ciphertext.substring(splitIndex + 1);
         }
         String uuid = ciphertext.substring(0, splitIndex);
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("uuid", uuid);
-        XpackShare xpackShare = xpackShareMapper.selectOne(queryWrapper);
+        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("uuid"), uuid));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
         return StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
     }
 
     public Map<String, String> queryRelationByUserId(Long uid) {
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("creator", uid);
-        List<XpackShare> result = xpackShareMapper.selectList(queryWrapper);
+        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("creator"), uid));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<XpackShare> result = xpackShareRepository.findAll(xpackShareSpec);
         if (CollectionUtils.isNotEmpty(result)) {
             return result.stream()
                     .collect(Collectors.toMap(xpackShare -> String.valueOf(xpackShare.getResourceId()), XpackShare::getUuid));

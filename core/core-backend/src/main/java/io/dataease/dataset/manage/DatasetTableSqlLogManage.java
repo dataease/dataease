@@ -1,6 +1,5 @@
 package io.dataease.dataset.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.dataset.dto.SqlLogDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableSqlLog;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableSqlLogRepository;

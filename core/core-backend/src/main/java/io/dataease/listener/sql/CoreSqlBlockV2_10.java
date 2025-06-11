@@ -54,8 +54,8 @@ public class CoreSqlBlockV2_10 implements CoreSqlBlock {
         CoreFont coreFont = new CoreFont();
         coreFont.setId(1L);
         coreFont.setName("PingFang");
-        coreFont.setIsBuiltIn(true);
         coreFont.setIsDefault(true);
+        coreFont.setIsBuiltin(true);
         coreFont.setUpdateTime(0L);
         coreFontRepository.saveAndFlush(coreFont);
     }

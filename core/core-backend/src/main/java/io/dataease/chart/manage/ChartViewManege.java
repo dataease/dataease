@@ -1,16 +1,16 @@
 package io.dataease.chart.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
-import io.dataease.dao.auto.entity.CoreChartView;
+import io.dataease.dao.auto.entity.*;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.chart.dao.ext.entity.ChartBasePO;
-import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.constant.CommonConstants;
-import io.dataease.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
@@ -33,7 +33,8 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
-import io.dataease.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.entity.QSnapshotCoreChartView;
+import io.dataease.visualization.dao.auto.entity.QSnapshotDataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.SnapshotCoreChartView;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewRepository;
@@ -59,6 +60,10 @@ import java.util.stream.Collectors;
  */
 @Component
 public class ChartViewManege {
+
+    @Resource
+    private JPAQueryFactory queryFactory;
+
     @Resource
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
@@ -72,9 +77,6 @@ public class ChartViewManege {
 
     @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoRepository;
-
-    @Resource
-    private ExtChartViewMapper extChartViewMapper;
 
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
@@ -153,9 +155,25 @@ public class ChartViewManege {
      * sceneId 为仪表板或者数据大屏id
      */
     public List<ChartViewDTO> listBySceneId(Long sceneId, String resourceTable) {
-        QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
-        wrapper.eq("scene_id", sceneId);
-        List<ChartViewDTO> chartViewDTOS = transChart(extChartViewMapper.selectListCustom(sceneId, resourceTable));
+        Specification<CoreChartView> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("sceneId"), sceneId));
+            predicates.add(cb.notEqual(root.get("resourceTable"), "resourceTable"));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<CoreChartView> result = coreChartViewRepository.findAll(spec);
+        List<CoreChartView> coreChartViews;
+        if (resourceTable.equalsIgnoreCase("snapshot")) {
+            coreChartViews = coreChartViewRepository.findBySceneId(sceneId);
+        } else {
+            coreChartViews = snapshotCoreChartViewRepository.findBySceneId(sceneId).stream().map(ele -> {
+                CoreChartView coreChartView = new CoreChartView();
+                BeanUtils.copyBean(coreChartView, ele);
+                return coreChartView;
+            }).collect(Collectors.toList());
+        }
+        List<ChartViewDTO> chartViewDTOS = transChart(coreChartViews);
         if (!CollectionUtils.isEmpty(chartViewDTOS)) {
             List<Long> tableIds = chartViewDTOS.stream()
                     .map(ChartViewDTO::getTableId)
@@ -327,8 +345,70 @@ public class ChartViewManege {
         coreDatasetTableFieldRepository.deleteByChartId(chartId);
     }
 
+
     public ChartBaseVO chartBaseInfo(Long id, String resourceTable) {
-        ChartBasePO po = extChartViewMapper.queryChart(id, resourceTable);
+        ChartBasePO po;
+        if (resourceTable.equalsIgnoreCase("snapshot")) {
+            QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+            QSnapshotDataVisualizationInfo snapshotDataVisualizationInfo = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
+            JPAQuery<ChartBasePO> jpaQuery = queryFactory.select(
+                            Projections.constructor(ChartBasePO.class,
+                                    snapshotCoreChartView.id.as("chartId"),
+                                    snapshotCoreChartView.title.as("chartName"),
+                                    snapshotCoreChartView.type.as("chartType"),
+                                    snapshotCoreChartView.tableId.as("tableId"),
+                                    snapshotDataVisualizationInfo.id.as("resourceId"),
+                                    snapshotDataVisualizationInfo.name.as("resourceName"),
+                                    snapshotDataVisualizationInfo.type.as("resourceType"),
+                                    snapshotCoreChartView.xAxis.as("xAxis"),
+                                    snapshotCoreChartView.xAxisExt.as("xAxisExt"),
+                                    snapshotCoreChartView.yAxis.as("yAxis"),
+                                    snapshotCoreChartView.yAxisExt.as("yAxisExt"),
+                                    snapshotCoreChartView.extStack.as("extStack"),
+                                    snapshotCoreChartView.extBubble.as("extBubble"),
+                                    snapshotCoreChartView.extLabel.as("extLabel"),
+                                    snapshotCoreChartView.extTooltip.as("extTooltip"),
+                                    snapshotCoreChartView.flowMapStartName.as("flowMapStartName"),
+                                    snapshotCoreChartView.flowMapEndName.as("flowMapEndName"),
+                                    snapshotCoreChartView.extColor.as("extColor")
+
+                            )
+                    )
+                    .from(snapshotCoreChartView)
+                    .join(snapshotDataVisualizationInfo).on(snapshotDataVisualizationInfo.id.eq(String.valueOf(snapshotCoreChartView.sceneId)))
+                    .where(snapshotCoreChartView.id.eq(id));
+            po = jpaQuery.fetchFirst();
+        } else {
+            QCoreChartView coreChartView = QCoreChartView.coreChartView;
+            QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
+            JPAQuery<ChartBasePO> jpaQuery = queryFactory.select(
+                            Projections.constructor(ChartBasePO.class,
+                                    coreChartView.id.as("chartId"),
+                                    coreChartView.title.as("chartName"),
+                                    coreChartView.type.as("chartType"),
+                                    coreChartView.tableId.as("tableId"),
+                                    dataVisualizationInfo.id.as("resourceId"),
+                                    dataVisualizationInfo.name.as("resourceName"),
+                                    dataVisualizationInfo.type.as("resourceType"),
+                                    coreChartView.xAxis.as("xAxis"),
+                                    coreChartView.xAxisExt.as("xAxisExt"),
+                                    coreChartView.yAxis.as("yAxis"),
+                                    coreChartView.yAxisExt.as("yAxisExt"),
+                                    coreChartView.extStack.as("extStack"),
+                                    coreChartView.extBubble.as("extBubble"),
+                                    coreChartView.extLabel.as("extLabel"),
+                                    coreChartView.extTooltip.as("extTooltip"),
+                                    coreChartView.flowMapStartName.as("flowMapStartName"),
+                                    coreChartView.flowMapEndName.as("flowMapEndName"),
+                                    coreChartView.extColor.as("extColor")
+
+                            )
+                    )
+                    .from(coreChartView)
+                    .join(dataVisualizationInfo).on(dataVisualizationInfo.id.eq(String.valueOf(coreChartView.sceneId)))
+                    .where(coreChartView.id.eq(id));
+            po = jpaQuery.fetchFirst();
+        }
         if (ObjectUtils.isEmpty(po)) return null;
         ChartBaseVO vo = BeanUtils.copyBean(new ChartBaseVO(), po);
         TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {
@@ -462,9 +542,6 @@ public class ChartViewManege {
     }
 
     public String checkSameDataSet(String viewIdSource, String viewIdTarget) {
-        QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
-        wrapper.select("distinct table_id");
-        wrapper.in("id", Arrays.asList(viewIdSource, viewIdTarget));
         if (coreChartViewRepository.countDistinctTableIdByIdIn(Arrays.asList(viewIdSource, viewIdTarget)) == 1) {
             return "YES";
         } else {
@@ -474,7 +551,21 @@ public class ChartViewManege {
     }
 
     public List<ViewSelectorVO> viewOption(Long resourceId) {
-        List<ViewSelectorVO> result = extChartViewMapper.queryViewOption(resourceId);
+        Specification<CoreChartView> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("sceneId"), resourceId));
+            predicates.add(cb.notEqual(root.get("type"), "VQuery"));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<ViewSelectorVO> result = coreChartViewRepository.findAll(spec).stream().map(coreChartView -> {
+            ViewSelectorVO vo = new ViewSelectorVO();
+            vo.setId(coreChartView.getId());
+            vo.setPid(coreChartView.getSceneId());
+            vo.setTitle(coreChartView.getTitle());
+            vo.setType(coreChartView.getType());
+            return vo;
+        }).toList();
         DataVisualizationInfo dvInfo = dataVisualizationInfoRepository.findById(String.valueOf(resourceId)).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
             String componentData = dvInfo.getComponentData();
@@ -485,6 +576,35 @@ public class ChartViewManege {
     }
 
     public ChartViewDTO findChartViewAround(String viewId) {
-        return extChartViewMapper.findChartViewAround(viewId);
+        QCoreChartView qChartView = QCoreChartView.coreChartView;
+        QSnapshotCoreChartView qSnapshotChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+        ChartViewDTO mainResult = queryFactory
+                .select(Projections.constructor(
+                        ChartViewDTO.class,
+                        qChartView.id,
+                        qChartView.sceneId,
+                        qChartView.title,
+                        qChartView.type
+                ))
+                .from(qChartView)
+                .where(qChartView.id.eq(Long.valueOf(viewId)))
+                .fetchOne();
+
+        if (mainResult != null) {
+            return mainResult;
+        }
+        ChartViewDTO snapshotResult = queryFactory
+                .select(Projections.constructor(
+                        ChartViewDTO.class,
+                        qSnapshotChartView.id,
+                        qSnapshotChartView.sceneId,
+                        qSnapshotChartView.title,
+                        qSnapshotChartView.type
+                ))
+                .from(qSnapshotChartView)
+                .where(qSnapshotChartView.id.eq(Long.valueOf(viewId)))
+                .fetchOne();
+
+        return snapshotResult;
     }
 }
