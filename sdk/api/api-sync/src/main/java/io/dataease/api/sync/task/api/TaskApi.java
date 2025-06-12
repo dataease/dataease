@@ -1,12 +1,12 @@
 package io.dataease.api.sync.task.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.api.sync.commons.PageResult;
 import io.dataease.api.sync.task.dto.TaskGridRequest;
 import io.dataease.api.sync.task.dto.TaskInfoDTO;
 import io.dataease.api.sync.task.vo.TaskInfoVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.exception.DEException;
+import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;

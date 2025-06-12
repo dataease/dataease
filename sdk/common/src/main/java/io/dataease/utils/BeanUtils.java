@@ -77,4 +77,14 @@ public class BeanUtils {
         }
         return fieldNames;
     }
+
+    public static Class<?> getFieldType(Class<?> clazz, String fieldName) {
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            return field.getType();
+        } catch (NoSuchFieldException e) {
+            LogUtil.error("Field not found: " + fieldName, e);
+            return null;
+        }
+    }
 }

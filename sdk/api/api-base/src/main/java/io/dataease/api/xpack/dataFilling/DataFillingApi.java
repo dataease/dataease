@@ -10,10 +10,10 @@ import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -118,11 +118,11 @@ public interface DataFillingApi {
 
     @Operation(summary = "查询数据填报任务列表")
     @PostMapping("/form/{formId}/task/page/{goPage}/{pageSize}")
-    Page<ReportGridVO> taskPager(@PathVariable("formId") Long formId, @PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfTaskInfoRequest request);
+    PageResult<ReportGridVO> taskPager(@PathVariable("formId") Long formId, @PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfTaskInfoRequest request);
 
     @Operation(summary = "查询数据填报子任务列表")
     @PostMapping("/sub-task/page/{goPage}/{pageSize}")
-    Page<DfSubTaskVo> subTaskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfSubTaskInfoRequest request);
+    PageResult<DfSubTaskVo> subTaskPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfSubTaskInfoRequest request);
 
     @Operation(summary = "删除数据填报任务")
     @DePermit({"#p0+':manage'"})
@@ -150,7 +150,7 @@ public interface DataFillingApi {
 
     @Operation(summary = "查询用户待任务列表")
     @PostMapping("/user-task/page/{goPage}/{pageSize}")
-    Page<DfUserTaskVo> listUserTask(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfUserTaskRequest request) throws Exception;
+    PageResult<DfUserTaskVo> listUserTask(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody DfUserTaskRequest request) throws Exception;
 
     @Operation(summary = "查询用户待填报任务条数")
     @PostMapping("/user-task/todo/count")
@@ -167,7 +167,7 @@ public interface DataFillingApi {
     @Operation(summary = "数据填报操作日志")
     @DePermit({"#p0.formId+':read'"})
     @PostMapping("/log/page/{goPage}/{pageSize}")
-    Page<DfCommitLog> logPager(@RequestBody DfCommitLogRequest request, @PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize);
+    PageResult<DfCommitLog> logPager(@RequestBody DfCommitLogRequest request, @PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize);
 
     @Operation(summary = "清理数据填报操作日志")
     @DePermit({"#p0.formId+':manage'"})

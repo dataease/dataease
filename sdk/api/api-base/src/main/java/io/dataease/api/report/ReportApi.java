@@ -6,13 +6,13 @@ import io.dataease.api.report.dto.*;
 import io.dataease.api.report.vo.ReportGridVO;
 import io.dataease.api.report.vo.ReportInfoVO;
 import io.dataease.api.report.vo.ReportInstanceVO;
+import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +32,7 @@ public interface ReportApi {
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
     @PostMapping("/pager/{goPage}/{pageSize}")
-    Page<ReportGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ReportGridRequest request);
+    PageResult<ReportGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ReportGridRequest request);
 
     @Operation(summary = "创建任务")
     @PostMapping("/create")
@@ -70,7 +70,7 @@ public interface ReportApi {
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
     @PostMapping("/logPager/{goPage}/{pageSize}")
-    Page<ReportInstanceVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ReportInstanceRequest request);
+    PageResult<ReportInstanceVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ReportInstanceRequest request);
 
     @Operation(summary = "删除日志")
     @PostMapping("/deleteLog")

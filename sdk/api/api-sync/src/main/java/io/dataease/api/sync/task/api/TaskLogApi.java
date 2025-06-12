@@ -1,6 +1,6 @@
 package io.dataease.api.sync.task.api;
 
-import io.dataease.api.sync.commons.PageResult;
+import io.dataease.result.PageResult;
 import io.dataease.api.sync.task.dto.TaskLogGridRequest;
 import io.dataease.api.sync.task.vo.LogResultVO;
 import io.dataease.api.sync.task.vo.TaskLogVO;

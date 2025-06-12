@@ -1,6 +1,5 @@
 package io.dataease.api.sync.datasource.api;
 
-import io.dataease.api.sync.commons.PageResult;
 import io.dataease.api.sync.datasource.dto.DBTableDTO;
 import io.dataease.api.sync.datasource.dto.DatasourceGridRequest;
 import io.dataease.api.sync.datasource.dto.GetDatasourceRequest;
@@ -8,6 +7,7 @@ import io.dataease.api.sync.datasource.dto.SyncDatasourceDTO;
 import io.dataease.api.sync.datasource.vo.SyncDatasourceVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.exception.DEException;
+import io.dataease.result.PageResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
