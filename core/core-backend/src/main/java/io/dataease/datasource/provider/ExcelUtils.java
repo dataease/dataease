@@ -802,7 +802,7 @@ public class ExcelUtils {
             outputStream.close();
 
         } catch (IOException e) {
-            DEException.throwException(Translator.get("i18n_file_download_failed"));
+            DEException.throwException(Translator.get("i18n_file_download_failed") + ", " + e.getMessage());
         }
         return fileNames;
     }
