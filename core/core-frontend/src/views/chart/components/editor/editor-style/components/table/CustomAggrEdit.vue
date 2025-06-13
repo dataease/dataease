@@ -81,7 +81,7 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
     pre[next[from]] = next[to]
     return pre
   }, {})
-  const on = originName.match(/\[(.+?)\]/g)
+  const on = originName.match(/\[(.+?)\]/g) || []
   if (on) {
     on.forEach(itm => {
       const ele = itm.slice(1, -1)

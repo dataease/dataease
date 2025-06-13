@@ -660,7 +660,7 @@ export function setIdValueTrans(from, to, content, colList) {
     pre[next[from]] = next[to]
     return pre
   }, {})
-  const on = content?.match(/\[(.+?)\]/g)
+  const on = content?.match(/\[(.+?)\]/g) || []
   if (on) {
     on.forEach(itm => {
       const ele = itm.slice(1, -1)

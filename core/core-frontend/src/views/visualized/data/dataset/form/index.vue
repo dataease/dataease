@@ -493,7 +493,7 @@ const delFieldById = arr => {
     const allfieldsId = allfields.value.map(ele => ele.id).concat(paramsId)
     allfields.value = allfields.value.filter(ele => {
       if (![2, 3].includes(ele.extField)) return true
-      const idMap = ele.originName.match(/\[(.+?)\]/g)
+      const idMap = ele.originName.match(/\[(.+?)\]/g) || []
       if (!idMap) return true
       const result = idMap.every(itm => {
         const id = itm.slice(1, -1)
@@ -518,7 +518,7 @@ const delFieldByIdFake = (arr, fakeAllfields) => {
     const allfieldsId = fakeAllfields.map(ele => ele.id)
     fakeAllfields = fakeAllfields.filter(ele => {
       if (![2, 3].includes(ele.extField)) return true
-      const idMap = ele.originName.match(/\[(.+?)\]/g)
+      const idMap = ele.originName.match(/\[(.+?)\]/g) || []
       if (
         !idMap ||
         idMap.every(itx => ele.params?.map(element => element.id).includes(itx.slice(1, -1)))
@@ -971,7 +971,7 @@ const confirmEditUnion = () => {
   if (!!idList.length) {
     const idArr = allfields.value.reduce((pre, next) => {
       if (idList.includes(next.id)) {
-        const idMap = next.originName.match(/\[(.+?)\]/g)
+        const idMap = next.originName.match(/\[(.+?)\]/g) || []
         const result = idMap.map(itm => {
           return itm.slice(1, -1)
         })
