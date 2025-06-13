@@ -24,6 +24,7 @@ public class XpackShareServer implements XpackShareApi {
 
     @Resource(name = "xpackShareManage")
     private XpackShareManage xpackShareManage;
+
     @Override
     public boolean status(Long resourceId) {
         return ObjectUtils.isNotEmpty(xpackShareManage.queryByResource(resourceId));
@@ -53,7 +54,7 @@ public class XpackShareServer implements XpackShareApi {
 
     @Override
     public List<XpackShareGridVO> query(VisualizationWorkbranchQueryRequest request) {
-        return xpackShareManage.query(1, 20, request).getRecords();
+        return xpackShareManage.query(1, 20, request);
     }
 
     @Override

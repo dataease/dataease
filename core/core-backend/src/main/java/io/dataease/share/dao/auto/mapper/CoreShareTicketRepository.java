@@ -20,4 +20,9 @@ public interface CoreShareTicketRepository extends JpaRepository<CoreShareTicket
     @Query("DELETE FROM CoreShareTicket c WHERE c.ticket = :ticket")
     void deleteByTicket(String ticket);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE CoreShareTicket c set c.uuid = :newUuid where c.uuid = :oldUuid")
+    void updateTicketUuid(String newUuid, String oldUuid);
+
 }

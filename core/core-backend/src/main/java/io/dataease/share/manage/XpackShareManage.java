@@ -1,8 +1,8 @@
 package io.dataease.share.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.system.vo.ShareBaseVO;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.xpack.share.request.XpackShareProxyRequest;
@@ -12,15 +12,17 @@ import io.dataease.api.xpack.share.vo.TicketValidVO;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.BusiResourceEnum;
+import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
+import io.dataease.share.dao.auto.entity.QXpackShare;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.dao.auto.mapper.XpackShareRepository;
-import io.dataease.share.dao.ext.mapper.XpackShareExtMapper;
 import io.dataease.share.dao.ext.po.XpackSharePO;
 import io.dataease.share.util.LinkTokenUtil;
 import io.dataease.system.manage.SysParameterManage;
@@ -32,6 +34,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,10 +51,10 @@ import java.util.stream.Collectors;
 public class XpackShareManage {
 
     @Resource
-    private XpackShareRepository xpackShareRepository;
+    private JPAQueryFactory queryFactory;
 
-    @Resource(name = "xpackShareExtMapper")
-    private XpackShareExtMapper xpackShareExtMapper;
+    @Resource
+    private XpackShareRepository xpackShareRepository;
 
     @Resource
     private ShareTicketManage shareTicketManage;
@@ -101,7 +104,14 @@ public class XpackShareManage {
         xpackShare.setResourceId(resourceId);
         xpackShare.setUuid(RandomStringUtils.randomAlphanumeric(8));
         xpackShare.setOid(user.getDefaultOid());
-        String dType = xpackShareExtMapper.visualizationType(resourceId);
+
+
+        QDataVisualizationInfo qVisualization = QDataVisualizationInfo.dataVisualizationInfo;
+        String dType = queryFactory
+                .select(qVisualization.type)
+                .from(qVisualization)
+                .where(qVisualization.id.eq(String.valueOf(resourceId)))
+                .fetchOne();
         xpackShare.setType(StringUtils.equalsIgnoreCase("dataV", dType) ? 2 : 1);
         xpackShareRepository.saveAndFlush(xpackShare);
     }
@@ -165,10 +175,26 @@ public class XpackShareManage {
     }
 
 
-    public IPage<XpackSharePO> querySharePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
+    public Page<XpackSharePO> querySharePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();
-        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("s.creator", uid);
+        QXpackShare xpackShare = QXpackShare.xpackShare;
+        QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
+        JPAQuery<XpackSharePO> query = queryFactory.select(
+                        Projections.constructor(XpackSharePO.class,
+                                xpackShare.id.as("shareId"),
+                                dataVisualizationInfo.id.as("resourceId"),
+                                dataVisualizationInfo.mobileLayout.as("extFlag"),
+                                dataVisualizationInfo.status.as("extFlag1"),
+                                dataVisualizationInfo.type.as("type"),
+                                xpackShare.creator.as("creator"),
+                                xpackShare.time.as("time"),
+                                xpackShare.exp.as("exp"),
+                                dataVisualizationInfo.name.as("name")
+                        )
+
+                ).from(xpackShare)
+                .join(dataVisualizationInfo).on(dataVisualizationInfo.id.eq(String.valueOf(xpackShare.resourceId)))
+                .where(xpackShare.creator.eq(uid));
         if (StringUtils.isNotBlank(request.getType())) {
             BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());
             if (ObjectUtils.isEmpty(busiResourceEnum)) {
@@ -176,19 +202,23 @@ public class XpackShareManage {
             }
             String resourceType = convertResourceType(request.getType());
             if (StringUtils.isNotBlank(resourceType)) {
-                queryWrapper.eq("v.type", resourceType);
+                query.where(dataVisualizationInfo.type.eq(resourceType));
             }
         }
+
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            queryWrapper.like("v.name", request.getKeyword());
+            query.where(dataVisualizationInfo.name.like("%" + request.getKeyword() + "%"));
         }
-        String info = CommunityUtils.getInfo();
-        if (StringUtils.isNotBlank(info)) {
-            queryWrapper.notExists(String.format(info, "s.resource_id"));
-        }
-        queryWrapper.orderBy(true, request.isAsc(), "s.time");
-        Page<XpackSharePO> page = new Page<>(goPage, pageSize);
-        return xpackShareExtMapper.query(page, queryWrapper);
+
+        //TODO CommunityUtils.getInfo
+//        String info = CommunityUtils.getInfo();
+//        if (StringUtils.isNotBlank(info)) {
+//            queryWrapper.notExists(String.format(info, "s.resource_id"));
+//        }
+        query.orderBy(request.isAsc() ? xpackShare.time.asc() : xpackShare.time.desc());
+        Pageable pageable = PageRequest.of(goPage - 1, pageSize);
+        long total = query.fetchCount();
+        return new PageImpl<>(query.offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch(), pageable, total);
     }
 
     private String convertResourceType(String busiFlag) {
@@ -200,21 +230,15 @@ public class XpackShareManage {
     }
 
     @XpackInteract(value = "perFilterShareManage", recursion = true, invalid = true)
-    public IPage<XpackShareGridVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
-        IPage<XpackSharePO> poiPage = proxy().querySharePage(pageNum, pageSize, request);
-        List<XpackShareGridVO> vos = proxy().formatResult(poiPage.getRecords());
+    public List<XpackShareGridVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
+        Page<XpackSharePO> poiPage = proxy().querySharePage(pageNum, pageSize, request);
+        List<XpackShareGridVO> vos = proxy().formatResult(poiPage.getContent());
         if (!org.springframework.util.CollectionUtils.isEmpty(vos)) {
             vos.forEach(item -> {
                 item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
             });
         }
-        IPage<XpackShareGridVO> ipage = new Page<>();
-        ipage.setSize(poiPage.getSize());
-        ipage.setCurrent(poiPage.getCurrent());
-        ipage.setPages(poiPage.getPages());
-        ipage.setTotal(poiPage.getTotal());
-        ipage.setRecords(vos);
-        return ipage;
+        return vos;
     }
 
     public List<XpackShareGridVO> formatResult(List<XpackSharePO> pos) {

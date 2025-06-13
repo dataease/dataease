@@ -1,6 +1,5 @@
 package io.dataease.visualization.server;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
@@ -14,7 +13,6 @@ import io.dataease.api.visualization.vo.*;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.dao.auto.entity.CoreChartView;
-import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
@@ -129,9 +127,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private DatasetGroupManage datasetGroupManage;
 
     @Resource
-    private DatasetDataManage datasetDataManage;
-
-    @Resource
     private ExtVisualizationTemplateMapper appTemplateMapper;
 
     @Resource
@@ -159,8 +154,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private SnapshotDataVisualizationInfoRepository snapshotDataVisualizationInfoRepository;
-    @Resource
-    private ExtChartViewMapper extChartViewMapper;
     @Resource
     private DatasetSQLManage datasetSQLManage;
 
@@ -563,7 +556,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         // 状态修改统一为后端操作：历史状态检查 如果 状态为 0（未发布） 或者 2（已发布未保存）则状态不变
         // 如果当前状态为 1 则状态修改为  2（已发布未保存）
-        Integer curStatus = extDataVisualizationMapper.findDvInfoStats(dvId);
+        Integer curStatus = dataVisualizationInfoRepository.findDvInfoStats(dvId);
         visualizationInfo.setStatus(curStatus == 1 ? CommonConstants.DV_STATUS.SAVED_UNPUBLISHED : curStatus);
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
@@ -969,14 +962,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-
-
-        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
-        if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
-            if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt())) {
-                wrapper.ne("id", request.getId());
-            }
-        }
         List<DataVisualizationInfo> existList = dataVisualizationInfoRepository.findAll(spec);
         if (CollectionUtils.isNotEmpty(existList) && existList.stream().anyMatch(item -> item.getName().equals(request.getName().trim()))) {
             DEException.throwException("当前名称已经存在");

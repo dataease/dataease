@@ -109,7 +109,7 @@ public class DataSourceManage {
 
         String info = CommunityUtils.getInfo();
         if (StringUtils.isNotBlank(info)) {
-            //TODO
+            //TODO CommunityUtils.getInfo
 //            queryWrapper.notExists(String.format(info, "core_datasource.id"));
         }
 

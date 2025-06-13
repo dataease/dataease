@@ -252,8 +252,6 @@ public class DeFeignRegister implements ImportBeanDefinitionRegistrar, ResourceL
 
     private void validate(Map<String, Object> attributes) {
         AnnotationAttributes annotation = AnnotationAttributes.fromMap(attributes);
-        // This blows up if an aliased property is overspecified
-        // FIXME annotation.getAliasedString("name", DeFeign.class, null);
         validateFallback(annotation.getClass("fallback"));
         validateFallbackFactory(annotation.getClass("fallbackFactory"));
     }

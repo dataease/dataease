@@ -18,7 +18,7 @@ public class SnapshotVisualizationLinkJumpTargetViewInfo {
     @Id
     @Comment("主键")
     @Column(name = "target_id", nullable = false)
-    private Long id;
+    private Long targetId;
 
     @Comment("visualization_link_jump_info 表的 ID")
     @Column(name = "link_jump_info_id")

@@ -12,7 +12,6 @@ import io.dataease.share.dao.auto.entity.CoreShareTicket;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.dao.auto.mapper.CoreShareTicketRepository;
 import io.dataease.share.dao.auto.mapper.XpackShareRepository;
-import io.dataease.share.dao.ext.mapper.XpackShareExtMapper;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
@@ -42,8 +41,6 @@ public class ShareTicketManage {
     @Resource
     private XpackShareRepository xpackShareRepository;
 
-    @Resource
-    private XpackShareExtMapper xpackShareExtMapper;
 
 
     public CoreShareTicket getByTicket(String ticket) {
@@ -140,13 +137,12 @@ public class ShareTicketManage {
         };
 
         Page<TicketVO> pager = coreShareTicketRepository.findAll(spec, pageable).map(dtoConverter);
-        ;
         return pager;
     }
 
     @Transactional
     public void updateByUuidChange(String originalUuid, String newUuid) {
-        xpackShareExtMapper.updateTicketUuid(originalUuid, newUuid);
+        coreShareTicketRepository.updateTicketUuid(newUuid, originalUuid);
     }
 
     @Transactional

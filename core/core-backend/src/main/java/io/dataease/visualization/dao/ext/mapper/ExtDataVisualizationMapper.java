@@ -68,34 +68,12 @@ public interface ExtDataVisualizationMapper {
 
     void snapshotLinkageField(@Param("dvId") Long dvId);
 
-    void snapshotLinkage(@Param("dvId") Long dvId);
 
-    void snapshotOuterParamsTargetViewInfo(@Param("dvId") Long dvId);
 
-    void snapshotOuterParamsInfo(@Param("dvId") Long dvId);
 
-    void snapshotOuterParams(@Param("dvId") Long dvId);
 
-    void restoreDataV(@Param("dvId") Long dvId);
 
-    void restoreViews(@Param("dvId") Long dvId);
 
-    void restoreLinkJumpTargetViewInfo(@Param("dvId") Long dvId);
 
-    void restoreLinkJumpInfo(@Param("dvId") Long dvId);
 
-    void restoreLinkJump(@Param("dvId") Long dvId);
-
-    void restoreLinkageField(@Param("dvId") Long dvId);
-
-    void restoreLinkage(@Param("dvId") Long dvId);
-
-    void restoreOuterParamsTargetViewInfo(@Param("dvId") Long dvId);
-
-    void restoreOuterParamsInfo(@Param("dvId") Long dvId);
-
-    void restoreOuterParams(@Param("dvId") Long dvId);
-
-    @Select("select status from data_visualization_info where id = #{dvId}")
-    Integer findDvInfoStats(@Param("dvId") Long dvId);
 }

@@ -97,7 +97,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
             sql = Utils.replaceSchemaAlias(sql, dsMap);
             SQLMeta sqlMeta2 = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta2, null, "(" + sql + ")", crossDs);
-            Field2SQLObj.field2sqlObj(sqlMeta2, allFieldsTmp, allFieldsTmp, crossDs, dsMap, Utils.getParams(allFieldsTmp), null, pluginManage);// todo chartParam从视图里取
+            Field2SQLObj.field2sqlObj(sqlMeta2, allFieldsTmp, allFieldsTmp, crossDs, dsMap, Utils.getParams(allFieldsTmp), null, pluginManage);
             String querySQL;
             querySQL = SQLProvider.createQuerySQL(sqlMeta2, false, needOrder, false);
             querySQL = provider.rebuildSQL(querySQL, sqlMeta2, crossDs, dsMap);
