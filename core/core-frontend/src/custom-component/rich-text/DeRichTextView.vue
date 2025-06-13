@@ -370,7 +370,7 @@ const jumpTargetAdaptor = () => {
 
 const assignment = content => {
   if (content) {
-    const on = content?.match(/\[(.+?)\]/g)
+    const on = content?.match(/\[(.+?)\]/g) || []
     if (on) {
       const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
       on.forEach(itm => {
