@@ -153,7 +153,8 @@ export const exportDatasetData = (data = {}) => {
     url: '/datasetTree/exportDataset',
     method: 'post',
     data: data,
-    loading: true
+    loading: true,
+    responseType: 'blob'
   })
 }
 

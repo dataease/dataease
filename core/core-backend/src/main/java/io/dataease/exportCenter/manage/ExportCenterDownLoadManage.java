@@ -623,5 +623,206 @@ public class ExportCenterDownLoadManage {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public void downloadDataset(DataSetExportRequest request, HttpServletResponse response) throws Exception {
+        OutputStream outputStream = response.getOutputStream();
+        try {
+            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(request.getId());
+            if (coreDatasetGroup == null) {
+                throw new Exception("Not found dataset group: " + request.getFilename());
+            }
+            DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
+            BeanUtils.copyBean(dto, coreDatasetGroup);
+            dto.setUnionSql(null);
+            List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
+            });
+            dto.setUnion(unionDTOList);
+            List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(request.getId());
+            List<DatasetTableFieldDTO> allFields = dsFields.stream().map(ele -> {
+                DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
+                BeanUtils.copyBean(datasetTableFieldDTO, ele);
+                datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
+                return datasetTableFieldDTO;
+            }).collect(Collectors.toList());
+
+            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(dto, null);
+            String sql = (String) sqlMap.get("sql");
+            if (ObjectUtils.isEmpty(allFields)) {
+                DEException.throwException(Translator.get("i18n_no_fields"));
+            }
+            Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+            allFields = permissionManage.filterColumnPermissions(allFields, desensitizationList, dto.getId(), null);
+            if (ObjectUtils.isEmpty(allFields)) {
+                DEException.throwException(Translator.get("i18n_no_column_permission"));
+            }
+            dto.setAllFields(allFields);
+            datasetDataManage.buildFieldName(sqlMap, allFields);
+            Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+            DatasourceUtils.checkDsStatus(dsMap);
+            List<String> dsList = new ArrayList<>();
+            for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+                dsList.add(next.getValue().getType());
+            }
+            boolean needOrder = Utils.isNeedOrder(dsList);
+            boolean crossDs = dto.getIsCross();
+            if (!crossDs) {
+                if (datasetDataManage.notFullDs.contains(dsMap.entrySet().iterator().next().getValue().getType()) && (boolean) sqlMap.get("isFullJoin")) {
+                    DEException.throwException(Translator.get("i18n_not_full"));
+                }
+                sql = Utils.replaceSchemaAlias(sql, dsMap);
+            }
+            List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
+            TokenUserBO user = AuthUtils.getUser();
+            if (user != null) {
+                rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), user.getUserId());
+            }
+            if (StringUtils.isNotEmpty(request.getExpressionTree())) {
+                DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj = JsonUtil.parseObject(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
+                permissionManage.getField(datasetRowPermissionsTreeObj);
+                DataSetRowPermissionsTreeDTO dataSetRowPermissionsTreeDTO = new DataSetRowPermissionsTreeDTO();
+                dataSetRowPermissionsTreeDTO.setTree(datasetRowPermissionsTreeObj);
+                dataSetRowPermissionsTreeDTO.setExportData(true);
+                rowPermissionsTree.add(dataSetRowPermissionsTreeDTO);
+            }
+
+            Provider provider;
+            if (crossDs) {
+                provider = ProviderFactory.getDefaultProvider();
+            } else {
+                provider = ProviderFactory.getProvider(dsList.getFirst());
+            }
+            SQLMeta sqlMeta = new SQLMeta();
+            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+            Field2SQLObj.field2sqlObj(sqlMeta, allFields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+            Order2SQLObj.getOrders(sqlMeta, dto.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+            String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
+            Long totalCount = datasetDataManage.getDatasetTotal(dto, replaceSql, null);
+            Long curLimit = ExportCenterUtils.getExportLimit("dataset");
+            totalCount = totalCount > curLimit ? curLimit : totalCount;
+
+            Long sheetCount = (totalCount / sheetLimit) + (totalCount % sheetLimit > 0 ? 1 : 0);
+            Workbook wb = new SXSSFWorkbook();
+            CellStyle cellStyle = wb.createCellStyle();
+            Font font = wb.createFont();
+            font.setFontHeightInPoints((short) 12);
+            font.setBold(true);
+            cellStyle.setFont(font);
+            cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            for (Long s = 1L; s < sheetCount + 1; s++) {
+                Long sheetSize;
+                if (s.equals(sheetCount)) {
+                    sheetSize = totalCount - (s - 1) * sheetLimit;
+                } else {
+                    sheetSize = sheetLimit;
+                }
+                Long pageSize = (sheetSize / extractPageSize) + (sheetSize % extractPageSize > 0 ? 1 : 0);
+                Sheet detailsSheet = null;
+                List<List<String>> details = new ArrayList<>();
+                for (Long p = 0L; p < pageSize; p++) {
+                    int beforeCount = (int) ((s - 1) * sheetLimit);
+                    String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, beforeCount + p.intValue() * extractPageSize, extractPageSize);
+                    if (pageSize == 1) {
+                        querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, sheetSize.intValue());
+                    }
+                    querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+                    DatasourceRequest datasourceRequest = new DatasourceRequest();
+                    datasourceRequest.setQuery(querySQL);
+                    datasourceRequest.setDsList(dsMap);
+                    datasourceRequest.setIsCross(coreDatasetGroup.getIsCross());
+                    Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList, false);
+                    List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
+                    if (p.equals(0L)) {
+                        detailsSheet = wb.createSheet("数据" + s);
+                        List<String> header = new ArrayList<>();
+                        for (DatasetTableFieldDTO field : allFields) {
+                            header.add(field.getName());
+                        }
+                        details.add(header);
+                        for (Map<String, Object> obj : data) {
+                            List<String> row = new ArrayList<>();
+                            for (DatasetTableFieldDTO field : allFields) {
+                                String string = (String) obj.get(field.getDataeaseName());
+                                row.add(string);
+                            }
+                            details.add(row);
+                        }
+                        if (CollectionUtils.isNotEmpty(details)) {
+                            for (int i = 0; i < details.size(); i++) {
+                                Row row = detailsSheet.createRow(i);
+                                List<String> rowData = details.get(i);
+                                if (rowData != null) {
+                                    for (int j = 0; j < rowData.size(); j++) {
+                                        Cell cell = row.createCell(j);
+                                        if (i == 0) {
+                                            cell.setCellValue(rowData.get(j));
+                                            cell.setCellStyle(cellStyle);
+                                            detailsSheet.setColumnWidth(j, 255 * 20);
+                                        } else {
+                                            if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
+                                                try {
+                                                    cell.setCellValue(Double.valueOf(rowData.get(j)));
+                                                } catch (Exception e) {
+                                                    cell.setCellValue(rowData.get(j));
+                                                }
+                                            } else {
+                                                cell.setCellValue(rowData.get(j));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        details.clear();
+                        for (Map<String, Object> obj : data) {
+                            List<String> row = new ArrayList<>();
+                            for (DatasetTableFieldDTO field : allFields) {
+                                String string = (String) obj.get(field.getDataeaseName());
+                                row.add(string);
+                            }
+                            details.add(row);
+                        }
+                        int lastNum = detailsSheet.getLastRowNum();
+                        for (int i = 0; i < details.size(); i++) {
+                            Row row = detailsSheet.createRow(i + lastNum + 1);
+                            List<String> rowData = details.get(i);
+                            if (rowData != null) {
+                                for (int j = 0; j < rowData.size(); j++) {
+                                    Cell cell = row.createCell(j);
+                                    if (i == 0) {
+                                        cell.setCellValue(rowData.get(j));
+                                        cell.setCellStyle(cellStyle);
+                                        detailsSheet.setColumnWidth(j, 255 * 20);
+                                    } else {
+                                        if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
+                                            try {
+                                                cell.setCellValue(Double.valueOf(rowData.get(j)));
+                                            } catch (Exception e) {
+                                                cell.setCellValue(rowData.get(j));
+                                            }
+                                        } else {
+                                            cell.setCellValue(rowData.get(j));
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            this.addWatermarkTools(wb);
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(request.getFilename(), StandardCharsets.UTF_8) + ".xlsx");
+            wb.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+    }
 }
 
