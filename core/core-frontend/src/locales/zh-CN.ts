@@ -2900,6 +2900,7 @@ export default {
       '如果展示查询按钮，需要点击该按钮后才能触发图表查询；如果不展示查询按钮，选择完查询条件后立即触发图表查询',
     custom_query_bg_color: '自定义查询条件背景',
     query_condition_space: '查询条件间距',
+    query_condition_height: '查询条件高度',
     query_condition_name: '查询条件名称',
     condition_left: '左侧',
     condition_top: '上侧',

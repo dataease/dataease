@@ -92,6 +92,7 @@ const defaultStyle = {
   queryConditionWidth: 227,
   nameboxSpacing: 8,
   queryConditionSpacing: 16,
+  queryConditionHeight: 32,
   btnColor: '#3370ff',
   labelColorBtn: '#ffffff'
 }
@@ -237,6 +238,7 @@ const setCustomStyle = val => {
     queryConditionWidth,
     nameboxSpacing,
     queryConditionSpacing,
+    queryConditionHeight,
     labelColorBtn,
     btnColor,
     placeholderSize,
@@ -270,6 +272,7 @@ const setCustomStyle = val => {
   customStyle.queryConditionWidth = queryConditionWidth ?? 227
   customStyle.nameboxSpacing = nameboxSpacing ?? 8
   customStyle.queryConditionSpacing = queryConditionSpacing ?? 16
+  customStyle.queryConditionHeight = queryConditionHeight ?? 32
   customStyle.labelColorBtn = labelColorBtn || '#ffffff'
   customStyle.labelShow = labelShow ?? true
   customStyle.btnColor = btnColor || '#3370ff'
@@ -690,6 +693,10 @@ const boxWidth = computed(() => {
   return `${customStyle.placeholderSize}px`
 })
 
+const boxHeight = computed(() => {
+  return `${customStyle.queryConditionHeight || 32}px`
+})
+
 const queryData = () => {
   let requiredName = ''
   let numName = ''
@@ -949,6 +956,17 @@ const autoStyle = computed(() => {
     background-color: v-bind(tagColor);
   }
 
+  :deep(.ed-input),
+  :deep(.ed-date-editor) {
+    --ed-input-height: v-bind(boxHeight);
+  }
+
+  :deep(.ed-select__wrapper),
+  :deep(.text-search-select .ed-input__wrapper),
+  :deep(.text-search-select .ed-select__wrapper) {
+    height: v-bind(boxHeight);
+  }
+
   .ed-button--primary {
     --ed-button-bg-color: v-bind(btnHoverStyle.rawColor);
     --ed-button-border-color: v-bind(btnHoverStyle.rawColor);
@@ -971,7 +989,8 @@ const autoStyle = computed(() => {
     --ed-tag-font-size: v-bind(boxWidth);
   }
 
-  :deep(.ed-select-v2) {
+  :deep(.ed-select-v2),
+  :deep(.ed-select__wrapper) {
     font-size: v-bind(boxWidth);
   }
 

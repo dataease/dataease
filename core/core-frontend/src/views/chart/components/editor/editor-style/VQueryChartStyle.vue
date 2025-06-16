@@ -236,6 +236,12 @@ const checkItalic = type => {
   chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'italic'
 }
 const initParams = () => {
+  if (!chart.value.customStyle.component.hasOwnProperty('queryConditionHeight')) {
+    chart.value.customStyle.component = {
+      ...chart.value.customStyle.component,
+      queryConditionHeight: 32
+    }
+  }
   if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
     chart.value.customStyle.component = {
       ...chart.value.customStyle.component,
@@ -408,6 +414,19 @@ const onTitleChange = () => {
             >
               <el-input-number
                 v-model="chart.customStyle.component.queryConditionSpacing"
+                :min="0"
+                :effect="themes"
+                controls-position="right"
+              />
+            </el-form-item>
+            <el-form-item
+              :effect="themes"
+              class="form-item"
+              :label="t('visualization.query_condition_space')"
+              :class="'form-item-' + themes"
+            >
+              <el-input-number
+                v-model="chart.customStyle.component.queryConditionHeight"
                 :min="0"
                 :effect="themes"
                 controls-position="right"
