@@ -12,7 +12,9 @@ import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.dataset.manage.*;
 import io.dataease.exception.DEException;
+import io.dataease.exportCenter.dao.auto.entity.CoreExportDownloadTask;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
+import io.dataease.exportCenter.dao.auto.mapper.CoreExportDownloadTaskMapper;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskMapper;
 import io.dataease.exportCenter.dao.ext.mapper.ExportTaskExtMapper;
 import io.dataease.license.config.XpackInteract;
@@ -47,6 +49,8 @@ public class ExportCenterManage implements BaseExportApi {
     @Resource
     private CoreExportTaskMapper exportTaskMapper;
     @Resource
+    private CoreExportDownloadTaskMapper coreExportDownloadTaskMapper;
+    @Resource
     private ExportTaskExtMapper exportTaskExtMapper;
     @Resource
     private DatasetGroupManage datasetGroupManage;
@@ -78,7 +82,7 @@ public class ExportCenterManage implements BaseExportApi {
 
 
     public void download(String id, HttpServletResponse response) throws Exception {
-        if (!downLoadInfos.stream().anyMatch(downLoadInfo -> downLoadInfo.getId().equals(id))) {
+        if (coreExportDownloadTaskMapper.selectById(id) == null) {
             DEException.throwException("任务不存在");
         }
         CoreExportTask exportTask = exportTaskMapper.selectById(id);
@@ -258,9 +262,9 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
-        if(busiFlag.equalsIgnoreCase("dashboard")){
+        if (busiFlag.equalsIgnoreCase("dashboard")) {
             exportCenterDownLoadManage.startPanelViewTask(exportTask, request);
-        }else {
+        } else {
             exportCenterDownLoadManage.startDataVViewTask(exportTask, request);
         }
 
@@ -334,20 +338,27 @@ public class ExportCenterManage implements BaseExportApi {
 
     @DeLog(id = "#p0", ot = LogOT.DOWNLOAD, st = LogST.DATA)
     public void generateDownloadUri(String id) {
-        if (!downLoadInfos.stream().anyMatch(downLoadInfo -> downLoadInfo.getId().equals(id))) {
-            DownLoadInfo downLoadInfo = new DownLoadInfo();
-            downLoadInfo.setId(id);
-            downLoadInfo.setCreateTime(System.currentTimeMillis());
-            downLoadInfo.setValidTime(5L);
-            downLoadInfos.add(downLoadInfo);
+        CoreExportDownloadTask coreExportDownloadTask = coreExportDownloadTaskMapper.selectById(id);
+        if (coreExportDownloadTask != null) {
+            coreExportDownloadTask.setCreateTime(System.currentTimeMillis());
+            coreExportDownloadTaskMapper.updateById(coreExportDownloadTask);
+        } else {
+            coreExportDownloadTask = new CoreExportDownloadTask();
+            coreExportDownloadTask.setId(id);
+            coreExportDownloadTask.setCreateTime(System.currentTimeMillis());
+            coreExportDownloadTask.setValidTime(5L);
+            coreExportDownloadTaskMapper.insert(coreExportDownloadTask);
         }
     }
 
-    private List<DownLoadInfo> downLoadInfos = new ArrayList<>();
 
-    @Scheduled(fixedRate = 10 * 1000)
+    @Scheduled(fixedRate = 60 * 60 * 1000)
     public void checkDownLoadInfos() {
-        downLoadInfos.removeIf(downLoadInfo -> System.currentTimeMillis() - downLoadInfo.createTime > downLoadInfo.validTime * 60 * 1000);
+        coreExportDownloadTaskMapper.selectList(null).forEach(downLoadInfo -> {
+            if (System.currentTimeMillis() - downLoadInfo.getCreateTime() > downLoadInfo.getValidTime() * 60 * 1000) {
+                coreExportDownloadTaskMapper.deleteById(downLoadInfo.getId());
+            }
+        });
     }
 
     @Data
