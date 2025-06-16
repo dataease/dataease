@@ -283,7 +283,7 @@ public class ChartViewThresholdManage {
                 String fieldDTOName = fieldDTO.getName();
                 String dataeaseName = fieldDTO.getDataeaseName();
                 String replacement = null;
-                if (fieldDTO.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                if (fieldDTO.getDeType().equals(DeTypeConstants.DE_FLOAT) || fieldDTO.getDeType().equals(DeTypeConstants.DE_INT)) {
                     List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : stripTrailingZeros2String(row.get(dataeaseName))).collect(Collectors.toList());
                     replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
                 } else {
@@ -310,7 +310,7 @@ public class ChartViewThresholdManage {
             return null;
         }
         if (!(value instanceof BigDecimal)) return value.toString();
-        return ((BigDecimal) value).stripTrailingZeros().toString();
+        return ((BigDecimal) value).stripTrailingZeros().toPlainString();
     }
 
     private void chartDynamicMap(List<Map<String, Object>> rows, FilterTreeObj conditionTree, Map<Long, DatasetTableFieldDTO> fieldMap) {
