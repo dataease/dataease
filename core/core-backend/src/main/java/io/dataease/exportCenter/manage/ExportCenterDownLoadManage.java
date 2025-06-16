@@ -41,6 +41,7 @@ import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.i18n.Translator;
@@ -150,7 +151,8 @@ public class ExportCenterDownLoadManage {
                     setExportFromName(exportTaskDTO);
                     WsMessage message = new WsMessage(exportTask.getUserId(), "/task-export-topic", exportTaskDTO);
                     wsService.releaseMessage(message);
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
         }
     }
@@ -469,9 +471,21 @@ public class ExportCenterDownLoadManage {
                         if (((details.size() + extractPageSize) > sheetLimit) || i == chartViewDTO.getTotalPage()) {
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
-                            details.add(0, request.getHeader());
                             ViewDetailField[] detailFields = request.getDetailFields();
                             Object[] header = request.getHeader();
+                            request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            request.getViewInfo().setYAxis(request.getViewInfo().getYAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            request.getViewInfo().setYAxisExt(request.getViewInfo().getYAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            List<ChartViewFieldDTO> xAxis = new ArrayList<>();
+                            xAxis.addAll(request.getViewInfo().getXAxis());
+                            xAxis.addAll(request.getViewInfo().getYAxis());
+                            xAxis.addAll(request.getViewInfo().getXAxisExt());
+                            xAxis.addAll(request.getViewInfo().getYAxisExt());
+                            xAxis.addAll(request.getViewInfo().getExtStack());
+                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(DatasetTableFieldDTO::getName).collect(Collectors.toList()).contains(item)).collect(Collectors.toList()).toArray();
+                            details.add(0, header);
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
@@ -600,10 +614,7 @@ public class ExportCenterDownLoadManage {
             filePath = exportData_path + exportTask.getId() + "/" + exportTask.getId() + ".xlsx";
         }
 
-        try (
-                FileInputStream fileInputStream = new FileInputStream(filePath);
-                OutputStream outputStream = response.getOutputStream()
-        ) {
+        try (FileInputStream fileInputStream = new FileInputStream(filePath); OutputStream outputStream = response.getOutputStream()) {
             FileChannel fileChannel = fileInputStream.getChannel();
             WritableByteChannel outputChannel = Channels.newChannel(outputStream);
             fileChannel.transferTo(0, fileChannel.size(), outputChannel);

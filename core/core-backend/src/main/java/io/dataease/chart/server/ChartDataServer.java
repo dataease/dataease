@@ -262,9 +262,21 @@ public class ChartDataServer implements ChartDataApi {
                         if ((details.size() + extractPageSize) > sheetLimit || i == chartViewDTO.getTotalPage()) {
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
-                            details.add(0, request.getHeader());
-                            ViewDetailField[] detailFields = request.getDetailFields();
                             Object[] header = request.getHeader();
+                            request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            request.getViewInfo().setYAxis(request.getViewInfo().getYAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            request.getViewInfo().setYAxisExt(request.getViewInfo().getYAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                            List<ChartViewFieldDTO> xAxis = new ArrayList<>();
+                            xAxis.addAll(request.getViewInfo().getXAxis());
+                            xAxis.addAll(request.getViewInfo().getYAxis());
+                            xAxis.addAll(request.getViewInfo().getXAxisExt());
+                            xAxis.addAll(request.getViewInfo().getYAxisExt());
+                            xAxis.addAll(request.getViewInfo().getExtStack());
+                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(DatasetTableFieldDTO::getName).collect(Collectors.toList()).contains(item)).collect(Collectors.toList()).toArray();
+                            details.add(0, header);
+                            ViewDetailField[] detailFields = request.getDetailFields();
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
