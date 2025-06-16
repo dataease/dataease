@@ -525,6 +525,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               placeholderShow: true,
               placeholderSize: 14,
               queryConditionSpacing: 16,
+              queryConditionHeight: 32,
               labelColorBtn: '#ffffff',
               btnColor: '#3370ff'
             }
