@@ -640,11 +640,11 @@ onMounted(() => {
 })
 
 const tagWidth = computed(() => {
-  return Math.min(getCustomWidth() / 3, 40) + 'px'
+  return Math.min((getCustomWidth() - 60) / 2, 50) + 'px'
 })
 
 const tagTextWidth = computed(() => {
-  return Math.min(getCustomWidth() / 3, 50) - 25 + 'px'
+  return Math.min((getCustomWidth() - 60) / 2 - 25, 40) + 'px'
 })
 
 defineExpose({
@@ -741,9 +741,9 @@ defineExpose({
 </style>
 
 <style lang="less" scoped>
-:deep(.ed-select-v2__selection) {
+:deep(.ed-select__selected-item) {
   .ed-tag {
-    max-width: v-bind(tagWidth);
+    max-width: v-bind(tagWidth) !important;
   }
 
   .ed-select__tags-text {
