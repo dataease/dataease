@@ -63,6 +63,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { emitter } = useEmitt()
 const dePreviewPopDialogRef = ref(null)
 let innerRefreshTimer = null
+let innerSearchCount = 0
 const appStore = useAppStoreWithOut()
 const appearanceStore = useAppearanceStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
@@ -240,6 +241,7 @@ const buildInnerRefreshTimer = (
     innerRefreshTimer = setInterval(() => {
       clearViewLinkage()
       queryData()
+      innerSearchCount++
     }, timerRefreshTime)
   }
 }
@@ -853,7 +855,11 @@ onMounted(() => {
 
 // 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态
 const loadingFlag = computed(() => {
-  return (canvasStyleData.value.refreshViewLoading || searchCount.value === 0) && loading.value
+  return (
+    (canvasStyleData.value.refreshViewLoading ||
+      (searchCount.value === 0 && innerSearchCount === 0)) &&
+    loading.value
+  )
 })
 
 const chartAreaShow = computed(() => {
