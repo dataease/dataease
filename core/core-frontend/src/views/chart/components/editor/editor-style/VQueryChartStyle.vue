@@ -422,7 +422,7 @@ const onTitleChange = () => {
             <el-form-item
               :effect="themes"
               class="form-item"
-              :label="t('visualization.query_condition_space')"
+              :label="t('visualization.query_condition_height')"
               :class="'form-item-' + themes"
             >
               <el-input-number
