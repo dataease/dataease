@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 
 public interface SnapshotCoreChartViewRepository extends JpaRepository<SnapshotCoreChartView, Long>, JpaSpecificationExecutor<SnapshotCoreChartView> {
@@ -22,4 +23,9 @@ public interface SnapshotCoreChartViewRepository extends JpaRepository<SnapshotC
     @Query("SELECT c FROM SnapshotCoreChartView c WHERE c.sceneId = :sceneId")
     List<SnapshotCoreChartView> findBySceneId(Long sceneId);
 
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM SnapshotCoreChartView c WHERE c.sceneId IN :sceneIds ")
+    void deleteBySceneIds(Set<Long> sceneIds);
 }

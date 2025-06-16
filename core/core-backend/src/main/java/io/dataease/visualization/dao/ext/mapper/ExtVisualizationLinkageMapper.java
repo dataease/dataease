@@ -32,12 +32,3 @@ public interface ExtVisualizationLinkageMapper {
     void deleteViewLinkageSnapshot(@Param("dvId") Long dvId,@Param("sourceViewId") Long sourceViewId);
 
     void deleteViewLinkageFieldSnapshot(@Param("dvId") Long dvId,@Param("sourceViewId") Long sourceViewId);
-
-    void copyViewLinkage(@Param("copyId") Long copyId);
-
-    void copyViewLinkageField(@Param("copyId") Long copyId);
-
-    List<VisualizationLinkage> findLinkageWithDvId(@Param("dvId") Long dvId);
-
-    List<VisualizationLinkageField> findLinkageFieldWithDvId(@Param("dvId") Long dvId);
-}

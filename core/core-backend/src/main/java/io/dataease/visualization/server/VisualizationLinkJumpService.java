@@ -1,5 +1,7 @@
 package io.dataease.visualization.server;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.VisualizationLinkJumpApi;
 import io.dataease.api.visualization.dto.VisualizationComponentDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
@@ -11,6 +13,9 @@ import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.dao.auto.entity.QCoreChartView;
+import io.dataease.dao.auto.entity.QCoreDatasetTableField;
+import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
@@ -37,7 +42,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("linkJump")
 public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
-
+    @Resource
+    private JPAQueryFactory queryFactory;
     @Resource
     private ExtVisualizationLinkageMapper extVisualizationLinkageMapper;
 
@@ -154,18 +160,55 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     public VisualizationComponentDTO viewTableDetailList(Long dvId) {
         DataVisualizationInfo dvInfo = dataVisualizationInfoMapper.findById(String.valueOf(dvId)).orElse(null);
         List<VisualizationViewTableVO> result;
-        List<VisualizationOutParamsJumpVO> outParamsJumpInfo;
+        List<VisualizationOutParamsJumpVO> outParamsJumpInfos;
         String componentData;
         if (dvInfo != null) {
-            result = extVisualizationLinkJumpMapper.getViewTableDetails(dvId).stream().filter(viewTableInfo -> dvInfo.getComponentData().indexOf(viewTableInfo.getId().toString()) > -1).collect(Collectors.toList());
+            outParamsJumpInfos = new ArrayList<>();
+            QCoreChartView coreChartView = QCoreChartView.coreChartView;
+            QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
+            QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
+            result = queryFactory.select(Projections.constructor(VisualizationViewTableVO.class,
+                            coreChartView.id.as("id"),
+                            coreChartView.title.as("title"),
+                            coreChartView.type.as("type"),
+                            coreChartView.sceneId.as("dvId"),
+                            coreDatasetTableField.id.as("fieldId"),
+                            coreDatasetTableField.originName.as("originName"),
+                            coreDatasetTableField.name.as("fieldName"),
+                            coreDatasetTableField.type.as("fieldType"),
+                            coreDatasetTableField.deType.as("deType")
+                    )).from(coreChartView)
+                    .leftJoin(coreDatasetTableField).on(coreChartView.tableId.eq(coreDatasetTableField.datasetGroupId))
+                    .innerJoin(dataVisualizationInfo).on(coreChartView.sceneId.eq(Long.valueOf(dataVisualizationInfo.id.toString())))
+                    .where(coreChartView.sceneId.eq(dvId))
+                    .where(coreChartView.type.ne("VQuery"))
+                    .where(coreChartView.tableId.isNotNull())
+                    .where(dataVisualizationInfo.id.eq(dvId.toString()))
+                    .where(dataVisualizationInfo.componentData.contains(coreChartView.id.toString())).fetch();
+
             componentData = dvInfo.getComponentData();
-            outParamsJumpInfo = extVisualizationLinkJumpMapper.queryOutParamsTargetWithDvId(dvId);
+
+            QVisualizationOuterParamsInfo visualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
+            QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
+
+            queryFactory.select(Projections.constructor(VisualizationOutParamsJumpVO.class,
+                            visualizationOuterParamsInfo.paramsInfoId.as("id"),
+                            visualizationOuterParamsInfo.paramName.as("name"),
+                            visualizationOuterParamsInfo.paramName.as("title")
+                    )).from(visualizationOuterParamsInfo)
+                    .leftJoin(visualizationOuterParams).on(visualizationOuterParamsInfo.paramsId.eq(visualizationOuterParams.paramsId))
+                    .where(visualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(outParamsJumpVO -> {
+                        outParamsJumpVO.setType("outerParams");
+                        outParamsJumpInfos.add(outParamsJumpVO);
+                    });
+
+
         } else {
             result = new ArrayList<>();
-            outParamsJumpInfo = new ArrayList<>();
+            outParamsJumpInfos = new ArrayList<>();
             componentData = "[]";
         }
-        return new VisualizationComponentDTO(componentData, result, outParamsJumpInfo);
+        return new VisualizationComponentDTO(componentData, result, outParamsJumpInfos);
 
     }
 

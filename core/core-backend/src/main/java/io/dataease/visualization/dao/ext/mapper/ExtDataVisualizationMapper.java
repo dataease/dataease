@@ -28,11 +28,13 @@ public interface ExtDataVisualizationMapper {
     @Select("select type from data_visualization_info where id = #{dvId}")
     String findDvType(@Param("dvId") Long dvId);
 
-    void dvCopy(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
-    void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId,@Param("resourceTable") String resourceTable);
+    void dvCopy(@Param("sourceDvId") Long sourceDvId, @Param("newDvId") Long newDvId, @Param("copyId") Long copyId);
+
+    void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId, @Param("newDvId") Long newDvId, @Param("copyId") Long copyId, @Param("resourceTable") String resourceTable);
+
     List<CoreChartView> findViewInfoByCopyId(@Param("copyId") Long copyId);
 
-    DataVisualizationVO findDvInfo(@Param("dvId") Long dvId,@Param("dvType") String dvType,@Param("resourceTable") String resourceTable);
+    DataVisualizationVO findDvInfo(@Param("dvId") Long dvId, @Param("dvType") String dvType, @Param("resourceTable") String resourceTable);
 
     IPage<VisualizationResourcePO> findRecent(IPage<VisualizationResourcePO> page, @Param("uid") Long uid, @Param("keyword") String keyword, @Param("ew") Map ew);
 
@@ -46,34 +48,8 @@ public interface ExtDataVisualizationMapper {
 
     void copyLinkageField(@Param("copyId") Long copyId);
 
-    List<VisualizationViewTableDTO> getVisualizationViewDetails(@Param("dvId") Long dvId);
 
-    List<VisualizationReportFilterVO> queryReportFilter(@Param("dvId") Long dvId,@Param("taskId") Long taskId);
-
-    void deleteDataVBatch(@Param("ids") Set<Long> ids,@Param("resourceTable") String resourceTable);
-
-    void deleteViewsBatch(@Param("ids") Set<Long> ids,@Param("resourceTable") String resourceTable);
-
-    UserFormVO queryInnerUserInfo(@Param("id") Long id);
-
-    void snapshotDataV(@Param("dvId") Long dvId);
-
-    void snapshotViews(@Param("dvId") Long dvId);
-
-    void snapshotLinkJumpTargetViewInfo(@Param("dvId") Long dvId);
-
-    void snapshotLinkJumpInfo(@Param("dvId") Long dvId);
-
-    void snapshotLinkJump(@Param("dvId") Long dvId);
-
-    void snapshotLinkageField(@Param("dvId") Long dvId);
-
-
-
-
-
-
-
+    List<VisualizationReportFilterVO> queryReportFilter(@Param("dvId") Long dvId, @Param("taskId") Long taskId);
 
 
 }

@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -101,6 +102,10 @@ public class CoreVisualizationManage {
     private SnapshotVisualizationLinkJumpRepository snapshotVisualizationLinkJumpRepository;
     @Autowired
     private VisualizationOuterParamsInfoRepository visualizationOuterParamsInfoRepository;
+    @Resource
+    private SnapshotVisualizationLinkJumpInfoRepository snapshotVisualizationLinkJumpInfoRepository;
+    @Resource
+    private SnapshotVisualizationLinkJumpTargetViewInfoRepository snapshotVisualizationLinkJumpTargetViewInfoRepository;
 
     @XpackInteract(value = "visualizationResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -166,11 +171,15 @@ public class CoreVisualizationManage {
             }
         }
         // 删除可视化资源
-        extDataVisualizationMapper.deleteDataVBatch(delIds, CommonConstants.RESOURCE_TABLE.CORE);
-        extDataVisualizationMapper.deleteDataVBatch(delIds, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+        snapshotDataVisualizationInfoRepository.deleteAllByIdInBatch(delIds);
+        dataVisualizationInfoRepository.deleteAllByIdInBatch(delIds.stream()
+                .map(Object::toString)
+                .collect(Collectors.toList()));
+
         // 删除图表信息
-        extDataVisualizationMapper.deleteViewsBatch(delIds, CommonConstants.RESOURCE_TABLE.CORE);
-        extDataVisualizationMapper.deleteViewsBatch(delIds, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+        coreChartViewRepository.deleteBySceneIds(delIds);
+        snapshotCoreChartViewRepository.deleteBySceneIds(delIds);
+
 
         coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.DELETE);
     }
@@ -311,7 +320,8 @@ public class CoreVisualizationManage {
             // 清理历史数据
             Set<Long> dvIds = new HashSet<>();
             dvIds.add(dvId);
-            extDataVisualizationMapper.deleteDataVBatch(dvIds, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+            snapshotDataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds);
+
             snapshotCoreChartViewRepository.deleteBySceneId(dvId);
             linkageMapper.deleteViewLinkageFieldSnapshot(dvId, null);
             linkageMapper.deleteViewLinkageSnapshot(dvId, null);
@@ -333,7 +343,11 @@ public class CoreVisualizationManage {
             // 清理历史数据
             Set<Long> dvIds = new HashSet<>();
             dvIds.add(dvId);
-            extDataVisualizationMapper.deleteDataVBatch(dvIds, CommonConstants.RESOURCE_TABLE.CORE);
+            dataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList()));
+
+
             coreChartViewRepository.deleteBySceneId(dvId);
             linkageMapper.deleteViewLinkageField(dvId, null);
             linkageMapper.deleteViewLinkage(dvId, null);
@@ -354,12 +368,58 @@ public class CoreVisualizationManage {
         CoreVisualizationManage proxy = CommonBeanFactory.proxy(this.getClass());
         assert proxy != null;
         proxy.removeSnapshot(dvId);
-        // 导入新数据
-        extDataVisualizationMapper.snapshotDataV(dvId);
-        extDataVisualizationMapper.snapshotViews(dvId);
-        extDataVisualizationMapper.snapshotLinkJumpTargetViewInfo(dvId);
-        extDataVisualizationMapper.snapshotLinkJumpInfo(dvId);
-        extDataVisualizationMapper.snapshotLinkJump(dvId);
+        dataVisualizationInfoRepository.findById(dvId.toString()).ifPresent(visualizationInfo -> {
+            SnapshotDataVisualizationInfo snapshotDataVisualizationInfo = new SnapshotDataVisualizationInfo();
+            BeanUtils.copyBean(snapshotDataVisualizationInfo, visualizationInfo);
+            snapshotDataVisualizationInfoRepository.saveAndFlush(snapshotDataVisualizationInfo);
+        });
+
+        coreChartViewRepository.findBySceneId(dvId).forEach(item -> {
+            SnapshotCoreChartView snapshotCoreChartView = new SnapshotCoreChartView();
+            BeanUtils.copyBean(snapshotCoreChartView, item);
+            snapshotCoreChartViewRepository.saveAndFlush(snapshotCoreChartView);
+        });
+
+        QVisualizationLinkJumpInfo visualizationLinkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
+        QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
+        QVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
+        queryFactory.select(Projections.constructor(VisualizationLinkJumpTargetViewInfo.class,
+                        visualizationLinkJumpTargetViewInfo.targetId,
+                        visualizationLinkJumpTargetViewInfo.linkJumpInfoId,
+                        visualizationLinkJumpTargetViewInfo.sourceFieldActiveId,
+                        visualizationLinkJumpTargetViewInfo.targetViewId,
+                        visualizationLinkJumpTargetViewInfo.targetFieldId,
+                        visualizationLinkJumpTargetViewInfo.copyFrom,
+                        visualizationLinkJumpTargetViewInfo.copyId,
+                        visualizationLinkJumpTargetViewInfo.targetType)).from(visualizationLinkJumpTargetViewInfo)
+                .join(visualizationLinkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(visualizationLinkJumpInfo.id))
+                .join(visualizationLinkJump).on(visualizationLinkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
+                .where(visualizationLinkJump.sourceDvId.eq(dvId)).fetch().forEach(item -> {
+                    SnapshotVisualizationLinkJumpTargetViewInfo snapshotVisualizationLinkJumpTargetViewInfo = new SnapshotVisualizationLinkJumpTargetViewInfo();
+                    BeanUtils.copyBean(snapshotVisualizationLinkJumpTargetViewInfo, item);
+                    snapshotVisualizationLinkJumpTargetViewInfoRepository.saveAndFlush(snapshotVisualizationLinkJumpTargetViewInfo);
+                });
+
+
+        queryFactory.select(Projections.constructor(VisualizationLinkJumpInfo.class,
+                        visualizationLinkJumpInfo.id,
+                        visualizationLinkJumpInfo.linkJumpId,
+                        visualizationLinkJumpInfo.linkType,
+                        visualizationLinkJumpInfo.jumpType,
+                        visualizationLinkJumpInfo.targetDvId,
+                        visualizationLinkJumpInfo.sourceFieldId,
+                        visualizationLinkJumpInfo.content,
+                        visualizationLinkJumpInfo.checked,
+                        visualizationLinkJumpInfo.attachParams,
+                        visualizationLinkJumpInfo.copyFrom,
+                        visualizationLinkJumpInfo.copyId,
+                        visualizationLinkJumpInfo.windowSize
+                )).from(visualizationLinkJumpInfo).join(visualizationLinkJump).on(visualizationLinkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
+                .where(visualizationLinkJump.sourceDvId.eq(dvId)).fetch().forEach(item -> {
+                    SnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = new SnapshotVisualizationLinkJumpInfo();
+                    BeanUtils.copyBean(snapshotVisualizationLinkJumpInfo, item);
+                    snapshotVisualizationLinkJumpInfoRepository.saveAndFlush(snapshotVisualizationLinkJumpInfo);
+                });
 
 
         visualizationLinkJumpRepository.findBySourceDvId(dvId).forEach(item -> {

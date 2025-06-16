@@ -1,6 +1,8 @@
 package io.dataease.visualization.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
@@ -19,6 +21,7 @@ import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
+import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dao.auto.entity.CoreDatasetTableField;
@@ -52,6 +55,7 @@ import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.entity.QSnapshotCoreChartView;
 import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
@@ -85,7 +89,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
-
+    @Resource
+    private JPAQueryFactory queryFactory;
     @Resource
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
@@ -212,6 +217,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
             if (DataVisualizationConstants.QUERY_SOURCE.REPORT.equals(request.getSource()) && request.getTaskId() != null) {
                 //获取定时报告过自定义过滤组件信息
+
                 List<VisualizationReportFilterVO> filterVOS = extDataVisualizationMapper.queryReportFilter(dvId, request.getTaskId());
                 if (!CollectionUtils.isEmpty(filterVOS)) {
                     Map<Long, VisualizationReportFilterVO> reportFilterInfo = filterVOS.stream().collect(Collectors.toMap(VisualizationReportFilterVO::getFilterId, filterVo -> filterVo));
@@ -885,7 +891,28 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public List<VisualizationViewTableDTO> detailList(Long dvId) {
-        List<VisualizationViewTableDTO> result = extDataVisualizationMapper.getVisualizationViewDetails(dvId);
+        QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+        QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
+
+        List<VisualizationViewTableDTO> result = queryFactory.select(Projections.constructor(VisualizationViewTableDTO.class,
+                        snapshotCoreChartView.id,
+                        snapshotCoreChartView.title,
+                        snapshotCoreChartView.sceneId,
+                        snapshotCoreChartView.tableId,
+                        snapshotCoreChartView.type,
+                        snapshotCoreChartView.render,
+                        snapshotCoreChartView.sceneId.as("visualizationId"),
+                        coreDatasetTableField.id.as("fieldId"),
+                        coreDatasetTableField.originName,
+                        coreDatasetTableField.name.as("fieldName"),
+                        coreDatasetTableField.type.as("fieldType"),
+                        coreDatasetTableField.deType
+                )).from(snapshotCoreChartView)
+                .join(coreDatasetTableField).on(snapshotCoreChartView.tableId.eq(coreDatasetTableField.datasetGroupId))
+                .where(snapshotCoreChartView.sceneId.eq(dvId)
+                        .and(snapshotCoreChartView.id.isNotNull())
+                        .and(snapshotCoreChartView.type.ne("VQuery"))).fetch();
+
         SnapshotDataVisualizationInfo dvInfo = snapshotDataVisualizationInfoRepository.findById(dvId).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
             String componentData = dvInfo.getComponentData();

@@ -1,6 +1,5 @@
 package io.dataease.menu.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.menu.vo.MenuMeta;
 import io.dataease.api.menu.vo.MenuVO;
 import io.dataease.i18n.Translator;

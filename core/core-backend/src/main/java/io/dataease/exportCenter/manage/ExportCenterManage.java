@@ -10,6 +10,7 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.export.BaseExportApi;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
 import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataRequest;
 import io.dataease.auth.bo.TokenUserBO;
@@ -830,7 +831,7 @@ public class ExportCenterManage implements BaseExportApi {
         VisualizationWatermark watermark = visualizationWatermarkRepository.findById("system_default").orElse(null);
         WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
         if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
-            UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(AuthUtils.getUser().getUserId());
+            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(AuthUtils.getUser().getUserId());
             // 在主逻辑中添加水印
             int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
             for (Sheet sheet : wb) {
