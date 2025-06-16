@@ -397,6 +397,7 @@ const save = ({ logic, items, errorMessage }) => {
   table.value.id = nodeInfo.id
   table.value.row = 100000
   table.value.filename = exportForm.value.name
+  table.value.dataEaseBi = isDataEaseBi.value || appStore.getIsIframe
   if (errorMessage) {
     ElMessage.error(errorMessage)
     return
@@ -405,10 +406,17 @@ const save = ({ logic, items, errorMessage }) => {
   exportDatasetLoading.value = true
   exportDatasetData(table.value)
     .then(res => {
-      if (res.code === 0) {
-        openMessageLoading(exportData)
+      if (isDataEaseBi.value || appStore.getIsIframe) {
+        const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = table.value.filename + '.xlsx' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       } else {
-        ElMessage.error(res.msg)
+        openMessageLoading(exportData)
       }
     })
     .finally(() => {
