@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 public interface VisualizationTemplateCategoryMapRepository extends JpaRepository<VisualizationTemplateCategoryMap, String>, JpaSpecificationExecutor<VisualizationTemplateCategoryMap> {
 
@@ -21,5 +23,14 @@ public interface VisualizationTemplateCategoryMapRepository extends JpaRepositor
     @Query("DELETE FROM VisualizationTemplateCategoryMap vtcm WHERE vtcm.categoryId = :categoryId")
     int deleteByCategoryId(String categoryId);
 
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM VisualizationTemplateCategoryMap vtcm WHERE vtcm.templateId = :templateId")
+    int deleteByTemplateId(String templateId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM VisualizationTemplateCategoryMap vtcm WHERE vtcm.templateId in :templateIds")
+    int deleteByTemplateIds(List<String> templateIds);
 
 }

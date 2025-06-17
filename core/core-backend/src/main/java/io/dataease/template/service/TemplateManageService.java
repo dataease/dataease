@@ -1,16 +1,17 @@
 package io.dataease.template.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.template.TemplateManageApi;
 import io.dataease.api.template.dto.TemplateManageDTO;
 import io.dataease.api.template.request.TemplateManageBatchRequest;
 import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.api.template.vo.VisualizationTemplateVO;
 import io.dataease.constant.CommonConstants;
+import io.dataease.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.exception.DEException;
-import io.dataease.template.dao.auto.entity.VisualizationTemplate;
-import io.dataease.template.dao.auto.entity.VisualizationTemplateCategory;
-import io.dataease.template.dao.auto.entity.VisualizationTemplateCategoryMap;
+import io.dataease.template.dao.auto.entity.*;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapRepository;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryRepository;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
@@ -42,7 +43,8 @@ public class TemplateManageService implements TemplateManageApi {
 
     @Resource
     private VisualizationTemplateRepository visualizationTemplateRepository;
-
+    @Resource
+    private JPAQueryFactory queryFactory;
     @Resource
     private VisualizationTemplateCategoryRepository visualizationTemplateCategoryRepository;
     @Resource
@@ -101,7 +103,12 @@ public class TemplateManageService implements TemplateManageApi {
                 visualizationTemplateCategoryRepository.saveAndFlush(templateCategory);
             } else {//模板插入 同名的模板进行覆盖(先删除)
                 // 分类映射删除
-                extTemplateMapper.deleteCategoryMapByTemplate(request.getName(), null);
+                List<VisualizationTemplate> visualizationTemplates = visualizationTemplateRepository.findByName(request.getName());
+                if (!CollectionUtils.isEmpty(visualizationTemplates)) {
+                    visualizationTemplateCategoryMapRepository.deleteByTemplateIds(visualizationTemplates.stream().map(VisualizationTemplate::getId).toList());
+                }
+
+
                 // 模板删除
                 visualizationTemplateRepository.deleteByTemplateName(request.getName());
 
@@ -143,7 +150,7 @@ public class TemplateManageService implements TemplateManageApi {
                 visualizationTemplateRepository.saveAndFlush(template);
                 //更新分类
                 // 分类映射删除
-                extTemplateMapper.deleteCategoryMapByTemplate(null, request.getId());
+                visualizationTemplateCategoryMapRepository.deleteByTemplateId(request.getId());
                 // 插入分类关系
                 request.getCategories().forEach(categoryId -> {
                     VisualizationTemplateCategoryMap categoryMap = new VisualizationTemplateCategoryMap();
@@ -184,7 +191,13 @@ public class TemplateManageService implements TemplateManageApi {
     //分类下模板名称检查
     @Override
     public String categoryTemplateNameCheck(TemplateManageRequest request) {
-        Long result = extTemplateMapper.checkCategoryTemplateName(request.getName(), request.getCategories());
+        QVisualizationTemplate qVisualizationTemplate = QVisualizationTemplate.visualizationTemplate;
+        QVisualizationTemplateCategoryMap qVisualizationTemplateCategoryMap = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
+        Long result = queryFactory.selectFrom(qVisualizationTemplate)
+                .leftJoin(qVisualizationTemplateCategoryMap).on(qVisualizationTemplate.id.eq(qVisualizationTemplateCategoryMap.templateId))
+                .where(qVisualizationTemplate.name.eq(request.getName())
+                        .and(qVisualizationTemplateCategoryMap.categoryId.in(request.getCategories()))).fetchCount();
+
         if (result == 0) {
             return CommonConstants.CHECK_RESULT.NONE;
         } else {
@@ -194,7 +207,14 @@ public class TemplateManageService implements TemplateManageApi {
 
     @Override
     public String checkCategoryTemplateBatchNames(TemplateManageRequest request) {
-        Long result = extTemplateMapper.checkCategoryTemplateBatchNames(request.getTemplateNames(), request.getCategories(), request.getTemplateArray());
+        QVisualizationTemplate visualizationTemplate = QVisualizationTemplate.visualizationTemplate;
+        QVisualizationTemplateCategoryMap qVisualizationTemplateCategoryMap = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
+        Long result = queryFactory.selectFrom(visualizationTemplate)
+                .leftJoin(qVisualizationTemplateCategoryMap).on(visualizationTemplate.id.eq(qVisualizationTemplateCategoryMap.templateId))
+                .where(visualizationTemplate.name.in(request.getTemplateNames())
+                        .and(qVisualizationTemplateCategoryMap.categoryId.in(request.getCategories()))
+                        .and(visualizationTemplate.id.notIn(request.getTemplateArray()))).fetchCount();
+
         if (result == 0) {
             return CommonConstants.CHECK_RESULT.NONE;
         } else {
@@ -235,7 +255,16 @@ public class TemplateManageService implements TemplateManageApi {
         Assert.notNull(categoryId, "categoryId cannot be null");
         visualizationTemplateCategoryMapRepository.deleteByTemplateIdAndCategoryId(id, categoryId);
         // 如何是最后一个 则实际模板需要删除
-        Long result = extTemplateMapper.checkRepeatTemplateId(categoryId, id);
+        Specification<VisualizationTemplateCategoryMap> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("categoryId"), categoryId));
+            predicates.add(cb.equal(root.get("templateId"), id));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        long result = visualizationTemplateCategoryMapRepository.count(spec);
+
+
         if (result == 0) {
             visualizationTemplateRepository.deleteById(id);
         }
@@ -245,8 +274,14 @@ public class TemplateManageService implements TemplateManageApi {
     public String deleteCategory(String id) {
         Assert.notNull(id, "id cannot be null");
         // 该分类下是否有其他分类公用的模板
+        Specification<VisualizationTemplateCategoryMap> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("categoryId"), id));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
 
-        Long checkResult = extTemplateMapper.checkCategoryMap(id);
+        long checkResult = visualizationTemplateCategoryMapRepository.count(spec);
+
         if (checkResult == 0) {
             visualizationTemplateCategoryRepository.deleteById(id);
             visualizationTemplateCategoryMapRepository.deleteByCategoryId(id);
@@ -263,7 +298,13 @@ public class TemplateManageService implements TemplateManageApi {
             VisualizationTemplateVO templateVO = new VisualizationTemplateVO();
             BeanUtils.copyBean(templateVO, template);
             //查找分类
-            List<String> categories = extTemplateMapper.findTemplateCategories(templateId);
+            QVisualizationTemplateCategoryMap qVisualizationTemplateCategoryMap = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
+
+            List<String> categories = queryFactory
+                    .select(qVisualizationTemplateCategoryMap.categoryId)
+                    .from(qVisualizationTemplateCategoryMap)
+                    .where(qVisualizationTemplateCategoryMap.templateId.eq(templateId)).fetch();
+
             templateVO.setCategories(categories);
             return templateVO;
         } else {
@@ -289,14 +330,27 @@ public class TemplateManageService implements TemplateManageApi {
 
     @Override
     public List<TemplateManageDTO> findCategories(TemplateManageRequest request) {
-        return extTemplateMapper.findCategories(request);
+        QVisualizationTemplateCategory visualizationTemplateCategory = QVisualizationTemplateCategory.visualizationTemplateCategory;
+        return queryFactory.select(Projections.constructor(TemplateManageDTO.class,
+                        visualizationTemplateCategory.id,
+                        visualizationTemplateCategory.name,
+                        visualizationTemplateCategory.name.as("label"),
+                        visualizationTemplateCategory.pid,
+                        visualizationTemplateCategory.level,
+                        visualizationTemplateCategory.dvType,
+                        visualizationTemplateCategory.nodeType,
+                        visualizationTemplateCategory.createBy,
+                        visualizationTemplateCategory.createTime,
+                        visualizationTemplateCategory.templateType,
+                        visualizationTemplateCategory.snapshot)).from(visualizationTemplateCategory)
+                .orderBy(visualizationTemplateCategory.createTime.desc()).fetch();
     }
 
     @Override
     public void batchUpdate(TemplateManageBatchRequest request) {
         request.getTemplateIds().forEach(templateId -> {
             // 分类映射删除
-            extTemplateMapper.deleteCategoryMapByTemplate(null, templateId);
+            visualizationTemplateCategoryMapRepository.deleteByTemplateId(templateId);
             // 插入分类关系
             request.getCategories().forEach(categoryId -> {
                 VisualizationTemplateCategoryMap categoryMap = new VisualizationTemplateCategoryMap();
@@ -314,7 +368,16 @@ public class TemplateManageService implements TemplateManageApi {
             request.getCategories().forEach(categoryId -> {
                 visualizationTemplateCategoryMapRepository.deleteByTemplateIdAndCategoryId(templateId, categoryId);
                 // 如何是最后一个 则实际模板需要删除
-                Long result = extTemplateMapper.checkRepeatTemplateId(categoryId, templateId);
+
+                Specification<VisualizationTemplateCategoryMap> spec = (root, query, cb) -> {
+                    List<Predicate> predicates = new ArrayList<>();
+                    predicates.add(cb.equal(root.get("categoryId"), categoryId));
+                    predicates.add(cb.equal(root.get("templateId"), templateId));
+                    return cb.and(predicates.toArray(new Predicate[0]));
+                };
+
+                long result = visualizationTemplateCategoryMapRepository.count(spec);
+
                 if (result == 0) {
                     visualizationTemplateRepository.deleteById(templateId);
                 }

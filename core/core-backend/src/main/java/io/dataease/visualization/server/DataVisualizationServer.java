@@ -2,13 +2,7 @@ package io.dataease.visualization.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
@@ -32,14 +26,18 @@ import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dao.auto.entity.CoreDatasetTableField;
+import io.dataease.dataset.dao.auto.entity.QCoreDatasetGroup;
+import io.dataease.dataset.dao.auto.entity.QCoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
-import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
+import io.dataease.datasource.dao.auto.entity.QCoreDatasource;
+import io.dataease.datasource.dao.auto.entity.QCoreDatasourceTask;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
@@ -63,10 +61,7 @@ import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.*;
-import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
-import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewRepository;
-import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoRepository;
-import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
+import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreBusiManage;
 import io.dataease.visualization.manage.CoreVisualizationManage;
@@ -166,6 +161,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private SnapshotDataVisualizationInfoRepository snapshotDataVisualizationInfoRepository;
     @Resource
     private DatasetSQLManage datasetSQLManage;
+    @Autowired
+    private VisualizationLinkJumpRepository visualizationLinkJumpRepository;
+    @Autowired
+    private VisualizationLinkageRepository visualizationLinkageRepository;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -923,14 +922,34 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo = null;
         //获取所有视图信息
         if (!CollectionUtils.isEmpty(viewIds)) {
-            chartViewVOInfo = appTemplateMapper.findAppViewInfo(viewIds);
+            chartViewVOInfo = coreChartViewRepository.findAllById(viewIds).stream().map(item -> {
+                return BeanUtils.copyBean(new AppCoreChartViewVO(), item);
+            }).collect(Collectors.toList());
         }
         if (!CollectionUtils.isEmpty(dsIds)) {
-            datasetGroupVOInfo = appTemplateMapper.findAppDatasetGroupInfo(dsIds);
-            datasetTableVOInfo = appTemplateMapper.findAppDatasetTableInfo(dsIds);
-            datasetTableFieldVOInfo = appTemplateMapper.findAppDatasetTableFieldInfo(dsIds);
-            datasourceVOInfo = appTemplateMapper.findAppDatasourceInfo(dsIds);
-            datasourceTaskVOInfo = appTemplateMapper.findAppDatasourceTaskInfo(dsIds);
+            QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
+            datasetGroupVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasetGroupVO.class)).from(coreDatasetGroup).where(coreDatasetGroup.id.in(dsIds)).fetch();
+
+            QCoreDatasetTable coreDatasetTable = QCoreDatasetTable.coreDatasetTable;
+            datasetTableVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasetTableVO.class)).from(coreDatasetTable).where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
+
+            QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
+            datasetTableFieldVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasetTableFieldVO.class)).from(coreDatasetTableField)
+                    .where(coreDatasetTableField.datasetGroupId.in(dsIds)).fetch();
+
+            QCoreDatasourceTask coreDatasourceTask = QCoreDatasourceTask.coreDatasourceTask;
+            QCoreDatasource coreDatasource = QCoreDatasource.coreDatasource;
+
+            datasourceVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasourceVO.class)).from(coreDatasource)
+                    .innerJoin(coreDatasetTable).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
+                    .where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
+
+            datasourceTaskVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasourceTaskVO.class)).from(coreDatasourceTask)
+                    .innerJoin(coreDatasource).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
+                    .innerJoin(coreDatasetTable).on(coreDatasetTable.datasourceId.eq(coreDatasource.id))
+                    .where(coreDatasetTable.datasetGroupId.in(dsIds))
+                    .fetch();
+
         }
 
         if (CollectionUtils.isEmpty(datasourceVOInfo)) {
@@ -939,11 +958,39 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DEException.throwException(Translator.get("i18n_app_error_no_api"));
         }
 
-        List<VisualizationLinkageVO> linkageVOInfo = appTemplateMapper.findAppLinkageInfo(dvId);
-        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = appTemplateMapper.findAppLinkageFieldInfo(dvId);
-        List<VisualizationLinkJumpVO> linkJumpVOInfo = appTemplateMapper.findAppLinkJumpInfo(dvId);
-        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = appTemplateMapper.findAppLinkJumpInfoInfo(dvId);
-        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = appTemplateMapper.findAppLinkJumpTargetViewInfoInfo(dvId);
+
+        List<VisualizationLinkageVO> linkageVOInfo = visualizationLinkageRepository.findByDvId(dvId).stream().map(item -> {
+            VisualizationLinkageVO linkageVO = BeanUtils.copyBean(new VisualizationLinkageVO(), item);
+            return linkageVO;
+        }).collect(Collectors.toList());
+
+        QVisualizationLinkageField visualizationLinkageField = QVisualizationLinkageField.visualizationLinkageField;
+        QVisualizationLinkage visualizationLinkage = QVisualizationLinkage.visualizationLinkage;
+        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = queryFactory.select(Projections.constructor(VisualizationLinkageFieldVO.class)).from(visualizationLinkageField)
+                .innerJoin(visualizationLinkage).on(visualizationLinkageField.linkageId.eq(visualizationLinkage.id))
+                .where(visualizationLinkage.dvId.eq(dvId)).fetch();
+
+
+        List<VisualizationLinkJumpVO> linkJumpVOInfo = visualizationLinkJumpRepository.findBySourceDvId(dvId).stream().map(item -> {
+            VisualizationLinkJumpVO linkJumpVO = BeanUtils.copyBean(new VisualizationLinkJumpVO(), item);
+            return linkJumpVO;
+        }).collect(Collectors.toList());
+
+        QVisualizationLinkJumpInfo visualizationLinkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
+        QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
+        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = queryFactory.select(Projections.constructor(VisualizationLinkJumpInfoVO.class)).from(visualizationLinkJumpInfo)
+                .innerJoin(visualizationLinkJump).on(visualizationLinkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
+                .where(visualizationLinkJump.sourceDvId.eq(dvId)).fetch();
+
+
+        QVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
+
+        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = queryFactory.select(Projections.constructor(VisualizationLinkJumpTargetViewInfoVO.class)).from(visualizationLinkJumpTargetViewInfo)
+                .innerJoin(visualizationLinkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(visualizationLinkJumpInfo.id))
+                .innerJoin(visualizationLinkJump).on(visualizationLinkJump.id.eq(visualizationLinkJumpInfo.linkJumpId))
+                .where(visualizationLinkJump.sourceDvId.eq(dvId))
+                .fetch();
+
 
         return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo, datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo, linkJumpVOInfo, linkJumpInfoVOInfo, listJumpTargetViewInfoVO, linkageVOInfo, linkageFieldVOInfo);
     }
