@@ -59,7 +59,7 @@ public class CoreVisualizationManage {
     private VisualizationLinkageFieldRepository visualizationLinkageFieldRepository;
     @Resource
     private VisualizationLinkageRepository visualizationLinkageRepository;
-    @Resource
+
     private VisualizationLinkJumpRepository visualizationLinkJumpRepository;
     @Resource
     private VisualizationLinkJumpInfoRepository visualizationLinkJumpInfoRepository;
@@ -274,7 +274,7 @@ public class CoreVisualizationManage {
         if (ObjectUtils.isEmpty(visualizationResourcePOPageIPage)) {
             return null;
         }
-        List<VisualizationResourceVO> vos = proxy().formatResult(visualizationResourcePOPageIPage.getRecords());
+        List<VisualizationResourceVO> vos = proxy().formatResult(visualizationResourcePOPageIPage.getContent());
         IPage<VisualizationResourceVO> iPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>();
         iPage.setCurrent(visualizationResourcePOPageIPage.getCurrent());
         iPage.setPages(visualizationResourcePOPageIPage.getPages());
@@ -346,11 +346,13 @@ public class CoreVisualizationManage {
             dataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds.stream()
                     .map(Object::toString)
                     .collect(Collectors.toList()));
-
-
             coreChartViewRepository.deleteBySceneId(dvId);
+            List<VisualizationLinkage> visualizationLinkages = visualizationLinkageRepository.findByDvId(dvId);
+            if (CollectionUtils.isNotEmpty(visualizationLinkages)) {
+                visualizationLinkageFieldRepository.deleteByLinkageIds(visualizationLinkages.stream().map(VisualizationLinkage::getId).collect(Collectors.toList()));
+            }
             linkageMapper.deleteViewLinkageField(dvId, null);
-            linkageMapper.deleteViewLinkage(dvId, null);
+            visualizationLinkageRepository.deleteByDvId(dvId);
             linkJumpMapper.deleteJumpTargetViewInfoWithVisualization(dvId);
             linkJumpMapper.deleteJumpInfoWithVisualization(dvId);
             linkJumpMapper.deleteJumpWithVisualization(dvId);

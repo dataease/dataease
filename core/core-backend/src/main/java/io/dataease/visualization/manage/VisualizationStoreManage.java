@@ -65,9 +65,6 @@ public class VisualizationStoreManage {
     }
 
     public Boolean favorited(Long resourceId) {
-        QueryWrapper<CoreStore> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("resource_id", resourceId);
-        queryWrapper.eq("uid", AuthUtils.getUser().getUserId());
         Specification<CoreStore> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("uid"), AuthUtils.getUser().getUserId()));
@@ -78,17 +75,13 @@ public class VisualizationStoreManage {
     }
 
     @XpackInteract(value = "perFilterManage", recursion = true, invalid = true)
-    public IPage<VisualizationStoreVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
-        IPage<StorePO> storePOIPage = proxy().queryStorePage(pageNum, pageSize, request);
+    public Page<VisualizationStoreVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
+        Page<StorePO> storePOIPage = proxy().queryStorePage(pageNum, pageSize, request);
         if (ObjectUtils.isEmpty(storePOIPage)) return null;
-        List<VisualizationStoreVO> vos = proxy().formatResult(storePOIPage.getRecords());
-        IPage<VisualizationStoreVO> ipage = new Page<>();
-        ipage.setCurrent(storePOIPage.getCurrent());
-        ipage.setPages(storePOIPage.getPages());
-        ipage.setSize(storePOIPage.getSize());
-        ipage.setTotal(storePOIPage.getTotal());
-        ipage.setRecords(vos);
-        return ipage;
+        List<VisualizationStoreVO> vos = proxy().formatResult(storePOIPage.getContent());
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        return new PageImpl<>(vos, pageable, storePOIPage.getTotalElements());
     }
 
     public VisualizationStoreManage proxy() {

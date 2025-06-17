@@ -25,7 +25,6 @@ public interface ExtVisualizationLinkageMapper {
 
     List<DatasetTableFieldDTO> queryTableFieldWithViewId(@Param("viewId") Long viewId);
 
-    void deleteViewLinkage(@Param("dvId") Long dvId,@Param("sourceViewId") Long sourceViewId);
 
     void deleteViewLinkageField(@Param("dvId") Long dvId,@Param("sourceViewId") Long sourceViewId);
 

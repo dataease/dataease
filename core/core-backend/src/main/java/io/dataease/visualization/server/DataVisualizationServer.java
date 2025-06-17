@@ -1,7 +1,14 @@
 package io.dataease.visualization.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
@@ -55,9 +62,7 @@ import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
-import io.dataease.visualization.dao.auto.entity.QSnapshotCoreChartView;
-import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
-import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
+import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewRepository;
 import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoRepository;
@@ -183,13 +188,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         // 如果是编辑查询 则进行镜像检查
         if (DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT.equals(request.getSource())) {
             Specification<SnapshotDataVisualizationInfo> spec = (root, query, criteriaBuilder) -> {
-                return criteriaBuilder.and(
-                        criteriaBuilder.equal(root.get("id"), dvId),
-                        root.get("status").in(Arrays.asList(
-                                CommonConstants.DV_STATUS.UNPUBLISHED,
-                                CommonConstants.DV_STATUS.SAVED_UNPUBLISHED
-                        ))
-                );
+                return criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), dvId), root.get("status").in(Arrays.asList(CommonConstants.DV_STATUS.UNPUBLISHED, CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)));
             };
             if (!snapshotDataVisualizationInfoRepository.exists(spec)) {
                 coreVisualizationManage.dvSnapshotRecover(dvId);
@@ -752,7 +751,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public String findDvType(Long dvId) {
-        return extDataVisualizationMapper.findDvType(dvId);
+        DataVisualizationInfo dataVisualizationInfo = dataVisualizationInfoRepository.findById(String.valueOf(dvId)).orElse(null);
+        if (dataVisualizationInfo != null) {
+            return dataVisualizationInfo.getType();
+        } else {
+            return null;
+        }
+
     }
 
     @Override
@@ -894,24 +899,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
         QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
 
-        List<VisualizationViewTableDTO> result = queryFactory.select(Projections.constructor(VisualizationViewTableDTO.class,
-                        snapshotCoreChartView.id,
-                        snapshotCoreChartView.title,
-                        snapshotCoreChartView.sceneId,
-                        snapshotCoreChartView.tableId,
-                        snapshotCoreChartView.type,
-                        snapshotCoreChartView.render,
-                        snapshotCoreChartView.sceneId.as("visualizationId"),
-                        coreDatasetTableField.id.as("fieldId"),
-                        coreDatasetTableField.originName,
-                        coreDatasetTableField.name.as("fieldName"),
-                        coreDatasetTableField.type.as("fieldType"),
-                        coreDatasetTableField.deType
-                )).from(snapshotCoreChartView)
-                .join(coreDatasetTableField).on(snapshotCoreChartView.tableId.eq(coreDatasetTableField.datasetGroupId))
-                .where(snapshotCoreChartView.sceneId.eq(dvId)
-                        .and(snapshotCoreChartView.id.isNotNull())
-                        .and(snapshotCoreChartView.type.ne("VQuery"))).fetch();
+        List<VisualizationViewTableDTO> result = queryFactory.select(Projections.constructor(VisualizationViewTableDTO.class, snapshotCoreChartView.id, snapshotCoreChartView.title, snapshotCoreChartView.sceneId, snapshotCoreChartView.tableId, snapshotCoreChartView.type, snapshotCoreChartView.render, snapshotCoreChartView.sceneId.as("visualizationId"), coreDatasetTableField.id.as("fieldId"), coreDatasetTableField.originName, coreDatasetTableField.name.as("fieldName"), coreDatasetTableField.type.as("fieldType"), coreDatasetTableField.deType)).from(snapshotCoreChartView).join(coreDatasetTableField).on(snapshotCoreChartView.tableId.eq(coreDatasetTableField.datasetGroupId)).where(snapshotCoreChartView.sceneId.eq(dvId).and(snapshotCoreChartView.id.isNotNull()).and(snapshotCoreChartView.type.ne("VQuery"))).fetch();
 
         SnapshotDataVisualizationInfo dvInfo = snapshotDataVisualizationInfoRepository.findById(dvId).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
