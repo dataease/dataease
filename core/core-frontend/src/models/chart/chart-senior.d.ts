@@ -1,5 +1,3 @@
-import { SymbolicMap } from '@/views/chart/components/js/panel/charts/map/symbolic-map'
-
 /**
  * 高级设置
  */

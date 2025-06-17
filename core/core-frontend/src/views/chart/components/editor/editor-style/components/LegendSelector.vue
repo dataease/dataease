@@ -242,8 +242,8 @@ const changeLegendSort = sort => {
   } else {
     state.showCustomSort = false
     state.legendForm.sort = sort
+    changeLegendStyle('sort')
   }
-  changeLegendStyle('sort')
 }
 const closeCustomSort = () => {
   state.showCustomSort = false

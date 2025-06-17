@@ -3178,7 +3178,6 @@ export default {
     space_left: '左',
     space_width: '宽',
     space_height: '高',
-    to_top: '置顶',
     down: '下载',
     mobile_style_setting: '样式设置',
     mobile_style_setting_tips: '自定义移动端背景',
