@@ -309,6 +309,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 
             // 根据配置动态决定排序顺序
             uniqueValues.sort((a, b) => {
+              if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
+                return sortMethod === 'ASC' ? a - b : b - a
+              }
               if (!a && !b) {
                 return 0
               }
@@ -345,6 +348,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
             const uniqueValues = [...new Set(fieldValues)]
             // 根据配置动态决定排序顺序
             uniqueValues.sort((a, b) => {
+              if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
+                return sortMethod === 'ASC' ? a - b : b - a
+              }
               if (!a && !b) {
                 return 0
               }
