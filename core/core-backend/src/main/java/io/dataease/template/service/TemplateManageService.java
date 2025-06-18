@@ -1,6 +1,5 @@
 package io.dataease.template.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.template.TemplateManageApi;
@@ -9,7 +8,6 @@ import io.dataease.api.template.request.TemplateManageBatchRequest;
 import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.api.template.vo.VisualizationTemplateVO;
 import io.dataease.constant.CommonConstants;
-import io.dataease.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.exception.DEException;
 import io.dataease.template.dao.auto.entity.*;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapRepository;
