@@ -1,7 +1,7 @@
-package io.dataease.datasource.dao.interceptor;
+package io.dataease.dao.auto.interceptor;
 
 
-import io.dataease.commons.utils.EncryptUtils;
+import io.dataease.utils.EncryptUtils;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

@@ -1,8 +1,8 @@
 package io.dataease.datasource.manage;
 
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;

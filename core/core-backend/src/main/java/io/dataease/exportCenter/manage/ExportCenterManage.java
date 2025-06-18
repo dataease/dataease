@@ -18,7 +18,7 @@ import io.dataease.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.chart.server.ChartDataServer;
 import io.dataease.commons.utils.ExcelWatermarkUtils;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.manage.*;
 import io.dataease.datasource.utils.DatasourceUtils;

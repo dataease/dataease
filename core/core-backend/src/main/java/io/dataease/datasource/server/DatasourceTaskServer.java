@@ -1,7 +1,7 @@
 package io.dataease.datasource.server;
 
 import io.dataease.commons.constants.TaskStatus;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;

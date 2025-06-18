@@ -1,6 +1,6 @@
 package io.dataease.dataset.manage;
 
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;

@@ -12,6 +12,7 @@ import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.*;

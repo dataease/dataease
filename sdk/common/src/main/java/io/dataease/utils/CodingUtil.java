@@ -1,4 +1,4 @@
-package io.dataease.commons.utils;
+package io.dataease.utils;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;

@@ -1,6 +1,6 @@
 package io.dataease.datasource.dao.auto.entity;
 
-import io.dataease.datasource.dao.interceptor.EncryptDecryptConverter;
+import io.dataease.dao.auto.interceptor.EncryptDecryptConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

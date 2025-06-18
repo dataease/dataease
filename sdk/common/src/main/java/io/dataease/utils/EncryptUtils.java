@@ -1,6 +1,5 @@
-package io.dataease.commons.utils;
+package io.dataease.utils;
 
-import io.dataease.utils.BeanUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;

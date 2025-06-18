@@ -9,7 +9,7 @@ import io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO;
 import io.dataease.api.visualization.response.VisualizationOuterParamsBaseResponse;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.constant.CommonConstants;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.constant.DeTypeConstants;
 import io.dataease.extensions.view.dto.SqlVariableDetails;

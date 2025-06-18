@@ -1,6 +1,6 @@
 package io.dataease.datasource.dao.auto.repository;
 
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

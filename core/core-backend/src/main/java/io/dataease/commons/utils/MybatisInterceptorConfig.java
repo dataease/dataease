@@ -1,6 +1,7 @@
 package io.dataease.commons.utils;
 
 
+import io.dataease.utils.EncryptUtils;
 import lombok.Getter;
 import lombok.Setter;
 

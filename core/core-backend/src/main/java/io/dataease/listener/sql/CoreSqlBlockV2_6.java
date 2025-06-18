@@ -2,10 +2,10 @@ package io.dataease.listener.sql;
 
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.dao.auto.entity.CoreChartView;
+import io.dataease.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.initSql.Version;

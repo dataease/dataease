@@ -6,7 +6,7 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.copilot.api.CopilotAPI;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetSQLManage;

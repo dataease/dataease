@@ -1,6 +1,6 @@
 package io.dataease.datasource.manage;
 
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
