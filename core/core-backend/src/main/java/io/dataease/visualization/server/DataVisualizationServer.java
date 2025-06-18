@@ -285,7 +285,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     }
                 });
 
-                List<CoreDatasource> systemDatasource = coreDatasourceRepository.findInIds(newDatasourceId);
+                List<CoreDatasource> systemDatasource = coreDatasourceRepository.findAllById(newDatasourceId);
                 systemDatasource.forEach(datasourceNew -> {
                     // Excel 数据表明映射
                     if (StringUtils.isNotEmpty(datasourceNew.getConfiguration())) {

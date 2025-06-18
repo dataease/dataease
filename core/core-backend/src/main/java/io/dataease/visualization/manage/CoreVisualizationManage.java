@@ -661,7 +661,7 @@ public class CoreVisualizationManage {
         )).from(snapshotVisualizationOuterParams).where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(item -> {
             VisualizationOuterParams outerParams = new VisualizationOuterParams();
             BeanUtils.copyBean(outerParams, item);
-            visualizationOuterParamsRepository.save(outerParams);
+            visualizationOuterParamsRepository.saveAndFlush(outerParams);
         });
 
 

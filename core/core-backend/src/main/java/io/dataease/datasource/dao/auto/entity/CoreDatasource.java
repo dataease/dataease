@@ -1,5 +1,6 @@
 package io.dataease.datasource.dao.auto.entity;
 
+import io.dataease.datasource.dao.interceptor.EncryptDecryptConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -49,6 +50,7 @@ public class CoreDatasource {
     @Lob
     @Comment("详细信息")
     @Column(name = "configuration", length = 16777216, nullable = false)
+    @Convert(converter = EncryptDecryptConverter.class)
     private String configuration;
 
     @NotNull

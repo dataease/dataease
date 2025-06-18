@@ -1,5 +1,6 @@
 package io.dataease.datasource.dao.auto.entity;
 
+import io.dataease.datasource.dao.interceptor.EncryptDecryptConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -38,6 +39,7 @@ public class CoreDeEngine {
     @NotNull
     @Lob
     @Column(name = "configuration", nullable = false, length = 16777216)
+    @Convert(converter = EncryptDecryptConverter.class)
     private String configuration;
 
     @Comment("Create timestamp")

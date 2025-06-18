@@ -13,12 +13,9 @@ import java.util.List;
 
 public interface CoreDatasourceRepository extends JpaRepository<CoreDatasource, Long>, JpaSpecificationExecutor<CoreDatasource> {
 
-    @Query("SELECT p FROM CoreDatasource p WHERE p.id IN :ids")
-    List<CoreDatasource> findInIds(@Param("ids") List<Long> ids);
 
     @Query("SELECT p FROM CoreDatasource p WHERE p.type IN :types")
     List<CoreDatasource> findInTypes(@Param("types") List<String> types);
-
 
     @Query("SELECT c FROM CoreDatasource c WHERE c.pid = :pid")
     List<CoreDatasource> findByPid(Long pid);

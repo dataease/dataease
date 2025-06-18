@@ -291,7 +291,7 @@ public class DatasetGroupManage {
         if (CollectionUtils.isEmpty(ids)) {
             DEException.throwException(Translator.get("i18n_dataset_create_error"));
         }
-        List<DatasourceDTO> datasourceDTOList = coreDatasourceRepository.findInIds(ids).stream().map(ele -> {
+        List<DatasourceDTO> datasourceDTOList = coreDatasourceRepository.findAllById(ids).stream().map(ele -> {
             DatasourceDTO dto = new DatasourceDTO();
             BeanUtils.copyBean(dto, ele);
             dto.setConfiguration(null);

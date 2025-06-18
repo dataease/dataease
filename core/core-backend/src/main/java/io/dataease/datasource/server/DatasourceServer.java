@@ -143,7 +143,7 @@ public class DatasourceServer implements DatasourceApi {
             return false;
         }
 
-        List<CoreDatasource> datasources = coreDatasourceRepository.findInIds(ids);
+        List<CoreDatasource> datasources = coreDatasourceRepository.findAllById(ids);
         if (CollectionUtils.isEmpty(datasources)) {
             return false;
         }
@@ -572,7 +572,7 @@ public class DatasourceServer implements DatasourceApi {
             if (ids.isEmpty()) {
                 return list;
             } else {
-                dsList = coreDatasourceRepository.findInIds(ids);
+                dsList = coreDatasourceRepository.findAllById(ids);
             }
         }
         if (types != null) {

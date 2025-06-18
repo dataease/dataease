@@ -179,7 +179,7 @@ public class DataSourceManage {
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        coreDatasourceRepository.save(coreDatasource);
+        coreDatasourceRepository.saveAndFlush(coreDatasource);
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 
