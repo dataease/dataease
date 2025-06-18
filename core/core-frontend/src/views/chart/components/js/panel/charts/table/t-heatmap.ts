@@ -208,6 +208,12 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     return newChart
   }
 
+  protected configTheme(chart: Chart, options: HeatmapOptions): HeatmapOptions {
+    const tmp = super.configTheme(chart, options)
+    tmp.theme.innerLabels.offset = 0
+    return tmp
+  }
+
   protected configBasicStyle(chart: Chart, options: HeatmapOptions): HeatmapOptions {
     const basicStyle = parseJson(chart.customAttr).basicStyle
     const color = basicStyle.colors?.map(ele => {
