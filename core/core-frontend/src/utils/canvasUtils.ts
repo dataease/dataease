@@ -1019,12 +1019,12 @@ export function findComponentById(componentId) {
   return result
 }
 
-export function onInitReady(params) {
+export function onInitReady(params, eventName = 'canvas_init_ready') {
   try {
-    console.info('Canvas initReady')
+    console.info('event:' + eventName)
     const targetPm = {
       type: 'dataease-embedded-interactive',
-      eventName: 'canvas_init_ready',
+      eventName: eventName,
       args: params
     }
     window.parent.postMessage(targetPm, '*')
