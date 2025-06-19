@@ -48,7 +48,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import _ from 'lodash'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
-import { findParentIdByChildIdRecursive } from '@/utils/canvasUtils'
+import { findParentIdByChildIdRecursive, onInitReady } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
 import treeSort, { treeParentWeight } from '@/utils/treeSortUtils'
 import router from '@/router'
@@ -371,6 +371,7 @@ const afterTreeInit = () => {
     expandedArray.value = getDefaultExpandedKeys()
     returnMounted.value = false
   }
+  onInitReady({ type: curCanvasType.value }, 'resource_tree_init_ready')
   nextTick(() => {
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
     resourceListTree.value.filter(filterText.value)
