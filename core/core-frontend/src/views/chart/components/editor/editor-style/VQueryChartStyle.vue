@@ -427,7 +427,7 @@ const onTitleChange = () => {
             >
               <el-input-number
                 v-model="chart.customStyle.component.queryConditionHeight"
-                :min="0"
+                :min="32"
                 :effect="themes"
                 controls-position="right"
               />
