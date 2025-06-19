@@ -1377,9 +1377,9 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 1)
-        const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
+        const value = meta?.formatter?.(fieldValue) || fieldValue
         cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        cell.value = value
+        cell.value = isNumeric(value) ? parseFloat(value) : value
       }
     }
   }
@@ -1548,9 +1548,9 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 2)
-        const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
+        const value = meta?.formatter?.(fieldValue) || fieldValue
         cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        cell.value = value
+        cell.value = isNumeric(value) ? parseFloat(value) : value
       }
     }
   }
@@ -1670,9 +1670,9 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 1 + 1)
-        const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
+        const value = meta?.formatter?.(fieldValue) || fieldValue
         cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        cell.value = value
+        cell.value = isNumeric(value) ? parseFloat(value) : value
       }
     }
   }
@@ -1793,9 +1793,9 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 2)
-        const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
+        const value = meta?.formatter?.(fieldValue) || fieldValue
         cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        cell.value = value
+        cell.value = isNumeric(value) ? parseFloat(value) : value
       }
     }
   }
@@ -1804,6 +1804,11 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
   })
   saveAs(dataBlob, `${chart.title ?? '透视表'}.xlsx`)
+}
+
+
+function isNumeric(value: string): boolean {
+  return /^[+-]?\d+(\.\d+)?$/.test(value)
 }
 
 export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
