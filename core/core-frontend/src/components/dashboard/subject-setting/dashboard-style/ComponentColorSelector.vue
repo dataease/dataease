@@ -70,7 +70,7 @@
         :title="t('visualization.table_color_matching')"
         name="table_color_matching"
         class="inner-collapse"
-        effect="dark"
+        :effect="themes"
         :class="`inner-collapse_${themes}`"
       >
         <div style="padding: 0 8px 8px">
@@ -117,6 +117,51 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
+              <el-form-item :label="t('chart.rowBackgroundColor')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm['tableHeader']['tableHeaderBgColor']"
+                  size="small"
+                  :predefine="predefineColors"
+                  color-format="rgb"
+                  :effect="themes"
+                  show-alpha
+                  is-custom
+                  @change="changeColorCase('tableHeaderBgColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('chart.colBackgroundColor')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm['tableHeader']['tableHeaderColBgColor']"
+                  size="small"
+                  :predefine="predefineColors"
+                  color-format="rgb"
+                  :effect="themes"
+                  show-alpha
+                  is-custom
+                  @change="changeColorCase('tableHeaderColBgColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('chart.cornerBackgroundColor')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm['tableHeader']['tableHeaderCornerBgColor']"
+                  size="small"
+                  :predefine="predefineColors"
+                  color-format="rgb"
+                  :effect="themes"
+                  show-alpha
+                  is-custom
+                  @change="changeColorCase('tableHeaderCornerBgColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
               <el-form-item :label="t('chart.table_item_font_color')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
@@ -129,8 +174,6 @@
                 />
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row :gutter="8">
             <el-col :span="12">
               <el-form-item :label="t('chart.table_border_color')" class="form-item">
                 <el-color-picker
