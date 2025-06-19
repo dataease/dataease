@@ -3210,8 +3210,7 @@ export default {
     template_preview: '預覽模板',
     apply: '應用',
     apply_this_template: '應用此模板',
-    market_network_tips:
-      '查看模板市場模板需要服務器與模板市場(https://templates.dataease.cn)連通，請檢查網絡...',
+    market_network_tips: '查看模板市場模板需要服務器與模板市場({0})連通，請檢查網絡...',
     enter_name_tips: '請輸入儀表板名稱',
     apply_template: '應用模板',
     style_template: '樣式模板',

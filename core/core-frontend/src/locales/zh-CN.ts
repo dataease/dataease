@@ -3215,8 +3215,7 @@ export default {
     template_preview: '预览模板',
     apply: '应用',
     apply_this_template: '应用此模板',
-    market_network_tips:
-      '查看模板市场模板需要服务器与模板市场(https://templates.dataease.cn)连通，请检查网络...',
+    market_network_tips: `查看模板市场模板需要服务器与模板市场({0})连通，请检查网络...`,
     enter_name_tips: '请输入仪表板名称',
     apply_template: '应用模板',
     style_template: '样式模板',

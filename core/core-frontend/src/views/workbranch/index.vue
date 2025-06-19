@@ -430,7 +430,7 @@ loadShareBase()
             </div>
           </el-row>
           <el-row v-show="!state.networkStatus" class="template-empty">
-            {{ t('visualization.market_network_tips') }}
+            {{ t('visualization.market_network_tips', [state.baseUrl]) }}
           </el-row>
         </template>
       </div>

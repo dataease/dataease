@@ -103,7 +103,8 @@ public class TemplateCenterManage {
         config.setConnectTimeout(5000);
         config.setSocketTimeout(10000);
         config.setConnectionRequestTimeout(5000);
-        return HttpClientUtil.get(url, config);
+        return HttpClientUtil.
+                get(url, config);
     }
 
     private MarketTemplateV2BaseResponse templateQuery(Map<String, String> templateParams) {

@@ -3304,7 +3304,7 @@ export default {
     apply: 'Apply',
     apply_this_template: 'Apply This Template',
     market_network_tips:
-      'To view templates from the template market, your server must be connected to the template market (https://templates.dataease.cn). Please check your network connection...',
+      'To view templates from the template market, your server must be connected to the template market ({0}). Please check your network connection...',
     enter_name_tips: 'Please enter the dashboard name.',
     apply_template: 'App Template',
     style_template: 'Style Template',
