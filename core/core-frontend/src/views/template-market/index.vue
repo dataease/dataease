@@ -175,7 +175,7 @@
           </div>
         </el-row>
         <el-row v-show="!state.networkStatus" class="template-empty">
-          {{ t('visualization.market_network_tips') }}
+          111 {{ t('visualization.market_network_tips', [state.baseUrl]) }}
         </el-row>
       </el-row>
     </el-row>
@@ -428,7 +428,8 @@ const initMarketTemplate = async () => {
       )
       state.marketActiveTab = state.marketTabs[1].label
     })
-    .catch(() => {
+    .catch(err => {
+      console.error('searchMarket:', err)
       state.networkStatus = false
     })
 }
