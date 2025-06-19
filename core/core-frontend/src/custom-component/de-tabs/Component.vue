@@ -171,6 +171,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Board from '@/components/de-board/Board.vue'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
@@ -267,6 +268,23 @@ const svgInnerActiveEnable = itemName => {
     backgroundType === 'innerImage' &&
     typeof innerImage === 'string'
   )
+}
+
+// tooltips 轮播会影响tab 展示
+const viewToolTipsChange = () => {
+  element.value.propValue?.forEach(tabItem => {
+    const tMethod =
+      editableTabsValue.value === tabItem.name
+        ? ChartCarouselTooltip.resume
+        : ChartCarouselTooltip.paused
+    tabItem.componentData?.forEach(componentItem => {
+      tMethod(componentItem.id)
+      if (componentItem.component === 'Group')
+        componentItem.propValue.forEach(groupItem => {
+          tMethod(groupItem.id)
+        })
+    })
+  })
 }
 
 const handleMouseEnter = () => {
@@ -624,6 +642,12 @@ watch(
   }
 )
 
+watch(
+  () => editableTabsValue.value,
+  () => {
+    viewToolTipsChange()
+  }
+)
 const initCarousel = () => {
   carouselTimer && clearInterval(carouselTimer)
   carouselTimer = null
@@ -656,12 +680,14 @@ onMounted(() => {
     eventBus.on('onTabMoveOut-' + element.value.id, componentMoveOut)
     eventBus.on('onTabSortChange-' + element.value.id, reShow)
   }
-
   currentInstance = getCurrentInstance()
   initCarousel()
   nextTick(() => {
     groupSizeStyleAdaptor(element.value)
   })
+  setTimeout(() => {
+    viewToolTipsChange()
+  }, 1000)
 })
 onBeforeUnmount(() => {
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
