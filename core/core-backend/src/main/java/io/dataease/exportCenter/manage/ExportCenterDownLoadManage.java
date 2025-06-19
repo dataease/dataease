@@ -484,6 +484,7 @@ public class ExportCenterDownLoadManage {
                             xAxis.addAll(request.getViewInfo().getXAxisExt());
                             xAxis.addAll(request.getViewInfo().getYAxisExt());
                             xAxis.addAll(request.getViewInfo().getExtStack());
+                            xAxis.addAll(request.getViewInfo().getDrillFields());
                             header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(DatasetTableFieldDTO::getName).collect(Collectors.toList()).contains(item)).collect(Collectors.toList()).toArray();
                             details.add(0, header);
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);

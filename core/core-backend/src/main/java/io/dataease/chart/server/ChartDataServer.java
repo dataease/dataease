@@ -344,6 +344,7 @@ public class ChartDataServer implements ChartDataApi {
         xAxis.addAll(viewInfo.getXAxisExt());
         xAxis.addAll(viewInfo.getYAxisExt());
         xAxis.addAll(viewInfo.getExtStack());
+        xAxis.addAll(viewInfo.getDrillFields());
         TableHeader tableHeader = null;
         Integer totalDepth = 0;
         if (viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) {
