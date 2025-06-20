@@ -144,6 +144,7 @@ onMounted(() => {
           v-model="state.currentAxis"
           :class="'form-item-' + themes"
           class="form-item"
+          :effect="themes"
           @change="onSelectAxis"
         >
           <el-option
@@ -173,6 +174,7 @@ onMounted(() => {
               v-model="state.currentAxisSummary.summary"
               :class="'form-item-' + themes"
               class="form-item"
+              :effect="themes"
               :disabled="!state.currentAxisSummary.show"
               @change="changeBasicStyle('seriesSummary')"
             >
