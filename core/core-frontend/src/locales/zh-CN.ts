@@ -1353,6 +1353,7 @@ export default {
     table_title_fontsize: '表头字体大小',
     table_item_fontsize: '表格字体大小',
     table_header_bg: '表头背景',
+    table_header_row_bg: '表头/行背景',
     table_item_bg: '表格背景',
     table_header_font_color: '表头字体',
     table_item_font_color: '表格字体',

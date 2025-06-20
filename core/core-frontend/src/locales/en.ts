@@ -1386,6 +1386,7 @@ export default {
     table_title_fontsize: 'Header font size',
     table_item_fontsize: 'Table font size',
     table_header_bg: 'Header Bg',
+    table_header_row_bg: 'Header&Row Bg',
     table_item_bg: 'Table Bg',
     table_header_font_color: 'Header font',
     table_item_font_color: 'Table font',
