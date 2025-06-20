@@ -154,6 +154,10 @@ const initForm = type => {
     cron: '0 0/1 * * * ? *'
   }
   form.value.type = type
+
+  setTimeout(() => {
+    remoteExcelForm.value.clearValidate()
+  }, 0)
 }
 
 const handleResize = debounce(() => {
