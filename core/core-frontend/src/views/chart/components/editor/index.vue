@@ -4016,10 +4016,10 @@ const deleteChartFieldItem = id => {
       destroy-on-close
     >
       <template #header>
-        <span style="font-size: 15px; font-weight: bold; color: black">
+        <span style="font-size: 15px; font-weight: bold; color: #1f2329">
           {{ t('chart.sort_priority') }}
         </span>
-        <span>({{ t('chart.sort_priority_tip') }})</span>
+        <span style="color: #1f2329">({{ t('chart.sort_priority_tip') }})</span>
       </template>
       <sort-priority-edit :chart="view" @on-priority-change="onPriorityChange" />
       <template #footer>
