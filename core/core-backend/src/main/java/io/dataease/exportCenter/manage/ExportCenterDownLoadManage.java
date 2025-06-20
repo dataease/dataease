@@ -485,15 +485,15 @@ public class ExportCenterDownLoadManage {
                             xAxis.addAll(request.getViewInfo().getYAxisExt());
                             xAxis.addAll(request.getViewInfo().getExtStack());
                             xAxis.addAll(request.getViewInfo().getDrillFields());
-                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(DatasetTableFieldDTO::getName).collect(Collectors.toList()).contains(item)).collect(Collectors.toList()).toArray();
+                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).toArray();
                             details.add(0, header);
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
                             exportTask.setExportStatus("IN_PROGRESS");
-                            double exportRogress = (double) (i / (chartViewDTO.getTotalPage() + 1));
+                            double exportProgress = (double) (i / (chartViewDTO.getTotalPage() + 1));
                             DecimalFormat df = new DecimalFormat("#.##");
-                            String formattedResult = df.format((exportRogress) * 100);
+                            String formattedResult = df.format((exportProgress) * 100);
                             exportTask.setExportProgress(formattedResult);
                             exportTaskMapper.updateById(exportTask);
                         }
