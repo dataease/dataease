@@ -97,7 +97,7 @@ const existLinkage = computed(() => {
   top: 2px;
   right: 2px;
   opacity: 0.8;
-  z-index: 1;
+  z-index: 2;
   position: absolute;
 }
 
