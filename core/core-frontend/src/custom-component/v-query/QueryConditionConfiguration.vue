@@ -1441,6 +1441,17 @@ const validate = () => {
       }
     }
 
+    if (ele.displayType === '2') {
+      if (!ele.defaultValueCheck) return false
+      if (
+        (Array.isArray(ele.defaultValue) && !ele.defaultValue.length) ||
+        (!Array.isArray(ele.defaultValue) && isNaN(ele.defaultValue))
+      ) {
+        ElMessage.error(t('v_query.cannot_be_empty_de'))
+        return true
+      }
+    }
+
     if (+ele.displayType === 7) {
       if (!ele.defaultValueCheck) return false
       if (ele.timeType === 'fixed') {
@@ -1544,7 +1555,7 @@ const handleBeforeClose = () => {
   relationshipChartIndex.value = 0
   dialogVisible.value = false
 }
-const emits = defineEmits(['queryData'])
+const emits = defineEmits(['queryData', 'reRenderAll'])
 const confirmClick = () => {
   if (validate()) return
   defaultConfigurationRef.value?.mult()
@@ -1559,6 +1570,7 @@ const confirmClick = () => {
         : curComponent.value.multiple
     )
   })
+  const oldArr = cloneDeep(unref(queryElement.value.propValue))
   queryElement.value.propValue = []
   nextTick(() => {
     conditions.value.forEach(itx => {
@@ -1579,6 +1591,7 @@ const confirmClick = () => {
     curComponent.value.id = ''
     relationshipChartIndex.value = 0
     nextTick(() => {
+      emits('reRenderAll', oldArr, cloneDeep(unref(conditions)))
       emits('queryData')
     })
   })
