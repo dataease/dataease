@@ -76,7 +76,7 @@
         <div style="padding: 0 8px 8px">
           <el-row :gutter="8">
             <el-col :span="12">
-              <el-form-item :label="t('chart.table_header_bg')" class="form-item">
+              <el-form-item :label="t('chart.table_header_row_bg')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
                   v-model="colorForm['tableHeader']['tableHeaderBgColor']"
@@ -117,21 +117,6 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item :label="t('chart.rowBackgroundColor')" class="form-item">
-                <el-color-picker
-                  :trigger-width="colorPickerWidth"
-                  v-model="colorForm['tableHeader']['tableHeaderBgColor']"
-                  size="small"
-                  :predefine="predefineColors"
-                  color-format="rgb"
-                  :effect="themes"
-                  show-alpha
-                  is-custom
-                  @change="changeColorCase('tableHeaderBgColor')"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
               <el-form-item :label="t('chart.colBackgroundColor')" class="form-item">
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
@@ -140,7 +125,6 @@
                   :predefine="predefineColors"
                   color-format="rgb"
                   :effect="themes"
-                  show-alpha
                   is-custom
                   @change="changeColorCase('tableHeaderColBgColor')"
                 />
@@ -155,7 +139,6 @@
                   :predefine="predefineColors"
                   color-format="rgb"
                   :effect="themes"
-                  show-alpha
                   is-custom
                   @change="changeColorCase('tableHeaderCornerBgColor')"
                 />
