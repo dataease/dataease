@@ -360,12 +360,16 @@ public class ChartDataServer implements ChartDataApi {
             Map<String, Object> customAttr = viewInfo.getCustomAttr();
             Map<String, Object> tableHeaderMap = (Map<String, Object>) customAttr.get("tableHeader");
             if (tableHeaderMap.get("headerGroup") != null && Boolean.parseBoolean(tableHeaderMap.get("headerGroup").toString())) {
-                tableHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
-                for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
-                    totalDepth = Math.max(totalDepth, getDepth(column, 1));
-                }
-                for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
-                    setWidth(column, 1);
+                var tmpHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
+                // 校验字段数量和顺序
+                if (validateHeaderGroup(tmpHeader, viewInfo.getXAxis())) {
+                    tableHeader = tmpHeader;
+                    for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
+                        totalDepth = Math.max(totalDepth, getDepth(column, 1));
+                    }
+                    for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
+                        setWidth(column, 1);
+                    }
                 }
             }
         }
@@ -517,6 +521,39 @@ public class ChartDataServer implements ChartDataApi {
         }
     }
 
+    private static boolean validateHeaderGroup(TableHeader header, List<ChartViewFieldDTO> fields) {
+        if (header == null) {
+            return false;
+        }
+        var columns = header.getHeaderGroupConfig().getColumns();
+        if (CollectionUtils.isEmpty(columns)) {
+            return false;
+        }
+        var leafColumn = getHeaderLeafColumn(columns);
+        if (CollectionUtils.isEmpty(leafColumn) || leafColumn.size() != fields.size()) {
+            return false;
+        }
+        for (int i = 0; i < leafColumn.size(); i++) {
+            var a = leafColumn.get(i);
+            var b = fields.get(i).getDataeaseName();
+            if (!StringUtils.equals(a, b)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<String> getHeaderLeafColumn(List<TableHeader.ColumnInfo> columns) {
+        var result = new ArrayList<String>();
+        for (TableHeader.ColumnInfo column : columns) {
+            if (CollectionUtils.isEmpty(column.getChildren())) {
+                result.add(column.getKey());
+            } else {
+                result.addAll(getHeaderLeafColumn(column.getChildren()));
+            }
+        }
+        return result;
+    }
 
     private static Integer getDepth(TableHeader.ColumnInfo column, Integer parentDepth) {
         if (org.springframework.util.CollectionUtils.isEmpty(column.getChildren())) {
