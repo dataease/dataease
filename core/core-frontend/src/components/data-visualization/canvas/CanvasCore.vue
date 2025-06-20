@@ -920,9 +920,11 @@ function removeItemComponent(item) {
       })
     }
     if (!!checkedFields.length) {
-      Array.from(new Set(checkedFields)).forEach(ele => {
-        emitter.emit(`query-data-${ele}`)
-      })
+      setTimeout(() => {
+        Array.from(new Set(checkedFields)).forEach(ele => {
+          emitter.emit(`query-data-${ele}`)
+        })
+      }, 300)
     }
     snapshotStore.recordSnapshotCache('removeItem')
   }

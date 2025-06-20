@@ -16,6 +16,7 @@ import {
   reactive,
   ref,
   toRefs,
+  unref,
   watch,
   computed,
   onMounted,
@@ -593,10 +594,27 @@ const addCriteriaConfigOut = () => {
   queryConfig.value.setConditionOut()
 }
 
+const reRenderAll = (oldArr, newArr) => {
+  const newArrIds = newArr.map(ele => ele.id)
+  const emitterList = (oldArr || []).reduce((pre, next) => {
+    if (newArrIds.includes(next.id)) return pre
+    const keyList = getKeyList(next)
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
+  if (!emitterList.length) return
+  emitterList.forEach(ele => {
+    console.log('`query-data-${ele}`', `query-data-${ele}`)
+    emitter.emit(`query-data-${ele}`)
+  })
+}
+
 const delQueryConfig = index => {
+  const com = cloneDeep(unref(list))
   list.value.splice(index, 1)
   element.value.propValue = [...list.value]
   snapshotStore.recordSnapshotCache('delQueryConfig')
+  reRenderAll(com, cloneDeep(unref(list)))
 }
 
 const resetData = () => {
@@ -939,6 +957,7 @@ const autoStyle = computed(() => {
       :query-element="element"
       @queryData="queryData"
       ref="queryConfig"
+      @reRenderAll="reRenderAll"
     ></QueryConditionConfiguration>
   </Teleport>
 </template>
