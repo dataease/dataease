@@ -83,6 +83,7 @@
                   size="small"
                   :predefine="predefineColors"
                   is-custom
+                  show-alpha
                   :effect="themes"
                   @change="changeColorCase('tableHeaderBgColor')"
                 />
@@ -96,6 +97,7 @@
                   size="small"
                   :predefine="predefineColors"
                   :effect="themes"
+                  show-alpha
                   is-custom
                   @change="changeColorCase('tableItemBgColor')"
                 />
@@ -125,6 +127,7 @@
                   :predefine="predefineColors"
                   color-format="rgb"
                   :effect="themes"
+                  show-alpha
                   is-custom
                   @change="changeColorCase('tableHeaderColBgColor')"
                 />
@@ -139,6 +142,7 @@
                   :predefine="predefineColors"
                   color-format="rgb"
                   :effect="themes"
+                  show-alpha
                   is-custom
                   @change="changeColorCase('tableHeaderCornerBgColor')"
                 />
@@ -166,6 +170,7 @@
                   :predefine="predefineColors"
                   :effect="themes"
                   is-custom
+                  show-alpha
                   @change="changeColorCase('tableBorderColor')"
                 />
               </el-form-item>
