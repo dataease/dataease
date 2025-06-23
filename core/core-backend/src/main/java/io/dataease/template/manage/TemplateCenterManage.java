@@ -1,11 +1,14 @@
 package io.dataease.template.manage;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.template.dto.TemplateManageDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.TemplateMarketDTO;
 import io.dataease.api.template.dto.TemplateMarketPreviewInfoDTO;
+import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.api.template.response.*;
 import io.dataease.api.template.vo.MarketApplicationMetaDataVO;
 import io.dataease.api.template.vo.MarketApplicationSpecVO;
@@ -20,7 +23,6 @@ import io.dataease.template.dao.auto.entity.QVisualizationTemplate;
 import io.dataease.template.dao.auto.entity.QVisualizationTemplateCategory;
 import io.dataease.template.dao.auto.entity.QVisualizationTemplateCategoryMap;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapRepository;
-import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.JsonUtil;
@@ -50,8 +52,6 @@ public class TemplateCenterManage {
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
 
-    @Resource
-    private ExtVisualizationTemplateMapper templateManageMapper;
     @Resource
     private JPAQueryFactory queryFactory;
 
@@ -367,5 +367,33 @@ public class TemplateCenterManage {
                         LinkedHashMap::new
                 ));
         return new ArrayList<>(marketMetaDataMap.values());
+    }
+
+    public List<TemplateManageDTO> findTemplateList(TemplateManageRequest request) {
+        QVisualizationTemplate vt = QVisualizationTemplate.visualizationTemplate;
+        QVisualizationTemplateCategoryMap vtcm = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
+
+        JPAQuery<TemplateManageDTO> query = queryFactory.select(Projections.constructor(
+                TemplateManageDTO.class,
+                vt.id,
+                vt.name,
+                vt.pid,
+                vt.level,
+                vt.dvType,
+                vt.nodeType,
+                vt.createBy,
+                vt.createTime,
+                vt.templateType,
+                vt.snapshot,
+                request.getWithBlobs().equals("Y") ? vt.templateStyle : Expressions.nullExpression(),
+                request.getWithBlobs().equals("Y") ? vt.templateData : Expressions.nullExpression(),
+                request.getWithBlobs().equals("Y") ? vt.dynamicData : Expressions.nullExpression()
+        ))
+                .from(vt)
+                .leftJoin(vtcm).on(vt.id.eq(vtcm.templateId))
+                .where(vtcm.categoryId.eq(request.getCategoryId()))
+                .orderBy(vt.createTime.desc());
+
+        return  query.fetch();
     }
 }

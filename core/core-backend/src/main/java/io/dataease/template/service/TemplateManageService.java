@@ -13,7 +13,7 @@ import io.dataease.template.dao.auto.entity.*;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapRepository;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryRepository;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
-import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
+import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.visualization.server.StaticResourceServer;
@@ -48,14 +48,14 @@ public class TemplateManageService implements TemplateManageApi {
     @Resource
     private VisualizationTemplateCategoryMapRepository visualizationTemplateCategoryMapRepository;
     @Resource
-    private ExtVisualizationTemplateMapper extTemplateMapper;
-    @Resource
     private StaticResourceServer staticResourceServer;
+    @Resource
+    private TemplateCenterManage templateCenterManage;
 
     @Override
     public List<TemplateManageDTO> templateList(TemplateManageRequest request) {
         request.setWithBlobs("N");
-        List<TemplateManageDTO> templateList = extTemplateMapper.findTemplateList(request);
+        List<TemplateManageDTO> templateList = templateCenterManage.findTemplateList(request);
         if (request.getWithChildren()) {
             getTreeChildren(templateList, request.getLeafDvType());
         }
@@ -64,14 +64,14 @@ public class TemplateManageService implements TemplateManageApi {
 
     public void getTreeChildren(List<TemplateManageDTO> parentTemplateList, String dvType) {
         Optional.ofNullable(parentTemplateList).ifPresent(parent -> parent.forEach(parentTemplate -> {
-            List<TemplateManageDTO> panelTemplateDTOChildren = extTemplateMapper.findTemplateList(new TemplateManageRequest(parentTemplate.getId(), dvType));
+            List<TemplateManageDTO> panelTemplateDTOChildren = templateCenterManage.findTemplateList(new TemplateManageRequest(parentTemplate.getId(), dvType));
             parentTemplate.setChildren(panelTemplateDTOChildren);
             getTreeChildren(panelTemplateDTOChildren, dvType);
         }));
     }
 
     public List<TemplateManageDTO> getSystemTemplateType(TemplateManageRequest request) {
-        return extTemplateMapper.findTemplateList(request);
+        return templateCenterManage.findTemplateList(request);
     }
 
 
@@ -313,7 +313,7 @@ public class TemplateManageService implements TemplateManageApi {
     @Override
     public List<String> findCategoriesByTemplateIds(TemplateManageRequest request) throws Exception {
         if (!CollectionUtils.isEmpty(request.getTemplateArray())) {
-            List<String> result = extTemplateMapper.findTemplateArrayCategories(request.getTemplateArray());
+            List<String> result = visualizationTemplateCategoryMapRepository.findTemplateArrayCategories(request.getTemplateArray());
             if (!CollectionUtils.isEmpty(result) && result.size() == 1) {
                 return Arrays.stream(result.get(0).split(",")).toList();
             }
@@ -323,7 +323,7 @@ public class TemplateManageService implements TemplateManageApi {
 
     @Override
     public List<TemplateManageDTO> find(TemplateManageRequest request) {
-        return extTemplateMapper.findTemplateList(request);
+        return templateCenterManage.findTemplateList(request);
     }
 
     @Override

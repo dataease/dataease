@@ -18,7 +18,6 @@ public class CoreCustomGeoArea {
     @Id
     @Comment("id")
     @Size(max = 50)
-    @Comment("id")
     @Column(name = "id", nullable = false, length = 50)
     private String id;
 

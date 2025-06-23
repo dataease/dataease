@@ -33,4 +33,10 @@ public interface VisualizationTemplateCategoryMapRepository extends JpaRepositor
     @Query("DELETE FROM VisualizationTemplateCategoryMap vtcm WHERE vtcm.templateId in :templateIds")
     int deleteByTemplateIds(List<String> templateIds);
 
+    @Query("SELECT DISTINCT vtcm.categoryId " +
+            "FROM VisualizationTemplateCategoryMap vtcm " +
+            "WHERE vtcm.templateId IN :templateIds " +
+            "GROUP BY vtcm.templateId")
+    List<String> findTemplateArrayCategories(List<String> templateIds);
+
 }

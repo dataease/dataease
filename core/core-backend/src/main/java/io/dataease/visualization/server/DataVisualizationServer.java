@@ -48,7 +48,6 @@ import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataRepository;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
-import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.*;
@@ -121,9 +120,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private DatasetGroupManage datasetGroupManage;
-
-    @Resource
-    private ExtVisualizationTemplateMapper appTemplateMapper;
 
     @Resource
     private CoreDatasetGroupRepository coreDatasetGroupRepository;

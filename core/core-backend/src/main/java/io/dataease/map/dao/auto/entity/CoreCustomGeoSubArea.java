@@ -17,7 +17,6 @@ import org.hibernate.annotations.Comment;
 @Table(name = "core_custom_geo_sub_area")
 public class CoreCustomGeoSubArea {
     @Id
-    @Comment("主键")
     @Comment("id")
     @Column(name = "id", nullable = false)
     private Long id;
@@ -36,7 +35,6 @@ public class CoreCustomGeoSubArea {
     @Comment("自定义地理区域id")
     @Size(max = 50)
     @NotNull
-    @Comment("id")
     @Column(name = "geo_area_id", nullable = false, length = 50)
     private String geoAreaId;
 
