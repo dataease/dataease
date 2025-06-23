@@ -216,7 +216,6 @@ onMounted(async () => {
     return
   }
   dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
-  dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
 })
 
 const dataVKeepSize = computed(() => {

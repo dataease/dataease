@@ -39,9 +39,11 @@ import PwdTips from './pwd.vue'
 import ErrorTemplate from './ErrorTemplate.vue'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useI18n } from '@/hooks/web/useI18n'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const linkStore = useLinkStoreWithOut()
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
+const dvMainStore = dvMainStoreWithOut()
 const pcanvas = ref(null)
 const iframeError = ref(true)
 const disableError = ref(true)
@@ -101,6 +103,7 @@ onMounted(async () => {
     }
     loading.value = false
   })
+  dvMainStore.setPublicLinkStatus(true)
 })
 onBeforeUnmount(() => {
   linkStore.$reset()
