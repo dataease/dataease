@@ -479,8 +479,8 @@ const getPlaceholder = computed(() => {
   }
 })
 
-const isConfirmSearch = id => {
-  if (componentWithSure.value) return
+const isConfirmSearch = (id, disabledFirstItem = false) => {
+  if (componentWithSure.value && !disabledFirstItem) return
   queryDataForId(id)
 }
 
