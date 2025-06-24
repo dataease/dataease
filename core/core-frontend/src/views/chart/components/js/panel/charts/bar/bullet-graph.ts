@@ -358,21 +358,35 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
 
         const result = []
         const data = options.data.find(item => item.title === originalItems[0].title)
-        Object.keys(formatterMap).forEach(key => {
+        Object.keys(formatterMap).forEach((key, index) => {
           if (key === '记录数*') return
           const formatter = formatterMap[key]
           if (formatter) {
             if (key !== 'ranges') {
+              let name = ''
               let value = 0
-              if (chart.yAxis[0].id === chart.yAxisExt[0].id) {
-                value = valueFormatter(parseFloat(data['target'] as string), formatter.formatterCfg)
-              } else {
-                value = valueFormatter(parseFloat(data[key] as string), formatter.formatterCfg)
+              let color: string | Array<string> = []
+              let tFormatter = chart.yAxis[1]
+              if (index === 0) {
+                tFormatter = chart.yAxis[0]
+                value = valueFormatter(
+                  parseFloat(data['measures'] as string),
+                  formatter.formatterCfg
+                )
+                color = bullet.bar['measures'].fill
               }
-              const name = isEmpty(formatter.chartShowName)
-                ? formatter.name
-                : formatter.chartShowName
-              result.push({ ...originalItems[0], color: bullet.bar[key].fill, name, value })
+              if (index === 1) {
+                tFormatter = chart.yAxisExt[0]
+                value = valueFormatter(parseFloat(data['target'] as string), formatter.formatterCfg)
+                color = bullet.bar['target'].fill
+              }
+              name = isEmpty(tFormatter.chartShowName) ? tFormatter.name : tFormatter.chartShowName
+              result.push({
+                color,
+                name,
+                value
+              })
+              result.reverse()
             } else {
               const ranges = data.ranges
               const isDynamic = bullet.bar.ranges.showType === 'dynamic'
