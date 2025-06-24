@@ -21,4 +21,8 @@ public interface VisualizationLinkJumpRepository extends JpaRepository<Visualiza
     @Transactional
     @Query("DELETE FROM VisualizationLinkJump c WHERE c.sourceDvId = :sourceDvId ")
     void deleteBySourceDvId(Long sourceDvId);
+
+    @Query("SELECT j FROM VisualizationLinkJump j WHERE j.sourceDvId = :dvId AND j.sourceViewId = :viewId")
+    VisualizationLinkJump findBySourceDvIdAndSourceViewId(Long dvId, Long viewId);
+
 }

@@ -1,8 +1,14 @@
 package io.dataease.visualization.manage;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
+import io.dataease.api.visualization.dto.VisualizationLinkJumpInfoDTO;
 import io.dataease.dao.auto.entity.QCoreChartView;
+import io.dataease.share.dao.auto.entity.QXpackShare;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpInfoRepository;
 import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpRepository;
@@ -30,7 +36,7 @@ public class VisualizationLinkJumpManage {
 
     @Resource
     private VisualizationLinkJumpTargetViewInfoRepository visualizationLinkJumpTargetViewInfoRepository;
-
+    private final QXpackShare qXpackShare = QXpackShare.xpackShare;
 
     public void copyLinkJump(Long copyId) {
         // 1. 查询需要复制的源数据
@@ -217,4 +223,80 @@ public class VisualizationLinkJumpManage {
     }
 
 
+
+    public List<VisualizationLinkJumpDTO> queryWithDvId(Long dvId, Long uid, Boolean isDesktop) {
+        return buildLinkJumpQuery(dvId, uid, isDesktop, false).fetch();
+    }
+
+    public List<VisualizationLinkJumpDTO> queryWithDvIdSnapshot(Long dvId, Long uid, Boolean isDesktop) {
+        return buildLinkJumpQuery(dvId, uid, isDesktop, true).fetch();
+    }
+
+    public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId, Long uid, Boolean isDesktop) {
+        return null;
+    }
+
+    private JPAQuery<VisualizationLinkJumpDTO> buildLinkJumpQuery(Long dvId, Long uid, Boolean isDesktop, boolean isSnapshot) {
+
+        if(isSnapshot){
+            QSnapshotCoreChartView qChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+            QSnapshotVisualizationLinkJump qJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
+            return queryFactory
+                    .select(Projections.bean(VisualizationLinkJumpDTO.class,
+                            qChartView.id.as("sourceViewId"),
+                            qJump.id,
+                            Expressions.asNumber(dvId).as("sourceDvId"),
+                            qJump.linkJumpInfo,
+                            qJump.checked
+                    ))
+                    .from(qChartView)
+                    .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId))
+                    .where(qJump.sourceDvId.eq(dvId))
+                    .where(qChartView.jumpActive.eq(true));
+        }else{
+            QCoreChartView qChartView = QCoreChartView.coreChartView;
+            QVisualizationLinkJump qJump = QVisualizationLinkJump.visualizationLinkJump;
+
+            return queryFactory
+                    .select(Projections.bean(VisualizationLinkJumpDTO.class,
+                            qChartView.id.as("sourceViewId"),
+                            qJump.id,
+                            Expressions.asNumber(dvId).as("sourceDvId"),
+                            qJump.linkJumpInfo,
+                            qJump.checked
+                    ))
+                    .from(qChartView)
+                    .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId))
+                    .where(qJump.sourceDvId.eq(dvId))
+                    .where(qChartView.jumpActive.eq(true));
+        }
+
+
+    }
+
+    public List<VisualizationLinkJumpInfoDTO> getLinkJumpInfo(String jumpId, Long sourceViewId, Long uid, Boolean isDesktop) {
+        return buildLinkJumpInfoQuery(jumpId, sourceViewId, uid, isDesktop, false).fetch();
+    }
+
+    public List<VisualizationLinkJumpInfoDTO> getLinkJumpInfoSnapshot(String jumpId, Long sourceViewId, Long uid, Boolean isDesktop) {
+        return buildLinkJumpInfoQuery(jumpId, sourceViewId, uid, isDesktop, true).fetch();
+    }
+
+    private JPAQuery<VisualizationLinkJumpInfoDTO> buildLinkJumpInfoQuery(String jumpId, Long sourceViewId, Long uid, Boolean isDesktop, boolean isSnapshot) {
+
+
+        return null;
+    }
+
+    public void deleteJumpTargetViewInfoSnapshot(Long dvId, Long viewId) {
+
+    }
+
+    public void deleteJumpInfoSnapshot(Long dvId, Long viewId) {
+
+    }
+
+    public void deleteJumpSnapshot(Long dvId, Long viewId) {
+
+    }
 }

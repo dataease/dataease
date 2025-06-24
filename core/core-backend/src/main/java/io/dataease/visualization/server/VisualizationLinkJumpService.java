@@ -25,7 +25,7 @@ import io.dataease.utils.IDUtils;
 import io.dataease.utils.ModelUtils;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
-import io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkJumpMapper;
+import io.dataease.visualization.manage.VisualizationLinkJumpManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,9 +47,6 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     private JPAQueryFactory queryFactory;
 
     @Resource
-    private ExtVisualizationLinkJumpMapper extVisualizationLinkJumpMapper;
-
-    @Resource
     private SnapshotVisualizationLinkJumpRepository snapshotVisualizationLinkJumpRepository;
 
     @Resource
@@ -65,6 +62,8 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     private DataVisualizationInfoRepository dataVisualizationInfoMapper;
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
+    @Resource
+    private VisualizationLinkJumpManage visualizationLinkJumpManage;
 
     @Override
     public List<DatasetTableFieldDTO> getTableFieldWithViewId(Long viewId) {
@@ -78,9 +77,9 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
         List<VisualizationLinkJumpDTO> resultLinkJumpList = null;
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
-            resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvIdSnapshot(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
+            resultLinkJumpList = visualizationLinkJumpManage.queryWithDvIdSnapshot(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
         } else {
-            resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
+            resultLinkJumpList = visualizationLinkJumpManage.queryWithDvId(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
         }
         Optional.ofNullable(resultLinkJumpList).orElse(new ArrayList<>()).forEach(resultLinkJump -> {
             if (resultLinkJump.getChecked()) {
@@ -106,7 +105,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Override
     public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId) {
-        return extVisualizationLinkJumpMapper.queryWithViewId(dvId, viewId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
+        return visualizationLinkJumpManage.queryWithViewId(dvId, viewId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
     }
 
     @Transactional
@@ -117,9 +116,9 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         Assert.notNull(dvId, "dvId cannot be null");
         Assert.notNull(viewId, "viewId cannot be null");
         //清理原有数据
-        extVisualizationLinkJumpMapper.deleteJumpTargetViewInfoSnapshot(dvId, viewId);
-        extVisualizationLinkJumpMapper.deleteJumpInfoSnapshot(dvId, viewId);
-        extVisualizationLinkJumpMapper.deleteJumpSnapshot(dvId, viewId);
+        visualizationLinkJumpManage.deleteJumpTargetViewInfoSnapshot(dvId, viewId);
+        visualizationLinkJumpManage.deleteJumpInfoSnapshot(dvId, viewId);
+        visualizationLinkJumpManage.deleteJumpSnapshot(dvId, viewId);
 
         // 插入新的数据
         Long linkJumpId = IDUtils.snowID();
@@ -268,9 +267,9 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @Override
     public void removeJumpSet(VisualizationLinkJumpDTO jumpDTO) {
         //清理原有数据
-        extVisualizationLinkJumpMapper.deleteJumpTargetViewInfoSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
-        extVisualizationLinkJumpMapper.deleteJumpInfoSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
-        extVisualizationLinkJumpMapper.deleteJumpSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
+        visualizationLinkJumpManage.deleteJumpTargetViewInfoSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
+        visualizationLinkJumpManage.deleteJumpInfoSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
+        visualizationLinkJumpManage.deleteJumpSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
     }
 
 }

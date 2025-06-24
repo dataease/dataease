@@ -26,7 +26,6 @@ import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
-import io.dataease.visualization.dao.ext.mapper.*;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
@@ -68,9 +67,6 @@ public class CoreVisualizationManage {
     private VisualizationLinkJumpInfoRepository visualizationLinkJumpInfoRepository;
     @Resource
     private VisualizationLinkJumpTargetViewInfoRepository visualizationLinkJumpTargetViewInfoRepository;
-
-    @Resource
-    private ExtVisualizationLinkJumpMapper linkJumpMapper;
 
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
