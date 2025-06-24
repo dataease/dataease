@@ -332,9 +332,26 @@ public class CoreVisualizationManage {
             linkJumpMapper.deleteJumpTargetViewInfoWithVisualizationSnapshot(dvId);
             linkJumpMapper.deleteJumpInfoWithVisualizationSnapshot(dvId);
             linkJumpMapper.deleteJumpWithVisualizationSnapshot(dvId);
-            outerParamsMapper.deleteOuterParamsTargetWithVisualizationIdSnapshot(dvId.toString());
-            outerParamsMapper.deleteOuterParamsInfoWithVisualizationIdSnapshot(dvId.toString());
-            outerParamsMapper.deleteOuterParamsWithVisualizationIdSnapshot(dvId.toString());
+            QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
+            QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
+            QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
+            List<String> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId).from(snapshotVisualizationOuterParamsTargetViewInfo)
+                    .innerJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
+                    .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
+                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch();
+
+            if (CollectionUtils.isNotEmpty(paramsInfoIds)) {
+                snapshotVisualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
+            }
+
+            List<String> paramsIds = queryFactory.select(snapshotVisualizationOuterParamsInfo.paramsId).from(snapshotVisualizationOuterParamsInfo)
+                    .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
+                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString()))
+                    .fetch();
+            if (CollectionUtils.isNotEmpty(paramsIds)) {
+                snapshotVisualizationOuterParamsInfoRepository.deleteByParamsIds(paramsIds);
+            }
+            snapshotVisualizationOuterParamsRepository.deleteByVisualizationId(dvId.toString());
             //xpack 阈值告警
             chartViewManege.removeThreshold(dvId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
 
@@ -360,9 +377,30 @@ public class CoreVisualizationManage {
             linkJumpMapper.deleteJumpTargetViewInfoWithVisualization(dvId);
             linkJumpMapper.deleteJumpInfoWithVisualization(dvId);
             linkJumpMapper.deleteJumpWithVisualization(dvId);
-            outerParamsMapper.deleteOuterParamsTargetWithVisualizationId(dvId.toString());
-            outerParamsMapper.deleteOuterParamsInfoWithVisualizationId(dvId.toString());
-            outerParamsMapper.deleteOuterParamsWithVisualizationId(dvId.toString());
+
+            QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
+            QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
+            QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
+
+            List<String> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId)
+                    .from(snapshotVisualizationOuterParamsTargetViewInfo)
+                    .innerJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
+                    .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
+                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch();
+            if (CollectionUtils.isNotEmpty(paramsInfoIds)) {
+                snapshotVisualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
+            }
+
+            QVisualizationOuterParamsInfo visualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
+            QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
+            List<String> paramsIds = queryFactory.select(visualizationOuterParamsInfo.paramsId).from(visualizationOuterParamsInfo)
+                    .leftJoin(visualizationOuterParams).on(visualizationOuterParamsInfo.paramsId.eq(visualizationOuterParams.paramsId))
+                    .where(visualizationOuterParams.visualizationId.eq(dvId.toString())).fetch();
+
+            if (CollectionUtils.isNotEmpty(paramsIds)) {
+                visualizationOuterParamsInfoRepository.deleteByParamsIds(paramsIds);
+            }
+            visualizationOuterParamsRepository.deleteByVisualizationId(dvId.toString());
             //xpack 阈值告警
             chartViewManege.removeThreshold(dvId, CommonConstants.RESOURCE_TABLE.CORE);
         }
