@@ -271,6 +271,11 @@ const relativeToCurrentListRange = computed(() => {
   ]
 })
 
+const defaultValueFirstItemShow = computed(() => {
+  const { displayType, optionValueSource, multiple } = curComponent.value
+  return +displayType === 0 && optionValueSource === 1 && !multiple
+})
+
 const aroundList = [
   {
     label: t('dynamic_time.before'),
@@ -662,6 +667,11 @@ defineExpose({
       :class="dynamicTime && 'setting'"
     >
       <div class="setting-label" v-if="dynamicTime">{{ t('template_manage.preview') }}</div>
+      <div v-if="defaultValueFirstItemShow" class="first-item" style="margin-bottom: 8px">
+        <el-checkbox v-model="curComponent.defaultValueFirstItem">{{
+          $t('common.first_item')
+        }}</el-checkbox>
+      </div>
       <div :class="dynamicTime ? 'setting-value' : 'w100'">
         <component :config="curComponent" isConfig ref="inputCom" :is="filterTypeCom"></component>
       </div>

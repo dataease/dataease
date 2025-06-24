@@ -1,6 +1,7 @@
 export default {
   common: {
     empty: ' ',
+    first_item: 'First Item',
     cross_source: 'Cross-source',
     single_source: 'Single-source',
     source_tips:
