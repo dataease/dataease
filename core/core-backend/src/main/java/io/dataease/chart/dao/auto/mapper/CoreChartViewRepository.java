@@ -44,4 +44,7 @@ public interface CoreChartViewRepository extends JpaRepository<CoreChartView, Lo
     @Transactional
     @Query("DELETE FROM CoreChartView c WHERE c.sceneId IN :sceneIds ")
     void deleteBySceneIds(Set<Long> sceneIds);
+
+    @Query("SELECT c FROM CoreChartView c WHERE c.copyId = :copyId")
+    List<CoreChartView> findViewInfoByCopyId(Long copyId);
 }

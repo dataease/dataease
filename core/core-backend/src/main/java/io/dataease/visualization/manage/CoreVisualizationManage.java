@@ -4,6 +4,7 @@ package io.dataease.visualization.manage;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
@@ -13,15 +14,14 @@ import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.constant.CommonConstants;
-import io.dataease.dao.auto.entity.CoreChartView;
-import io.dataease.dao.auto.entity.QDataVisualizationInfo;
+import io.dataease.dao.auto.entity.*;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.*;
-import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.dao.ext.mapper.*;
@@ -59,7 +59,7 @@ public class CoreVisualizationManage {
     private VisualizationLinkageFieldRepository visualizationLinkageFieldRepository;
     @Resource
     private VisualizationLinkageRepository visualizationLinkageRepository;
-
+    @Resource
     private VisualizationLinkJumpRepository visualizationLinkJumpRepository;
     @Resource
     private VisualizationLinkJumpInfoRepository visualizationLinkJumpInfoRepository;
@@ -669,4 +669,35 @@ public class CoreVisualizationManage {
         chartViewManege.restoreThreshold(dvId, CommonConstants.RESOURCE_TABLE.CORE);
     }
 
+    public List<VisualizationViewTableDTO> getVisualizationViewDetails(Long dvId) {
+        QCoreChartView ccv = QCoreChartView.coreChartView;
+        QCoreDatasetTableField field = QCoreDatasetTableField.coreDatasetTableField;
+
+        return queryFactory
+                .select(Projections.constructor(
+                        VisualizationViewTableDTO.class,
+                        ccv.id,
+                        ccv.title,
+                        ccv.sceneId,
+                        ccv.tableId,
+                        ccv.type,
+                        ccv.render,
+                        Projections.constructor(
+                                DatasetTableFieldDTO.class,
+                                field.id.as("id"),
+                                field.originName.as("originName"),
+                                field.name.as("name"),
+                                field.type.as("type"),
+                                field.deType.as("deType")
+                        )
+                ))
+                .from(ccv)
+                .leftJoin(field).on(ccv.tableId.eq(field.datasetGroupId))
+                .where(ccv.sceneId.eq(dvId)
+                        .and(ccv.id.isNotNull())
+                        .and(ccv.type.ne("VQuery")))
+                .fetch();
+    }
 }
+
+
