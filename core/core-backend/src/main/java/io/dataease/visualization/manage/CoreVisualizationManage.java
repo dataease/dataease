@@ -79,9 +79,6 @@ public class CoreVisualizationManage {
     private ExtVisualizationOuterParamsMapper outerParamsMapper;
 
     @Resource
-    private ExtDataVisualizationMapper extDataVisualizationMapper;
-
-    @Resource
     private CoreOptRecentManage coreOptRecentManage;
 
     @Resource

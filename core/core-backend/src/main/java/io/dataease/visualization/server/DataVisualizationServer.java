@@ -50,11 +50,11 @@ import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataRepos
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
-import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreBusiManage;
 import io.dataease.visualization.manage.CoreVisualizationManage;
+import io.dataease.visualization.manage.VisualizationLinkJumpManage;
+import io.dataease.visualization.manage.VisualizationLinkageManage;
 import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
@@ -90,9 +90,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private ChartViewManege chartViewManege;
-
-    @Resource
-    private ExtDataVisualizationMapper extDataVisualizationMapper;
 
     @Resource
     private CoreVisualizationManage coreVisualizationManage;
@@ -152,6 +149,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private VisualizationLinkJumpRepository visualizationLinkJumpRepository;
     @Autowired
     private VisualizationLinkageRepository visualizationLinkageRepository;
+    @Resource
+    private VisualizationLinkJumpManage visualizationLinkJumpManage;
+
+    @Resource
+    private VisualizationLinkageManage visualizationLinkageManage;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -181,7 +183,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             }
 
         }
-        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag, resourceTable);
+        DataVisualizationVO result = coreVisualizationManage.findDvInfo(dvId, busiFlag, resourceTable);
         if (result != null) {
             // get creator
             String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
@@ -203,7 +205,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             if (DataVisualizationConstants.QUERY_SOURCE.REPORT.equals(request.getSource()) && request.getTaskId() != null) {
                 //获取定时报告过自定义过滤组件信息
 
-                List<VisualizationReportFilterVO> filterVOS = extDataVisualizationMapper.queryReportFilter(dvId, request.getTaskId());
+                List<VisualizationReportFilterVO> filterVOS = coreVisualizationManage.queryReportFilter(dvId, request.getTaskId());
                 if (!CollectionUtils.isEmpty(filterVOS)) {
                     Map<Long, VisualizationReportFilterVO> reportFilterInfo = filterVOS.stream().collect(Collectors.toMap(VisualizationReportFilterVO::getFilterId, filterVo -> filterVo));
                     result.setReportFilterInfo(reportFilterInfo);
@@ -710,9 +712,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         newDv.setPid(String.valueOf(request.getPid()));
         newDv.setCreateTime(System.currentTimeMillis());
         // 复制图表 chart_view
-        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.CORE);
-        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
-        List<CoreChartView> viewList = extDataVisualizationMapper.findViewInfoByCopyId(copyId);
+        chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.CORE);
+        chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+        List<CoreChartView> viewList = coreChartViewRepository.findViewInfoByCopyId(copyId);
         if (!CollectionUtils.isEmpty(viewList)) {
             String componentData = newDv.getComponentData();
             // componentData viewId 数据  并保存
@@ -722,12 +724,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
             newDv.setComponentData(componentData);
         }
         // 复制图表联动信息
-        extDataVisualizationMapper.copyLinkage(copyId);
-        extDataVisualizationMapper.copyLinkageField(copyId);
+        visualizationLinkageManage.copyLinkage(copyId);
+        visualizationLinkageManage.copyLinkageField(copyId);
         // 复制图表跳转信息
-        extDataVisualizationMapper.copyLinkJump(copyId);
-        extDataVisualizationMapper.copyLinkJumpInfo(copyId);
-        extDataVisualizationMapper.copyLinkJumpTargetInfo(copyId);
+        visualizationLinkJumpManage.copyLinkJump(copyId);
+        visualizationLinkJumpManage.copyLinkJumpInfo(copyId);
+        visualizationLinkJumpManage.copyLinkJumpTargetInfo(copyId);
         DataVisualizationInfo visualizationInfoTarget = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfoTarget, newDv);
         visualizationInfoTarget.setPid("-1");
@@ -1058,7 +1060,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     public List<Long> getEnabledViewIds(Long dvId, String resourceTable) {
         List<Long> result = new ArrayList<>();
-        DataVisualizationVO dvInfo = extDataVisualizationMapper.findDvInfo(dvId, null, resourceTable);
+        DataVisualizationVO dvInfo = coreVisualizationManage.findDvInfo(dvId, null, resourceTable);
         List<CoreChartView> views;
         if (resourceTable.equalsIgnoreCase("snapshot")) {
             views = coreChartViewRepository.findBySceneId(dvId);

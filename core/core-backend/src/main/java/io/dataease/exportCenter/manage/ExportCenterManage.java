@@ -50,7 +50,6 @@ import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.server.DataVisualizationServer;
 import io.dataease.websocket.WsMessage;
 import io.dataease.websocket.WsService;
@@ -118,8 +117,6 @@ public class ExportCenterManage implements BaseExportApi {
     private String exportData_path;
     @Resource
     private VisualizationWatermarkRepository visualizationWatermarkRepository;
-    @Resource
-    private ExtDataVisualizationMapper visualizationMapper;
 
     public Integer getExtractPageSize() {
         return extractPageSize;

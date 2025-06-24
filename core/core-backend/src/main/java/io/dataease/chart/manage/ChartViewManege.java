@@ -607,4 +607,43 @@ public class ChartViewManege {
 
         return snapshotResult;
     }
+
+    public void viewCopyWithDv(Long sourceDvId, Long newDvId, Long copyId, String resourceTable) {
+        if (resourceTable.equalsIgnoreCase("snapshot")) {
+            // 1. 查询源数据
+            List<SnapshotCoreChartView> sourceViews = snapshotCoreChartViewRepository.findBySceneId(sourceDvId);
+            // 2. 创建新记录
+            List<SnapshotCoreChartView> newViews = sourceViews.stream()
+                    .map(source -> {
+                        SnapshotCoreChartView newView = new SnapshotCoreChartView();
+                        BeanUtils.copyBean(newView,source);
+                        newView.setId(source.getId() + copyId);
+                        newView.setSceneId(newDvId);
+                        newView.setCopyId(copyId);
+                        return newView;
+                    })
+                    .collect(Collectors.toList());
+
+            // 3. 批量保存
+            snapshotCoreChartViewRepository.saveAll(newViews);
+        }else{
+            // 1. 查询源数据
+            List<CoreChartView> sourceViews = coreChartViewRepository.findBySceneId(sourceDvId);
+            // 2. 创建新记录
+            List<CoreChartView> newViews = sourceViews.stream()
+                    .map(source -> {
+                        CoreChartView newView = new CoreChartView();
+                        BeanUtils.copyBean(newView,source);
+                        newView.setId(source.getId() + copyId);
+                        newView.setSceneId(newDvId);
+                        newView.setCopyId(copyId);
+                        return newView;
+                    })
+                    .collect(Collectors.toList());
+
+            // 3. 批量保存
+            coreChartViewRepository.saveAll(newViews);
+        }
+
+    }
 }
