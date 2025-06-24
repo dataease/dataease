@@ -76,9 +76,6 @@ public class CoreVisualizationManage {
     private ExtVisualizationLinkJumpMapper linkJumpMapper;
 
     @Resource
-    private ExtVisualizationOuterParamsMapper outerParamsMapper;
-
-    @Resource
     private CoreOptRecentManage coreOptRecentManage;
 
     @Resource
@@ -329,9 +326,24 @@ public class CoreVisualizationManage {
             snapshotCoreChartViewRepository.deleteBySceneId(dvId);
             linkageMapper.deleteViewLinkageFieldSnapshot(dvId, null);
             linkageMapper.deleteViewLinkageSnapshot(dvId, null);
-            linkJumpMapper.deleteJumpTargetViewInfoWithVisualizationSnapshot(dvId);
-            linkJumpMapper.deleteJumpInfoWithVisualizationSnapshot(dvId);
-            linkJumpMapper.deleteJumpWithVisualizationSnapshot(dvId);
+            visualizationLinkJumpRepository.deleteBySourceDvId(dvId);
+            QSnapshotVisualizationLinkJump snapshotVisualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
+            QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
+            List<Long> linkJumpInfoIds = queryFactory.select(snapshotVisualizationLinkJumpInfo.id).from(snapshotVisualizationLinkJumpInfo)
+                    .join(snapshotVisualizationLinkJump).on(snapshotVisualizationLinkJumpInfo.linkJumpId.eq(snapshotVisualizationLinkJump.id))
+                    .where(snapshotVisualizationLinkJump.sourceDvId.eq(dvId))
+                    .fetch();
+            if (CollectionUtils.isEmpty(linkJumpInfoIds)) {
+                snapshotVisualizationLinkJumpTargetViewInfoRepository.deleteByLinkJumpInfoIds(linkJumpInfoIds);
+            }
+
+            List<Long> ids = queryFactory.select(snapshotVisualizationLinkJump.id).from(snapshotVisualizationLinkJump)
+                    .where(snapshotVisualizationLinkJump.sourceDvId.eq(dvId)).fetch();
+            if (CollectionUtils.isNotEmpty(ids)) {
+                snapshotVisualizationLinkJumpInfoRepository.deleteByLinkJumpIds(ids);
+            }
+            snapshotVisualizationLinkJumpRepository.deleteBySourceDvId(dvId);
+
             QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
             QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
             QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
@@ -374,10 +386,25 @@ public class CoreVisualizationManage {
             }
             linkageMapper.deleteViewLinkageField(dvId, null);
             visualizationLinkageRepository.deleteByDvId(dvId);
-            linkJumpMapper.deleteJumpTargetViewInfoWithVisualization(dvId);
-            linkJumpMapper.deleteJumpInfoWithVisualization(dvId);
-            linkJumpMapper.deleteJumpWithVisualization(dvId);
 
+            QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
+            QSnapshotVisualizationLinkJump snapshotVisualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
+            List<Long> linkJumpInfoIds = queryFactory.select(snapshotVisualizationLinkJumpInfo.id).from(snapshotVisualizationLinkJumpInfo)
+                    .join(snapshotVisualizationLinkJump).on(snapshotVisualizationLinkJumpInfo.linkJumpId.eq(snapshotVisualizationLinkJump.id))
+                    .where(snapshotVisualizationLinkJump.sourceDvId.eq(dvId))
+                    .fetch();
+
+            if (CollectionUtils.isNotEmpty(linkJumpInfoIds)) {
+                snapshotVisualizationLinkJumpTargetViewInfoRepository.deleteByLinkJumpInfoIds(linkJumpInfoIds);
+            }
+            QVisualizationLinkJump linkJump = QVisualizationLinkJump.visualizationLinkJump;
+            List<Long> linkJumpIds = queryFactory.select(linkJump.id).from(linkJump)
+                    .where(linkJump.sourceDvId.eq(dvId)).fetch();
+            if (CollectionUtils.isNotEmpty(linkJumpIds)) {
+                visualizationLinkJumpInfoRepository.deleteByLinkJumpIds(linkJumpIds);
+            }
+
+            visualizationLinkJumpRepository.deleteBySourceDvId(dvId);
             QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
             QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
             QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
@@ -753,7 +780,7 @@ public class CoreVisualizationManage {
         DataVisualizationInfo entity = dataVisualizationInfoRepository.findDvInfoEntity(dvId, dvType)
                 .orElseThrow(() -> new EntityNotFoundException("Data Visualization not found with id: " + dvId));
         DataVisualizationVO vo = new DataVisualizationVO();
-        BeanUtils.copyBean(vo,entity);
+        BeanUtils.copyBean(vo, entity);
         return vo;
     }
 
@@ -761,7 +788,7 @@ public class CoreVisualizationManage {
         SnapshotDataVisualizationInfo entity = snapshotDataVisualizationInfoRepository.findSnapshotDvInfoEntity(dvId, dvType)
                 .orElseThrow(() -> new EntityNotFoundException("Snapshot Data Visualization not found with id: " + dvId));
         DataVisualizationVO vo = new DataVisualizationVO();
-        BeanUtils.copyBean(vo,entity);
+        BeanUtils.copyBean(vo, entity);
         return vo;
     }
 

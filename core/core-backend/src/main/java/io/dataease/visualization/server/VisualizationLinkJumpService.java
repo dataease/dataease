@@ -1,6 +1,7 @@
 package io.dataease.visualization.server;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.VisualizationLinkJumpApi;
 import io.dataease.api.visualization.dto.VisualizationComponentDTO;
@@ -11,6 +12,7 @@ import io.dataease.api.visualization.response.VisualizationLinkJumpBaseResponse;
 import io.dataease.api.visualization.vo.VisualizationOutParamsJumpVO;
 import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.auth.DeLinkPermit;
+import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.dao.auto.entity.QCoreChartView;
@@ -149,9 +151,52 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     public VisualizationLinkJumpBaseResponse queryTargetVisualizationJumpInfo(VisualizationLinkJumpBaseRequest request) {
         List<VisualizationLinkJumpDTO> result = null;
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
-            result = extVisualizationLinkJumpMapper.getTargetVisualizationJumpInfoSnapshot(request);
+            QSnapshotVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QSnapshotVisualizationLinkJumpTargetViewInfo.snapshotVisualizationLinkJumpTargetViewInfo;
+            QSnapshotVisualizationLinkJumpInfo linkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
+            QSnapshotVisualizationLinkJump visualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
+
+            JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
+                            Projections.constructor(VisualizationLinkJumpDTO.class,
+                                    visualizationLinkJump.sourceViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.sourceFieldActiveId.stringValue()).as("sourceInfo"),
+                                    visualizationLinkJumpTargetViewInfo.targetViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.targetFieldId.stringValue()).as("targetInfo")
+                            ))
+                    .from(visualizationLinkJumpTargetViewInfo)
+                    .leftJoin(linkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(linkJumpInfo.id))
+                    .leftJoin(visualizationLinkJump).on(linkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
+                    .where(linkJumpInfo.checked.eq(true))
+                    .where(visualizationLinkJump.sourceDvId.eq(request.getSourceDvId()))
+                    .where(visualizationLinkJump.sourceViewId.eq(request.getSourceViewId()))
+                    .where(linkJumpInfo.targetDvId.eq(request.getTargetDvId()));
+
+            if (request.getSourceFieldId() != null) {
+                jpaQuery.where(linkJumpInfo.sourceFieldId.eq(request.getSourceFieldId()));
+            }
+            result = jpaQuery.fetch();
+
+
         } else {
-            result = extVisualizationLinkJumpMapper.getTargetVisualizationJumpInfo(request);
+            QVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
+            QVisualizationLinkJumpInfo linkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
+            QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
+
+            JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
+                            Projections.constructor(VisualizationLinkJumpDTO.class,
+                                    visualizationLinkJump.sourceViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.sourceFieldActiveId.stringValue()).as("sourceInfo"),
+                                    visualizationLinkJumpTargetViewInfo.targetViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.targetFieldId.stringValue()).as("targetInfo")
+                            ))
+                    .from(visualizationLinkJumpTargetViewInfo)
+                    .leftJoin(linkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(linkJumpInfo.id))
+                    .leftJoin(visualizationLinkJump).on(linkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
+                    .where(linkJumpInfo.checked.eq(true))
+                    .where(visualizationLinkJump.sourceDvId.eq(request.getSourceDvId()))
+                    .where(visualizationLinkJump.sourceViewId.eq(request.getSourceViewId()))
+                    .where(linkJumpInfo.targetDvId.eq(request.getTargetDvId()));
+
+            if (request.getSourceFieldId() != null) {
+                jpaQuery.where(linkJumpInfo.sourceFieldId.eq(request.getSourceFieldId()));
+            }
+            result = jpaQuery.fetch();
+
         }
         return new VisualizationLinkJumpBaseResponse(null, Optional.ofNullable(result).orElse(new ArrayList<>()).stream().filter(item -> StringUtils.isNotEmpty(item.getSourceInfo())).collect(Collectors.toMap(VisualizationLinkJumpDTO::getSourceInfo, VisualizationLinkJumpDTO::getTargetInfoList)));
     }
