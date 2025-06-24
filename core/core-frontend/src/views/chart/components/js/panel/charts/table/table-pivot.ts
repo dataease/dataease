@@ -301,7 +301,14 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         if (sortMethod === 'CUSTOM_SORT') {
           sort.sortBy = valueFieldMap[f].customSort
         } else {
-          if (i === 0) {
+          if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
+            const fieldValues = newData.map(item => item[f])
+            const uniqueValues = [...new Set(fieldValues)]
+            uniqueValues.sort((a, b) => {
+              return sortMethod === 'ASC' ? a - b : b - a
+            })
+            sort.sortBy = uniqueValues
+          } else if (i === 0) {
             sort.sortMethod = sortMethod
           } else {
             const fieldValues = newData.map(item => item[f])
@@ -309,9 +316,6 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 
             // 根据配置动态决定排序顺序
             uniqueValues.sort((a, b) => {
-              if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
-                return sortMethod === 'ASC' ? a - b : b - a
-              }
               if (!a && !b) {
                 return 0
               }
@@ -341,16 +345,20 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         if (sortMethod === 'CUSTOM_SORT') {
           sort.sortBy = valueFieldMap[f].customSort
         } else {
-          if (i === 0) {
+          if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
+            const fieldValues = newData.map(item => item[f])
+            const uniqueValues = [...new Set(fieldValues)]
+            uniqueValues.sort((a, b) => {
+              return sortMethod === 'ASC' ? a - b : b - a
+            })
+            sort.sortBy = uniqueValues
+          } else if (i === 0) {
             sort.sortMethod = sortMethod
           } else {
             const fieldValues = newData.map(item => item[f])
             const uniqueValues = [...new Set(fieldValues)]
             // 根据配置动态决定排序顺序
             uniqueValues.sort((a, b) => {
-              if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
-                return sortMethod === 'ASC' ? a - b : b - a
-              }
               if (!a && !b) {
                 return 0
               }
