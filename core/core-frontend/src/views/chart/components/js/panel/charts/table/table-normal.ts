@@ -6,7 +6,12 @@ import {
   CustomDataCell,
   getSummaryRow,
   SortTooltip,
-  SummaryCell
+  SummaryCell,
+  getLeafNodes,
+  getColumns,
+  summaryRowStyle,
+  calcTreeWidth,
+  getStartPosition
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -20,7 +25,7 @@ import {
   TableSheet,
   ViewMeta
 } from '@antv/s2'
-import { isNumber } from 'lodash-es'
+import { isNumber, isEqual } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
 const { t } = useI18n()
@@ -34,7 +39,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     'table-header-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
       'tableHeaderSort',
-      'showTableHeader'
+      'showTableHeader',
+      'headerGroup'
     ],
     'basic-style-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['basic-style-selector'],
@@ -76,6 +82,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
     const columns = []
     const meta = []
+    const drillFieldMap = {}
     if (chart.drill) {
       // 下钻过滤字段
       const filterFields = chart.drillFilters.map(i => i.fieldId)
@@ -84,13 +91,14 @@ export class TableNormal extends S2ChartView<TableSheet> {
       const drillFieldIndex = chart.xAxis.findIndex(ele => ele.id === drillFieldId)
       // 当前下钻字段
       const curDrillFieldId = chart.drillFields[filterFields.length].id
-      const curDrillField = fields.filter(ele => ele.id === curDrillFieldId)
+      const curDrillField = fields.find(ele => ele.id === curDrillFieldId)
       filterFields.push(curDrillFieldId)
       // 移除下钻字段，把当前下钻字段插入到下钻入口位置
       fields = fields.filter(ele => {
         return !filterFields.includes(ele.id)
       })
-      fields.splice(drillFieldIndex, 0, ...curDrillField)
+      drillFieldMap[curDrillField.dataeaseName] = chart.drillFields[0].dataeaseName
+      fields.splice(drillFieldIndex, 0, curDrillField)
     }
     const axisMap = [...chart.xAxis, ...chart.yAxis].reduce((pre, cur) => {
       pre[cur.dataeaseName] = cur
@@ -124,7 +132,27 @@ export class TableNormal extends S2ChartView<TableSheet> {
         }
       })
     })
-
+    const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
+    // 表头分组
+    const { headerGroup, showTableHeader } = tableHeader
+    if (headerGroup && showTableHeader !== false) {
+      const { headerGroupConfig } = tableHeader
+      if (headerGroupConfig?.columns?.length) {
+        const allKeys = columns.map(c => drillFieldMap[c] || c)
+        const leafNodes = getLeafNodes(headerGroupConfig.columns as ColumnNode[])
+        const leafKeys = leafNodes.map(c => c.key)
+        if (isEqual(leafKeys, allKeys)) {
+          if (Object.keys(drillFieldMap).length) {
+            const originField = Object.values(drillFieldMap)[0]
+            const drillField = Object.keys(drillFieldMap)[0]
+            const [drillCol] = getColumns([originField], headerGroupConfig.columns as ColumnNode[])
+            drillCol.key = drillField
+          }
+          columns.splice(0, columns.length, ...headerGroupConfig.columns)
+          meta.push(...headerGroupConfig.meta)
+        }
+      }
+    }
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
     // data config
@@ -136,7 +164,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
       data: newData
     }
 
-    const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
       width: containerDom.getBoundingClientRect().width,
@@ -186,7 +213,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     // 总计紧贴在单元格后面
-    this.summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
+    summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
     // 自适应铺满
     if (basicStyle.tableColumnMode === 'adapt') {
       newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
@@ -207,6 +234,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
             n.x = p
             return p + n.width
           }, 0)
+          // 处理分组的单元格，宽度为所有叶子节点之和
+          ev.colNodes.forEach(n => {
+            if (n.colIndex === -1) {
+              n.width = calcTreeWidth(n)
+              n.x = getStartPosition(n)
+            }
+          })
           ev.colsHierarchy.width = totalWidth
           newChart.store.set('lastLayoutResult', undefined)
           return
@@ -227,6 +261,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
           n.x = p
           return p + n.width
         }, 0)
+        // 处理分组的单元格，宽度为所有叶子节点之和
+        ev.colNodes.forEach(n => {
+          if (n.colIndex === -1) {
+            n.width = calcTreeWidth(n)
+            n.x = getStartPosition(n)
+          }
+        })
         if (totalWidth > containerWidth) {
           // 从最后一列减掉
           ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - containerWidth
@@ -330,22 +371,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
       return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
     }
-  }
-
-  protected summaryRowStyle(newChart, newData, tableCell, tableHeader, showSummary) {
-    if (!showSummary || !newData.length) return
-    newChart.on(S2Event.LAYOUT_BEFORE_RENDER, () => {
-      const showHeader = tableHeader.showTableHeader === true
-      // 不显示表头时，减少一个表头的高度
-      const headerAndSummaryHeight = showHeader ? 2 : 1
-      const totalHeight =
-        tableHeader.tableTitleHeight * headerAndSummaryHeight +
-        tableCell.tableItemHeight * (newData.length - 1)
-      if (totalHeight < newChart.container.cfg.height) {
-        newChart.options.height =
-          totalHeight < newChart.container.cfg.height - 8 ? totalHeight + 8 : totalHeight
-      }
-    })
   }
 
   constructor() {

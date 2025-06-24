@@ -52,22 +52,27 @@ const emits = defineEmits(['onConfigChange', 'onCancelConfig'])
 const onCancelConfig = () => {
   emits('onCancelConfig')
 }
-
+const allAxis = computed(() => {
+  const axis = [...props.chart.xAxis]
+  if (props.chart.type === 'table-normal') {
+    axis.push(...props.chart.yAxis)
+  }
+  return axis
+})
 const onConfigChange = () => {
-  const allAxis = props.chart.xAxis
+  const showAxis = allAxis.value
     ?.map(axis => axis.hide !== true && axis.dataeaseName)
     .filter(i => i)
   const { fields, meta } = s2.dataCfg
-  const groupMeta = meta.filter(item => !allAxis.includes(item.field))
+  const groupMeta = meta.filter(item => !showAxis.includes(item.field))
   emits('onConfigChange', { columns: fields.columns, meta: groupMeta })
 }
 
 const init = () => {
   const chart = cloneDeep(props.chart)
-  const xAxis = chart.xAxis
   const { headerGroupConfig } = chart.customAttr.tableHeader
   const showColumns = []
-  xAxis?.forEach(axis => {
+  allAxis.value?.forEach(axis => {
     axis.hide !== true && showColumns.push({ key: axis.dataeaseName })
   })
   if (!showColumns.length) {
@@ -109,7 +114,7 @@ const renderTable = (chart: ChartObj) => {
   const { headerGroupConfig } = chart.customAttr.tableHeader
   const meta = [...headerGroupConfig.meta]
   const columns = headerGroupConfig.columns
-  const axisMap = chart.xAxis.reduce((pre, cur) => {
+  const axisMap = allAxis.value.reduce((pre, cur) => {
     pre[cur.dataeaseName] = cur
     return pre
   }, {})
@@ -141,7 +146,7 @@ const renderTable = (chart: ChartObj) => {
       })
     })
   } else {
-    chart.xAxis?.forEach(axis => {
+    allAxis.value?.forEach(axis => {
       if (axis.hide !== true) {
         meta.push({
           field: axis.dataeaseName,

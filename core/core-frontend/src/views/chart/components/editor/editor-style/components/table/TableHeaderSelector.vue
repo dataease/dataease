@@ -96,18 +96,21 @@ const groupConfigValid = computed(() => {
   if (noGroup) {
     return false
   }
-  const xAxis = props.chart.xAxis
+  const allAxis = [...props.chart?.xAxis]
+  if (props.chart.type === 'table-normal') {
+    allAxis.push(...props.chart?.yAxis)
+  }
   const showColumns = []
-  xAxis?.forEach(axis => {
+  allAxis?.forEach(axis => {
     axis.hide !== true && showColumns.push({ key: axis.dataeaseName })
   })
   if (!showColumns.length) {
     return false
   }
-  const allAxis = showColumns.map(item => item.key)
+  const showColumnFields = showColumns.map(item => item.key)
   const leafNodes = getLeafNodes(columns as Array<ColumnNode>)
   const leafKeys = leafNodes.map(item => item.key)
-  return isEqual(allAxis, leafKeys)
+  return isEqual(showColumnFields, leafKeys)
 })
 const init = () => {
   const tableHeader = props.chart?.customAttr?.tableHeader

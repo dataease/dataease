@@ -347,7 +347,7 @@ public class ChartDataServer implements ChartDataApi {
         xAxis.addAll(viewInfo.getDrillFields());
         TableHeader tableHeader = null;
         Integer totalDepth = 0;
-        if (viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) {
+        if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-normal", "table-info")) {
             for (ChartViewFieldDTO xAxi : xAxis) {
                 if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
                     CellStyle formatterCellStyle = createCellStyle(wb, xAxi.getFormatterCfg(), null);
@@ -362,7 +362,11 @@ public class ChartDataServer implements ChartDataApi {
             if (tableHeaderMap.get("headerGroup") != null && Boolean.parseBoolean(tableHeaderMap.get("headerGroup").toString())) {
                 var tmpHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
                 // 校验字段数量和顺序
-                if (validateHeaderGroup(tmpHeader, viewInfo.getXAxis())) {
+                var allAxis = new ArrayList<>(viewInfo.getXAxis().stream().filter(x -> !x.isHide()).toList());
+                if (StringUtils.equalsIgnoreCase(viewInfo.getType(), "table-normal")) {
+                    allAxis.addAll(viewInfo.getYAxis().stream().filter(x -> !x.isHide()).toList());
+                }
+                if (validateHeaderGroup(tmpHeader, allAxis)) {
                     tableHeader = tmpHeader;
                     for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
                         totalDepth = Math.max(totalDepth, getDepth(column, 1));

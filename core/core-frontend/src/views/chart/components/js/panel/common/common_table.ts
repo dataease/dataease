@@ -2393,3 +2393,51 @@ export function drawImage() {
     })
   }
 }
+
+
+export function calcTreeWidth(node) {
+  if (!node.children?.length) {
+    return node.width
+  }
+  return node.children.reduce((pre, cur) => {
+    return pre + calcTreeWidth(cur)
+  }, 0)
+}
+
+export function getStartPosition(node) {
+  if (!node.children?.length) {
+    return node.x
+  }
+  return getStartPosition(node.children[0])
+}
+
+function getMaxTreeDepth(nodes) {
+  if (!nodes?.length) {
+    return 0
+  }
+  return Math.max(
+    ...nodes.map(node => {
+      if (!node.children?.length) {
+        return 1
+      }
+      return getMaxTreeDepth(node.children) + 1
+    })
+  )
+}
+
+export function summaryRowStyle(newChart, newData, tableCell, tableHeader, showSummary) {
+  if (!showSummary || !newData.length) return
+  const columns = newChart.dataCfg.fields.columns
+  const showHeader = tableHeader.showTableHeader === true
+  // 不显示表头时，减少一个表头的高度
+  const headerAndSummaryHeight = showHeader ? getMaxTreeDepth(columns) + 1 : 1
+  newChart.on(S2Event.LAYOUT_BEFORE_RENDER, () => {
+    const totalHeight =
+      tableHeader.tableTitleHeight * headerAndSummaryHeight +
+      tableCell.tableItemHeight * (newData.length - 1)
+    if (totalHeight < newChart.container.cfg.height) {
+      newChart.options.height =
+        totalHeight < newChart.container.cfg.height - 8 ? totalHeight + 8 : totalHeight
+    }
+  })
+}
