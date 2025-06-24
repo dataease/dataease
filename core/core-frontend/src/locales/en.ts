@@ -12,6 +12,7 @@ export default {
     the_application_id: 'Please enter the application ID',
     embed: 'Embed',
     empty: ' ',
+    first_item: 'First Item',
     cross_source: 'Cross-source',
     single_source: 'Single-source',
     source_tips:
