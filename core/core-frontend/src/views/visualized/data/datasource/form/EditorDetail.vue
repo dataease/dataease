@@ -141,7 +141,7 @@ const defaultApiItem = {
   useJsonPath: false,
   jsonPath: ''
 }
-
+let time
 const initForm = (type, pluginDsList, indexPlugin, isPluginDs) => {
   pluginDs.value = pluginDsList
   pluginIndex.value = indexPlugin
@@ -183,6 +183,12 @@ const initForm = (type, pluginDsList, indexPlugin, isPluginDs) => {
     form.value.configuration.connectionType = 'sid'
   }
   form.value.type = type
+
+  time = setTimeout(() => {
+    clearTimeout(time)
+    dsApiForm.value && dsApiForm.value.clearValidate()
+    dsForm.value && dsForm.value.clearValidate()
+  }, 0)
 }
 
 const notapiexcelconfig = computed(() => form.value && !form.value.type.startsWith('API'))
