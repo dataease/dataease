@@ -1789,6 +1789,7 @@ const parameterCompletion = ele => {
     },
     oldTreeLoad: false,
     treeCheckedList: [],
+    defaultValueFirstItem: false,
     treeFieldList: []
   }
   Object.entries(attributes).forEach(([key, val]) => {

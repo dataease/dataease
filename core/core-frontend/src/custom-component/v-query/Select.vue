@@ -32,6 +32,7 @@ interface SelectConfig {
   placeholder: string
   resultMode: number
   displayId: string
+  defaultValueFirstItem: boolean
   sort: string
   sortId: string
   checkedFields: string[]
@@ -99,6 +100,10 @@ const cascade = computed(() => {
   return cascadeList() || []
 })
 
+const disabledFirstItem = computed(() => {
+  const { defaultValueFirstItem, optionValueSource, multiple } = props.config
+  return defaultValueFirstItem && optionValueSource === 1 && !multiple
+})
 const setDefaultMapValue = arr => {
   const { displayId, field } = config.value
   if (config.value.optionValueSource !== 1) {
@@ -214,7 +219,7 @@ const handleValueChange = () => {
     setCascadeValueBack(config.value.mapValue)
     emitCascade()
     nextTick(() => {
-      isConfirmSearch(config.value.id)
+      isConfirmSearch(config.value.id, disabledFirstItem.value)
     })
     return
   }
@@ -366,6 +371,10 @@ const handleFieldIdChange = (val: EnumValue) => {
           : selectValue.value
       }
 
+      if (disabledFirstItem.value) {
+        setDefaultValueFirstItem()
+      }
+
       isFromRemote.value = false
     })
 }
@@ -376,6 +385,20 @@ watch(
   () => config.value.showEmpty,
   () => {
     setEmptyData()
+  }
+)
+
+const setDefaultValueFirstItem = () => {
+  if (!options.value.length) return
+  selectValue.value = options.value[0].value
+  handleValueChange()
+}
+
+watch(
+  () => config.value.defaultValueFirstItem,
+  val => {
+    if (!val) return
+    setDefaultValueFirstItem()
   }
 )
 
@@ -440,6 +463,7 @@ watch(
     }
     nextTick(() => {
       multiple.value = val
+      config.value.defaultValueFirstItem = false
       if (!val) {
         nextTick(() => {
           selectValue.value = undefined
@@ -477,6 +501,7 @@ watch(
       config.value.defaultValue = cloneDeep(selectValue.value)
     }
     debounceOptions(valNew)
+    config.value.defaultValueFirstItem = false
   }
 )
 
@@ -684,6 +709,7 @@ defineExpose({
     v-loading="loading"
     @change="handleValueChange"
     clearable
+    :disabled="disabledFirstItem && props.isConfig"
     ref="single"
     :style="selectStyle"
     filterable

@@ -1,6 +1,7 @@
 export default {
   common: {
     empty: '',
+    first_item: '首项',
     cross_source: '跨源',
     single_source: '单源',
     source_tips: '数据集存在跨源情况，请检查其他 SQL 节点的语法，是否确认将类型改为单源?',
