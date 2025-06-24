@@ -1,5 +1,5 @@
 <template>
-  <div :id="containerId" class="table-container"></div>
+  <div :id="containerId" class="table-container" :class="{ dark: themes === 'dark' }"></div>
   <div class="button-group">
     <el-button :effect="themes" @click="onCancelConfig">{{ t('chart.cancel') }}</el-button>
     <el-button type="primary" @click="onConfigChange">{{ t('chart.confirm') }}</el-button>
@@ -609,6 +609,9 @@ class GroupMenu extends BaseTooltip {
   height: 40vh;
   overflow-x: auto;
   overflow-y: hidden;
+  &.dark {
+    scrollbar-color: #3a3a3a #1a1a1a;
+  }
 }
 
 .group-menu {
