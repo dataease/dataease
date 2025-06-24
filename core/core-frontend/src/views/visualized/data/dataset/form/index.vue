@@ -577,7 +577,11 @@ const addCalcField = groupType => {
   editCalcField.value = true
   calcTitle.value = t('dataset.add_calc_field')
   nextTick(() => {
-    calcEdit.value.initEdit({ groupType, id: guid() }, dimensions.value, quota.value)
+    calcEdit.value.initEdit(
+      { groupType, id: guid() },
+      dimensions.value.filter(ele => ele.extField !== 3),
+      quota.value.filter(ele => ele.extField !== 3)
+    )
   })
 }
 
