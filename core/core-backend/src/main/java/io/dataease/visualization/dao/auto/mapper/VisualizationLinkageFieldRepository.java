@@ -18,5 +18,5 @@ public interface VisualizationLinkageFieldRepository extends JpaRepository<Visua
     @Query("DELETE FROM VisualizationLinkageField v where v.linkageId in :linkageIds")
     void deleteByLinkageIds(List<Long> linkageIds);
 
-
+    List<VisualizationLinkageField> findByLinkageIdIn(List<Long> linkageIds);
 }

@@ -330,4 +330,17 @@ public class DatasetTableFieldManage {
         DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
         return StringUtils.equalsIgnoreCase(value.getType(), "mysql");
     }
+
+    public List<DatasetTableFieldDTO> queryTableFieldWithViewId(Long viewId) {
+        return coreDatasetTableFieldRepository.findByViewId(viewId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    // 使用BeanUtils进行单个对象转换
+    private DatasetTableFieldDTO convertToDto(CoreDatasetTableField field) {
+        DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+        BeanUtils.copyBean(dto, field);
+        return dto;
+    }
 }

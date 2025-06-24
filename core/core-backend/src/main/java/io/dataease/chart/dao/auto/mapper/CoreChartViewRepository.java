@@ -47,4 +47,6 @@ public interface CoreChartViewRepository extends JpaRepository<CoreChartView, Lo
 
     @Query("SELECT c FROM CoreChartView c WHERE c.copyId = :copyId")
     List<CoreChartView> findViewInfoByCopyId(Long copyId);
+
+    List<CoreChartView> findByIdInAndTypeNot(List<Long> ids, String type);
 }

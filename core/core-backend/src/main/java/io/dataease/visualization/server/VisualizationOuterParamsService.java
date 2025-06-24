@@ -20,7 +20,6 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
-import io.dataease.visualization.dao.ext.mapper.ExtVisualizationOuterParamsMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +41,6 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
 
     @Resource
     private JPAQueryFactory queryFactory;
-    @Resource
-    private ExtVisualizationOuterParamsMapper extOuterParamsMapper;
     @Resource
     private SnapshotVisualizationOuterParamsRepository snapshotVisualizationOuterParamsRepository;
     @Resource

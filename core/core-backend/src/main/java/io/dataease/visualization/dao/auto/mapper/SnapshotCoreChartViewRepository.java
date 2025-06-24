@@ -28,4 +28,6 @@ public interface SnapshotCoreChartViewRepository extends JpaRepository<SnapshotC
     @Transactional
     @Query("DELETE FROM SnapshotCoreChartView c WHERE c.sceneId IN :sceneIds ")
     void deleteBySceneIds(Set<Long> sceneIds);
+
+    List<SnapshotCoreChartView> findByIdInAndTypeNot(List<Long> ids, String type);
 }

@@ -34,4 +34,6 @@ public interface CoreDatasetTableFieldRepository extends JpaRepository<CoreDatas
     @Query("DELETE FROM CoreDatasetTableField c WHERE c.datasetGroupId = :datasetGroupId AND c.id NOT IN :fieldIds")
     void deleteByDatasetGroupIdAndNotInFieldIds(Long datasetGroupId, List<Long> fieldIds);
 
+    @Query("SELECT f FROM CoreDatasetTableField f LEFT JOIN CoreChartView v ON f.datasetTableId = v.tableId WHERE v.id = :viewId")
+    List<CoreDatasetTableField> findByViewId(Long viewId);
 }

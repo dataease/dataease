@@ -1,14 +1,14 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import io.dataease.dao.auto.entity.CoreChartView;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -64,5 +64,12 @@ public class VisualizationLinkage {
     @Comment("复制来源ID")
     @Column(name = "copy_id")
     private Long copyId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_view_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private CoreChartView sourceView;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<VisualizationLinkageField> linkageFields;
 
 }

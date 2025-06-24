@@ -2,20 +2,21 @@ package io.dataease.visualization.manage;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.dataease.api.visualization.dto.LinkageInfoDTO;
+import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
+import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
+import io.dataease.dao.auto.entity.CoreChartView;
 import io.dataease.dao.auto.entity.QCoreChartView;
-import io.dataease.visualization.dao.auto.entity.QVisualizationLinkage;
-import io.dataease.visualization.dao.auto.entity.QVisualizationLinkageField;
-import io.dataease.visualization.dao.auto.entity.VisualizationLinkage;
-import io.dataease.visualization.dao.auto.entity.VisualizationLinkageField;
-import io.dataease.visualization.dao.auto.mapper.VisualizationLinkageFieldRepository;
-import io.dataease.visualization.dao.auto.mapper.VisualizationLinkageRepository;
+import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.visualization.dao.auto.entity.*;
+import io.dataease.visualization.dao.auto.mapper.*;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,6 +30,24 @@ public class VisualizationLinkageManage {
 
     @Resource
     private VisualizationLinkageFieldRepository linkageFieldRepository;
+
+    @Resource
+    private CoreChartViewRepository coreChartViewRepository;
+
+    @Resource
+    private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
+
+
+
+    @Resource
+    private SnapshotCoreChartViewRepository snapshotCoreChartViewRepository;
+
+    @Resource
+    private SnapshotVisualizationLinkageRepository snapshotLinkageRepository;
+
+    @Resource
+    private SnapshotVisualizationLinkageFieldRepository snapshotVisualizationLinkageFieldRepository;
+
 
     public void copyLinkage(Long copyId) {
         // 1. 查询视图映射关系（源视图ID -> 目标视图ID）
@@ -158,5 +177,184 @@ public class VisualizationLinkageManage {
 
         // 5. 批量保存
         linkageFieldRepository.saveAll(newFields);
+    }
+
+    public List<VisualizationLinkageDTO> getViewLinkageGatherSnapshot(Long dvId, Long sourceViewId, List<String> targetViewIds) {
+        // 转换 targetViewIds 为 Long 类型
+        List<Long> targetViewIdList = targetViewIds.stream()
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
+
+        // 1. 获取目标视图信息
+        List<SnapshotCoreChartView> targetViews = snapshotCoreChartViewRepository.findByIdInAndTypeNot(targetViewIdList, "VQuery");
+
+        // 2. 获取联动信息
+        List<SnapshotVisualizationLinkage> linkages = snapshotLinkageRepository.findByDvIdAndSourceViewId(dvId, sourceViewId);
+
+        // 3. 获取联动字段信息
+        List<Long> linkageIds = linkages.stream()
+                .map(SnapshotVisualizationLinkage::getId)
+                .collect(Collectors.toList());
+        List<SnapshotVisualizationLinkageField> linkageFields = snapshotVisualizationLinkageFieldRepository.findByLinkageIdIn(linkageIds);
+
+        // 4. 构建结果
+        return targetViews.stream().map(targetView -> {
+            VisualizationLinkageDTO dto = new VisualizationLinkageDTO();
+            dto.setTargetViewId(targetView.getId());
+            dto.setTargetViewType(targetView.getType());
+            dto.setTableId(targetView.getTableId());
+            dto.setTargetViewName(targetView.getTitle());
+            dto.setSourceViewId(sourceViewId);
+
+            // 设置联动状态
+            linkages.stream()
+                    .filter(linkage -> linkage.getTargetViewId().equals(targetView.getId()))
+                    .findFirst()
+                    .ifPresent(linkage -> {
+                        dto.setLinkageActive(linkage.getLinkageActive());
+                    });
+
+            // 设置联动字段
+            List<VisualizationLinkageFieldVO> fieldVOs = linkageFields.stream()
+                    .filter(field -> linkages.stream()
+                            .anyMatch(linkage ->
+                                    linkage.getId().equals(field.getLinkageId()) &&
+                                            linkage.getTargetViewId().equals(targetView.getId())
+                            ))
+                    .map(field -> {
+                        VisualizationLinkageFieldVO vo = new VisualizationLinkageFieldVO();
+                        vo.setSourceField(field.getSourceField());
+                        vo.setTargetField(field.getTargetField());
+                        return vo;
+                    })
+                    .collect(Collectors.toList());
+            dto.setLinkageFields(fieldVOs);
+
+            // 设置目标视图字段
+            if (targetView.getTableId() != null) {
+                List<DatasetTableFieldDTO> fields = coreDatasetTableFieldRepository.findByDatasetTableId(targetView.getTableId())
+                        .stream()
+                        .map(field -> {
+                            DatasetTableFieldDTO fieldDto = new DatasetTableFieldDTO();
+                            fieldDto.setId(field.getId());
+                            fieldDto.setDatasetTableId(field.getDatasetTableId());
+                            fieldDto.setOriginName(field.getOriginName());
+                            fieldDto.setName(field.getName());
+                            fieldDto.setDeType(field.getDeType());
+                            return fieldDto;
+                        })
+                        .collect(Collectors.toList());
+                dto.setTargetViewFields(fields);
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<VisualizationLinkageDTO> getViewLinkageGather(Long dvId, Long sourceViewId, List<String> targetViewIds) {
+        // 转换 targetViewIds 为 Long 类型
+        List<Long> targetViewIdList = targetViewIds.stream()
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
+
+        // 1. 获取目标视图信息
+        List<CoreChartView> targetViews = coreChartViewRepository.findByIdInAndTypeNot(targetViewIdList, "VQuery");
+
+        // 2. 获取联动信息
+        List<VisualizationLinkage> linkages = linkageRepository.findByDvIdAndSourceViewId(dvId, sourceViewId);
+
+        // 3. 获取联动字段信息
+        List<Long> linkageIds = linkages.stream()
+                .map(VisualizationLinkage::getId)
+                .collect(Collectors.toList());
+        List<VisualizationLinkageField> linkageFields = linkageFieldRepository.findByLinkageIdIn(linkageIds);
+
+        // 4. 构建结果
+        return targetViews.stream().map(targetView -> {
+            VisualizationLinkageDTO dto = new VisualizationLinkageDTO();
+            dto.setTargetViewId(targetView.getId());
+            dto.setTargetViewType(targetView.getType());
+            dto.setTableId(targetView.getTableId());
+            dto.setTargetViewName(targetView.getTitle());
+            dto.setSourceViewId(sourceViewId);
+
+            // 设置联动状态
+            linkages.stream()
+                    .filter(linkage -> linkage.getTargetViewId().equals(targetView.getId()))
+                    .findFirst()
+                    .ifPresent(linkage -> {
+                        dto.setLinkageActive(linkage.getLinkageActive());
+                    });
+
+            // 设置联动字段
+            List<VisualizationLinkageFieldVO> fieldVOs = linkageFields.stream()
+                    .filter(field -> linkages.stream()
+                            .anyMatch(linkage ->
+                                    linkage.getId().equals(field.getLinkageId()) &&
+                                            linkage.getTargetViewId().equals(targetView.getId())
+                            ))
+                    .map(field -> {
+                                VisualizationLinkageFieldVO vo = new VisualizationLinkageFieldVO();
+                                vo.setSourceField(field.getSourceField());
+                                vo.setTargetField(field.getTargetField());
+                                return vo;
+                            })
+                    .collect(Collectors.toList());
+            dto.setLinkageFields(fieldVOs);
+
+            // 设置目标视图字段
+            if (targetView.getTableId() != null) {
+                List<DatasetTableFieldDTO> fields = coreDatasetTableFieldRepository.findByDatasetTableId(targetView.getTableId())
+                        .stream()
+                        .map(field -> {
+                            DatasetTableFieldDTO fieldDto = new DatasetTableFieldDTO();
+                            fieldDto.setId(field.getId());
+                            fieldDto.setDatasetTableId(field.getDatasetTableId());
+                            fieldDto.setOriginName(field.getOriginName());
+                            fieldDto.setName(field.getName());
+                            fieldDto.setDeType(field.getDeType());
+                            return fieldDto;
+                        })
+                        .collect(Collectors.toList());
+                dto.setTargetViewFields(fields);
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<LinkageInfoDTO> getPanelAllLinkageInfo(Long dvId) {
+        // 1. 查询符合条件的联动信息
+        List<VisualizationLinkage> linkages = linkageRepository.findByDvIdAndLinkageActive(dvId, true);
+
+        // 2. 创建分组Map
+        Map<String, List<String>> groupedResults = new HashMap<>();
+
+        // 3. 填充分组数据
+        linkages.stream()
+                .filter(linkage -> linkage.getSourceView() != null && linkage.getSourceView().getLinkageActive())
+                .forEach(linkage -> {
+                    linkage.getLinkageFields().stream()
+                            .filter(field -> field.getId() != null)
+                            .forEach(field -> {
+                                String sourceKey = linkage.getSourceViewId() + "#" + field.getSourceField();
+                                String targetValue = linkage.getTargetViewId() + "#" + field.getTargetField();
+                                groupedResults.computeIfAbsent(sourceKey, k -> new ArrayList<>()).add(targetValue);
+                            });
+                });
+
+        // 4. 转换为 LinkageInfoDTO 列表
+        return groupedResults.entrySet().stream()
+                .map(entry -> {
+                    LinkageInfoDTO dto = new LinkageInfoDTO();
+                    dto.setSourceInfo(entry.getKey());
+                    dto.setTargetInfoList(entry.getValue());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<LinkageInfoDTO> getPanelAllLinkageInfoSnapshot(Long dvId) {
+        return null;
     }
 }

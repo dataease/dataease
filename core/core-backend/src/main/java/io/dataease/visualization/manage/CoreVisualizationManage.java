@@ -70,9 +70,6 @@ public class CoreVisualizationManage {
     private VisualizationLinkJumpTargetViewInfoRepository visualizationLinkJumpTargetViewInfoRepository;
 
     @Resource
-    private ExtVisualizationLinkageMapper linkageMapper;
-
-    @Resource
     private ExtVisualizationLinkJumpMapper linkJumpMapper;
 
     @Resource
@@ -324,8 +321,8 @@ public class CoreVisualizationManage {
             snapshotDataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds);
 
             snapshotCoreChartViewRepository.deleteBySceneId(dvId);
-            linkageMapper.deleteViewLinkageFieldSnapshot(dvId, null);
-            linkageMapper.deleteViewLinkageSnapshot(dvId, null);
+            snapshotVisualizationLinkageRepository.deleteViewLinkageFieldSnapshot(dvId, null);
+            snapshotVisualizationLinkageRepository.deleteViewLinkageSnapshot(dvId, null);
             visualizationLinkJumpRepository.deleteBySourceDvId(dvId);
             QSnapshotVisualizationLinkJump snapshotVisualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
             QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
@@ -384,7 +381,7 @@ public class CoreVisualizationManage {
             if (CollectionUtils.isNotEmpty(visualizationLinkages)) {
                 visualizationLinkageFieldRepository.deleteByLinkageIds(visualizationLinkages.stream().map(VisualizationLinkage::getId).collect(Collectors.toList()));
             }
-            linkageMapper.deleteViewLinkageField(dvId, null);
+            visualizationLinkageRepository.deleteViewLinkageField(dvId, null);
             visualizationLinkageRepository.deleteByDvId(dvId);
 
             QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;

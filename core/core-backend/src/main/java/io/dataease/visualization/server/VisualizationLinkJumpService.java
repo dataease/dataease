@@ -12,12 +12,12 @@ import io.dataease.api.visualization.response.VisualizationLinkJumpBaseResponse;
 import io.dataease.api.visualization.vo.VisualizationOutParamsJumpVO;
 import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.auth.DeLinkPermit;
-import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.dao.auto.entity.QCoreChartView;
 import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dao.auto.entity.QDataVisualizationInfo;
+import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
@@ -26,7 +26,6 @@ import io.dataease.utils.ModelUtils;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkJumpMapper;
-import io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkageMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,8 +45,6 @@ import java.util.stream.Collectors;
 public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @Resource
     private JPAQueryFactory queryFactory;
-    @Resource
-    private ExtVisualizationLinkageMapper extVisualizationLinkageMapper;
 
     @Resource
     private ExtVisualizationLinkJumpMapper extVisualizationLinkJumpMapper;
@@ -66,10 +63,12 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoMapper;
+    @Resource
+    private DatasetTableFieldManage datasetTableFieldManage;
 
     @Override
     public List<DatasetTableFieldDTO> getTableFieldWithViewId(Long viewId) {
-        return extVisualizationLinkageMapper.queryTableFieldWithViewId(viewId);
+        return datasetTableFieldManage.queryTableFieldWithViewId(viewId);
     }
 
     @DeLinkPermit
