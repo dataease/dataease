@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 
 public interface CoreOptRecentRepository extends JpaRepository<CoreOptRecent, Long>, JpaSpecificationExecutor<CoreOptRecent> {
     @Modifying
@@ -23,4 +25,7 @@ public interface CoreOptRecentRepository extends JpaRepository<CoreOptRecent, Lo
             @Param("optType") int optType,
             @Param("time") Long time
     );
+
+    List<CoreOptRecent> findByUid(Long uid);
+
 }

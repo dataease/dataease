@@ -30,15 +30,8 @@ public class VisualizationStoreServer implements VisualizationStoreApi {
 
     @Override
     public List<VisualizationStoreVO> query(VisualizationWorkbranchQueryRequest request) {
-        IPage<VisualizationStoreVO> iPage = visualizationStoreManage.query(1, 20, request);
-        List<VisualizationStoreVO> resourceVOS = iPage.getRecords();
-        if (!CollectionUtils.isEmpty(resourceVOS)) {
-            resourceVOS.forEach(item -> {
-                item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
-                item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
-            });
-        }
-        return iPage.getRecords();
+
+        return null;
     }
 
     @Override

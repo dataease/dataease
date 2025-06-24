@@ -52,4 +52,6 @@ public interface CoreDatasourceRepository extends JpaRepository<CoreDatasource, 
     @Transactional
     @Query("UPDATE CoreDatasource c SET c.updateTime = :updateTime, c.pid = :pid, c.name = :name, c.updateBy = :updateBy WHERE c.id = :id")
     int move(Long id, Long updateTime, Long pid, String name, Long updateBy);
+
+    List<CoreDatasource> findByTypeNot(String type);
 }

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface DataVisualizationInfoRepository extends JpaRepository<DataVisualizationInfo, String>, JpaSpecificationExecutor<DataVisualizationInfo> {
@@ -36,4 +37,10 @@ public interface DataVisualizationInfoRepository extends JpaRepository<DataVisua
     @Query("select dv.status from DataVisualizationInfo dv where dv.id = :dvId")
     Integer findDvInfoStats(@Param("dvId") Long dvId);
 
+    @Query("SELECT d FROM DataVisualizationInfo d " +
+            "WHERE d.deleteFlag = false AND d.id = :dvId " +
+            "AND (:dvType IS NULL OR d.type = :dvType)")
+    Optional<DataVisualizationInfo> findDvInfoEntity( Long dvId, String dvType);
+
+    List<DataVisualizationInfo> findByDeleteFlagAndNodeTypeAndStatusNot(  Integer deleteFlag, String nodeType,Integer status);
 }

@@ -7,6 +7,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
+import io.dataease.api.visualization.vo.DataVisualizationVO;
+import io.dataease.api.visualization.vo.VisualizationReportFilterVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.chart.manage.ChartViewManege;
@@ -29,6 +31,7 @@ import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -106,6 +109,8 @@ public class CoreVisualizationManage {
     private SnapshotVisualizationLinkJumpInfoRepository snapshotVisualizationLinkJumpInfoRepository;
     @Resource
     private SnapshotVisualizationLinkJumpTargetViewInfoRepository snapshotVisualizationLinkJumpTargetViewInfoRepository;
+    @Resource
+    private VisualizationReportFilterRepository reportFilterRepository;
 
     @XpackInteract(value = "visualizationResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -275,13 +280,14 @@ public class CoreVisualizationManage {
             return null;
         }
         List<VisualizationResourceVO> vos = proxy().formatResult(visualizationResourcePOPageIPage.getContent());
-        IPage<VisualizationResourceVO> iPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>();
-        iPage.setCurrent(visualizationResourcePOPageIPage.getCurrent());
-        iPage.setPages(visualizationResourcePOPageIPage.getPages());
-        iPage.setSize(visualizationResourcePOPageIPage.getSize());
-        iPage.setTotal(visualizationResourcePOPageIPage.getTotal());
-        iPage.setRecords(vos);
-        return iPage;
+//        IPage<VisualizationResourceVO> iPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>();
+//        iPage.setCurrent(visualizationResourcePOPageIPage.getCurrent());
+//        iPage.setPages(visualizationResourcePOPageIPage.getPages());
+//        iPage.setSize(visualizationResourcePOPageIPage.getSize());
+//        iPage.setTotal(visualizationResourcePOPageIPage.getTotal());
+//        iPage.setRecords(vos);
+//        return iPage;
+        return null;
     }
 
     List<VisualizationResourceVO> formatResult(List<VisualizationResourcePO> pos) {
@@ -310,8 +316,9 @@ public class CoreVisualizationManage {
             params.put("info", info);
         }
         params.put("isAsc", request.isAsc());
-        IPage<VisualizationResourcePO> iPage = new Page<>(goPage, pageSize);
-        return extDataVisualizationMapper.findRecent(iPage, uid, request.getKeyword(), params);
+//        IPage<VisualizationResourcePO> iPage = new Page<>(goPage, pageSize);
+//        return extDataVisualizationMapper.findRecent(iPage, uid, request.getKeyword(), params);
+        return null;
     }
 
     @Transactional
@@ -698,6 +705,47 @@ public class CoreVisualizationManage {
                         .and(ccv.type.ne("VQuery")))
                 .fetch();
     }
+
+    public DataVisualizationVO findDvInfo(Long dvId, String dvType, String resourceTable) {
+        if ("snapshot".equals(resourceTable)) {
+            return findSnapshotDvInfo(dvId, dvType);
+        } else {
+            return findNormalDvInfo(dvId, dvType);
+        }
+    }
+
+    public DataVisualizationVO findNormalDvInfo(Long dvId, String dvType) {
+        DataVisualizationInfo entity = dataVisualizationInfoRepository.findDvInfoEntity(dvId, dvType)
+                .orElseThrow(() -> new EntityNotFoundException("Data Visualization not found with id: " + dvId));
+        DataVisualizationVO vo = new DataVisualizationVO();
+        BeanUtils.copyBean(vo,entity);
+        return vo;
+    }
+
+    public DataVisualizationVO findSnapshotDvInfo(Long dvId, String dvType) {
+        SnapshotDataVisualizationInfo entity = snapshotDataVisualizationInfoRepository.findSnapshotDvInfoEntity(dvId, dvType)
+                .orElseThrow(() -> new EntityNotFoundException("Snapshot Data Visualization not found with id: " + dvId));
+        DataVisualizationVO vo = new DataVisualizationVO();
+        BeanUtils.copyBean(vo,entity);
+        return vo;
+    }
+
+    public List<VisualizationReportFilterVO> queryReportFilter(Long dvId, Long taskId) {
+        // 1. 查询实体列表
+        List<VisualizationReportFilter> entities = reportFilterRepository
+                .findByResourceIdAndTaskId(dvId, taskId);
+        // 2. 转换为VO列表
+        return entities.stream()
+                .map(this::convertToVo)
+                .collect(Collectors.toList());
+    }
+
+    private VisualizationReportFilterVO convertToVo(VisualizationReportFilter entity) {
+        VisualizationReportFilterVO vo = new VisualizationReportFilterVO();
+        BeanUtils.copyBean(vo, entity);
+        return vo;
+    }
+
 }
 
 
