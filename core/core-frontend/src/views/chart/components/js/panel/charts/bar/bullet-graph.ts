@@ -344,10 +344,21 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
 
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
-      .reduce((pre, next, index) => {
-        const keys = ['measures', 'target', 'ranges']
-        if (keys[index]) pre[keys[index]] = next
-        return pre
+      .reduce((pre, next, _index) => {
+        switch (next.axisType) {
+          case 'yAxis':
+            pre['measures'] = next
+            return pre
+          case 'yAxisExt':
+            pre['target'] = next
+            return pre
+          case 'extBubble':
+            pre['ranges'] = next
+            return pre
+          default:
+            pre[next.name] = next
+            return pre
+        }
       }, {}) as Record<string, SeriesFormatter>
 
     const tooltip = {
@@ -358,35 +369,21 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
 
         const result = []
         const data = options.data.find(item => item.title === originalItems[0].title)
-        Object.keys(formatterMap).forEach((key, index) => {
+        Object.keys(formatterMap).forEach((key, _index) => {
           if (key === '记录数*') return
           const formatter = formatterMap[key]
           if (formatter) {
             if (key !== 'ranges') {
-              let name = ''
-              let value = 0
-              let color: string | Array<string> = []
-              let tFormatter = chart.yAxis[1]
-              if (index === 0) {
-                tFormatter = chart.yAxis[0]
-                value = valueFormatter(
-                  parseFloat(data['measures'] as string),
-                  formatter.formatterCfg
-                )
-                color = bullet.bar['measures'].fill
-              }
-              if (index === 1) {
-                tFormatter = chart.yAxisExt[0]
-                value = valueFormatter(parseFloat(data['target'] as string), formatter.formatterCfg)
-                color = bullet.bar['target'].fill
-              }
-              name = isEmpty(tFormatter.chartShowName) ? tFormatter.name : tFormatter.chartShowName
+              const name = isEmpty(formatter.chartShowName)
+                ? formatter.name
+                : formatter.chartShowName
+              const value = valueFormatter(parseFloat(data[key] as string), formatter.formatterCfg)
+              const color = bullet.bar[key].fill
               result.push({
                 color,
                 name,
                 value
               })
-              result.reverse()
             } else {
               const ranges = data.ranges
               const isDynamic = bullet.bar.ranges.showType === 'dynamic'
