@@ -212,6 +212,11 @@ function deepCopyHelper(data, idMap) {
   delete result.mEvents
   delete result.mPropValue
   delete result.mCommonBackground
+  if (result.component === 'VQuery') {
+    result.propValue?.forEach(queryItem => {
+      queryItem.id = generateID()
+    })
+  }
   if (result.component === 'Group') {
     result.propValue.forEach((component, i) => {
       result.propValue[i] = deepCopyHelper(component, idMap)
