@@ -625,6 +625,13 @@ const viewToolTipsChangeDebounce = debounce(() => {
 }, 500)
 
 watch(
+  () => scale.value,
+  () => {
+    viewToolTipsChangeDebounce()
+  }
+)
+
+watch(
   () => element.value,
   () => {
     calcTabLength()
@@ -670,6 +677,7 @@ const initCarousel = () => {
 }
 
 onMounted(() => {
+  document.addEventListener('visibilitychange', viewToolTipsChange)
   if (element.value.propValue.length > 0) {
     element.value.editableTabsValue = element.value.propValue[0].name
   }
@@ -689,6 +697,7 @@ onMounted(() => {
   }, 1000)
 })
 onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', viewToolTipsChange)
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
     eventBus.off('onTabMoveIn-' + element.value.id, componentMoveIn)
     eventBus.off('onTabMoveOut-' + element.value.id, componentMoveOut)
