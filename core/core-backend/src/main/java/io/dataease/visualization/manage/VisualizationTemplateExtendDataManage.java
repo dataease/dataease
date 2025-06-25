@@ -1,6 +1,5 @@
 package io.dataease.visualization.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.exception.DEException;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;

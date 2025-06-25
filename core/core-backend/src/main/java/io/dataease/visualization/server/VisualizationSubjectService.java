@@ -1,11 +1,9 @@
 package io.dataease.visualization.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.visualization.VisualizationSubjectApi;
 import io.dataease.api.visualization.request.VisualizationSubjectRequest;
 import io.dataease.api.visualization.vo.VisualizationSubjectVO;
 import io.dataease.exception.DEException;
-import io.dataease.share.dao.auto.entity.CoreShareTicket;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.VisualizationSubject;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -67,9 +64,6 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
     @Override
     public synchronized void update(VisualizationSubjectRequest request) {
         if (StringUtils.isEmpty(request.getId())) {
-            QueryWrapper<VisualizationSubject> wrapper = new QueryWrapper<>();
-            wrapper.eq("name", request.getName());
-
             Specification<VisualizationSubject> spec = (root, query, cb) -> {
                 List<Predicate> predicates = new ArrayList<>();
                 predicates.add(cb.equal(root.get("name"), request.getName()));

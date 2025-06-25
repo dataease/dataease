@@ -1,6 +1,5 @@
 package io.dataease.template.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.license.utils.LogUtil;
 import io.dataease.template.dao.auto.entity.DeTemplateVersion;
