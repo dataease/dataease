@@ -1447,7 +1447,7 @@ const validate = () => {
         (Array.isArray(ele.defaultValue) && !ele.defaultValue.length) ||
         (!Array.isArray(ele.defaultValue) && isNaN(ele.defaultValue))
       ) {
-        ElMessage.error(t('v_query.cannot_be_empty_de'))
+        ElMessage.error(t('report.filter.title'))
         return true
       }
     }
