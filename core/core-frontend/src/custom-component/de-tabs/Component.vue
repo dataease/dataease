@@ -648,6 +648,7 @@ watch(
     viewToolTipsChange()
   }
 )
+
 const initCarousel = () => {
   carouselTimer && clearInterval(carouselTimer)
   carouselTimer = null
@@ -671,6 +672,7 @@ const initCarousel = () => {
 }
 
 onMounted(() => {
+  document.addEventListener('visibilitychange', viewToolTipsChange)
   if (element.value.propValue.length > 0) {
     editableTabsValue.value = element.value.propValue[0].name
   }
@@ -695,6 +697,7 @@ onBeforeUnmount(() => {
     eventBus.off('onTabMoveOut-' + element.value.id, componentMoveOut)
     eventBus.off('onTabSortChange-' + element.value.id, reShow)
   }
+  document.addEventListener('visibilitychange', viewToolTipsChange)
 })
 onBeforeMount(() => {
   if (carouselTimer) {
