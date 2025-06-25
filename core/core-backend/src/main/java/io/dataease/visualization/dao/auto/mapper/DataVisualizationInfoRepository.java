@@ -42,5 +42,5 @@ public interface DataVisualizationInfoRepository extends JpaRepository<DataVisua
             "AND (:dvType IS NULL OR d.type = :dvType)")
     Optional<DataVisualizationInfo> findDvInfoEntity( Long dvId, String dvType);
 
-    List<DataVisualizationInfo> findByDeleteFlagAndNodeTypeAndStatusNot(  Integer deleteFlag, String nodeType,Integer status);
+    List<DataVisualizationInfo> findByDeleteFlagAndNodeTypeAndStatusNot(boolean deleteFlag, String nodeType,Integer status);
 }

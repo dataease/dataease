@@ -105,7 +105,7 @@ public class VisualizationRecentManage {
     }
 
     private List<VisualizationResourcePO> queryVisualizations(Long uid, String keyword, Map<String, Object> params, Set<Long> storedResourceIds) {
-        return dataVizRepository.findByDeleteFlagAndNodeTypeAndStatusNot(0, "leaf", 0)
+        return dataVizRepository.findByDeleteFlagAndNodeTypeAndStatusNot(false, "leaf", 0)
                 .stream()
                 .map(dv -> new VisualizationResourcePO(
                         Long.getLong(dv.getId()),
