@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class BulletGraphHandler extends YoyChartHandler {
@@ -26,7 +27,12 @@ public class BulletGraphHandler extends YoyChartHandler {
         var result = super.formatAxis(view);
         var yAxis = result.getAxisMap().get(ChartAxis.yAxis);
         yAxis.addAll(view.getYAxisExt());
-        yAxis.addAll(view.getExtBubble());
+        if (!view.getExtBubble().isEmpty()
+                && !Objects.equals(view.getExtBubble().getFirst().getId(), view.getYAxisExt().getFirst().getId())
+                && !Objects.equals(view.getExtBubble().getFirst().getId(), view.getYAxis().getFirst().getId())) {
+            yAxis.addAll(view.getExtBubble());
+            result.getAxisMap().put(ChartAxis.extBubble, view.getExtBubble());
+        }
         yAxis.addAll(view.getExtTooltip());
         result.getAxisMap().put(ChartAxis.yAxis, yAxis);
         result.getAxisMap().put(ChartAxis.yAxisExt, view.getYAxisExt());
