@@ -241,6 +241,7 @@ const displayTypeChange = () => {
   if (!props.isConfig) return
   config.value.defaultValue = config.value.multiple ? [] : undefined
   selectValue.value = config.value.multiple ? [] : undefined
+  config.value.defaultValueFirstItem = false
 }
 
 const handleFieldIdDefaultChange = (val: string[]) => {
