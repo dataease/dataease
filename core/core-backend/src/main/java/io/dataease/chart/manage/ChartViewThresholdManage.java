@@ -252,7 +252,7 @@ public class ChartViewThresholdManage {
         String thresholdRules = request.getThresholdRules();
         Long chartId = request.getChartId();
         try {
-            ChartViewDTO chart = chartViewManege.getChart(chartId, request.getResourceTable());
+            ChartViewDTO chart = chartViewManege.getChart(chartId, request.getResourceTable(), true);
             Map<String, Object> data = null;
             if (ObjectUtils.isEmpty(chart) || MapUtils.isEmpty(data = chart.getData())) {
                 return new ThresholdCheckVO(false, null, "查询图表异常！", null);
