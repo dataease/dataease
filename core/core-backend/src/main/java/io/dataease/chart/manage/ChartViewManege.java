@@ -224,17 +224,31 @@ public class ChartViewManege {
             return Collections.emptyList();
         }
         return list.stream().map(ele -> {
-            ChartViewDTO dto = transRecord2DTO(ele);
-            return dto;
+            return transRecord2DTO(ele);
         }).collect(Collectors.toList());
     }
 
-    public ChartViewDTO getChart(Long id, String resourceTable) throws Exception {
+    public ChartViewDTO getChart(Long id, String resourceTable, boolean forThreshold) throws Exception {
         ChartViewDTO details = getDetails(id, resourceTable);
         if (details == null) {
             return null;
         }
+        if (forThreshold) {
+            ChartExtRequest chartExtRequest = details.getChartExtRequest();
+            if (chartExtRequest == null) {
+                chartExtRequest = new ChartExtRequest();
+                chartExtRequest.setResultMode("all");
+                chartExtRequest.setResultCount(1000);
+                chartExtRequest.setGoPage(1L);
+                chartExtRequest.setPageSize(50000L);
+            }
+            details.setChartExtRequest(chartExtRequest);
+        }
         return chartDataManage.calcData(details);
+    }
+
+    public ChartViewDTO getChart(Long id, String resourceTable) throws Exception {
+        return getChart(id, resourceTable, false);
     }
 
     public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId, ChartViewDTO chartViewDTO) {
