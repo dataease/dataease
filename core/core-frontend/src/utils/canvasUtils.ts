@@ -165,6 +165,7 @@ export function historyItemAdaptor(
   }
 
   if (componentItem.component === 'DeTabs') {
+    componentItem['editableTabsValue'] = componentItem['editableTabsValue'] || ''
     componentItem.style['showTabTitle'] =
       componentItem.style['showTabTitle'] === undefined ? true : componentItem.style['showTabTitle']
   }

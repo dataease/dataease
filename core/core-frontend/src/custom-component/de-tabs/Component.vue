@@ -12,7 +12,7 @@
     ref="tabComponentRef"
   >
     <de-custom-tab
-      v-model="editableTabsValue"
+      v-model="element.editableTabsValue"
       @tab-add="addTab"
       :addable="isEditMode"
       :font-color="fontColor"
@@ -88,7 +88,7 @@
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
         v-for="(tabItem, index) in element.propValue"
-        :class="{ 'switch-hidden': editableTabsValue !== tabItem.name }"
+        :class="{ 'switch-hidden': element.editableTabsValue !== tabItem.name }"
       >
         <de-canvas
           v-if="isEdit && !mobileInPc"
@@ -99,7 +99,7 @@
           :canvas-id="element.id + '--' + tabItem.name"
           :class="moveActive ? 'canvas-move-in' : ''"
           :canvas-position="'tab'"
-          :canvas-active="editableTabsValue === tabItem.name"
+          :canvas-active="element.editableTabsValue === tabItem.name"
           :font-family="fontFamily"
         ></de-canvas>
         <de-preview
@@ -111,7 +111,7 @@
           :canvas-style-data="{}"
           :canvas-view-info="canvasViewInfo"
           :canvas-id="element.id + '--' + tabItem.name"
-          :preview-active="editableTabsValue === tabItem.name"
+          :preview-active="element.editableTabsValue === tabItem.name"
           :show-position="showPosition"
           :outer-scale="scale"
           :font-family="fontFamily"
@@ -172,6 +172,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Board from '@/components/de-board/Board.vue'
 import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+import { debounce } from 'lodash-es'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
@@ -250,7 +251,7 @@ const svgInnerInActiveEnable = itemName => {
   const { backgroundImageEnable, backgroundType, innerImage } =
     element.value.titleBackground.inActive
   return (
-    editableTabsValue.value !== itemName &&
+    element.value.editableTabsValue !== itemName &&
     !element.value.titleBackground.multiply &&
     element.value.titleBackground?.enable &&
     backgroundImageEnable &&
@@ -262,7 +263,7 @@ const svgInnerInActiveEnable = itemName => {
 const svgInnerActiveEnable = itemName => {
   const { backgroundImageEnable, backgroundType, innerImage } = element.value.titleBackground.active
   return (
-    (editableTabsValue.value === itemName || element.value.titleBackground.multiply) &&
+    (element.value.editableTabsValue === itemName || element.value.titleBackground.multiply) &&
     element.value.titleBackground?.enable &&
     backgroundImageEnable &&
     backgroundType === 'innerImage' &&
@@ -274,7 +275,7 @@ const svgInnerActiveEnable = itemName => {
 const viewToolTipsChange = () => {
   element.value.propValue?.forEach(tabItem => {
     const tMethod =
-      editableTabsValue.value === tabItem.name
+      element.value.editableTabsValue === tabItem.name
         ? ChartCarouselTooltip.resume
         : ChartCarouselTooltip.paused
     tabItem.componentData?.forEach(componentItem => {
@@ -303,7 +304,6 @@ const state = reactive({
   hoverFlag: false
 })
 const tabsAreaScroll = ref(false)
-const editableTabsValue = ref(null)
 
 // 无边框
 const noBorderColor = ref('none')
@@ -360,7 +360,7 @@ function addTab() {
     closable: true
   }
   element.value.propValue.push(newTab)
-  editableTabsValue.value = newTab.name
+  element.value.editableTabsValue = newTab.name
   snapshotStore.recordSnapshotCache('addTab')
 }
 
@@ -372,7 +372,7 @@ function deleteCur(param) {
       element.value.propValue.splice(len, 1)
       const activeIndex =
         (len - 1 + element.value.propValue.length) % element.value.propValue.length
-      editableTabsValue.value = element.value.propValue[activeIndex].name
+      element.value.editableTabsValue = element.value.propValue[activeIndex].name
       state.tabShow = false
       nextTick(() => {
         state.tabShow = true
@@ -426,7 +426,7 @@ const reloadLinkage = () => {
 
 const componentMoveIn = component => {
   element.value.propValue.forEach((tabItem, index) => {
-    if (editableTabsValue.value === tabItem.name) {
+    if (element.value.editableTabsValue === tabItem.name) {
       //获取主画布当前组件的index
       if (isDashboard()) {
         eventBus.emit('removeMatrixItemById-canvas-main', component.id)
@@ -541,7 +541,7 @@ const backgroundStyle = backgroundParams => {
 
 const titleStyle = itemName => {
   let style = {}
-  if (editableTabsValue.value === itemName) {
+  if (element.value.editableTabsValue === itemName) {
     style = {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
@@ -620,10 +620,15 @@ const titleValid = computed(() => {
   return !!state.textarea && !!state.textarea.trim()
 })
 
+const viewToolTipsChangeDebounce = debounce(() => {
+  viewToolTipsChange()
+}, 500)
+
 watch(
   () => element.value,
   () => {
     calcTabLength()
+    viewToolTipsChangeDebounce()
   },
   { deep: true }
 )
@@ -642,12 +647,6 @@ watch(
   }
 )
 
-watch(
-  () => editableTabsValue.value,
-  () => {
-    viewToolTipsChange()
-  }
-)
 const initCarousel = () => {
   carouselTimer && clearInterval(carouselTimer)
   carouselTimer = null
@@ -662,7 +661,7 @@ const initCarousel = () => {
           const nowIndex = switchCount % element.value.propValue.length
           switchCount++
           nextTick(() => {
-            editableTabsValue.value = element.value.propValue[nowIndex].name
+            element.value.editableTabsValue = element.value.propValue[nowIndex].name
           })
         }
       }, switchTime)
@@ -672,7 +671,7 @@ const initCarousel = () => {
 
 onMounted(() => {
   if (element.value.propValue.length > 0) {
-    editableTabsValue.value = element.value.propValue[0].name
+    element.value.editableTabsValue = element.value.propValue[0].name
   }
   calcTabLength()
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
