@@ -5,6 +5,7 @@ import io.dataease.api.xpack.share.request.TicketCreator;
 import io.dataease.api.xpack.share.request.TicketDelRequest;
 import io.dataease.api.xpack.share.request.TicketSwitchRequest;
 import io.dataease.api.xpack.share.vo.TicketVO;
+import io.dataease.result.PageResult;
 import io.dataease.share.manage.ShareTicketManage;
 import io.dataease.utils.CodingUtil;
 import jakarta.annotation.Resource;
@@ -35,8 +36,7 @@ public class ShareTicketServer implements ShareTicketApi {
     }
 
     @Override
-    public Page<TicketVO> pager(Long resourceId, int goPage, int pageSize) {
-
+    public PageResult<TicketVO> pager(Long resourceId, int goPage, int pageSize) {
         return shareTicketManage.query(resourceId,  goPage,  pageSize);
     }
 

@@ -329,7 +329,7 @@ public class TemplateManageService implements TemplateManageApi {
     @Override
     public List<TemplateManageDTO> findCategories(TemplateManageRequest request) {
         QVisualizationTemplateCategory visualizationTemplateCategory = QVisualizationTemplateCategory.visualizationTemplateCategory;
-        return queryFactory.select(Projections.constructor(TemplateManageDTO.class,
+        return queryFactory.select(Projections.fields(TemplateManageDTO.class,
                         visualizationTemplateCategory.id,
                         visualizationTemplateCategory.name,
                         visualizationTemplateCategory.name.as("label"),

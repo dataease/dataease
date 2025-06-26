@@ -7,6 +7,7 @@ import io.dataease.api.xpack.share.request.TicketSwitchRequest;
 import io.dataease.api.xpack.share.vo.TicketVO;
 import io.dataease.api.xpack.share.vo.TicketValidVO;
 import io.dataease.exception.DEException;
+import io.dataease.result.PageResult;
 import io.dataease.share.dao.auto.entity.CoreShareTicket;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.dao.auto.mapper.CoreShareTicketRepository;
@@ -112,8 +113,7 @@ public class ShareTicketManage {
         return dto;
     };
 
-    public Page<TicketVO> query(Long resourceId, int goPage, int pageSize) {
-
+    public PageResult<TicketVO> query(Long resourceId, int goPage, int pageSize) {
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("resourceId"), resourceId));
@@ -133,7 +133,7 @@ public class ShareTicketManage {
         };
 
         Page<TicketVO> pager = coreShareTicketRepository.findAll(spec, pageable).map(dtoConverter);
-        return pager;
+        return new PageResult<>(pager.getContent(), pager.getTotalElements(), pageable);
     }
 
     @Transactional

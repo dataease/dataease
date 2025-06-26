@@ -108,7 +108,7 @@ public class CoreVisualizationManage {
         }
         QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
         JPAQuery<VisualizationNodePO> query = queryFactory.select(
-                        Projections.constructor(VisualizationNodePO.class,
+                        Projections.fields(VisualizationNodePO.class,
                                 dataVisualizationInfo.id,
                                 dataVisualizationInfo.name,
                                 dataVisualizationInfo.pid,
@@ -448,7 +448,7 @@ public class CoreVisualizationManage {
         QVisualizationLinkJumpInfo visualizationLinkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
         QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
         QVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
-        queryFactory.select(Projections.constructor(VisualizationLinkJumpTargetViewInfo.class,
+        queryFactory.select(Projections.fields(VisualizationLinkJumpTargetViewInfo.class,
                         visualizationLinkJumpTargetViewInfo.targetId,
                         visualizationLinkJumpTargetViewInfo.linkJumpInfoId,
                         visualizationLinkJumpTargetViewInfo.sourceFieldActiveId,
@@ -466,7 +466,7 @@ public class CoreVisualizationManage {
                 });
 
 
-        queryFactory.select(Projections.constructor(VisualizationLinkJumpInfo.class,
+        queryFactory.select(Projections.fields(VisualizationLinkJumpInfo.class,
                         visualizationLinkJumpInfo.id,
                         visualizationLinkJumpInfo.linkJumpId,
                         visualizationLinkJumpInfo.linkType,
@@ -496,7 +496,7 @@ public class CoreVisualizationManage {
 
         QVisualizationLinkageField visualizationLinkageField = QVisualizationLinkageField.visualizationLinkageField;
         QVisualizationLinkage visualizationLinkage = QVisualizationLinkage.visualizationLinkage;
-        queryFactory.select(Projections.constructor(VisualizationLinkageField.class,
+        queryFactory.select(Projections.fields(VisualizationLinkageField.class,
                         visualizationLinkageField.id,
                         visualizationLinkageField.linkageId,
                         visualizationLinkageField.sourceField,
@@ -521,7 +521,7 @@ public class CoreVisualizationManage {
         QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
         QVisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = QVisualizationOuterParamsTargetViewInfo.visualizationOuterParamsTargetViewInfo;
 
-        queryFactory.select(Projections.constructor(QVisualizationOuterParamsTargetViewInfo.class,
+        queryFactory.select(Projections.fields(QVisualizationOuterParamsTargetViewInfo.class,
                         visualizationOuterParamsTargetViewInfo.targetId,
                         visualizationOuterParamsTargetViewInfo.paramsInfoId,
                         visualizationOuterParamsTargetViewInfo.targetViewId,
@@ -537,7 +537,7 @@ public class CoreVisualizationManage {
                     snapshotVisualizationOuterParamsTargetViewInfoRepository.saveAndFlush(snapshotVisualizationOuterParamsTargetViewInfo);
                 });
 
-        queryFactory.select(Projections.constructor(VisualizationOuterParamsInfo.class,
+        queryFactory.select(Projections.fields(VisualizationOuterParamsInfo.class,
                         visualizationOuterParamsInfo.paramsInfoId,
                         visualizationOuterParamsInfo.paramsId,
                         visualizationOuterParamsInfo.paramName,
@@ -580,7 +580,7 @@ public class CoreVisualizationManage {
         QSnapshotVisualizationLinkJump snapshotVisualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
         QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
         QSnapshotVisualizationLinkJumpTargetViewInfo snapshotVisualizationLinkJumpTargetViewInfo = QSnapshotVisualizationLinkJumpTargetViewInfo.snapshotVisualizationLinkJumpTargetViewInfo;
-        queryFactory.select(Projections.constructor(SnapshotVisualizationLinkJumpTargetViewInfo.class,
+        queryFactory.select(Projections.fields(SnapshotVisualizationLinkJumpTargetViewInfo.class,
                         snapshotVisualizationLinkJumpTargetViewInfo.targetId,
                         snapshotVisualizationLinkJumpTargetViewInfo.linkJumpInfoId,
                         snapshotVisualizationLinkJumpTargetViewInfo.sourceFieldActiveId,
@@ -599,7 +599,7 @@ public class CoreVisualizationManage {
                 });
 
 
-        queryFactory.select(Projections.constructor(SnapshotVisualizationLinkJumpInfo.class,
+        queryFactory.select(Projections.fields(SnapshotVisualizationLinkJumpInfo.class,
                         snapshotVisualizationLinkJumpInfo.id,
                         snapshotVisualizationLinkJumpInfo.linkJumpId,
                         snapshotVisualizationLinkJumpInfo.linkType,
@@ -620,7 +620,7 @@ public class CoreVisualizationManage {
                     visualizationLinkJumpInfoRepository.saveAndFlush(visualizationLinkJumpInfo);
                 });
 
-        queryFactory.select(Projections.constructor(SnapshotVisualizationLinkJump.class,
+        queryFactory.select(Projections.fields(SnapshotVisualizationLinkJump.class,
                         snapshotVisualizationLinkJump.id,
                         snapshotVisualizationLinkJump.sourceDvId,
                         snapshotVisualizationLinkJump.sourceViewId,
@@ -636,7 +636,7 @@ public class CoreVisualizationManage {
                 });
 
         QSnapshotVisualizationLinkage snapshotVisualizationLinkage = QSnapshotVisualizationLinkage.snapshotVisualizationLinkage;
-        queryFactory.select(Projections.constructor(SnapshotVisualizationLinkage.class,
+        queryFactory.select(Projections.fields(SnapshotVisualizationLinkage.class,
                         snapshotVisualizationLinkage.id,
                         snapshotVisualizationLinkage.dvId,
                         snapshotVisualizationLinkage.sourceViewId,
@@ -657,7 +657,7 @@ public class CoreVisualizationManage {
 
         QSnapshotVisualizationLinkageField snapshotVisualizationLinkageField = QSnapshotVisualizationLinkageField.snapshotVisualizationLinkageField;
 
-        queryFactory.select(Projections.constructor(SnapshotVisualizationLinkageField.class,
+        queryFactory.select(Projections.fields(SnapshotVisualizationLinkageField.class,
                         snapshotVisualizationLinkageField.id,
                         snapshotVisualizationLinkageField.linkageId,
                         snapshotVisualizationLinkageField.sourceField,
@@ -677,7 +677,7 @@ public class CoreVisualizationManage {
         QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
         QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
         QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
-        queryFactory.select(Projections.constructor(SnapshotVisualizationOuterParamsTargetViewInfo.class,
+        queryFactory.select(Projections.fields(SnapshotVisualizationOuterParamsTargetViewInfo.class,
                         snapshotVisualizationOuterParamsTargetViewInfo.targetId,
                         snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId,
                         snapshotVisualizationOuterParamsTargetViewInfo.targetViewId,
@@ -695,7 +695,7 @@ public class CoreVisualizationManage {
                 });
 
 
-        queryFactory.select(Projections.constructor(SnapshotVisualizationOuterParamsInfo.class,
+        queryFactory.select(Projections.fields(SnapshotVisualizationOuterParamsInfo.class,
                         snapshotVisualizationOuterParamsInfo.paramsInfoId,
                         snapshotVisualizationOuterParamsInfo.paramsId,
                         snapshotVisualizationOuterParamsInfo.paramName,
@@ -714,7 +714,7 @@ public class CoreVisualizationManage {
 
                 });
 
-        queryFactory.select(Projections.constructor(SnapshotVisualizationOuterParams.class,
+        queryFactory.select(Projections.fields(SnapshotVisualizationOuterParams.class,
                 snapshotVisualizationOuterParams.paramsId,
                 snapshotVisualizationOuterParams.visualizationId,
                 snapshotVisualizationOuterParams.checked,
@@ -737,7 +737,7 @@ public class CoreVisualizationManage {
         QCoreDatasetTableField field = QCoreDatasetTableField.coreDatasetTableField;
 
         return queryFactory
-                .select(Projections.constructor(
+                .select(Projections.fields(
                         VisualizationViewTableDTO.class,
                         ccv.id,
                         ccv.title,
@@ -745,7 +745,7 @@ public class CoreVisualizationManage {
                         ccv.tableId,
                         ccv.type,
                         ccv.render,
-                        Projections.constructor(
+                        Projections.fields(
                                 DatasetTableFieldDTO.class,
                                 field.id.as("id"),
                                 field.originName.as("originName"),

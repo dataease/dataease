@@ -5,12 +5,12 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.threshold.dto.*;
 import io.dataease.api.threshold.vo.ThresholdGridVO;
 import io.dataease.api.threshold.vo.ThresholdInstanceVO;
+import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public interface ThresholdApi {
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
     @PostMapping("/pager/{goPage}/{pageSize}")
-    Page<ThresholdGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ThresholdGridRequest request);
+    PageResult<ThresholdGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ThresholdGridRequest request);
 
     @Operation(summary = "查询表单")
     @GetMapping("/formInfo/{id}/{resourceTable}")
@@ -59,7 +59,7 @@ public interface ThresholdApi {
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
     @PostMapping("/instancePager/{goPage}/{pageSize}")
-    Page<ThresholdInstanceVO> instancePager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ThresholdInstanceRequest request);
+    PageResult<ThresholdInstanceVO> instancePager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody ThresholdInstanceRequest request);
 
     @Operation(summary = "预览信息")
     @PostMapping("/preview")

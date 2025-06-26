@@ -180,7 +180,7 @@ public class XpackShareManage {
         QXpackShare xpackShare = QXpackShare.xpackShare;
         QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
         JPAQuery<XpackSharePO> query = queryFactory.select(
-                        Projections.constructor(XpackSharePO.class,
+                        Projections.fields(XpackSharePO.class,
                                 xpackShare.id.as("shareId"),
                                 dataVisualizationInfo.id.as("resourceId"),
                                 dataVisualizationInfo.mobileLayout.as("extFlag"),

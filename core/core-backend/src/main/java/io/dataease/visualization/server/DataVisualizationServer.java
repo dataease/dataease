@@ -887,7 +887,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
         QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
 
-        List<VisualizationViewTableDTO> result = queryFactory.select(Projections.constructor(VisualizationViewTableDTO.class, snapshotCoreChartView.id, snapshotCoreChartView.title, snapshotCoreChartView.sceneId, snapshotCoreChartView.tableId, snapshotCoreChartView.type, snapshotCoreChartView.render, snapshotCoreChartView.sceneId.as("visualizationId"), coreDatasetTableField.id.as("fieldId"), coreDatasetTableField.originName, coreDatasetTableField.name.as("fieldName"), coreDatasetTableField.type.as("fieldType"), coreDatasetTableField.deType)).from(snapshotCoreChartView).join(coreDatasetTableField).on(snapshotCoreChartView.tableId.eq(coreDatasetTableField.datasetGroupId)).where(snapshotCoreChartView.sceneId.eq(dvId).and(snapshotCoreChartView.id.isNotNull()).and(snapshotCoreChartView.type.ne("VQuery"))).fetch();
+        List<VisualizationViewTableDTO> result = queryFactory.select(Projections.fields(VisualizationViewTableDTO.class, snapshotCoreChartView.id, snapshotCoreChartView.title, snapshotCoreChartView.sceneId, snapshotCoreChartView.tableId, snapshotCoreChartView.type, snapshotCoreChartView.render, snapshotCoreChartView.sceneId.as("visualizationId"), coreDatasetTableField.id.as("fieldId"), coreDatasetTableField.originName, coreDatasetTableField.name.as("fieldName"), coreDatasetTableField.type.as("fieldType"), coreDatasetTableField.deType)).from(snapshotCoreChartView).join(coreDatasetTableField).on(snapshotCoreChartView.tableId.eq(coreDatasetTableField.datasetGroupId)).where(snapshotCoreChartView.sceneId.eq(dvId).and(snapshotCoreChartView.id.isNotNull()).and(snapshotCoreChartView.type.ne("VQuery"))).fetch();
 
         SnapshotDataVisualizationInfo dvInfo = snapshotDataVisualizationInfoRepository.findById(dvId).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
@@ -917,23 +917,23 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         if (!CollectionUtils.isEmpty(dsIds)) {
             QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
-            datasetGroupVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasetGroupVO.class)).from(coreDatasetGroup).where(coreDatasetGroup.id.in(dsIds)).fetch();
+            datasetGroupVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetGroupVO.class)).from(coreDatasetGroup).where(coreDatasetGroup.id.in(dsIds)).fetch();
 
             QCoreDatasetTable coreDatasetTable = QCoreDatasetTable.coreDatasetTable;
-            datasetTableVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasetTableVO.class)).from(coreDatasetTable).where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
+            datasetTableVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetTableVO.class)).from(coreDatasetTable).where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
 
             QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
-            datasetTableFieldVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasetTableFieldVO.class)).from(coreDatasetTableField)
+            datasetTableFieldVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetTableFieldVO.class)).from(coreDatasetTableField)
                     .where(coreDatasetTableField.datasetGroupId.in(dsIds)).fetch();
 
             QCoreDatasourceTask coreDatasourceTask = QCoreDatasourceTask.coreDatasourceTask;
             QCoreDatasource coreDatasource = QCoreDatasource.coreDatasource;
 
-            datasourceVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasourceVO.class)).from(coreDatasource)
+            datasourceVOInfo = queryFactory.select(Projections.fields(AppCoreDatasourceVO.class)).from(coreDatasource)
                     .innerJoin(coreDatasetTable).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
                     .where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
 
-            datasourceTaskVOInfo = queryFactory.select(Projections.constructor(AppCoreDatasourceTaskVO.class)).from(coreDatasourceTask)
+            datasourceTaskVOInfo = queryFactory.select(Projections.fields(AppCoreDatasourceTaskVO.class)).from(coreDatasourceTask)
                     .innerJoin(coreDatasource).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
                     .innerJoin(coreDatasetTable).on(coreDatasetTable.datasourceId.eq(coreDatasource.id))
                     .where(coreDatasetTable.datasetGroupId.in(dsIds))
@@ -955,7 +955,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         QVisualizationLinkageField visualizationLinkageField = QVisualizationLinkageField.visualizationLinkageField;
         QVisualizationLinkage visualizationLinkage = QVisualizationLinkage.visualizationLinkage;
-        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = queryFactory.select(Projections.constructor(VisualizationLinkageFieldVO.class)).from(visualizationLinkageField)
+        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = queryFactory.select(Projections.fields(VisualizationLinkageFieldVO.class)).from(visualizationLinkageField)
                 .innerJoin(visualizationLinkage).on(visualizationLinkageField.linkageId.eq(visualizationLinkage.id))
                 .where(visualizationLinkage.dvId.eq(dvId)).fetch();
 
@@ -967,14 +967,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         QVisualizationLinkJumpInfo visualizationLinkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
         QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
-        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = queryFactory.select(Projections.constructor(VisualizationLinkJumpInfoVO.class)).from(visualizationLinkJumpInfo)
+        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = queryFactory.select(Projections.fields(VisualizationLinkJumpInfoVO.class)).from(visualizationLinkJumpInfo)
                 .innerJoin(visualizationLinkJump).on(visualizationLinkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
                 .where(visualizationLinkJump.sourceDvId.eq(dvId)).fetch();
 
 
         QVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
 
-        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = queryFactory.select(Projections.constructor(VisualizationLinkJumpTargetViewInfoVO.class)).from(visualizationLinkJumpTargetViewInfo)
+        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = queryFactory.select(Projections.fields(VisualizationLinkJumpTargetViewInfoVO.class)).from(visualizationLinkJumpTargetViewInfo)
                 .innerJoin(visualizationLinkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(visualizationLinkJumpInfo.id))
                 .innerJoin(visualizationLinkJump).on(visualizationLinkJump.id.eq(visualizationLinkJumpInfo.linkJumpId))
                 .where(visualizationLinkJump.sourceDvId.eq(dvId))

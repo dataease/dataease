@@ -5,6 +5,7 @@ import io.dataease.api.exportCenter.ExportCenterApi;
 import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.model.ExportTaskDTO;
+import io.dataease.result.PageResult;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public class ExportCenterServer implements ExportCenterApi {
     }
 
     @Override
-    public Page<ExportTaskDTO> pager(int goPage, int pageSize, String status) {
+    public PageResult<ExportTaskDTO> pager(int goPage, int pageSize, String status) {
         return exportCenterManage.pager(goPage, pageSize, status);
     }
 

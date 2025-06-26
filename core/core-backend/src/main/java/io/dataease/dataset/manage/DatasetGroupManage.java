@@ -240,7 +240,7 @@ public class DatasetGroupManage {
         }
         QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
         JPAQuery<DataSetNodePO> jpaQuery = queryFactory.select(
-                        Projections.constructor(DataSetNodePO.class,
+                        Projections.fields(DataSetNodePO.class,
                                 coreDatasetGroup.id,
                                 coreDatasetGroup.name,
                                 coreDatasetGroup.nodeType,

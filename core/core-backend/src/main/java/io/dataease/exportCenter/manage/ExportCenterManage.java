@@ -45,6 +45,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.ExportTaskDTO;
+import io.dataease.result.PageResult;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
@@ -272,7 +273,7 @@ public class ExportCenterManage implements BaseExportApi {
         }
     }
 
-    public Page<ExportTaskDTO> pager(int goPage, int pageSize, String status) {
+    public PageResult<ExportTaskDTO> pager(int goPage, int pageSize, String status) {
         if (!STATUS.contains(status)) {
             DEException.throwException("Invalid status: " + status);
         }
@@ -294,7 +295,7 @@ public class ExportCenterManage implements BaseExportApi {
                 proxy().setOrg(exportTask);
             }
         });
-        return pager;
+        return new PageResult<>(pager.getContent(), pager.getTotalElements(), pageable);
     }
 
     private Function<CoreExportTask, ExportTaskDTO> coreExportToDtoConverter = c -> {

@@ -40,6 +40,7 @@ import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.qrtz.dao.auto.repo.entity.QrtzSchedulerState;
+import io.dataease.result.PageResult;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
@@ -1123,10 +1124,8 @@ public class DatasourceServer implements DatasourceApi {
         return dto;
     };
 
-    public Page<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
+    public PageResult<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
         Pageable pageable = PageRequest.of(goPage - 1, pageSize, Sort.by(Sort.Direction.DESC, "startTime"));
-
-
         Specification<CoreDatasourceTaskLog> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("dsId"), dsId));
@@ -1149,7 +1148,7 @@ public class DatasourceServer implements DatasourceApi {
                 }
             }
         }
-        return pager;
+        return new PageResult<>(pager.getContent(), pager.getTotalElements(), pageable);
     }
 
 

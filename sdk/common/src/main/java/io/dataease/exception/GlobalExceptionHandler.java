@@ -27,6 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DEException.class)
     public ResultMessage deExceptionHandler(DEException e) {
         LogUtil.error(e.getMessage(), e);
+        e.printStackTrace();
         return new ResultMessage(e.getCode(), e.getMessage());
     }
 
@@ -34,6 +35,7 @@ public class GlobalExceptionHandler {
     public ResultMessage noUserExceptionHandler(Exception e) {
         String message = e.getMessage();
         LogUtil.error(message, e);
+        e.printStackTrace();
         if (StringUtils.contains(message, "Cannot invoke \"io.dataease.auth.bo.TokenUserBO.getUserId()\" because \"user\" is null")) {
             return new ResultMessage(ResultCode.USER_NOT_LOGGED_IN.code(), ResultCode.USER_NOT_LOGGED_IN.message());
         }

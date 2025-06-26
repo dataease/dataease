@@ -92,7 +92,7 @@ public class DataSourceManage {
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
         QCoreDatasource coreDatasource = QCoreDatasource.coreDatasource;
         JPAQuery<DataSourceNodePO> jpaQuery = queryFactory.select(
-                        Projections.constructor(DataSourceNodePO.class,
+                        Projections.fields(DataSourceNodePO.class,
                                 coreDatasource.id,
                                 coreDatasource.pid,
                                 coreDatasource.name,

@@ -53,8 +53,8 @@ import java.util.stream.Collectors;
 public class CopilotManage {
     @Resource
     private DatasetSQLManage datasetSQLManage;
-    @Resource
-    private CoreDatasetGroupRepository coreDatasetGroupRepository;
+    //    @Resource
+//    private CoreDatasetGroupRepository coreDatasetGroupRepository;
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
@@ -78,7 +78,8 @@ public class CopilotManage {
     private String[] chartType = {"bar", "line", "pie"};
 
     public MsgDTO chat(MsgDTO msgDTO) throws Exception {
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(msgDTO.getDatasetGroupId()).orElse(null);
+        CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
+//                coreDatasetGroupRepository.findById(msgDTO.getDatasetGroupId()).orElse(null);
         if (coreDatasetGroup == null) {
             return null;
         }

@@ -133,7 +133,7 @@ public class TemplateCenterManage {
             QVisualizationTemplate visualizationTemplate = QVisualizationTemplate.visualizationTemplate;
             QVisualizationTemplateCategoryMap visualizationTemplateCategoryMap = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
             QCoreOptRecent coreOptRecent = QCoreOptRecent.coreOptRecent;
-            List<TemplateManageDTO> manageResult = queryFactory.select(Projections.constructor(TemplateManageDTO.class,
+            List<TemplateManageDTO> manageResult = queryFactory.select(Projections.fields(TemplateManageDTO.class,
                             visualizationTemplate.id,
                             visualizationTemplate.name,
                             visualizationTemplate.pid,
@@ -155,7 +155,7 @@ public class TemplateCenterManage {
             });
 
             QVisualizationTemplateCategory visualizationTemplateCategory = QVisualizationTemplateCategory.visualizationTemplateCategory;
-            List<TemplateManageDTO> categories = queryFactory.select(Projections.constructor(TemplateManageDTO.class,
+            List<TemplateManageDTO> categories = queryFactory.select(Projections.fields(TemplateManageDTO.class,
                             visualizationTemplateCategory.id,
                             visualizationTemplateCategory.name,
                             visualizationTemplateCategory.name.as("label"),
@@ -322,7 +322,7 @@ public class TemplateCenterManage {
     public List<MarketMetaDataVO> getCategoriesV2() {
         List<MarketMetaDataVO> allCategories = new ArrayList<>();
         QVisualizationTemplateCategory visualizationTemplateCategory = QVisualizationTemplateCategory.visualizationTemplateCategory;
-        List<TemplateManageDTO> manageCategories = queryFactory.select(Projections.constructor(TemplateManageDTO.class,
+        List<TemplateManageDTO> manageCategories = queryFactory.select(Projections.fields(TemplateManageDTO.class,
                         visualizationTemplateCategory.id,
                         visualizationTemplateCategory.name,
                         visualizationTemplateCategory.name.as("label"),
@@ -373,7 +373,7 @@ public class TemplateCenterManage {
         QVisualizationTemplate vt = QVisualizationTemplate.visualizationTemplate;
         QVisualizationTemplateCategoryMap vtcm = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
 
-        JPAQuery<TemplateManageDTO> query = queryFactory.select(Projections.constructor(
+        JPAQuery<TemplateManageDTO> query = queryFactory.select(Projections.fields(
                 TemplateManageDTO.class,
                 vt.id,
                 vt.name,

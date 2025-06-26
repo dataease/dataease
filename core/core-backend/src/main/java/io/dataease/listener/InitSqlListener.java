@@ -60,7 +60,7 @@ public class InitSqlListener implements ApplicationRunner {
     }
 
     private void executeSql(SqlBlock sqlBlock, int versionRank) {
-        LogUtil.info("Begin to migrate sql : " + sqlBlock.getVersion().getVersion());
+        LogUtil.info("Begin to migrate sql: " + sqlBlock.getVersion().getVersion());
         long time = System.currentTimeMillis();
         sqlBlock.execute();
         DeStandaloneVersion deStandaloneVersion = new DeStandaloneVersion();

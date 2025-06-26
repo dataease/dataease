@@ -57,7 +57,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     public VisualizationOuterParamsDTO queryWithVisualizationId(String visualizationId) {
         QSnapshotDataVisualizationInfo qSnapshotDataVisualizationInfo = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
         QSnapshotVisualizationOuterParams qSnapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
-        VisualizationOuterParamsDTO visualizationOuterParamsDTO = queryFactory.select(Projections.constructor(VisualizationOuterParamsDTO.class,
+        VisualizationOuterParamsDTO visualizationOuterParamsDTO = queryFactory.select(Projections.fields(VisualizationOuterParamsDTO.class,
                         qSnapshotDataVisualizationInfo.id.as("visualizationId"),
                         qSnapshotVisualizationOuterParams.checked.as("checked")
                 )).from(qSnapshotDataVisualizationInfo)
@@ -76,7 +76,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         Map<String, String> paramsInfoNameIdMap = new HashMap<>();
         QSnapshotVisualizationOuterParamsInfo qSnapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
         QSnapshotVisualizationOuterParams qSnapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
-        List<SnapshotVisualizationOuterParamsInfo> paramsInfoNameIdList = queryFactory.select(Projections.constructor(SnapshotVisualizationOuterParamsInfo.class,
+        List<SnapshotVisualizationOuterParamsInfo> paramsInfoNameIdList = queryFactory.select(Projections.fields(SnapshotVisualizationOuterParamsInfo.class,
                         qSnapshotVisualizationOuterParamsInfo.paramName,
                         qSnapshotVisualizationOuterParamsInfo.paramsInfoId
                 )).from(qSnapshotVisualizationOuterParams)
@@ -148,7 +148,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         QVisualizationOuterParamsInfo qVisualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
         QVisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = QVisualizationOuterParamsTargetViewInfo.visualizationOuterParamsTargetViewInfo;
 
-        List<VisualizationOuterParamsInfoDTO> result = queryFactory.select(Projections.constructor(VisualizationOuterParamsInfoDTO.class,
+        List<VisualizationOuterParamsInfoDTO> result = queryFactory.select(Projections.fields(VisualizationOuterParamsInfoDTO.class,
                         qVisualizationOuterParamsInfo.paramName.as("paramName"),
                         qVisualizationOuterParamsInfo.required,
                         qVisualizationOuterParamsInfo.defaultValue,
@@ -168,7 +168,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         QCoreDatasetGroup qCoreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
         QSnapshotCoreChartView qSnapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
         QSnapshotDataVisualizationInfo qSnapshotDataVisualizationInfo = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
-        List<CoreDatasetGroupVO> result = queryFactory.select(Projections.constructor(CoreDatasetGroupVO.class,
+        List<CoreDatasetGroupVO> result = queryFactory.select(Projections.fields(CoreDatasetGroupVO.class,
                         qCoreDatasetGroup.id,
                         qCoreDatasetGroup.name,
                         qCoreDatasetGroup.pid,

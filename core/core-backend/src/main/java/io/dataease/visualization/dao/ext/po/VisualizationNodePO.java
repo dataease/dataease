@@ -18,4 +18,6 @@ public class VisualizationNodePO implements Serializable {
     @Schema(description = "额外标识1")
     private int extraFlag1;
 
+
+
 }

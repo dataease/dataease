@@ -5,7 +5,7 @@ import io.dataease.utils.EncryptUtils;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-@Converter(autoApply = true)
+@Converter(autoApply = false)
 public class EncryptDecryptConverter implements AttributeConverter<String, String> {
 
     @Override

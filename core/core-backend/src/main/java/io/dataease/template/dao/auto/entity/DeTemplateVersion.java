@@ -57,7 +57,6 @@ public class DeTemplateVersion {
 
     @NotNull
     @Comment("安装时间")
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "installed_on", nullable = false)
     private LocalDateTime installedOn;
 

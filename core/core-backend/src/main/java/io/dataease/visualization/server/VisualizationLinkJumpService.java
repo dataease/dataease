@@ -154,7 +154,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             QSnapshotVisualizationLinkJump visualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
 
             JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
-                            Projections.constructor(VisualizationLinkJumpDTO.class,
+                            Projections.fields(VisualizationLinkJumpDTO.class,
                                     visualizationLinkJump.sourceViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.sourceFieldActiveId.stringValue()).as("sourceInfo"),
                                     visualizationLinkJumpTargetViewInfo.targetViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.targetFieldId.stringValue()).as("targetInfo")
                             ))
@@ -178,7 +178,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
 
             JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
-                            Projections.constructor(VisualizationLinkJumpDTO.class,
+                            Projections.fields(VisualizationLinkJumpDTO.class,
                                     visualizationLinkJump.sourceViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.sourceFieldActiveId.stringValue()).as("sourceInfo"),
                                     visualizationLinkJumpTargetViewInfo.targetViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.targetFieldId.stringValue()).as("targetInfo")
                             ))
@@ -210,7 +210,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             QCoreChartView coreChartView = QCoreChartView.coreChartView;
             QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
             QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
-            result = queryFactory.select(Projections.constructor(VisualizationViewTableVO.class,
+            result = queryFactory.select(Projections.fields(VisualizationViewTableVO.class,
                             coreChartView.id.as("id"),
                             coreChartView.title.as("title"),
                             coreChartView.type.as("type"),
@@ -234,7 +234,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             QVisualizationOuterParamsInfo visualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
             QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
 
-            queryFactory.select(Projections.constructor(VisualizationOutParamsJumpVO.class,
+            queryFactory.select(Projections.fields(VisualizationOutParamsJumpVO.class,
                             visualizationOuterParamsInfo.paramsInfoId.as("id"),
                             visualizationOuterParamsInfo.paramName.as("name"),
                             visualizationOuterParamsInfo.paramName.as("title")

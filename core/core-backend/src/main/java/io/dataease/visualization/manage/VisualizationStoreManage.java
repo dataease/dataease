@@ -102,7 +102,7 @@ public class VisualizationStoreManage {
 
         QCoreStore coreStore = QCoreStore.coreStore;
         QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
-        JPAQuery<StorePO> query = queryFactory.select(Projections.constructor(StorePO.class,
+        JPAQuery<StorePO> query = queryFactory.select(Projections.fields(StorePO.class,
                         coreStore.id.as("storeId"),
                         dataVisualizationInfo.id.as("resourceId"),
                         dataVisualizationInfo.type,

@@ -352,7 +352,7 @@ public class ChartViewManege {
             QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
             QSnapshotDataVisualizationInfo snapshotDataVisualizationInfo = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
             JPAQuery<ChartBasePO> jpaQuery = queryFactory.select(
-                            Projections.constructor(ChartBasePO.class,
+                            Projections.fields(ChartBasePO.class,
                                     snapshotCoreChartView.id.as("chartId"),
                                     snapshotCoreChartView.title.as("chartName"),
                                     snapshotCoreChartView.type.as("chartType"),
@@ -382,7 +382,7 @@ public class ChartViewManege {
             QCoreChartView coreChartView = QCoreChartView.coreChartView;
             QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
             JPAQuery<ChartBasePO> jpaQuery = queryFactory.select(
-                            Projections.constructor(ChartBasePO.class,
+                            Projections.fields(ChartBasePO.class,
                                     coreChartView.id.as("chartId"),
                                     coreChartView.title.as("chartName"),
                                     coreChartView.type.as("chartType"),
@@ -579,7 +579,7 @@ public class ChartViewManege {
         QCoreChartView qChartView = QCoreChartView.coreChartView;
         QSnapshotCoreChartView qSnapshotChartView = QSnapshotCoreChartView.snapshotCoreChartView;
         ChartViewDTO mainResult = queryFactory
-                .select(Projections.constructor(
+                .select(Projections.fields(
                         ChartViewDTO.class,
                         qChartView.id,
                         qChartView.sceneId,
@@ -594,7 +594,7 @@ public class ChartViewManege {
             return mainResult;
         }
         ChartViewDTO snapshotResult = queryFactory
-                .select(Projections.constructor(
+                .select(Projections.fields(
                         ChartViewDTO.class,
                         qSnapshotChartView.id,
                         qSnapshotChartView.sceneId,
