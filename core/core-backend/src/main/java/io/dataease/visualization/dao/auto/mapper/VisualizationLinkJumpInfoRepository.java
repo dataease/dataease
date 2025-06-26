@@ -18,6 +18,6 @@ public interface VisualizationLinkJumpInfoRepository extends JpaRepository<Visua
     @Query("DELETE FROM VisualizationLinkJumpInfo c WHERE c.linkJumpId IN :linkJumpIds ")
     void deleteByLinkJumpIds(List<Long> linkJumpIds);
 
-    @Query("SELECT i FROM VisualizationLinkJumpInfo i WHERE i.linkType = 'outer' AND i.linkJump.sourceDvId = :dvId")
-    List<VisualizationLinkJumpInfo> findOuterLinkJumpInfoByDvId(Long dvId);
+//    @Query("SELECT i FROM VisualizationLinkJumpInfo i WHERE i.linkType = 'outer' AND i.linkJump.sourceDvId = :dvId")
+//    List<VisualizationLinkJumpInfo> findOuterLinkJumpInfoByDvId(Long dvId);
 }

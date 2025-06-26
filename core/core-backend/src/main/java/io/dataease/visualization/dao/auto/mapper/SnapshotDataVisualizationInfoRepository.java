@@ -11,11 +11,10 @@ import java.util.Optional;
 
 
 public interface SnapshotDataVisualizationInfoRepository extends JpaRepository<SnapshotDataVisualizationInfo, Long>, JpaSpecificationExecutor<SnapshotDataVisualizationInfo> {
-    List<SnapshotDataVisualizationInfo> findBySceneId(Long sceneId);
 
     @Query("SELECT s FROM SnapshotDataVisualizationInfo s " +
             "WHERE s.deleteFlag = false AND s.id = :dvId " +
             "AND (:dvType IS NULL OR s.type = :dvType)")
-    Optional<SnapshotDataVisualizationInfo> findSnapshotDvInfoEntity(Long dvId,String dvType);
+    Optional<SnapshotDataVisualizationInfo> findSnapshotDvInfoEntity(Long dvId, String dvType);
 
 }

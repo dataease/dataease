@@ -17,6 +17,7 @@ import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dao.auto.entity.*;
+import io.dataease.dao.auto.repo.VisualizationReportFilterRepository;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.license.config.XpackInteract;
@@ -572,7 +573,7 @@ public class CoreVisualizationManage {
         });
 
         List<CoreChartView> coreChartViews = new ArrayList<>();
-        snapshotDataVisualizationInfoRepository.findBySceneId(dvId).forEach(item -> {
+        snapshotCoreChartViewRepository.findBySceneId(dvId).forEach(item -> {
             coreChartViews.add(BeanUtils.copyBean(new CoreChartView(), item));
         });
         coreChartViewRepository.saveAllAndFlush(coreChartViews);
