@@ -203,7 +203,10 @@ public class ExportCenterDownLoadManage {
     public void startDatasetTask(CoreExportTask exportTask, DataSetExportRequest request) {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
-        boolean isCreated = directory.mkdir();
+        // 如果父目录不存在，则递归创建
+        if (!directory.exists()){
+            boolean isCreated = directory.mkdirs(); // 创建所有必要的父目录
+        }
 
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
