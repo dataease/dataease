@@ -14,38 +14,32 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import { setGradientColor, TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
-/**
- * 折线图
- */
-export class Line extends G2ChartView {
+export class Area extends G2ChartView {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = {
     ...LINE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': [...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
+    'basic-style-selector': [
+      ...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'],
+      'gradient',
+      'seriesColor'
+    ],
     'label-selector': ['seriesLabelVPosition', 'seriesLabelFormatter', 'showExtremum'],
     'tooltip-selector': [
       ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
       'seriesTooltipFormatter',
       'carousel'
-    ],
-    'legend-selector': [...LINE_EDITOR_PROPERTY_INNER['legend-selector'], 'legendSort']
+    ]
   }
-  axis: AxisType[] = [...LINE_AXIS_TYPE, 'xAxisExt']
+  axis: AxisType[] = [...LINE_AXIS_TYPE]
   axisConfig = {
     ...this['axisConfig'],
     xAxis: {
       name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
       type: 'd'
-    },
-    xAxisExt: {
-      name: `${t('chart.chart_group')} / ${t('chart.dimension')}`,
-      type: 'd',
-      limit: 1,
-      allowEmpty: true
     },
     yAxis: {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
@@ -81,13 +75,19 @@ export class Line extends G2ChartView {
         }
       },
       children: [
-        { type: 'line', encode: { series: 'category' } },
-        { type: 'point', tooltip: false }
+        {
+          type: 'area',
+          tooltip: false,
+          style: { fillOpacity: 0.3 },
+          zIndex: 1
+        },
+        { type: 'line', encode: { series: 'category' }, zIndex: 0 },
+        { type: 'point', tooltip: false, zIndex: 2 }
       ]
     }
-    const options = this.setupOptions(chart, initOptions)
-    // 开始渲染
     const newChart = new G2Chart({ container })
+    const options = this.setupOptions(chart, initOptions, { chartObj: newChart })
+    // 开始渲染
     newChart.options(options)
     newChart.on('point:click', action)
     // extremumEvt(newChart, chart, options, container)
@@ -101,7 +101,11 @@ export class Line extends G2ChartView {
     if (customAttr.basicStyle) {
       const basicStyle = customAttr.basicStyle
       basicStyle.colors.forEach(ele => {
-        colors.push(hexColorToRGBA(ele, basicStyle.alpha))
+        let color = hexColorToRGBA(ele, basicStyle.alpha)
+        if (basicStyle.gradient) {
+          color = setGradientColor(color, true, 270)
+        }
+        colors.push(color)
       })
     }
     const customStyle = parseJson(chart.customStyle)
@@ -126,29 +130,24 @@ export class Line extends G2ChartView {
     if (!seriesColor?.length) {
       return options
     }
-    const { xAxis, xAxisExt, yAxis } = chart
+    const { xAxis, yAxis } = chart
     if (!xAxis?.length || !yAxis?.length) {
       return options
     }
     const relations = []
-    if (xAxisExt?.length) {
-      seriesColor.forEach(item => {
-        relations.push([item.id, hexColorToRGBA(item.color, basicStyle.alpha)])
-      })
-    } else {
-      const colorMap = seriesColor.reduce((pre, next) => {
-        pre[next.id] = next.color
-        return pre
-      }, {})
-      yAxis.forEach(item => {
-        if (colorMap[item.id]) {
-          relations.push([
-            item.chartShowName ?? item.name,
-            hexColorToRGBA(colorMap[item.id], basicStyle.alpha)
-          ])
+    const colorMap = seriesColor.reduce((pre, next) => {
+      pre[next.id] = next.color
+      return pre
+    }, {})
+    yAxis.forEach(item => {
+      if (colorMap[item.id]) {
+        let color = hexColorToRGBA(colorMap[item.id], basicStyle.alpha)
+        if (basicStyle.gradient) {
+          color = setGradientColor(color, true, 270)
         }
-      })
-    }
+        relations.push([item.chartShowName ?? item.name, color])
+      }
+    })
     if (relations.length) {
       const scaleOptions = {
         scale: {
@@ -163,7 +162,7 @@ export class Line extends G2ChartView {
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
-    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
+    const { label: labelAttr } = parseJson(chart.customAttr)
     if (!labelAttr.show) {
       return options
     }
@@ -172,7 +171,7 @@ export class Line extends G2ChartView {
       pre[next.id] = next
       return pre
     }, {})
-    const pointMark: G2Spec = options.children[1]
+    const pointMark: G2Spec = options.children[2]
     const labelOpt = {
       labels: [
         {
@@ -255,10 +254,10 @@ export class Line extends G2ChartView {
     return options
   }
 
-  protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {
+  protected configBasicStyle(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     // size
     const { basicStyle } = parseJson(chart.customAttr)
-    const [lineMark, pointMark] = options.children
+    const [_, lineMark, pointMark] = options.children
     const lineStyleOpt = {
       encode: {
         shape: basicStyle.lineSmooth ? 'smooth' : 'line',
@@ -427,42 +426,6 @@ export class Line extends G2ChartView {
   }
 
   protected configLegend(chart: Chart, options: G2Spec): G2Spec {
-    const xAxisExt = chart.xAxisExt[0]
-    if (xAxisExt?.customSort?.length > 0) {
-      // 图例自定义排序
-      const sort = xAxisExt.customSort ?? []
-      if (sort?.length) {
-        // 用值域限定排序，有可能出现新数据但是未出现在图表上，所以这边要遍历一下子维度，加到后面，让新数据显示出来
-        const data = options.data.value
-        const cats =
-          data?.reduce((p, n) => {
-            const cat = n['category']
-            if (cat && !p.includes(cat)) {
-              p.push(cat)
-            }
-            return p
-          }, []) || []
-        const values = sort.reduce((p, n) => {
-          if (cats.includes(n)) {
-            const index = cats.indexOf(n)
-            if (index !== -1) {
-              cats.splice(index, 1)
-            }
-            p.push(n)
-          }
-          return p
-        }, [])
-        cats.length > 0 && values.push(...cats)
-        const scaleOpt = {
-          scale: {
-            color: {
-              domain: values
-            }
-          }
-        }
-        defaultsDeep(options, scaleOpt)
-      }
-    }
     const { legend } = parseJson(chart.customStyle)
     if (!legend.show) {
       return { ...options, legend: false }
@@ -478,52 +441,6 @@ export class Line extends G2ChartView {
       }
     }
     defaultsDeep(options, tmpLegend)
-
-    const customStyle = parseJson(chart.customStyle)
-    const { sort, customSort } = customStyle.legend
-    if (sort && sort !== 'none' && chart.xAxisExt.length) {
-      const domain = options.scale?.color?.domain || []
-      if (!domain?.length) {
-        options.data.value.forEach(item => {
-          if (item.category && !domain.includes(item.category)) {
-            domain.push(item.category)
-          }
-        })
-      }
-      if (sort !== 'custom') {
-        domain.sort((a, b) => {
-          return sort !== 'desc' ? a.localeCompare(b) : b.localeCompare(a)
-        })
-        const scaleOpt = {
-          scale: {
-            color: {
-              domain
-            }
-          }
-        }
-        defaultsDeep(options, scaleOpt)
-      } else {
-        if (!customSort?.length) {
-          return options
-        }
-        const tmp = []
-        customSort.forEach(item => {
-          if (domain.includes(item)) {
-            const index = domain.indexOf(item)
-            const val = domain.splice(index, 1)
-            tmp.push(val[0])
-          }
-        })
-        const scaleOpt = {
-          scale: {
-            color: {
-              domain: [...tmp, ...domain]
-            }
-          }
-        }
-        defaultsDeep(options, scaleOpt)
-      }
-    }
     return options
   }
 
@@ -628,7 +545,7 @@ export class Line extends G2ChartView {
       g2TooltipWrapper.style.zIndex = '9999'
       document.body.appendChild(g2TooltipWrapper)
     }
-    const lineMark = options.children[0]
+    const lineMark = options.children[1]
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -703,7 +620,7 @@ export class Line extends G2ChartView {
     if (!functionCfg?.sliderShow) {
       return options
     }
-    const lineMark = options.children[0]
+    const lineMark = options.children[1]
     const sliderOpt = {
       slider: {
         x: {
@@ -721,7 +638,7 @@ export class Line extends G2ChartView {
     return options
   }
 
-  protected setupOptions(chart: Chart, options: G2Spec): G2Spec {
+  protected setupOptions(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     return flow(
       this.configTheme,
       this.configColor,
@@ -733,10 +650,10 @@ export class Line extends G2ChartView {
       this.configAssistLine,
       this.configTooltip,
       this.configSlider
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
-  constructor(name = 'line') {
+  constructor(name = 'area') {
     super(name, DEFAULT_DATA)
   }
 }
