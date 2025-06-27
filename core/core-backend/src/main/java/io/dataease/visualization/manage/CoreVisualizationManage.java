@@ -24,6 +24,7 @@ import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.result.PageResult;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
@@ -262,32 +263,16 @@ public class CoreVisualizationManage {
     }
 
     @XpackInteract(value = "perFilterManage", recursion = true, invalid = true)
-    public Page<VisualizationResourceVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
-        Page<VisualizationResourcePO> visualizationResourcePOPageIPage = proxy().queryVisualizationPage(pageNum, pageSize, request);
-        if (ObjectUtils.isEmpty(visualizationResourcePOPageIPage)) {
-            return null;
-        }
-        List<VisualizationResourceVO> vos = proxy().formatResult(visualizationResourcePOPageIPage.getContent());
-//        IPage<VisualizationResourceVO> iPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>();
-//        iPage.setCurrent(visualizationResourcePOPageIPage.getCurrent());
-//        iPage.setPages(visualizationResourcePOPageIPage.getPages());
-//        iPage.setSize(visualizationResourcePOPageIPage.getSize());
-//        iPage.setTotal(visualizationResourcePOPageIPage.getTotal());
-//        iPage.setRecords(vos);
-//        return iPage;
-        return null;
+    public PageResult<VisualizationResourceVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
+        Page<VisualizationResourceVO> visualizationResourcePOPageIPage = proxy().queryVisualizationPage(pageNum, pageSize, request).map(po -> {
+            return new VisualizationResourceVO(
+                    po.getId(), po.getResourceId(), po.getName(),
+                    po.getType(), String.valueOf(po.getCreator()), String.valueOf(po.getLastEditor()), po.getLastEditTime(),
+                    po.getFavorite(), 9, po.getExtFlag());
+        });
+        return new PageResult<>(visualizationResourcePOPageIPage);
     }
 
-    List<VisualizationResourceVO> formatResult(List<VisualizationResourcePO> pos) {
-        if (CollectionUtils.isEmpty(pos)) {
-            return new ArrayList<>();
-        }
-        return pos.stream().map(po ->
-                new VisualizationResourceVO(
-                        po.getId(), po.getResourceId(), po.getName(),
-                        po.getType(), String.valueOf(po.getCreator()), String.valueOf(po.getLastEditor()), po.getLastEditTime(),
-                        po.getFavorite(), 9, po.getExtFlag())).toList();
-    }
 
     public Page<VisualizationResourcePO> queryVisualizationPage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();

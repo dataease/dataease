@@ -40,7 +40,7 @@ public class QrtzBlobTrigger {
     private String triggerGroup;
 
     @Lob
-    @Column(name = "BLOB_DATA")
+    @Column(name = "BLOB_DATA", length = 16777216)
     private Blob blobData;
 
 }

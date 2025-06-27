@@ -27,7 +27,7 @@ public class VisualizationTemplateExtendData {
 
     @Comment("视图详情")
     @Lob
-    @Column(name = "view_details")
+    @Column(name = "view_details", length = 16777216)
     private String viewDetails;
 
     @Size(max = 255)

@@ -69,7 +69,7 @@ public class CoreExportTask {
 
     @NotNull
     @Lob
-    @Column(name = "params", nullable = false)
+    @Column(name = "params", nullable = false, length = 16777216)
     private String params;
 
     @Lob

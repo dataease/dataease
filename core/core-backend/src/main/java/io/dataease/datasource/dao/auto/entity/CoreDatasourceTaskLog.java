@@ -53,7 +53,7 @@ public class CoreDatasourceTaskLog {
     private String tableName;
 
     @Lob
-    @Column(name = "info")
+    @Column(name = "info", length = 16777216)
     private String info;
 
     @Comment("创建时间")

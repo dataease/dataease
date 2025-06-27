@@ -29,6 +29,7 @@ import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.datasource.dao.auto.entity.QCoreDatasourceTask;
+import io.dataease.result.PageResult;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.ExcelUtils;
@@ -684,8 +685,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public List<VisualizationResourceVO> findRecent(@RequestBody VisualizationWorkbranchQueryRequest request) {
         request.setQueryFrom("recent");
-        Page<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
-        List<VisualizationResourceVO> resourceVOS = result.getContent();
+        PageResult<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
+        List<VisualizationResourceVO> resourceVOS = result.getRecords();
         if (!CollectionUtils.isEmpty(resourceVOS)) {
             resourceVOS.forEach(item -> {
                 item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());

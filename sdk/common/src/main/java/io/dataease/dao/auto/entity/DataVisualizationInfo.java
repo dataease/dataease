@@ -49,11 +49,11 @@ public class DataVisualizationInfo {
     private String type;
 
     @Lob
-    @Column(name = "canvas_style_data")
+    @Column(name = "canvas_style_data", length = 16777216)
     private String canvasStyleData;
 
     @Lob
-    @Column(name = "component_data")
+    @Column(name = "component_data", length = 16777216)
     private String componentData;
 
     @Comment("移动端布局0-关闭 1-开启")

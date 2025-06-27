@@ -35,7 +35,7 @@ public class CoreShareTicket {
     private Long exp;
 
     @Lob
-    @Column(name = "args")
+    @Column(name = "args", length = 16777216)
     private String args;
 
     @Comment("首次访问时间")

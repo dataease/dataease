@@ -128,7 +128,7 @@ public class CoreDatasetTableField {
 
     @Comment("计算字段参数")
     @Lob
-    @Column(name = "params")
+    @Column(name = "params", length = 16777216)
     private String params;
 
     public CoreDatasetTableField() {
