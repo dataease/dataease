@@ -202,8 +202,12 @@ public class ExportCenterDownLoadManage {
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATASET)
     public void startDatasetTask(CoreExportTask exportTask, DataSetExportRequest request) {
         String dataPath = exportData_path + exportTask.getId();
+
+        // 如果父目录不存在，则递归创建
         File directory = new File(dataPath);
-        boolean isCreated = directory.mkdir();
+        if (!directory.exists()){
+            boolean isCreated = directory.mkdirs(); // 创建所有必要的父目录
+        }
 
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
