@@ -163,7 +163,7 @@ export class Line extends G2ChartView {
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
-    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
+    const { label: labelAttr } = parseJson(chart.customAttr)
     if (!labelAttr.show) {
       return options
     }
@@ -177,7 +177,7 @@ export class Line extends G2ChartView {
       labels: [
         {
           text: d => {
-            if (d.EXTREME) {
+            if (d.EXTREME || d.value === null) {
               return ''
             }
             if (!labelAttr.seriesLabelFormatter?.length) {
@@ -606,12 +606,10 @@ export class Line extends G2ChartView {
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
-    const yAxis = chart.yAxis
+    const lineMark = options.children[0]
     if (!tooltipAttr.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
+      defaultsDeep(lineMark, { tooltip: false })
+      return options
     }
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
@@ -628,7 +626,7 @@ export class Line extends G2ChartView {
       g2TooltipWrapper.style.zIndex = '9999'
       document.body.appendChild(g2TooltipWrapper)
     }
-    const lineMark = options.children[0]
+    const yAxis = chart.yAxis
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
