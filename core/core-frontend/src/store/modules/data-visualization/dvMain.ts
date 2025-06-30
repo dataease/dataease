@@ -1409,7 +1409,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
-              } else {
+              } else if (QDItem.value !== null && QDItem.value !== '') {
                 condition = {
                   fieldId: targetFieldId,
                   operator: 'eq',
