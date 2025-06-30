@@ -110,13 +110,13 @@ public class CoreVisualizationManage {
         QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
         JPAQuery<VisualizationNodePO> query = queryFactory.select(
                         Projections.fields(VisualizationNodePO.class,
-                                dataVisualizationInfo.id,
+                                dataVisualizationInfo.id.castToNum(Long.class).as("id"),
                                 dataVisualizationInfo.name,
-                                dataVisualizationInfo.pid,
+                                dataVisualizationInfo.pid.castToNum(Long.class).as("pid"),
                                 dataVisualizationInfo.nodeType,
-                                dataVisualizationInfo.mobileLayout.as("extraFlag"),
-                                dataVisualizationInfo.status.as("extraFlag1"))
-                ).from(dataVisualizationInfo)
+                                dataVisualizationInfo.mobileLayout.castToNum(Integer.class).as("extraFlag"),
+                                dataVisualizationInfo.status.as("extraFlag1")))
+                .from(dataVisualizationInfo)
                 .where(dataVisualizationInfo.deleteFlag.eq(false))
                 .where(dataVisualizationInfo.pid.eq("-1"))
                 .where(dataVisualizationInfo.type.eq(request.getBusiFlag()))

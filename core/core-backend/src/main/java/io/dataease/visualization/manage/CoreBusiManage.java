@@ -33,11 +33,9 @@ public class CoreBusiManage {
                 result.put(key, dataSourceManage.tree(busiNodeRequest));
             } else if (StringUtils.equalsIgnoreCase(key, "dataset")) {
                 result.put(key, datasetGroupManage.tree(busiNodeRequest));
+            } else if (StringUtils.equalsAnyIgnoreCase(key, "dashboard", "dataV")) {
+                result.put(key, coreVisualizationManage.tree(busiNodeRequest));
             }
-            //TODO
-//            else if (StringUtils.equalsAnyIgnoreCase(key, "dashboard", "dataV")) {
-//                result.put(key, coreVisualizationManage.tree(busiNodeRequest));
-//            }
         }
         return result;
     }
