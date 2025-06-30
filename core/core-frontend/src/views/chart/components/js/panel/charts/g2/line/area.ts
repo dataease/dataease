@@ -5,7 +5,8 @@ import {
   getLineLabelColorByCondition,
   hexColorToRGBA,
   parseJson,
-  setUpGroupSeriesColor
+  setUpGroupSeriesColor,
+  setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
 import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
@@ -46,6 +47,33 @@ export class Area extends G2ChartView {
       type: 'q'
     }
   }
+  baseOptions: G2Spec = {
+    type: 'view',
+    autoFit: true,
+    encode: {
+      x: 'field',
+      y: 'value',
+      color: 'category'
+    },
+    scale: {
+      x: {
+        range: [0, 1]
+      },
+      y: {
+        nice: true
+      }
+    },
+    children: [
+      {
+        type: 'area',
+        tooltip: false,
+        style: { fillOpacity: 0.3 },
+        zIndex: 1
+      },
+      { type: 'line', encode: { series: 'category' }, zIndex: 0 },
+      { type: 'point', tooltip: false, zIndex: 2 }
+    ]
+  }
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
     const { chart, action, container } = drawOptions
     chart.container = container
@@ -56,34 +84,10 @@ export class Area extends G2ChartView {
     const data = cloneDeep(chart.data.data)
     // options
     const initOptions: G2Spec = {
-      type: 'view',
+      ...cloneDeep(this.baseOptions),
       data: {
         value: data
-      },
-      autoFit: true,
-      encode: {
-        x: 'field',
-        y: 'value',
-        color: 'category'
-      },
-      scale: {
-        x: {
-          range: [0, 1]
-        },
-        y: {
-          nice: true
-        }
-      },
-      children: [
-        {
-          type: 'area',
-          tooltip: false,
-          style: { fillOpacity: 0.3 },
-          zIndex: 1
-        },
-        { type: 'line', encode: { series: 'category' }, zIndex: 0 },
-        { type: 'point', tooltip: false, zIndex: 2 }
-      ]
+      }
     }
     const newChart = new G2Chart({ container })
     const options = this.setupOptions(chart, initOptions, { chartObj: newChart })
@@ -257,7 +261,7 @@ export class Area extends G2ChartView {
   protected configBasicStyle(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     // size
     const { basicStyle } = parseJson(chart.customAttr)
-    const [_, lineMark, pointMark] = options.children
+    const [areaMark, lineMark, pointMark] = options.children
     const lineStyleOpt = {
       encode: {
         shape: basicStyle.lineSmooth ? 'smooth' : 'line',
@@ -265,6 +269,12 @@ export class Area extends G2ChartView {
       }
     }
     defaultsDeep(lineMark, lineStyleOpt)
+    const areaStyleOpt = {
+      encode: {
+        shape: basicStyle.lineSmooth ? 'smooth' : 'area'
+      }
+    }
+    defaultsDeep(areaMark, areaStyleOpt)
     const pointStyleOpt = {
       encode: {
         shape: basicStyle.lineSymbol,
@@ -523,12 +533,10 @@ export class Area extends G2ChartView {
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
-    const yAxis = chart.yAxis
+    const lineMark = options.children[1]
     if (!tooltipAttr.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
+      defaultsDeep(lineMark, { tooltip: false })
+      return options
     }
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
@@ -545,7 +553,7 @@ export class Area extends G2ChartView {
       g2TooltipWrapper.style.zIndex = '9999'
       document.body.appendChild(g2TooltipWrapper)
     }
-    const lineMark = options.children[1]
+    const yAxis = chart.yAxis
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -655,5 +663,207 @@ export class Area extends G2ChartView {
 
   constructor(name = 'area') {
     super(name, DEFAULT_DATA)
+  }
+}
+
+/**
+ * 堆叠面积图
+ */
+export class StackArea extends Area {
+  propertyInner = {
+    ...this['propertyInner'],
+    'label-selector': ['vPosition', 'fontSize', 'color', 'labelFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter', 'show', 'carousel']
+  }
+  axisConfig = {
+    ...this['axisConfig'],
+    extStack: {
+      name: `${t('chart.stack_item')} / ${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1,
+      allowEmpty: true
+    }
+  }
+  protected configLabel(chart: Chart, options: G2Spec): G2Spec {
+    const { label: labelAttr } = parseJson(chart.customAttr)
+    if (!labelAttr.show) {
+      return options
+    }
+    const conditions = getLineConditions(chart)
+    const pointMark: G2Spec = options.children[2]
+    const labelOpt = {
+      labels: [
+        {
+          text: d => {
+            if (d.EXTREME || d.value === null) {
+              return ''
+            }
+            return valueFormatter(d.value, labelAttr.labelFormatter)
+          },
+          style: {
+            opacity: 1,
+            fontSize: d => {
+              if (d.EXTREME) {
+                return 0
+              }
+              return labelAttr.fontSize
+            },
+            fill: d => {
+              const color =
+                getLineLabelColorByCondition(conditions, d.value, d.quotaList[0].id) ||
+                labelAttr.color
+              return color
+            },
+            position: labelAttr.position
+          },
+          textBaseline: () => {
+            return labelAttr.position === 'top' ? 'bottom' : 'top'
+          },
+          transform: labelAttr.fullDisplay
+            ? []
+            : [{ type: 'overlapHide' }, { type: 'exceedAdjust' }],
+          fontFamily: chart.fontFamily
+        }
+      ]
+    }
+    defaultsDeep(pointMark, labelOpt)
+    return options
+  }
+
+  public setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.senior.functionCfg.emptyDataStrategy = 'ignoreData'
+    return chart
+  }
+
+  protected configColor(chart: Chart, options: G2Spec): G2Spec {
+    const { basicStyle } = parseJson(chart.customAttr)
+    const { seriesColor } = basicStyle
+    if (!seriesColor?.length) {
+      return options
+    }
+    const { xAxis, extStack, yAxis } = chart
+    if (!xAxis?.length || !yAxis?.length) {
+      return options
+    }
+    const relations = []
+    const colorMap = seriesColor.reduce((pre, next) => {
+      pre[next.id] = next.color
+      return pre
+    }, {})
+    if (extStack?.length) {
+      Object.entries(colorMap).forEach(([k, v]) => {
+        let color = hexColorToRGBA(v.color, basicStyle.alpha)
+        if (basicStyle.gradient) {
+          color = setGradientColor(color, true, 270)
+        }
+        relations.push([k, color])
+      })
+    } else {
+      yAxis.forEach(item => {
+        if (colorMap[item.id]) {
+          let color = hexColorToRGBA(colorMap[item.id], basicStyle.alpha)
+          if (basicStyle.gradient) {
+            color = setGradientColor(color, true, 270)
+          }
+          relations.push([item.chartShowName ?? item.name, color])
+        }
+      })
+    }
+    if (relations.length) {
+      const scaleOptions = {
+        scale: {
+          color: {
+            relations
+          }
+        }
+      }
+      defaultsDeep(options, scaleOptions)
+    }
+    return options
+  }
+
+  protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const tooltipAttr = customAttr.tooltip
+    const lineMark = options.children[1]
+    if (!tooltipAttr.show) {
+      defaultsDeep(lineMark, { tooltip: false })
+      return options
+    }
+    let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
+    if (!g2TooltipWrapper) {
+      g2TooltipWrapper = document.createElement('div')
+      g2TooltipWrapper.id = 'G2-TOOLTIP-WRAPPER'
+      g2TooltipWrapper.style.position = 'absolute'
+      g2TooltipWrapper.style.pointerEvents = 'none'
+      g2TooltipWrapper.style.zIndex = '9999'
+      document.body.appendChild(g2TooltipWrapper)
+    }
+    const tooltipOptions: G2Spec = {
+      tooltip: d => d,
+      interaction: {
+        tooltip: {
+          crosshairsLineDash: [4, 4],
+          mount: g2TooltipWrapper,
+          css: {
+            '.g2-tooltip': {
+              background: tooltipAttr.backgroundColor
+            },
+            '.g2-tooltip-title': {
+              color: tooltipAttr.color,
+              'font-size': `${tooltipAttr.fontSize}px`
+            },
+            '.g2-tooltip-list-item-name-label': {
+              color: tooltipAttr.color,
+              'font-size': `${tooltipAttr.fontSize}px`
+            },
+            '.g2-tooltip-list-item-value': {
+              color: tooltipAttr.color,
+              'font-size': `${tooltipAttr.fontSize}px`
+            }
+          },
+          render: (e, { title, items }) => {
+            const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
+            const result = []
+            items.forEach(item => {
+              if (item.value === null || item.value === undefined) {
+                return
+              }
+              const value = valueFormatter(item.value, tooltipAttr.tooltipFormatter)
+              result.push({ ...item, name: item.category, value })
+            })
+            const itemsHtml = result
+              .map(item => {
+                const marker = item.color
+                const label = item.name
+                const value = item.value
+                return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
+                  .replace('{label}', label)
+                  .replace('{value}', value)
+              })
+              .join('')
+            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            return `${titleHtml}${listHtml}`
+          }
+        }
+      }
+    }
+    defaultsDeep(lineMark, tooltipOptions)
+    return options
+  }
+
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpStackSeriesColor(chart, data)
+  }
+
+  constructor() {
+    super('area-stack')
+    this.baseOptions = {
+      ...this.baseOptions,
+      transform: [{ type: 'stackY' }]
+    }
+    delete this.propertyInner.threshold
+    this.properties = this.properties.filter(item => item !== 'threshold')
+    this.axis.push('extStack')
   }
 }
