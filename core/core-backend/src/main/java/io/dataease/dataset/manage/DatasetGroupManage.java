@@ -266,7 +266,7 @@ public class DatasetGroupManage {
     public DataSetBarVO queryBarInfo(Long id) {
         DataSetBarVO dataSetBarVO = new DataSetBarVO();
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
-        if (ObjectUtils.isEmpty(coreDatasetGroup)) {
+        if (ObjectUtils.isNotEmpty(coreDatasetGroup)) {
             BeanUtils.copyBean(dataSetBarVO, coreDatasetGroup);
         }
         // get creator
