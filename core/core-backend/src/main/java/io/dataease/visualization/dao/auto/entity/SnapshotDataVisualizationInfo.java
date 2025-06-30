@@ -16,7 +16,7 @@ public class SnapshotDataVisualizationInfo {
     @Size(max = 50)
     @Comment("主键")
     @Column(name = "id", nullable = false, length = 50)
-    private String id;
+    private Long id;
 
     @Size(max = 255)
     @Comment("名称")
@@ -26,12 +26,12 @@ public class SnapshotDataVisualizationInfo {
     @Size(max = 50)
     @Comment("父id")
     @Column(name = "pid", length = 50)
-    private String pid;
+    private Long pid;
 
     @Size(max = 50)
     @Comment("所属组织id")
     @Column(name = "org_id", length = 50)
-    private String orgId;
+    private Long orgId;
 
     @Comment("层级")
     @Column(name = "level")
