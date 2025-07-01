@@ -397,11 +397,13 @@ public class HttpClientUtil {
             name.put("fileName", fileName);
             name.put("tranName", tranName);
             File localFile = new File(path + tranName);
-            FileOutputStream outputStream = new FileOutputStream(localFile);
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = response.getEntity().getContent().read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
+            try (InputStream is = response.getEntity().getContent();
+                 FileOutputStream outputStream = new FileOutputStream(localFile)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
             }
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
