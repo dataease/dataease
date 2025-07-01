@@ -291,7 +291,7 @@ public class CoreVisualizationManage {
         params.put("isAsc", request.isAsc());
 //        IPage<VisualizationResourcePO> iPage = new Page<>(goPage, pageSize);
 //        return extDataVisualizationMapper.findRecent(iPage, uid, request.getKeyword(), params);
-        return null;
+        return Page.empty();
     }
 
     @Transactional
