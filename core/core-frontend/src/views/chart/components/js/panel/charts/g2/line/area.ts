@@ -259,7 +259,6 @@ export class Area extends G2ChartView {
   }
 
   protected configBasicStyle(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
-    // size
     const { basicStyle } = parseJson(chart.customAttr)
     const [areaMark, lineMark, pointMark] = options.children
     const lineStyleOpt = {
@@ -328,6 +327,7 @@ export class Area extends G2ChartView {
           labelFill: xAxis.axisLabel.color,
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
+          tick: xAxis.axisLabel.show,
           grid: xAxis.splitLine.show,
           gridStroke: xAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
@@ -388,6 +388,7 @@ export class Area extends G2ChartView {
           labelFill: yAxis.axisLabel.color,
           labelFillOpacity: 1,
           labelFontSize: yAxis.axisLabel.fontSize,
+          tick: false,
           grid: yAxis.splitLine.show,
           gridStroke: yAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
