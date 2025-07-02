@@ -119,7 +119,7 @@ public class DatasourceTaskServer {
     public List<CoreDatasourceTaskDTO> taskWithTriggers(Long taskId) {
         Specification<QrtzTriggers> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("TRIGGER_NAME"), String.valueOf(taskId)));
+            predicates.add(cb.equal(root.get("triggerName"), String.valueOf(taskId)));
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };

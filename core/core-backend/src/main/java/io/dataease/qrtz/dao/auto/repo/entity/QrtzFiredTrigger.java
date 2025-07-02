@@ -63,12 +63,12 @@ public class QrtzFiredTrigger {
     @Column(name = "JOB_GROUP", length = 200)
     private String jobGroup;
 
-    @Size(max = 1)
-    @Column(name = "IS_NONCONCURRENT", length = 1)
+    @Size(max = 16)
+    @Column(name = "IS_NONCONCURRENT", length = 16)
     private String isNonconcurrent;
 
-    @Size(max = 1)
-    @Column(name = "REQUESTS_RECOVERY", length = 1)
+    @Size(max = 16)
+    @Column(name = "REQUESTS_RECOVERY", length = 16)
     private String requestsRecovery;
 
 }
