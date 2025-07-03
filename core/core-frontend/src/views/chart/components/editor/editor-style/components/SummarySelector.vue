@@ -6,6 +6,9 @@ import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep, filter, find } from 'lodash-es'
 
 const dvMainStore = dvMainStoreWithOut()
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const props = defineProps({
   chart: {
@@ -141,7 +144,7 @@ onMounted(() => {
         />
       </el-form-item>
 
-      <el-form-item class="form-item" :class="'form-item-' + themes">
+      <el-form-item v-if="!batchOptStatus" class="form-item" :class="'form-item-' + themes">
         <el-select
           v-model="state.currentAxis"
           :class="'form-item-' + themes"
