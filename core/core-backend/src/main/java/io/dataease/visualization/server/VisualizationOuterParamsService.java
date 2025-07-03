@@ -15,6 +15,7 @@ import io.dataease.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dao.auto.entity.QCoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.constant.DeTypeConstants;
+import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -207,7 +208,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                             List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(sqlVarDetail, listTypeReference);
                             defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {
                                 String varFieldId = coreDatasetTable.getId() + "|DE|" + sqlVariableDetails.getVariableName();
-                                fields.add(new CoreDatasetTableFieldVO(varFieldId, sqlVariableDetails.getVariableName(), DeTypeConstants.DE_STRING));
+                                fields.add(new CoreDatasetTableFieldVO(varFieldId, sqlVariableDetails.getVariableName(), FieldUtils.transType2DeType(sqlVariableDetails.getType().get(0).contains("DATETIME") ? "DATETIME" : sqlVariableDetails.getType().get(0))));
                             });
                         }
                     });
