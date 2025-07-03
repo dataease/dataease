@@ -138,7 +138,13 @@ const close = () => {
 
 const gatherAppInfo = (viewIds, dsIds, componentDataCheck) => {
   componentDataCheck.forEach(item => {
-    if (item.component === 'UserView' && canvasViewInfo.value[item.id]) {
+    if (item.component === 'VQuery' && item.propValue?.length) {
+      item.propValue.forEach(filterItem => {
+        if (filterItem.dataset?.id) {
+          dsIds.push(filterItem.dataset.id)
+        }
+      })
+    } else if (item.component === 'UserView' && canvasViewInfo.value[item.id]) {
       const viewDetails = canvasViewInfo.value[item.id]
       const { id, tableId } = viewDetails
       viewIds.push(id)
