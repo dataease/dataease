@@ -493,6 +493,20 @@ const list = [
     }
   },
   {
+    component: 'DynamicBackground',
+    name: t('visualization.dynamic_background'),
+    label: t('visualization.dynamic_background'),
+    propValue: '&nbsp;',
+    icon: 'dv_dynamic_background',
+    style: {
+      width: 400,
+      height: 300,
+      backgroundColor: 'rgba(236,231,231,0.1)',
+      borderActive: false,
+      backdropFilter: 'blur(0px)'
+    }
+  },
+  {
     component: 'RectShape',
     name: t('visualization.rect_shape'),
     label: t('visualization.rect_shape'),

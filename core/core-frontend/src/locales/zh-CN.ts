@@ -2831,6 +2831,8 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    dynamic_background_name: '背景{0}',
+    dynamic_background: '动图',
     support_query: '仅支持添加查询组件',
     publish_update_tips: '有更新',
     filter_freeze_tips: '已存在置顶查询组件,确定切换该组件？',

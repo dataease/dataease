@@ -96,6 +96,8 @@ export function findNewComponent(componentName, innerType, staticMap?) {
     if (newComponent.isPlugin) {
       newComponent.staticMap = staticMap
     }
+  } else if (componentName === 'DynamicBackground') {
+    newComponent.style.borderWidth = 0
   }
   return newComponent
 }
