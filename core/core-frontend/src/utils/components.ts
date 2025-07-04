@@ -7,6 +7,8 @@ import UserView from '@/custom-component/user-view/Component.vue'
 import UserViewAttr from '@/custom-component/user-view/Attr.vue'
 import Picture from '@/custom-component/picture/Component.vue'
 import PictureAttr from '@/custom-component/picture/Attr.vue'
+import DynamicBackground from '@/custom-component/dynamic_background/Component.vue'
+import DynamicBackgroundAttr from '@/custom-component/dynamic_background/Attr.vue'
 import CanvasBoard from '@/custom-component/canvas-board/Component.vue'
 import CanvasBoardAttr from '@/custom-component/canvas-board/Attr.vue'
 import CanvasIcon from '@/custom-component/canvas-icon/Component.vue'
@@ -47,6 +49,8 @@ export const componentsMap = {
   UserViewAttr: UserViewAttr,
   Picture: Picture,
   PictureAttr: PictureAttr,
+  DynamicBackground: DynamicBackground,
+  DynamicBackgroundAttr: DynamicBackgroundAttr,
   CanvasBoard: CanvasBoard,
   CanvasBoardAttr: CanvasBoardAttr,
   CanvasIcon: CanvasIcon,

@@ -77,7 +77,9 @@ const containerRef = ref()
 const containerWidth = ref()
 
 const borderSettingShow = computed(() => {
-  return !!element.value.style['borderStyle']
+  return (
+    !!element.value.style['borderStyle'] && !['DynamicBackground'].includes(element.value.component)
+  )
 })
 
 // 暂时关闭
@@ -113,7 +115,7 @@ const styleShow = computed(() => {
   return (
     element.value &&
     element.value.style &&
-    element.value.component !== 'DeTabs' &&
+    !['DynamicBackground', 'DeTabs'].includes(element.value.component) &&
     Object.keys(element.value.style).length > 0
   )
 })

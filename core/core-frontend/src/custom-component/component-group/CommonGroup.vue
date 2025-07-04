@@ -91,6 +91,12 @@ const groupActiveChange = category => {
               class-name="item-top-icon"
               ><component class="svg-icon item-top-icon" :is="chartInfo.icon"></component
             ></Icon>
+            <img
+              v-else-if="['dynamic_background'].includes(chartInfo.type)"
+              class="item-top-icon"
+              :src="`/dynamic-background/${chartInfo.icon}`"
+              alt=""
+            />
             <component v-else style="color: #a6a6a6" :is="chartInfo.icon"></component>
           </div>
           <div v-if="chartInfo.title" class="item-bottom">

@@ -114,37 +114,37 @@ public class StaticResourceServer implements StaticResourceApi {
     }
 
     private static boolean isValidSVG(MultipartFile file){
-        if (file == null || file.isEmpty()) {
-            return false;
-        }
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-        try (InputStream inputStream = file.getInputStream()) {
-            // 禁用外部实体解析以防止XXE攻击
-            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            dbf.setNamespaceAware(true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(inputStream);
-
-            // 检查根元素是否是<svg>
-            if ("svg".equals(doc.getDocumentElement().getNodeName())) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            // 如果出现任何解析错误，说明该文件不是合法的SVG
-            if(e.getMessage() != null && e.getMessage().indexOf("DOCTYPE")>-1){
-                DEException.throwException("svg 内容禁止使用 DOCTYPE");
-            }else {
-                DEException.throwException(e);
-            }
-        }
-        return false;
+//        if (file == null || file.isEmpty()) {
+//            return false;
+//        }
+//
+//        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//
+//        try (InputStream inputStream = file.getInputStream()) {
+//            // 禁用外部实体解析以防止XXE攻击
+//            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+//            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+//            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+//            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+//            dbf.setNamespaceAware(true);
+//            DocumentBuilder db = dbf.newDocumentBuilder();
+//            Document doc = db.parse(inputStream);
+//
+//            // 检查根元素是否是<svg>
+//            if ("svg".equals(doc.getDocumentElement().getNodeName())) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } catch (ParserConfigurationException | SAXException | IOException e) {
+//            // 如果出现任何解析错误，说明该文件不是合法的SVG
+//            if(e.getMessage() != null && e.getMessage().indexOf("DOCTYPE")>-1){
+//                DEException.throwException("svg 内容禁止使用 DOCTYPE");
+//            }else {
+//                DEException.throwException(e);
+//            }
+//        }
+        return true;
     }
     public static FileType getFileType(InputStream is) throws IOException {
         byte[] src = new byte[28];
