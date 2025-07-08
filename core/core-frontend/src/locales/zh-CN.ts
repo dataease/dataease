@@ -2831,6 +2831,8 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    decoration_name: '装饰{0}',
+    decoration: '装饰',
     dynamic_background_name: '背景{0}',
     dynamic_background: '动图',
     support_query: '仅支持添加查询组件',

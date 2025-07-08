@@ -493,6 +493,19 @@ const list = [
     }
   },
   {
+    component: 'DeDecoration',
+    name: t('visualization.dynamic_background'),
+    label: t('visualization.dynamic_background'),
+    propValue: '&nbsp;',
+    icon: 'dv_dynamic_background',
+    style: {
+      width: 400,
+      height: 300,
+      borderActive: false,
+      backdropFilter: 'blur(0px)'
+    }
+  },
+  {
     component: 'DynamicBackground',
     name: t('visualization.dynamic_background'),
     label: t('visualization.dynamic_background'),

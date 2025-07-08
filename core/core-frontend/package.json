@@ -19,6 +19,7 @@
     "@antv/l7plot": "^0.5.5",
     "@antv/s2": "^1.49.0",
     "@codemirror/lang-sql": "^6.4.0",
+    "@babel/runtime": "^7.5.5",
     "@npkg/tinymce-plugins": "^0.0.7",
     "@tinymce/tinymce-vue": "^5.1.0",
     "@turf/centroid": "^7.0.0",

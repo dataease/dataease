@@ -9,6 +9,8 @@ import Picture from '@/custom-component/picture/Component.vue'
 import PictureAttr from '@/custom-component/picture/Attr.vue'
 import DynamicBackground from '@/custom-component/dynamic_background/Component.vue'
 import DynamicBackgroundAttr from '@/custom-component/dynamic_background/Attr.vue'
+import DeDecoration from '@/custom-component/de-decoration/Component.vue'
+import DeDecorationAttr from '@/custom-component/de-decoration/Attr.vue'
 import CanvasBoard from '@/custom-component/canvas-board/Component.vue'
 import CanvasBoardAttr from '@/custom-component/canvas-board/Attr.vue'
 import CanvasIcon from '@/custom-component/canvas-icon/Component.vue'
@@ -80,7 +82,9 @@ export const componentsMap = {
   PopArea: PopArea,
   PopAreaAttr: PopAreaAttr,
   PictureGroup: PictureGroup,
-  PictureGroupAttr: PictureGroupAttr
+  PictureGroupAttr: PictureGroupAttr,
+  DeDecoration: DeDecoration,
+  DeDecorationAttr: DeDecorationAttr
 }
 
 export default function findComponent(key) {

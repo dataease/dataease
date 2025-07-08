@@ -2825,6 +2825,8 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    decoration_name: '裝飾{0}',
+    decoration: '裝飾',
     dynamic_background_name: '動圖{0}',
     dynamic_background: '動圖',
     support_query: '僅可新增查詢元件',

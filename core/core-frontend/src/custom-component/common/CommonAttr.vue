@@ -78,7 +78,8 @@ const containerWidth = ref()
 
 const borderSettingShow = computed(() => {
   return (
-    !!element.value.style['borderStyle'] && !['DynamicBackground'].includes(element.value.component)
+    !!element.value.style['borderStyle'] &&
+    !['DeDecoration', 'DynamicBackground'].includes(element.value.component)
   )
 })
 
@@ -99,7 +100,14 @@ const backgroundCustomShow = computed(() => {
   return (
     dashboardActive.value ||
     (!dashboardActive.value &&
-      !['CanvasBoard', 'CanvasIcon', 'CircleShape', 'RectShape'].includes(element.value.component))
+      ![
+        'CanvasBoard',
+        'CanvasIcon',
+        'CircleShape',
+        'RectShape',
+        'DeDecoration',
+        'DynamicBackground'
+      ].includes(element.value.component))
   )
 })
 
@@ -115,7 +123,7 @@ const styleShow = computed(() => {
   return (
     element.value &&
     element.value.style &&
-    !['DynamicBackground', 'DeTabs'].includes(element.value.component) &&
+    !['DeDecoration', 'DynamicBackground', 'DeTabs'].includes(element.value.component) &&
     Object.keys(element.value.style).length > 0
   )
 })

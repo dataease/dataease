@@ -96,8 +96,9 @@ export function findNewComponent(componentName, innerType, staticMap?) {
     if (newComponent.isPlugin) {
       newComponent.staticMap = staticMap
     }
-  } else if (componentName === 'DynamicBackground') {
+  } else if (['DeDecoration', 'DynamicBackground'].includes(componentName)) {
     newComponent.style.borderWidth = 0
+    newComponent.style.innerPadding = 0
   }
   return newComponent
 }

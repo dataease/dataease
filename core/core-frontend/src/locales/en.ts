@@ -2906,6 +2906,8 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    decoration_name: 'Decoration {0}',
+    decoration: 'Decoration',
     dynamic_background_name: 'Animated {0}',
     dynamic_background: 'Animated Image',
     support_query: 'Only query components can be added',

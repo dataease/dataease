@@ -1704,6 +1704,7 @@ defineExpose({
         class="component"
         :is-edit="true"
         :style="getComponentStyle(item.style)"
+        :curStyle="getShapeItemShowStyle(item)"
         :prop-value="item.propValue"
         :element="item"
         :request="item.request"

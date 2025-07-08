@@ -4,6 +4,7 @@ import eventBus from '@/utils/eventBus'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { CANVAS_MATERIAL } from '@/custom-component/common/ComponentConfig'
 import { ElScrollbar } from 'element-plus-secondary'
+import DeDecoration from '@/custom-component/de-decoration/Component.vue'
 
 defineProps({
   propValue: {
@@ -97,6 +98,12 @@ const groupActiveChange = category => {
               :src="`/dynamic-background/${chartInfo.icon}`"
               alt=""
             />
+            <DeDecoration
+              :curStyle="{ width: '80px', height: '56px' }"
+              :element="{ innerType: chartInfo.value }"
+              :scale="0.15"
+              v-else-if="['de_decoration'].includes(chartInfo.type)"
+            ></DeDecoration>
             <component v-else style="color: #a6a6a6" :is="chartInfo.icon"></component>
           </div>
           <div v-if="chartInfo.title" class="item-bottom">

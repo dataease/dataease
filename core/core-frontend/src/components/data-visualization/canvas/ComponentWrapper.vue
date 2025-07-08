@@ -468,6 +468,7 @@ const updateFromMobile = (e, type) => {
           :dv-type="dvInfo.type"
           :canvas-view-info="canvasViewInfo"
           :style="getComponentStyleDefault(config?.style)"
+          :curStyle="slotStyle"
           :prop-value="config?.propValue"
           :element="config"
           :request="config?.request"

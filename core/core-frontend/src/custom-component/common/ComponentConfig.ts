@@ -75,6 +75,67 @@ export const CANVAS_MATERIAL = [
     ]
   },
   {
+    category: 'DeDecoration',
+    title: t('visualization.decoration'),
+    span: 8,
+    details: [
+      {
+        value: 'DeBoard1',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [1]),
+        icon: 'DeBoard1'
+      },
+      {
+        value: 'DeBoard2',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [2]),
+        icon: 'DeBoard2'
+      },
+      {
+        value: 'DeBoard3',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [3]),
+        icon: 'DeBoard3'
+      },
+      {
+        value: 'DeBoard4',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [4]),
+        icon: 'DeBoard4'
+      },
+      {
+        value: 'DeBoard5',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [5]),
+        icon: 'DeBoard5'
+      },
+      {
+        value: 'DeBoard6',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [6]),
+        icon: 'DeBoard6'
+      },
+      {
+        value: 'DeBoard7',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [7]),
+        icon: 'DeBoard7'
+      },
+      {
+        value: 'DeBoard8',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [8]),
+        icon: 'DeBoard8'
+      },
+      {
+        value: 'DeBoard10',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [10]),
+        icon: 'DeBoard10'
+      }
+    ]
+  },
+  {
     category: 'DynamicBackground',
     title: t('visualization.dynamic_background'),
     span: 8,
