@@ -600,7 +600,6 @@ const reRenderAll = (oldArr, newArr) => {
   }, [])
   if (!emitterList.length) return
   emitterList.forEach(ele => {
-    console.log('`query-data-${ele}`', `query-data-${ele}`)
     emitter.emit(`query-data-${ele}`)
   })
 }
