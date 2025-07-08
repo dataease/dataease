@@ -279,6 +279,16 @@ const onTitleChange = () => {
   element.value.name = chart.value.customStyle.component.title
   chart.value.title = chart.value.customStyle.component.title
 }
+
+const onPlaceholderChange = () => {
+  props.element.propValue.forEach(ele => {
+    if (ele.id === currentPlaceholder.value) {
+      ele.placeholder = currentSearch.value.placeholder
+      ele.queryConditionWidth = currentSearch.value.queryConditionWidth
+    }
+  })
+  snapshotStore.recordSnapshotCacheToMobile('propValue')
+}
 </script>
 
 <template>
@@ -497,7 +507,7 @@ const onTitleChange = () => {
             >
               <el-input
                 :effect="themes"
-                @change="handleCurrentPlaceholderChange"
+                @change="onPlaceholderChange"
                 :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
                 v-model.lazy="currentSearch.placeholder"
               />
@@ -512,7 +522,7 @@ const onTitleChange = () => {
                 :effect="themes"
                 :min="100"
                 controls-position="right"
-                @change="handleCurrentPlaceholderChange"
+                @change="onPlaceholderChange"
                 :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
                 v-model.lazy="currentSearch.queryConditionWidth"
               />
