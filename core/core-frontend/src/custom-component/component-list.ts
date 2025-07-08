@@ -501,6 +501,10 @@ const list = [
     style: {
       width: 400,
       height: 300,
+      color0: null,
+      color1: null,
+      color2: null,
+      dur: 6,
       borderActive: false,
       backdropFilter: 'blur(0px)'
     }

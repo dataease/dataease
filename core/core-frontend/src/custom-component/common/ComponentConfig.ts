@@ -80,6 +80,36 @@ export const CANVAS_MATERIAL = [
     span: 8,
     details: [
       {
+        value: 'DeDecoration1',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [11]),
+        icon: 'DeDecoration1'
+      },
+      {
+        value: 'DeDecoration2',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [12]),
+        icon: 'DeDecoration2'
+      },
+      {
+        value: 'DeDecoration3',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [12]),
+        icon: 'DeDecoration3'
+      },
+      {
+        value: 'DeDecoration4',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [12]),
+        icon: 'DeDecoration4'
+      },
+      {
+        value: 'DeDecoration5',
+        type: 'de_decoration',
+        title: t('visualization.decoration_name', [12]),
+        icon: 'DeDecoration5'
+      },
+      {
         value: 'DeBoard1',
         type: 'de_decoration',
         title: t('visualization.decoration_name', [1]),
