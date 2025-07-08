@@ -676,11 +676,11 @@ onMounted(() => {
 })
 
 const tagWidth = computed(() => {
-  return Math.min((getCustomWidth() - 60) / 2, 50) + 'px'
+  return (getCustomWidth() - 65) / 2 + 'px'
 })
 
 const tagTextWidth = computed(() => {
-  return Math.min((getCustomWidth() - 60) / 2 - 25, 40) + 'px'
+  return (getCustomWidth() - 65) / 2 - 20 + 'px'
 })
 
 defineExpose({
