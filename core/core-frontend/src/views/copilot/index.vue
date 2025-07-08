@@ -287,6 +287,7 @@ const queryAnswer = (event?: KeyboardEvent) => {
               @change="handleDatasetChange"
               :props="dsSelectProps"
               style="width: 100%"
+              node-key="id"
               ref="treeSelectRef"
               placement="bottom"
               :render-after-expand="false"
