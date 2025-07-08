@@ -99,7 +99,7 @@ const placeholderText = computed(() => {
 const cascade = computed(() => {
   return cascadeList() || []
 })
-
+let time
 const disabledFirstItem = computed(() => {
   const { defaultValueFirstItem, optionValueSource, multiple } = props.config
   return defaultValueFirstItem && optionValueSource === 1 && !multiple
@@ -126,6 +126,7 @@ const setDefaultMapValue = arr => {
 }
 
 onUnmounted(() => {
+  clearTimeout(time)
   enumValueArr = []
 })
 
@@ -220,6 +221,12 @@ const handleValueChange = () => {
     setCascadeValueBack(config.value.mapValue)
     emitCascade()
     nextTick(() => {
+      console.log(
+        'disabledFirstItem.value',
+        disabledFirstItem.value,
+        selectValue.value,
+        cloneDeep(config.value)
+      )
       isConfirmSearch(config.value.id, disabledFirstItem.value)
     })
     return
@@ -374,7 +381,10 @@ const handleFieldIdChange = (val: EnumValue) => {
       }
 
       if (disabledFirstItem.value) {
-        setDefaultValueFirstItem()
+        time = setTimeout(() => {
+          clearTimeout(time)
+          setDefaultValueFirstItem()
+        }, 300)
       }
 
       isFromRemote.value = false
