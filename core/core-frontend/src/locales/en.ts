@@ -2906,6 +2906,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    color_setting: 'Color{0}',
     decoration_name: 'Decoration {0}',
     decoration: 'Decoration',
     dynamic_background_name: 'Animated {0}',

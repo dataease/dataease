@@ -2825,6 +2825,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    color_setting: '配色{0}',
     decoration_name: '裝飾{0}',
     decoration: '裝飾',
     dynamic_background_name: '動圖{0}',

@@ -175,6 +175,7 @@ const defaultColor = ref(['#11eefd', '#0078d2'])
 const mergedColor = ref<string[]>([])
 import { cloneDeep, merge } from 'lodash-es'
 import { uuid } from 'vue-uuid'
+import { customMergeColor } from '@/custom-component/de-decoration/component_details/config'
 
 const id = uuid
 
@@ -182,7 +183,7 @@ const gradientId = `border-box-9-gradient-${id}`
 const maskId = `border-box-9-mask-${id}`
 
 const mergeColor = () => {
-  mergedColor.value = merge(cloneDeep(defaultColor.value), props.color || []) as string[]
+  mergedColor.value = customMergeColor(cloneDeep(defaultColor.value), props.color)
 }
 
 const border_style = computed(() => {

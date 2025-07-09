@@ -94,10 +94,11 @@ const refName = ref('border-box-1')
 const border = ref(['left-top', 'right-top', 'left-bottom', 'right-bottom'])
 const defaultColor = ref(['#4fd2dd', '#235fa7'])
 const mergedColor = ref<string[]>([])
-import { cloneDeep, merge } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
+import { customMergeColor } from '@/custom-component/de-decoration/component_details/config'
 
 const mergeColor = () => {
-  mergedColor.value = merge(cloneDeep(defaultColor.value), props.color || []) as string[]
+  mergedColor.value = customMergeColor(cloneDeep(defaultColor.value), props.color)
 }
 
 const border_style = computed(() => {

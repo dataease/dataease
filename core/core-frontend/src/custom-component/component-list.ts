@@ -245,7 +245,8 @@ export const commonAttr = {
     'videoLinks',
     'streamLinks',
     'carouselInfo',
-    'events'
+    'events',
+    'decoration_style'
   ], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
@@ -505,6 +506,7 @@ const list = [
       color1: null,
       color2: null,
       dur: 6,
+      reverse: false,
       borderActive: false,
       backdropFilter: 'blur(0px)'
     }

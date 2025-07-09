@@ -53,3 +53,9 @@ export function getPointDistances(points) {
     .fill(0)
     .map((_, i) => calcTwoPointDistance(points[i], points[i + 1]))
 }
+
+export function customMergeColor(defaultColor: string[], newColor: []) {
+  return defaultColor.map((defaultVal, index) => {
+    return newColor && newColor[index] !== null ? newColor[index] : defaultVal
+  })
+}

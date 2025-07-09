@@ -35,8 +35,11 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { getPointDistances } from '@/custom-component/de-decoration/component_details/config'
-import { cloneDeep, merge, sum } from 'lodash-es'
+import {
+  customMergeColor,
+  getPointDistances
+} from '@/custom-component/de-decoration/component_details/config'
+import { cloneDeep, sum } from 'lodash-es'
 
 interface Props {
   color?: string[]
@@ -81,7 +84,7 @@ const border_style = computed(() => {
 })
 
 const mergeColor = () => {
-  mergedColor.value = merge(cloneDeep(defaultColor.value), props.color || []) as string[]
+  mergedColor.value = customMergeColor(cloneDeep(defaultColor.value), props.color)
 }
 
 const calcSVGData = () => {

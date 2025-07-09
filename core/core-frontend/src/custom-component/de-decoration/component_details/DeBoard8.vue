@@ -72,15 +72,16 @@ const height = computed(() => {
 })
 const defaultColor = ref(['#2862b7', '#2862b7'])
 const mergedColor = ref<string[]>([])
-import { cloneDeep, merge } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { uuid } from 'vue-uuid'
+import { customMergeColor } from '@/custom-component/de-decoration/component_details/config'
 
 const id = uuid
 const path = `border-box-8-path-${id}`
 const gradient = `border-box-8-gradient-${id}`
 const mask = `border-box-8-mask-${id}`
 const mergeColor = () => {
-  mergedColor.value = merge(cloneDeep(defaultColor.value), props.color || []) as string[]
+  mergedColor.value = customMergeColor(cloneDeep(defaultColor.value), props.color)
 }
 
 const length = computed(() => {

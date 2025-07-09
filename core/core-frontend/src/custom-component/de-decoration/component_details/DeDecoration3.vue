@@ -29,7 +29,8 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { cloneDeep, merge } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
+import { customMergeColor } from '@/custom-component/de-decoration/component_details/config'
 
 interface Props {
   color?: string[]
@@ -64,7 +65,7 @@ const border_style = computed(() => {
 })
 
 const mergeColor = () => {
-  mergedColor.value = merge(cloneDeep(defaultColor.value), props.color || []) as string[]
+  mergedColor.value = customMergeColor(cloneDeep(defaultColor.value), props.color)
 }
 
 // Constants

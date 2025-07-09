@@ -2831,6 +2831,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    color_setting: '配色{0}',
     decoration_name: '装饰{0}',
     decoration: '装饰',
     dynamic_background_name: '背景{0}',
