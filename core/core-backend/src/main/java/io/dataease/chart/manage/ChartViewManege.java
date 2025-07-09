@@ -375,7 +375,7 @@ public class ChartViewManege {
                             )
                     )
                     .from(snapshotCoreChartView)
-                    .join(snapshotDataVisualizationInfo).on(snapshotDataVisualizationInfo.id.eq(String.valueOf(snapshotCoreChartView.sceneId)))
+                    .join(snapshotDataVisualizationInfo).on(snapshotDataVisualizationInfo.id.eq(snapshotCoreChartView.sceneId))
                     .where(snapshotCoreChartView.id.eq(id));
             po = jpaQuery.fetchFirst();
         } else {

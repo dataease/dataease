@@ -15,7 +15,7 @@ import org.hibernate.annotations.Comment;
 @Table(name = "core_de_engine")
 public class CoreDeEngine {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Comment("主键")
     @Column(name = "id", nullable = false)
     private Long id;

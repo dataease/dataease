@@ -69,9 +69,9 @@ public class CoreDatasetTableField {
     @Column(name = "other_group", length = 16777216)
     private String otherGroup;
 
-    @Comment("数据集字段")
+    @Comment("维度/指标标识 d:维度，q:指标")
     @Size(max = 50)
-    @Column(name = "维度/指标标识 d:维度，q:指标", length = 50)
+    @Column(name = "group_type", length = 50)
     private String groupType;
 
     @Comment("原始字段类型")

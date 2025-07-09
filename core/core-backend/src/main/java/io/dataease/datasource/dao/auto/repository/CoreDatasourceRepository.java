@@ -2,6 +2,7 @@ package io.dataease.datasource.dao.auto.repository;
 
 import io.dataease.dao.auto.entity.CoreDatasource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -38,10 +39,15 @@ public interface CoreDatasourceRepository extends JpaRepository<CoreDatasource, 
     @Query("UPDATE CoreDatasource c SET c.taskStatus = :taskStatus WHERE c.id = :id AND c.taskStatus = :taskStatus")
     int updateTaskStatusByIds(Long id, String taskStatus);
 
-    @Modifying
     @Transactional
-    @Query("UPDATE CoreDatasource c SET c.status = :status WHERE c.id = :id")
-    int updateStatusById(String status, Long id);
+    default void updateStatusById(String status, Long id){
+        Specification<CoreDatasource> spec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), id);
+        CoreDatasource datasource = findOne(spec).orElse(null);
+        if (datasource != null) {
+            datasource.setStatus(status);
+            saveAndFlush(datasource);
+        }
+    }
 
     @Modifying
     @Transactional

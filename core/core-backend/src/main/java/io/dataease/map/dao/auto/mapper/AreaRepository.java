@@ -1,39 +1,62 @@
 package io.dataease.map.dao.auto.mapper;
 
 import io.dataease.map.dao.auto.entity.Area;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public interface AreaRepository extends JpaRepository<Area, String>, JpaSpecificationExecutor<Area> {
 
-    @Query("SELECT p FROM Area p WHERE p.pid = :pid")
-    List<Area> findByPid156(@Param("pid") String pid);
-
-
-    @Modifying
     @Transactional
-    @Query("UPDATE Area a SET a.id = :newId, a.name = :newName WHERE a.id = :oldId")
-    int updateArea(String oldId, String newId, String newName);
+    default void updateArea(String oldId, String newId, String newName) {
+        findById(oldId).ifPresent(area -> {
+            Area newArea = new Area();
+            // 复制除 id 外的其他属性
+            newArea.setId(newId);
+            newArea.setName(newName);
+            BeanUtils.copyProperties(area, newArea, "id", "name");
+            save(newArea);
+            deleteById(oldId);
+        });
+    }
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM Area a WHERE a.pid = :areaId OR a.id = :areaId")
-    void deleteByPidOrId(String areaId);
+    default void deleteByPidOrId(String areaId) {
+        Specification<Area> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("pid"), areaId));
+            predicates.add(cb.equal(root.get("id"), areaId));
+            return cb.or(predicates.toArray(new Predicate[0]));
+        };
+        List<Area> areas = findAll(spec);
+        if (!areas.isEmpty()) {
+            deleteAll(areas);
+        }
+    }
 
-    @Modifying
     @Transactional
-    @Query("UPDATE Area a SET  a.name = :newName WHERE a.id = :id")
-    int updatateNameById(String id, String newName);
+    default void updateNameById(String id, String newName){
+        Area area = findById(id).orElse(null);
+        if (area != null) {
+            area.setName(newName);
+            save(area);
+        }
+    }
 
-    @Modifying
     @Transactional
-    @Query("UPDATE Area a SET  a.pid = :newPid WHERE a.pid = :oldPid")
-    int updatatePid(String newPid,String oldPid);
+    default void updatePid(String newPid, String oldPid){
+        Specification<Area> spec = (root, query, cb) -> cb.equal(root.get("pid"), oldPid);
+        List<Area> areas = findAll(spec);
+        for (Area area : areas) {
+            area.setPid(newPid);
+            save(area);
+        }
+    }
 }

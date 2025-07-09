@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
-import java.time.Instant;
 import java.util.Date;
 
 @Getter
@@ -18,8 +17,8 @@ public class DemoTeaMaterial {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "data")
-    private Date data;
+    @Column(name = "date")
+    private Date date;
 
     @Lob
     @Column(name = "shop", length = 16777216)
@@ -32,9 +31,9 @@ public class DemoTeaMaterial {
     @Column(name = "amount")
     private Long amount;
 
-    public DemoTeaMaterial(Integer id, Date data, String shop, String purpose, Long amount) {
+    public DemoTeaMaterial(Integer id, Date date, String shop, String purpose, Long amount) {
         this.id = id;
-        this.data = data;
+        this.date = date;
         this.shop = shop;
         this.purpose = purpose;
         this.amount = amount;

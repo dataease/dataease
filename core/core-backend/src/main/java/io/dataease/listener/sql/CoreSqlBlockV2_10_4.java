@@ -2,8 +2,6 @@ package io.dataease.listener.sql;
 
 import io.dataease.initSql.Version;
 import io.dataease.map.dao.auto.mapper.AreaRepository;
-import io.dataease.menu.dao.auto.mapper.CoreMenuRepository;
-import io.dataease.system.dao.auto.mapper.CoreSysSettingRepository;
 import io.dataease.visualization.dao.auto.entity.VisualizationBackground;
 import io.dataease.visualization.dao.auto.mapper.VisualizationBackgroundRepository;
 import io.dataease.visualization.dao.auto.mapper.VisualizationSubjectRepository;
@@ -37,8 +35,8 @@ public class CoreSqlBlockV2_10_4 implements CoreSqlBlock {
         areaRepository.deleteById("156500200");
 
 
-        areaRepository.updatatePid("156500100", "156500200");
-        areaRepository.updatateNameById("156500101", "万州区");
+        areaRepository.updatePid("156500100", "156500200");
+        areaRepository.updateNameById("156500101", "万州区");
 
 
         visualizationBackgroundRepository.deleteAll();

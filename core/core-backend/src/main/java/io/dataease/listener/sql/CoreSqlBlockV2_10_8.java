@@ -1,10 +1,8 @@
 package io.dataease.listener.sql;
 
 import io.dataease.initSql.Version;
-import io.dataease.menu.dao.auto.mapper.CoreMenuRepository;
 import io.dataease.startup.dao.auto.entity.CoreSysStartupJob;
 import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobRepository;
-import io.dataease.system.dao.auto.mapper.CoreSysSettingRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 

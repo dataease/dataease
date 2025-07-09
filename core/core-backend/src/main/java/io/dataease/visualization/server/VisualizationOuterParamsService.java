@@ -61,8 +61,8 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                         qSnapshotDataVisualizationInfo.id.as("visualizationId"),
                         qSnapshotVisualizationOuterParams.checked.as("checked")
                 )).from(qSnapshotDataVisualizationInfo)
-                .leftJoin(qSnapshotVisualizationOuterParams).on(qSnapshotDataVisualizationInfo.id.eq(qSnapshotVisualizationOuterParams.visualizationId))
-                .where(qSnapshotDataVisualizationInfo.id.eq(visualizationId)).fetchFirst();
+                .leftJoin(qSnapshotVisualizationOuterParams).on(qSnapshotDataVisualizationInfo.id.stringValue().eq(qSnapshotVisualizationOuterParams.visualizationId))
+                .where(qSnapshotDataVisualizationInfo.id.stringValue().eq(visualizationId)).fetchFirst();
         if (visualizationOuterParamsDTO != null && visualizationOuterParamsDTO.getChecked() == null) {
             visualizationOuterParamsDTO.setChecked(false);
         }
@@ -186,7 +186,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                 )).from(qCoreDatasetGroup)
                 .innerJoin(qSnapshotCoreChartView).on(qCoreDatasetGroup.id.eq(qSnapshotCoreChartView.tableId).and(qSnapshotCoreChartView.type.ne("VQuery")))
                 .innerJoin(qSnapshotDataVisualizationInfo).on(qSnapshotCoreChartView.sceneId.eq(Long.valueOf(qSnapshotDataVisualizationInfo.id.toString())))
-                .where(qSnapshotCoreChartView.sceneId.eq(Long.valueOf(visualizationId)).and(qSnapshotDataVisualizationInfo.id.eq(visualizationId)))
+                .where(qSnapshotCoreChartView.sceneId.eq(Long.valueOf(visualizationId)).and(qSnapshotDataVisualizationInfo.id.stringValue().eq(visualizationId)))
                 .where(qSnapshotDataVisualizationInfo.componentData.like("%" + qSnapshotCoreChartView.id + "%"))
                 .fetch();
         if (!CollectionUtils.isEmpty(result)) {

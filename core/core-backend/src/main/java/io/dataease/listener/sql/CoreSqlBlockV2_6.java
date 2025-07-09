@@ -96,80 +96,80 @@ public class CoreSqlBlockV2_6 implements CoreSqlBlock {
         // First dataset fields (demo_tea_material)
         fields.add(new CoreDatasetTableField(
                 1715053944934L, 985188400292302848L, 7193457660727922688L, 985189703189925888L,
-                null, "店铺", "店铺", null, "f_4a4cd188441bb10a", "f_4a4cd188441bb10a",
+                null, "shop", "shop", null, "f_4a4cd188441bb10a", "f_4a4cd188441bb10a",
                 "d", "LONGTEXT", null, 0, 0, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715053944935L, 985188400292302848L, 7193457660727922688L, 985189703189925888L,
-                null, "日期", "日期", null, "f_7fedb6b454fd0ddb", "f_7fedb6b454fd0ddb",
+                null, "date", "date", null, "f_7fedb6b454fd0ddb", "f_7fedb6b454fd0ddb",
                 "d", "DATETIME", null, 1, 1, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715053944936L, 985188400292302848L, 7193457660727922688L, 985189703189925888L,
-                null, "用途", "用途", null, "f_703aac67af8ea53d", "f_703aac67af8ea53d",
+                null, "purpose", "purpose", null, "f_703aac67af8ea53d", "f_703aac67af8ea53d",
                 "d", "LONGTEXT", null, 0, 0, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715053944937L, 985188400292302848L, 7193457660727922688L, 985189703189925888L,
-                null, "金额", "金额", null, "f_8cc276e515d2de6d", "f_8cc276e515d2de6d",
+                null, "amount", "amount", null, "f_8cc276e515d2de6d", "f_8cc276e515d2de6d",
                 "q", "BIGINT", null, 2, 2, 0, true, null, null, 0, null, null
         ));
 
         // Second dataset fields (demo_tea_order)
         fields.add(new CoreDatasetTableField(
                 1715072798360L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "冷/热", "冷/热", null, "f_68bd7361c951941a", "f_68bd7361c951941a",
+                null, "temperature", "temperature", null, "f_68bd7361c951941a", "f_68bd7361c951941a",
                 "d", "LONGTEXT", null, 0, 0, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715072798361L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "单价", "单价", null, "f_878cf3320c82724f", "f_878cf3320c82724f",
+                null, "price", "price", null, "f_878cf3320c82724f", "f_878cf3320c82724f",
                 "q", "BIGINT", null, 2, 2, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715072798362L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "品线", "品线", null, "f_f8fc4f728f1e6fa2", "f_f8fc4f728f1e6fa2",
+                null, "product", "product", null, "f_f8fc4f728f1e6fa2", "f_f8fc4f728f1e6fa2",
                 "d", "LONGTEXT", null, 0, 0, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715072798363L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "店铺", "店铺", null, "f_4a4cd188441bb10a", "f_4a4cd188441bb10a",
+                null, "shop", "shop", null, "f_4a4cd188441bb10a", "f_4a4cd188441bb10a",
                 "d", "LONGTEXT", null, 0, 0, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715072798364L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "菜品名称", "菜品名称", null, "f_7c7894e776e3b8ec", "f_7c7894e776e3b8ec",
+                null, "dish", "dish", null, "f_7c7894e776e3b8ec", "f_7c7894e776e3b8ec",
                 "d", "LONGTEXT", null, 0, 0, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715072798365L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "规格", "规格", null, "f_5c1a43f6150f3a56", "f_5c1a43f6150f3a56",
+                null, "specifications", "specifications", null, "f_5c1a43f6150f3a56", "f_5c1a43f6150f3a56",
                 "d", "LONGTEXT", null, 0, 0, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715072798366L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "账单流水号", "账单流水号", null, "f_252845fa1a250405", "f_252845fa1a250405",
+                null, "serial", "serial", null, "f_252845fa1a250405", "f_252845fa1a250405",
                 "d", "LONGTEXT", null, 0, 0, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715072798367L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "销售数量", "销售数量", null, "f_59fcc2c2b0f47cde", "f_59fcc2c2b0f47cde",
+                null, "sales", "sales", null, "f_59fcc2c2b0f47cde", "f_59fcc2c2b0f47cde",
                 "q", "BIGINT", null, 2, 2, 0, true, null, null, 0, null, null
         ));
 
         fields.add(new CoreDatasetTableField(
                 1715072798368L, 985188400292302848L, 7193537020143079424L, 985189053949415424L,
-                null, "销售日期", "销售日期", null, "f_852cde987322fd1d", "f_852cde987322fd1d",
+                null, "sale_date", "sale_date", null, "f_852cde987322fd1d", "f_852cde987322fd1d",
                 "d", "DATETIME", null, 1, 1, 0, true, null, null, 0, null, null
         ));
 
@@ -182,7 +182,7 @@ public class CoreSqlBlockV2_6 implements CoreSqlBlock {
 
         fields.add(new CoreDatasetTableField(
                 7193537244429291520L, null, null, 985189053949415424L,
-                null, "round(sum([7193537137675866112])/count([1715072798366])/100,2)", "客单价", null,
+                null, "round(sum([7193537137675866112])/count([1715072798366])/100,2)", "客price", null,
                 "f_39fd4542efb6a572", "f_39fd4542efb6a572", "q", "VARCHAR", null, 3, 3, 2, true, null, null, 0, "", ""
         ));
 
@@ -209,14 +209,14 @@ public class CoreSqlBlockV2_6 implements CoreSqlBlock {
                 "dataset",
                 null,
                 0,
-                "[{\"currentDs\":{\"id\":\"7193457660727922688\",\"name\":null,\"tableName\":\"demo_tea_material\",\"datasourceId\":\"985188400292302848\",\"datasetGroupId\":null,\"type\":\"db\",\"info\":\"{\\\"table\\\":\\\"demo_tea_material\\\",\\\"sql\\\":\\\"\\\"}\",\"sqlVariableDetails\":null,\"fields\":null,\"lastUpdateTime\":0,\"status\":null},\"currentDsField\":null,\"currentDsFields\":[{\"id\":\"1715053944934\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193457660727922688\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"店铺\",\"name\":\"店铺\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_4a4cd188441bb10a\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_4a4cd188441bb10a\",\"desensitized\":null},{\"id\":\"1715053944935\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193457660727922688\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"日期\",\"name\":\"日期\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_7fedb6b454fd0ddb\",\"groupType\":\"d\",\"type\":\"DATETIME\",\"precision\":null,\"scale\":null,\"deType\":1,\"deExtractType\":1,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_7fedb6b454fd0ddb\",\"desensitized\":null},{\"id\":\"1715053944936\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193457660727922688\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"用途\",\"name\":\"用途\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_703aac67af8ea53d\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_703aac67af8ea53d\",\"desensitized\":null},{\"id\":\"1715053944937\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193457660727922688\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"金额\",\"name\":\"金额\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_8cc276e515d2de6d\",\"groupType\":\"q\",\"type\":\"BIGINT\",\"precision\":null,\"scale\":null,\"deType\":2,\"deExtractType\":2,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_8cc276e515d2de6d\",\"desensitized\":null}],\"childrenDs\":[],\"unionToParent\":{\"unionType\":\"left\",\"unionFields\":[],\"parentDs\":null,\"currentDs\":null,\"parentSQLObj\":null,\"currentSQLObj\":null},\"allChildCount\":0}]",
+                "[{\"currentDs\":{\"id\":\"7193457660727922688\",\"name\":null,\"tableName\":\"demo_tea_material\",\"datasourceId\":\"985188400292302848\",\"datasetGroupId\":null,\"type\":\"db\",\"info\":\"{\\\"table\\\":\\\"demo_tea_material\\\",\\\"sql\\\":\\\"\\\"}\",\"sqlVariableDetails\":null,\"fields\":null,\"lastUpdateTime\":0,\"status\":null},\"currentDsField\":null,\"currentDsFields\":[{\"id\":\"1715053944934\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193457660727922688\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"shop\",\"name\":\"shop\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_4a4cd188441bb10a\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_4a4cd188441bb10a\",\"desensitized\":null},{\"id\":\"1715053944935\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193457660727922688\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"date\",\"name\":\"date\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_7fedb6b454fd0ddb\",\"groupType\":\"d\",\"type\":\"DATETIME\",\"precision\":null,\"scale\":null,\"deType\":1,\"deExtractType\":1,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_7fedb6b454fd0ddb\",\"desensitized\":null},{\"id\":\"1715053944936\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193457660727922688\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"purpose\",\"name\":\"purpose\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_703aac67af8ea53d\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_703aac67af8ea53d\",\"desensitized\":null},{\"id\":\"1715053944937\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193457660727922688\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"amount\",\"name\":\"amount\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_8cc276e515d2de6d\",\"groupType\":\"q\",\"type\":\"BIGINT\",\"precision\":null,\"scale\":null,\"deType\":2,\"deExtractType\":2,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_8cc276e515d2de6d\",\"desensitized\":null}],\"childrenDs\":[],\"unionToParent\":{\"unionType\":\"left\",\"unionFields\":[],\"parentDs\":null,\"currentDs\":null,\"parentSQLObj\":null,\"currentSQLObj\":null},\"allChildCount\":0}]",
                 "1",
                 1715053994811L,
                 null,
                 null,
                 "1",
                 1715054022426L,
-                "SELECT t_a_0.`店铺` AS `f_4a4cd188441bb10a`,t_a_0.`日期` AS `f_7fedb6b454fd0ddb`,t_a_0.`用途` AS `f_703aac67af8ea53d`,t_a_0.`金额` AS `f_8cc276e515d2de6d` FROM s_a_985188400292302848.`demo_tea_material` t_a_0"
+                "SELECT t_a_0.`shop` AS `f_4a4cd188441bb10a`,t_a_0.`date` AS `f_7fedb6b454fd0ddb`,t_a_0.`purpose` AS `f_703aac67af8ea53d`,t_a_0.`amount` AS `f_8cc276e515d2de6d` FROM s_a_985188400292302848.`demo_tea_material` t_a_0"
         );
 
         CoreDatasetGroup datasetGroup2 = new CoreDatasetGroup(
@@ -227,14 +227,14 @@ public class CoreSqlBlockV2_6 implements CoreSqlBlock {
                 "dataset",
                 null,
                 0,
-                "[{\"currentDs\":{\"id\":\"7193537020143079424\",\"name\":null,\"tableName\":\"demo_tea_order\",\"datasourceId\":\"985188400292302848\",\"datasetGroupId\":null,\"type\":\"db\",\"info\":\"{\\\"table\\\":\\\"demo_tea_order\\\",\\\"sql\\\":\\\"\\\"}\",\"sqlVariableDetails\":null,\"fields\":null,\"lastUpdateTime\":0,\"status\":null},\"currentDsField\":null,\"currentDsFields\":[{\"id\":\"1715072798360\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"冷/热\",\"name\":\"冷/热\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_68bd7361c951941a\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_68bd7361c951941a\",\"desensitized\":null},{\"id\":\"1715072798361\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"单价\",\"name\":\"单价\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_878cf3320c82724f\",\"groupType\":\"q\",\"type\":\"BIGINT\",\"precision\":null,\"scale\":null,\"deType\":2,\"deExtractType\":2,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_878cf3320c82724f\",\"desensitized\":null},{\"id\":\"1715072798362\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"品线\",\"name\":\"品线\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_f8fc4f728f1e6fa2\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_f8fc4f728f1e6fa2\",\"desensitized\":null},{\"id\":\"1715072798363\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"店铺\",\"name\":\"店铺\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_4a4cd188441bb10a\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_4a4cd188441bb10a\",\"desensitized\":null},{\"id\":\"1715072798364\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"菜品名称\",\"name\":\"菜品名称\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_7c7894e776e3b8ec\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_7c7894e776e3b8ec\",\"desensitized\":null},{\"id\":\"1715072798365\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"规格\",\"name\":\"规格\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_5c1a43f6150f3a56\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_5c1a43f6150f3a56\",\"desensitized\":null},{\"id\":\"1715072798366\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"账单流水号\",\"name\":\"账单流水号\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_252845fa1a250405\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_252845fa1a250405\",\"desensitized\":null},{\"id\":\"1715072798367\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"销售数量\",\"name\":\"销售数量\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_59fcc2c2b0f47cde\",\"groupType\":\"q\",\"type\":\"BIGINT\",\"precision\":null,\"scale\":null,\"deType\":2,\"deExtractType\":2,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_59fcc2c2b0f47cde\",\"desensitized\":null},{\"id\":\"1715072798368\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"销售日期\",\"name\":\"销售日期\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_852cde987322fd1d\",\"groupType\":\"d\",\"type\":\"DATETIME\",\"precision\":null,\"scale\":null,\"deType\":1,\"deExtractType\":1,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_852cde987322fd1d\",\"desensitized\":null}],\"childrenDs\":[],\"unionToParent\":{\"unionType\":\"left\",\"unionFields\":[],\"parentDs\":null,\"currentDs\":null,\"parentSQLObj\":null,\"currentSQLObj\":null},\"allChildCount\":0}]",
+                "[{\"currentDs\":{\"id\":\"7193537020143079424\",\"name\":null,\"tableName\":\"demo_tea_order\",\"datasourceId\":\"985188400292302848\",\"datasetGroupId\":null,\"type\":\"db\",\"info\":\"{\\\"table\\\":\\\"demo_tea_order\\\",\\\"sql\\\":\\\"\\\"}\",\"sqlVariableDetails\":null,\"fields\":null,\"lastUpdateTime\":0,\"status\":null},\"currentDsField\":null,\"currentDsFields\":[{\"id\":\"1715072798360\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"temperature\",\"name\":\"temperature\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_68bd7361c951941a\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_68bd7361c951941a\",\"desensitized\":null},{\"id\":\"1715072798361\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"price\",\"name\":\"price\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_878cf3320c82724f\",\"groupType\":\"q\",\"type\":\"BIGINT\",\"precision\":null,\"scale\":null,\"deType\":2,\"deExtractType\":2,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_878cf3320c82724f\",\"desensitized\":null},{\"id\":\"1715072798362\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"product\",\"name\":\"product\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_f8fc4f728f1e6fa2\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_f8fc4f728f1e6fa2\",\"desensitized\":null},{\"id\":\"1715072798363\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"shop\",\"name\":\"shop\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_4a4cd188441bb10a\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_4a4cd188441bb10a\",\"desensitized\":null},{\"id\":\"1715072798364\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"dish\",\"name\":\"dish\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_7c7894e776e3b8ec\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_7c7894e776e3b8ec\",\"desensitized\":null},{\"id\":\"1715072798365\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"specifications\",\"name\":\"specifications\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_5c1a43f6150f3a56\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_5c1a43f6150f3a56\",\"desensitized\":null},{\"id\":\"1715072798366\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"serial\",\"name\":\"serial\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_252845fa1a250405\",\"groupType\":\"d\",\"type\":\"LONGTEXT\",\"precision\":null,\"scale\":null,\"deType\":0,\"deExtractType\":0,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_252845fa1a250405\",\"desensitized\":null},{\"id\":\"1715072798367\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"sales\",\"name\":\"sales\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_59fcc2c2b0f47cde\",\"groupType\":\"q\",\"type\":\"BIGINT\",\"precision\":null,\"scale\":null,\"deType\":2,\"deExtractType\":2,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_59fcc2c2b0f47cde\",\"desensitized\":null},{\"id\":\"1715072798368\",\"datasourceId\":\"985188400292302848\",\"datasetTableId\":\"7193537020143079424\",\"datasetGroupId\":null,\"chartId\":null,\"originName\":\"sale_date\",\"name\":\"sale_date\",\"dbFieldName\":null,\"description\":null,\"dataeaseName\":\"f_852cde987322fd1d\",\"groupType\":\"d\",\"type\":\"DATETIME\",\"precision\":null,\"scale\":null,\"deType\":1,\"deExtractType\":1,\"extField\":0,\"checked\":true,\"columnIndex\":null,\"lastSyncTime\":null,\"dateFormat\":null,\"dateFormatType\":null,\"fieldShortName\":\"f_852cde987322fd1d\",\"desensitized\":null}],\"childrenDs\":[],\"unionToParent\":{\"unionType\":\"left\",\"unionFields\":[],\"parentDs\":null,\"currentDs\":null,\"parentSQLObj\":null,\"currentSQLObj\":null},\"allChildCount\":0}]",
                 "1",
                 1715053994811L,
                 null,
                 null,
                 "1",
                 1715054022426L,
-                "SELECT t_a_0.`冷/热` AS `f_68bd7361c951941a`,t_a_0.`单价` AS `f_878cf3320c82724f`,t_a_0.`品线` AS `f_f8fc4f728f1e6fa2`,t_a_0.`店铺` AS `f_4a4cd188441bb10a`,t_a_0.`菜品名称` AS `f_7c7894e776e3b8ec`,t_a_0.`规格` AS `f_5c1a43f6150f3a56`,t_a_0.`账单流水号` AS `f_252845fa1a250405`,t_a_0.`销售数量` AS `f_59fcc2c2b0f47cde`,t_a_0.`销售日期` AS `f_852cde987322fd1d` FROM s_a_985188400292302848.`demo_tea_order` t_a_0"
+                "SELECT t_a_0.`temperature` AS `f_68bd7361c951941a`,t_a_0.`price` AS `f_878cf3320c82724f`,t_a_0.`product` AS `f_f8fc4f728f1e6fa2`,t_a_0.`shop` AS `f_4a4cd188441bb10a`,t_a_0.`dish` AS `f_7c7894e776e3b8ec`,t_a_0.`specifications` AS `f_5c1a43f6150f3a56`,t_a_0.`serial` AS `f_252845fa1a250405`,t_a_0.`sales` AS `f_59fcc2c2b0f47cde`,t_a_0.`sale_date` AS `f_852cde987322fd1d` FROM s_a_985188400292302848.`demo_tea_order` t_a_0"
         );
 
         CoreDatasetGroup datasetGroup3 = new CoreDatasetGroup(

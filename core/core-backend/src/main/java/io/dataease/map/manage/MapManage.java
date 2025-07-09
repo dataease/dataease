@@ -267,7 +267,9 @@ public class MapManage {
     }
 
     public List<AreaNode> getCustomGeoSubAreaOptions() {
-        return areaRepository.findByPid156("156").stream().map(a -> BeanUtils.copyBean(AreaNode.builder().build(), a)).toList();
+        Specification<Area> spec = (root, query, cb) ->
+                cb.equal(root.get("pid"), "156");
+        return areaRepository.findAll(spec).stream().map(a -> BeanUtils.copyBean(AreaNode.builder().build(), a)).toList();
     }
 
     public void childTreeIdList(List<String> pidList, List<String> resultList) {

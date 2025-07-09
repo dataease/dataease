@@ -3,23 +3,31 @@ package io.dataease.system.dao.auto.mapper;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 
 public interface CoreSysSettingRepository extends JpaRepository<CoreSysSetting, Long>, JpaSpecificationExecutor<CoreSysSetting> {
 
     void deleteByPkey(String pkey);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE CoreSysSetting dv SET dv.sort = :sort WHERE dv.pkey = :pkey")
-    void updateByPkey(String pkey, Integer sort);
+    Optional<CoreSysSetting> findByPkey(String pkey);
 
-    @Modifying
     @Transactional
-    @Query("UPDATE CoreSysSetting dv SET dv.pval = :pval WHERE dv.pkey = :pkey")
-    void updatePvalByPkey(String pkey, String pval);
+    default void updateByPkey(String pkey, Integer sort){
+        findByPkey(pkey).ifPresent(coreSysSetting -> {
+            coreSysSetting.setSort(sort);
+            saveAndFlush(coreSysSetting);
+        });
+    }
+
+    @Transactional
+    default void updatePvalByPkey(String pkey, String pval){
+        findByPkey(pkey).ifPresent(coreSysSetting -> {
+            coreSysSetting.setPval(pval);
+            saveAndFlush(coreSysSetting);
+        });
+    }
 
 }

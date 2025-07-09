@@ -15,10 +15,15 @@ import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.*;
-import io.dataease.datasource.dao.auto.repository.*;
-
+import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
+import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
+import io.dataease.datasource.dao.auto.entity.CoreDsFinishPage;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskLogRepository;
+import io.dataease.datasource.dao.auto.repository.CoreDsFinishPageRepository;
+import io.dataease.datasource.dao.auto.repository.QrtzSchedulerStateRepository;
 import io.dataease.datasource.manage.DataSourceManage;
+import io.dataease.datasource.manage.DatabaseTimeManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
@@ -38,7 +43,6 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
-import io.dataease.model.ExportTaskDTO;
 import io.dataease.qrtz.dao.auto.repo.entity.QrtzSchedulerState;
 import io.dataease.result.PageResult;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
@@ -68,6 +72,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -93,8 +98,6 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private QrtzSchedulerStateRepository qrtzSchedulerStateRepository;
     @Resource
-    private TimestampRepository timestampRepository;
-    @Resource
     private CoreDsFinishPageRepository coreDsFinishPageRepository;
     @Resource
     private DatasetDataManage datasetDataManage;
@@ -110,6 +113,8 @@ public class DatasourceServer implements DatasourceApi {
     private CoreDatasourceRepository coreDatasourceRepository;
     @Autowired
     private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
+    @Resource
+    private DatabaseTimeManage databaseTimeManage;
 
 
     public enum UpdateType {
@@ -1188,8 +1193,9 @@ public class DatasourceServer implements DatasourceApi {
 
     private void doUpdate() {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateRepository.findAll();
-
-        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > timestampRepository.getCurrentTimestamp().getTime()).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
+        Timestamp currentTimestamp = databaseTimeManage.getCurrentDatabaseTime();
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
+                .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > currentTimestamp.getTime()).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
 
         List<CoreDatasource> datasources = coreDatasourceRepository.findByTaskStatus(TaskStatus.UnderExecution.name());
 

@@ -50,13 +50,13 @@ public class TemplateLocalParseManage {
                     return cb.and(predicates.toArray(new Predicate[0]));
                 };
 
-                if (!deTemplateVersionRepository.exists(spec)) {
+                if (!(deTemplateVersionRepository.count(spec) > 0)) {
                     DeTemplateVersion version = new DeTemplateVersion();
                     version.setScript(templateName);
                     version.setInstalledOn(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
                     version.setInstalledRank(IDUtils.snowID());
                     try {
-                        String content = new String(templateFile.getInputStream().readAllBytes());;
+                        String content = new String(templateFile.getInputStream().readAllBytes());
                         DataVisualizationBaseRequest template = JsonUtil.parseObject(content, DataVisualizationBaseRequest.class);
                         parseCore(template);
                         version.setSuccess(true);

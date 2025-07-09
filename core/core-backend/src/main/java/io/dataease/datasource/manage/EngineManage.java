@@ -182,27 +182,18 @@ public class EngineManage {
             predicates.add(cb.equal(root.get("version"), "985188400292302848"));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-
-        if (!coreDatasourceRepository.exists(example) && !deTemplateVersionRepository.exists(spec) && !ModelUtils.isDesktop()) {
-            Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)\\?(.*)");
-            Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
-            if (!matcher.find()) {
-                return;
-            }
-            Map configuration = new HashMap<>();
-            configuration.put("dataBase", matcher.group(3));
-            configuration.put("username", env.getProperty("spring.datasource.username"));
-            configuration.put("password", env.getProperty("spring.datasource.password"));
-            configuration.put("host", matcher.group(1));
-            configuration.put("port", Integer.valueOf(matcher.group(2)));
-            configuration.put("extraParams", "");
+        // Spring Data JPA 在某些数据库下exists方法会自动生成 fetch first ? rows only，在 Oracle 11g 及以下会报 ORA-00933 错误
+        // 使用count方法替代exists方法
+        if (!(coreDatasourceRepository.count(example) > 0) && !(deTemplateVersionRepository.count(spec) > 0) && !ModelUtils.isDesktop()) {
+            Map<String, String> configuration = parseJdbcUrl();
+            if (configuration == null) return;
 
             CoreDatasource initDatasource = new CoreDatasource();
             initDatasource.setId(985188400292302848L);
             initDatasource.setName("Demo");
-            initDatasource.setType("mysql");
+            initDatasource.setType(configuration.get("type"));
             initDatasource.setPid(0L);
-            initDatasource.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+            initDatasource.setConfiguration((String) JsonUtil.toJSONString(configuration));
             initDatasource.setCreateTime(System.currentTimeMillis());
             initDatasource.setUpdateTime(System.currentTimeMillis());
             initDatasource.setCreateBy("1");
@@ -222,4 +213,137 @@ public class EngineManage {
         }
 
     }
+
+    /**
+     * 定义一个接口，用于解析不同数据库类型的JDBC URL
+     * 该接口包含一个parse方法，接受JDBC URL和Spring Environment对象
+     * 返回一个Map<String, String>，包含解析后的连接配置
+     */
+    public interface JdbcUrlParser {
+        Map<String, String> parse(String url, Environment env);
+    }
+
+    /**
+     * MySQL JDBC URL解析器实现
+     */
+    public static class MysqlJdbcUrlParser implements JdbcUrlParser {
+        private static final Pattern PATTERN = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)\\?(.*)");
+
+        @Override
+        public Map<String, String> parse(String url, Environment env) {
+            Matcher matcher = PATTERN.matcher(url);
+            if (!matcher.find()) return null;
+            Map<String, String> config = new HashMap<>();
+            config.put("host", matcher.group(1));
+            config.put("port", matcher.group(2));
+            config.put("dataBase", matcher.group(3));
+            config.put("type", "mysql");
+            config.put("username", env.getProperty("spring.datasource.username"));
+            config.put("password", env.getProperty("spring.datasource.password"));
+            return config;
+        }
+    }
+
+
+    /**
+     * Oracle JDBC URL解析器实现
+     * 支持两种格式的Oracle JDBC URL：
+     * 1. jdbc:oracle:thin:@host:port:serviceName
+     * 2. jdbc:oracle:thin:@//host:port/serviceName
+     */
+    public static class OracleJdbcUrlParser implements JdbcUrlParser {
+        private static final Pattern PATTERN1 = Pattern.compile("jdbc:oracle:thin:@(.*):(\\d+)/(.*)\\?(.*)");
+        private static final Pattern PATTERN2 = Pattern.compile("jdbc:oracle:thin:@//(.*):(\\d+)/(.*)\\?(.*)");
+
+        @Override
+        public Map<String, String> parse(String url, Environment env) {
+            Matcher m1 = PATTERN1.matcher(url);
+            Matcher m2 = PATTERN2.matcher(url);
+            Map<String, String> config = new HashMap<>();
+            if (m1.find()) {
+                config.put("host", m1.group(1));
+                config.put("port", m1.group(2));
+                config.put("dataBase", m1.group(3));
+            } else if (m2.find()) {
+                config.put("host", m2.group(1));
+                config.put("port", m2.group(2));
+                config.put("dataBase", m2.group(3));
+            } else {
+                return null;
+            }
+            config.put("extraParams", "");
+            config.put("type", "oracle");
+            config.put("username", env.getProperty("spring.datasource.username"));
+            config.put("password", env.getProperty("spring.datasource.password"));
+            config.put("schema", getCurrentSchema(env.getProperty("spring.datasource.hikari.connection-init-sql")));
+            return config;
+        }
+
+        /**
+         * 提取 Oracle ev 中的spring.datasource.hikari.connection-init-sql
+         * 格式为：-Dspring.datasource.hikari.connection-init-sql="ALTER SESSION SET CURRENT_SCHEMA = JIANNENG1"
+         * @param arg
+         * @return
+         */
+        public static String getCurrentSchema(String arg) {
+            // 匹配等号后最后一个非空白字符串
+            Pattern pattern = Pattern.compile("CURRENT_SCHEMA\\s*=\\s*([\\w\\d_]+)", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(arg);
+            if (matcher.find()) {
+                return matcher.group(1).toUpperCase();
+            }
+            // 如果没有匹配到，返回默认值
+            return "USERS";
+        }
+    }
+
+    /**
+     * JDBC URL解析器映射
+     */
+    private static volatile Map<String, JdbcUrlParser> parserMap;
+
+    /**
+     * 按需注册JDBC URL解析器
+     *
+     * @param env Spring Environment
+     * @return 包含不同数据库类型的JDBC URL解析器的Map
+     */
+    private Map<String, JdbcUrlParser> getParserMap(Environment env) {
+        if (parserMap == null) {
+            synchronized (EngineManage.class) {
+                if (parserMap == null) {
+                    parserMap = new HashMap<>();
+                    String jdbcUrl = env.getProperty("spring.datasource.url");
+                    if (jdbcUrl != null) {
+                        if (jdbcUrl.startsWith("jdbc:mysql://")) {
+                            parserMap.put("jdbc:mysql://", new MysqlJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
+                            parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
+                        }
+                    }
+                }
+            }
+        }
+        return parserMap;
+    }
+
+    /**
+     * 解析JDBC URL
+     *
+     * @return 解析后的连接配置Map，包含host, port, dataBase, extraParams, type, username, password等信息
+     */
+    private Map<String, String> parseJdbcUrl() {
+        String url = env.getProperty("spring.datasource.url");
+        if (StringUtils.isEmpty(url)) {
+            return null;
+        }
+        Map<String, JdbcUrlParser> map = getParserMap(env);
+        return map.entrySet().stream()
+                .filter(e -> url.startsWith(e.getKey()))
+                .map(e -> e.getValue().parse(url, env))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+    }
+
 }
