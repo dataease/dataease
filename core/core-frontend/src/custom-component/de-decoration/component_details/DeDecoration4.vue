@@ -36,8 +36,8 @@ const props = withDefaults(defineProps<Props>(), {
   color: () => [],
   curStyle: () => {
     return {
-      width: '320px',
-      height: '240px'
+      width: 320,
+      height: 240
     }
   },
   reverse: false,
@@ -47,14 +47,8 @@ const props = withDefaults(defineProps<Props>(), {
 const refName = ref('decoration-4')
 const defaultColor = ref(['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.3)'])
 const mergedColor = ref<string[]>([])
-const width = computed(() => {
-  return parseInt(props.curStyle.width) / props.scale
-})
-
-const height = computed(() => {
-  return parseInt(props.curStyle.height) / props.scale
-})
-
+const width = computed(() => props.curStyle.width)
+const height = computed(() => props.curStyle.height)
 const border_style = computed(() => {
   return {
     width: `${width.value}px`,

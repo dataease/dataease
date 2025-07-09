@@ -534,6 +534,7 @@ defineExpose({
         :canvas-id="canvasId"
         :canvas-style-data="canvasStyleData"
         :dv-info="dvInfo"
+        :cur-style="getShapeItemShowStyle(item)"
         :canvas-view-info="canvasViewInfo"
         :view-info="canvasViewInfo[item.id]"
         :key="index"

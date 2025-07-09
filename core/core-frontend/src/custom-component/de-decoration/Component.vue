@@ -1,7 +1,7 @@
 <template>
   <div class="dynamic-shape">
     <component
-      :curStyle="curStyle"
+      :curStyle="curStyleAdaptor"
       :scale="calScale"
       :is="findDecoration(element.innerType)"
       :color="curColor"
@@ -16,6 +16,20 @@ const calScale = computed(() => {
   return props.scale
 })
 
+const curStyleAdaptor = computed(() => {
+  if (props.showPosition.includes('edit')) {
+    return {
+      width: parseInt(props.curStyle.width) / props.scale,
+      height: parseInt(props.curStyle.height) / props.scale
+    }
+  } else {
+    return {
+      width: parseInt(props.curStyle.width),
+      height: parseInt(props.curStyle.height)
+    }
+  }
+})
+
 const curColor = computed(() => {
   return [props.element.style?.color0 || null, props.element.style?.color1 || null]
 })
@@ -25,6 +39,11 @@ const props = defineProps({
   },
   scale: {
     type: Number
+  },
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'preview'
   },
   element: {
     type: Object,

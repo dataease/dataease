@@ -37,6 +37,9 @@ const commonFilterAttrsFilterBorder = [
 ]
 
 const props = defineProps({
+  curStyle: {
+    type: Object
+  },
   active: {
     type: Boolean,
     default: false
@@ -468,7 +471,7 @@ const updateFromMobile = (e, type) => {
           :dv-type="dvInfo.type"
           :canvas-view-info="canvasViewInfo"
           :style="getComponentStyleDefault(config?.style)"
-          :curStyle="slotStyle"
+          :curStyle="curStyle"
           :prop-value="config?.propValue"
           :element="config"
           :request="config?.request"

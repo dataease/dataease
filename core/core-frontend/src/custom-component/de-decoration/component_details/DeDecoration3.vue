@@ -42,19 +42,14 @@ const props = withDefaults(defineProps<Props>(), {
   color: () => [],
   curStyle: () => {
     return {
-      width: '320px',
-      height: '240px'
+      width: 320,
+      height: 240
     }
   }
 })
 
-const width = computed(() => {
-  return parseInt(props.curStyle.width) / props.scale
-})
-
-const height = computed(() => {
-  return parseInt(props.curStyle.height) / props.scale
-})
+const width = computed(() => props.curStyle.width)
+const height = computed(() => props.curStyle.height)
 
 const border_style = computed(() => {
   return {

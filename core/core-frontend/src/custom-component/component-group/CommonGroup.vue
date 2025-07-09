@@ -95,11 +95,11 @@ const groupActiveChange = category => {
             <img
               v-else-if="['dynamic_background'].includes(chartInfo.type)"
               class="item-top-icon"
-              :src="`/dynamic-background/${chartInfo.icon}`"
+              :src="`./dynamic-background/${chartInfo.icon}`"
               alt=""
             />
             <DeDecoration
-              :curStyle="{ width: '80px', height: '56px' }"
+              :curStyle="{ width: 530, height: 373 }"
               :element="{ innerType: chartInfo.value }"
               :scale="0.15"
               v-else-if="['de_decoration'].includes(chartInfo.type)"

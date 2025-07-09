@@ -108,6 +108,6 @@ const init = () => {
     state.style.color0 = curComponent.value.style.color0
     state.style.color1 = curComponent.value.style.color1
     state.style.color2 = curComponent.value.style.color2
-  }, 1000)
+  })
 }
 </script>
