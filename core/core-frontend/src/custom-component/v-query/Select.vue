@@ -221,12 +221,6 @@ const handleValueChange = () => {
     setCascadeValueBack(config.value.mapValue)
     emitCascade()
     nextTick(() => {
-      console.log(
-        'disabledFirstItem.value',
-        disabledFirstItem.value,
-        selectValue.value,
-        cloneDeep(config.value)
-      )
       isConfirmSearch(config.value.id, disabledFirstItem.value)
     })
     return
