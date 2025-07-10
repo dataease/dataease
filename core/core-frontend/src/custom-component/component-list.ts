@@ -495,10 +495,10 @@ const list = [
   },
   {
     component: 'DeDecoration',
-    name: t('visualization.dynamic_background'),
-    label: t('visualization.dynamic_background'),
+    name: t('visualization.decoration'),
+    label: t('visualization.decoration'),
     propValue: '&nbsp;',
-    icon: 'dv_dynamic_background',
+    icon: 'dv_decoration',
     style: {
       width: 400,
       height: 300,

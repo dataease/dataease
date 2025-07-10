@@ -1,6 +1,6 @@
 <template>
   <div class="circle-shape">
-    <img class="dynamic-shape" :src="`./dynamic-background/${element.innerType}`" alt="" />
+    <img class="dynamic-shape" :src="findUrl(element.innerType)" alt="" />
   </div>
 </template>
 
@@ -15,6 +15,10 @@ defineProps({
     }
   }
 })
+
+const findUrl = name => {
+  return new URL(`/src/assets/dynamic-background/${name}`, import.meta.url).href
+}
 </script>
 
 <style lang="less" scoped>

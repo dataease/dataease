@@ -49,6 +49,10 @@ const groupActiveChange = category => {
   state.curCategory = category
   anchorPosition('#' + category)
 }
+
+const findUrl = name => {
+  return new URL(`/src/assets/dynamic-background/${name}`, import.meta.url).href
+}
 </script>
 
 <template>
@@ -95,7 +99,7 @@ const groupActiveChange = category => {
             <img
               v-else-if="['dynamic_background'].includes(chartInfo.type)"
               class="item-top-icon"
-              :src="`./dynamic-background/${chartInfo.icon}`"
+              :src="findUrl(chartInfo.icon)"
               alt=""
             />
             <DeDecoration
