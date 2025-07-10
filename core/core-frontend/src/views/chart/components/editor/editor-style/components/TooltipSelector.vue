@@ -487,6 +487,7 @@ onMounted(() => {
         @change="changeTooltipAttr('backgroundColor')"
         is-custom
         :trigger-width="108"
+        show-alpha
       />
     </el-form-item>
     <el-space>
