@@ -4011,7 +4011,11 @@ export default {
     dynamic_partition_enable: '動態分區',
     time_end: '結束',
     es_query_param_formatter_error: '查詢參數格式錯誤，請輸入正確的JSON格式，請檢查',
-    show_task_id: '查看任務ID'
+    show_task_id: '查看任務ID',
+    offset: '偏移量',
+    offset_tip: '偏移量，負數為前向偏移，正數為後向偏移',
+    millisecond: '毫秒',
+    units: '單位'
   },
   watermark: {
     support_params: '目前支援的參數：',

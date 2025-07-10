@@ -4125,7 +4125,11 @@ export default {
     time_end: 'End',
     es_query_param_formatter_error:
       'Query parameter format error, please enter the correct JSON format, please check',
-    show_task_id: 'View Task ID'
+    show_task_id: 'View Task ID',
+    offset: 'Offset',
+    offset_tip: 'Offset: negative for backward, positive for forward',
+    millisecond: 'Millisecond',
+    units: 'Unit'
   },
   watermark: {
     support_params: 'Currently supported parameters:',

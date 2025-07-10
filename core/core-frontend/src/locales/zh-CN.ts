@@ -4013,7 +4013,11 @@ export default {
     dynamic_partition_enable: '动态分区',
     time_end: '结束',
     es_query_param_formatter_error: '查询参数格式错误，请输入正确的JSON格式，请检查',
-    show_task_id: '查看任务ID'
+    show_task_id: '查看任务ID',
+    offset: '偏移量',
+    offset_tip: '偏移量，负数为前向偏移，正数为后向偏移',
+    millisecond: '毫秒',
+    units: '单位'
   },
   watermark: {
     support_params: '当前支持的参数：',

@@ -24,4 +24,6 @@ public class Target {
     private double faultToleranceRate;
     private String incrementFieldType;
     private String remarks;
+    private Long incrementOffset;
+    private String incrementOffsetUnit;
 }
