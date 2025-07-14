@@ -62,7 +62,7 @@ public class FontManage {
             return create(fontDto);
         }
         if (fontDto.getIsDefault()) {
-            coreFontRepository.updateIsDefaultById(fontDto.getId(), false);
+            coreFontRepository.resetDefaultById(fontDto.getId());
         }
         CoreFont coreFont = new CoreFont();
         BeanUtils.copyBean(coreFont, fontDto);
