@@ -18,6 +18,7 @@ services:
       - ${DE_BASE}/dataease3.0/data/exportData:/opt/dataease3.0/data/exportData
       - ${DE_BASE}/dataease3.0/data/plugin:/opt/dataease3.0/data/plugin
       - ${DE_BASE}/dataease3.0/data/font:/opt/dataease3.0/data/font
+      - ${DE_BASE}/dataease3.0/data/driver:/opt/dataease3.0/data/driver
       - ${DE_BASE}/dataease3.0/data/i18n:/opt/dataease3.0/data/i18n
     depends_on:
       DE_MYSQL_HOST:

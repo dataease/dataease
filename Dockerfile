@@ -8,6 +8,7 @@ RUN mkdir -p /opt/apps/config \
     /opt/dataease3.0/data/appearance/ \
     /opt/dataease3.0/data/exportData/ \
     /opt/dataease3.0/data/i8n/ \
+    /opt/dataease3.0/data/driver/ \
     /opt/dataease3.0/data/plugin/
 
 ADD drivers/* /opt/dataease3.0/drivers/
