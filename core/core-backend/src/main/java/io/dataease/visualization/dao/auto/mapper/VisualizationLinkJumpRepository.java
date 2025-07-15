@@ -1,11 +1,8 @@
 package io.dataease.visualization.dao.auto.mapper;
 
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkJump;
-import io.dataease.visualization.dao.auto.entity.VisualizationLinkage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -16,13 +13,12 @@ public interface VisualizationLinkJumpRepository extends JpaRepository<Visualiza
     List<VisualizationLinkJump> findBySourceDvId(Long sourceDvId);
 
 
-
-    @Modifying
     @Transactional
-    @Query("DELETE FROM VisualizationLinkJump c WHERE c.sourceDvId = :sourceDvId ")
-    void deleteBySourceDvId(Long sourceDvId);
-
-    @Query("SELECT j FROM VisualizationLinkJump j WHERE j.sourceDvId = :dvId AND j.sourceViewId = :viewId")
-    VisualizationLinkJump findBySourceDvIdAndSourceViewId(Long dvId, Long viewId);
+    default void deleteBySourceDvId(Long sourceDvId) {
+        List<VisualizationLinkJump> jumps = findBySourceDvId(sourceDvId);
+        if (jumps != null && !jumps.isEmpty()) {
+            deleteAll(jumps);
+        }
+    }
 
 }

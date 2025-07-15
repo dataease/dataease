@@ -2,40 +2,68 @@ package io.dataease.traffic.dao.mapper;
 
 
 import io.dataease.traffic.dao.entity.CoreApiTraffic;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import java.util.List;
 import java.util.Optional;
 
 public interface CoreApiTrafficRepository extends JpaRepository<CoreApiTraffic, Long>, JpaSpecificationExecutor<CoreApiTraffic> {
 
-    @Query("SELECT t.alive FROM CoreApiTraffic t WHERE t.api = :api")
-    Optional<Integer> getAlive(String api);
+    default Optional<Integer> getAlive(String api) {
+        Specification<CoreApiTraffic> spec = (root, query, cb) ->
+                cb.equal(root.get("api"), api);
+        return findOne(spec).map(CoreApiTraffic::getAlive);
+    }
 
-    @Modifying
     @Transactional
-    @Query("UPDATE CoreApiTraffic t SET t.alive = t.alive + 1 WHERE t.api = :api")
-    void upgrade(String api);
+    default void upgrade(String api) {
+        Specification<CoreApiTraffic> spec = (root, query, cb) ->
+                cb.equal(root.get("api"), api);
+        List<CoreApiTraffic> trafficList = findAll(spec);
+        if (!trafficList.isEmpty()) {
+            trafficList.forEach(traffic -> {
+                traffic.setAlive(traffic.getAlive() + 1);
+            });
+            saveAllAndFlush(trafficList);
+        }
+    }
 
-    @Modifying
     @Transactional
-    @Query("INSERT INTO CoreApiTraffic (id, api, threshold, alive) VALUES (:id, :api, :threshold, 0)")
-    void insert(Long id, String api, int threshold);
+    default void insert(Long id, String api, int threshold) {
+        CoreApiTraffic apiTraffic = new CoreApiTraffic();
+        apiTraffic.setId(id);
+        apiTraffic.setApi(api);
+        apiTraffic.setThreshold(threshold);
+        apiTraffic.setAlive(0);
+        saveAndFlush(apiTraffic);
+    }
 
-    @Query("SELECT COUNT(t) FROM CoreApiTraffic t WHERE t.api = :api")
-    Integer apiCount(String api);
+    default long apiCount(String api) {
+        Specification<CoreApiTraffic> spec = (root, query, cb) ->
+                cb.equal(root.get("api"), api);
+        return count(spec);
+    }
 
-    @Modifying
     @Transactional
-    @Query("UPDATE CoreApiTraffic t SET t.alive = CASE WHEN t.alive > 0 THEN t.alive - 1 ELSE t.alive END WHERE t.api = :api")
-    void releaseAlive(String api);
+    default void releaseAlive(String api) {
+        Specification<CoreApiTraffic> spec = (root, query, cb) ->
+                cb.equal(root.get("api"), api);
+        List<CoreApiTraffic> trafficList = findAll(spec);
+        if (!trafficList.isEmpty()) {
+            trafficList.forEach(traffic -> {
+                if (traffic.getAlive() > 0) {
+                    traffic.setAlive(traffic.getAlive() - 1);
+                }
+            });
+            saveAllAndFlush(trafficList);
+        }
+    }
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM CoreApiTraffic")
-    void cleanTraffic();
+    default void cleanTraffic() {
+        deleteAllInBatch();
+    }
 }

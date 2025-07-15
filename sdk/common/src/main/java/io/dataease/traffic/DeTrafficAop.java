@@ -41,7 +41,7 @@ public class DeTrafficAop {
         Object result = null;
         boolean access = false;
         try {
-            Integer count = coreApiTrafficRepository.apiCount(api);
+            long count = coreApiTrafficRepository.apiCount(api);
             if (count == 0) {
                 CoreApiTraffic apiTraffic = new CoreApiTraffic();
                 apiTraffic.setId(IDUtils.snowID());

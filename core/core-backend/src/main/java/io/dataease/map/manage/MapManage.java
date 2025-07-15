@@ -273,7 +273,7 @@ public class MapManage {
     }
 
     public void childTreeIdList(List<String> pidList, List<String> resultList) {
-        List<CoreAreaCustom> coreAreaCustoms = coreAreaCustomRepository.findInPids(pidList);
+        List<CoreAreaCustom> coreAreaCustoms = coreAreaCustomRepository.findAll((root, query, cb) -> root.get("pid").in(pidList));
         if (CollectionUtils.isNotEmpty(coreAreaCustoms)) {
             List<String> codeList = coreAreaCustoms.stream().map(CoreAreaCustom::getId).toList();
             resultList.addAll(codeList);

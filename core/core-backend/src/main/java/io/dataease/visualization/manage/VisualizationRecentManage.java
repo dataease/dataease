@@ -6,16 +6,17 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.operation.dao.auto.entity.CoreOptRecent;
 import io.dataease.operation.dao.auto.mapper.CoreOptRecentRepository;
+import io.dataease.visualization.dao.auto.entity.CoreStore;
 import io.dataease.visualization.dao.auto.mapper.CoreStoreRepository;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import jakarta.annotation.Resource;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,7 +37,12 @@ public class VisualizationRecentManage {
 
     public Page<VisualizationResourcePO> findRecent(Long uid, String keyword, Map<String, Object> params, Pageable pageable) {
         // 1. 获取用户收藏的资源ID集合
-        Set<Long> storedResourceIds = storeRepository.findStoredResourceIdsByUser(uid);
+        Specification<CoreStore> findStoredResourceIdsByUserSpec = (root, query, cb) ->
+                cb.equal(root.get("uid"), uid);
+        Set<Long> storedResourceIds = storeRepository.findAll(findStoredResourceIdsByUserSpec)
+                .stream()
+                .map(CoreStore::getResourceId)
+                .collect(Collectors.toSet());
 
         // 2. 获取用户最近操作的资源
         List<CoreOptRecent> recentOperations = optRecentRepository.findByUid(uid);
@@ -69,7 +75,7 @@ public class VisualizationRecentManage {
         List<VisualizationResourcePO> filteredResources = applyFilters(allResources, keyword, params);
 
         // 7. 分页处理
-        return paginateResults(filteredResources, pageable,params);
+        return paginateResults(filteredResources, pageable, params);
     }
 
     private List<VisualizationResourcePO> queryDatasets(Long uid, String keyword, Map<String, Object> params, Set<Long> storedResourceIds) {
@@ -83,7 +89,7 @@ public class VisualizationRecentManage {
                         0L,
                         0L,
                         ds.getLastUpdateTime(),
-                        false,0,0
+                        false, 0, 0
                 ))
                 .collect(Collectors.toList());
     }
@@ -99,7 +105,7 @@ public class VisualizationRecentManage {
                         0L,
                         0L,
                         ds.getUpdateTime(),
-                        false,0,0
+                        false, 0, 0
                 ))
                 .collect(Collectors.toList());
     }
@@ -108,14 +114,14 @@ public class VisualizationRecentManage {
         return dataVizRepository.findByDeleteFlagAndNodeTypeAndStatusNot(false, "leaf", 0)
                 .stream()
                 .map(dv -> new VisualizationResourcePO(
-                        Long.getLong(dv.getId()),
-                        Long.getLong(dv.getId()),
+                        dv.getId(),
+                        dv.getId(),
                         dv.getName(),
                         "dataV".equals(dv.getType()) ? "screen" : "panel",
                         0L,
                         0L,
                         dv.getUpdateTime(),
-                        false,0,0
+                        false, 0, 0
                 ))
                 .collect(Collectors.toList());
     }
@@ -140,7 +146,7 @@ public class VisualizationRecentManage {
         return stream.collect(Collectors.toList());
     }
 
-    private Page<VisualizationResourcePO> paginateResults(List<VisualizationResourcePO> resources, Pageable pageable,Map<String, Object> params) {
+    private Page<VisualizationResourcePO> paginateResults(List<VisualizationResourcePO> resources, Pageable pageable, Map<String, Object> params) {
         // 排序
         if (Boolean.TRUE.equals(params.get("isAsc"))) {
             resources.sort(Comparator.comparing(VisualizationResourcePO::getLastEditTime));

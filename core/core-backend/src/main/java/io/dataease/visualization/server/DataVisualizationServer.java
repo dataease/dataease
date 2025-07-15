@@ -187,7 +187,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
         DataVisualizationVO result = coreVisualizationManage.findDvInfo(dvId, busiFlag, resourceTable);
         if (result != null) {
             // get creator
-            String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
+            String userName = null;
+            if (StringUtils.isNotEmpty(result.getCreateBy())) {
+                userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
+            }
             if (StringUtils.isNotBlank(userName)) {
                 result.setCreatorName(userName);
             }
@@ -437,7 +440,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
             // 复制更新 新建权限插入
-            dataVisualizationInfoRepository.deleteById(String.valueOf(request.getId()));
+            dataVisualizationInfoRepository.deleteById(request.getId());
             snapshotDataVisualizationInfoRepository.deleteById(request.getId());
             visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
         }
@@ -569,7 +572,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Long dvId = request.getId();
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         visualizationInfo.setMobileLayout(Byte.valueOf(request.getMobileLayout() ? "1" : "0"));
-        visualizationInfo.setId(String.valueOf(dvId));
+        visualizationInfo.setId(dvId);
         visualizationInfo.setName(request.getName());
         visualizationInfo.setStatus(request.getStatus());
         coreVisualizationManage.innerEdit(visualizationInfo);
@@ -586,7 +589,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public void recoverToPublished(DataVisualizationBaseRequest request) {
         coreVisualizationManage.dvSnapshotRecover(request.getId());
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
-        visualizationInfo.setId(String.valueOf(request.getId()));
+        visualizationInfo.setId(request.getId());
         visualizationInfo.setName(request.getName());
         visualizationInfo.setStatus(CommonConstants.DV_STATUS.PUBLISHED);
         coreVisualizationManage.innerEdit(visualizationInfo);
@@ -707,10 +710,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Long newDvId = IDUtils.snowID(); //目标仪表板ID
         Long copyId = IDUtils.snowID() / 100; // 本次复制执行ID
         // 复制仪表板
-        DataVisualizationInfo newDv = dataVisualizationInfoRepository.findById(String.valueOf(sourceDvId)).orElse(null);
+        DataVisualizationInfo newDv = dataVisualizationInfoRepository.findById(sourceDvId).orElse(null);
         newDv.setName(request.getName());
-        newDv.setId(String.valueOf(newDvId));
-        newDv.setPid(String.valueOf(request.getPid()));
+        newDv.setId(newDvId);
+        newDv.setPid(request.getPid());
         newDv.setCreateTime(System.currentTimeMillis());
         // 复制图表 chart_view
         chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.CORE);
@@ -733,14 +736,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationLinkJumpManage.copyLinkJumpTargetInfo(copyId);
         DataVisualizationInfo visualizationInfoTarget = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfoTarget, newDv);
-        visualizationInfoTarget.setPid("-1");
+        visualizationInfoTarget.setPid(-1L);
         coreVisualizationManage.preInnerSave(visualizationInfoTarget);
         return String.valueOf(newDvId);
     }
 
     @Override
     public String findDvType(Long dvId) {
-        DataVisualizationInfo dataVisualizationInfo = dataVisualizationInfoRepository.findById(String.valueOf(dvId)).orElse(null);
+        DataVisualizationInfo dataVisualizationInfo = dataVisualizationInfoRepository.findById(dvId).orElse(null);
         if (dataVisualizationInfo != null) {
             return dataVisualizationInfo.getType();
         } else {
@@ -752,7 +755,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public String updateCheckVersion(Long dvId) {
         DataVisualizationInfo updateInfo = new DataVisualizationInfo();
-        updateInfo.setId(String.valueOf(dvId));
+        updateInfo.setId(dvId);
         updateInfo.setCheckVersion(coreLicManage.getVersion());
         dataVisualizationInfoRepository.saveAndFlush(updateInfo);
         return "";
@@ -991,7 +994,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
             if (request.getPid() == null) {
-                DataVisualizationInfo result = dataVisualizationInfoRepository.findById(String.valueOf(request.getId())).orElse(null);
+                DataVisualizationInfo result = dataVisualizationInfoRepository.findById(request.getId()).orElse(null);
                 request.setPid(Long.valueOf(result.getPid()));
             }
         }
@@ -1041,7 +1044,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     public List<DataVisualizationInfo> getParents(Long id) {
         List<DataVisualizationInfo> list = new ArrayList<>();
-        DataVisualizationInfo dataVisualizationInfo = dataVisualizationInfoRepository.findById(String.valueOf(id)).orElse(null);
+        DataVisualizationInfo dataVisualizationInfo = dataVisualizationInfoRepository.findById(id).orElse(null);
         list.add(dataVisualizationInfo);
         if (dataVisualizationInfo.getPid().equals(dataVisualizationInfo.getId())) {
             return list;

@@ -1,10 +1,9 @@
 package io.dataease.visualization.dao.auto.mapper;
 
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,35 +11,59 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface DataVisualizationInfoRepository extends JpaRepository<DataVisualizationInfo, String>, JpaSpecificationExecutor<DataVisualizationInfo> {
+public interface DataVisualizationInfoRepository extends JpaRepository<DataVisualizationInfo, Long>, JpaSpecificationExecutor<DataVisualizationInfo> {
 
-    @Modifying
     @Transactional
-    @Query("UPDATE DataVisualizationInfo dv SET dv.mobileLayout = 0")
-    void updateMobileLayout();
+    default void updateMobileLayout() {
+        List<DataVisualizationInfo> dataVisualizationInfos = findAll();
+        for (DataVisualizationInfo dv : dataVisualizationInfos) {
+            dv.setMobileLayout((byte) 0L);
+        }
+        saveAllAndFlush(dataVisualizationInfos);
+    }
 
-
-    @Modifying
     @Transactional
-    @Query("UPDATE DataVisualizationInfo dv SET dv.version = 2")
-    void updateVersion();
+    default void updateVersion() {
+        List<DataVisualizationInfo> dataVisualizationInfos = findAll();
+        for (DataVisualizationInfo dv : dataVisualizationInfos) {
+            dv.setVersion(2);
+        }
+        saveAllAndFlush(dataVisualizationInfos);
+    }
 
-    @Modifying
     @Transactional
-    @Query("UPDATE DataVisualizationInfo dv SET dv.checkVersion = :checkVersion")
-    void updateCheckVersion(String checkVersion);
+    default void updateCheckVersion(String checkVersion) {
+        List<DataVisualizationInfo> dataVisualizationInfos = findAll();
+        for (DataVisualizationInfo dv : dataVisualizationInfos) {
+            dv.setCheckVersion(checkVersion);
+        }
+        saveAllAndFlush(dataVisualizationInfos);
+    }
 
 
-    @Query("select dv.id from DataVisualizationInfo dv where dv.pid = :pid and dv.deleteFlag = true")
-    List<Long> queryChildrenId(@Param("pid") Long pid);
+    default List<Long> queryChildrenId(@Param("pid") Long pid) {
+        Specification<DataVisualizationInfo> spec = (root, query, cb) ->
+                cb.and(cb.equal(root.get("pid"), pid), cb.equal(root.get("deleteFlag"), true));
+        return findAll(spec).stream()
+                .map(DataVisualizationInfo::getId)
+                .toList();
+    }
 
-    @Query("select dv.status from DataVisualizationInfo dv where dv.id = :dvId")
-    Integer findDvInfoStats(@Param("dvId") Long dvId);
+    default Integer findDvInfoStats(@Param("dvId") Long dvId) {
+        return findById(dvId)
+                .map(DataVisualizationInfo::getStatus)
+                .orElse(null);
+    }
 
-    @Query("SELECT d FROM DataVisualizationInfo d " +
-            "WHERE d.deleteFlag = false AND d.id = :dvId " +
-            "AND (:dvType IS NULL OR d.type = :dvType)")
-    Optional<DataVisualizationInfo> findDvInfoEntity( Long dvId, String dvType);
+    default Optional<DataVisualizationInfo> findDvInfoEntity(Long dvId, String dvType) {
+        Specification<DataVisualizationInfo> spec = (root, query, cb) ->
+                cb.and(
+                        cb.equal(root.get("deleteFlag"), false),
+                        cb.equal(root.get("id"), String.valueOf(dvId)),
+                        dvType == null ? cb.conjunction() : cb.equal(root.get("type"), dvType)
+                );
+        return findOne(spec);
+    }
 
-    List<DataVisualizationInfo> findByDeleteFlagAndNodeTypeAndStatusNot(boolean deleteFlag, String nodeType,Integer status);
+    List<DataVisualizationInfo> findByDeleteFlagAndNodeTypeAndStatusNot(boolean deleteFlag, String nodeType, Integer status);
 }

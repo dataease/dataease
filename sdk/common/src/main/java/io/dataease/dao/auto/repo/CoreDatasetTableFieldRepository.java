@@ -5,8 +5,6 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -27,10 +25,18 @@ public interface CoreDatasetTableFieldRepository extends JpaRepository<CoreDatas
 
     void deleteByDatasetGroupId(Long datasetGroupId);
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM CoreDatasetTableField c WHERE c.datasetTableId = :datasetTableId AND c.id NOT IN :fieldIds")
-    void deleteByDatasetTableIdAndNotInFieldIds(Long datasetTableId, List<Long> fieldIds);
+    default void deleteByDatasetTableIdAndNotInFieldIds(Long datasetTableId, List<Long> fieldIds) {
+        Specification<CoreDatasetTableField> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("datasetTableId"), datasetTableId));
+            if (fieldIds != null && !fieldIds.isEmpty()) {
+                predicates.add(cb.not(root.get("id").in(fieldIds)));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        deleteAllInBatch(findAll(spec));
+    }
 
     @Transactional
     default void deleteByDatasetGroupIdAndNotInFieldIds(Long datasetGroupId, List<Long> fieldIds) {
@@ -45,6 +51,4 @@ public interface CoreDatasetTableFieldRepository extends JpaRepository<CoreDatas
         deleteAllInBatch(findAll(spec));
     }
 
-    @Query("SELECT f FROM CoreDatasetTableField f LEFT JOIN CoreChartView v ON f.datasetTableId = v.tableId WHERE v.id = :viewId")
-    List<CoreDatasetTableField> findByViewId(Long viewId);
 }

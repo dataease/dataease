@@ -14,25 +14,22 @@ import org.hibernate.annotations.Comment;
 @Table(name = "data_visualization_info")
 public class DataVisualizationInfo {
     @Id
-    @Size(max = 50)
     @Comment("主键")
-    @Column(name = "id", nullable = false, length = 50)
-    private String id;
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     @Size(max = 255)
     @Comment("名称")
     @Column(name = "name")
     private String name;
 
-    @Size(max = 50)
     @Comment("父id")
-    @Column(name = "pid", length = 50)
-    private String pid;
+    @Column(name = "pid")
+    private Long pid;
 
-    @Size(max = 50)
     @Comment("所属组织id")
-    @Column(name = "org_id", length = 50)
-    private String orgId;
+    @Column(name = "org_id")
+    private Long orgId;
 
     @Comment("层级")
     @Column(name = "level")

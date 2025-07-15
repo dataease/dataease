@@ -201,7 +201,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Override
     public VisualizationComponentDTO viewTableDetailList(Long dvId) {
-        DataVisualizationInfo dvInfo = dataVisualizationInfoMapper.findById(String.valueOf(dvId)).orElse(null);
+        DataVisualizationInfo dvInfo = dataVisualizationInfoMapper.findById(dvId).orElse(null);
         List<VisualizationViewTableVO> result;
         List<VisualizationOutParamsJumpVO> outParamsJumpInfos;
         String componentData;
@@ -226,7 +226,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
                     .where(coreChartView.sceneId.eq(dvId))
                     .where(coreChartView.type.ne("VQuery"))
                     .where(coreChartView.tableId.isNotNull())
-                    .where(dataVisualizationInfo.id.eq(dvId.toString()))
+                    .where(dataVisualizationInfo.id.eq(dvId))
                     .where(dataVisualizationInfo.componentData.contains(coreChartView.id.toString())).fetch();
 
             componentData = dvInfo.getComponentData();

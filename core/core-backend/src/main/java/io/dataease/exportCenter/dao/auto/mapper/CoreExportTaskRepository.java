@@ -1,24 +1,35 @@
 package io.dataease.exportCenter.dao.auto.mapper;
 
-import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 public interface CoreExportTaskRepository extends JpaRepository<CoreExportTask, String>, JpaSpecificationExecutor<CoreExportTask> {
 
-    @Query("SELECT COUNT(et) FROM CoreExportTask et WHERE et.userId = :userId AND et.exportStatus = :exportStatus")
-    long countByUserIdAndExportStatus(Long userId, String exportStatus);
+    default long countByUserIdAndExportStatus(Long userId, String exportStatus) {
+        Specification<CoreExportTask> spec = (root, query, cb) ->
+                cb.and(cb.equal(root.get("userId"), userId), cb.equal(root.get("exportStatus"), exportStatus));
+        return count(spec);
+    }
 
-    @Query("SELECT COUNT(et) FROM CoreExportTask et WHERE et.userId = :userId")
-    long countByUserId(Long userId);
+    default long countByUserId(Long userId) {
+        Specification<CoreExportTask> spec = (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("userId"), userId);
+        return count(spec);
+    }
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM CoreExportTask cdtl WHERE cdtl.exportTime < :threshold")
-    void deleteByExportTimeLessThan(long threshold);
+    default void deleteByExportTimeLessThan(long threshold) {
+        Specification<CoreExportTask> spec = (root, query, cb) ->
+                cb.lessThan(root.get("exportTime"), threshold);
+        List<CoreExportTask> tasks = findAll(spec);
+        if (!tasks.isEmpty()) {
+            deleteAll(tasks);
+        }
+    }
 }

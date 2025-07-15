@@ -118,7 +118,7 @@ public class CoreVisualizationManage {
                                 dataVisualizationInfo.status.as("extraFlag1")))
                 .from(dataVisualizationInfo)
                 .where(dataVisualizationInfo.deleteFlag.eq(false))
-                .where(dataVisualizationInfo.pid.eq("-1"))
+                .where(dataVisualizationInfo.pid.eq(-1L))
                 .where(dataVisualizationInfo.type.eq(request.getBusiFlag()))
                 .orderBy(dataVisualizationInfo.createTime.desc());
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
@@ -142,7 +142,7 @@ public class CoreVisualizationManage {
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void delete(Long id) {
-        DataVisualizationInfo info = dataVisualizationInfoRepository.findById(String.valueOf(id)).orElse(null);
+        DataVisualizationInfo info = dataVisualizationInfoRepository.findById(id).orElse(null);
         if (ObjectUtils.isEmpty(info)) {
             DEException.throwException("resource not exist");
         }
@@ -166,9 +166,7 @@ public class CoreVisualizationManage {
         }
         // 删除可视化资源
         snapshotDataVisualizationInfoRepository.deleteAllByIdInBatch(delIds);
-        dataVisualizationInfoRepository.deleteAllByIdInBatch(delIds.stream()
-                .map(Object::toString)
-                .collect(Collectors.toList()));
+        dataVisualizationInfoRepository.deleteAllByIdInBatch(delIds);
 
         // 删除图表信息
         coreChartViewRepository.deleteBySceneIds(delIds);
@@ -204,7 +202,7 @@ public class CoreVisualizationManage {
     public Long preInnerSave(DataVisualizationInfo visualizationInfo) {
         if (visualizationInfo.getId() == null) {
             Long id = IDUtils.snowID();
-            visualizationInfo.setId(String.valueOf(id));
+            visualizationInfo.setId(id);
         }
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
         visualizationInfo.setStatus(visualizationInfo.getStatus());
@@ -212,7 +210,7 @@ public class CoreVisualizationManage {
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setCreateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
-        visualizationInfo.setOrgId(String.valueOf(AuthUtils.getUser().getDefaultOid()));
+        visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
         dataVisualizationInfoRepository.saveAndFlush(visualizationInfo);
         // 镜像文件插入
         SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
@@ -303,8 +301,8 @@ public class CoreVisualizationManage {
             snapshotDataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds);
 
             snapshotCoreChartViewRepository.deleteBySceneId(dvId);
-            snapshotVisualizationLinkageRepository.deleteViewLinkageFieldSnapshot(dvId, null);
-            snapshotVisualizationLinkageRepository.deleteViewLinkageSnapshot(dvId, null);
+            deleteViewLinkageFieldSnapshot(dvId, null);
+            deleteViewLinkageSnapshot(dvId, null);
             visualizationLinkJumpRepository.deleteBySourceDvId(dvId);
             QSnapshotVisualizationLinkJump snapshotVisualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
             QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
@@ -349,21 +347,61 @@ public class CoreVisualizationManage {
         }
     }
 
+    public void deleteViewLinkageFieldSnapshot(Long dvId, Long sourceViewId) {
+        QSnapshotVisualizationLinkage snapshotVisualizationLinkage = QSnapshotVisualizationLinkage.snapshotVisualizationLinkage;
+        QSnapshotVisualizationLinkageField snapshotVisualizationLinkageField = QSnapshotVisualizationLinkageField.snapshotVisualizationLinkageField;
+
+        List<Long> linkageIds = queryFactory.select(snapshotVisualizationLinkage.id)
+                .from(snapshotVisualizationLinkage)
+                .where(
+                        sourceViewId == null
+                                ? snapshotVisualizationLinkage.dvId.eq(dvId)
+                                : snapshotVisualizationLinkage.dvId.eq(dvId).and(snapshotVisualizationLinkage.sourceViewId.eq(sourceViewId))
+                )
+                .fetch();
+        if (CollectionUtils.isEmpty(linkageIds)) {
+            return;
+        }
+        queryFactory.delete(snapshotVisualizationLinkageField)
+                .where(snapshotVisualizationLinkageField.linkageId.in(linkageIds))
+                .execute();
+    }
+
+    public void deleteViewLinkageSnapshot(Long dvId, Long sourceViewId) {
+        QSnapshotVisualizationLinkage snapshotVisualizationLinkage = QSnapshotVisualizationLinkage.snapshotVisualizationLinkage;
+        queryFactory.delete(snapshotVisualizationLinkage)
+                .where(
+                        sourceViewId == null
+                                ? snapshotVisualizationLinkage.dvId.eq(dvId)
+                                : snapshotVisualizationLinkage.dvId.eq(dvId).and(snapshotVisualizationLinkage.sourceViewId.eq(sourceViewId))
+                )
+                .execute();
+    }
+
     @Transactional
     public void removeDvCore(Long dvId) {
         if (dvId != null) {
             // 清理历史数据
             Set<Long> dvIds = new HashSet<>();
             dvIds.add(dvId);
-            dataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds.stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toList()));
+            dataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds);
             coreChartViewRepository.deleteBySceneId(dvId);
             List<VisualizationLinkage> visualizationLinkages = visualizationLinkageRepository.findByDvId(dvId);
             if (CollectionUtils.isNotEmpty(visualizationLinkages)) {
                 visualizationLinkageFieldRepository.deleteByLinkageIds(visualizationLinkages.stream().map(VisualizationLinkage::getId).collect(Collectors.toList()));
             }
-            visualizationLinkageRepository.deleteViewLinkageField(dvId, null);
+            QVisualizationLinkage qVisualizationLinkage = QVisualizationLinkage.visualizationLinkage;
+            List<Long> linkageIds = queryFactory.select(qVisualizationLinkage.id)
+                    .from(qVisualizationLinkage)
+                    .where(qVisualizationLinkage.dvId.eq(dvId))
+                    .fetch();
+            if (CollectionUtils.isEmpty(linkageIds)) {
+                return;
+            }
+            QVisualizationLinkageField qVisualizationLinkageField = QVisualizationLinkageField.visualizationLinkageField;
+            queryFactory.delete(qVisualizationLinkageField)
+                    .where(qVisualizationLinkageField.linkageId.in(linkageIds))
+                    .execute();
             visualizationLinkageRepository.deleteByDvId(dvId);
 
             QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
@@ -418,7 +456,7 @@ public class CoreVisualizationManage {
         CoreVisualizationManage proxy = CommonBeanFactory.proxy(this.getClass());
         assert proxy != null;
         proxy.removeSnapshot(dvId);
-        dataVisualizationInfoRepository.findById(dvId.toString()).ifPresent(visualizationInfo -> {
+        dataVisualizationInfoRepository.findById(dvId).ifPresent(visualizationInfo -> {
             SnapshotDataVisualizationInfo snapshotDataVisualizationInfo = new SnapshotDataVisualizationInfo();
             BeanUtils.copyBean(snapshotDataVisualizationInfo, visualizationInfo);
             snapshotDataVisualizationInfoRepository.saveAndFlush(snapshotDataVisualizationInfo);
@@ -672,7 +710,7 @@ public class CoreVisualizationManage {
                         snapshotVisualizationOuterParamsTargetViewInfo.targetDsId
                 )).from(snapshotVisualizationOuterParamsTargetViewInfo)
                 .leftJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
-                .leftJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
+                .leftJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParams.paramsId.eq(snapshotVisualizationOuterParamsInfo.paramsId))
                 .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(item -> {
                     VisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = new VisualizationOuterParamsTargetViewInfo();
                     BeanUtils.copyBean(visualizationOuterParamsTargetViewInfo, item);
@@ -788,5 +826,4 @@ public class CoreVisualizationManage {
     }
 
 }
-
 

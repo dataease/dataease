@@ -1,8 +1,11 @@
 package io.dataease.dataset.manage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dao.auto.entity.CoreDatasetTableField;
+import io.dataease.dao.auto.entity.QCoreChartView;
+import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.TableUtils;
@@ -41,6 +44,11 @@ import java.util.stream.Collectors;
 @Component
 @Transactional
 public class DatasetTableFieldManage {
+    public DatasetTableFieldManage(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
+
+    private final JPAQueryFactory queryFactory;
     @Resource
     private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
     @Resource
@@ -332,7 +340,15 @@ public class DatasetTableFieldManage {
     }
 
     public List<DatasetTableFieldDTO> queryTableFieldWithViewId(Long viewId) {
-        return coreDatasetTableFieldRepository.findByViewId(viewId).stream()
+        QCoreDatasetTableField qCoreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
+        QCoreChartView qCoreChartView = QCoreChartView.coreChartView;
+        List<CoreDatasetTableField> result = queryFactory
+                .select(qCoreDatasetTableField)
+                .from(qCoreDatasetTableField)
+                .leftJoin(qCoreChartView).on(qCoreDatasetTableField.datasetTableId.eq(qCoreChartView.tableId))
+                .where(qCoreChartView.id.eq(viewId))
+                .fetch();
+        return result.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }

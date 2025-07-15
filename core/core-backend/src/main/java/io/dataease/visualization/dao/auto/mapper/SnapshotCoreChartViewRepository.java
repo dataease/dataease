@@ -1,12 +1,10 @@
 package io.dataease.visualization.dao.auto.mapper;
 
 
-import io.dataease.dao.auto.entity.CoreChartView;
 import io.dataease.visualization.dao.auto.entity.SnapshotCoreChartView;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,19 +13,31 @@ import java.util.Set;
 
 public interface SnapshotCoreChartViewRepository extends JpaRepository<SnapshotCoreChartView, Long>, JpaSpecificationExecutor<SnapshotCoreChartView> {
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM SnapshotCoreChartView c WHERE c.sceneId = :sceneId ")
-    void deleteBySceneId(Long sceneId);
+    default void deleteBySceneId(Long sceneId) {
+        Specification<SnapshotCoreChartView> spec = (root, query, cb) ->
+                cb.equal(root.get("sceneId"), sceneId);
+        List<SnapshotCoreChartView> entities = findAll(spec);
+        if (!entities.isEmpty()) {
+            deleteAll(entities);
+        }
+    }
 
-    @Query("SELECT c FROM SnapshotCoreChartView c WHERE c.sceneId = :sceneId")
-    List<SnapshotCoreChartView> findBySceneId(Long sceneId);
+    default List<SnapshotCoreChartView> findBySceneId(Long sceneId) {
+        Specification<SnapshotCoreChartView> spec = (root, query, cb) ->
+                cb.equal(root.get("sceneId"), sceneId);
+        return findAll(spec);
+    }
 
-
-    @Modifying
     @Transactional
-    @Query("DELETE FROM SnapshotCoreChartView c WHERE c.sceneId IN :sceneIds ")
-    void deleteBySceneIds(Set<Long> sceneIds);
+    default void deleteBySceneIds(Set<Long> sceneIds) {
+        Specification<SnapshotCoreChartView> spec = (root, query, cb) ->
+                root.get("sceneId").in(sceneIds);
+        List<SnapshotCoreChartView> entities = findAll(spec);
+        if (!entities.isEmpty()) {
+            deleteAll(entities);
+        }
+    }
 
     List<SnapshotCoreChartView> findByIdInAndTypeNot(List<Long> ids, String type);
 }

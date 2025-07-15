@@ -1,10 +1,9 @@
 package io.dataease.template.dao.auto.mapper;
 
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -12,20 +11,33 @@ import java.util.List;
 
 public interface VisualizationTemplateRepository extends JpaRepository<VisualizationTemplate, String>, JpaSpecificationExecutor<VisualizationTemplate> {
 
-    @Modifying
     @Transactional
-    @Query("UPDATE VisualizationTemplate vt SET vt.useCount = 0")
-    void updateUseCountToZero();
+    default void updateUseCountToZero() {
+        List<VisualizationTemplate> templates = findAll();
+        for (VisualizationTemplate template : templates) {
+            template.setUseCount(0);
+        }
+        saveAllAndFlush(templates);
+    }
 
-    @Modifying
     @Transactional
-    @Query(value = "DELETE FROM VisualizationTemplate WHERE name = :name")
-    int deleteByTemplateName(String name);
+    default void deleteByTemplateName(String name) {
+        Specification<VisualizationTemplate> spec = (root, query, cb) ->
+                cb.equal(root.get("name"), name);
+        List<VisualizationTemplate> templates = findAll(spec);
+        if (!templates.isEmpty()) {
+            deleteAll(templates);
+        }
+    }
 
-    @Modifying
     @Transactional
-    @Query("UPDATE VisualizationTemplate vt SET vt.version = 2")
-    void updateVersion();
+    default void updateVersion() {
+        List<VisualizationTemplate> templates = findAll();
+        for (VisualizationTemplate template : templates) {
+            template.setVersion(2);
+        }
+        saveAllAndFlush(templates);
+    }
 
     List<VisualizationTemplate> findByName(String name);
 }

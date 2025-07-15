@@ -12,7 +12,6 @@ import io.dataease.api.xpack.share.vo.TicketValidVO;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.dao.auto.entity.QDataVisualizationInfo;
@@ -34,7 +33,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,7 +112,7 @@ public class XpackShareManage {
         String dType = queryFactory
                 .select(qVisualization.type)
                 .from(qVisualization)
-                .where(qVisualization.id.eq(String.valueOf(resourceId)))
+                .where(qVisualization.id.eq(resourceId))
                 .fetchOne();
         xpackShare.setType(StringUtils.equalsIgnoreCase("dataV", dType) ? 2 : 1);
         xpackShareRepository.saveAndFlush(xpackShare);
@@ -193,7 +195,7 @@ public class XpackShareManage {
                         )
 
                 ).from(xpackShare)
-                .join(dataVisualizationInfo).on(dataVisualizationInfo.id.eq(String.valueOf(xpackShare.resourceId)))
+                .join(dataVisualizationInfo).on(dataVisualizationInfo.id.eq(xpackShare.resourceId))
                 .where(xpackShare.creator.eq(uid));
         if (StringUtils.isNotBlank(request.getType())) {
             BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());

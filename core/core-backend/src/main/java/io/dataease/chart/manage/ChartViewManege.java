@@ -162,7 +162,7 @@ public class ChartViewManege {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        List<CoreChartView> result = coreChartViewRepository.findAll(spec);
+//        List<CoreChartView> result = coreChartViewRepository.findAll(spec);
         List<CoreChartView> coreChartViews;
         if (resourceTable.equalsIgnoreCase("snapshot")) {
             coreChartViews = coreChartViewRepository.findBySceneId(sceneId);
@@ -405,7 +405,7 @@ public class ChartViewManege {
                             )
                     )
                     .from(coreChartView)
-                    .join(dataVisualizationInfo).on(dataVisualizationInfo.id.eq(String.valueOf(coreChartView.sceneId)))
+                    .join(dataVisualizationInfo).on(dataVisualizationInfo.id.eq(coreChartView.sceneId))
                     .where(coreChartView.id.eq(id));
             po = jpaQuery.fetchFirst();
         }
@@ -566,7 +566,7 @@ public class ChartViewManege {
             vo.setType(coreChartView.getType());
             return vo;
         }).toList();
-        DataVisualizationInfo dvInfo = dataVisualizationInfoRepository.findById(String.valueOf(resourceId)).orElse(null);
+        DataVisualizationInfo dvInfo = dataVisualizationInfoRepository.findById(resourceId).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
             String componentData = dvInfo.getComponentData();
             return result.stream().filter(item -> componentData.indexOf(String.valueOf(item.getId())) > 0).toList();

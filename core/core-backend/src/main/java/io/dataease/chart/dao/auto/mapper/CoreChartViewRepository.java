@@ -2,11 +2,9 @@ package io.dataease.chart.dao.auto.mapper;
 
 
 import io.dataease.dao.auto.entity.CoreChartView;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,38 +13,65 @@ import java.util.Set;
 
 public interface CoreChartViewRepository extends JpaRepository<CoreChartView, Long>, JpaSpecificationExecutor<CoreChartView> {
 
-    @Query("SELECT COUNT(DISTINCT c.tableId) FROM CoreChartView c WHERE c.id IN :ids")
-    Long countDistinctTableIdByIdIn(List<String> ids);
+    default Long countDistinctTableIdByIdIn(List<String> ids) {
+        Specification<CoreChartView> spec = (root, query, cb) ->
+                cb.and(
+                        root.get("id").in(ids),
+                        cb.isNotNull(root.get("tableId"))
+                );
+        return count(spec);
+    }
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM CoreChartView c WHERE c.sceneId = :sceneId AND c.id NOT IN :chartIds")
-    void deleteBySceneIdAndNotInIds(Long sceneId, List<Long> chartIds);
+    default void deleteBySceneIdAndNotInIds(Long sceneId, List<Long> chartIds) {
+        Specification<CoreChartView> spec = (root, query, cb) ->
+                cb.and(
+                        cb.equal(root.get("sceneId"), sceneId),
+                        root.get("id").in(chartIds).not()
+                );
+        List<CoreChartView> views = findAll(spec);
+        if (!views.isEmpty()) {
+            deleteAll(views);
+        }
+    }
 
-    @Query("SELECT c FROM CoreChartView c WHERE c.type = 'table-pivot'")
-    List<CoreChartView> findAllTablePivotViews();
+    default List<CoreChartView> findAllTablePivotViews() {
+        Specification<CoreChartView> spec = (root, query, cb) ->
+                cb.equal(root.get("type"), "table-pivot");
+        return findAll(spec);
+    }
 
-    @Modifying
-    @Query("UPDATE CoreChartView c SET c.xAxis = :newXAxis, c.xAxisExt = :newXAxisExt WHERE c.id = :id")
-    void updateAxes(@Param("id") Long id,
-                    @Param("newXAxis") String newXAxis,
-                    @Param("newXAxisExt") String newXAxisExt);
-
-    @Modifying
     @Transactional
-    @Query("DELETE FROM CoreChartView c WHERE c.sceneId = :sceneId ")
-    void deleteBySceneId(Long sceneId);
+    default void deleteBySceneId(Long sceneId) {
+        Specification<CoreChartView> spec = (root, query, cb) ->
+                cb.equal(root.get("sceneId"), sceneId);
+        List<CoreChartView> views = findAll(spec);
+        if (!views.isEmpty()) {
+            deleteAll(views);
+        }
+    }
 
-    @Query("SELECT c FROM CoreChartView c WHERE c.sceneId = :sceneId")
-    List<CoreChartView> findBySceneId(Long sceneId);
+    default List<CoreChartView> findBySceneId(Long sceneId) {
+        Specification<CoreChartView> spec = (root, query, cb) ->
+                cb.equal(root.get("sceneId"), sceneId);
+        return findAll(spec);
+    }
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM CoreChartView c WHERE c.sceneId IN :sceneIds ")
-    void deleteBySceneIds(Set<Long> sceneIds);
+    default void deleteBySceneIds(Set<Long> sceneIds) {
+        Specification<CoreChartView> spec = (root, query, cb) ->
+                root.get("sceneId").in(sceneIds);
+        List<CoreChartView> views = findAll(spec);
+        if (!views.isEmpty()) {
+            deleteAll(views);
+        }
+    }
 
-    @Query("SELECT c FROM CoreChartView c WHERE c.copyId = :copyId")
-    List<CoreChartView> findViewInfoByCopyId(Long copyId);
+    default List<CoreChartView> findViewInfoByCopyId(Long copyId) {
+        Specification<CoreChartView> spec = (root, query, cb) ->
+                cb.equal(root.get("copyId"), copyId);
+        return findAll(spec);
+    }
 
     List<CoreChartView> findByIdInAndTypeNot(List<Long> ids, String type);
 }

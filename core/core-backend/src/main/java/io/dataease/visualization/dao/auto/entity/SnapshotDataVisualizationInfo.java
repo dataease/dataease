@@ -13,9 +13,8 @@ import org.hibernate.annotations.Comment;
 @Table(name = "snapshot_data_visualization_info")
 public class SnapshotDataVisualizationInfo {
     @Id
-    @Size(max = 50)
     @Comment("主键")
-    @Column(name = "id", nullable = false, length = 50)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Size(max = 255)
@@ -23,14 +22,12 @@ public class SnapshotDataVisualizationInfo {
     @Column(name = "name")
     private String name;
 
-    @Size(max = 50)
     @Comment("父id")
-    @Column(name = "pid", length = 50)
+    @Column(name = "pid")
     private Long pid;
 
-    @Size(max = 50)
     @Comment("所属组织id")
-    @Column(name = "org_id", length = 50)
+    @Column(name = "org_id")
     private Long orgId;
 
     @Comment("层级")

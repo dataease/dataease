@@ -10,8 +10,13 @@ import io.dataease.auth.DeLinkPermit;
 import io.dataease.constant.CommonConstants;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
-import io.dataease.visualization.dao.auto.entity.*;
-import io.dataease.visualization.dao.auto.mapper.*;
+import io.dataease.visualization.dao.auto.entity.SnapshotCoreChartView;
+import io.dataease.visualization.dao.auto.entity.SnapshotVisualizationLinkage;
+import io.dataease.visualization.dao.auto.entity.SnapshotVisualizationLinkageField;
+import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewRepository;
+import io.dataease.visualization.dao.auto.mapper.SnapshotVisualizationLinkageFieldRepository;
+import io.dataease.visualization.dao.auto.mapper.SnapshotVisualizationLinkageRepository;
+import io.dataease.visualization.manage.CoreVisualizationManage;
 import io.dataease.visualization.manage.VisualizationLinkageManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,6 +46,8 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     private SnapshotCoreChartViewRepository snapshotCoreChartViewRepository;
     @Resource
     private VisualizationLinkageManage visualizationLinkageManage;
+    @Resource
+    private CoreVisualizationManage coreVisualizationManage;
 
     @Override
     public Map<String, VisualizationLinkageDTO> getViewLinkageGather(VisualizationLinkageRequest request) {
@@ -78,8 +85,8 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
         Assert.notNull(dvId, "dvId can not be null");
 
         // 清理原有关系
-        snapshotVisualizationLinkageRepository.deleteViewLinkageFieldSnapshot(dvId, sourceViewId);
-        snapshotVisualizationLinkageRepository.deleteViewLinkageSnapshot(dvId, sourceViewId);
+        coreVisualizationManage.deleteViewLinkageFieldSnapshot(dvId, sourceViewId);
+        coreVisualizationManage.deleteViewLinkageSnapshot(dvId, sourceViewId);
 
         //重新建立关系
         for (VisualizationLinkageDTO linkageDTO : linkageInfo) {
@@ -135,7 +142,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     @Override
     public void removeLinkage(VisualizationLinkageRequest request) {
         // 清理原有关系
-        snapshotVisualizationLinkageRepository.deleteViewLinkageFieldSnapshot(request.getDvId(), request.getSourceViewId());
-        snapshotVisualizationLinkageRepository.deleteViewLinkageSnapshot(request.getDvId(), request.getSourceViewId());
+        coreVisualizationManage.deleteViewLinkageFieldSnapshot(request.getDvId(), request.getSourceViewId());
+        coreVisualizationManage.deleteViewLinkageSnapshot(request.getDvId(), request.getSourceViewId());
     }
 }

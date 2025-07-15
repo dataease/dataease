@@ -2,10 +2,9 @@ package io.dataease.visualization.dao.auto.mapper;
 
 
 import io.dataease.visualization.dao.auto.entity.SnapshotVisualizationOuterParamsInfo;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -13,9 +12,14 @@ import java.util.List;
 
 public interface SnapshotVisualizationOuterParamsInfoRepository extends JpaRepository<SnapshotVisualizationOuterParamsInfo, Long>, JpaSpecificationExecutor<SnapshotVisualizationOuterParamsInfo> {
 
-    @Modifying
     @Transactional
-    @Query("DELETE FROM SnapshotVisualizationOuterParamsInfo c WHERE c.paramsId IN :paramsIds ")
-    void deleteByParamsIds(List<String> paramsIds);
+    default void deleteByParamsIds(List<String> paramsIds) {
+        Specification<SnapshotVisualizationOuterParamsInfo> spec = (root, query, cb) ->
+                cb.and(cb.in(root.get("paramsId")).value(paramsIds));
+        List<SnapshotVisualizationOuterParamsInfo> entities = findAll(spec);
+        if (!entities.isEmpty()) {
+            deleteAll(entities);
+        }
+    }
 
 }

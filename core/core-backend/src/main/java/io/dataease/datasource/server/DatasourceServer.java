@@ -586,7 +586,9 @@ public class DatasourceServer implements DatasourceApi {
             if (types.isEmpty()) {
                 return list;
             } else {
-                dsList = coreDatasourceRepository.findInTypes(types);
+                Specification<CoreDatasource> findInTypesSpec = (root, query, cb) ->
+                        root.get("type").in(types);
+                dsList = coreDatasourceRepository.findAll(findInTypesSpec);
             }
         }
 
@@ -698,7 +700,9 @@ public class DatasourceServer implements DatasourceApi {
         }
 
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
-            List<CoreDatasource> coreDatasources = coreDatasourceRepository.findByPid(datasourceId);
+            Specification<CoreDatasource> findByPidSpec = (root, query, cb) ->
+                    cb.equal(root.get("pid"), datasourceId);
+            List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll(findByPidSpec);
             if (ObjectUtils.isNotEmpty(coreDatasources)) {
                 for (CoreDatasource record : coreDatasources) {
                     delete(record.getId());
@@ -1110,8 +1114,12 @@ public class DatasourceServer implements DatasourceApi {
         List<String> types = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         org.springframework.data.domain.Pageable pageableWithSort = PageRequest.of(0, 5, sort);
-
-        List<CoreDatasource> coreDatasources = coreDatasourceRepository.findCoreDatasourcesByCreateBy(AuthUtils.getUser().getUserId(), pageableWithSort);
+        Specification<CoreDatasource> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("createBy"), AuthUtils.getUser().getUserId()));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll(spec, pageableWithSort).getContent();
         if (CollectionUtils.isEmpty(coreDatasources)) {
             return types;
         }
@@ -1158,7 +1166,12 @@ public class DatasourceServer implements DatasourceApi {
 
 
     public void updateDatasourceStatus() {
-        List<CoreDatasource> datasources = coreDatasourceRepository.findTypeNotIn(Arrays.asList("Excel", "folder"));
+        Specification<CoreDatasource> findTypeNotInSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.not(root.get("type").in(Arrays.asList("Excel", "folder"))));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<CoreDatasource> datasources = coreDatasourceRepository.findAll(findTypeNotInSpec);
         datasources.forEach(datasource -> {
             if (!syncDsIds.contains(datasource.getId())) {
                 syncDsIds.add(datasource.getId());
