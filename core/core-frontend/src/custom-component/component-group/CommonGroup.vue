@@ -96,12 +96,6 @@ const findUrl = name => {
               class-name="item-top-icon"
               ><component class="svg-icon item-top-icon" :is="chartInfo.icon"></component
             ></Icon>
-            <img
-              v-else-if="['dynamic_background'].includes(chartInfo.type)"
-              class="item-top-icon"
-              :src="findUrl(chartInfo.icon)"
-              alt=""
-            />
             <DeDecoration
               :curStyle="{ width: 530, height: 373 }"
               :element="{ innerType: chartInfo.value }"

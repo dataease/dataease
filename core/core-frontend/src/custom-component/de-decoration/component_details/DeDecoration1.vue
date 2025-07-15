@@ -103,13 +103,13 @@ const props = withDefaults(defineProps<Props>(), {
 const width = computed(() => props.curStyle.width)
 const height = computed(() => props.curStyle.height)
 
-const border_style = computed(() => {
-  return {
-    width: `${width.value}px`,
-    height: `${height.value}px`,
-    zoom: props.scale
-  }
-})
+const border_style = computed(() => ({
+  width: `${width.value}px`,
+  height: `${height.value}px`,
+  transform: `scale(${props.scale})`,
+  'transform-origin': '0 0',
+  'will-change': 'transform' // 提示浏览器优化
+}))
 
 const pointSideLength = 2.5
 const refName = ref('decoration-1')
@@ -183,11 +183,20 @@ watch([width, height], () => {
 
 <style lang="less">
 .dv-decoration-1 {
+  position: relative;
   width: 100%;
   height: 100%;
+  /* 启用硬件加速 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: content; /* 限制重绘范围 */
 
   svg {
+    position: absolute;
     transform-origin: left top;
+    /* 优化SVG渲染 */
+    shape-rendering: optimizeSpeed;
+    pointer-events: none;
   }
 }
 </style>

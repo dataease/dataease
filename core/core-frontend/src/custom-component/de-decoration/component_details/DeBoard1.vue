@@ -100,7 +100,8 @@ const border_style = computed(() => {
   return {
     width: `${width.value}px`,
     height: `${height.value}px`,
-    zoom: props.scale
+    transform: `scale(${props.scale})`,
+    'transform-origin': '0 0'
   }
 })
 
@@ -119,33 +120,43 @@ onMounted(() => {
 <style lang="less">
 .dv-border-box-1 {
   position: relative;
-  width: 100%;
-  height: 100%;
+  /* 启用硬件加速 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform; // 提示浏览器准备变换
+
   .border {
     position: absolute;
     display: block;
+    /* 优化SVG渲染 */
+    shape-rendering: optimizeSpeed;
+    /* 禁用鼠标事件提高性能 */
+    pointer-events: none;
   }
 
+  /* 保持原有角标定位不变 */
   .right-top {
     right: 0px;
-    transform: rotateY(180deg);
+    transform: rotateY(180deg) translateZ(0); // 添加硬件加速
   }
 
   .left-bottom {
     bottom: 0px;
-    transform: rotateX(180deg);
+    transform: rotateX(180deg) translateZ(0); // 添加硬件加速
   }
 
   .right-bottom {
     right: 0px;
     bottom: 0px;
-    transform: rotateX(180deg) rotateY(180deg);
+    transform: rotateX(180deg) rotateY(180deg) translateZ(0); // 添加硬件加速
   }
 
   .border-box-content {
     position: relative;
     width: 100%;
     height: 100%;
+    /* 创建新的层叠上下文 */
+    isolation: isolate;
   }
 }
 </style>

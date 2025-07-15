@@ -502,7 +502,7 @@ const list = [
     style: {
       width: 400,
       height: 300,
-      color0: '#2862b7',
+      color0: '#298e73',
       color1: '#2862b7',
       color2: '#2862b7',
       dur: 6,

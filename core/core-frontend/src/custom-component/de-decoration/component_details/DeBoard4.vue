@@ -1,3 +1,49 @@
+<script lang="tsx" setup>
+import { ref, watch, onMounted, computed } from 'vue'
+import { customMergeColor } from '@/custom-component/de-decoration/component_details/config'
+import { cloneDeep } from 'lodash-es'
+
+interface Props {
+  color?: string[]
+  backgroundColor?: string
+  curStyle: { width: number; height: number }
+  scale: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  color: () => [],
+  backgroundColor: 'transparent',
+  curStyle: () => ({
+    width: 320,
+    height: 240
+  })
+})
+
+const width = computed(() => props.curStyle.width)
+const height = computed(() => props.curStyle.height)
+const reverse = computed(() => false)
+
+const defaultColor = ref(['#805151', '#2862b7'])
+const mergedColor = ref<string[]>([])
+
+const mergeColor = () => {
+  mergedColor.value = customMergeColor(cloneDeep(defaultColor.value), props.color)
+}
+
+const border_style = computed(() => {
+  return {
+    width: `${width.value}px`,
+    height: `${height.value}px`,
+    transform: `scale(${props.scale})`,
+    'transform-origin': '0 0',
+    'will-change': 'transform' // 提示浏览器准备变换
+  }
+})
+
+watch(() => props.color, mergeColor, { immediate: true })
+onMounted(mergeColor)
+</script>
+
 <template>
   <div class="dv-border-box-4" :style="border_style" :ref="ref">
     <svg
@@ -58,83 +104,40 @@
   </div>
 </template>
 
-<script lang="tsx" setup>
-import { ref, watch, onMounted, computed } from 'vue'
-interface Props {
-  color?: string[]
-  backgroundColor?: string
-  curStyle: object
-  scale: number
-}
-const props = withDefaults(defineProps<Props>(), {
-  color: () => [],
-  backgroundColor: 'transparent',
-  curStyle: () => {
-    return {
-      width: 320,
-      height: 240
-    }
-  }
-})
-
-const width = computed(() => props.curStyle.width)
-const height = computed(() => props.curStyle.height)
-
-const reverse = computed(() => false)
-
-const defaultColor = ref(['#2862b7', '#2862b7'])
-const mergedColor = ref<string[]>([])
-import { cloneDeep } from 'lodash-es'
-import { customMergeColor } from '@/custom-component/de-decoration/component_details/config'
-
-const mergeColor = () => {
-  mergedColor.value = customMergeColor(cloneDeep(defaultColor.value), props.color)
-}
-
-const border_style = computed(() => {
-  return {
-    width: `${width.value}px`,
-    height: `${height.value}px`,
-    zoom: props.scale
-  }
-})
-
-watch(
-  () => props.color,
-  () => {
-    mergeColor()
-  }
-)
-
-onMounted(() => {
-  mergeColor()
-})
-</script>
-
 <style lang="less">
 .dv-border-box-4 {
   position: relative;
   width: 100%;
   height: 100%;
+  /* 启用硬件加速 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: content; /* 限制重绘范围 */
 
   .dv-reverse {
     transform: rotate(180deg);
+    transform-origin: center;
   }
 
   .dv-border-svg-container {
     position: absolute;
     width: 100%;
     height: 100%;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
+    /* 优化SVG渲染 */
+    shape-rendering: crispEdges;
+    pointer-events: none; /* 禁用鼠标事件 */
 
     & > polyline {
       fill: none;
+      vector-effect: non-scaling-stroke; /* 保持线条宽度不受缩放影响 */
     }
   }
 
   .sw1 {
     stroke-width: 1;
+    stroke-linecap: butt;
   }
 
   .sw3 {
@@ -144,50 +147,67 @@ onMounted(() => {
 
   .dv-bb4-line-1 {
     .sw1;
+    stroke-dasharray: none;
   }
 
   .dv-bb4-line-2 {
     .sw1;
+    stroke-dasharray: none;
   }
 
   .dv-bb4-line-3 {
     .sw3;
+    stroke-dasharray: none;
   }
 
   .dv-bb4-line-4 {
     .sw3;
+    stroke-dasharray: none;
   }
 
   .dv-bb4-line-5 {
     .sw1;
+    stroke-dasharray: 2 2; /* 添加虚线效果 */
   }
 
   .dv-bb4-line-6 {
     .sw1;
+    stroke-dasharray: 2 2; /* 添加虚线效果 */
   }
 
   .dv-bb4-line-7 {
     .sw1;
+    stroke-dasharray: none;
   }
 
   .dv-bb4-line-8 {
     .sw3;
+    stroke-dasharray: none;
   }
 
   .dv-bb4-line-9 {
     .sw3;
-    stroke-dasharray: 100 250;
+    stroke-dasharray: 10 5; /* 优化虚线样式 */
+    animation: dash-animation 3s linear infinite;
   }
 
   .dv-bb4-line-10 {
     .sw1;
-    stroke-dasharray: 80 270;
+    stroke-dasharray: 8 6; /* 优化虚线样式 */
+    animation: dash-animation 3s linear infinite reverse;
   }
 
   .border-box-content {
     position: relative;
     width: 100%;
     height: 100%;
+    isolation: isolate; /* 创建新的层叠上下文 */
+  }
+}
+
+@keyframes dash-animation {
+  to {
+    stroke-dashoffset: 15;
   }
 }
 </style>

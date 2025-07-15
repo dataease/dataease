@@ -166,37 +166,6 @@ export const CANVAS_MATERIAL = [
     ]
   },
   {
-    category: 'DynamicBackground',
-    title: t('visualization.dynamic_background'),
-    span: 8,
-    details: [
-      {
-        value: 'dynamic_background1.gif',
-        type: 'dynamic_background',
-        title: t('visualization.dynamic_background_name', [1]),
-        icon: 'dynamic_background1.gif'
-      },
-      {
-        value: 'dynamic_background2.gif',
-        type: 'dynamic_background',
-        title: t('visualization.dynamic_background_name', [2]),
-        icon: 'dynamic_background2.gif'
-      },
-      {
-        value: 'dynamic_background3.gif',
-        type: 'dynamic_background',
-        title: t('visualization.dynamic_background_name', [2]),
-        icon: 'dynamic_background3.gif'
-      },
-      {
-        value: 'dynamic_background4.gif',
-        type: 'dynamic_background',
-        title: t('visualization.dynamic_background_name', [2]),
-        icon: 'dynamic_background4.gif'
-      }
-    ]
-  },
-  {
     category: 'DeGraphical',
     title: t('visualization.graphic'),
     span: 8,
