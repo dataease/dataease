@@ -64,7 +64,8 @@ export const getData = async (data): Promise<IResponse> => {
     'extBubble',
     'extLabel',
     'extStack',
-    'extTooltip'
+    'extTooltip',
+    'extColor'
   ]
   const dataFields = ['fields', 'sourceFields']
   originNameHandleWithArr(copyData, fields)

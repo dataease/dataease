@@ -35,7 +35,7 @@ public class CoreSqlBlockV2_10_3 implements CoreSqlBlock {
         CoreSysSetting coreSysSetting1 = new CoreSysSetting();
         coreSysSetting1.setId(1048232869488627719L);
         coreSysSetting1.setPkey("basic.defaultSort");
-        coreSysSetting1.setPval("true");
+        coreSysSetting1.setPval("1");
         coreSysSetting1.setType("text");
         coreSysSetting1.setSort(13);
         CoreSysSetting coreSysSetting2 = new CoreSysSetting();

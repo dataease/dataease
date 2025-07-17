@@ -117,8 +117,8 @@ public class CoreVisualizationManage {
                                 dataVisualizationInfo.mobileLayout.castToNum(Integer.class).as("extraFlag"),
                                 dataVisualizationInfo.status.as("extraFlag1")))
                 .from(dataVisualizationInfo)
-                .where(dataVisualizationInfo.deleteFlag.eq(false))
-                .where(dataVisualizationInfo.pid.eq(-1L))
+                .where(dataVisualizationInfo.deleteFlag.eq(false).or(dataVisualizationInfo.deleteFlag.isNull()))
+                .where(dataVisualizationInfo.pid.ne(-1L))
                 .where(dataVisualizationInfo.type.eq(request.getBusiFlag()))
                 .orderBy(dataVisualizationInfo.createTime.desc());
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
@@ -378,7 +378,6 @@ public class CoreVisualizationManage {
                 .execute();
     }
 
-    @Transactional
     public void removeDvCore(Long dvId) {
         if (dvId != null) {
             // 清理历史数据
@@ -587,11 +586,10 @@ public class CoreVisualizationManage {
         chartViewManege.restoreThreshold(dvId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
     }
 
-    @Transactional
     public void dvRestore(Long dvId) {
         snapshotDataVisualizationInfoRepository.findById(dvId).ifPresent(item -> {
             DataVisualizationInfo dataVisualizationInfo = new DataVisualizationInfo();
-            BeanUtils.copyBean(dataVisualizationInfo, item);
+            BeanUtils.copyBean(dataVisualizationInfo,item, "updateTime");
             dataVisualizationInfoRepository.saveAndFlush(dataVisualizationInfo);
         });
 

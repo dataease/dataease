@@ -17,7 +17,7 @@ public interface DataVisualizationInfoRepository extends JpaRepository<DataVisua
     default void updateMobileLayout() {
         List<DataVisualizationInfo> dataVisualizationInfos = findAll();
         for (DataVisualizationInfo dv : dataVisualizationInfos) {
-            dv.setMobileLayout((byte) 0L);
+            dv.setMobileLayout(false);
         }
         saveAllAndFlush(dataVisualizationInfos);
     }

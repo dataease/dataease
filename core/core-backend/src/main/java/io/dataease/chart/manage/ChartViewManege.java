@@ -155,23 +155,15 @@ public class ChartViewManege {
      * sceneId 为仪表板或者数据大屏id
      */
     public List<ChartViewDTO> listBySceneId(Long sceneId, String resourceTable) {
-        Specification<CoreChartView> spec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("sceneId"), sceneId));
-            predicates.add(cb.notEqual(root.get("resourceTable"), "resourceTable"));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-
-//        List<CoreChartView> result = coreChartViewRepository.findAll(spec);
         List<CoreChartView> coreChartViews;
         if (resourceTable.equalsIgnoreCase("snapshot")) {
-            coreChartViews = coreChartViewRepository.findBySceneId(sceneId);
-        } else {
             coreChartViews = snapshotCoreChartViewRepository.findBySceneId(sceneId).stream().map(ele -> {
                 CoreChartView coreChartView = new CoreChartView();
                 BeanUtils.copyBean(coreChartView, ele);
                 return coreChartView;
             }).collect(Collectors.toList());
+        } else {
+            coreChartViews = coreChartViewRepository.findBySceneId(sceneId);
         }
         List<ChartViewDTO> chartViewDTOS = transChart(coreChartViews);
         if (!CollectionUtils.isEmpty(chartViewDTOS)) {

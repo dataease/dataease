@@ -287,7 +287,7 @@ public class EngineManage {
          */
         public static String getCurrentSchema(String arg) {
             // 匹配等号后最后一个非空白字符串
-            Pattern pattern = Pattern.compile("CURRENT_SCHEMA\\s*=\\s*([\\w\\d_]+)", Pattern.CASE_INSENSITIVE);
+            Pattern pattern = Pattern.compile("CURRENT_SCHEMA\\s*=\\s*([\\w\\d_#]+)", Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(arg);
             if (matcher.find()) {
                 return matcher.group(1).toUpperCase();

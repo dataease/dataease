@@ -56,7 +56,7 @@ public class DataVisualizationInfo {
     @Comment("移动端布局0-关闭 1-开启")
     @ColumnDefault("0")
     @Column(name = "mobile_layout")
-    private Byte mobileLayout;
+    private Boolean mobileLayout;
 
     @Comment("状态 0-未发布 1-已发布")
     @ColumnDefault("1")
