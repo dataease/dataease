@@ -39,6 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -378,6 +379,7 @@ public class CoreVisualizationManage {
                 .execute();
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeDvCore(Long dvId) {
         if (dvId != null) {
             // 清理历史数据
@@ -543,7 +545,7 @@ public class CoreVisualizationManage {
         QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
         QVisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = QVisualizationOuterParamsTargetViewInfo.visualizationOuterParamsTargetViewInfo;
 
-        queryFactory.select(Projections.fields(QVisualizationOuterParamsTargetViewInfo.class,
+        queryFactory.select(Projections.bean(QVisualizationOuterParamsTargetViewInfo.class,
                         visualizationOuterParamsTargetViewInfo.targetId,
                         visualizationOuterParamsTargetViewInfo.paramsInfoId,
                         visualizationOuterParamsTargetViewInfo.targetViewId,
@@ -551,7 +553,8 @@ public class CoreVisualizationManage {
                         visualizationOuterParamsTargetViewInfo.copyFrom,
                         visualizationOuterParamsTargetViewInfo.copyId,
                         visualizationOuterParamsTargetViewInfo.targetDsId
-                )).leftJoin(visualizationOuterParamsInfo).on(visualizationOuterParamsTargetViewInfo.paramsInfoId.eq(visualizationOuterParamsInfo.paramsInfoId))
+                )).from(visualizationOuterParamsTargetViewInfo)
+                .leftJoin(visualizationOuterParamsInfo).on(visualizationOuterParamsTargetViewInfo.paramsInfoId.eq(visualizationOuterParamsInfo.paramsInfoId))
                 .leftJoin(visualizationOuterParams).on(visualizationOuterParams.paramsId.eq(visualizationOuterParamsInfo.paramsId))
                 .where(visualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(item -> {
                     SnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = new SnapshotVisualizationOuterParamsTargetViewInfo();
@@ -559,7 +562,7 @@ public class CoreVisualizationManage {
                     snapshotVisualizationOuterParamsTargetViewInfoRepository.saveAndFlush(snapshotVisualizationOuterParamsTargetViewInfo);
                 });
 
-        queryFactory.select(Projections.fields(VisualizationOuterParamsInfo.class,
+        queryFactory.select(Projections.bean(VisualizationOuterParamsInfo.class,
                         visualizationOuterParamsInfo.paramsInfoId,
                         visualizationOuterParamsInfo.paramsId,
                         visualizationOuterParamsInfo.paramName,
@@ -586,6 +589,7 @@ public class CoreVisualizationManage {
         chartViewManege.restoreThreshold(dvId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
     }
 
+    @Transactional
     public void dvRestore(Long dvId) {
         snapshotDataVisualizationInfoRepository.findById(dvId).ifPresent(item -> {
             DataVisualizationInfo dataVisualizationInfo = new DataVisualizationInfo();

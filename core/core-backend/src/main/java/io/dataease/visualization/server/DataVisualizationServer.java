@@ -1,7 +1,6 @@
 package io.dataease.visualization.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
@@ -15,22 +14,20 @@ import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest
 import io.dataease.api.visualization.vo.*;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
-import io.dataease.dao.auto.entity.*;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
+import io.dataease.dao.auto.entity.*;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.datasource.dao.auto.entity.QCoreDatasourceTask;
-import io.dataease.result.PageResult;
-import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
@@ -44,6 +41,7 @@ import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.result.PageResult;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
@@ -51,6 +49,7 @@ import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataRepos
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
+import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.manage.CoreBusiManage;
 import io.dataease.visualization.manage.CoreVisualizationManage;
@@ -58,13 +57,13 @@ import io.dataease.visualization.manage.VisualizationLinkJumpManage;
 import io.dataease.visualization.manage.VisualizationLinkageManage;
 import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -82,6 +81,8 @@ import java.util.stream.Collectors;
 public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private JPAQueryFactory queryFactory;
+    @Resource
+    private EntityManager entityManager;
     @Resource
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
@@ -562,7 +563,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
-    @Transactional
     public void updatePublishStatus(DataVisualizationBaseRequest request) {
         /**
          * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
@@ -578,6 +578,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         coreVisualizationManage.innerEdit(visualizationInfo);
         if (CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()) {
             coreVisualizationManage.removeDvCore(dvId);
+            entityManager.clear();
             coreVisualizationManage.dvRestore(dvId);
             chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
         } else if (CommonConstants.DV_STATUS.UNPUBLISHED == request.getStatus()) {
