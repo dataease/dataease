@@ -1,11 +1,12 @@
 package io.dataease.datasource.manage;
 
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
+import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.type.H2;
-import io.dataease.datasource.type.Mysql;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -13,10 +14,7 @@ import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.result.ResultMessage;
 import io.dataease.template.dao.auto.entity.DeTemplateVersion;
 import io.dataease.template.dao.auto.mapper.DeTemplateVersionRepository;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.JsonUtil;
-import io.dataease.utils.ModelUtils;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +42,10 @@ public class EngineManage {
     private CoreDeEngineRepository coreDeEngineRepository;
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
-
+    @Resource
+    private DataSourceManage dataSourceManage;
+    @Resource
+    private DatasourceServer datasourceServer;
     @Value("${dataease.path.engine:jdbc:h2:/opt/dataease2.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE}")
     private String engineUrl;
 
@@ -114,7 +115,7 @@ public class EngineManage {
             if (ModelUtils.isDesktop()) {
                 predicates.add(criteriaBuilder.equal(root.get("type"), engineType.h2.name()));
             } else {
-                predicates.add(criteriaBuilder.equal(root.get("type"), engineType.mysql.name()));
+                predicates.add(criteriaBuilder.notEqual(root.get("type"), engineType.h2.name()));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -132,24 +133,13 @@ public class EngineManage {
             h2.setPassword(env.getProperty("spring.datasource.password"));
             engine.setConfiguration(JsonUtil.toJSONString(h2).toString());
         } else {
-            engine.setType(engineType.mysql.name());
-            Mysql mysqlConfiguration = new Mysql();
-            Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-            Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
-            if (!matcher.find()) {
-                return;
-            }
-            mysqlConfiguration.setHost(matcher.group(1));
-            mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
-            String[] databasePrams = matcher.group(3).split("\\?");
-            mysqlConfiguration.setDataBase(databasePrams[0]);
-            if (databasePrams.length == 2) {
-                mysqlConfiguration.setExtraParams(databasePrams[1]);
-            }
-            mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
-            mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
-            engine.setConfiguration(JsonUtil.toJSONString(mysqlConfiguration).toString());
+            Map<String, String> configuration = parseJdbcUrl();
+            if (configuration == null) return;
+            engine.setType(configuration.get("type"));
+            engine.setConfiguration((String) JsonUtil.toJSONString(configuration));
         }
+
+
         engine.setName("默认引擎");
         engine.setDescription("默认引擎");
         engine.setId(IDUtils.snowID());
@@ -159,6 +149,7 @@ public class EngineManage {
 
     public enum engineType {
         mysql("Mysql"),
+        oracle("oracle"),
         h2("h2");
         private String alias;
 
@@ -188,11 +179,11 @@ public class EngineManage {
             Map<String, String> configuration = parseJdbcUrl();
             if (configuration == null) return;
 
-            CoreDatasource initDatasource = new CoreDatasource();
+            DatasourceDTO initDatasource = new DatasourceDTO();
             initDatasource.setId(985188400292302848L);
             initDatasource.setName("Demo");
-            initDatasource.setType(configuration.get("type"));
             initDatasource.setPid(0L);
+            initDatasource.setType(configuration.get("type"));
             initDatasource.setConfiguration((String) JsonUtil.toJSONString(configuration));
             initDatasource.setCreateTime(System.currentTimeMillis());
             initDatasource.setUpdateTime(System.currentTimeMillis());
@@ -200,8 +191,11 @@ public class EngineManage {
             initDatasource.setUpdateBy(1L);
             initDatasource.setStatus("success");
             initDatasource.setTaskStatus("WaitingForExecution");
-            coreDatasourceRepository.deleteById(985188400292302848L);
-            coreDatasourceRepository.saveAndFlush(initDatasource);
+            AuthUtils.setUser(new TokenUserBO(1L, 1L));
+            coreDatasourceRepository.findById(985188400292302848L).ifPresent(coreDatasource1 -> {
+                datasourceServer.delete(coreDatasource1.getId());
+            });
+            dataSourceManage.innerSave(initDatasource);
 
             DeTemplateVersion version = new DeTemplateVersion();
             version.setVersion("985188400292302848");
@@ -237,6 +231,9 @@ public class EngineManage {
             config.put("host", matcher.group(1));
             config.put("port", matcher.group(2));
             config.put("dataBase", matcher.group(3));
+            if (matcher.groupCount() == 4) {
+                config.put("extraParams", matcher.group(4));
+            }
             config.put("type", "mysql");
             config.put("username", env.getProperty("spring.datasource.username"));
             config.put("password", env.getProperty("spring.datasource.password"));
@@ -253,7 +250,7 @@ public class EngineManage {
      */
     public static class OracleJdbcUrlParser implements JdbcUrlParser {
         private static final Pattern PATTERN1 = Pattern.compile("jdbc:oracle:thin:@(.*):(\\d+)/(.*)\\?(.*)");
-        private static final Pattern PATTERN2 = Pattern.compile("jdbc:oracle:thin:@//(.*):(\\d+)/(.*)\\?(.*)");
+        private static final Pattern PATTERN2 = Pattern.compile("jdbc:oracle:thin:@(.*):(\\d+):(.*)\\?(.*)");
 
         @Override
         public Map<String, String> parse(String url, Environment env) {
@@ -264,10 +261,18 @@ public class EngineManage {
                 config.put("host", m1.group(1));
                 config.put("port", m1.group(2));
                 config.put("dataBase", m1.group(3));
+                if (m1.groupCount() == 4) {
+                    config.put("extraParams", m1.group(4));
+                }
+                config.put("connectionType", "serviceName");
             } else if (m2.find()) {
                 config.put("host", m2.group(1));
                 config.put("port", m2.group(2));
                 config.put("dataBase", m2.group(3));
+                if (m2.groupCount() == 4) {
+                    config.put("extraParams", m2.group(4));
+                }
+                config.put("connectionType", "sid");
             } else {
                 return null;
             }
@@ -282,6 +287,7 @@ public class EngineManage {
         /**
          * 提取 Oracle ev 中的spring.datasource.hikari.connection-init-sql
          * 格式为：-Dspring.datasource.hikari.connection-init-sql="ALTER SESSION SET CURRENT_SCHEMA = JIANNENG1"
+         *
          * @param arg
          * @return
          */

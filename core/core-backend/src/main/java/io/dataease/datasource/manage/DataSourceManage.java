@@ -216,7 +216,10 @@ public class DataSourceManage {
         if (id == -1L) {
             coreDatasource = engineManage.getDeEngine();
         } else {
-            coreDatasource = coreDatasourceRepository.findById(id).get();
+            coreDatasource = coreDatasourceRepository.findById(id).orElse(null);
+        }
+        if (coreDatasource == null) {
+            return null;
         }
         coreDatasource.setConfiguration((String) EncryptUtils.aesDecrypt(coreDatasource.getConfiguration()));
         return coreDatasource;
