@@ -16,6 +16,8 @@ public abstract class EngineProvider {
 
     public abstract String dropTable(String name);
 
+    public abstract boolean needCheckExistTable();
+
     public abstract String dropView(String name);
 
     public abstract String replaceTable(String name);

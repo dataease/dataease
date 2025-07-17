@@ -71,6 +71,11 @@ public class H2EngineProvider extends EngineProvider {
     }
 
     @Override
+    public boolean needCheckExistTable() {
+        return false;
+    }
+
+    @Override
     public String dropView(String name) {
         return "DROP VIEW IF EXISTS `" + name + "`";
     }

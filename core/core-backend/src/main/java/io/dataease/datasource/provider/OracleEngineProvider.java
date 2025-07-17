@@ -18,12 +18,17 @@ import java.util.stream.Collectors;
 @Service("oracleEngine")
 public class OracleEngineProvider extends EngineProvider {
 
-    private static final String creatTableSql = "CREATE TABLE \"TABLE_NAME\" " + "Column_Fields;";
+    private static final String creatTableSql = "CREATE TABLE \"TABLE_NAME\" " + "Column_Fields";
 
 
     @Override
     public String createView(String name, String viewSQL) {
         return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
+    }
+
+    @Override
+    public boolean needCheckExistTable() {
+        return true;
     }
 
     @Override

@@ -1026,6 +1026,9 @@ public class CalciteProvider extends Provider {
                                 dataSource.setMaxTotal(configuration.getMaxPoolSize());
                                 dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                dataSource.setConnectionInitSqls(Collections.singletonList(
+                                        "ALTER SESSION SET CURRENT_SCHEMA = " + configuration.getSchema()
+                                ));
                                 startSshSession(configuration, null, ds.getId());
                                 dataSource.setUrl(configuration.getJdbc());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
@@ -1603,13 +1606,15 @@ public class CalciteProvider extends Provider {
         BeanUtils.copyBean(datasourceSchemaDTO, datasource);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         try {
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-            SchemaPlus rootSchema = calciteConnection.getRootSchema();
-            if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null) {
-                JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
-                BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
-                basicDataSource.close();
-                rootSchema.removeSubSchema(datasourceSchemaDTO.getSchemaAlias());
+            if (connection != null) {
+                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+                SchemaPlus rootSchema = calciteConnection.getRootSchema();
+                if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null) {
+                    JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
+                    BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
+                    basicDataSource.close();
+                    rootSchema.removeSubSchema(datasourceSchemaDTO.getSchemaAlias());
+                }
             }
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
