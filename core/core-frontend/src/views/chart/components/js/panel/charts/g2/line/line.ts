@@ -269,11 +269,14 @@ export class Line extends G2ChartView {
     const pointStyleOpt = {
       encode: {
         shape: basicStyle.lineSymbol,
-        size: basicStyle.lineSymbolSize
+        size: basicStyle.lineSymbolSize ? basicStyle.lineSymbolSize : 0.01
+      },
+      style: {
+        opacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
+        fillOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
+        strokeOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
+        lineWidth: 0
       }
-    }
-    if (basicStyle.lineSymbolSize === 0) {
-      pointStyleOpt.encode.shape = 'none'
     }
     defaultsDeep(pointMark, pointStyleOpt)
     return options

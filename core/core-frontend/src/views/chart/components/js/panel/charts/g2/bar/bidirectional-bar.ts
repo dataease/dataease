@@ -450,7 +450,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
     const [firstMark, secondMark] = options.children[0].children
-    const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
+    const { yAxis, yAxisExt } = parseJson(chart.customStyle)
     const { basicStyle } = parseJson(chart.customAttr)
     if (!yAxis.show) {
       firstMark.axis.y = false
@@ -536,55 +536,6 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     defaultsDeep(firstMark, { axis: { y: yAxisOption } })
     defaultsDeep(secondMark, { axis: { y: yAxisExtOption } })
     return options
-  }
-
-  private getAxis(axis: DeepPartial<ChartAxisStyle>): AxisComponent {
-    let lineLineDash = undefined
-    if (axis.axisLine.lineStyle.style === 'dashed') {
-      lineLineDash = [10, 8]
-    }
-    if (axis.axisLine.lineStyle.style === 'dotted') {
-      lineLineDash = [1, 2]
-    }
-    let gridLineDash = [0, 0]
-    if (axis.splitLine.lineStyle.style === 'dashed') {
-      gridLineDash = [10, 8]
-    }
-    if (axis.splitLine.lineStyle.style === 'dotted') {
-      gridLineDash = [1, 2]
-    }
-    const axisOption = {
-      position: axis.position,
-      title: axis.nameShow === false ? false : isEmpty(axis.name) ? false : axis.name,
-      titleFontSize: axis.fontSize,
-      titleFill: axis.color,
-      line: axis.axisLine.show,
-      lineStroke: axis.axisLine.lineStyle.color,
-      lineStrokeOpacity: 1,
-      lineLineWidth: axis.axisLine.lineStyle.width,
-      lineLineDash,
-      label: axis.axisLabel.show,
-      labelFill: axis.axisLabel.color,
-      labelFillOpacity: 1,
-      labelFontSize: axis.axisLabel.fontSize,
-      grid: axis.splitLine.show,
-      gridStroke: axis.splitLine.lineStyle.color,
-      gridStrokeOpacity: 1,
-      gridLineWidth: axis.splitLine.lineStyle.width,
-      gridLineDash,
-      labelTransform: `rotate(${axis.axisLabel.rotate || 0})`,
-      transform: [
-        {
-          type: 'hide',
-          keepHeader: true,
-          keepTail: true
-        }
-      ],
-      labelFormatter: d => {
-        return valueFormatter(d, axis.axisLabelFormatter)
-      }
-    }
-    return axisOption
   }
 
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
