@@ -276,7 +276,6 @@ public class EngineManage {
             } else {
                 return null;
             }
-            config.put("extraParams", "");
             config.put("type", "oracle");
             config.put("username", env.getProperty("spring.datasource.username"));
             config.put("password", env.getProperty("spring.datasource.password"));

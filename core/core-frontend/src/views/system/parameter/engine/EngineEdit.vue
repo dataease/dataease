@@ -1,17 +1,19 @@
 <script lang="ts" setup>
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { ref, reactive } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'
 import { dsTypes, Node } from '@/views/visualized/data/datasource/form/option'
 import { cloneDeep } from 'lodash-es'
-import { getDeEngine } from '@/api/datasource'
+import { getDeEngine, getSchema } from '@/api/datasource'
 import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
 import { querySymmetricKey } from '@/api/login'
 import { symmetricDecrypt } from '@/utils/encryption'
+import { Icon } from '@/components/icon-custom'
 const { t } = useI18n()
 const dialogVisible = ref(false)
 const loadingInstance = ref(null)
@@ -145,6 +147,7 @@ const defaultInfo = {
     jdbc: '',
     port: 8081,
     dataBase: '',
+    schema: '',
     username: '',
     password: '',
     extraParams: '',
@@ -202,6 +205,37 @@ const edit = () => {
   })
 }
 const basicForm = ref()
+
+const showSchema = ref(false)
+const schemas = ref([])
+const getDsSchema = () => {
+  showSchema.value = true
+  const validateFrom = basicForm.value.validate
+  let data = JSON.parse(JSON.stringify(nodeInfo)) as unknown as Omit<
+    Node,
+    'configuration' | 'apiConfiguration'
+  > & {
+    configuration: string
+    apiConfiguration: string
+  }
+  validateFrom(val => {
+    showSchema.value = false
+    if (val) {
+      data.configuration = Base64.encode(JSON.stringify(data.configuration))
+      getSchema(data).then(res => {
+        schemas.value = (res.data || []).map(ele => ({
+          value: ele,
+          label: ele
+        }))
+        ElMessage.success(t('commons.success'))
+      })
+    }
+  })
+}
+
+const validatorSchema = () => {
+  basicForm.value.validateField('configuration.schema')
+}
 
 const submitForm = async () => {
   let data = JSON.parse(JSON.stringify(nodeInfo)) as unknown as Omit<
@@ -349,6 +383,32 @@ defineExpose({
           show-password
           type="password"
           v-model="nodeInfo.configuration.password"
+        />
+      </el-form-item>
+      <el-form-item
+        v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(nodeInfo.type)"
+        class="schema-label"
+        :prop="showSchema ? '' : 'configuration.schema'"
+      >
+        <template v-slot:label>
+          <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
+          <el-button text size="small" @click="getDsSchema()">
+            <template #icon>
+              <Icon name="icon_add_outlined">
+                <icon_add_outlined class="svg-icon" />
+              </Icon>
+            </template>
+            {{ t('datasource.get_schema') }}
+          </el-button>
+        </template>
+        <el-select-v2
+          v-model="nodeInfo.configuration.schema"
+          :options="schemas"
+          filterable
+          :placeholder="t('common.please_select')"
+          class="de-select"
+          @change="validatorSchema"
+          @blur="validatorSchema"
         />
       </el-form-item>
       <el-form-item :label="t('datasource.extra_params')">
