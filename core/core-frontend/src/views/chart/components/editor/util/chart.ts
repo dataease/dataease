@@ -1724,7 +1724,25 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   circleBorderWidth: 0,
   circlePadding: 0,
   quotaPosition: 'col',
-  quotaColLabel: t('dataset.value')
+  quotaColLabel: t('dataset.value'),
+  subAlpha: 100,
+  subColorScheme: 'fast',
+  subSeriesColor: [],
+  subColors: [
+    '#fae800',
+    '#00c039',
+    '#0482dc',
+    '#bb9581',
+    '#ff7701',
+    '#9c5ec3',
+    '#00ccdf',
+    '#00c039',
+    '#ff7701'
+  ],
+  leftLineWidth: 2,
+  leftLineSymbol: 'circle',
+  leftLineSymbolSize: 4,
+  leftLineSmooth: true
 }
 
 export const BASE_VIEW_CONFIG = {

@@ -1,4 +1,4 @@
-import { G2Spec, type Chart as G2Chart } from '@antv/g2'
+import { AxisComponent, G2Spec, type Chart as G2Chart } from '@antv/g2'
 import {
   AntVAbstractChartView,
   AntVDrawOptions,
@@ -6,6 +6,8 @@ import {
 } from '@/views/chart/components/js/panel/types'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
 import { parseJson, setupSeriesColor } from '../../../util'
+import { isEmpty } from 'lodash-es'
+import { valueFormatter } from '../../../formatter'
 
 export interface G2DrawOptions<O> extends AntVDrawOptions<O> {
   /**
@@ -84,6 +86,55 @@ export abstract class G2ChartView<
       }
     }
     return legend
+  }
+
+  protected getAxis(axis: DeepPartial<ChartAxisStyle>): AxisComponent {
+    let lineLineDash = undefined
+    if (axis.axisLine.lineStyle.style === 'dashed') {
+      lineLineDash = [10, 8]
+    }
+    if (axis.axisLine.lineStyle.style === 'dotted') {
+      lineLineDash = [1, 2]
+    }
+    let gridLineDash = [0, 0]
+    if (axis.splitLine.lineStyle.style === 'dashed') {
+      gridLineDash = [10, 8]
+    }
+    if (axis.splitLine.lineStyle.style === 'dotted') {
+      gridLineDash = [1, 2]
+    }
+    const axisOption = {
+      position: axis.position,
+      title: axis.nameShow === false ? false : isEmpty(axis.name) ? false : axis.name,
+      titleFontSize: axis.fontSize,
+      titleFill: axis.color,
+      line: axis.axisLine.show,
+      lineStroke: axis.axisLine.lineStyle.color,
+      lineStrokeOpacity: 1,
+      lineLineWidth: axis.axisLine.lineStyle.width,
+      lineLineDash,
+      label: axis.axisLabel.show,
+      labelFill: axis.axisLabel.color,
+      labelFillOpacity: 1,
+      labelFontSize: axis.axisLabel.fontSize,
+      grid: axis.splitLine.show,
+      gridStroke: axis.splitLine.lineStyle.color,
+      gridStrokeOpacity: 1,
+      gridLineWidth: axis.splitLine.lineStyle.width,
+      gridLineDash,
+      labelTransform: `rotate(${axis.axisLabel.rotate || 0})`,
+      transform: [
+        {
+          type: 'hide',
+          keepHeader: true,
+          keepTail: true
+        }
+      ],
+      labelFormatter: d => {
+        return valueFormatter(d, axis.axisLabelFormatter)
+      }
+    }
+    return axisOption
   }
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
