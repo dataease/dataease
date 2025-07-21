@@ -114,6 +114,10 @@ declare interface BaseFormatter {
    * 千分符
    */
   thousandSeparator: boolean
+  /**
+   * 显示总出占比
+   */
+  showTotalPercent: boolean
 }
 
 /**

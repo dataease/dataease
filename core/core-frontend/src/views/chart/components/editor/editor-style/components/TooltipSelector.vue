@@ -456,6 +456,9 @@ watch(
     }
   }
 )
+const showTotalPercent = computed(() => {
+  return props.chart.type === 'sankey'
+})
 onMounted(() => {
   init()
   useEmitt({ name: 'addAxis', callback: updateSeriesTooltipFormatter })
@@ -695,6 +698,15 @@ onMounted(() => {
           v-model="state.tooltipForm.tooltipFormatter.thousandSeparator"
           @change="changeTooltipAttr('tooltipFormatter.thousandSeparator')"
           :label="t('chart.value_formatter_thousand_separator')"
+        />
+      </el-form-item>
+      <el-form-item v-if="showTotalPercent" class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          size="small"
+          :effect="props.themes"
+          v-model="state.tooltipForm.tooltipFormatter.showTotalPercent"
+          @change="changeTooltipAttr('tooltipFormatter.showTotalPercent')"
+          :label="t('chart.value_formatter_total_out_percent')"
         />
       </el-form-item>
     </template>
