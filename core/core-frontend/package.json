@@ -115,8 +115,8 @@
     "xss": "^1.0.14"
   },
   "overrides": {
-    "@intlify/message-compiler": "9.14.2",
-    "@intlify/shared": "9.14.2",
+    "@intlify/message-compiler": "9.14.5",
+    "@intlify/shared": "9.14.5",
     "glob": {
       "inflight": "npm:inflight-lru@^1.0.0"
     }
