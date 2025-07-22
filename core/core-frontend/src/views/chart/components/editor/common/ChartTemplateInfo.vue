@@ -79,7 +79,6 @@ defineProps({
   box-shadow: none !important;
   border: 0 !important;
   background: var(--ed-color-primary) !important;
-  inset: 0 auto auto -5px !important;
   .ed-popper__arrow::before {
     border: 1px solid var(--ed-color-primary) !important;
     background: var(--ed-color-primary) !important;
