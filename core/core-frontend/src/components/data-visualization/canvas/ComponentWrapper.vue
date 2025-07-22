@@ -383,6 +383,7 @@ const freezeFlag = computed(() => {
   return (
     isMainCanvas(props.canvasId) &&
     config.value.freeze &&
+    !isMobile() &&
     scrollMain.value - config.value.style?.top > 0
   )
 })
