@@ -38,7 +38,8 @@ const state = reactive({
   showOffset: {
     top: 3,
     left: 3
-  }
+  },
+  containerMainHeight: '3000px'
 })
 
 const props = defineProps({
@@ -216,17 +217,52 @@ onMounted(async () => {
     return
   }
   dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
+
+  window.matchMedia('print').addListener(async mql => {
+    if (mql.matches) {
+      await prepareForPrint()
+    }
+  })
 })
 
 const dataVKeepSize = computed(() => {
   return state.canvasStylePreview?.screenAdaptor === 'keep'
 })
 
-const freezeStyle = computed(() => [
-  { '--top-show-offset': state.showOffset.top },
-  { '--left-show-offset': state.showOffset.left }
-])
+watch(
+  () => state.containerMainHeight,
+  newVal => {
+    if (previewCanvasContainer.value) {
+      previewCanvasContainer.value.style.setProperty('--print-height', newVal)
+    }
+  }
+)
 
+const freezeStyle = computed(() => {
+  return [
+    { '--top-show-offset': state.showOffset.top },
+    { '--left-show-offset': state.showOffset.left },
+    { '--print-height': state.containerMainHeight }
+  ]
+})
+
+const dvPreview = ref(null)
+const getPrintHeight = async () => {
+  if (dvPreview.value && dvPreview.value.getDownloadStatusMainHeight) {
+    state.containerMainHeight = await dvPreview.value.getDownloadStatusMainHeight()
+  }
+}
+
+// 打印前准备
+const prepareForPrint = async () => {
+  await getPrintHeight()
+}
+
+// 暴露方法给外部调用打印
+const handlePrint = async () => {
+  await prepareForPrint()
+  window.print()
+}
 defineExpose({
   loadCanvasDataAsync
 })
@@ -278,6 +314,19 @@ defineExpose({
     @load-fail="initIframe"
   />
 </template>
+
+<style lang="less">
+@media print {
+  html,
+  body {
+    height: auto !important;
+  }
+  .content {
+    height: var(--print-height, auto) !important;
+    min-height: 0 !important;
+  }
+}
+</style>
 
 <style lang="less" scoped>
 ::-webkit-scrollbar {

@@ -486,7 +486,8 @@ const scrollPreview = () => {
 const showUnpublishFlag = computed(() => dvInfo.value?.status === 0 && isMainCanvas(canvasId.value))
 
 defineExpose({
-  restore
+  restore,
+  getDownloadStatusMainHeight
 })
 </script>
 
