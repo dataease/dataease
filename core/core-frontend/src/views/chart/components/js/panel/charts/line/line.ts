@@ -20,7 +20,7 @@ import {
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
 import { cloneDeep, defaults, isEmpty } from 'lodash-es'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { niceMin, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,
@@ -34,6 +34,7 @@ import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
+
 /**
  * 折线图
  */
@@ -68,6 +69,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       type: 'q'
     }
   }
+
   async drawChart(drawOptions: G2PlotDrawOptions<G2Line>): Promise<G2Line> {
     const { chart, action, container } = drawOptions
     chart.container = container
@@ -128,6 +130,30 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     newChart.on('point:click', action)
     extremumEvt(newChart, chart, options, container)
     configPlotTooltipEvent(chart, newChart)
+    const yAxis = parseJson(chart.customStyle).yAxis
+    if (yAxis.axisValue?.auto) {
+      newChart.on('legend-item-group:click', e => {
+        if (e.view?.options?.scales) {
+          const values = e.view.filteredData
+            .map(d => d.value)
+            ?.filter(v => v !== null && v !== undefined)
+          const min = Math.min(...values)
+          const max = Math.max(...values)
+          e.view.options.scales.value.min = niceMin(min, max)
+          e.view.render(true)
+        }
+      })
+      newChart.on('slider:valuechanged', ev => {
+        const values = ev.view.filteredData
+          .map(d => d.value)
+          ?.filter(v => v !== null && v !== undefined)
+        const min = Math.min(...values)
+        const max = Math.max(...values)
+        if (max !== min) {
+          ev.view.options.scales.value.min = niceMin(min, max)
+        }
+      })
+    }
     return newChart
   }
 
@@ -249,6 +275,20 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       }
       return { ...tmpOptions, ...axis }
     }
+    if (axisValue?.auto) {
+      const data = options.data || []
+      const values = data.map(d => d.value)?.filter(v => v !== null && v !== undefined)
+      const min = Math.min(...values)
+      const max = Math.max(...values)
+      const niceMinValue = niceMin(min, max)
+      const axis = {
+        yAxis: {
+          ...tmpOptions.yAxis,
+          min: niceMinValue
+        }
+      }
+      return { ...tmpOptions, ...axis }
+    }
     return tmpOptions
   }
 
@@ -310,9 +350,11 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       tooltip
     }
   }
+
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpGroupSeriesColor(chart, data)
   }
+
   protected configLegend(chart: Chart, options: LineOptions): LineOptions {
     const optionTmp = super.configLegend(chart, options)
     if (!optionTmp.legend) {
@@ -420,6 +462,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     }
     return optionTmp
   }
+
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
     return flow(
       this.configTheme,

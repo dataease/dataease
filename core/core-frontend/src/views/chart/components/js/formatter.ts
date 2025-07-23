@@ -158,3 +158,26 @@ function transSeparatorAndSuffix(value, formatter) {
   }
   return str + formatter.suffix.replace(/(^\s*)|(\s*$)/g, '')
 }
+
+/**
+ * 根据最小值、最大值max和刻度数量tickCount
+ * 计算一个nice最小刻度值
+ * @param min
+ * @param max
+ * @param tickCount
+ */
+export const niceMin = (min, max, tickCount = 5) => {
+  // 数据的总跨度
+  const range = max - min
+  // 将范围均分为 tickCount-1 份， 得到每份的粗略步长
+  const roughStep = range / (tickCount - 1)
+  // 确定步长的数量级
+  // 取步长的 10 为底的对数，向下取整，得到步长的数量级
+  const exponent = Math.floor(Math.log10(roughStep))
+  // 将步长取整到nice的倍数（如 1, 2, 5, 10, 20, 50...）
+  const power = Math.pow(10, exponent)
+  // 从中找出第一个大于等于粗略步长的nice步长
+  const niceStep = [1, 2, 5, 10].map(mult => mult * power).find(step => step >= roughStep)
+  // 将 min 向下取整到 niceStep 的整数倍，得到一个更整齐的起始值
+  return Math.floor(min / niceStep) * niceStep
+}
