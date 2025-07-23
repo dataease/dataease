@@ -39,7 +39,7 @@ const state = reactive({
     top: 3,
     left: 3
   },
-  containerMainHeight: '3000px'
+  containerMainHeight: '1000px'
 })
 
 const props = defineProps({
@@ -229,15 +229,6 @@ const dataVKeepSize = computed(() => {
   return state.canvasStylePreview?.screenAdaptor === 'keep'
 })
 
-watch(
-  () => state.containerMainHeight,
-  newVal => {
-    if (previewCanvasContainer.value) {
-      previewCanvasContainer.value.style.setProperty('--print-height', newVal)
-    }
-  }
-)
-
 const freezeStyle = computed(() => {
   return [
     { '--top-show-offset': state.showOffset.top },
@@ -248,8 +239,8 @@ const freezeStyle = computed(() => {
 
 const dvPreview = ref(null)
 const getPrintHeight = async () => {
-  if (dvPreview.value && dvPreview.value.getDownloadStatusMainHeight) {
-    state.containerMainHeight = await dvPreview.value.getDownloadStatusMainHeight()
+  if (dvPreview.value) {
+    state.containerMainHeight = await dvPreview.value.getDownloadStatusMainHeightV2()
   }
 }
 

@@ -198,6 +198,36 @@ const canvasStyle = computed(() => {
   return style
 })
 
+const getDownloadStatusMainHeightV2 = () => {
+  if (!previewCanvas.value?.childNodes) {
+    nextTick(() => {
+      canvasStyle.value.height = getDownloadStatusMainHeight()
+    })
+    return '100%'
+  }
+  const children = previewCanvas.value.childNodes
+  let maxBottomPosition = 0
+
+  children.forEach(child => {
+    // 获取style中的top值
+    const styleTop = child.style?.top || 0
+    // 获取style中的height
+    const styleHeight = child.style?.height || 0
+
+    // 转换为数字
+    const top = parseFloat(styleTop) || 0
+    const height = parseFloat(styleHeight) || 0
+
+    // 计算底部位置
+    const bottomPosition = top + height
+
+    if (bottomPosition > maxBottomPosition) {
+      maxBottomPosition = bottomPosition
+    }
+  })
+  return `${maxBottomPosition}px`
+}
+
 const getDownloadStatusMainHeight = () => {
   if (!previewCanvas.value?.childNodes) {
     nextTick(() => {
@@ -487,7 +517,7 @@ const showUnpublishFlag = computed(() => dvInfo.value?.status === 0 && isMainCan
 
 defineExpose({
   restore,
-  getDownloadStatusMainHeight
+  getDownloadStatusMainHeightV2
 })
 </script>
 
