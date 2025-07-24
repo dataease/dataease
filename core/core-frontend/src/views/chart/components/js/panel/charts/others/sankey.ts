@@ -195,12 +195,11 @@ export class SankeyBar extends G2PlotChartView<SankeyOptions, Sankey> {
               const { source, target, value } = datum
               // 总出占比
               if (t.tooltipFormatter.showTotalPercent) {
-                const decimalCount =
-                  t.tooltipFormatter.type !== 'auto' ? t.tooltipFormatter.decimalCount : 2
-                const ratio = (value / outTotal[source]).toFixed(decimalCount)
+                const { decimalCount = 2 } = t.tooltipFormatter
+                const ratioStr = ((value / outTotal[source]) * 100).toFixed(decimalCount) + '%'
                 return {
-                  name: source + ' -> ' + target,
-                  value: valueFormatter(value, t.tooltipFormatter) + ` (${ratio}%)`
+                  name: `${source} -> ${target}`,
+                  value: valueFormatter(value, t.tooltipFormatter) + ` (${ratioStr})`
                 }
               }
               return {

@@ -555,10 +555,10 @@ export const dvMainStore = defineStore('dataVisualization', {
 
     deleteComponentById(componentId, componentData = this.componentData, deep = false) {
       if (componentId) {
-        let indexResult
+        const indexResult = []
         componentData.forEach((component, index) => {
           if (componentId === component.id) {
-            indexResult = index
+            indexResult.push(index)
           } else if (deep && component.component === 'Group') {
             this.deleteComponentById(componentId, component.propValue || [])
           } else if (deep && component.innerType === 'DeTabs') {
@@ -567,7 +567,9 @@ export const dvMainStore = defineStore('dataVisualization', {
             })
           }
         })
-        this.deleteComponent(indexResult, componentData)
+        indexResult.forEach(indexItem => {
+          this.deleteComponent(indexItem, componentData)
+        })
       }
     },
 

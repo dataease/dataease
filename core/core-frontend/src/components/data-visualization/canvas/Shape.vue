@@ -336,6 +336,7 @@ const freezeFlag = computed(() => {
   return (
     isMainCanvas(canvasId.value) &&
     element.value.freeze &&
+    !mobileInPc.value &&
     mainScrollTop.value - defaultStyle.value.top > 0
   )
 })

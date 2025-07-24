@@ -20,7 +20,11 @@ import {
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
 import { cloneDeep, defaults, isEmpty } from 'lodash-es'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import {
+  calcNiceMinValue,
+  listenYAxisNiceMinEvents,
+  valueFormatter
+} from '@/views/chart/components/js/formatter'
 import {
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,
@@ -34,6 +38,7 @@ import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
+
 /**
  * 折线图
  */
@@ -68,6 +73,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       type: 'q'
     }
   }
+
   async drawChart(drawOptions: G2PlotDrawOptions<G2Line>): Promise<G2Line> {
     const { chart, action, container } = drawOptions
     chart.container = container
@@ -128,6 +134,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     newChart.on('point:click', action)
     extremumEvt(newChart, chart, options, container)
     configPlotTooltipEvent(chart, newChart)
+    listenYAxisNiceMinEvents(chart, newChart)
     return newChart
   }
 
@@ -249,6 +256,9 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       }
       return { ...tmpOptions, ...axis }
     }
+    if (axisValue?.auto) {
+      return calcNiceMinValue(chart, options, tmpOptions)
+    }
     return tmpOptions
   }
 
@@ -310,9 +320,11 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       tooltip
     }
   }
+
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpGroupSeriesColor(chart, data)
   }
+
   protected configLegend(chart: Chart, options: LineOptions): LineOptions {
     const optionTmp = super.configLegend(chart, options)
     if (!optionTmp.legend) {
@@ -420,6 +432,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     }
     return optionTmp
   }
+
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
     return flow(
       this.configTheme,

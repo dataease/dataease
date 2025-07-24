@@ -251,7 +251,7 @@ watch(
 )
 
 watch(
-  () => canvasStyleData.value,
+  [() => componentData.value.length, () => canvasStyleData.value],
   () => {
     nextTick(() => {
       initWatermark()

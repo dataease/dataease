@@ -1,6 +1,8 @@
 import { find } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getLocale } from '@/utils/utils'
+import { parseJson } from '@/views/chart/components/js/util'
+
 const { t } = useI18n()
 
 export const isEnLocal = !['zh', 'zh-cn', 'zh-CN', 'tw'].includes(getLocale())
@@ -157,4 +159,96 @@ function transSeparatorAndSuffix(value, formatter) {
     }
   }
   return str + formatter.suffix.replace(/(^\s*)|(\s*$)/g, '')
+}
+
+/**
+ * 根据最小值、最大值max和刻度数量tickCount
+ * 计算一个nice最小刻度值
+ * @param min
+ * @param max
+ * @param tickCount
+ */
+function niceMin(min, max, tickCount = 5) {
+  // 数据的总跨度
+  const range = max - min
+  // 将范围均分为 tickCount-1 份， 得到每份的粗略步长
+  const roughStep = range / (tickCount - 1)
+  // 确定步长的数量级
+  // 取步长的 10 为底的对数，向下取整，得到步长的数量级
+  const exponent = Math.floor(Math.log10(roughStep))
+  // 将步长取整到nice的倍数（如 1, 2, 5, 10, 20, 50...）
+  const power = Math.pow(10, exponent)
+  // 从中找出第一个大于等于粗略步长的nice步长
+  const niceStep = [1, 2, 5, 10].map(mult => mult * power).find(step => step >= roughStep)
+  // 将 min 向下取整到 niceStep 的整数倍，得到一个更整齐的起始值
+  return Math.floor(min / niceStep) * niceStep
+}
+
+/**
+ * 监听图例、缩略轴事件，计算y轴的nice最小刻度值
+ * @param chart
+ * @param newChart
+ */
+export const listenYAxisNiceMinEvents = (chart: Chart, newChart) => {
+  const yAxis = parseJson(chart.customStyle).yAxis
+  if (yAxis.axisValue?.auto) {
+    newChart.on('legend-item-group:click', e => {
+      if (e.view?.options?.scales) {
+        const values = e.view.filteredData
+          .map(d => d.value)
+          ?.filter(v => v !== null && v !== undefined)
+        const min = Math.min(...values)
+        const max = Math.max(...values)
+        e.view.options.scales.value.min = niceMin(min, max)
+        e.view.render(true)
+      }
+    })
+    newChart.on('slider:valuechanged', ev => {
+      const values = ev.view.filteredData
+        .map(d => d.value)
+        ?.filter(v => v !== null && v !== undefined)
+      const min = Math.min(...values)
+      const max = Math.max(...values)
+      if (max !== min) {
+        ev.view.options.scales.value.min = niceMin(min, max)
+      }
+    })
+  }
+}
+
+/**
+ * 计算数据min值的nice值
+ * @param chart
+ * @param options
+ * @param tmpOptions
+ */
+export const calcNiceMinValue = (chart, options, tmpOptions) => {
+  let filteredData
+  let cfg
+  const senior = parseJson(chart.senior)
+  if (senior.functionCfg && senior.functionCfg.sliderShow) {
+    cfg = {
+      start: senior.functionCfg.sliderRange[0] / 100,
+      end: senior.functionCfg.sliderRange[1] / 100
+    }
+  }
+  const data = options.data || []
+  filteredData = data
+  // 如果有缩略轴，则取缩略轴范围
+  if (cfg && cfg.start !== undefined && cfg.end !== undefined) {
+    const startIndex = Math.floor(cfg.start * data.length)
+    const endIndex = Math.ceil(cfg.end * data.length)
+    filteredData = data.slice(startIndex, endIndex)
+  }
+  const values = filteredData.map(d => d.value)?.filter(v => v !== null && v !== undefined)
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const niceMinValue = niceMin(min, max)
+  const axis = {
+    yAxis: {
+      ...tmpOptions.yAxis,
+      min: niceMinValue
+    }
+  }
+  return { ...tmpOptions, ...axis }
 }
