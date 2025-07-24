@@ -19,7 +19,11 @@ import {
   parseJson,
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
-import { niceMin, valueFormatter } from '@/views/chart/components/js/formatter'
+import {
+  calcNiceMinValue,
+  listenYAxisNiceMinEvents,
+  valueFormatter
+} from '@/views/chart/components/js/formatter'
 import {
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,
@@ -126,30 +130,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     newChart.on('point:click', action)
     extremumEvt(newChart, chart, options, container)
     configPlotTooltipEvent(chart, newChart)
-    const yAxis = parseJson(chart.customStyle).yAxis
-    if (yAxis.axisValue?.auto) {
-      newChart.on('legend-item-group:click', e => {
-        if (e.view?.options?.scales) {
-          const values = e.view.filteredData
-            .map(d => d.value)
-            ?.filter(v => v !== null && v !== undefined)
-          const min = Math.min(...values)
-          const max = Math.max(...values)
-          e.view.options.scales.value.min = niceMin(min, max)
-          e.view.render(true)
-        }
-      })
-      newChart.on('slider:valuechanged', ev => {
-        const values = ev.view.filteredData
-          .map(d => d.value)
-          ?.filter(v => v !== null && v !== undefined)
-        const min = Math.min(...values)
-        const max = Math.max(...values)
-        if (max !== min) {
-          ev.view.options.scales.value.min = niceMin(min, max)
-        }
-      })
-    }
+    listenYAxisNiceMinEvents(chart, newChart)
     return newChart
   }
 
@@ -295,18 +276,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       return { ...tmpOptions, ...axis }
     }
     if (axisValue?.auto) {
-      const data = options.data || []
-      const values = data.map(d => d.value)?.filter(v => v !== null && v !== undefined)
-      const min = Math.min(...values)
-      const max = Math.max(...values)
-      const niceMinValue = niceMin(min, max)
-      const axis = {
-        yAxis: {
-          ...tmpOptions.yAxis,
-          min: niceMinValue
-        }
-      }
-      return { ...tmpOptions, ...axis }
+      return calcNiceMinValue(chart, options, tmpOptions)
     }
     return tmpOptions
   }
