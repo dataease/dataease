@@ -1,6 +1,6 @@
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
+import { cloneDeep, defaultsDeep, isEmpty, merge, random } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
@@ -10,15 +10,17 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { setGradientColor, TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
 import { CHART_MIX_EDITOR_PROPERTY, CHART_MIX_EDITOR_PROPERTY_INNER } from './common'
+import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 
 const { t } = useI18n()
 /**
  * 柱线混合图
  */
-export class ColumnLineMix extends G2ChartView {
+export class GroupLineMix extends G2ChartView {
   properties: EditorProperty[] = CHART_MIX_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = {
     ...CHART_MIX_EDITOR_PROPERTY_INNER,
+    'legend-selector': ['icon', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       'fontSize',
@@ -38,13 +40,20 @@ export class ColumnLineMix extends G2ChartView {
     'extLabel',
     'extTooltip',
     'xAxisExtRight',
-    'yAxisExt'
+    'yAxisExt',
+    'xAxisExt'
   ]
 
   axisConfig: AxisConfig = {
     xAxis: {
       name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
       type: 'd'
+    },
+    xAxisExt: {
+      name: `${t('chart.chart_group')} / ${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1,
+      allowEmpty: true
     },
     yAxis: {
       name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.column_quota')}`,
@@ -66,6 +75,8 @@ export class ColumnLineMix extends G2ChartView {
     }
   }
 
+  EMPTY_MARKER = () => []
+
   protected getLeftType(): string {
     return 'column'
   }
@@ -84,70 +95,84 @@ export class ColumnLineMix extends G2ChartView {
 
     // options
     const initOptions: G2Spec = {
-      type: 'view',
+      type: 'spaceFlex',
+      ratio: [1],
+      direction: 'col',
       autoFit: true,
       children: [
         {
-          type: 'interval',
-          data: left.data,
-          encode: {
-            x: 'field',
-            y: 'value',
-            color: {
-              type: 'transform',
-              value: () => chart.yAxis[0]?.chartShowName ?? chart.yAxis[0]?.name
+          type: 'view',
+          key: 'chart',
+          legend: false,
+          children: [
+            {
+              type: 'interval',
+              data: left.data,
+              encode: {
+                x: 'field',
+                y: 'value',
+                series: 'category',
+                color: 'category'
+              },
+              axis: {
+                y: {
+                  position: 'left'
+                }
+              },
+              scale: {
+                y: {
+                  key: 'left'
+                }
+              }
+            },
+            {
+              type: 'line',
+              data: right.data,
+              encode: {
+                x: 'field',
+                y: 'value',
+                series: 'category',
+                color: 'category'
+              },
+              scale: {
+                y: {
+                  key: 'right'
+                }
+              },
+              axis: {
+                y: {
+                  position: 'right'
+                }
+              },
+              style: {
+                connect: false
+              }
+            },
+            {
+              type: 'point',
+              data: right.data,
+              encode: {
+                x: 'field',
+                y: 'value',
+                color: 'category'
+              },
+              scale: {
+                y: {
+                  key: 'right'
+                }
+              },
+              tooltip: false
             }
-          },
-          axis: {
-            y: {
-              position: 'left'
-            }
-          },
-          scale: {
-            y: {
-              key: 'left'
-            }
-          }
-        },
-        {
-          type: 'line',
-          data: right.data,
-          encode: {
-            x: 'field',
-            y: 'value',
-            series: 'category',
-            color: 'category'
-          },
-          scale: {
-            y: {
-              key: 'right'
-            }
-          },
-          axis: {
-            y: {
-              position: 'right'
-            }
-          }
-        },
-        {
-          type: 'point',
-          data: right.data,
-          encode: {
-            x: 'field',
-            y: 'value',
-            color: 'category'
-          },
-          scale: {
-            y: {
-              key: 'right'
-            }
-          },
-          tooltip: false
+          ]
         }
       ]
     }
     const newChart = new G2Chart({ container })
-    const options = this.setupOptions(chart, initOptions, { chartObj: newChart })
+    const options = this.setupOptions(chart, initOptions, {
+      chartObj: newChart,
+      leftData: left.data,
+      rightData: right.data
+    })
 
     newChart.on('point:click', action)
     newChart.on('interval:click', action)
@@ -157,64 +182,130 @@ export class ColumnLineMix extends G2ChartView {
     return newChart
   }
 
-  protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {
+  protected configBasicStyle(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const { basicStyle } = parseJson(chart.customAttr)
-    let leftColor = hexColorToRGBA(basicStyle.colors?.[0], basicStyle.alpha)
-    const leftSeriesMap = basicStyle.seriesColor?.find(c => c.id === chart.yAxis[0]?.id)
-    if (leftSeriesMap) {
-      leftColor = hexColorToRGBA(leftSeriesMap.color, basicStyle.alpha)
+    const leftCat = []
+    const { xAxisExt, extBubble, yAxis, yAxisExt } = chart
+    const [intervalMark, lineMark, pointMark] = options.children[0].children
+    if (!xAxisExt?.length) {
+      leftCat.push(yAxis[0]?.chartShowName ?? yAxis[0]?.name)
+    } else {
+      const { leftData } = context
+      leftData.forEach(d => d.category && !leftCat.includes(d.category) && leftCat.push(d.category))
     }
-    merge(options, {
+    const leftColorMap = leftCat.reduce((acc, cur, index) => {
+      acc[cur] = hexColorToRGBA(
+        basicStyle.colors[index % basicStyle.colors.length],
+        basicStyle.alpha
+      )
+      return acc
+    }, {})
+    if (basicStyle.seriesColor?.length) {
+      if (!xAxisExt?.length) {
+        const ySeries = basicStyle.seriesColor.find(s => s.id === yAxis[0]?.id)
+        if (ySeries) {
+          leftColorMap[yAxis[0]?.chartShowName ?? yAxis[0]?.name] = hexColorToRGBA(
+            ySeries.color,
+            basicStyle.alpha
+          )
+        }
+      } else {
+        basicStyle.seriesColor.forEach(s => {
+          if (leftColorMap[s.id]) {
+            leftColorMap[s.id] = hexColorToRGBA(s.color, basicStyle.alpha)
+          }
+        })
+      }
+    }
+    const leftRelations = []
+    Object.entries(leftColorMap).forEach(([key, value]) => {
+      if (basicStyle.gradient) {
+        value = setGradientColor(value as string, true, 270)
+      }
+      leftRelations.push([key, value])
+    })
+    const leftRange = basicStyle.colors.map(c => {
+      const color = hexColorToRGBA(c, basicStyle.alpha)
+      if (basicStyle.gradient) {
+        return setGradientColor(color, true, 270)
+      }
+      return color
+    })
+    const leftColorScale = {
+      scale: {
+        color: {
+          key: 'left-color',
+          type: 'ordinal',
+          independent: true,
+          range: leftRange,
+          relations: leftRelations
+        }
+      }
+    }
+    merge(intervalMark, leftColorScale)
+    const rightCat = []
+    if (!extBubble?.length) {
+      rightCat.push(yAxisExt[0]?.chartShowName ?? yAxisExt[0]?.name)
+    } else {
+      const { rightData } = context
+      rightData.forEach(
+        d => d.category && !rightCat.includes(d.category) && rightCat.push(d.category)
+      )
+    }
+    const rightColorMap = rightCat.reduce((acc, cur, index) => {
+      acc[cur] = hexColorToRGBA(
+        basicStyle.subColors[index % basicStyle.subColors.length],
+        basicStyle.subAlpha
+      )
+      return acc
+    }, {})
+    if (basicStyle.subSeriesColor?.length) {
+      if (!extBubble?.length) {
+        const yExtSeries = basicStyle.subSeriesColor.find(s => s.id === yAxisExt[0]?.id)
+        if (yExtSeries) {
+          rightColorMap[yAxisExt[0]?.chartShowName ?? yAxisExt[0]?.name] = hexColorToRGBA(
+            yExtSeries.color,
+            basicStyle.subAlpha
+          )
+        }
+      } else {
+        basicStyle.subSeriesColor.forEach(s => {
+          if (rightColorMap[s.id]) {
+            rightColorMap[s.id] = hexColorToRGBA(s.color, basicStyle.subAlpha)
+          }
+        })
+      }
+    }
+    const rightRelations = []
+    Object.entries(rightColorMap).forEach(entry => {
+      rightRelations.push(entry)
+    })
+    const rightRange = basicStyle.subColors.map(c => hexColorToRGBA(c, basicStyle.subAlpha))
+    const rightColorScale = {
       scale: {
         color: {
           type: 'ordinal',
-          relations: [[chart.yAxis[0]?.chartShowName ?? chart.yAxis[0]?.name, leftColor]]
+          independent: true,
+          domain: rightCat,
+          range: rightRange,
+          relations: rightRelations
         }
       }
-    })
-    if (basicStyle.subSeriesColor?.length) {
-      const { yAxisExt, extBubble } = chart
-      const relations = [options.scale?.color?.relations?.[0]]
-      if (extBubble?.length) {
-        basicStyle.subSeriesColor.reduce((acc, cur) => {
-          acc[cur.id] = cur.color
-          return acc
-        }, {})
-        basicStyle.subSeriesColor.forEach(c =>
-          relations.push([c.id, hexColorToRGBA(c.color, basicStyle.subAlpha)])
-        )
-      } else {
-        const rightColor = basicStyle.subSeriesColor.find(c => c.id === yAxisExt[0]?.id)?.color
-        if (rightColor) {
-          relations.push([
-            yAxisExt[0]?.chartShowName ?? yAxisExt[0]?.name,
-            hexColorToRGBA(rightColor, basicStyle.subAlpha)
-          ])
-        }
-      }
-      merge(options, {
-        scale: {
-          color: {
-            relations
-          }
-        }
-      })
     }
-    const colors = basicStyle.subColors.map(c => hexColorToRGBA(c, basicStyle.subAlpha))
-    merge(options, {
+    merge(lineMark, rightColorScale, {
       scale: {
-        color: {
-          range: colors
+        series: {
+          type: 'ordinal',
+          independent: true,
+          domain: rightCat,
+          range: rightRange,
+          relations: rightRelations
         }
       }
     })
-    const [intervalMark, lineMark, pointMark] = options.children
-    if (basicStyle.gradient) {
-      leftColor = setGradientColor(leftColor, true, 270)
-    }
+    merge(pointMark, rightColorScale)
     merge(intervalMark, {
       style: {
-        fill: leftColor,
         columnWidthRatio: basicStyle.columnWidthRatio / 100
       }
     })
@@ -259,19 +350,84 @@ export class ColumnLineMix extends G2ChartView {
   protected configLegend(chart: Chart, options: G2Spec): G2Spec {
     const { legend } = parseJson(chart.customStyle)
     if (!legend.show) {
-      return { ...options, legend: false }
+      return options
     }
-    const baseLegend = this.getLegend(chart)
-    const tmpLegend = {
-      legend: {
+    const [intervalMark, lineMark] = options.children[0].children
+    const leftRelations = intervalMark.scale.color.relations
+    const rightRelations = lineMark.scale.color.relations
+    const unionRelations = [...leftRelations, ...rightRelations]
+    const legendMark = {
+      position: 'top',
+      type: 'legends',
+      key: 'legend',
+      scale: {
         color: {
-          ...baseLegend,
-          itemMarkerSize: legend.size,
-          itemMarker: legend.icon
+          type: 'ordinal',
+          domain: [],
+          range: [],
+          relations: unionRelations
         }
-      }
+      },
+      layout: {
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      itemMarker: legend.icon,
+      itemMarkerSize: legend.size,
+      itemLabelFontSize: legend.fontSize,
+      itemLabelFill: legend.color
     }
-    defaultsDeep(options, tmpLegend)
+    unionRelations.forEach(([key, value]) => {
+      legendMark.scale.color.domain.push(key)
+      legendMark.scale.color.range.push(value)
+    })
+    if (legend.hPosition === 'center') {
+      options.direction = 'col'
+      legendMark.maxRows = 1
+      if (legend.vPosition === 'top') {
+        legendMark.position = 'top'
+        options.ratio = [1, 20]
+        options.children.unshift(legendMark)
+      }
+      if (legend.vPosition === 'bottom') {
+        legendMark.position = 'bottom'
+        options.ratio = [20, 1]
+        options.children.push(legendMark)
+      }
+      return options
+    }
+    if (legend.vPosition === 'center') {
+      options.direction = 'row'
+      legendMark.maxCols = 1
+      if (legend.hPosition === 'left') {
+        legendMark.position = 'left'
+        options.ratio = [1, 20]
+        options.children.unshift(legendMark)
+      }
+      if (legend.hPosition === 'right') {
+        legendMark.position = 'right'
+        options.ratio = [20, 1]
+        options.children.push(legendMark)
+      }
+      return options
+    }
+    legendMark.maxRows = 1
+    if (legend.vPosition === 'top') {
+      legendMark.position = 'top'
+      options.ratio = [1, 20]
+      options.children.unshift(legendMark)
+    }
+    if (legend.vPosition === 'bottom') {
+      legendMark.position = 'bottom'
+      options.ratio = [20, 1]
+      options.children.push(legendMark)
+    }
+    if (legend.hPosition === 'left') {
+      legendMark.layout.justifyContent = 'flex-start'
+    }
+    if (legend.hPosition === 'right') {
+      legendMark.layout.justifyContent = 'flex-end'
+    }
     return options
   }
 
@@ -339,7 +495,7 @@ export class ColumnLineMix extends G2ChartView {
         }
       ]
     }
-    const [intervalMark, _, pointMark] = options.children
+    const [intervalMark, _, pointMark] = options.children.find(c => c.key === 'chart').children
     if (!label.seriesLabelFormatter?.length) {
       defaultsDeep(intervalMark, labelOpt)
       defaultsDeep(pointMark, labelOpt)
@@ -360,7 +516,7 @@ export class ColumnLineMix extends G2ChartView {
 
   protected configTooltip(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const { tooltip } = parseJson(chart.customAttr)
-    const [intervalMark, lineMark] = options.children
+    const [intervalMark, lineMark] = options.children.find(c => c.key === 'chart').children
     if (!tooltip.show) {
       defaultsDeep(intervalMark, { tooltip: false })
       defaultsDeep(lineMark, { tooltip: false })
@@ -412,7 +568,7 @@ export class ColumnLineMix extends G2ChartView {
               items = items.filter(i => formatterMap[i.quotaList[0].id])
             }
             const result = []
-            const [view] = chartObj.getContext().views
+            const view = chartObj.getContext().views.find(v => v.key === 'chart')
             items.forEach(item => {
               const formatterCfg =
                 formatterMap[item.quotaList[0].id]?.formatterCfg ?? yAxis[0].formatterCfg
@@ -444,13 +600,15 @@ export class ColumnLineMix extends G2ChartView {
 
   protected configXAxis(chart: Chart, options: G2Spec): G2Spec {
     const { xAxis } = parseJson(chart.customStyle)
+    const view = options.children.find(c => c.key === 'chart')
     if (!xAxis.show) {
       const axisHide = {
         axis: {
           x: false
         }
       }
-      return defaultsDeep(options, axisHide)
+      defaultsDeep(view, axisHide)
+      return options
     }
     let lineLineDash = undefined
     if (xAxis.axisLine.lineStyle.style === 'dashed') {
@@ -499,12 +657,15 @@ export class ColumnLineMix extends G2ChartView {
         }
       }
     }
-    return defaultsDeep(options, axisStyle)
+    defaultsDeep(view, axisStyle)
+    return options
   }
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
     const { yAxis, yAxisExt } = parseJson(chart.customStyle)
-    const [intervalMark, lineMark, pointMark] = options.children
+    const [intervalMark, lineMark, pointMark] = options.children.find(
+      c => c.key === 'chart'
+    ).children
     if (!yAxis.show) {
       intervalMark.axis.y = false
       lineMark.axis.y = false
@@ -579,6 +740,16 @@ export class ColumnLineMix extends G2ChartView {
     return options
   }
 
+  private randomString(length: number): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let result = ''
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length)
+      result += chars[randomIndex]
+    }
+    return result
+  }
+
   protected configAssistLine(chart: Chart, options: G2Spec): G2Spec {
     const { assistLineCfg } = parseJson(chart.senior)
     if (!assistLineCfg.enable || !assistLineCfg.assistLine?.length) {
@@ -612,11 +783,13 @@ export class ColumnLineMix extends G2ChartView {
     const yAxisFormatterCfg = yAxis.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
     const yAxisExtFormatterCfg =
       yAxisExt.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
+    const view = options.children.find(c => c.key === 'chart')
+    const randomAssistColorScale = this.randomString(6)
     splitLineData.forEach((lineData, index) => {
       if (lineData.length) {
         const assistLineMark: G2Spec = {
           type: 'lineY',
-          encode: { y: 'value' },
+          encode: { y: 'value', color: () => randomAssistColorScale },
           scale: {
             y: {
               key: index === 0 ? 'left' : 'right'
@@ -650,9 +823,35 @@ export class ColumnLineMix extends G2ChartView {
             }
           ]
         }
-        options.children.push(assistLineMark)
+        view.children.push(assistLineMark)
       }
     })
+    const assistFlag = splitLineData.some(l => l.length > 0)
+    const { legend } = parseJson(chart.customStyle)
+    // 处理 legend 点击辅助线会消失，创建一个隐藏的 legend 项
+    if (assistFlag && legend.show) {
+      const legendMark = options.children.find(c => c.key === 'legend')
+      legendMark.scale.color.domain.push(randomAssistColorScale)
+      legendMark.scale.color.relations.push([randomAssistColorScale, '#000000'])
+      if (!Symbols.has('empty')) {
+        registerSymbol('empty', this.EMPTY_MARKER)
+      }
+      const originMarker = legendMark.itemMarker
+      merge(legendMark, {
+        itemMarker: d => {
+          if (d === randomAssistColorScale || d.id === randomAssistColorScale) {
+            return 'empty'
+          }
+          return originMarker
+        },
+        itemLabelText: d => {
+          if (d.id === randomAssistColorScale) {
+            return ''
+          }
+          return d.id
+        }
+      })
+    }
     return options
   }
 
@@ -665,6 +864,39 @@ export class ColumnLineMix extends G2ChartView {
       senior.functionCfg.emptyDataStrategy = 'breakLine'
     }
     return chart
+  }
+
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    const result: ChartBasicStyle['seriesColor'] = []
+    const seriesSet = new Set<string>()
+    const colors = chart.customAttr.basicStyle.colors
+    const { yAxis, xAxisExt } = chart
+    if (xAxisExt?.length) {
+      data?.forEach(d => {
+        if (d.value === null || d.category === null || seriesSet.has(d.category)) {
+          return
+        }
+        seriesSet.add(d.category)
+        result.push({
+          id: d.category,
+          name: d.category,
+          color: colors[(seriesSet.size - 1) % colors.length]
+        })
+      })
+    } else {
+      yAxis?.forEach(axis => {
+        if (seriesSet.has(axis.id)) {
+          return
+        }
+        seriesSet.add(axis.id)
+        result.push({
+          id: axis.id,
+          name: axis.chartShowName ?? axis.name,
+          color: colors[(seriesSet.size - 1) % colors.length]
+        })
+      })
+    }
+    return result
   }
 
   public setupSubSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
@@ -712,8 +944,9 @@ export class ColumnLineMix extends G2ChartView {
     )(chart, options, context, this)
   }
 
-  constructor(name = 'chart-mix') {
+  constructor(name = 'chart-mix-group') {
     super(name, [])
+    this.EMPTY_MARKER.style = []
   }
 }
 
