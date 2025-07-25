@@ -598,9 +598,21 @@ export class GroupLineMix extends G2ChartView {
     return options
   }
 
-  protected configXAxis(chart: Chart, options: G2Spec): G2Spec {
+  protected configXAxis(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const { xAxis } = parseJson(chart.customStyle)
     const view = options.children.find(c => c.key === 'chart')
+    // 固定 x 轴顺序
+    const { leftData: xAxisData } = context
+    const xAxisSort = xAxisData.map(d => d.field)
+    defaultsDeep(view, {
+      scale: {
+        x: {
+          compare: (a, b) => {
+            return xAxisSort.indexOf(a) - xAxisSort.indexOf(b)
+          }
+        }
+      }
+    })
     if (!xAxis.show) {
       const axisHide = {
         axis: {
@@ -645,15 +657,7 @@ export class GroupLineMix extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: xAxis.splitLine.lineStyle.width,
           gridLineDash,
-          transform: xAxis.axisLabel.rotate
-            ? [
-                {
-                  type: 'rotate',
-                  optionalAngles: [xAxis.axisLabel.rotate],
-                  recoverWhenFailed: false
-                }
-              ]
-            : []
+          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`
         }
       }
     }
@@ -821,7 +825,9 @@ export class GroupLineMix extends G2ChartView {
               transform: [{ type: 'overlapHide' }, { type: 'exceedAdjust' }],
               fontFamily: chart.fontFamily
             }
-          ]
+          ],
+          tooltip: false,
+          legend: false
         }
         view.children.push(assistLineMark)
       }
