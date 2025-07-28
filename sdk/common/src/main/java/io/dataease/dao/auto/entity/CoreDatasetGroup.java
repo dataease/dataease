@@ -50,7 +50,6 @@ public class CoreDatasetGroup {
     private Integer mode;
 
     @Comment("关联关系树")
-    @Lob
     @Column(name = "info", length = 16777216)
     private String info;
 
@@ -84,7 +83,6 @@ public class CoreDatasetGroup {
     private Long lastUpdateTime;
 
     @Comment("关联sql")
-    @Lob
     @Column(name = "union_sql", length = 16777216)
     private String unionSql;
 

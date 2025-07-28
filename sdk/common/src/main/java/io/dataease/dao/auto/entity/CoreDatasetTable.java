@@ -43,12 +43,10 @@ public class CoreDatasetTable {
     private String type;
 
     @Comment("表原始信息,表名,sql等")
-    @Lob
     @Column(name = "info", length = 16777216)
     private String info;
 
     @Comment("SQL参数")
-    @Lob
     @Column(name = "sql_variable_details", length = 16777216)
     private String sqlVariableDetails;
 

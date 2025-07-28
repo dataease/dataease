@@ -20,11 +20,9 @@ public class DemoTeaMaterial {
     @Column(name = "date")
     private Date date;
 
-    @Lob
     @Column(name = "shop", length = 16777216)
     private String shop;
 
-    @Lob
     @Column(name = "purpose", length = 16777216)
     private String purpose;
 

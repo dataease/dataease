@@ -53,7 +53,6 @@ public class VisualizationTemplate {
     private Long createTime;
 
     @Comment("缩略图")
-    @Lob
     @Column(name = "snapshot", length = 16777216)
     private String snapshot;
 
@@ -63,22 +62,18 @@ public class VisualizationTemplate {
     private String templateType;
 
     @Comment("template 样式")
-    @Lob
     @Column(name = "template_style", length = 16777216)
     private String templateStyle;
 
     @Comment("template 数据")
-    @Lob
     @Column(name = "template_data", length = 16777216)
     private String templateData;
 
     @Comment("预存数据")
-    @Lob
     @Column(name = "dynamic_data", length = 16777216)
     private String dynamicData;
 
     @Comment("app数据")
-    @Lob
     @Column(name = "app_data", length = 16777216)
     private String appData;
 

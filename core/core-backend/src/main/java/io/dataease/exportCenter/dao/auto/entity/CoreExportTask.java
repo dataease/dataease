@@ -68,11 +68,9 @@ public class CoreExportTask {
     private String exportMachineName;
 
     @NotNull
-    @Lob
     @Column(name = "params", nullable = false, length = 16777216)
     private String params;
 
-    @Lob
     @Column(name = "msg", length = 16777216)
     private String msg;
 

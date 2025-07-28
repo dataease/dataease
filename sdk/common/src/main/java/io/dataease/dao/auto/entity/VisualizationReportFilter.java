@@ -45,7 +45,6 @@ public class VisualizationReportFilter {
     private Long filterId;
 
     @Comment("过滤组件内容")
-    @Lob
     @Column(name = "filter_info", length = 16777216)
     private String filterInfo;
 

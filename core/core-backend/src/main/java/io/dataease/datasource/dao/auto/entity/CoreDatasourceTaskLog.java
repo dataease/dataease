@@ -18,7 +18,6 @@ import org.hibernate.annotations.Comment;
 })
 public class CoreDatasourceTaskLog {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Comment("主键")
     @Column(name = "id", nullable = false)
     private Long id;
@@ -52,7 +51,7 @@ public class CoreDatasourceTaskLog {
     @Column(name = "table_name", nullable = false)
     private String tableName;
 
-    @Lob
+
     @Column(name = "info", length = 16777216)
     private String info;
 

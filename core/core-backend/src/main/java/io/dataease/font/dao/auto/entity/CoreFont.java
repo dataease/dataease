@@ -40,7 +40,7 @@ public class CoreFont {
     private String fileTransName;
 
     @Comment("是否默认")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "is_default")
     private Boolean isDefault;
 
@@ -50,7 +50,7 @@ public class CoreFont {
     private Long updateTime;
 
     @Comment("是否内置")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "is_BuiltIn")
     private Boolean isBuiltin;
 

@@ -30,7 +30,6 @@ public class VisualizationBackground {
     @Column(name = "classification", nullable = false)
     private String classification;
 
-    @Lob
     @Column(name = "content", length = 16777216)
     private String content;
 

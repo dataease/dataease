@@ -41,7 +41,6 @@ public class CoreDatasetTableSqlLog {
     private Long spend;
 
     @NotNull
-    @Lob
     @Column(name = "`sql`", nullable = false, length = 16777216)
     private String sql;
 

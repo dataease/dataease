@@ -51,63 +51,48 @@ public class SnapshotCoreChartView {
     @Column(name = "result_mode", length = 50)
     private String resultMode;
 
-    @Lob
     @Column(name = "x_axis", length = 16777216)
     private String xAxis;
 
-    @Lob
     @Column(name = "x_axis_ext", length = 16777216)
     private String xAxisExt;
 
-    @Lob
     @Column(name = "y_axis", length = 16777216)
     private String yAxis;
 
-    @Lob
     @Column(name = "y_axis_ext", length = 16777216)
     private String yAxisExt;
 
-    @Lob
     @Column(name = "ext_stack", length = 16777216)
     private String extStack;
 
-    @Lob
     @Column(name = "ext_bubble", length = 16777216)
     private String extBubble;
 
-    @Lob
     @Column(name = "ext_label", length = 16777216)
     private String extLabel;
 
-    @Lob
     @Column(name = "ext_tooltip", length = 16777216)
     private String extTooltip;
 
-    @Lob
     @Column(name = "custom_attr", length = 16777216)
     private String customAttr;
 
-    @Lob
     @Column(name = "custom_attr_mobile", length = 16777216)
     private String customAttrMobile;
 
-    @Lob
     @Column(name = "custom_style", length = 16777216)
     private String customStyle;
 
-    @Lob
     @Column(name = "custom_style_mobile", length = 16777216)
     private String customStyleMobile;
 
-    @Lob
     @Column(name = "custom_filter", length = 16777216)
     private String customFilter;
 
-    @Lob
     @Column(name = "drill_fields", length = 16777216)
     private String drillFields;
 
-    @Lob
     @Column(name = "senior", length = 16777216)
     private String senior;
 
@@ -124,7 +109,6 @@ public class SnapshotCoreChartView {
     @Column(name = "update_time")
     private Long updateTime;
 
-    @Lob
     @Column(name = "snapshot", length = 16777216)
     private String snapshot;
 
@@ -150,12 +134,11 @@ public class SnapshotCoreChartView {
     @Column(name = "data_from")
     private String dataFrom;
 
-    @Lob
     @Column(name = "view_fields", length = 16777216)
     private String viewFields;
 
     @Comment("是否开启刷新")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "refresh_view_enable")
     private Boolean refreshViewEnable;
 
@@ -171,12 +154,12 @@ public class SnapshotCoreChartView {
     private Integer refreshTime;
 
     @Comment("是否开启联动")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "linkage_active")
     private Boolean linkageActive;
 
     @Comment("是否开启跳转")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "jump_active")
     private Boolean jumpActive;
 
@@ -193,21 +176,17 @@ public class SnapshotCoreChartView {
     private Boolean aggregate;
 
     @Comment("流向地图起点名称field")
-    @Lob
     @Column(name = "flow_map_start_name", length = 16777216)
     private String flowMapStartName;
 
     @Comment("流向地图终点名称field")
-    @Lob
     @Column(name = "flow_map_end_name", length = 16777216)
     private String flowMapEndName;
 
     @Comment("颜色维度field")
-    @Lob
     @Column(name = "ext_color", length = 16777216)
     private String extColor;
 
-    @Lob
     @Column(name = "sort_priority", length = 16777216)
     private String sortPriority;
 

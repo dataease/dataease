@@ -39,8 +39,7 @@ public class QrtzBlobTrigger {
     @Column(name = "TRIGGER_GROUP", nullable = false, length = 200)
     private String triggerGroup;
 
-    @Lob
     @Column(name = "BLOB_DATA", length = 16777216)
-    private Blob blobData;
+    private byte[] blobData;
 
 }

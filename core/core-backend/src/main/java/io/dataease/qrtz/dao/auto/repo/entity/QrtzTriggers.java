@@ -61,9 +61,8 @@ public class QrtzTriggers {
     @Column(name = "MISFIRE_INSTR")
     private Short misfireInstr;
 
-    @Lob
     @Column(name = "JOB_DATA", length = 16777216)
-    private Blob jobData;
+    private byte[] jobData;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({

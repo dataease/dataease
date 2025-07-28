@@ -21,7 +21,6 @@ public class QrtzCalendars {
     @Column(name = "CALENDAR_NAME", length = 200, nullable = false)
     private String calendarName;
 
-    @Lob
     @Column(name = "CALENDAR", nullable = false, length = 16777216)
-    private Blob calendar;
+    private byte[] calendar;
 }

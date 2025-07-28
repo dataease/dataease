@@ -47,7 +47,6 @@ public class CoreDatasource {
     private String editType;
 
     @NotNull
-    @Lob
     @Comment("详细信息")
     @Column(name = "configuration", length = 16777216, nullable = false)
     @Convert(converter = EncryptDecryptConverter.class)
@@ -72,12 +71,10 @@ public class CoreDatasource {
     @Column(name = "创建人ID", length = 50)
     private String createBy;
 
-    @Lob
     @Comment("数据源状态")
     @Column(name = "status", length = 16777216)
     private String status;
 
-    @Lob
     @Comment("同步实例")
     @Column(name = "qrtz_instance")
     private String qrtzInstance;

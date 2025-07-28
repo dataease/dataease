@@ -242,6 +242,34 @@ public class EngineManage {
     }
 
 
+    public static class PgJdbcUrlParser implements JdbcUrlParser {
+        private static final Pattern PATTERN = Pattern.compile("jdbc:postgresql://(.*):(\\d+)/(.*)\\?(.*)");
+
+        @Override
+        public Map<String, String> parse(String url, Environment env) {
+            Matcher matcher = PATTERN.matcher(url);
+            if (!matcher.find()) return null;
+            Map<String, String> config = new HashMap<>();
+            config.put("host", matcher.group(1));
+            config.put("port", matcher.group(2));
+            config.put("dataBase", matcher.group(3));
+            if (matcher.groupCount() == 4) {
+                String regex = "currentSchema=([^&]+)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher schema = pattern.matcher(matcher.group(4));
+                if (schema.find()) {
+                    config.put("schema", schema.group(1));
+                }
+                config.put("extraParams", "");
+            }
+            config.put("type", "pg");
+            config.put("username", env.getProperty("spring.datasource.username"));
+            config.put("password", env.getProperty("spring.datasource.password"));
+            return config;
+        }
+    }
+
+
     /**
      * Oracle JDBC URL解析器实现
      * 支持两种格式的Oracle JDBC URL：
@@ -324,6 +352,8 @@ public class EngineManage {
                             parserMap.put("jdbc:mysql://", new MysqlJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
                             parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:postgresql://")) {
+                            parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());
                         }
                     }
                 }

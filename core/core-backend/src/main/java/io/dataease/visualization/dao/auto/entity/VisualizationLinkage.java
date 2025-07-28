@@ -43,7 +43,7 @@ public class VisualizationLinkage {
     private String updatePeople;
 
     @Comment("是否启用关联")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "linkage_active")
     private Boolean linkageActive;
 

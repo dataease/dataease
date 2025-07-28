@@ -46,7 +46,7 @@ public class SnapshotVisualizationOuterParamsInfo {
     private String copyId;
 
     @Comment("是否必填")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "required")
     private Boolean required;
 
@@ -56,7 +56,7 @@ public class SnapshotVisualizationOuterParamsInfo {
     private String defaultValue;
 
     @Comment("是否启用默认值")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "enabled_default")
     private Boolean enabledDefault;
 

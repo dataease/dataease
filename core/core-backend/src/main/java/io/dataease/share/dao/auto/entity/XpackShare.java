@@ -63,13 +63,13 @@ public class XpackShare {
 
     @NotNull
     @Comment("自动生成密码")
-    @ColumnDefault("1")
+    @ColumnDefault("true")
     @Column(name = "auto_pwd", nullable = false)
     private Boolean autoPwd = false;
 
     @NotNull
     @Comment("ticket")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "ticket_require", nullable = false)
     private Boolean ticketRequire = false;
 

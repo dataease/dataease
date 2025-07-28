@@ -45,16 +45,14 @@ public class DataVisualizationInfo {
     @Column(name = "type", length = 50)
     private String type;
 
-    @Lob
     @Column(name = "canvas_style_data", length = 16777216)
     private String canvasStyleData;
 
-    @Lob
     @Column(name = "component_data", length = 16777216)
     private String componentData;
 
     @Comment("移动端布局0-关闭 1-开启")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "mobile_layout")
     private Boolean mobileLayout;
 
@@ -102,7 +100,7 @@ public class DataVisualizationInfo {
     private String source;
 
     @Comment("删除标志")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "delete_flag")
     private Boolean deleteFlag;
 

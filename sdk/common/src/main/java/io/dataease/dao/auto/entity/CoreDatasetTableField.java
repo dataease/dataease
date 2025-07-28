@@ -37,17 +37,14 @@ public class CoreDatasetTableField {
 
     @Comment("原始字段名")
     @NotNull
-    @Lob
     @Column(name = "origin_name", nullable = false, length = 16777216)
     private String originName;
 
     @Comment("字段名用于展示")
-    @Lob
     @Column(name = "name", length = 16777216)
     private String name;
 
     @Comment("描述")
-    @Lob
     @Column(name = "description", length = 16777216)
     private String description;
 
@@ -61,11 +58,9 @@ public class CoreDatasetTableField {
     @Column(name = "field_short_name")
     private String fieldShortName;
 
-    @Lob
     @Column(name = "group_list", length = 16777216)
     private String groupList;
 
-    @Lob
     @Column(name = "other_group", length = 16777216)
     private String otherGroup;
 
@@ -99,7 +94,7 @@ public class CoreDatasetTableField {
     private Integer extField;
 
     @Comment("是否选中")
-    @ColumnDefault("1")
+    @ColumnDefault("true")
     @Column(name = "checked")
     private Boolean checked;
 
@@ -127,7 +122,6 @@ public class CoreDatasetTableField {
     private String dateFormatType;
 
     @Comment("计算字段参数")
-    @Lob
     @Column(name = "params", length = 16777216)
     private String params;
 

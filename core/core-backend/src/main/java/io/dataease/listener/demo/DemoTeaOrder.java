@@ -18,23 +18,18 @@ public class DemoTeaOrder {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Lob
     @Column(name = "shop", length = 16777216)
     private String shop;
 
-    @Lob
     @Column(name = "product", length = 16777216)
     private String product;
 
-    @Lob
     @Column(name = "dish", length = 16777216)
     private String dish;
 
-    @Lob
     @Column(name = "temperature", length = 16777216)
     private String temperature;
 
-    @Lob
     @Column(name = "specifications", length = 16777216)
     private String specifications;
 
@@ -44,7 +39,6 @@ public class DemoTeaOrder {
     @Column(name = "price")
     private Long price;
 
-    @Lob
     @Column(name = "serial", length = 16777216)
     private String serial;
 

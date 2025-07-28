@@ -43,8 +43,7 @@ public class QrtzJobDetails {
     @Column(name = "REQUESTS_RECOVERY", nullable = false)
     private Boolean requestsRecovery;
 
-    @Lob
     @Column(name = "JOB_DATA", length = 16777216)
-    private Blob jobData;
+    private byte[] jobData;
 }
 

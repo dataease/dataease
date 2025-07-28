@@ -52,7 +52,6 @@ public class VisualizationTemplateCategory {
     private Long createTime;
 
     @Comment("缩略图")
-    @Lob
     @Column(name = "snapshot", length = 16777216)
     private String snapshot;
 

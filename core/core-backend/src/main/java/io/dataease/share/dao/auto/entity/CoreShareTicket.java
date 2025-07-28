@@ -34,7 +34,6 @@ public class CoreShareTicket {
     @Column(name = "exp")
     private Long exp;
 
-    @Lob
     @Column(name = "args", length = 16777216)
     private String args;
 

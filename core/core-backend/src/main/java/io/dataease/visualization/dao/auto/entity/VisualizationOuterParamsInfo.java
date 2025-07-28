@@ -44,16 +44,15 @@ public class VisualizationOuterParamsInfo {
     private String copyId;
 
     @Comment("是否必填")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "required")
     private Boolean required;
 
-    @Lob
     @Column(name = "default_value", length = 16777216)
     private String defaultValue;
 
     @Comment("是否启用默认值")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "enabled_default")
     private Boolean enabledDefault;
 

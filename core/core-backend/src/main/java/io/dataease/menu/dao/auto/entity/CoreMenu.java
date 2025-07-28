@@ -54,19 +54,19 @@ public class CoreMenu {
 
     @Comment("隐藏")
     @NotNull
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "hidden", nullable = false)
     private Boolean hidden = false;
 
     @Comment("是否内部")
     @NotNull
-    @ColumnDefault("1")
+    @ColumnDefault("true")
     @Column(name = "in_layout", nullable = false)
     private Boolean inLayout = false;
 
     @Comment("参与授权")
     @NotNull
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "auth", nullable = false)
     private Boolean auth = false;
 

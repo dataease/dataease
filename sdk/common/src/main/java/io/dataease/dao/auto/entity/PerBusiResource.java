@@ -47,7 +47,7 @@ public class PerBusiResource {
 
     @NotNull
     @Comment("叶子结点")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "leaf", nullable = false)
     private Boolean leaf = false;
 

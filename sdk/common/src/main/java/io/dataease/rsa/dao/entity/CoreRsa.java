@@ -24,13 +24,11 @@ public class CoreRsa implements Serializable {
 
     @Comment("私钥")
     @NotNull
-    @Lob
     @Column(name = "private_key", nullable = false, length = 16777216)
     private String privateKey;
 
     @Comment("公钥")
     @NotNull
-    @Lob
     @Column(name = "public_key", nullable = false, length = 16777216)
     private String publicKey;
 
@@ -41,7 +39,6 @@ public class CoreRsa implements Serializable {
 
     @Comment("AES 加密算法的 key")
     @NotNull
-    @Lob
     @Column(name = "aes_key", nullable = false, length = 16777216)
     private String aesKey;
 

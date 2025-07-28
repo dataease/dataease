@@ -29,16 +29,14 @@ public class VisualizationSubject {
     @Column(name = "type")
     private String type;
 
-    @Lob
     @Column(name = "details", length = 16777216)
     private String details;
 
     @Comment("删除标记")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "delete_flag")
     private Boolean deleteFlag;
 
-    @Lob
     @Column(name = "cover_url", length = 16777216)
     private String coverUrl;
 

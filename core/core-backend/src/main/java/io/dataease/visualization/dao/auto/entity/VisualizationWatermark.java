@@ -23,7 +23,6 @@ public class VisualizationWatermark {
     @Column(name = "version")
     private String version;
 
-    @Lob
     @Column(name = "setting_content", length = 16777216)
     private String settingContent;
 

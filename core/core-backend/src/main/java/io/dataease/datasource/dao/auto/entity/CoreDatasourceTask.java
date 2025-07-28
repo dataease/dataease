@@ -14,7 +14,6 @@ import org.hibernate.annotations.Comment;
 @Table(name = "core_datasource_task")
 public class CoreDatasourceTask {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Comment("主键")
     @Column(name = "id", nullable = false)
     private Long id;
@@ -82,7 +81,6 @@ public class CoreDatasourceTask {
     @Column(name = "last_exec_status", length = 50)
     private String lastExecStatus;
 
-    @Lob
     @Column(name = "extra_data", length = 16777216)
     private String extraData;
 

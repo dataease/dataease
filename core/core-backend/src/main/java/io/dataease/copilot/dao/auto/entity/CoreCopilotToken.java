@@ -21,7 +21,6 @@ public class CoreCopilotToken {
     @Column(name = "type")
     private String type;
 
-    @Lob
     @Column(name = "token", length = 16777216)
     private String token;
 
