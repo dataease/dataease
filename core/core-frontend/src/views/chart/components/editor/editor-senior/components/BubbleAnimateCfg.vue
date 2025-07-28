@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { BubbleCfg } from '@/models/chart/chart-senior'
 
 const { t } = useI18n()
 
@@ -38,7 +39,7 @@ const onBubbleAnimateChange = () => {
 }
 
 const changeSpeedSize = v => {
-  const _v = parseInt(v)
+  const _v = parseFloat(v)
   if (_v >= 0 && _v <= 5) {
     state.bubbleAnimateForm.speed = _v
   } else if (_v < 0) {
@@ -50,7 +51,7 @@ const changeSpeedSize = v => {
 }
 
 const changeRingsSize = v => {
-  const _v = parseInt(v)
+  const _v = parseFloat(v)
   if (_v >= 0 && _v <= 5) {
     state.bubbleAnimateForm.rings = _v
   } else if (_v < 0) {
@@ -121,7 +122,7 @@ init()
             <el-form-item class="form-item bubble-animate-slider" :class="'form-item-' + themes">
               <el-slider
                 :effect="themes"
-                :min="1"
+                :min="0"
                 :max="5"
                 v-model="state.bubbleAnimateForm.speed"
                 @change="onBubbleAnimateChange()"
@@ -134,7 +135,7 @@ init()
                 type="number"
                 :effect="themes"
                 v-model="state.bubbleAnimateForm.speed"
-                :min="1"
+                :min="0"
                 :max="5"
                 class="basic-input-number"
                 :controls="false"
@@ -154,7 +155,7 @@ init()
             <el-form-item class="form-item bubble-animate-slider" :class="'form-item-' + themes">
               <el-slider
                 :effect="themes"
-                :min="1"
+                :min="0"
                 :max="5"
                 v-model="state.bubbleAnimateForm.rings"
                 @change="onBubbleAnimateChange()"
@@ -167,7 +168,7 @@ init()
                 type="number"
                 :effect="themes"
                 v-model="state.bubbleAnimateForm.rings"
-                :min="1"
+                :min="0"
                 :max="5"
                 class="basic-input-number"
                 :controls="false"
