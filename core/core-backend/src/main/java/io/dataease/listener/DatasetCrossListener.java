@@ -1,9 +1,8 @@
 package io.dataease.listener;
 
-import io.dataease.chart.manage.ChartViewOldDataMergeService;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.startup.dao.auto.entity.CoreSysStartupJob;
-import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobMapper;
+import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobRepository;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +23,7 @@ public class DatasetCrossListener implements ApplicationListener<ApplicationRead
     private final Logger logger = LoggerFactory.getLogger(DatasetCrossListener.class);
     public static final String JOB_ID = "datasetCrossListener";
     @Resource
-    private CoreSysStartupJobMapper coreSysStartupJobMapper;
+    private CoreSysStartupJobRepository coreSysStartupJobRepository;
     @Resource
     private DatasetSQLManage datasetSQLManage;
 
@@ -32,14 +31,14 @@ public class DatasetCrossListener implements ApplicationListener<ApplicationRead
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         logger.info("====dataset cross listener [start]====");
 
-        CoreSysStartupJob sysStartupJob = coreSysStartupJobMapper.selectById(JOB_ID);
+        CoreSysStartupJob sysStartupJob = coreSysStartupJobRepository.findById(JOB_ID).orElse(null);
         if (ObjectUtils.isNotEmpty(sysStartupJob) && StringUtils.equalsIgnoreCase(sysStartupJob.getStatus(), "ready")) {
             logger.info("====dataset cross listener [doing]====");
 
             datasetSQLManage.datasetCrossDefault();
 
             sysStartupJob.setStatus("done");
-            coreSysStartupJobMapper.updateById(sysStartupJob);
+            coreSysStartupJobRepository.saveAndFlush(sysStartupJob);
         }
         logger.info("====dataset cross listener [end]====");
     }

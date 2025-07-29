@@ -1,9 +1,8 @@
 package io.dataease.datasource.manage;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
@@ -32,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.CRON;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
@@ -290,6 +290,9 @@ public class DatasourceSyncManage {
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         int pageNumber = 1000; //一次插入 1000条
+        if (engine.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.oracle.name())) {
+            pageNumber = 1;
+        }
         int totalPage;
         if (dataList.size() % pageNumber > 0) {
             totalPage = dataList.size() / pageNumber + 1;
@@ -322,7 +325,18 @@ public class DatasourceSyncManage {
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         engineRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
-        calciteProvider.exec(engineRequest);
+        if (engineProvider.needCheckExistTable()) {
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            DatasourceDTO datasourceDTO = new DatasourceDTO();
+            BeanUtils.copyBean(datasourceDTO, engine);
+            datasourceRequest.setDatasource(datasourceDTO);
+            if (!calciteProvider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
+                calciteProvider.exec(engineRequest);
+            }
+        } else {
+            calciteProvider.exec(engineRequest);
+        }
+
     }
 
     public void dropEngineTable(String tableName) throws Exception {
@@ -331,7 +345,17 @@ public class DatasourceSyncManage {
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         engineRequest.setQuery(engineProvider.dropTable(tableName));
-        calciteProvider.exec(engineRequest);
+        if (engineProvider.needCheckExistTable()) {
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            DatasourceDTO datasourceDTO = new DatasourceDTO();
+            BeanUtils.copyBean(datasourceDTO, engine);
+            datasourceRequest.setDatasource(datasourceDTO);
+            if (calciteProvider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
+                calciteProvider.exec(engineRequest);
+            }
+        }else {
+            calciteProvider.exec(engineRequest);
+        }
     }
 
     public void addSchedule(CoreDatasourceTask datasourceTask) throws DEException {

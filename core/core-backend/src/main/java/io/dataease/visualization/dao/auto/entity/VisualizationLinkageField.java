@@ -1,113 +1,46 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- *
- * </p>
- *
- * @author fit2cloud
- * @since 2023-09-22
- */
-@TableName("visualization_linkage_field")
-public class VisualizationLinkageField implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+@Getter
+@Setter
+@Comment("联动字段")
+@Entity
+@Table(name = "visualization_linkage_field")
+public class VisualizationLinkageField {
+    @Id
+    @Comment("主键")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * 联动ID
-     */
+    @Comment("联动ID")
+    @Column(name = "linkage_id")
     private Long linkageId;
 
-    /**
-     * 源图表字段
-     */
+    @Comment("源视图字段")
+    @Column(name = "source_field")
     private Long sourceField;
 
-    /**
-     * 目标图表字段
-     */
+    @Comment("目标视图字段")
+    @Column(name = "target_field")
     private Long targetField;
 
-    /**
-     * 更新时间
-     */
+    @Comment("更新时间")
+    @Column(name = "update_time")
     private Long updateTime;
 
+    @Comment("复制来源")
+    @Column(name = "copy_from")
     private Long copyFrom;
 
+    @Comment("复制来源ID")
+    @Column(name = "copy_id")
     private Long copyId;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getLinkageId() {
-        return linkageId;
-    }
-
-    public void setLinkageId(Long linkageId) {
-        this.linkageId = linkageId;
-    }
-
-    public Long getSourceField() {
-        return sourceField;
-    }
-
-    public void setSourceField(Long sourceField) {
-        this.sourceField = sourceField;
-    }
-
-    public Long getTargetField() {
-        return targetField;
-    }
-
-    public void setTargetField(Long targetField) {
-        this.targetField = targetField;
-    }
-
-    public Long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Long getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(Long copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public Long getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(Long copyId) {
-        this.copyId = copyId;
-    }
-
-    @Override
-    public String toString() {
-        return "VisualizationLinkageField{" +
-        "id = " + id +
-        ", linkageId = " + linkageId +
-        ", sourceField = " + sourceField +
-        ", targetField = " + targetField +
-        ", updateTime = " + updateTime +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        "}";
-    }
 }

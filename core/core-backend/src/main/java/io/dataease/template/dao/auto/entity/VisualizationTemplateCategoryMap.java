@@ -1,66 +1,34 @@
 package io.dataease.template.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 模板表
- * </p>
- *
- * @author fit2cloud
- * @since 2023-12-04
- */
-@TableName("visualization_template_category_map")
-public class VisualizationTemplateCategoryMap implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
+@Getter
+@Setter
+@Comment("模板表")
+@Entity
+@Table(name = "visualization_template_category_map")
+public class VisualizationTemplateCategoryMap {
+    @Id
+    @Size(max = 50)
+    @Comment("主键")
+    @Column(name = "id", nullable = false, length = 50)
     private String id;
 
-    /**
-     * 名称
-     */
+    @Size(max = 255)
+    @Comment("名称")
+    @Column(name = "category_id")
     private String categoryId;
 
-    /**
-     * 父级id
-     */
+    @Size(max = 255)
+    @Comment("父级id")
+    @Column(name = "template_id")
     private String templateId;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(String templateId) {
-        this.templateId = templateId;
-    }
-
-    @Override
-    public String toString() {
-        return "VisualizationTemplateCategoryMap{" +
-        "id = " + id +
-        ", categoryId = " + categoryId +
-        ", templateId = " + templateId +
-        "}";
-    }
 }

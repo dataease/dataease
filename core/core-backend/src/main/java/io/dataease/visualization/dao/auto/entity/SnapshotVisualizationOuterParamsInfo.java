@@ -1,152 +1,63 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 外部参数配置表
- * </p>
- *
- * @author fit2cloud
- * @since 2025-03-24
- */
-@TableName("snapshot_visualization_outer_params_info")
-public class SnapshotVisualizationOuterParamsInfo implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
-    @TableId("params_info_id")
+@Getter
+@Setter
+@Entity
+@Table(name = "snapshot_visualization_outer_params_info")
+public class SnapshotVisualizationOuterParamsInfo {
+    @Id
+    @Size(max = 50)
+    @Comment("主键")
+    @Column(name = "params_info_id", nullable = false, length = 50)
     private String paramsInfoId;
 
-    /**
-     * visualization_outer_params 表的 ID
-     */
+    @Size(max = 50)
+    @Comment("visualization_outer_params 表的 ID")
+    @Column(name = "params_id", length = 50)
     private String paramsId;
 
-    /**
-     * 参数名
-     */
+    @Size(max = 255)
+    @Comment("参数名")
+    @Column(name = "param_name")
     private String paramName;
 
-    /**
-     * 是否启用
-     */
+    @Comment("是否启用")
+    @Column(name = "checked")
     private Boolean checked;
 
-    /**
-     * 复制来源
-     */
+    @Size(max = 255)
+    @Comment("复制来源")
+    @Column(name = "copy_from")
     private String copyFrom;
 
-    /**
-     * 复制来源ID
-     */
+    @Size(max = 50)
+    @Comment("复制来源ID")
+    @Column(name = "copy_id", length = 50)
     private String copyId;
 
-    /**
-     * 是否必填
-     */
+    @Comment("是否必填")
+    @ColumnDefault("false")
+    @Column(name = "required")
     private Boolean required;
 
-    /**
-     * 默认值 JSON格式
-     */
+    @Size(max = 255)
+    @Comment("默认值 JSON格式")
+    @Column(name = "default_value")
     private String defaultValue;
 
-    /**
-     * 是否启用默认值
-     */
+    @Comment("是否启用默认值")
+    @ColumnDefault("false")
+    @Column(name = "enabled_default")
     private Boolean enabledDefault;
 
-    public String getParamsInfoId() {
-        return paramsInfoId;
-    }
-
-    public void setParamsInfoId(String paramsInfoId) {
-        this.paramsInfoId = paramsInfoId;
-    }
-
-    public String getParamsId() {
-        return paramsId;
-    }
-
-    public void setParamsId(String paramsId) {
-        this.paramsId = paramsId;
-    }
-
-    public String getParamName() {
-        return paramName;
-    }
-
-    public void setParamName(String paramName) {
-        this.paramName = paramName;
-    }
-
-    public Boolean getChecked() {
-        return checked;
-    }
-
-    public void setChecked(Boolean checked) {
-        this.checked = checked;
-    }
-
-    public String getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(String copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public String getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(String copyId) {
-        this.copyId = copyId;
-    }
-
-    public Boolean getRequired() {
-        return required;
-    }
-
-    public void setRequired(Boolean required) {
-        this.required = required;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    public Boolean getEnabledDefault() {
-        return enabledDefault;
-    }
-
-    public void setEnabledDefault(Boolean enabledDefault) {
-        this.enabledDefault = enabledDefault;
-    }
-
-    @Override
-    public String toString() {
-        return "SnapshotVisualizationOuterParamsInfo{" +
-        "paramsInfoId = " + paramsInfoId +
-        ", paramsId = " + paramsId +
-        ", paramName = " + paramName +
-        ", checked = " + checked +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        ", required = " + required +
-        ", defaultValue = " + defaultValue +
-        ", enabledDefault = " + enabledDefault +
-        "}";
-    }
 }

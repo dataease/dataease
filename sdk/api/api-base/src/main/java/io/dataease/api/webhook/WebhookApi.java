@@ -1,11 +1,11 @@
 package io.dataease.api.webhook;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.webhook.request.WebhookSwitchRequest;
 import io.dataease.api.webhook.vo.WebhookGridVO;
 import io.dataease.api.webhook.vo.WebhookOption;
 import io.dataease.model.KeywordRequest;
+import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -29,7 +29,7 @@ public interface WebhookApi {
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
     @PostMapping("/pager/{goPage}/{pageSize}")
-    IPage<WebhookGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody KeywordRequest request);
+    PageResult<WebhookGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody KeywordRequest request);
 
     @Operation(summary = "保存")
     @PostMapping("/save")

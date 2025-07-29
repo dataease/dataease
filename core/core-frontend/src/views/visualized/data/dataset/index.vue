@@ -294,7 +294,7 @@ const dtLoading = ref(false)
 const isCreated = ref(false)
 const getData = () => {
   dtLoading.value = true
-  let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1].value
+  let curSortType = sortList[Number(wsCache.get('TreeSort-backend') === 'true') ?? 1].value
   curSortType = wsCache.get('TreeSort-dataset') ?? curSortType
   const request = { busiFlag: 'dataset' } as BusiTreeRequest
   interactiveStore

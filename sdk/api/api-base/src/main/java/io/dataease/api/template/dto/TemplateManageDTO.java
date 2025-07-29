@@ -26,5 +26,7 @@ public class TemplateManageDTO extends VisualizationTemplateVO {
 
     private List<String> categoryNames;
 
+    private String categoryId;
+
 
 }

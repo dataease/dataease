@@ -1,9 +1,6 @@
 package io.dataease.datasource.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,19 +12,25 @@ import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.*;
-import io.dataease.datasource.dao.auto.mapper.CoreDsFinishPageMapper;
-import io.dataease.datasource.dao.auto.mapper.QrtzSchedulerStateMapper;
+import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
+import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
+import io.dataease.datasource.dao.auto.entity.CoreDsFinishPage;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
-import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
-import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskLogRepository;
+import io.dataease.datasource.dao.auto.repository.CoreDsFinishPageRepository;
+import io.dataease.datasource.dao.auto.repository.QrtzSchedulerStateRepository;
 import io.dataease.datasource.manage.DataSourceManage;
+import io.dataease.datasource.manage.DatabaseTimeManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
+import io.dataease.datasource.type.H2;
+import io.dataease.datasource.type.Mysql;
+import io.dataease.datasource.type.Oracle;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.*;
@@ -43,10 +46,13 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.qrtz.dao.auto.repo.entity.QrtzSchedulerState;
+import io.dataease.result.PageResult;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,8 +60,11 @@ import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,11 +72,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
@@ -85,17 +95,13 @@ public class DatasourceServer implements DatasourceApi {
     private CalciteProvider calciteProvider;
     @Resource
     private DatasourceSyncManage datasourceSyncManage;
-    @Resource
-    private TaskLogExtMapper taskLogExtMapper;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     @Resource
     private DataSourceManage dataSourceManage;
     @Resource
-    private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
+    private QrtzSchedulerStateRepository qrtzSchedulerStateRepository;
     @Resource
-    private DataSourceExtMapper dataSourceExtMapper;
-    @Resource
-    private CoreDsFinishPageMapper coreDsFinishPageMapper;
+    private CoreDsFinishPageRepository coreDsFinishPageRepository;
     @Resource
     private DatasetDataManage datasetDataManage;
     @Resource
@@ -108,6 +114,10 @@ public class DatasourceServer implements DatasourceApi {
     private RelationApi relationManage;
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
+    @Autowired
+    private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
+    @Resource
+    private DatabaseTimeManage databaseTimeManage;
 
 
     public enum UpdateType {
@@ -143,7 +153,7 @@ public class DatasourceServer implements DatasourceApi {
             return false;
         }
 
-        List<CoreDatasource> datasources = coreDatasourceRepository.findInIds(ids);
+        List<CoreDatasource> datasources = coreDatasourceRepository.findAllById(ids);
         if (CollectionUtils.isEmpty(datasources)) {
             return false;
         }
@@ -567,22 +577,21 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public List<DatasourceDTO> innerList(List<Long> ids, List<String> types) throws DEException {
         List<DatasourceDTO> list = new ArrayList<>();
-        LambdaQueryWrapper<CoreDatasource> queryWrapper = new LambdaQueryWrapper<>();
         List<CoreDatasource> dsList = new ArrayList<>();
         if (ids != null) {
             if (ids.isEmpty()) {
                 return list;
             } else {
-                queryWrapper.in(CoreDatasource::getId, ids);
-                dsList = coreDatasourceRepository.findInIds(ids);
+                dsList = coreDatasourceRepository.findAllById(ids);
             }
         }
         if (types != null) {
             if (types.isEmpty()) {
                 return list;
             } else {
-                queryWrapper.in(CoreDatasource::getType, types);
-                dsList = coreDatasourceRepository.findInTypes(types);
+                Specification<CoreDatasource> findInTypesSpec = (root, query, cb) ->
+                        root.get("type").in(types);
+                dsList = coreDatasourceRepository.findAll(findInTypesSpec);
             }
         }
 
@@ -694,7 +703,9 @@ public class DatasourceServer implements DatasourceApi {
         }
 
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
-            List<CoreDatasource> coreDatasources = coreDatasourceRepository.findByPid(datasourceId);
+            Specification<CoreDatasource> findByPidSpec = (root, query, cb) ->
+                    cb.equal(root.get("pid"), datasourceId);
+            List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll(findByPidSpec);
             if (ObjectUtils.isNotEmpty(coreDatasources)) {
                 for (CoreDatasource record : coreDatasources) {
                     delete(record.getId());
@@ -747,6 +758,7 @@ public class DatasourceServer implements DatasourceApi {
         if (coreDatasource == null) {
             DEException.throwException("无效数据源！");
         }
+        System.out.println(JsonUtil.toJSONString(coreDatasource));
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -1105,8 +1117,12 @@ public class DatasourceServer implements DatasourceApi {
         List<String> types = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         org.springframework.data.domain.Pageable pageableWithSort = PageRequest.of(0, 5, sort);
-
-        List<CoreDatasource> coreDatasources = coreDatasourceRepository.findCoreDatasourcesByCreateBy(AuthUtils.getUser().getUserId(), pageableWithSort);
+        Specification<CoreDatasource> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("createBy"), AuthUtils.getUser().getUserId()));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll(spec, pageableWithSort).getContent();
         if (CollectionUtils.isEmpty(coreDatasources)) {
             return types;
         }
@@ -1118,12 +1134,20 @@ public class DatasourceServer implements DatasourceApi {
         return types;
     }
 
-    public IPage<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
-        QueryWrapper<CoreDatasourceTaskLogDTO> wrapper = new QueryWrapper<>();
-        wrapper.eq("ds_id", dsId);
-        wrapper.orderByDesc("start_time");
-        Page<CoreDatasourceTaskLogDTO> page = new Page<>(goPage, pageSize);
-        IPage<CoreDatasourceTaskLogDTO> pager = taskLogExtMapper.pager(page, wrapper);
+    private Function<CoreDatasourceTaskLog, CoreDatasourceTaskLogDTO> coreExportToDtoConverter = c -> {
+        CoreDatasourceTaskLogDTO dto = new CoreDatasourceTaskLogDTO();
+        BeanUtils.copyBean(dto, c);
+        return dto;
+    };
+
+    public PageResult<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
+        Pageable pageable = PageRequest.of(goPage - 1, pageSize, Sort.by(Sort.Direction.DESC, "startTime"));
+        Specification<CoreDatasourceTaskLog> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("dsId"), dsId));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        Page<CoreDatasourceTaskLogDTO> pager = coreDatasourceTaskLogRepository.findAll(spec, pageable).map(coreExportToDtoConverter);
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dsId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
@@ -1133,19 +1157,24 @@ public class DatasourceServer implements DatasourceApi {
         } else {
             datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
         }
-        for (int i = 0; i < pager.getRecords().size(); i++) {
+        for (int i = 0; i < pager.getContent().size(); i++) {
             for (int i1 = 0; i1 < datasetTableDTOS.size(); i1++) {
-                if (pager.getRecords().get(i).getTableName().equalsIgnoreCase(datasetTableDTOS.get(i1).getTableName())) {
-                    pager.getRecords().get(i).setName(datasetTableDTOS.get(i1).getName());
+                if (pager.getContent().get(i).getTableName().equalsIgnoreCase(datasetTableDTOS.get(i1).getTableName())) {
+                    pager.getContent().get(i).setName(datasetTableDTOS.get(i1).getName());
                 }
             }
         }
-        return pager;
+        return new PageResult<>(pager.getContent(), pager.getTotalElements(), pageable);
     }
 
 
     public void updateDatasourceStatus() {
-        List<CoreDatasource> datasources = coreDatasourceRepository.findTypeNotIn(Arrays.asList("Excel", "folder"));
+        Specification<CoreDatasource> findTypeNotInSpec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.not(root.get("type").in(Arrays.asList("Excel", "folder"))));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<CoreDatasource> datasources = coreDatasourceRepository.findAll(findTypeNotInSpec);
         datasources.forEach(datasource -> {
             if (!syncDsIds.contains(datasource.getId())) {
                 syncDsIds.add(datasource.getId());
@@ -1179,8 +1208,10 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private void doUpdate() {
-        List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectList(null);
-        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurrentTimestamp() * 1000).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
+        List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateRepository.findAll();
+        Timestamp currentTimestamp = databaseTimeManage.getCurrentDatabaseTime();
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
+                .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > currentTimestamp.getTime()).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
 
         List<CoreDatasource> datasources = coreDatasourceRepository.findByTaskStatus(TaskStatus.UnderExecution.name());
 
@@ -1203,14 +1234,14 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public boolean showFinishPage() throws DEException {
-        return coreDsFinishPageMapper.selectById(AuthUtils.getUser().getUserId()) == null;
+        return coreDsFinishPageRepository.findById(AuthUtils.getUser().getUserId()).orElse(null) == null;
     }
 
 
     public void setShowFinishPage() throws DEException {
         CoreDsFinishPage coreDsFinishPage = new CoreDsFinishPage();
         coreDsFinishPage.setId(AuthUtils.getUser().getUserId());
-        coreDsFinishPageMapper.insert(coreDsFinishPage);
+        coreDsFinishPageRepository.saveAndFlush(coreDsFinishPage);
     }
 
     private DatasourceDTO transDTO(CoreDatasource record) {
@@ -1333,6 +1364,18 @@ public class DatasourceServer implements DatasourceApi {
             if (hidePw) {
                 Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
                 provider.hidePW(datasourceDTO);
+            }else {
+                switch (datasourceDTO.getType()) {
+                    case "mysql":
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class)).toString());
+                        break;
+                    case "h2":
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class)).toString());
+                        break;
+                    case "oracle":
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Oracle.class)).toString());
+                        break;
+                }
             }
         }
         if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.Excel.toString())) {

@@ -1,66 +1,34 @@
 package io.dataease.startup.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 项目启动任务
- * </p>
- *
- * @author fit2cloud
- * @since 2024-05-15
- */
-@TableName("core_sys_startup_job")
-public class CoreSysStartupJob implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * ID
-     */
+@Getter
+@Setter
+@Comment("项目启动任务")
+@Entity
+@Table(name = "core_sys_startup_job")
+public class CoreSysStartupJob {
+    @Id
+    @Size(max = 64)
+    @Comment("ID")
+    @Column(name = "id", nullable = false, length = 64)
     private String id;
 
-    /**
-     * 任务名称
-     */
+    @Size(max = 255)
+    @Comment("任务名称")
+    @Column(name = "name")
     private String name;
 
-    /**
-     * 任务状态
-     */
+    @Size(max = 255)
+    @Comment("任务状态")
+    @Column(name = "status")
     private String status;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "CoreSysStartupJob{" +
-        "id = " + id +
-        ", name = " + name +
-        ", status = " + status +
-        "}";
-    }
 }

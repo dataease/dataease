@@ -1,640 +1,193 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2025-03-24
- */
-@TableName("snapshot_core_chart_view")
-public class SnapshotCoreChartView implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * ID
-     */
+@Getter
+@Setter
+@Entity
+@Table(name = "snapshot_core_chart_view")
+public class SnapshotCoreChartView {
+    @Id
+    @Comment("ID")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * 标题
-     */
+    @Size(max = 1024)
+    @Comment("标题")
+    @Column(name = "title", length = 1024)
     private String title;
 
-    /**
-     * 场景ID chart_type为private的时候 是仪表板id
-     */
+    @NotNull
+    @Comment("场景ID chart_type为private的时候 是仪表板id")
+    @Column(name = "scene_id", nullable = false)
     private Long sceneId;
 
-    /**
-     * 数据集表ID
-     */
+    @Comment("数据集表ID")
+    @Column(name = "table_id")
     private Long tableId;
 
-    /**
-     * 图表类型
-     */
+    @Size(max = 50)
+    @Comment("图表类型")
+    @Column(name = "type", length = 50)
     private String type;
 
-    /**
-     * 图表渲染方式
-     */
+    @Size(max = 50)
+    @Comment("图表渲染方式")
+    @Column(name = "render", length = 50)
     private String render;
 
-    /**
-     * 展示结果
-     */
+    @Comment("展示结果")
+    @Column(name = "result_count")
     private Integer resultCount;
 
-    /**
-     * 展示模式
-     */
+    @Size(max = 50)
+    @Comment("展示模式")
+    @Column(name = "result_mode", length = 50)
     private String resultMode;
 
-    /**
-     * 横轴field
-     */
+    @Column(name = "x_axis", length = 16777216)
     private String xAxis;
 
-    /**
-     * table-row
-     */
+    @Column(name = "x_axis_ext", length = 16777216)
     private String xAxisExt;
 
-    /**
-     * 纵轴field
-     */
+    @Column(name = "y_axis", length = 16777216)
     private String yAxis;
 
-    /**
-     * 副轴
-     */
+    @Column(name = "y_axis_ext", length = 16777216)
     private String yAxisExt;
 
-    /**
-     * 堆叠项
-     */
+    @Column(name = "ext_stack", length = 16777216)
     private String extStack;
 
-    /**
-     * 气泡大小
-     */
+    @Column(name = "ext_bubble", length = 16777216)
     private String extBubble;
 
-    /**
-     * 动态标签
-     */
+    @Column(name = "ext_label", length = 16777216)
     private String extLabel;
 
-    /**
-     * 动态提示
-     */
+    @Column(name = "ext_tooltip", length = 16777216)
     private String extTooltip;
 
-    /**
-     * 图形属性
-     */
+    @Column(name = "custom_attr", length = 16777216)
     private String customAttr;
 
-    /**
-     * 图形属性_移动端
-     */
+    @Column(name = "custom_attr_mobile", length = 16777216)
     private String customAttrMobile;
 
-    /**
-     * 组件样式
-     */
+    @Column(name = "custom_style", length = 16777216)
     private String customStyle;
 
-    /**
-     * 组件样式_移动端
-     */
+    @Column(name = "custom_style_mobile", length = 16777216)
     private String customStyleMobile;
 
-    /**
-     * 结果过滤
-     */
+    @Column(name = "custom_filter", length = 16777216)
     private String customFilter;
 
-    /**
-     * 钻取字段
-     */
+    @Column(name = "drill_fields", length = 16777216)
     private String drillFields;
 
-    /**
-     * 高级
-     */
+    @Column(name = "senior", length = 16777216)
     private String senior;
 
-    /**
-     * 创建人ID
-     */
+    @Size(max = 50)
+    @Comment("创建人ID")
+    @Column(name = "create_by", length = 50)
     private String createBy;
 
-    /**
-     * 创建时间
-     */
+    @Comment("创建时间")
+    @Column(name = "create_time")
     private Long createTime;
 
-    /**
-     * 更新时间
-     */
+    @Comment("更新时间")
+    @Column(name = "update_time")
     private Long updateTime;
 
-    /**
-     * 缩略图 
-     */
+    @Column(name = "snapshot", length = 16777216)
     private String snapshot;
 
-    /**
-     * 样式优先级 panel 仪表板 view 图表
-     */
+    @Size(max = 255)
+    @Comment("样式优先级 panel 仪表板 view 图表")
+    @ColumnDefault("'panel'")
+    @Column(name = "style_priority")
     private String stylePriority;
 
-    /**
-     * 图表类型 public 公共 历史可复用的图表，private 私有 专属某个仪表板
-     */
+    @Size(max = 255)
+    @Comment("图表类型 public 公共 历史可复用的图表，private 私有 专属某个仪表板")
+    @ColumnDefault("'private'")
+    @Column(name = "chart_type")
     private String chartType;
 
-    /**
-     * 是否插件
-     */
+    @Comment("是否插件")
+    @Column(name = "is_plugin")
     private Boolean isPlugin;
 
-    /**
-     * 数据来源 template 模板数据 dataset 数据集数据
-     */
+    @Size(max = 255)
+    @Comment("数据来源 template 模板数据 dataset 数据集数据")
+    @ColumnDefault("'dataset'")
+    @Column(name = "data_from")
     private String dataFrom;
 
-    /**
-     * 图表字段集合
-     */
+    @Column(name = "view_fields", length = 16777216)
     private String viewFields;
 
-    /**
-     * 是否开启刷新
-     */
+    @Comment("是否开启刷新")
+    @ColumnDefault("false")
+    @Column(name = "refresh_view_enable")
     private Boolean refreshViewEnable;
 
-    /**
-     * 刷新时间单位
-     */
+    @Size(max = 255)
+    @Comment("刷新时间单位")
+    @ColumnDefault("'minute'")
+    @Column(name = "refresh_unit")
     private String refreshUnit;
 
-    /**
-     * 刷新时间
-     */
+    @Comment("刷新时间")
+    @ColumnDefault("5")
+    @Column(name = "refresh_time")
     private Integer refreshTime;
 
-    /**
-     * 是否开启联动
-     */
+    @Comment("是否开启联动")
+    @ColumnDefault("false")
+    @Column(name = "linkage_active")
     private Boolean linkageActive;
 
-    /**
-     * 是否开启跳转
-     */
+    @Comment("是否开启跳转")
+    @ColumnDefault("false")
+    @Column(name = "jump_active")
     private Boolean jumpActive;
 
-    /**
-     * 复制来源
-     */
+    @Comment("复制来源")
+    @Column(name = "copy_from")
     private Long copyFrom;
 
-    /**
-     * 复制ID
-     */
+    @Comment("复制ID")
+    @Column(name = "copy_id")
     private Long copyId;
 
-    /**
-     * 区间条形图开启时间纬度开启聚合
-     */
+    @Comment("区间条形图开启时间纬度开启聚合")
+    @Column(name = "aggregate")
     private Boolean aggregate;
 
-    /**
-     * 流向地图起点名称field
-     */
+    @Comment("流向地图起点名称field")
+    @Column(name = "flow_map_start_name", length = 16777216)
     private String flowMapStartName;
 
-    /**
-     * 流向地图终点名称field
-     */
+    @Comment("流向地图终点名称field")
+    @Column(name = "flow_map_end_name", length = 16777216)
     private String flowMapEndName;
 
-    /**
-     * 颜色维度field
-     */
+    @Comment("颜色维度field")
+    @Column(name = "ext_color", length = 16777216)
     private String extColor;
 
-    /**
-     * 字段排序优先级
-     */
+    @Column(name = "sort_priority", length = 16777216)
     private String sortPriority;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Long getSceneId() {
-        return sceneId;
-    }
-
-    public void setSceneId(Long sceneId) {
-        this.sceneId = sceneId;
-    }
-
-    public Long getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(Long tableId) {
-        this.tableId = tableId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getRender() {
-        return render;
-    }
-
-    public void setRender(String render) {
-        this.render = render;
-    }
-
-    public Integer getResultCount() {
-        return resultCount;
-    }
-
-    public void setResultCount(Integer resultCount) {
-        this.resultCount = resultCount;
-    }
-
-    public String getResultMode() {
-        return resultMode;
-    }
-
-    public void setResultMode(String resultMode) {
-        this.resultMode = resultMode;
-    }
-
-    public String getxAxis() {
-        return xAxis;
-    }
-
-    public void setxAxis(String xAxis) {
-        this.xAxis = xAxis;
-    }
-
-    public String getxAxisExt() {
-        return xAxisExt;
-    }
-
-    public void setxAxisExt(String xAxisExt) {
-        this.xAxisExt = xAxisExt;
-    }
-
-    public String getyAxis() {
-        return yAxis;
-    }
-
-    public void setyAxis(String yAxis) {
-        this.yAxis = yAxis;
-    }
-
-    public String getyAxisExt() {
-        return yAxisExt;
-    }
-
-    public void setyAxisExt(String yAxisExt) {
-        this.yAxisExt = yAxisExt;
-    }
-
-    public String getExtStack() {
-        return extStack;
-    }
-
-    public void setExtStack(String extStack) {
-        this.extStack = extStack;
-    }
-
-    public String getExtBubble() {
-        return extBubble;
-    }
-
-    public void setExtBubble(String extBubble) {
-        this.extBubble = extBubble;
-    }
-
-    public String getExtLabel() {
-        return extLabel;
-    }
-
-    public void setExtLabel(String extLabel) {
-        this.extLabel = extLabel;
-    }
-
-    public String getExtTooltip() {
-        return extTooltip;
-    }
-
-    public void setExtTooltip(String extTooltip) {
-        this.extTooltip = extTooltip;
-    }
-
-    public String getCustomAttr() {
-        return customAttr;
-    }
-
-    public void setCustomAttr(String customAttr) {
-        this.customAttr = customAttr;
-    }
-
-    public String getCustomAttrMobile() {
-        return customAttrMobile;
-    }
-
-    public void setCustomAttrMobile(String customAttrMobile) {
-        this.customAttrMobile = customAttrMobile;
-    }
-
-    public String getCustomStyle() {
-        return customStyle;
-    }
-
-    public void setCustomStyle(String customStyle) {
-        this.customStyle = customStyle;
-    }
-
-    public String getCustomStyleMobile() {
-        return customStyleMobile;
-    }
-
-    public void setCustomStyleMobile(String customStyleMobile) {
-        this.customStyleMobile = customStyleMobile;
-    }
-
-    public String getCustomFilter() {
-        return customFilter;
-    }
-
-    public void setCustomFilter(String customFilter) {
-        this.customFilter = customFilter;
-    }
-
-    public String getDrillFields() {
-        return drillFields;
-    }
-
-    public void setDrillFields(String drillFields) {
-        this.drillFields = drillFields;
-    }
-
-    public String getSenior() {
-        return senior;
-    }
-
-    public void setSenior(String senior) {
-        this.senior = senior;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getSnapshot() {
-        return snapshot;
-    }
-
-    public void setSnapshot(String snapshot) {
-        this.snapshot = snapshot;
-    }
-
-    public String getStylePriority() {
-        return stylePriority;
-    }
-
-    public void setStylePriority(String stylePriority) {
-        this.stylePriority = stylePriority;
-    }
-
-    public String getChartType() {
-        return chartType;
-    }
-
-    public void setChartType(String chartType) {
-        this.chartType = chartType;
-    }
-
-    public Boolean getIsPlugin() {
-        return isPlugin;
-    }
-
-    public void setIsPlugin(Boolean isPlugin) {
-        this.isPlugin = isPlugin;
-    }
-
-    public String getDataFrom() {
-        return dataFrom;
-    }
-
-    public void setDataFrom(String dataFrom) {
-        this.dataFrom = dataFrom;
-    }
-
-    public String getViewFields() {
-        return viewFields;
-    }
-
-    public void setViewFields(String viewFields) {
-        this.viewFields = viewFields;
-    }
-
-    public Boolean getRefreshViewEnable() {
-        return refreshViewEnable;
-    }
-
-    public void setRefreshViewEnable(Boolean refreshViewEnable) {
-        this.refreshViewEnable = refreshViewEnable;
-    }
-
-    public String getRefreshUnit() {
-        return refreshUnit;
-    }
-
-    public void setRefreshUnit(String refreshUnit) {
-        this.refreshUnit = refreshUnit;
-    }
-
-    public Integer getRefreshTime() {
-        return refreshTime;
-    }
-
-    public void setRefreshTime(Integer refreshTime) {
-        this.refreshTime = refreshTime;
-    }
-
-    public Boolean getLinkageActive() {
-        return linkageActive;
-    }
-
-    public void setLinkageActive(Boolean linkageActive) {
-        this.linkageActive = linkageActive;
-    }
-
-    public Boolean getJumpActive() {
-        return jumpActive;
-    }
-
-    public void setJumpActive(Boolean jumpActive) {
-        this.jumpActive = jumpActive;
-    }
-
-    public Long getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(Long copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public Long getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(Long copyId) {
-        this.copyId = copyId;
-    }
-
-    public Boolean getAggregate() {
-        return aggregate;
-    }
-
-    public void setAggregate(Boolean aggregate) {
-        this.aggregate = aggregate;
-    }
-
-    public String getFlowMapStartName() {
-        return flowMapStartName;
-    }
-
-    public void setFlowMapStartName(String flowMapStartName) {
-        this.flowMapStartName = flowMapStartName;
-    }
-
-    public String getFlowMapEndName() {
-        return flowMapEndName;
-    }
-
-    public void setFlowMapEndName(String flowMapEndName) {
-        this.flowMapEndName = flowMapEndName;
-    }
-
-    public String getExtColor() {
-        return extColor;
-    }
-
-    public void setExtColor(String extColor) {
-        this.extColor = extColor;
-    }
-
-    public String getSortPriority() {
-        return sortPriority;
-    }
-
-    public void setSortPriority(String sortPriority) {
-        this.sortPriority = sortPriority;
-    }
-
-    @Override
-    public String toString() {
-        return "SnapshotCoreChartView{" +
-        "id = " + id +
-        ", title = " + title +
-        ", sceneId = " + sceneId +
-        ", tableId = " + tableId +
-        ", type = " + type +
-        ", render = " + render +
-        ", resultCount = " + resultCount +
-        ", resultMode = " + resultMode +
-        ", xAxis = " + xAxis +
-        ", xAxisExt = " + xAxisExt +
-        ", yAxis = " + yAxis +
-        ", yAxisExt = " + yAxisExt +
-        ", extStack = " + extStack +
-        ", extBubble = " + extBubble +
-        ", extLabel = " + extLabel +
-        ", extTooltip = " + extTooltip +
-        ", customAttr = " + customAttr +
-        ", customAttrMobile = " + customAttrMobile +
-        ", customStyle = " + customStyle +
-        ", customStyleMobile = " + customStyleMobile +
-        ", customFilter = " + customFilter +
-        ", drillFields = " + drillFields +
-        ", senior = " + senior +
-        ", createBy = " + createBy +
-        ", createTime = " + createTime +
-        ", updateTime = " + updateTime +
-        ", snapshot = " + snapshot +
-        ", stylePriority = " + stylePriority +
-        ", chartType = " + chartType +
-        ", isPlugin = " + isPlugin +
-        ", dataFrom = " + dataFrom +
-        ", viewFields = " + viewFields +
-        ", refreshViewEnable = " + refreshViewEnable +
-        ", refreshUnit = " + refreshUnit +
-        ", refreshTime = " + refreshTime +
-        ", linkageActive = " + linkageActive +
-        ", jumpActive = " + jumpActive +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        ", aggregate = " + aggregate +
-        ", flowMapStartName = " + flowMapStartName +
-        ", flowMapEndName = " + flowMapEndName +
-        ", extColor = " + extColor +
-        ", sortPriority = " + sortPriority +
-        "}";
-    }
 }

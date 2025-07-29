@@ -17,7 +17,6 @@ import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.bo.ExcelSheetModel;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.template.FilterBuildTemplate;
 import io.dataease.visualization.utils.VisualizationExcelUtils;
 import jakarta.annotation.Resource;
@@ -36,8 +35,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class CoreVisualizationExportManage {
-    @Resource
-    private ExtDataVisualizationMapper extDataVisualizationMapper;
 
     @Resource
     private ChartViewManege chartViewManege;
@@ -49,16 +46,19 @@ public class CoreVisualizationExportManage {
     private VisualizationTemplateExtendDataManage extendDataManage;
 
     @Resource
+    private CoreVisualizationManage coreVisualizationManage;
+
+    @Resource
     private DatasetFieldServer datasetFieldServer;
 
     public String getResourceName(Long dvId, String busiFlag) {
-        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag, "core");
+        DataVisualizationVO visualization = coreVisualizationManage.findDvInfo(dvId, busiFlag, "core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
         return visualization.getName();
     }
 
     public File exportExcel(Long dvId, String busiFlag, List<Long> viewIdList, boolean onlyDisplay, String filterJson) throws Exception {
-        DataVisualizationVO visualization = extDataVisualizationMapper.findDvInfo(dvId, busiFlag, "core");
+        DataVisualizationVO visualization = coreVisualizationManage.findDvInfo(dvId, busiFlag, "core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
         List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId, CommonConstants.RESOURCE_TABLE.CORE);
 

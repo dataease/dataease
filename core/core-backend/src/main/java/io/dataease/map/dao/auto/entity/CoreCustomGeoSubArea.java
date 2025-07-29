@@ -1,80 +1,41 @@
 package io.dataease.map.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 自定义地理区域分区详情
- * </p>
- *
- * @author fit2cloud
- * @since 2024-11-22
- */
-@TableName("core_custom_geo_sub_area")
-public class CoreCustomGeoSubArea implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * id
-     */
+@Getter
+@Setter
+@Entity
+@Comment("自定义地理区域分区详情")
+@Table(name = "core_custom_geo_sub_area")
+public class CoreCustomGeoSubArea {
+    @Id
+    @Comment("id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * 名称
-     */
+    @Comment("名称")
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    /**
-     * 区域范围
-     */
+    @Comment("区域范围")
+    @Size(max = 1024)
+    @Column(name = "scope", length = 1024)
     private String scope;
 
-    /**
-     * 自定义地理区域id
-     */
+    @Comment("自定义地理区域id")
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "geo_area_id", nullable = false, length = 50)
     private String geoAreaId;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-    public String getGeoAreaId() {
-        return geoAreaId;
-    }
-
-    public void setGeoAreaId(String geoAreaId) {
-        this.geoAreaId = geoAreaId;
-    }
-
-    @Override
-    public String toString() {
-        return "CoreCustomGeoSubArea{" +
-        "id = " + id +
-        ", name = " + name +
-        ", scope = " + scope +
-        ", geoAreaId = " + geoAreaId +
-        "}";
-    }
 }

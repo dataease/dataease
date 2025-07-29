@@ -1,181 +1,73 @@
 package io.dataease.menu.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2023-06-02
- */
-@TableName("core_menu")
-public class CoreMenu implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+@Getter
+@Setter
+@Entity
+@Table(name = "core_menu")
+@Comment("路由菜单")
+public class CoreMenu {
+    @Id
+    @Comment("主键")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * 父ID
-     */
+    @NotNull
+    @Comment("父ID")
+    @Column(name = "pid", nullable = false)
     private Long pid;
 
-    /**
-     * 类型
-     */
+    @Comment("类型")
+    @Column(name = "type")
     private Integer type;
 
-    /**
-     * 名称
-     */
+    @Comment("名称")
+    @Size(max = 45)
+    @Column(name = "name", length = 45)
     private String name;
 
-    /**
-     * 组件
-     */
+    @Comment("组件")
+    @Size(max = 45)
+    @Column(name = "component", length = 45)
     private String component;
 
-    /**
-     * 排序
-     */
+    @Comment("排序")
+    @Column(name = "menu_sort")
     private Integer menuSort;
 
-    /**
-     * 图标
-     */
+    @Comment("图标")
+    @Size(max = 45)
+    @Column(name = "icon", length = 45)
     private String icon;
 
-    /**
-     * 路径
-     */
+    @Comment("路径")
+    @Size(max = 45)
+    @Column(name = "path", length = 45)
     private String path;
 
-    /**
-     * 隐藏
-     */
-    private Boolean hidden;
+    @Comment("隐藏")
+    @NotNull
+    @ColumnDefault("false")
+    @Column(name = "hidden", nullable = false)
+    private Boolean hidden = false;
 
-    /**
-     * 是否内部
-     */
-    private Boolean inLayout;
+    @Comment("是否内部")
+    @NotNull
+    @ColumnDefault("true")
+    @Column(name = "in_layout", nullable = false)
+    private Boolean inLayout = false;
 
-    /**
-     * 参与授权
-     */
-    private Boolean auth;
+    @Comment("参与授权")
+    @NotNull
+    @ColumnDefault("false")
+    @Column(name = "auth", nullable = false)
+    private Boolean auth = false;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getPid() {
-        return pid;
-    }
-
-    public void setPid(Long pid) {
-        this.pid = pid;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getComponent() {
-        return component;
-    }
-
-    public void setComponent(String component) {
-        this.component = component;
-    }
-
-    public Integer getMenuSort() {
-        return menuSort;
-    }
-
-    public void setMenuSort(Integer menuSort) {
-        this.menuSort = menuSort;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public Boolean getHidden() {
-        return hidden;
-    }
-
-    public void setHidden(Boolean hidden) {
-        this.hidden = hidden;
-    }
-
-    public Boolean getInLayout() {
-        return inLayout;
-    }
-
-    public void setInLayout(Boolean inLayout) {
-        this.inLayout = inLayout;
-    }
-
-    public Boolean getAuth() {
-        return auth;
-    }
-
-    public void setAuth(Boolean auth) {
-        this.auth = auth;
-    }
-
-    @Override
-    public String toString() {
-        return "CoreMenu{" +
-        "id = " + id +
-        ", pid = " + pid +
-        ", type = " + type +
-        ", name = " + name +
-        ", component = " + component +
-        ", menuSort = " + menuSort +
-        ", icon = " + icon +
-        ", path = " + path +
-        ", hidden = " + hidden +
-        ", inLayout = " + inLayout +
-        ", auth = " + auth +
-        "}";
-    }
 }

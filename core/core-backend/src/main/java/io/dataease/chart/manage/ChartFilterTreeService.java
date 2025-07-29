@@ -1,8 +1,8 @@
 package io.dataease.chart.manage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
+import io.dataease.dao.auto.entity.CoreDatasetTableField;
+import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
 import io.dataease.engine.utils.SQLUtils;
 import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Service
 public class ChartFilterTreeService {
     @Resource
-    private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
+    private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
 
     public void searchFieldAndSet(FilterTreeObj tree) {
         if (ObjectUtils.isNotEmpty(tree)) {
@@ -34,7 +34,7 @@ public class ChartFilterTreeService {
                 for (FilterTreeItem item : tree.getItems()) {
                     if (ObjectUtils.isNotEmpty(item)) {
                         if (StringUtils.equalsIgnoreCase(item.getType(), "item") || ObjectUtils.isEmpty(item.getSubTree())) {
-                            CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(item.getFieldId());
+                            CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldRepository.findById(item.getFieldId()).orElse(null);
                             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
                             BeanUtils.copyBean(dto, coreDatasetTableField);
                             if (StringUtils.isNotEmpty(coreDatasetTableField.getParams())) {

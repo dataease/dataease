@@ -1,160 +1,75 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import io.dataease.dao.auto.entity.CoreChartView;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- *
- * </p>
- *
- * @author fit2cloud
- * @since 2023-09-22
- */
-@TableName("visualization_linkage")
-public class VisualizationLinkage implements Serializable {
+import java.util.List;
 
-    private static final long serialVersionUID = 1L;
-
+@Getter
+@Setter
+@Comment("联动记录表")
+@Entity
+@Table(name = "visualization_linkage")
+public class VisualizationLinkage {
+    @Id
+    @Comment("主键")
+    @Column(name = "id", nullable = false)
     private Long id;
 
+    @Comment("联动大屏/仪表板ID")
+    @Column(name = "dv_id")
     private Long dvId;
 
-    /**
-     * 源图表id
-     */
+    @Comment("源视图id")
+    @Column(name = "source_view_id")
     private Long sourceViewId;
 
-    /**
-     * 联动图表id
-     */
+    @Comment("联动视图id")
+    @Column(name = "target_view_id")
     private Long targetViewId;
 
-    /**
-     * 更新时间
-     */
+    @Comment("更新时间")
+    @Column(name = "update_time")
     private Long updateTime;
 
-    /**
-     * 更新人
-     */
+    @Size(max = 255)
+    @Comment("更新人")
+    @Column(name = "update_people")
     private String updatePeople;
 
-    /**
-     * 是否启用关联
-     */
+    @Comment("是否启用关联")
+    @ColumnDefault("false")
+    @Column(name = "linkage_active")
     private Boolean linkageActive;
 
+    @Size(max = 2000)
+    @Comment("扩展字段1")
+    @Column(name = "ext1", length = 2000)
     private String ext1;
 
+    @Size(max = 2000)
+    @Comment("扩展字段2")
+    @Column(name = "ext2", length = 2000)
     private String ext2;
 
+    @Comment("复制来源")
+    @Column(name = "copy_from")
     private Long copyFrom;
 
+    @Comment("复制来源ID")
+    @Column(name = "copy_id")
     private Long copyId;
 
-    public Long getId() {
-        return id;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_view_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private CoreChartView sourceView;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<VisualizationLinkageField> linkageFields;
 
-    public Long getDvId() {
-        return dvId;
-    }
-
-    public void setDvId(Long dvId) {
-        this.dvId = dvId;
-    }
-
-    public Long getSourceViewId() {
-        return sourceViewId;
-    }
-
-    public void setSourceViewId(Long sourceViewId) {
-        this.sourceViewId = sourceViewId;
-    }
-
-    public Long getTargetViewId() {
-        return targetViewId;
-    }
-
-    public void setTargetViewId(Long targetViewId) {
-        this.targetViewId = targetViewId;
-    }
-
-    public Long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getUpdatePeople() {
-        return updatePeople;
-    }
-
-    public void setUpdatePeople(String updatePeople) {
-        this.updatePeople = updatePeople;
-    }
-
-    public Boolean getLinkageActive() {
-        return linkageActive;
-    }
-
-    public void setLinkageActive(Boolean linkageActive) {
-        this.linkageActive = linkageActive;
-    }
-
-    public String getExt1() {
-        return ext1;
-    }
-
-    public void setExt1(String ext1) {
-        this.ext1 = ext1;
-    }
-
-    public String getExt2() {
-        return ext2;
-    }
-
-    public void setExt2(String ext2) {
-        this.ext2 = ext2;
-    }
-
-    public Long getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(Long copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public Long getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(Long copyId) {
-        this.copyId = copyId;
-    }
-
-    @Override
-    public String toString() {
-        return "VisualizationLinkage{" +
-        "id = " + id +
-        ", dvId = " + dvId +
-        ", sourceViewId = " + sourceViewId +
-        ", targetViewId = " + targetViewId +
-        ", updateTime = " + updateTime +
-        ", updatePeople = " + updatePeople +
-        ", linkageActive = " + linkageActive +
-        ", ext1 = " + ext1 +
-        ", ext2 = " + ext2 +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        "}";
-    }
 }

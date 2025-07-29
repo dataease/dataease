@@ -1,10 +1,9 @@
 package io.dataease.visualization.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
-import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
@@ -14,26 +13,21 @@ import io.dataease.api.visualization.request.VisualizationAppExportRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.*;
 import io.dataease.auth.DeLinkPermit;
-import io.dataease.chart.dao.auto.entity.CoreChartView;
-import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
-import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
-import io.dataease.dataset.manage.DatasetDataManage;
+import io.dataease.dao.auto.entity.*;
+import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.DatasetUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.dao.auto.entity.QCoreDatasourceTask;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
@@ -47,31 +41,30 @@ import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.result.PageResult;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
-import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
-import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
-import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
+import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataRepository;
+import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
-import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
-import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
-import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
-import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
-import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewMapper;
-import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoMapper;
-import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
+import io.dataease.visualization.dao.auto.entity.*;
+import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.manage.CoreBusiManage;
 import io.dataease.visualization.manage.CoreVisualizationManage;
+import io.dataease.visualization.manage.VisualizationLinkJumpManage;
+import io.dataease.visualization.manage.VisualizationLinkageManage;
 import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,17 +79,19 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
-
     @Resource
-    private DataVisualizationInfoMapper visualizationInfoMapper;
+    private JPAQueryFactory queryFactory;
+    @Resource
+    private EntityManager entityManager;
+    @Resource
+    private CoreChartViewRepository coreChartViewRepository;
+    @Resource
+    private SnapshotCoreChartViewRepository snapshotCoreChartViewRepository;
+    @Resource
+    private DataVisualizationInfoRepository dataVisualizationInfoRepository;
 
     @Resource
     private ChartViewManege chartViewManege;
-    @Resource
-    private CoreChartViewMapper coreChartViewMapper;
-
-    @Resource
-    private ExtDataVisualizationMapper extDataVisualizationMapper;
 
     @Resource
     private CoreVisualizationManage coreVisualizationManage;
@@ -105,7 +100,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private ChartDataManage chartDataManage;
 
     @Resource
-    private VisualizationTemplateMapper templateMapper;
+    private VisualizationTemplateRepository visualizationTemplateRepository;
 
     @Resource
     private TemplateCenterManage templateCenterManage;
@@ -114,31 +109,25 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private StaticResourceServer staticResourceServer;
 
     @Resource
-    private VisualizationTemplateExtendDataMapper templateExtendDataMapper;
+    private VisualizationTemplateExtendDataRepository templateExtendDataRepository;
 
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
 
     @Resource
-    private VisualizationWatermarkMapper watermarkMapper;
+    private VisualizationWatermarkRepository visualizationWatermarkRepository;
 
     @Resource
     private DatasetGroupManage datasetGroupManage;
 
     @Resource
-    private DatasetDataManage datasetDataManage;
+    private CoreDatasetGroupRepository coreDatasetGroupRepository;
 
     @Resource
-    private ExtVisualizationTemplateMapper appTemplateMapper;
+    private CoreDatasetTableRepository coreDatasetTableRepository;
 
     @Resource
-    private CoreDatasetGroupMapper coreDatasetGroupMapper;
-
-    @Resource
-    private CoreDatasetTableMapper coreDatasetTableMapper;
-
-    @Resource
-    private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
+    private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
 
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
@@ -155,11 +144,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private DatasourceServer datasourceServer;
 
     @Resource
-    private SnapshotDataVisualizationInfoMapper snapshotMapper;
-    @Resource
-    private ExtChartViewMapper extChartViewMapper;
+    private SnapshotDataVisualizationInfoRepository snapshotDataVisualizationInfoRepository;
     @Resource
     private DatasetSQLManage datasetSQLManage;
+    @Autowired
+    private VisualizationLinkJumpRepository visualizationLinkJumpRepository;
+    @Autowired
+    private VisualizationLinkageRepository visualizationLinkageRepository;
+    @Resource
+    private VisualizationLinkJumpManage visualizationLinkJumpManage;
+
+    @Resource
+    private VisualizationLinkageManage visualizationLinkageManage;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -181,17 +177,21 @@ public class DataVisualizationServer implements DataVisualizationApi {
         String resourceTable = request.getResourceTable();
         // 如果是编辑查询 则进行镜像检查
         if (DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT.equals(request.getSource())) {
-            QueryWrapper<SnapshotDataVisualizationInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id", dvId);
-            queryWrapper.in("status", Arrays.asList(CommonConstants.DV_STATUS.UNPUBLISHED, CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)); // 状态为0 未发布 和 2 已保存未发布的 不需要重置镜像
-            if (!snapshotMapper.exists(queryWrapper)) {
+            Specification<SnapshotDataVisualizationInfo> spec = (root, query, criteriaBuilder) -> {
+                return criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), dvId), root.get("status").in(Arrays.asList(CommonConstants.DV_STATUS.UNPUBLISHED, CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)));
+            };
+            if (!snapshotDataVisualizationInfoRepository.exists(spec)) {
                 coreVisualizationManage.dvSnapshotRecover(dvId);
             }
+
         }
-        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag, resourceTable);
+        DataVisualizationVO result = coreVisualizationManage.findDvInfo(dvId, busiFlag, resourceTable);
         if (result != null) {
             // get creator
-            String userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
+            String userName = null;
+            if (StringUtils.isNotEmpty(result.getCreateBy())) {
+                userName = coreUserManage.getUserName(Long.valueOf(result.getCreateBy()));
+            }
             if (StringUtils.isNotBlank(userName)) {
                 result.setCreatorName(userName);
             }
@@ -202,14 +202,15 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().filter(item -> result.getComponentData().indexOf("\"id\":\"" + item.getId()) > 0).collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
             }
-            VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
+            VisualizationWatermark watermark = visualizationWatermarkRepository.findById("system_default").orElse(null);
             VisualizationWatermarkVO watermarkVO = new VisualizationWatermarkVO();
             BeanUtils.copyBean(watermarkVO, watermark);
             result.setWatermarkInfo(watermarkVO);
 
             if (DataVisualizationConstants.QUERY_SOURCE.REPORT.equals(request.getSource()) && request.getTaskId() != null) {
                 //获取定时报告过自定义过滤组件信息
-                List<VisualizationReportFilterVO> filterVOS = extDataVisualizationMapper.queryReportFilter(dvId, request.getTaskId());
+
+                List<VisualizationReportFilterVO> filterVOS = coreVisualizationManage.queryReportFilter(dvId, request.getTaskId());
                 if (!CollectionUtils.isEmpty(filterVOS)) {
                     Map<Long, VisualizationReportFilterVO> reportFilterInfo = filterVOS.stream().collect(Collectors.toMap(VisualizationReportFilterVO::getFilterId, filterVo -> filterVo));
                     result.setReportFilterInfo(reportFilterInfo);
@@ -278,7 +279,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     }
                 });
 
-                List<CoreDatasource> systemDatasource = coreDatasourceRepository.findInIds(newDatasourceId);
+                List<CoreDatasource> systemDatasource = coreDatasourceRepository.findAllById(newDatasourceId);
                 systemDatasource.forEach(datasourceNew -> {
                     // Excel 数据表明映射
                     if (StringUtils.isNotEmpty(datasourceNew.getConfiguration())) {
@@ -330,7 +331,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     datasetTable.setDatasetGroupId(dsGroupIdMap.get(datasetTable.getDatasetGroupId()));
                     datasetTable.setId(newId);
                     datasetTable.setDatasourceId(datasourceIdMap.get(datasetTable.getDatasourceId()));
-                    coreDatasetTableMapper.insert(datasetTable);
+                    coreDatasetTableRepository.saveAndFlush(datasetTable);
                     dsTableIdMap.put(oldId, newId);
 
                 });
@@ -353,7 +354,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     dsTableFieldsIdMap.forEach((key, value) -> {
                         dsTableFields.setOriginName(dsTableFields.getOriginName().replaceAll(key.toString(), value.toString()));
                     });
-                    coreDatasetTableFieldMapper.insert(dsTableFields);
+                    coreDatasetTableFieldRepository.saveAndFlush(dsTableFields);
                 });
 
                 List<String> dsGroupNameSave = new ArrayList<>();
@@ -387,8 +388,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         dsGroup.setName(dsGroup.getName() + "-" + UUID.randomUUID().toString());
                     }
                     dsGroupNameSave.add(dsGroup.getName());
-                    if(dsGroup.getIsCross() == null){
-                        if(dsGroup.getUnion() == null){
+                    if (dsGroup.getIsCross() == null) {
+                        if (dsGroup.getUnion() == null) {
                             dsGroup.setUnion(JsonUtil.parseList(dsGroup.getInfo(), new TypeReference<>() {
                             }));
                         }
@@ -440,13 +441,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
             // 复制更新 新建权限插入
-            visualizationInfoMapper.deleteById(request.getId());
-            snapshotMapper.deleteById(request.getId());
+            dataVisualizationInfoRepository.deleteById(request.getId());
+            snapshotDataVisualizationInfoRepository.deleteById(request.getId());
             visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
         }
         // 文件夹走默认发布 非文件夹默认未发布
-        visualizationInfo.setStatus(DataVisualizationConstants.NODE_TYPE.FOLDER.equals(visualizationInfo.getNodeType())
-                ? CommonConstants.DV_STATUS.PUBLISHED : CommonConstants.DV_STATUS.UNPUBLISHED);
+        visualizationInfo.setStatus(DataVisualizationConstants.NODE_TYPE.FOLDER.equals(visualizationInfo.getNodeType()) ? CommonConstants.DV_STATUS.PUBLISHED : CommonConstants.DV_STATUS.UNPUBLISHED);
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
         request.setId(newDvId);
         // 还原ID信息
@@ -486,11 +486,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public String appCanvasNameCheck(DataVisualizationBaseRequest request) throws Exception {
         Long datasetFolderPid = request.getDatasetFolderPid();
         String datasetFolderName = request.getDatasetFolderName();
-        QueryWrapper<CoreDatasetGroup> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("name", datasetFolderName);
-        queryWrapper.eq("pid", datasetFolderPid);
-        queryWrapper.eq("node_type", DataVisualizationConstants.NODE_TYPE.FOLDER);
-        if (coreDatasetGroupMapper.exists(queryWrapper)) {
+        Specification<CoreDatasetGroup> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("pid"), datasetFolderPid));
+            predicates.add(cb.equal(root.get("name"), datasetFolderName));
+            predicates.add(cb.equal(root.get("nodeType"), DataVisualizationConstants.NODE_TYPE.FOLDER));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        if (coreDatasetGroupRepository.exists(spec)) {
             return "repeat";
         } else {
             return "success";
@@ -504,10 +507,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DEException.throwException("ID can not be null");
         }
         // 内容ID校验
-        QueryWrapper<DataVisualizationInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("content_id", request.getContentId());
-        queryWrapper.eq("id", dvId);
-        if (!visualizationInfoMapper.exists(queryWrapper)) {
+        Specification<DataVisualizationInfo> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("id"), dvId));
+            predicates.add(cb.equal(root.get("contentId"), request.getContentId()));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        if (!dataVisualizationInfoRepository.exists(spec)) {
             return "Repeat";
         }
         return "Success";
@@ -534,17 +541,20 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         // 检查当前节点的pid是否一致如果不一致 需要调用move 接口(预存 可能会出现pid =-1的情况)
         if (request.getPid() != -1) {
-            QueryWrapper<DataVisualizationInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("pid", request.getPid());
-            queryWrapper.eq("id", dvId);
-            if (!visualizationInfoMapper.exists(queryWrapper)) {
+            Specification<DataVisualizationInfo> spec = (root, query, cb) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(root.get("id"), dvId));
+                predicates.add(cb.equal(root.get("pid"), request.getPid()));
+                return cb.and(predicates.toArray(new Predicate[0]));
+            };
+            if (!dataVisualizationInfoRepository.exists(spec)) {
                 request.setMoveFromUpdate(true);
                 coreVisualizationManage.move(request);
             }
         }
         // 状态修改统一为后端操作：历史状态检查 如果 状态为 0（未发布） 或者 2（已发布未保存）则状态不变
         // 如果当前状态为 1 则状态修改为  2（已发布未保存）
-        Integer curStatus = extDataVisualizationMapper.findDvInfoStats(dvId);
+        Integer curStatus = dataVisualizationInfoRepository.findDvInfoStats(dvId);
         visualizationInfo.setStatus(curStatus == 1 ? CommonConstants.DV_STATUS.SAVED_UNPUBLISHED : curStatus);
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
@@ -553,7 +563,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
-    @Transactional
     public void updatePublishStatus(DataVisualizationBaseRequest request) {
         /**
          * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
@@ -569,6 +578,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         coreVisualizationManage.innerEdit(visualizationInfo);
         if (CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()) {
             coreVisualizationManage.removeDvCore(dvId);
+            entityManager.clear();
             coreVisualizationManage.dvRestore(dvId);
             chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
         } else if (CommonConstants.DV_STATUS.UNPUBLISHED == request.getStatus()) {
@@ -679,7 +689,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public List<VisualizationResourceVO> findRecent(@RequestBody VisualizationWorkbranchQueryRequest request) {
         request.setQueryFrom("recent");
-        IPage<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
+        PageResult<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
         List<VisualizationResourceVO> resourceVOS = result.getRecords();
         if (!CollectionUtils.isEmpty(resourceVOS)) {
             resourceVOS.forEach(item -> {
@@ -687,7 +697,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? Translator.get("i18n_sys_admin") : item.getLastEditor());
             });
         }
-        return result.getRecords();
+        return resourceVOS;
     }
 
     /**
@@ -701,15 +711,15 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Long newDvId = IDUtils.snowID(); //目标仪表板ID
         Long copyId = IDUtils.snowID() / 100; // 本次复制执行ID
         // 复制仪表板
-        DataVisualizationInfo newDv = visualizationInfoMapper.selectById(sourceDvId);
+        DataVisualizationInfo newDv = dataVisualizationInfoRepository.findById(sourceDvId).orElse(null);
         newDv.setName(request.getName());
         newDv.setId(newDvId);
         newDv.setPid(request.getPid());
         newDv.setCreateTime(System.currentTimeMillis());
         // 复制图表 chart_view
-        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.CORE);
-        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
-        List<CoreChartView> viewList = extDataVisualizationMapper.findViewInfoByCopyId(copyId);
+        chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.CORE);
+        chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+        List<CoreChartView> viewList = coreChartViewRepository.findViewInfoByCopyId(copyId);
         if (!CollectionUtils.isEmpty(viewList)) {
             String componentData = newDv.getComponentData();
             // componentData viewId 数据  并保存
@@ -719,12 +729,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
             newDv.setComponentData(componentData);
         }
         // 复制图表联动信息
-        extDataVisualizationMapper.copyLinkage(copyId);
-        extDataVisualizationMapper.copyLinkageField(copyId);
+        visualizationLinkageManage.copyLinkage(copyId);
+        visualizationLinkageManage.copyLinkageField(copyId);
         // 复制图表跳转信息
-        extDataVisualizationMapper.copyLinkJump(copyId);
-        extDataVisualizationMapper.copyLinkJumpInfo(copyId);
-        extDataVisualizationMapper.copyLinkJumpTargetInfo(copyId);
+        visualizationLinkJumpManage.copyLinkJump(copyId);
+        visualizationLinkJumpManage.copyLinkJumpInfo(copyId);
+        visualizationLinkJumpManage.copyLinkJumpTargetInfo(copyId);
         DataVisualizationInfo visualizationInfoTarget = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfoTarget, newDv);
         visualizationInfoTarget.setPid(-1L);
@@ -734,7 +744,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public String findDvType(Long dvId) {
-        return extDataVisualizationMapper.findDvType(dvId);
+        DataVisualizationInfo dataVisualizationInfo = dataVisualizationInfoRepository.findById(dvId).orElse(null);
+        if (dataVisualizationInfo != null) {
+            return dataVisualizationInfo.getType();
+        } else {
+            return null;
+        }
+
     }
 
     @Override
@@ -742,7 +758,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         DataVisualizationInfo updateInfo = new DataVisualizationInfo();
         updateInfo.setId(dvId);
         updateInfo.setCheckVersion(coreLicManage.getVersion());
-        visualizationInfoMapper.updateById(updateInfo);
+        dataVisualizationInfoRepository.saveAndFlush(updateInfo);
         return "";
     }
 
@@ -761,7 +777,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             Integer version = null;
             //内部模板新建
             if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)) {
-                VisualizationTemplate visualizationTemplate = templateMapper.selectById(request.getTemplateId());
+                VisualizationTemplate visualizationTemplate = visualizationTemplateRepository.findById(request.getTemplateId()).orElse(null);
                 templateStyle = visualizationTemplate.getTemplateStyle();
                 templateData = visualizationTemplate.getTemplateData();
                 dynamicData = visualizationTemplate.getDynamicData();
@@ -774,7 +790,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 VisualizationTemplate visualizationTemplateUpdate = new VisualizationTemplate();
                 visualizationTemplateUpdate.setId(visualizationTemplate.getId());
                 visualizationTemplateUpdate.setUseCount(visualizationTemplate.getUseCount() == null ? 0 : visualizationTemplate.getUseCount() + 1);
-                templateMapper.updateById(visualizationTemplateUpdate);
+                visualizationTemplateRepository.saveAndFlush(visualizationTemplateUpdate);
             } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
                 templateStyle = request.getCanvasStyleData();
                 templateData = request.getComponentData();
@@ -851,7 +867,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 canvasViewInfo.put(chartView.getId(), chartView);
                 //插入模板数据 此处预先插入减少数据交互量
                 VisualizationTemplateExtendData extendData = new VisualizationTemplateExtendData();
-                templateExtendDataMapper.insert(BeanUtils.copyBean(extendData, extendDataDTO));
+                templateExtendDataRepository.saveAndFlush(BeanUtils.copyBean(extendData, extendDataDTO));
             }
             request.setComponentData(templateData);
             request.setCanvasStyleData(templateStyle);
@@ -873,8 +889,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public List<VisualizationViewTableDTO> detailList(Long dvId) {
-        List<VisualizationViewTableDTO> result = extDataVisualizationMapper.getVisualizationViewDetails(dvId);
-        SnapshotDataVisualizationInfo dvInfo = snapshotMapper.selectById(dvId);
+        QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+        QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
+
+        List<VisualizationViewTableDTO> result = queryFactory.select(Projections.fields(VisualizationViewTableDTO.class, snapshotCoreChartView.id, snapshotCoreChartView.title, snapshotCoreChartView.sceneId, snapshotCoreChartView.tableId, snapshotCoreChartView.type, snapshotCoreChartView.render, snapshotCoreChartView.sceneId.as("visualizationId"), coreDatasetTableField.id.as("fieldId"), coreDatasetTableField.originName, coreDatasetTableField.name.as("fieldName"), coreDatasetTableField.type.as("fieldType"), coreDatasetTableField.deType)).from(snapshotCoreChartView).join(coreDatasetTableField).on(snapshotCoreChartView.tableId.eq(coreDatasetTableField.datasetGroupId)).where(snapshotCoreChartView.sceneId.eq(dvId).and(snapshotCoreChartView.id.isNotNull()).and(snapshotCoreChartView.type.ne("VQuery"))).fetch();
+
+        SnapshotDataVisualizationInfo dvInfo = snapshotDataVisualizationInfoRepository.findById(dvId).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
             String componentData = dvInfo.getComponentData();
             return result.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).toList();
@@ -896,28 +916,75 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo = null;
         //获取所有视图信息
         if (!CollectionUtils.isEmpty(viewIds)) {
-            chartViewVOInfo = appTemplateMapper.findAppViewInfo(viewIds);
+            chartViewVOInfo = coreChartViewRepository.findAllById(viewIds).stream().map(item -> {
+                return BeanUtils.copyBean(new AppCoreChartViewVO(), item);
+            }).collect(Collectors.toList());
         }
         if (!CollectionUtils.isEmpty(dsIds)) {
-            datasetGroupVOInfo = appTemplateMapper.findAppDatasetGroupInfo(dsIds);
-            datasetTableVOInfo = appTemplateMapper.findAppDatasetTableInfo(dsIds);
-            datasetTableFieldVOInfo = appTemplateMapper.findAppDatasetTableFieldInfo(dsIds);
-            datasourceVOInfo = appTemplateMapper.findAppDatasourceInfo(dsIds);
-            datasourceTaskVOInfo = appTemplateMapper.findAppDatasourceTaskInfo(dsIds);
+            QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
+            datasetGroupVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetGroupVO.class)).from(coreDatasetGroup).where(coreDatasetGroup.id.in(dsIds)).fetch();
+
+            QCoreDatasetTable coreDatasetTable = QCoreDatasetTable.coreDatasetTable;
+            datasetTableVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetTableVO.class)).from(coreDatasetTable).where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
+
+            QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
+            datasetTableFieldVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetTableFieldVO.class)).from(coreDatasetTableField)
+                    .where(coreDatasetTableField.datasetGroupId.in(dsIds)).fetch();
+
+            QCoreDatasourceTask coreDatasourceTask = QCoreDatasourceTask.coreDatasourceTask;
+            QCoreDatasource coreDatasource = QCoreDatasource.coreDatasource;
+
+            datasourceVOInfo = queryFactory.select(Projections.fields(AppCoreDatasourceVO.class)).from(coreDatasource)
+                    .innerJoin(coreDatasetTable).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
+                    .where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
+
+            datasourceTaskVOInfo = queryFactory.select(Projections.fields(AppCoreDatasourceTaskVO.class)).from(coreDatasourceTask)
+                    .innerJoin(coreDatasource).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
+                    .innerJoin(coreDatasetTable).on(coreDatasetTable.datasourceId.eq(coreDatasource.id))
+                    .where(coreDatasetTable.datasetGroupId.in(dsIds))
+                    .fetch();
+
         }
 
         if (CollectionUtils.isEmpty(datasourceVOInfo)) {
             DEException.throwException("当前不存在数据源无法导出");
-        } else if (datasourceVOInfo.stream()
-                .anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()))) {
+        } else if (datasourceVOInfo.stream().anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()))) {
             DEException.throwException(Translator.get("i18n_app_error_no_api"));
         }
 
-        List<VisualizationLinkageVO> linkageVOInfo = appTemplateMapper.findAppLinkageInfo(dvId);
-        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = appTemplateMapper.findAppLinkageFieldInfo(dvId);
-        List<VisualizationLinkJumpVO> linkJumpVOInfo = appTemplateMapper.findAppLinkJumpInfo(dvId);
-        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = appTemplateMapper.findAppLinkJumpInfoInfo(dvId);
-        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = appTemplateMapper.findAppLinkJumpTargetViewInfoInfo(dvId);
+
+        List<VisualizationLinkageVO> linkageVOInfo = visualizationLinkageRepository.findByDvId(dvId).stream().map(item -> {
+            VisualizationLinkageVO linkageVO = BeanUtils.copyBean(new VisualizationLinkageVO(), item);
+            return linkageVO;
+        }).collect(Collectors.toList());
+
+        QVisualizationLinkageField visualizationLinkageField = QVisualizationLinkageField.visualizationLinkageField;
+        QVisualizationLinkage visualizationLinkage = QVisualizationLinkage.visualizationLinkage;
+        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = queryFactory.select(Projections.fields(VisualizationLinkageFieldVO.class)).from(visualizationLinkageField)
+                .innerJoin(visualizationLinkage).on(visualizationLinkageField.linkageId.eq(visualizationLinkage.id))
+                .where(visualizationLinkage.dvId.eq(dvId)).fetch();
+
+
+        List<VisualizationLinkJumpVO> linkJumpVOInfo = visualizationLinkJumpRepository.findBySourceDvId(dvId).stream().map(item -> {
+            VisualizationLinkJumpVO linkJumpVO = BeanUtils.copyBean(new VisualizationLinkJumpVO(), item);
+            return linkJumpVO;
+        }).collect(Collectors.toList());
+
+        QVisualizationLinkJumpInfo visualizationLinkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
+        QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
+        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = queryFactory.select(Projections.fields(VisualizationLinkJumpInfoVO.class)).from(visualizationLinkJumpInfo)
+                .innerJoin(visualizationLinkJump).on(visualizationLinkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
+                .where(visualizationLinkJump.sourceDvId.eq(dvId)).fetch();
+
+
+        QVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
+
+        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = queryFactory.select(Projections.fields(VisualizationLinkJumpTargetViewInfoVO.class)).from(visualizationLinkJumpTargetViewInfo)
+                .innerJoin(visualizationLinkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(visualizationLinkJumpInfo.id))
+                .innerJoin(visualizationLinkJump).on(visualizationLinkJump.id.eq(visualizationLinkJumpInfo.linkJumpId))
+                .where(visualizationLinkJump.sourceDvId.eq(dvId))
+                .fetch();
+
 
         return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo, datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo, linkJumpVOInfo, linkJumpInfoVOInfo, listJumpTargetViewInfoVO, linkageVOInfo, linkageFieldVOInfo);
     }
@@ -925,26 +992,33 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public void nameCheck(DataVisualizationBaseRequest request) {
-        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
+
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
             if (request.getPid() == null) {
-                DataVisualizationInfo result = visualizationInfoMapper.selectById(request.getId());
-                request.setPid(result.getPid());
-            }
-            if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt())) {
-                wrapper.ne("id", request.getId());
+                DataVisualizationInfo result = dataVisualizationInfoRepository.findById(request.getId()).orElse(null);
+                request.setPid(Long.valueOf(result.getPid()));
             }
         }
-        wrapper.eq("delete_flag", 0);
-        wrapper.eq("pid", request.getPid());
-        wrapper.ne("pid", -1);
-        wrapper.eq("name", request.getName().trim());
-        wrapper.eq("node_type", request.getNodeType());
-        wrapper.eq("type", request.getType());
-        if (AuthUtils.getUser().getDefaultOid() != null) {
-            wrapper.eq("org_id", AuthUtils.getUser().getDefaultOid());
-        }
-        List<DataVisualizationInfo> existList = visualizationInfoMapper.selectList(wrapper);
+
+        Specification<DataVisualizationInfo> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.isTrue(root.get("deleteFlag")));
+            predicates.add(cb.equal(root.get("pid"), request.getPid()));
+            predicates.add(cb.notEqual(root.get("pid"), "-1"));
+            if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
+                if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt())) {
+                    predicates.add(cb.notEqual(root.get("id"), String.valueOf(request.getId())));
+                }
+            }
+            predicates.add(cb.equal(root.get("name"), request.getName().trim()));
+            predicates.add(cb.equal(root.get("nodeType"), request.getNodeType()));
+            predicates.add(cb.equal(root.get("type"), request.getTaskId()));
+            if (AuthUtils.getUser().getDefaultOid() != null) {
+                predicates.add(cb.equal(root.get("orgId"), AuthUtils.getUser().getDefaultOid()));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<DataVisualizationInfo> existList = dataVisualizationInfoRepository.findAll(spec);
         if (CollectionUtils.isNotEmpty(existList) && existList.stream().anyMatch(item -> item.getName().equals(request.getName().trim()))) {
             DEException.throwException("当前名称已经存在");
         }
@@ -971,7 +1045,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     public List<DataVisualizationInfo> getParents(Long id) {
         List<DataVisualizationInfo> list = new ArrayList<>();
-        DataVisualizationInfo dataVisualizationInfo = visualizationInfoMapper.selectById(id);
+        DataVisualizationInfo dataVisualizationInfo = dataVisualizationInfoRepository.findById(id).orElse(null);
         list.add(dataVisualizationInfo);
         if (dataVisualizationInfo.getPid().equals(dataVisualizationInfo.getId())) {
             return list;
@@ -983,7 +1057,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     public void getParent(List<DataVisualizationInfo> list, DataVisualizationInfo dataVisualizationInfo) {
         if (ObjectUtils.isNotEmpty(dataVisualizationInfo) && dataVisualizationInfo.getPid() != null && !dataVisualizationInfo.getPid().equals(dataVisualizationInfo.getId())) {
-            DataVisualizationInfo d = visualizationInfoMapper.selectById(dataVisualizationInfo.getPid());
+            DataVisualizationInfo d = dataVisualizationInfoRepository.findById(dataVisualizationInfo.getPid()).orElse(null);
             list.add(d);
             getParent(list, d);
         }
@@ -991,12 +1065,21 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     public List<Long> getEnabledViewIds(Long dvId, String resourceTable) {
         List<Long> result = new ArrayList<>();
-        DataVisualizationVO dvInfo = extDataVisualizationMapper.findDvInfo(dvId, null, resourceTable);
-        List<CoreChartView> views = extChartViewMapper.selectListCustom(dvId, resourceTable);
+        DataVisualizationVO dvInfo = coreVisualizationManage.findDvInfo(dvId, null, resourceTable);
+        List<CoreChartView> views;
+        if (resourceTable.equalsIgnoreCase("snapshot")) {
+            views = coreChartViewRepository.findBySceneId(dvId);
+        } else {
+            views = snapshotCoreChartViewRepository.findBySceneId(dvId).stream().map(ele -> {
+                CoreChartView coreChartView = new CoreChartView();
+                BeanUtils.copyBean(coreChartView, ele);
+                return coreChartView;
+            }).collect(Collectors.toList());
+        }
+
         if (CollectionUtils.isNotEmpty(views) && dvInfo != null) {
             String componentData = dvInfo.getComponentData();
-            result = views.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).map(CoreChartView::getId)
-                    .collect(Collectors.toList());
+            result = views.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).map(CoreChartView::getId).collect(Collectors.toList());
 
         }
         return result;

@@ -1,74 +1,30 @@
 package io.dataease.copilot.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2024-07-08
- */
-@TableName("core_copilot_token")
-public class CoreCopilotToken implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * ID
-     */
+@Getter
+@Setter
+@Entity
+@Table(name = "core_copilot_token")
+public class CoreCopilotToken {
+    @Id
+    @Comment("ID")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * free or license
-     */
+    @Size(max = 255)
+    @Comment("free or license")
+    @Column(name = "type")
     private String type;
 
+    @Column(name = "token", length = 16777216)
     private String token;
 
+    @Column(name = "update_time")
     private Long updateTime;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    @Override
-    public String toString() {
-        return "CoreCopilotToken{" +
-        "id = " + id +
-        ", type = " + type +
-        ", token = " + token +
-        ", updateTime = " + updateTime +
-        "}";
-    }
 }

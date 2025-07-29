@@ -1,14 +1,12 @@
 package io.dataease.extensions.view.dto;
 
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.filter.FilterTreeObj;
 import lombok.Data;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

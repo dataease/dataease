@@ -1,7 +1,6 @@
 package io.dataease.listener;
 
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
-import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
@@ -26,8 +25,6 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
     private DatasourceSyncManage datasourceSyncManage;
     @Resource
     private DatasourceServer datasourceServer;
-    @Resource
-    private DataSourceManage dataSourceManage;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
     @Resource

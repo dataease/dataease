@@ -1,192 +1,72 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 跳转配置表
- * </p>
- *
- * @author fit2cloud
- * @since 2025-03-24
- */
-@TableName("snapshot_visualization_link_jump_info")
-public class SnapshotVisualizationLinkJumpInfo implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
+@Getter
+@Setter
+@Entity
+@Table(name = "snapshot_visualization_link_jump_info")
+public class SnapshotVisualizationLinkJumpInfo {
+    @Id
+    @Comment("主键")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * link jump ID
-     */
+    @Comment("link jump ID")
+    @Column(name = "link_jump_id")
     private Long linkJumpId;
 
-    /**
-     * 关联类型 inner 内部仪表板，outer 外部链接
-     */
+    @Size(max = 255)
+    @Comment("关联类型 inner 内部仪表板，outer 外部链接")
+    @Column(name = "link_type")
     private String linkType;
 
-    /**
-     * 跳转类型 _blank 新开页面 _self 当前窗口
-     */
+    @Size(max = 255)
+    @Comment("跳转类型 _blank 新开页面 _self 当前窗口")
+    @Column(name = "jump_type")
     private String jumpType;
 
-    /**
-     * 关联仪表板ID
-     */
+    @Comment("关联仪表板ID")
+    @Column(name = "target_dv_id")
     private Long targetDvId;
 
-    /**
-     * 字段ID
-     */
+    @Comment("字段ID")
+    @Column(name = "source_field_id")
     private Long sourceFieldId;
 
-    /**
-     * 内容 linkType = outer时使用
-     */
+    @Size(max = 4000)
+    @Comment("内容 linkType = outer时使用")
+    @Column(name = "content", length = 4000)
     private String content;
 
-    /**
-     * 是否可用
-     */
+    @Comment("是否可用")
+    @Column(name = "checked")
     private Boolean checked;
 
-    /**
-     * 是否附加点击参数
-     */
+    @Comment("是否附加点击参数")
+    @Column(name = "attach_params")
     private Boolean attachParams;
 
-    /**
-     * 复制来源
-     */
+    @Comment("复制来源")
+    @Column(name = "copy_from")
     private Long copyFrom;
 
-    /**
-     * 复制来源ID
-     */
+    @Comment("复制来源ID")
+    @Column(name = "copy_id")
     private Long copyId;
 
-    /**
-     * 窗口大小large middle small
-     */
+    @Size(max = 255)
+    @Comment("窗口大小large middle small")
+    @ColumnDefault("'middle'")
+    @Column(name = "window_size")
     private String windowSize;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getLinkJumpId() {
-        return linkJumpId;
-    }
-
-    public void setLinkJumpId(Long linkJumpId) {
-        this.linkJumpId = linkJumpId;
-    }
-
-    public String getLinkType() {
-        return linkType;
-    }
-
-    public void setLinkType(String linkType) {
-        this.linkType = linkType;
-    }
-
-    public String getJumpType() {
-        return jumpType;
-    }
-
-    public void setJumpType(String jumpType) {
-        this.jumpType = jumpType;
-    }
-
-    public Long getTargetDvId() {
-        return targetDvId;
-    }
-
-    public void setTargetDvId(Long targetDvId) {
-        this.targetDvId = targetDvId;
-    }
-
-    public Long getSourceFieldId() {
-        return sourceFieldId;
-    }
-
-    public void setSourceFieldId(Long sourceFieldId) {
-        this.sourceFieldId = sourceFieldId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Boolean getChecked() {
-        return checked;
-    }
-
-    public void setChecked(Boolean checked) {
-        this.checked = checked;
-    }
-
-    public Boolean getAttachParams() {
-        return attachParams;
-    }
-
-    public void setAttachParams(Boolean attachParams) {
-        this.attachParams = attachParams;
-    }
-
-    public Long getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(Long copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public Long getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(Long copyId) {
-        this.copyId = copyId;
-    }
-
-    public String getWindowSize() {
-        return windowSize;
-    }
-
-    public void setWindowSize(String windowSize) {
-        this.windowSize = windowSize;
-    }
-
-    @Override
-    public String toString() {
-        return "SnapshotVisualizationLinkJumpInfo{" +
-        "id = " + id +
-        ", linkJumpId = " + linkJumpId +
-        ", linkType = " + linkType +
-        ", jumpType = " + jumpType +
-        ", targetDvId = " + targetDvId +
-        ", sourceFieldId = " + sourceFieldId +
-        ", content = " + content +
-        ", checked = " + checked +
-        ", attachParams = " + attachParams +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        ", windowSize = " + windowSize +
-        "}";
-    }
 }

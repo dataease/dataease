@@ -1,25 +1,30 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/dataeasev3?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 123456
+    password: 123456789
   messages:
     basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
   flyway:
-    enabled: true
-    table: de_standalone_version
-    validate-on-migrate: false
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    out-of-order: true
+    enabled: false
   jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        # dialect: io.dataease.config.DataEaseOracle11gDialect
+        # dialect: io.dataease.config.DataEaseOracleDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          batch_size: 1000
+          lob:
+            non_contextual_creation: true
+        order_inserts: true
+        order_updates: true
+        temp:
+          use_jdbc_metadata_defaults: false
     hibernate:
+      naming:
+        physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
       ddl-auto: update
     show-sql: true
-mybatis-plus:
-  mapper-locations: classpath:mybatis/*.xml
-
 

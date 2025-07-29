@@ -85,7 +85,8 @@ export const updateCanvas = data => {
     'extBubble',
     'extLabel',
     'extStack',
-    'extTooltip'
+    'extTooltip',
+    'extColor'
   ]
 
   for (const key in copyData.canvasViewInfo) {

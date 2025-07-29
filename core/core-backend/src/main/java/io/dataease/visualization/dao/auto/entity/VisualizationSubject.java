@@ -1,200 +1,75 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2023-07-12
- */
-@TableName("visualization_subject")
-public class VisualizationSubject implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+@Getter
+@Setter
+@Comment("主题表")
+@Entity
+@Table(name = "visualization_subject")
+public class VisualizationSubject {
+    @Id
+    @Size(max = 50)
+    @Column(name = "id", nullable = false, length = 50)
     private String id;
 
-    /**
-     * 主题名称
-     */
+    @Size(max = 255)
+    @Comment("主题名称")
+    @Column(name = "name")
     private String name;
 
-    /**
-     * 主题类型 system 系统主题，self 自定义主题
-     */
+    @Size(max = 255)
+    @Comment("主题类型 system 系统主题，self 自定义主题")
+    @Column(name = "type")
     private String type;
 
-    /**
-     * 主题内容
-     */
+    @Column(name = "details", length = 16777216)
     private String details;
 
-    /**
-     * 删除标记
-     */
+    @Comment("删除标记")
+    @ColumnDefault("false")
+    @Column(name = "delete_flag")
     private Boolean deleteFlag;
 
-    /**
-     * 封面信息
-     */
+    @Column(name = "cover_url", length = 16777216)
     private String coverUrl;
 
+    @NotNull
+    @Comment("创建序号")
+    @ColumnDefault("0")
+    @Column(name = "create_num", nullable = false)
     private Integer createNum;
 
-    /**
-     * 创建时间
-     */
+    @Comment("创建时间")
+    @Column(name = "create_time")
     private Long createTime;
 
-    /**
-     * 创建人
-     */
+    @Size(max = 255)
+    @Comment("创建人")
+    @Column(name = "create_by")
     private String createBy;
 
-    /**
-     * 更新时间
-     */
+    @Comment("更新时间")
+    @Column(name = "update_time")
     private Long updateTime;
 
-    /**
-     * 更新人
-     */
+    @Size(max = 255)
+    @Comment("更新人")
+    @Column(name = "update_by")
     private String updateBy;
 
-    /**
-     * 删除时间
-     */
+    @Comment("删除时间")
+    @Column(name = "delete_time")
     private Long deleteTime;
 
-    /**
-     * 删除人
-     */
+    @Comment("删除人")
+    @Column(name = "delete_by")
     private Long deleteBy;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    public Boolean getDeleteFlag() {
-        return deleteFlag;
-    }
-
-    public void setDeleteFlag(Boolean deleteFlag) {
-        this.deleteFlag = deleteFlag;
-    }
-
-    public String getCoverUrl() {
-        return coverUrl;
-    }
-
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
-    }
-
-    public Integer getCreateNum() {
-        return createNum;
-    }
-
-    public void setCreateNum(Integer createNum) {
-        this.createNum = createNum;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
-
-    public Long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getUpdateBy() {
-        return updateBy;
-    }
-
-    public void setUpdateBy(String updateBy) {
-        this.updateBy = updateBy;
-    }
-
-    public Long getDeleteTime() {
-        return deleteTime;
-    }
-
-    public void setDeleteTime(Long deleteTime) {
-        this.deleteTime = deleteTime;
-    }
-
-    public Long getDeleteBy() {
-        return deleteBy;
-    }
-
-    public void setDeleteBy(Long deleteBy) {
-        this.deleteBy = deleteBy;
-    }
-
-    @Override
-    public String toString() {
-        return "VisualizationSubject{" +
-        "id = " + id +
-        ", name = " + name +
-        ", type = " + type +
-        ", details = " + details +
-        ", deleteFlag = " + deleteFlag +
-        ", coverUrl = " + coverUrl +
-        ", createNum = " + createNum +
-        ", createTime = " + createTime +
-        ", createBy = " + createBy +
-        ", updateTime = " + updateTime +
-        ", updateBy = " + updateBy +
-        ", deleteTime = " + deleteTime +
-        ", deleteBy = " + deleteBy +
-        "}";
-    }
 }

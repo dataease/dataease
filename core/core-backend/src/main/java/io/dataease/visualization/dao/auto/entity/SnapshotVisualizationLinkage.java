@@ -1,178 +1,67 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 联动记录表
- * </p>
- *
- * @author fit2cloud
- * @since 2025-03-24
- */
-@TableName("snapshot_visualization_linkage")
-public class SnapshotVisualizationLinkage implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
+@Getter
+@Setter
+@Entity
+@Table(name = "snapshot_visualization_linkage")
+public class SnapshotVisualizationLinkage {
+    @Id
+    @Comment("主键")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * 联动大屏/仪表板ID
-     */
+    @Comment("联动大屏/仪表板ID")
+    @Column(name = "dv_id")
     private Long dvId;
 
-    /**
-     * 源图表id
-     */
+    @Comment("源图表id")
+    @Column(name = "source_view_id")
     private Long sourceViewId;
 
-    /**
-     * 联动图表id
-     */
+    @Comment("联动图表id")
+    @Column(name = "target_view_id")
     private Long targetViewId;
 
-    /**
-     * 更新时间
-     */
+    @Comment("更新时间")
+    @Column(name = "update_time")
     private Long updateTime;
 
-    /**
-     * 更新人
-     */
+    @Size(max = 255)
+    @Comment("更新人")
+    @Column(name = "update_people")
     private String updatePeople;
 
-    /**
-     * 是否启用关联
-     */
+    @Comment("是否启用关联")
+    @ColumnDefault("false")
+    @Column(name = "linkage_active")
     private Boolean linkageActive;
 
-    /**
-     * 扩展字段1
-     */
+    @Size(max = 2000)
+    @Comment("扩展字段1")
+    @Column(name = "ext1", length = 2000)
     private String ext1;
 
-    /**
-     * 扩展字段2
-     */
+    @Size(max = 2000)
+    @Comment("扩展字段2")
+    @Column(name = "ext2", length = 2000)
     private String ext2;
 
-    /**
-     * 复制来源
-     */
+    @Comment("复制来源")
+    @Column(name = "copy_from")
     private Long copyFrom;
 
-    /**
-     * 复制来源ID
-     */
+    @Comment("复制来源ID")
+    @Column(name = "copy_id")
     private Long copyId;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getDvId() {
-        return dvId;
-    }
-
-    public void setDvId(Long dvId) {
-        this.dvId = dvId;
-    }
-
-    public Long getSourceViewId() {
-        return sourceViewId;
-    }
-
-    public void setSourceViewId(Long sourceViewId) {
-        this.sourceViewId = sourceViewId;
-    }
-
-    public Long getTargetViewId() {
-        return targetViewId;
-    }
-
-    public void setTargetViewId(Long targetViewId) {
-        this.targetViewId = targetViewId;
-    }
-
-    public Long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getUpdatePeople() {
-        return updatePeople;
-    }
-
-    public void setUpdatePeople(String updatePeople) {
-        this.updatePeople = updatePeople;
-    }
-
-    public Boolean getLinkageActive() {
-        return linkageActive;
-    }
-
-    public void setLinkageActive(Boolean linkageActive) {
-        this.linkageActive = linkageActive;
-    }
-
-    public String getExt1() {
-        return ext1;
-    }
-
-    public void setExt1(String ext1) {
-        this.ext1 = ext1;
-    }
-
-    public String getExt2() {
-        return ext2;
-    }
-
-    public void setExt2(String ext2) {
-        this.ext2 = ext2;
-    }
-
-    public Long getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(Long copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public Long getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(Long copyId) {
-        this.copyId = copyId;
-    }
-
-    @Override
-    public String toString() {
-        return "SnapshotVisualizationLinkage{" +
-        "id = " + id +
-        ", dvId = " + dvId +
-        ", sourceViewId = " + sourceViewId +
-        ", targetViewId = " + targetViewId +
-        ", updateTime = " + updateTime +
-        ", updatePeople = " + updatePeople +
-        ", linkageActive = " + linkageActive +
-        ", ext1 = " + ext1 +
-        ", ext2 = " + ext2 +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        "}";
-    }
 }

@@ -1,6 +1,5 @@
 package io.dataease.api.visualization.vo;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;

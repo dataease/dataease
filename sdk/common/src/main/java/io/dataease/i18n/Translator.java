@@ -1,6 +1,5 @@
 package io.dataease.i18n;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -11,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Array;
@@ -117,9 +117,9 @@ public class Translator {
                     translateObject(item);
                 }
             }
-            if (javaObject instanceof IPage) {
-                IPage iPage = (IPage) javaObject;
-                translateObject(iPage.getRecords());
+            if (javaObject instanceof Page) {
+                Page page = (Page) javaObject;
+                translateObject(page.getContent());
             }
 
             if (javaObject.getClass().isArray()) {

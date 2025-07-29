@@ -1,245 +1,89 @@
 package io.dataease.template.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 模板表
- * </p>
- *
- * @author fit2cloud
- * @since 2024-07-17
- */
-@TableName("visualization_template")
-public class VisualizationTemplate implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
+@Getter
+@Setter
+@Comment("模板表")
+@Entity
+@Table(name = "visualization_template")
+public class VisualizationTemplate {
+    @Id
+    @Size(max = 50)
+    @Comment("主键")
+    @Column(name = "id", nullable = false, length = 50)
     private String id;
 
-    /**
-     * 名称
-     */
+    @Size(max = 255)
+    @Comment("名称")
+    @Column(name = "name")
     private String name;
 
-    /**
-     * 父级id
-     */
+    @Size(max = 255)
+    @Comment("父级id")
+    @Column(name = "pid")
     private String pid;
 
-    /**
-     * 层级
-     */
+    @Comment("层级")
+    @Column(name = "level")
     private Integer level;
 
-    /**
-     * 模板种类  dataV or dashboard 目录或者文件夹
-     */
+    @Size(max = 255)
+    @Comment("模版种类  dataV or dashboard 目录或者文件夹")
+    @Column(name = "dv_type")
     private String dvType;
 
-    /**
-     * 节点类型  app or template 应用 或者 模板
-     */
+    @Size(max = 255)
+    @Comment("节点类型  app or template 应用 或者 模板")
+    @Column(name = "node_type")
     private String nodeType;
 
-    /**
-     * 创建人
-     */
+    @Size(max = 255)
+    @Comment("创建人")
+    @Column(name = "create_by")
     private String createBy;
 
-    /**
-     * 创建时间
-     */
+    @Comment("创建时间")
+    @Column(name = "create_time")
     private Long createTime;
 
-    /**
-     * 缩略图
-     */
+    @Comment("缩略图")
+    @Column(name = "snapshot", length = 16777216)
     private String snapshot;
 
-    /**
-     * 模板类型 system 系统内置 self 用户自建 
-     */
+    @Size(max = 255)
+    @Comment("模版类型 system 系统内置 self 用户自建 ")
+    @Column(name = "template_type")
     private String templateType;
 
-    /**
-     * template 样式
-     */
+    @Comment("template 样式")
+    @Column(name = "template_style", length = 16777216)
     private String templateStyle;
 
-    /**
-     * template 数据
-     */
+    @Comment("template 数据")
+    @Column(name = "template_data", length = 16777216)
     private String templateData;
 
-    /**
-     * 预存数据
-     */
+    @Comment("预存数据")
+    @Column(name = "dynamic_data", length = 16777216)
     private String dynamicData;
 
-    /**
-     * app数据
-     */
+    @Comment("app数据")
+    @Column(name = "app_data", length = 16777216)
     private String appData;
 
-    /**
-     * 使用次数
-     */
+    @Comment("使用次数")
+    @ColumnDefault("0")
+    @Column(name = "use_count")
     private Integer useCount;
 
+    @ColumnDefault("3")
+    @Column(name = "version")
     private Integer version;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPid() {
-        return pid;
-    }
-
-    public void setPid(String pid) {
-        this.pid = pid;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public String getDvType() {
-        return dvType;
-    }
-
-    public void setDvType(String dvType) {
-        this.dvType = dvType;
-    }
-
-    public String getNodeType() {
-        return nodeType;
-    }
-
-    public void setNodeType(String nodeType) {
-        this.nodeType = nodeType;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getSnapshot() {
-        return snapshot;
-    }
-
-    public void setSnapshot(String snapshot) {
-        this.snapshot = snapshot;
-    }
-
-    public String getTemplateType() {
-        return templateType;
-    }
-
-    public void setTemplateType(String templateType) {
-        this.templateType = templateType;
-    }
-
-    public String getTemplateStyle() {
-        return templateStyle;
-    }
-
-    public void setTemplateStyle(String templateStyle) {
-        this.templateStyle = templateStyle;
-    }
-
-    public String getTemplateData() {
-        return templateData;
-    }
-
-    public void setTemplateData(String templateData) {
-        this.templateData = templateData;
-    }
-
-    public String getDynamicData() {
-        return dynamicData;
-    }
-
-    public void setDynamicData(String dynamicData) {
-        this.dynamicData = dynamicData;
-    }
-
-    public String getAppData() {
-        return appData;
-    }
-
-    public void setAppData(String appData) {
-        this.appData = appData;
-    }
-
-    public Integer getUseCount() {
-        return useCount;
-    }
-
-    public void setUseCount(Integer useCount) {
-        this.useCount = useCount;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    @Override
-    public String toString() {
-        return "VisualizationTemplate{" +
-        "id = " + id +
-        ", name = " + name +
-        ", pid = " + pid +
-        ", level = " + level +
-        ", dvType = " + dvType +
-        ", nodeType = " + nodeType +
-        ", createBy = " + createBy +
-        ", createTime = " + createTime +
-        ", snapshot = " + snapshot +
-        ", templateType = " + templateType +
-        ", templateStyle = " + templateStyle +
-        ", templateData = " + templateData +
-        ", dynamicData = " + dynamicData +
-        ", appData = " + appData +
-        ", useCount = " + useCount +
-        ", version = " + version +
-        "}";
-    }
 }

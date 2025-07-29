@@ -1,7 +1,8 @@
 package io.dataease.visualization.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.vo.CoreDatasetGroupVO;
 import io.dataease.api.dataset.vo.CoreDatasetTableFieldVO;
 import io.dataease.api.visualization.VisualizationOuterParamsApi;
@@ -10,15 +11,15 @@ import io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO;
 import io.dataease.api.visualization.response.VisualizationOuterParamsBaseResponse;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.constant.CommonConstants;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
+import io.dataease.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dao.auto.entity.QCoreDatasetGroup;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.constant.DeTypeConstants;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
-import io.dataease.visualization.dao.ext.mapper.ExtVisualizationOuterParamsMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,35 +40,32 @@ import java.util.stream.Collectors;
 public class VisualizationOuterParamsService implements VisualizationOuterParamsApi {
 
     @Resource
-    private ExtVisualizationOuterParamsMapper extOuterParamsMapper;
+    private JPAQueryFactory queryFactory;
     @Resource
-    private VisualizationOuterParamsMapper outerParamsMapper;
+    private SnapshotVisualizationOuterParamsRepository snapshotVisualizationOuterParamsRepository;
     @Resource
-    private SnapshotVisualizationOuterParamsMapper snapshotOuterParamsMapper;
-
+    private SnapshotVisualizationOuterParamsInfoRepository snapshotVisualizationOuterParamsInfoRepository;
     @Resource
-    private VisualizationOuterParamsInfoMapper outerParamsInfoMapper;
-
+    private SnapshotVisualizationOuterParamsTargetViewInfoRepository snapshotVisualizationOuterParamsTargetViewInfoRepository;
     @Resource
-    private SnapshotVisualizationOuterParamsInfoMapper snapshotOuterParamsInfoMapper;
-
-    @Resource
-    private VisualizationOuterParamsTargetViewInfoMapper outerParamsTargetViewInfoMapper;
-
-    @Resource
-    private SnapshotVisualizationOuterParamsTargetViewInfoMapper snapshotOuterParamsTargetViewInfoMapper;
-
-    @Resource
-    private CoreDatasetTableMapper coreDatasetTableMapper;
+    private CoreDatasetTableRepository coreDatasetTableRepository;
     @Autowired
     private DataVisualizationServer dataVisualizationServer;
-    @Autowired
-    private SnapshotDataVisualizationInfoMapper snapshotDataVisualizationInfoMapper;
 
 
     @Override
     public VisualizationOuterParamsDTO queryWithVisualizationId(String visualizationId) {
-        VisualizationOuterParamsDTO visualizationOuterParamsDTO = extOuterParamsMapper.queryWithVisualizationIdSnapshot(visualizationId);
+        QSnapshotDataVisualizationInfo qSnapshotDataVisualizationInfo = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
+        QSnapshotVisualizationOuterParams qSnapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
+        VisualizationOuterParamsDTO visualizationOuterParamsDTO = queryFactory.select(Projections.fields(VisualizationOuterParamsDTO.class,
+                        qSnapshotDataVisualizationInfo.id.as("visualizationId"),
+                        qSnapshotVisualizationOuterParams.checked.as("checked")
+                )).from(qSnapshotDataVisualizationInfo)
+                .leftJoin(qSnapshotVisualizationOuterParams).on(qSnapshotDataVisualizationInfo.id.stringValue().eq(qSnapshotVisualizationOuterParams.visualizationId))
+                .where(qSnapshotDataVisualizationInfo.id.stringValue().eq(visualizationId)).fetchFirst();
+        if (visualizationOuterParamsDTO != null && visualizationOuterParamsDTO.getChecked() == null) {
+            visualizationOuterParamsDTO.setChecked(false);
+        }
         return visualizationOuterParamsDTO;
     }
 
@@ -75,17 +73,41 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     public void updateOuterParamsSet(VisualizationOuterParamsDTO outerParamsDTO) {
         String visualizationId = outerParamsDTO.getVisualizationId();
         Assert.notNull(visualizationId, "visualizationId cannot be null");
-        Map<String,String> paramsInfoNameIdMap = new HashMap<>();
-        List<SnapshotVisualizationOuterParamsInfo> paramsInfoNameIdList = extOuterParamsMapper.getVisualizationOuterParamsInfoBase(visualizationId);
-        if(!CollectionUtils.isEmpty(paramsInfoNameIdList)){
+        Map<String, String> paramsInfoNameIdMap = new HashMap<>();
+        QSnapshotVisualizationOuterParamsInfo qSnapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
+        QSnapshotVisualizationOuterParams qSnapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
+        List<SnapshotVisualizationOuterParamsInfo> paramsInfoNameIdList = queryFactory.select(Projections.fields(SnapshotVisualizationOuterParamsInfo.class,
+                        qSnapshotVisualizationOuterParamsInfo.paramName,
+                        qSnapshotVisualizationOuterParamsInfo.paramsInfoId
+                )).from(qSnapshotVisualizationOuterParams)
+                .innerJoin(qSnapshotVisualizationOuterParamsInfo).on(qSnapshotVisualizationOuterParams.paramsId.eq(qSnapshotVisualizationOuterParamsInfo.paramsId))
+                .where(qSnapshotVisualizationOuterParams.visualizationId.eq(visualizationId)).fetch();
+        if (!CollectionUtils.isEmpty(paramsInfoNameIdList)) {
             paramsInfoNameIdMap = paramsInfoNameIdList.stream()
                     .collect(Collectors.toMap(SnapshotVisualizationOuterParamsInfo::getParamName, SnapshotVisualizationOuterParamsInfo::getParamsInfoId));
         }
         //清理原有数据
-        extOuterParamsMapper.deleteOuterParamsTargetWithVisualizationIdSnapshot(visualizationId);
-        extOuterParamsMapper.deleteOuterParamsInfoWithVisualizationIdSnapshot(visualizationId);
-        extOuterParamsMapper.deleteOuterParamsWithVisualizationIdSnapshot(visualizationId);
-        if(CollectionUtils.isEmpty(outerParamsDTO.getOuterParamsInfoArray())){
+        QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
+        QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
+        QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
+        List<String> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId).from(snapshotVisualizationOuterParamsTargetViewInfo)
+                .innerJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
+                .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
+                .where(snapshotVisualizationOuterParams.visualizationId.eq(visualizationId)).fetch();
+
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(paramsInfoIds)) {
+            snapshotVisualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
+        }
+
+        List<String> paramsIds = queryFactory.select(snapshotVisualizationOuterParamsInfo.paramsId).from(snapshotVisualizationOuterParamsInfo)
+                .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
+                .where(snapshotVisualizationOuterParams.visualizationId.eq(visualizationId))
+                .fetch();
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(paramsIds)) {
+            snapshotVisualizationOuterParamsInfoRepository.deleteByParamsIds(paramsIds);
+        }
+        snapshotVisualizationOuterParamsRepository.deleteByVisualizationId(visualizationId);
+        if (CollectionUtils.isEmpty(outerParamsDTO.getOuterParamsInfoArray())) {
             return;
         }
         // 插入新的数据
@@ -93,18 +115,18 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         outerParamsDTO.setParamsId(paramsId);
         SnapshotVisualizationOuterParams newOuterParams = new SnapshotVisualizationOuterParams();
         BeanUtils.copyBean(newOuterParams, outerParamsDTO);
-        snapshotOuterParamsMapper.insert(newOuterParams);
+        snapshotVisualizationOuterParamsRepository.saveAndFlush(newOuterParams);
         Map<String, String> finalParamsInfoNameIdMap = paramsInfoNameIdMap;
         Optional.ofNullable(outerParamsDTO.getOuterParamsInfoArray()).orElse(new ArrayList<>()).forEach(outerParamsInfo -> {
             String paramsInfoId = finalParamsInfoNameIdMap.get(outerParamsInfo.getParamName());
-            if(StringUtils.isEmpty(paramsInfoId)){
+            if (StringUtils.isEmpty(paramsInfoId)) {
                 paramsInfoId = UUID.randomUUID().toString();
             }
             outerParamsInfo.setParamsInfoId(paramsInfoId);
             outerParamsInfo.setParamsId(paramsId);
             SnapshotVisualizationOuterParamsInfo newOuterParamsInfo = new SnapshotVisualizationOuterParamsInfo();
             BeanUtils.copyBean(newOuterParamsInfo, outerParamsInfo);
-            snapshotOuterParamsInfoMapper.insert(newOuterParamsInfo);
+            snapshotVisualizationOuterParamsInfoRepository.saveAndFlush(newOuterParamsInfo);
             String finalParamsInfoId = paramsInfoId;
             Optional.ofNullable(outerParamsInfo.getTargetViewInfoList()).orElse(new ArrayList<>()).forEach(targetViewInfo -> {
                 String targetViewInfoId = UUID.randomUUID().toString();
@@ -112,7 +134,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                 targetViewInfo.setParamsInfoId(finalParamsInfoId);
                 SnapshotVisualizationOuterParamsTargetViewInfo newOuterParamsTargetViewInfo = new SnapshotVisualizationOuterParamsTargetViewInfo();
                 BeanUtils.copyBean(newOuterParamsTargetViewInfo, targetViewInfo);
-                snapshotOuterParamsTargetViewInfoMapper.insert(newOuterParamsTargetViewInfo);
+                snapshotVisualizationOuterParamsTargetViewInfoRepository.saveAndFlush(newOuterParamsTargetViewInfo);
             });
         });
 
@@ -121,7 +143,20 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     @DeLinkPermit
     @Override
     public VisualizationOuterParamsBaseResponse getOuterParamsInfo(String visualizationId) {
-        List<VisualizationOuterParamsInfoDTO> result = extOuterParamsMapper.getVisualizationOuterParamsInfo(visualizationId);
+
+        QVisualizationOuterParams qVisualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
+        QVisualizationOuterParamsInfo qVisualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
+        QVisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = QVisualizationOuterParamsTargetViewInfo.visualizationOuterParamsTargetViewInfo;
+
+        List<VisualizationOuterParamsInfoDTO> result = queryFactory.select(Projections.fields(VisualizationOuterParamsInfoDTO.class,
+                        qVisualizationOuterParamsInfo.paramName.as("paramName"),
+                        qVisualizationOuterParamsInfo.required,
+                        qVisualizationOuterParamsInfo.defaultValue,
+                        qVisualizationOuterParamsInfo.enabledDefault,
+                        visualizationOuterParamsTargetViewInfo.targetViewId.concat("#").concat(visualizationOuterParamsTargetViewInfo.targetViewId).as("targetInfo"))).from(qVisualizationOuterParams)
+                .leftJoin(qVisualizationOuterParamsInfo).on(qVisualizationOuterParamsInfo.paramsId.eq(qVisualizationOuterParams.paramsId))
+                .leftJoin(visualizationOuterParamsTargetViewInfo).on(visualizationOuterParamsTargetViewInfo.paramsInfoId.eq(qVisualizationOuterParamsInfo.paramsInfoId))
+                .fetch();
         return new VisualizationOuterParamsBaseResponse(Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(VisualizationOuterParamsInfoDTO::getSourceInfo, VisualizationOuterParamsInfoDTO::getTargetInfoList)),
                 Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(VisualizationOuterParamsInfoDTO::getSourceInfo, paramsInfo -> paramsInfo))
         );
@@ -129,18 +164,40 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
 
     @Override
     public List<CoreDatasetGroupVO> queryDsWithVisualizationId(String visualizationId) {
-        List<CoreDatasetGroupVO> result = extOuterParamsMapper.queryDsWithVisualizationId(visualizationId);
+
+        QCoreDatasetGroup qCoreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
+        QSnapshotCoreChartView qSnapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+        QSnapshotDataVisualizationInfo qSnapshotDataVisualizationInfo = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
+        List<CoreDatasetGroupVO> result = queryFactory.select(Projections.fields(CoreDatasetGroupVO.class,
+                        qCoreDatasetGroup.id,
+                        qCoreDatasetGroup.name,
+                        qCoreDatasetGroup.pid,
+                        qCoreDatasetGroup.level,
+                        qCoreDatasetGroup.nodeType,
+                        qCoreDatasetGroup.type,
+                        qCoreDatasetGroup.mode,
+                        qCoreDatasetGroup.info,
+                        qCoreDatasetGroup.createBy,
+                        qCoreDatasetGroup.createTime,
+                        qCoreDatasetGroup.qrtzInstance,
+                        qCoreDatasetGroup.syncStatus,
+                        qCoreDatasetGroup.updateBy,
+                        qCoreDatasetGroup.lastUpdateTime
+                )).from(qCoreDatasetGroup)
+                .innerJoin(qSnapshotCoreChartView).on(qCoreDatasetGroup.id.eq(qSnapshotCoreChartView.tableId).and(qSnapshotCoreChartView.type.ne("VQuery")))
+                .innerJoin(qSnapshotDataVisualizationInfo).on(qSnapshotCoreChartView.sceneId.eq(Long.valueOf(qSnapshotDataVisualizationInfo.id.toString())))
+                .where(qSnapshotCoreChartView.sceneId.eq(Long.valueOf(visualizationId)).and(qSnapshotDataVisualizationInfo.id.stringValue().eq(visualizationId)))
+                .where(qSnapshotDataVisualizationInfo.componentData.like("%" + qSnapshotCoreChartView.id + "%"))
+                .fetch();
         if (!CollectionUtils.isEmpty(result)) {
             List<Long> activeViewIds = dataVisualizationServer.getEnabledViewIds(Long.valueOf(visualizationId), CommonConstants.RESOURCE_TABLE.SNAPSHOT);
             result.forEach(coreDatasetGroupVO -> {
                 // 过滤已删除的图表
-                if(!CollectionUtils.isEmpty(coreDatasetGroupVO.getDatasetViews())){
-                    coreDatasetGroupVO.setDatasetViews(coreDatasetGroupVO.getDatasetViews().stream().filter(item ->activeViewIds.contains(item.getChartId())).toList());
+                if (!CollectionUtils.isEmpty(coreDatasetGroupVO.getDatasetViews())) {
+                    coreDatasetGroupVO.setDatasetViews(coreDatasetGroupVO.getDatasetViews().stream().filter(item -> activeViewIds.contains(item.getChartId())).toList());
                 }
                 List<CoreDatasetTableFieldVO> fields = coreDatasetGroupVO.getDatasetFields();
-                QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
-                wrapper.eq("dataset_group_id", coreDatasetGroupVO.getId());
-                List<CoreDatasetTable> tableResult = coreDatasetTableMapper.selectList(wrapper);
+                List<CoreDatasetTable> tableResult = coreDatasetTableRepository.findByDatasetGroupId(coreDatasetGroupVO.getId());
                 if (!CollectionUtils.isEmpty(tableResult)) {
                     tableResult.forEach(coreDatasetTable -> {
                         String sqlVarDetail = coreDatasetTable.getSqlVariableDetails();

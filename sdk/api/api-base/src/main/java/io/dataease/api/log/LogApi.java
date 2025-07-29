@@ -1,10 +1,10 @@
 package io.dataease.api.log;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.log.dto.LogGridRequest;
 import io.dataease.api.log.vo.LogGridVO;
 import io.dataease.api.log.vo.LogOpVO;
+import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -28,7 +28,7 @@ public interface LogApi {
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
     @PostMapping("/pager/{goPage}/{pageSize}")
-    IPage<LogGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody LogGridRequest request);
+    PageResult<LogGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody LogGridRequest request);
 
     @Operation(summary = "导出日志列表")
     @PostMapping("/export")

@@ -1,13 +1,12 @@
 package io.dataease.copilot.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.copilot.dto.ChartDTO;
 import io.dataease.api.copilot.dto.HistoryDTO;
 import io.dataease.api.copilot.dto.MsgDTO;
 import io.dataease.copilot.dao.auto.entity.CoreCopilotMsg;
-import io.dataease.copilot.dao.auto.mapper.CoreCopilotMsgMapper;
+import io.dataease.copilot.dao.auto.mapper.CoreCopilotMsgRepository;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
@@ -26,7 +25,7 @@ import java.util.Map;
 @Component
 public class MsgManage {
     @Resource
-    private CoreCopilotMsgMapper coreCopilotMsgMapper;
+    private CoreCopilotMsgRepository coreCopilotMsgRepository;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -34,47 +33,30 @@ public class MsgManage {
         msgDTO.setId(IDUtils.snowID());
         msgDTO.setCreateTime(System.currentTimeMillis());
         msgDTO.setUserId(AuthUtils.getUser().getUserId());
-        coreCopilotMsgMapper.insert(transDTO(msgDTO));
+        coreCopilotMsgRepository.saveAndFlush(transDTO(msgDTO));
     }
 
     public List<MsgDTO> getMsg(MsgDTO msgDTO) {
-        QueryWrapper<CoreCopilotMsg> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id", msgDTO.getUserId());
-        wrapper.eq("dataset_group_id", msgDTO.getDatasetGroupId());
-        wrapper.orderByAsc("create_time");
-        List<CoreCopilotMsg> perCopilotMsgs = coreCopilotMsgMapper.selectList(wrapper);
+        List<CoreCopilotMsg> perCopilotMsgs = coreCopilotMsgRepository.findByUserIdAndDatasetGroupIdOrderByCreateTimeAsc(
+                msgDTO.getUserId(), msgDTO.getDatasetGroupId());
         return perCopilotMsgs.stream().map(this::transRecord).toList();
     }
 
     public void deleteMsg(MsgDTO msgDTO) {
-        QueryWrapper<CoreCopilotMsg> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id", msgDTO.getUserId());
-        wrapper.ne("dataset_group_id", msgDTO.getDatasetGroupId());
-        coreCopilotMsgMapper.delete(wrapper);
+        coreCopilotMsgRepository.deleteByUserIdAndNotDatasetGroupId(msgDTO.getUserId(), msgDTO.getDatasetGroupId());
     }
 
     public void clearAllUserMsg(Long userId) {
-        QueryWrapper<CoreCopilotMsg> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id", userId);
-        coreCopilotMsgMapper.delete(wrapper);
+        coreCopilotMsgRepository.deleteByUserId(userId);
     }
 
     public MsgDTO getLastMsg(Long userId) {
-        QueryWrapper<CoreCopilotMsg> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id", userId);
-        wrapper.orderByDesc("create_time");
-        List<CoreCopilotMsg> perCopilotMsgs = coreCopilotMsgMapper.selectList(wrapper);
+        List<CoreCopilotMsg> perCopilotMsgs = coreCopilotMsgRepository.findByUserIdOrderByCreateTimeDesc(userId);
         return ObjectUtils.isEmpty(perCopilotMsgs) ? null : transRecord(perCopilotMsgs.getFirst());
     }
 
     public MsgDTO getLastSuccessMsg(Long userId, Long datasetGroupId) {
-        QueryWrapper<CoreCopilotMsg> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id", userId);
-        wrapper.eq("dataset_group_id", datasetGroupId);
-        wrapper.eq("msg_status", 1);
-        wrapper.eq("msg_type", "api");
-        wrapper.orderByDesc("create_time");
-        List<CoreCopilotMsg> perCopilotMsgs = coreCopilotMsgMapper.selectList(wrapper);
+        List<CoreCopilotMsg> perCopilotMsgs = coreCopilotMsgRepository.findLastSuccessMsg(userId, datasetGroupId);
         return ObjectUtils.isEmpty(perCopilotMsgs) ? null : transRecord(perCopilotMsgs.getFirst());
     }
 

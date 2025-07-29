@@ -2,7 +2,7 @@ package io.dataease.listener;
 
 import io.dataease.chart.manage.ChartViewOldDataMergeService;
 import io.dataease.startup.dao.auto.entity.CoreSysStartupJob;
-import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobMapper;
+import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobRepository;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +23,7 @@ public class ChartFilterMergeListener implements ApplicationListener<Application
     private final Logger logger = LoggerFactory.getLogger(ChartFilterMergeListener.class);
     public static final String JOB_ID = "chartFilterMerge";
     @Resource
-    private CoreSysStartupJobMapper coreSysStartupJobMapper;
+    private CoreSysStartupJobRepository coreSysStartupJobRepository;
     @Resource
     private ChartViewOldDataMergeService chartViewOldDataMergeService;
 
@@ -31,14 +31,14 @@ public class ChartFilterMergeListener implements ApplicationListener<Application
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         logger.info("====chart filter merge [start]====");
 
-        CoreSysStartupJob sysStartupJob = coreSysStartupJobMapper.selectById(JOB_ID);
+        CoreSysStartupJob sysStartupJob = coreSysStartupJobRepository.findById(JOB_ID).orElse(null);
         if (ObjectUtils.isNotEmpty(sysStartupJob) && StringUtils.equalsIgnoreCase(sysStartupJob.getStatus(), "ready")) {
             logger.info("====chart filter merge [doing]====");
 
             chartViewOldDataMergeService.mergeOldData();
 
             sysStartupJob.setStatus("done");
-            coreSysStartupJobMapper.updateById(sysStartupJob);
+            coreSysStartupJobRepository.saveAndFlush(sysStartupJob);
         }
         logger.info("====chart filter merge [end]====");
     }

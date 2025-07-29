@@ -8,6 +8,7 @@ RUN mkdir -p /opt/apps/config \
     /opt/dataease3.0/data/appearance/ \
     /opt/dataease3.0/data/exportData/ \
     /opt/dataease3.0/data/i8n/ \
+    /opt/dataease3.0/data/driver/ \
     /opt/dataease3.0/data/plugin/
 
 ADD drivers/* /opt/dataease3.0/drivers/
@@ -20,7 +21,7 @@ ADD core/core-backend/target/CoreApplication.jar /opt/apps/app.jar
 
 ENV JAVA_APP_JAR=/opt/apps/app.jar
 ENV RUNNING_PORT=8100
-ENV JAVA_OPTIONS="-Dfile.encoding=utf-8 -Dloader.path=/opt/apps -Dspring.config.additional-location=/opt/apps/config/"
+ENV JAVA_OPTIONS="-Dfile.encoding=utf-8 -Dloader.path=/opt/apps,/opt/dataease3.0/data/driver/ -Dspring.config.additional-location=/opt/apps/config/"
 
 HEALTHCHECK --interval=15s --timeout=5s --retries=20 --start-period=30s CMD nc -zv 127.0.0.1 $RUNNING_PORT
 

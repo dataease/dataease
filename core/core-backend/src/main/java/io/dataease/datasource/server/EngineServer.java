@@ -2,15 +2,16 @@ package io.dataease.datasource.server;
 
 import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
+import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
+import io.dataease.datasource.type.H2;
+import io.dataease.datasource.type.Impala;
+import io.dataease.datasource.type.Mysql;
+import io.dataease.datasource.type.Oracle;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.RsaUtils;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ import java.util.*;
 @Transactional(rollbackFor = Exception.class)
 public class EngineServer implements EngineApi {
     @Resource
-    private CoreDeEngineMapper deEngineMapper;
+    private CoreDeEngineRepository coreDeEngineRepository;
     @Resource
     private EngineManage engineManage;
     @Resource
@@ -37,11 +38,22 @@ public class EngineServer implements EngineApi {
             DEException.throwException("非管理员，无权访问！");
         }
         DatasourceDTO datasourceDTO = new DatasourceDTO();
-        List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
+        List<CoreDeEngine> deEngines = coreDeEngineRepository.findAll();
         if (CollectionUtils.isEmpty(deEngines)) {
             return datasourceDTO;
         }
         BeanUtils.copyBean(datasourceDTO, deEngines.get(0));
+        switch (datasourceDTO.getType()) {
+            case "mysql":
+                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class)).toString());
+                break;
+            case "h2":
+                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class)).toString());
+                break;
+            case "oracle":
+                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Oracle.class)).toString());
+                break;
+        }
         datasourceDTO.setConfiguration(RsaUtils.symmetricEncrypt(datasourceDTO.getConfiguration()));
         return datasourceDTO;
     }
@@ -59,9 +71,9 @@ public class EngineServer implements EngineApi {
         if (coreDeEngine.getId() == null) {
             coreDeEngine.setId(IDUtils.snowID());
             datasourceDTO.setId(coreDeEngine.getId());
-            deEngineMapper.insert(coreDeEngine);
+            coreDeEngineRepository.saveAndFlush(coreDeEngine);
         } else {
-            deEngineMapper.updateById(coreDeEngine);
+            coreDeEngineRepository.saveAndFlush(coreDeEngine);
         }
         calciteProvider.update(datasourceDTO);
     }
@@ -82,12 +94,12 @@ public class EngineServer implements EngineApi {
         if (!AuthUtils.getUser().getUserId().equals(1L)) {
             DEException.throwException("非管理员，无权访问！");
         }
-        engineManage.validate(deEngineMapper.selectById(id));
+        engineManage.validate(coreDeEngineRepository.findById(id).orElse(null));
     }
 
     @Override
     public boolean supportSetKey() throws Exception {
-        List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
+        List<CoreDeEngine> deEngines = coreDeEngineRepository.findAll();
         if (CollectionUtils.isEmpty(deEngines)) {
             return false;
         } else {

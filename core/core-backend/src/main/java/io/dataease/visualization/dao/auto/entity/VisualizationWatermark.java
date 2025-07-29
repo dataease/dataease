@@ -1,94 +1,49 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 仪表板水印设置表
- * </p>
- *
- * @author fit2cloud
- * @since 2024-01-09
- */
-@TableName("visualization_watermark")
-public class VisualizationWatermark implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
+@Getter
+@Setter
+@Comment("仪表板水印设置表")
+@Entity
+@Table(name = "visualization_watermark")
+public class VisualizationWatermark {
+    @Id
+    @Size(max = 50)
+    @Comment("主键")
+    @Column(name = "id", nullable = false, length = 50)
     private String id;
 
-    /**
-     * 版本号
-     */
+    @Size(max = 255)
+    @Comment("版本号")
+    @Column(name = "version")
     private String version;
 
-    /**
-     * 设置内容
-     */
+    @Column(name = "setting_content", length = 16777216)
     private String settingContent;
 
-    /**
-     * 创建人
-     */
+    @Size(max = 255)
+    @Comment("创建人")
+    @Column(name = "create_by")
     private String createBy;
 
-    /**
-     * 创建时间
-     */
+    @Comment("创建时间")
+    @Column(name = "create_time")
     private Long createTime;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
+    public VisualizationWatermark(String id, String version, String settingContent, String createBy, Long createTime) {
         this.id = id;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
         this.version = version;
-    }
-
-    public String getSettingContent() {
-        return settingContent;
-    }
-
-    public void setSettingContent(String settingContent) {
         this.settingContent = settingContent;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
         this.createBy = createBy;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }
 
-    @Override
-    public String toString() {
-        return "VisualizationWatermark{" +
-        "id = " + id +
-        ", version = " + version +
-        ", settingContent = " + settingContent +
-        ", createBy = " + createBy +
-        ", createTime = " + createTime +
-        "}";
+    // 无参构造函数，JPA 需要
+    public VisualizationWatermark() {
     }
 }

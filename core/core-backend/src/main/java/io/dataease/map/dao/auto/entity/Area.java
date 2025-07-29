@@ -1,78 +1,41 @@
 package io.dataease.map.dao.auto.entity;
 
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2023-07-09
- */
-public class Area implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 区域id,和文件对应
-     */
+@Getter
+@Setter
+@Comment("地图区域表")
+@Entity
+@Table(name = "area")
+public class Area {
+    @Id
+    @Size(max = 255)
+    @Comment("区域id,和文件对应")
+    @Column(name = "id", nullable = false)
     private String id;
 
-    /**
-     * 区域级别，从高到低country,province,city,district,更细的待定
-     */
+    @Size(max = 255)
+    @Comment("区域级别，从高到低country,province,city,district,更细的待定")
+    @Column(name = "level")
     private String level;
 
-    /**
-     * 区域名称
-     */
+    @Size(max = 255)
+    @Comment("区域名称")
+    @Column(name = "name")
     private String name;
 
-    /**
-     * 父级区域id
-     */
+    @Size(max = 255)
+    @NotNull
+    @Comment("父级区域id")
+    @Column(name = "pid", nullable = false)
     private String pid;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPid() {
-        return pid;
-    }
-
-    public void setPid(String pid) {
-        this.pid = pid;
-    }
-
-    @Override
-    public String toString() {
-        return "Area{" +
-        "id = " + id +
-        ", level = " + level +
-        ", name = " + name +
-        ", pid = " + pid +
-        "}";
-    }
 }

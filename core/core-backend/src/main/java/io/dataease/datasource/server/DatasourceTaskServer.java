@@ -1,22 +1,23 @@
 package io.dataease.datasource.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.commons.constants.TaskStatus;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceTaskLogMapper;
-import io.dataease.datasource.dao.auto.mapper.CoreDatasourceTaskMapper;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskLogRepository;
+import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskRepository;
+import io.dataease.datasource.dao.auto.repository.QrtzTriggersRepository;
 import io.dataease.datasource.dto.CoreDatasourceTaskDTO;
-import io.dataease.datasource.dao.ext.mapper.ExtDatasourceTaskMapper;
 import io.dataease.datasource.manage.DatasourceSyncManage;
+import io.dataease.qrtz.dao.auto.repo.entity.QrtzTriggers;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -27,40 +28,41 @@ import java.util.List;
 public class DatasourceTaskServer {
 
     @Resource
-    private CoreDatasourceTaskMapper datasourceTaskMapper;
+    private CoreDatasourceTaskRepository coreDatasourceTaskRepository;
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
-    private ExtDatasourceTaskMapper extDatasourceTaskMapper;
+    private QrtzTriggersRepository qrtzTriggersRepository;
     @Resource
-    private CoreDatasourceTaskLogMapper coreDatasourceTaskLogMapper;
+    private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
     @Resource
     private DatasourceSyncManage datasourceSyncManage;
 
 
     public CoreDatasourceTask selectById(Long taskId) {
-        return datasourceTaskMapper.selectById(taskId);
+        return coreDatasourceTaskRepository.findById(taskId).orElse(null);
     }
 
     public List<CoreDatasourceTask> listAll() {
-        return datasourceTaskMapper.selectList(null);
+        return coreDatasourceTaskRepository.findAll();
     }
 
     public CoreDatasourceTask selectByDSId(Long dsId) {
-        QueryWrapper<CoreDatasourceTask> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ds_id", dsId);
-        List<CoreDatasourceTask> coreDatasourceTasks = datasourceTaskMapper.selectList(queryWrapper);
+        List<CoreDatasourceTask> coreDatasourceTasks = coreDatasourceTaskRepository.findByDsId(dsId);
         return CollectionUtils.isEmpty(coreDatasourceTasks) ? new CoreDatasourceTask() : coreDatasourceTasks.get(0);
     }
 
     public CoreDatasourceTaskLog lastSyncLogForTable(Long dsId, String tableName) {
-        List<CoreDatasourceTaskLog> coreDatasourceTaskLogs = new ArrayList<>();
-        QueryWrapper<CoreDatasourceTaskLog> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ds_id", dsId);
-        queryWrapper.eq("table_name", tableName);
-        queryWrapper.orderByDesc("start_time");
-        queryWrapper.last("limit 1");
-        List<CoreDatasourceTaskLog> logs = coreDatasourceTaskLogMapper.selectList(queryWrapper);
+        Specification<CoreDatasourceTaskLog> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("dsId"), dsId));
+            if (tableName != null) {
+                predicates.add(cb.equal(root.get("tableName"), tableName));
+            }
+            query.orderBy(cb.desc(root.get("startTime")));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<CoreDatasourceTaskLog> logs = coreDatasourceTaskLogRepository.findAll(spec, PageRequest.of(0, 1)).getContent();
         if (!CollectionUtils.isEmpty(logs)) {
             return logs.get(0);
         } else {
@@ -69,41 +71,34 @@ public class DatasourceTaskServer {
     }
 
     public void deleteByDSId(Long dsId) {
-        QueryWrapper<CoreDatasourceTask> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ds_id", dsId);
-        List<CoreDatasourceTask> coreDatasourceTasks = datasourceTaskMapper.selectList(queryWrapper);
+        List<CoreDatasourceTask> coreDatasourceTasks = coreDatasourceTaskRepository.findByDsId(dsId);
         if (!CollectionUtils.isEmpty(coreDatasourceTasks)) {
             datasourceSyncManage.deleteSchedule(coreDatasourceTasks.get(0));
         }
-        datasourceTaskMapper.delete(queryWrapper);
+        coreDatasourceTaskRepository.deleteByDsId(dsId);
     }
 
     public void insert(CoreDatasourceTask coreDatasourceTask) {
         coreDatasourceTask.setId(IDUtils.snowID());
-        datasourceTaskMapper.insert(coreDatasourceTask);
+        coreDatasourceTaskRepository.saveAndFlush(coreDatasourceTask);
     }
 
     public void delete(Long id) {
-        datasourceTaskMapper.deleteById(id);
+        coreDatasourceTaskRepository.deleteById(id);
     }
 
     public void update(CoreDatasourceTask coreDatasourceTask) {
         if (coreDatasourceTask.getId() == null) {
-            datasourceTaskMapper.insert(coreDatasourceTask);
+            coreDatasourceTask.setId(IDUtils.snowID());
+            coreDatasourceTaskRepository.saveAndFlush(coreDatasourceTask);
         } else {
-            UpdateWrapper<CoreDatasourceTask> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", coreDatasourceTask.getId());
-            datasourceTaskMapper.updateById(coreDatasourceTask);
+            coreDatasourceTaskRepository.saveAndFlush(coreDatasourceTask);
         }
 
     }
 
     public void updateByDsIds(List<Long> dsIds) {
-        UpdateWrapper<CoreDatasourceTask> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("ds_id", dsIds);
-        CoreDatasourceTask record = new CoreDatasourceTask();
-        record.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        datasourceTaskMapper.update(record, updateWrapper);
+        coreDatasourceTaskRepository.updateTaskStatusByDsIds(dsIds, TaskStatus.WaitingForExecution.name());
     }
 
     public void checkTaskIsStopped(CoreDatasourceTask coreDatasourceTask) {
@@ -112,24 +107,28 @@ public class DatasourceTaskServer {
             if (CollectionUtils.isEmpty(dataSetTaskDTOS)) {
                 return;
             }
-            UpdateWrapper<CoreDatasourceTask> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", coreDatasourceTask.getId());
-            CoreDatasourceTask datasourceTask = new CoreDatasourceTask();
             if (dataSetTaskDTOS.get(0).getNextExecTime() == null || dataSetTaskDTOS.get(0).getNextExecTime() <= 0) {
-                datasourceTask.setTaskStatus(TaskStatus.Stopped.name());
-                datasourceTaskMapper.update(datasourceTask, updateWrapper);
+                coreDatasourceTaskRepository.updateTaskStatus(coreDatasourceTask.getId(), TaskStatus.Stopped.name());
             }
             if (dataSetTaskDTOS.get(0).getNextExecTime() != null && dataSetTaskDTOS.get(0).getNextExecTime() > coreDatasourceTask.getEndTime()) {
-                datasourceTask.setTaskStatus(TaskStatus.Stopped.name());
-                datasourceTaskMapper.update(datasourceTask, updateWrapper);
+                coreDatasourceTaskRepository.updateTaskStatus(coreDatasourceTask.getId(), TaskStatus.Stopped.name());
             }
         }
     }
 
     public List<CoreDatasourceTaskDTO> taskWithTriggers(Long taskId) {
-        QueryWrapper<CoreDatasourceTaskDTO> wrapper = new QueryWrapper<>();
-        wrapper.eq("QRTZ_TRIGGERS.TRIGGER_NAME", String.valueOf(taskId));
-        return extDatasourceTaskMapper.taskWithTriggers(wrapper);
+        Specification<QrtzTriggers> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("triggerName"), String.valueOf(taskId)));
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return qrtzTriggersRepository.findAll(spec).stream().map(qrtzTriggers -> {
+            CoreDatasourceTaskDTO coreDatasourceTaskDTO = new CoreDatasourceTaskDTO();
+            coreDatasourceTaskDTO.setId(taskId);
+            coreDatasourceTaskDTO.setNextExecTime(qrtzTriggers.getNextFireTime());
+            return coreDatasourceTaskDTO;
+        }).toList();
     }
 
     public synchronized boolean existUnderExecutionTask(Long datasourceId, Long taskId) {
@@ -140,12 +139,7 @@ public class DatasourceTaskServer {
 
         boolean existSyncTask = coreDatasourceRepository.exists(example);
         if (!existSyncTask) {
-            UpdateWrapper<CoreDatasourceTask> updateTaskWrapper = new UpdateWrapper<>();
-            updateTaskWrapper.eq("id", taskId);
-            CoreDatasourceTask record = new CoreDatasourceTask();
-            record.setTaskStatus(TaskStatus.UnderExecution.name());
-            record.setLastExecTime(System.currentTimeMillis());
-            datasourceTaskMapper.update(record, updateTaskWrapper);
+            coreDatasourceTaskRepository.updateTaskStatusAndLastExecTime(taskId, TaskStatus.UnderExecution.name(), System.currentTimeMillis());
         }
         return existSyncTask;
     }
@@ -162,12 +156,12 @@ public class DatasourceTaskServer {
         coreDatasourceTaskLog.setCreateTime(startTime);
         coreDatasourceTaskLog.setTableName(tableName);
         coreDatasourceTaskLog.setInfo("");
-        coreDatasourceTaskLogMapper.insert(coreDatasourceTaskLog);
+        coreDatasourceTaskLogRepository.saveAndFlush(coreDatasourceTaskLog);
         return coreDatasourceTaskLog;
     }
 
     public void saveLog(CoreDatasourceTaskLog coreDatasourceTaskLog) {
-        coreDatasourceTaskLogMapper.updateById(coreDatasourceTaskLog);
+        coreDatasourceTaskLogRepository.saveAndFlush(coreDatasourceTaskLog);
     }
 
     public void updateTaskStatus(CoreDatasourceTask coreDatasourceTask) {
@@ -189,18 +183,13 @@ public class DatasourceTaskServer {
                 record.setTaskStatus(TaskStatus.WaitingForExecution.name());
             }
         }
-
-        UpdateWrapper<CoreDatasourceTask> updateTaskWrapper = new UpdateWrapper<>();
-        updateTaskWrapper.eq("id", coreDatasourceTask.getId());
-        datasourceTaskMapper.update(record, updateTaskWrapper);
+        coreDatasourceTaskRepository.updateTaskStatus(coreDatasourceTask.getId(), record.getTaskStatus());
     }
 
     public void cleanLog() {
         long expTime = Long.parseLong("30") * 24L * 3600L * 1000L;
         long threshold = System.currentTimeMillis() - expTime;
-        QueryWrapper<CoreDatasourceTaskLog> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lt("start_time", threshold);
-        coreDatasourceTaskLogMapper.delete(queryWrapper);
+        coreDatasourceTaskLogRepository.deleteByStartTimeLessThan(threshold);
     }
 
 

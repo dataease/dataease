@@ -1,276 +1,80 @@
 package io.dataease.copilot.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2024-07-04
- */
-@TableName("core_copilot_msg")
-public class CoreCopilotMsg implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * ID
-     */
+@Getter
+@Setter
+@Entity
+@Table(name = "core_copilot_msg")
+public class CoreCopilotMsg {
+    @Id
+    @Comment("ID")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * 用户ID
-     */
+    @Comment("用户ID")
+    @Column(name = "user_id")
     private Long userId;
 
-    /**
-     * 数据集ID
-     */
+    @Comment("数据集ID")
+    @Column(name = "dataset_group_id")
     private Long datasetGroupId;
 
-    /**
-     * user or api
-     */
+    @Size(max = 255)
+    @Comment("user or api")
+    @Column(name = "msg_type")
     private String msgType;
 
-    /**
-     * mysql oracle ...
-     */
+    @Size(max = 255)
+    @Comment("mysql oracle ...")
+    @Column(name = "engine_type")
     private String engineType;
 
-    /**
-     * create sql
-     */
+    @Column(name = "schema_sql", length = 16777216)
     private String schemaSql;
 
-    /**
-     * 用户提问
-     */
+    @Column(name = "question", length = 16777216)
     private String question;
 
-    /**
-     * 历史信息
-     */
+    @Column(name = "history", length = 16777216)
     private String history;
 
-    /**
-     * copilot 返回 sql
-     */
+    @Column(name = "copilot_sql", length = 16777216)
     private String copilotSql;
 
-    /**
-     * copilot 返回信息
-     */
+    @Column(name = "api_msg", length = 16777216)
     private String apiMsg;
 
-    /**
-     * sql 状态
-     */
+    @Comment("sql 状态")
+    @Column(name = "sql_ok")
     private Integer sqlOk;
 
-    /**
-     * chart 状态
-     */
+    @Comment("chart 状态")
+    @Column(name = "chart_ok")
     private Integer chartOk;
 
-    /**
-     * chart 内容
-     */
+    @Column(name = "chart", length = 16777216)
     private String chart;
 
-    /**
-     * 视图数据
-     */
+    @Column(name = "chart_data", length = 16777216)
     private String chartData;
 
-    /**
-     * 执行请求的SQL
-     */
+    @Column(name = "exec_sql", length = 16777216)
     private String execSql;
 
-    /**
-     * msg状态，0失败 1成功
-     */
+    @Comment("msg状态，0失败 1成功")
+    @Column(name = "msg_status")
     private Integer msgStatus;
 
-    /**
-     * de错误信息
-     */
+    @Column(name = "err_msg", length = 16777216)
     private String errMsg;
 
-    /**
-     * 创建时间
-     */
+    @Comment("创建时间")
+    @Column(name = "create_time")
     private Long createTime;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getDatasetGroupId() {
-        return datasetGroupId;
-    }
-
-    public void setDatasetGroupId(Long datasetGroupId) {
-        this.datasetGroupId = datasetGroupId;
-    }
-
-    public String getMsgType() {
-        return msgType;
-    }
-
-    public void setMsgType(String msgType) {
-        this.msgType = msgType;
-    }
-
-    public String getEngineType() {
-        return engineType;
-    }
-
-    public void setEngineType(String engineType) {
-        this.engineType = engineType;
-    }
-
-    public String getSchemaSql() {
-        return schemaSql;
-    }
-
-    public void setSchemaSql(String schemaSql) {
-        this.schemaSql = schemaSql;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public String getHistory() {
-        return history;
-    }
-
-    public void setHistory(String history) {
-        this.history = history;
-    }
-
-    public String getCopilotSql() {
-        return copilotSql;
-    }
-
-    public void setCopilotSql(String copilotSql) {
-        this.copilotSql = copilotSql;
-    }
-
-    public String getApiMsg() {
-        return apiMsg;
-    }
-
-    public void setApiMsg(String apiMsg) {
-        this.apiMsg = apiMsg;
-    }
-
-    public Integer getSqlOk() {
-        return sqlOk;
-    }
-
-    public void setSqlOk(Integer sqlOk) {
-        this.sqlOk = sqlOk;
-    }
-
-    public Integer getChartOk() {
-        return chartOk;
-    }
-
-    public void setChartOk(Integer chartOk) {
-        this.chartOk = chartOk;
-    }
-
-    public String getChart() {
-        return chart;
-    }
-
-    public void setChart(String chart) {
-        this.chart = chart;
-    }
-
-    public String getChartData() {
-        return chartData;
-    }
-
-    public void setChartData(String chartData) {
-        this.chartData = chartData;
-    }
-
-    public String getExecSql() {
-        return execSql;
-    }
-
-    public void setExecSql(String execSql) {
-        this.execSql = execSql;
-    }
-
-    public Integer getMsgStatus() {
-        return msgStatus;
-    }
-
-    public void setMsgStatus(Integer msgStatus) {
-        this.msgStatus = msgStatus;
-    }
-
-    public String getErrMsg() {
-        return errMsg;
-    }
-
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "CoreCopilotMsg{" +
-        "id = " + id +
-        ", userId = " + userId +
-        ", datasetGroupId = " + datasetGroupId +
-        ", msgType = " + msgType +
-        ", engineType = " + engineType +
-        ", schemaSql = " + schemaSql +
-        ", question = " + question +
-        ", history = " + history +
-        ", copilotSql = " + copilotSql +
-        ", apiMsg = " + apiMsg +
-        ", sqlOk = " + sqlOk +
-        ", chartOk = " + chartOk +
-        ", chart = " + chart +
-        ", chartData = " + chartData +
-        ", execSql = " + execSql +
-        ", msgStatus = " + msgStatus +
-        ", errMsg = " + errMsg +
-        ", createTime = " + createTime +
-        "}";
-    }
 }

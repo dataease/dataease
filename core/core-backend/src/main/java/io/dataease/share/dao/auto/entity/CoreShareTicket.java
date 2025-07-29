@@ -1,108 +1,44 @@
 package io.dataease.share.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2024-06-21
- */
-@TableName("core_share_ticket")
-public class CoreShareTicket implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * ID
-     */
+@Getter
+@Setter
+@Comment("分享Ticket表")
+@Entity
+@Table(name = "core_share_ticket")
+public class CoreShareTicket {
+    @Id
+    @Comment("ID")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * 分享uuid
-     */
+    @Size(max = 255)
+    @NotNull
+    @Comment("分享uuid")
+    @Column(name = "uuid", nullable = false)
     private String uuid;
 
-    /**
-     * ticket
-     */
+    @Size(max = 255)
+    @NotNull
+    @Comment("ticket")
+    @Column(name = "ticket", nullable = false)
     private String ticket;
 
-    /**
-     * ticket有效期
-     */
+    @Comment("ticket有效期")
+    @Column(name = "exp")
     private Long exp;
 
-    /**
-     * ticket参数
-     */
+    @Column(name = "args", length = 16777216)
     private String args;
 
-    /**
-     * 首次访问时间
-     */
+    @Comment("首次访问时间")
+    @Column(name = "access_time")
     private Long accessTime;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getTicket() {
-        return ticket;
-    }
-
-    public void setTicket(String ticket) {
-        this.ticket = ticket;
-    }
-
-    public Long getExp() {
-        return exp;
-    }
-
-    public void setExp(Long exp) {
-        this.exp = exp;
-    }
-
-    public String getArgs() {
-        return args;
-    }
-
-    public void setArgs(String args) {
-        this.args = args;
-    }
-
-    public Long getAccessTime() {
-        return accessTime;
-    }
-
-    public void setAccessTime(Long accessTime) {
-        this.accessTime = accessTime;
-    }
-
-    @Override
-    public String toString() {
-        return "CoreShareTicket{" +
-        "id = " + id +
-        ", uuid = " + uuid +
-        ", ticket = " + ticket +
-        ", exp = " + exp +
-        ", args = " + args +
-        ", accessTime = " + accessTime +
-        "}";
-    }
 }

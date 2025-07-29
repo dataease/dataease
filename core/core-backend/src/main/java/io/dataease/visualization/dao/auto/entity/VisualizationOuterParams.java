@@ -1,110 +1,48 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 外部参数关联关系表
- * </p>
- *
- * @author fit2cloud
- * @since 2024-09-09
- */
-@TableName("visualization_outer_params")
-public class VisualizationOuterParams implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
-    @TableId("params_id")
+@Getter
+@Setter
+@Comment("外部参数关联关系表")
+@Entity
+@Table(name = "visualization_outer_params")
+public class VisualizationOuterParams {
+    @Id
+    @Size(max = 50)
+    @Comment("主键")
+    @Column(name = "params_id", nullable = false, length = 50)
     private String paramsId;
 
-    /**
-     * 可视化资源ID
-     */
+    @Size(max = 50)
+    @Comment("可视化资源ID")
+    @Column(name = "visualization_id", length = 50)
     private String visualizationId;
 
-    /**
-     * 是否启用外部参数标识（1-是，0-否）
-     */
+    @Comment("是否启用外部参数标识（1-是，0-否）")
+    @Column(name = "checked")
     private Boolean checked;
 
-    /**
-     * 备注
-     */
+    @Size(max = 255)
+    @Comment("备注")
+    @Column(name = "remark")
     private String remark;
 
-    /**
-     * 复制来源
-     */
+    @Size(max = 50)
+    @Comment("复制来源")
+    @Column(name = "copy_from", length = 50)
     private String copyFrom;
 
-    /**
-     * 复制来源ID
-     */
+    @Size(max = 50)
+    @Comment("复制来源ID")
+    @Column(name = "copy_id", length = 50)
     private String copyId;
 
-    public String getParamsId() {
-        return paramsId;
-    }
-
-    public void setParamsId(String paramsId) {
-        this.paramsId = paramsId;
-    }
-
-    public String getVisualizationId() {
-        return visualizationId;
-    }
-
-    public void setVisualizationId(String visualizationId) {
-        this.visualizationId = visualizationId;
-    }
-
-    public Boolean getChecked() {
-        return checked;
-    }
-
-    public void setChecked(Boolean checked) {
-        this.checked = checked;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public String getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(String copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public String getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(String copyId) {
-        this.copyId = copyId;
-    }
-
-    @Override
-    public String toString() {
-        return "VisualizationOuterParams{" +
-        "paramsId = " + paramsId +
-        ", visualizationId = " + visualizationId +
-        ", checked = " + checked +
-        ", remark = " + remark +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        "}";
-    }
 }

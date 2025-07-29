@@ -1,113 +1,48 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- *
- * </p>
- *
- * @author fit2cloud
- * @since 2023-09-22
- */
-@TableName("visualization_link_jump")
-public class VisualizationLinkJump implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+@Getter
+@Setter
+@Comment("跳转记录表")
+@Entity
+@Table(name = "visualization_link_jump")
+public class VisualizationLinkJump {
+    @Id
+    @Comment("主键")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * 源仪表板ID
-     */
+    @Comment("源仪表板ID")
+    @Column(name = "source_dv_id")
     private Long sourceDvId;
 
-    /**
-     * 源图表ID
-     */
+    @Comment("源视图ID")
+    @Column(name = "source_view_id")
     private Long sourceViewId;
 
-    /**
-     * 跳转信息
-     */
+    @Size(max = 4000)
+    @Comment("跳转信息")
+    @Column(name = "link_jump_info", length = 4000)
     private String linkJumpInfo;
 
-    /**
-     * 是否启用
-     */
+    @Comment("是否启用")
+    @Column(name = "checked")
     private Boolean checked;
 
+    @Comment("复制来源")
+    @Column(name = "copy_from")
     private Long copyFrom;
 
+    @Comment("复制来源ID")
+    @Column(name = "copy_id")
     private Long copyId;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getSourceDvId() {
-        return sourceDvId;
-    }
-
-    public void setSourceDvId(Long sourceDvId) {
-        this.sourceDvId = sourceDvId;
-    }
-
-    public Long getSourceViewId() {
-        return sourceViewId;
-    }
-
-    public void setSourceViewId(Long sourceViewId) {
-        this.sourceViewId = sourceViewId;
-    }
-
-    public String getLinkJumpInfo() {
-        return linkJumpInfo;
-    }
-
-    public void setLinkJumpInfo(String linkJumpInfo) {
-        this.linkJumpInfo = linkJumpInfo;
-    }
-
-    public Boolean getChecked() {
-        return checked;
-    }
-
-    public void setChecked(Boolean checked) {
-        this.checked = checked;
-    }
-
-    public Long getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(Long copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public Long getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(Long copyId) {
-        this.copyId = copyId;
-    }
-
-    @Override
-    public String toString() {
-        return "VisualizationLinkJump{" +
-        "id = " + id +
-        ", sourceDvId = " + sourceDvId +
-        ", sourceViewId = " + sourceViewId +
-        ", linkJumpInfo = " + linkJumpInfo +
-        ", checked = " + checked +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        "}";
-    }
 }

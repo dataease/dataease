@@ -1,17 +1,17 @@
 package io.dataease.template.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.license.utils.LogUtil;
 import io.dataease.template.dao.auto.entity.DeTemplateVersion;
-import io.dataease.template.dao.auto.mapper.DeTemplateVersionMapper;
+import io.dataease.template.dao.auto.mapper.DeTemplateVersionRepository;
+import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.server.StaticResourceServer;
 import jakarta.annotation.Resource;
-import org.apache.commons.collections4.CollectionUtils;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.data.repository.init.ResourceReader;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author : WangJiaHao
@@ -31,7 +33,7 @@ public class TemplateLocalParseManage {
     private StaticResourceServer staticResourceServer;
 
     @Resource
-    private DeTemplateVersionMapper deTemplateVersionMapper;
+    private DeTemplateVersionRepository deTemplateVersionRepository;
 
     @Resource(type = ResourceLoader.class)
     private ResourceLoader resourceLoader;
@@ -42,22 +44,27 @@ public class TemplateLocalParseManage {
             for (int i = 0; i < templateFiles.length; i++) {
                 org.springframework.core.io.Resource templateFile = templateFiles[i];
                 String templateName = templateFile.getFilename();
-                QueryWrapper<DeTemplateVersion> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("script", templateName);
-                if (!deTemplateVersionMapper.exists(queryWrapper)) {
+                Specification<DeTemplateVersion> spec = (root, query, cb) -> {
+                    List<Predicate> predicates = new ArrayList<>();
+                    predicates.add(cb.equal(root.get("script"), "templateName"));
+                    return cb.and(predicates.toArray(new Predicate[0]));
+                };
+
+                if (!(deTemplateVersionRepository.count(spec) > 0)) {
                     DeTemplateVersion version = new DeTemplateVersion();
                     version.setScript(templateName);
                     version.setInstalledOn(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+                    version.setInstalledRank(IDUtils.snowID());
                     try {
-                        String content = new String(templateFile.getInputStream().readAllBytes());;
+                        String content = new String(templateFile.getInputStream().readAllBytes());
                         DataVisualizationBaseRequest template = JsonUtil.parseObject(content, DataVisualizationBaseRequest.class);
                         parseCore(template);
                         version.setSuccess(true);
-                        deTemplateVersionMapper.insert(version);
+                        deTemplateVersionRepository.saveAndFlush(version);
                     } catch (Exception e) {
                         LogUtil.error("De Template Version Error : " + templateName);
                         version.setSuccess(false);
-                        deTemplateVersionMapper.insert(version);
+                        deTemplateVersionRepository.saveAndFlush(version);
                         break;
                     }
                 }

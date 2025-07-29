@@ -1,14 +1,14 @@
 package io.dataease.font.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.api.font.dto.FontDto;
-import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.exception.DEException;
 import io.dataease.font.dao.auto.entity.CoreFont;
-import io.dataease.font.dao.auto.mapper.CoreFontMapper;
-import io.dataease.utils.*;
+import io.dataease.font.dao.auto.mapper.CoreFontRepository;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.FileUtils;
+import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -17,19 +17,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.ServletOutputStream;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.core.io.ResourceLoader;
-
 import java.awt.*;
 import java.io.*;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,13 +30,10 @@ public class FontManage {
     private String path;
 
     @Resource
-    private CoreFontMapper coreFontMapper;
-    @Autowired
-    private ResourceLoader resourceLoader;
+    private CoreFontRepository coreFontRepository;
 
     public List<FontDto> list(FontDto fontDto) {
-        QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
-        List<CoreFont> coreFonts = coreFontMapper.selectList(queryWrapper);
+        List<CoreFont> coreFonts = coreFontRepository.findAll();
         List<FontDto> fontDtos = new ArrayList<>();
         for (CoreFont coreFont : coreFonts) {
             FontDto dto = new FontDto();
@@ -58,16 +45,14 @@ public class FontManage {
     }
 
     public FontDto create(FontDto fontDto) {
-        QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("name", fontDto.getName());
-        if (CollectionUtils.isNotEmpty(coreFontMapper.selectList(queryWrapper))) {
+        if (CollectionUtils.isNotEmpty(coreFontRepository.findByName(fontDto.getName()))) {
             DEException.throwException("存在重名字库");
         }
         fontDto.setId(IDUtils.snowID());
         CoreFont coreFont = new CoreFont();
         BeanUtils.copyBean(coreFont, fontDto);
         coreFont.setUpdateTime(System.currentTimeMillis());
-        coreFontMapper.insert(coreFont);
+        coreFontRepository.saveAndFlush(coreFont);
         return fontDto;
     }
 
@@ -77,23 +62,19 @@ public class FontManage {
             return create(fontDto);
         }
         if (fontDto.getIsDefault()) {
-            UpdateWrapper<CoreFont> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.ne("id", fontDto.getId());
-            CoreFont record = new CoreFont();
-            record.setIsDefault(false);
-            coreFontMapper.update(record, updateWrapper);
+            coreFontRepository.resetDefaultById(fontDto.getId());
         }
         CoreFont coreFont = new CoreFont();
         BeanUtils.copyBean(coreFont, fontDto);
         coreFont.setUpdateTime(System.currentTimeMillis());
-        coreFontMapper.updateById(coreFont);
+        coreFontRepository.saveAndFlush(coreFont);
         return fontDto;
     }
 
     public void delete(Long id) {
-        CoreFont coreFont = coreFontMapper.selectById(id);
+        CoreFont coreFont = coreFontRepository.findById(id).orElse(null);
         if (coreFont != null) {
-            coreFontMapper.deleteById(id);
+            coreFontRepository.deleteById(id);
             if (StringUtils.isNotEmpty(coreFont.getFileTransName())) {
                 FileUtils.deleteFile(path + coreFont.getFileTransName());
             }
@@ -102,11 +83,7 @@ public class FontManage {
     }
 
     public void changeDefault(FontDto fontDto) {
-        QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", fontDto.getId());
-        CoreFont record = new CoreFont();
-        record.setIsDefault(fontDto.getIsDefault());
-        coreFontMapper.update(record, queryWrapper);
+        coreFontRepository.updateIsDefaultById(fontDto.getId(), fontDto.getIsDefault());
     }
 
     public FontDto upload(MultipartFile file) {
@@ -116,9 +93,7 @@ public class FontManage {
 
     public void download(String file, HttpServletResponse response) {
 
-        QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("file_trans_name", file);
-        List<CoreFont> coreFonts = coreFontMapper.selectList(queryWrapper);
+        List<CoreFont> coreFonts = coreFontRepository.findByFileTransName(file);
         if (CollectionUtils.isEmpty(coreFonts)) {
             DEException.throwException("不存在的字库文件");
         }
@@ -141,9 +116,7 @@ public class FontManage {
     }
 
     public List<FontDto> defaultFont() {
-        QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_default", 1);
-        List<CoreFont> coreFonts = coreFontMapper.selectList(queryWrapper);
+        List<CoreFont> coreFonts = coreFontRepository.findByisDefault(true);
         List<FontDto> fontDtos = new ArrayList<>();
         for (CoreFont coreFont : coreFonts) {
             FontDto dto = new FontDto();

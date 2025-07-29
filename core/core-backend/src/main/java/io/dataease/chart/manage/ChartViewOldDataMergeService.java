@@ -1,9 +1,8 @@
 package io.dataease.chart.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.chart.dao.auto.entity.CoreChartView;
-import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.dao.auto.entity.CoreChartView;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.extensions.view.dto.ChartCustomFilterItemDTO;
 import io.dataease.extensions.view.dto.ChartFieldCustomFilterDTO;
 import io.dataease.extensions.view.filter.FilterTreeItem;
@@ -25,7 +24,7 @@ import java.util.List;
 public class ChartViewOldDataMergeService {
 
     @Resource
-    private CoreChartViewMapper coreChartViewMapper;
+    private CoreChartViewRepository coreChartViewRepository;
 
     /**
      * 视图过滤器重构，合并老数据，将list变成tree
@@ -37,7 +36,7 @@ public class ChartViewOldDataMergeService {
         // 现在把一个字段当做tree中的一个节点
         // 节点中如果是logic且length>1，保留and或or，每一条都变成一个子节点；如果是枚举或只有1条，则当做and处理并保留值
         // 最后把字段之间通过and的逻辑合并
-        List<CoreChartView> chartViewWithBLOBs = coreChartViewMapper.selectList(new QueryWrapper<>());
+        List<CoreChartView> chartViewWithBLOBs = coreChartViewRepository.findAll();
         if (CollectionUtils.isEmpty(chartViewWithBLOBs)) {
             return;
         }
@@ -63,7 +62,7 @@ public class ChartViewOldDataMergeService {
             }
 
             try {
-                coreChartViewMapper.updateById(view);
+                coreChartViewRepository.saveAndFlush(view);
             } catch (Exception e) {
                 // do nothing,to continue
                 e.printStackTrace();
@@ -155,7 +154,7 @@ public class ChartViewOldDataMergeService {
     public void refreshFilter() {
         // 获取所有视图数据
         // 在filter中增加filterTypeTime = dateValue
-        List<CoreChartView> chartViewWithBLOBs = coreChartViewMapper.selectList(new QueryWrapper<>());
+        List<CoreChartView> chartViewWithBLOBs = coreChartViewRepository.findAll();
         if (CollectionUtils.isEmpty(chartViewWithBLOBs)) {
             return;
         }
@@ -177,7 +176,7 @@ public class ChartViewOldDataMergeService {
             }
 
             try {
-                coreChartViewMapper.updateById(view);
+                coreChartViewRepository.saveAndFlush(view);
             } catch (Exception e) {
                 // do nothing,to continue
                 e.printStackTrace();

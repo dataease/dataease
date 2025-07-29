@@ -1,6 +1,5 @@
 package io.dataease.api.permissions.user.api;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.login.dto.MfaLoginDTO;
 import io.dataease.api.permissions.login.vo.MfaQrVO;
@@ -11,6 +10,7 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.KeywordRequest;
+import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,7 +39,7 @@ public interface UserApi {
     })
     @DePermit("m:read")
     @PostMapping("/pager/{goPage}/{pageSize}")
-    IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
+    PageResult<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
 
     @Operation(summary = "查询用户详情")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
@@ -101,7 +101,7 @@ public interface UserApi {
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
     @PostMapping("/role/selected/{goPage}/{pageSize}")
-    IPage<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request);
+    PageResult<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request);
 
     @Operation(summary = "切换组织")
     @Parameter(name = "oId", description = "目标组织ID", required = true, in = ParameterIn.PATH)

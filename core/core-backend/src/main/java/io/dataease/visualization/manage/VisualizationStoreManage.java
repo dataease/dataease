@@ -1,26 +1,29 @@
 package io.dataease.visualization.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.request.VisualizationStoreRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationStoreVO;
 import io.dataease.constant.BusiResourceEnum;
+import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.CommonBeanFactory;
-import io.dataease.utils.CommunityUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.CoreStore;
-import io.dataease.visualization.dao.auto.mapper.CoreStoreMapper;
-import io.dataease.visualization.dao.ext.mapper.CoreStoreExtMapper;
+import io.dataease.visualization.dao.auto.entity.QCoreStore;
+import io.dataease.visualization.dao.auto.mapper.CoreStoreRepository;
 import io.dataease.visualization.dao.ext.po.StorePO;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -28,21 +31,23 @@ import java.util.List;
 
 @Component
 public class VisualizationStoreManage {
-
     @Resource
-    private CoreStoreMapper coreStoreMapper;
-
+    private JPAQueryFactory queryFactory;
     @Resource
-    private CoreStoreExtMapper coreStoreExtMapper;
+    private CoreStoreRepository coreStoreRepository;
+
 
     public void execute(VisualizationStoreRequest request) {
         Long resourceId = request.getId();
         Long uid = AuthUtils.getUser().getUserId();
         if (favorited(resourceId)) {
-            QueryWrapper<CoreStore> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("resource_id", resourceId);
-            queryWrapper.eq("uid", uid);
-            coreStoreMapper.delete(queryWrapper);
+            Specification<CoreStore> spec = (root, query, cb) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(root.get("uid"), uid));
+                predicates.add(cb.equal(root.get("resourceId"), resourceId));
+                return cb.and(predicates.toArray(new Predicate[0]));
+            };
+            coreStoreRepository.delete(spec);
             return;
         }
         String type = request.getType();
@@ -56,28 +61,27 @@ public class VisualizationStoreManage {
         coreStore.setUid(uid);
         coreStore.setResourceId(resourceId);
         coreStore.setResourceType(busiResourceEnum.getFlag());
-        coreStoreMapper.insert(coreStore);
+        coreStoreRepository.saveAndFlush(coreStore);
     }
 
     public Boolean favorited(Long resourceId) {
-        QueryWrapper<CoreStore> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("resource_id", resourceId);
-        queryWrapper.eq("uid", AuthUtils.getUser().getUserId());
-        return coreStoreMapper.exists(queryWrapper);
+        Specification<CoreStore> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("uid"), AuthUtils.getUser().getUserId()));
+            predicates.add(cb.equal(root.get("resourceId"), resourceId));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return coreStoreRepository.exists(spec);
     }
 
     @XpackInteract(value = "perFilterManage", recursion = true, invalid = true)
-    public IPage<VisualizationStoreVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
-        IPage<StorePO> storePOIPage = proxy().queryStorePage(pageNum, pageSize, request);
+    public Page<VisualizationStoreVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
+        Page<StorePO> storePOIPage = proxy().queryStorePage(pageNum, pageSize, request);
         if (ObjectUtils.isEmpty(storePOIPage)) return null;
-        List<VisualizationStoreVO> vos = proxy().formatResult(storePOIPage.getRecords());
-        IPage<VisualizationStoreVO> ipage = new Page<>();
-        ipage.setCurrent(storePOIPage.getCurrent());
-        ipage.setPages(storePOIPage.getPages());
-        ipage.setSize(storePOIPage.getSize());
-        ipage.setTotal(storePOIPage.getTotal());
-        ipage.setRecords(vos);
-        return ipage;
+        List<VisualizationStoreVO> vos = proxy().formatResult(storePOIPage.getContent());
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
+        return new PageImpl<>(vos, pageable, storePOIPage.getTotalElements());
     }
 
     public VisualizationStoreManage proxy() {
@@ -93,27 +97,47 @@ public class VisualizationStoreManage {
                         po.getEditTime(), 9, po.getExtFlag(), po.getExtFlag1())).toList();
     }
 
-    public IPage<StorePO> queryStorePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
+    public Page<StorePO> queryStorePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();
-        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("s.uid", uid);
-        queryWrapper.isNotNull("s.resource_id");
+
+        QCoreStore coreStore = QCoreStore.coreStore;
+        QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
+        JPAQuery<StorePO> query = queryFactory.select(Projections.fields(StorePO.class,
+                        coreStore.id.as("storeId"),
+                        dataVisualizationInfo.id.as("resourceId"),
+                        dataVisualizationInfo.type,
+                        dataVisualizationInfo.createBy.as("creator"),
+                        dataVisualizationInfo.updateBy.as("editor"),
+                        dataVisualizationInfo.updateTime.as("editTime"),
+                        dataVisualizationInfo.name,
+                        dataVisualizationInfo.mobileLayout.as("extFlag")))
+                .from(coreStore)
+                .innerJoin(dataVisualizationInfo).on(coreStore.resourceId.eq(Long.valueOf(dataVisualizationInfo.id.toString())))
+                .where(coreStore.uid.eq(uid))
+                .where(coreStore.resourceId.isNotNull())
+                .orderBy(request.isAsc() ? dataVisualizationInfo.updateTime.asc() : dataVisualizationInfo.updateTime.desc());
+
+
         if (StringUtils.isNotBlank(request.getType())) {
             BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());
             if (ObjectUtils.isEmpty(busiResourceEnum)) {
                 DEException.throwException("type is invalid");
             }
-            queryWrapper.eq("s.resource_type", busiResourceEnum.getFlag());
+            query.where(coreStore.resourceType.eq(busiResourceEnum.getFlag()));
         }
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            queryWrapper.apply("LOWER(v.name) LIKE LOWER(CONCAT('%', {0}, '%'))", request.getKeyword());
+            query.where(dataVisualizationInfo.name.lower().likeIgnoreCase("%" + request.getKeyword().toUpperCase() + "%"));
         }
-        String info = CommunityUtils.getInfo();
-        if (StringUtils.isNotBlank(info)) {
-            queryWrapper.notExists(String.format(info, "s.resource_id"));
-        }
-        queryWrapper.orderBy(true, request.isAsc(), "v.update_time");
-        Page<StorePO> page = new Page<>(goPage, pageSize);
-        return coreStoreExtMapper.query(page, queryWrapper);
+
+        //TODO CommunityUtils.getInfo
+//        String info = CommunityUtils.getInfo();
+//        if (StringUtils.isNotBlank(info)) {
+//            queryWrapper.notExists(String.format(info, "s.resource_id"));
+//        }
+
+        Pageable pageable = PageRequest.of(goPage - 1, pageSize);
+        long total = query.fetchCount();
+        return new PageImpl<>(query.offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch(), pageable, total);
+
     }
 }

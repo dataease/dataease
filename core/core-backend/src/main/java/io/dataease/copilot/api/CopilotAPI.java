@@ -3,7 +3,7 @@ package io.dataease.copilot.api;
 import io.dataease.api.copilot.dto.ReceiveDTO;
 import io.dataease.api.copilot.dto.SendDTO;
 import io.dataease.copilot.dao.auto.entity.CoreCopilotConfig;
-import io.dataease.copilot.dao.auto.mapper.CoreCopilotConfigMapper;
+import io.dataease.copilot.dao.auto.mapper.CoreCopilotConfigRepository;
 import io.dataease.exception.DEException;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
@@ -35,7 +35,7 @@ public class CopilotAPI {
     public static final String RATE_LIMIT = "/rate-limit";
 
     @Resource
-    private CoreCopilotConfigMapper coreCopilotConfigMapper;
+    private CoreCopilotConfigRepository coreCopilotConfigRepository;
 
     public String basicAuth(String userName, String password) {
         String auth = userName + ":" + password;
@@ -48,7 +48,7 @@ public class CopilotAPI {
     }
 
     public CoreCopilotConfig getConfig() {
-        CoreCopilotConfig coreCopilotConfig = coreCopilotConfigMapper.selectById(1);
+        CoreCopilotConfig coreCopilotConfig = coreCopilotConfigRepository.findById(1L).orElse(null);
         coreCopilotConfig.setPwd(new String(Base64.getDecoder().decode(coreCopilotConfig.getPwd())));
         return coreCopilotConfig;
     }

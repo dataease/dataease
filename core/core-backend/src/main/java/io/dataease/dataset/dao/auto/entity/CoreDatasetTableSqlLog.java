@@ -1,122 +1,52 @@
 package io.dataease.dataset.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2023-08-08
- */
-@TableName("core_dataset_table_sql_log")
-public class CoreDatasetTableSqlLog implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * ID
-     */
+@Getter
+@Setter
+@Comment("table数据集查询sql日志")
+@Entity
+@Table(name = "core_dataset_table_sql_log")
+public class CoreDatasetTableSqlLog {
+    @Id
+    @Size(max = 50)
+    @Comment("ID")
+    @ColumnDefault("''")
+    @Column(name = "id", nullable = false, length = 50)
     private String id;
 
-    /**
-     * 数据集SQL节点ID
-     */
+    @Size(max = 50)
+    @NotNull
+    @Comment("数据集SQL节点ID")
+    @ColumnDefault("''")
+    @Column(name = "table_id", nullable = false, length = 50)
     private String tableId;
 
-    /**
-     * 开始时间
-     */
+    @Comment("开始时间")
+    @Column(name = "start_time")
     private Long startTime;
 
-    /**
-     * 结束时间
-     */
+    @Comment("结束时间")
+    @Column(name = "end_time")
     private Long endTime;
 
-    /**
-     * 耗时(毫秒)
-     */
+    @Comment("耗时(毫秒)")
+    @Column(name = "spend")
     private Long spend;
 
-    /**
-     * 详细信息
-     */
+    @NotNull
+    @Column(name = "`sql`", nullable = false, length = 16777216)
     private String sql;
 
-    /**
-     * 状态
-     */
+    @Size(max = 45)
+    @Comment("状态")
+    @Column(name = "status", length = 45)
     private String status;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(String tableId) {
-        this.tableId = tableId;
-    }
-
-    public Long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
-    }
-
-    public Long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Long endTime) {
-        this.endTime = endTime;
-    }
-
-    public Long getSpend() {
-        return spend;
-    }
-
-    public void setSpend(Long spend) {
-        this.spend = spend;
-    }
-
-    public String getSql() {
-        return sql;
-    }
-
-    public void setSql(String sql) {
-        this.sql = sql;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "CoreDatasetTableSqlLog{" +
-        "id = " + id +
-        ", tableId = " + tableId +
-        ", startTime = " + startTime +
-        ", endTime = " + endTime +
-        ", spend = " + spend +
-        ", sql = " + sql +
-        ", status = " + status +
-        "}";
-    }
 }

@@ -1,17 +1,18 @@
 package io.dataease.menu.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.menu.vo.MenuMeta;
 import io.dataease.api.menu.vo.MenuVO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.menu.bo.MenuTreeNode;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
-import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
+import io.dataease.menu.dao.auto.mapper.CoreMenuRepository;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class MenuManage {
     private final static int ROOTID = 0;
 
     @Resource
-    private CoreMenuMapper coreMenuMapper;
+    private CoreMenuRepository coreMenuRepository;
 
 
     @XpackInteract(value = "menuApi")
@@ -40,9 +41,12 @@ public class MenuManage {
     }
 
     public List<CoreMenu> coreMenus() {
-        QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
-        wrapper.orderByAsc("menu_sort");
-        return coreMenuMapper.selectList(wrapper);
+        Specification<CoreMenu> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            query.orderBy(cb.asc(root.get("menuSort")));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return coreMenuRepository.findAll(spec);
     }
 
 

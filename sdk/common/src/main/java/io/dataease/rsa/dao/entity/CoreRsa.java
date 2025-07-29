@@ -1,90 +1,45 @@
 package io.dataease.rsa.dao.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
+
 import java.io.Serializable;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fit2cloud
- * @since 2023-04-03
- */
-@TableName("core_rsa")
+@Getter
+@Setter
+@Entity
+@Comment("RSA 密钥表")
+@Table(name = "core_rsa")
 public class CoreRsa implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 主键
-     */
+    @Comment("主键")
+    @Id
+    @Column(name = "id", nullable = false)
     private Integer id;
 
-    /**
-     * 私钥
-     */
+    @Comment("私钥")
+    @NotNull
+    @Column(name = "private_key", nullable = false, length = 16777216)
     private String privateKey;
 
-    /**
-     * 公钥
-     */
+    @Comment("公钥")
+    @NotNull
+    @Column(name = "public_key", nullable = false, length = 16777216)
     private String publicKey;
 
-    private String aesKey;
-
-    /**
-     * 生成时间
-     */
+    @Comment("生成时间")
+    @NotNull
+    @Column(name = "create_time", nullable = false)
     private Long createTime;
 
-    public Integer getId() {
-        return id;
-    }
+    @Comment("AES 加密算法的 key")
+    @NotNull
+    @Column(name = "aes_key", nullable = false, length = 16777216)
+    private String aesKey;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getPrivateKey() {
-        return privateKey;
-    }
-
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
-    }
-
-    public String getPublicKey() {
-        return publicKey;
-    }
-
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getAesKey() {
-        return aesKey;
-    }
-
-    public void setAesKey(String aesKey) {
-        this.aesKey = aesKey;
-    }
-
-    @Override
-    public String toString() {
-        return "CoreRsa{" +
-        "id = " + id +
-        ", privateKey = " + privateKey +
-        ", publicKey = " + publicKey +
-        ", createTime = " + createTime +
-        "}";
-    }
 }

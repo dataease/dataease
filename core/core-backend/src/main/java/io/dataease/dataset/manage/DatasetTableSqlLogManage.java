@@ -1,9 +1,8 @@
 package io.dataease.dataset.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.dataset.dto.SqlLogDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableSqlLog;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableSqlLogMapper;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableSqlLogRepository;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class DatasetTableSqlLogManage {
     @Resource
-    private CoreDatasetTableSqlLogMapper coreDatasetTableSqlLogMapper;
+    private CoreDatasetTableSqlLogRepository coreDatasetTableSqlLogRepository;
 
     public void save(SqlLogDTO dto) {
         if (dto == null) {
@@ -31,9 +30,9 @@ public class DatasetTableSqlLogManage {
         BeanUtils.copyBean(coreDatasetTableSqlLog, dto);
         if (ObjectUtils.isEmpty(coreDatasetTableSqlLog.getId())) {
             coreDatasetTableSqlLog.setId(UUID.randomUUID().toString());
-            coreDatasetTableSqlLogMapper.insert(coreDatasetTableSqlLog);
+            coreDatasetTableSqlLogRepository.saveAndFlush(coreDatasetTableSqlLog);
         } else {
-            coreDatasetTableSqlLogMapper.updateById(coreDatasetTableSqlLog);
+            coreDatasetTableSqlLogRepository.saveAndFlush(coreDatasetTableSqlLog);
         }
     }
 
@@ -41,9 +40,7 @@ public class DatasetTableSqlLogManage {
         if (dto == null || ObjectUtils.isEmpty(dto.getTableId())) {
             return null;
         }
-        QueryWrapper<CoreDatasetTableSqlLog> wrapper = new QueryWrapper<>();
-        wrapper.eq("table_id", dto.getTableId());
-        List<CoreDatasetTableSqlLog> coreDatasetTableSqlLogs = coreDatasetTableSqlLogMapper.selectList(wrapper);
+        List<CoreDatasetTableSqlLog> coreDatasetTableSqlLogs = coreDatasetTableSqlLogRepository.findByTableId(dto.getTableId());
         return coreDatasetTableSqlLogs.stream().map(ele -> {
             SqlLogDTO s = new SqlLogDTO();
             BeanUtils.copyBean(s, ele);
@@ -52,8 +49,6 @@ public class DatasetTableSqlLogManage {
     }
 
     public void deleteByTableId(String id) {
-        QueryWrapper<CoreDatasetTableSqlLog> wrapper = new QueryWrapper<>();
-        wrapper.eq("table_id", id);
-        coreDatasetTableSqlLogMapper.delete(wrapper);
+        coreDatasetTableSqlLogRepository.deleteByTableId(id);
     }
 }

@@ -481,7 +481,8 @@ const symmetricKey = ref('')
 const listDs = () => {
   rawDatasourceList.value = []
   dsLoading.value = true
-  let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1].value
+  let curSortType = sortList[Number(wsCache.get('TreeSort-backend') === 'true') ?? 1].value
+
   curSortType = wsCache.get('TreeSort-datasource') ?? curSortType
   const request = { busiFlag: 'datasource' } as BusiTreeRequest
   interactiveStore

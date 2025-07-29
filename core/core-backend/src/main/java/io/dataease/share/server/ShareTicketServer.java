@@ -1,15 +1,15 @@
 package io.dataease.share.server;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.xpack.share.ShareTicketApi;
 import io.dataease.api.xpack.share.request.TicketCreator;
 import io.dataease.api.xpack.share.request.TicketDelRequest;
 import io.dataease.api.xpack.share.request.TicketSwitchRequest;
 import io.dataease.api.xpack.share.vo.TicketVO;
-import io.dataease.commons.utils.CodingUtil;
+import io.dataease.result.PageResult;
 import io.dataease.share.manage.ShareTicketManage;
+import io.dataease.utils.CodingUtil;
 import jakarta.annotation.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,9 +36,8 @@ public class ShareTicketServer implements ShareTicketApi {
     }
 
     @Override
-    public IPage<TicketVO> pager(Long resourceId, int goPage, int pageSize) {
-        Page<TicketVO> page = new Page<>(goPage, pageSize);
-        return shareTicketManage.query(resourceId, page);
+    public PageResult<TicketVO> pager(Long resourceId, int goPage, int pageSize) {
+        return shareTicketManage.query(resourceId,  goPage,  pageSize);
     }
 
     @Override

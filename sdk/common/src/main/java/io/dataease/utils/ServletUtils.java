@@ -26,6 +26,7 @@ public class ServletUtils {
 
     public static String getHead(String key) {
         HttpServletRequest request = request();
+        if (request == null) return null;
         return request.getHeader(key);
     }
 

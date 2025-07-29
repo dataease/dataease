@@ -6,14 +6,13 @@ import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
+import io.dataease.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.constant.DatasetTableType;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.utils.DatasetTableTypeConstants;
 import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -69,7 +68,7 @@ public class DatasetSQLManage {
     @Resource
     private DatasetGroupManage datasetGroupManage;
     @Resource
-    private CoreDatasetGroupMapper coreDatasetGroupMapper;
+    private CoreDatasetGroupRepository coreDatasetGroupRepository;
 
     private RowPermissionsApi getRowPermissionsApi() {
         return rowPermissionsApi;
@@ -555,7 +554,7 @@ public class DatasetSQLManage {
             mergeDatasetCrossDefault(ele);
             CoreDatasetGroup record = new CoreDatasetGroup();
             BeanUtils.copyBean(record, ele);
-            coreDatasetGroupMapper.updateById(record);
+            coreDatasetGroupRepository.saveAndFlush(record);
         }
     }
 

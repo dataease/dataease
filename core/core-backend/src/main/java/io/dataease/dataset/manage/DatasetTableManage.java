@@ -1,8 +1,7 @@
 package io.dataease.dataset.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
+import io.dataease.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.i18n.Translator;
@@ -21,55 +20,49 @@ import java.util.List;
 @Component
 public class DatasetTableManage {
     @Resource
-    private CoreDatasetTableMapper coreDatasetTableMapper;
+    private CoreDatasetTableRepository coreDatasetTableRepository;
 
     public void save(CoreDatasetTable coreDatasetTable) {
         checkNameLength(coreDatasetTable.getName());
         checkNameLength(coreDatasetTable.getTableName());
         if (ObjectUtils.isEmpty(coreDatasetTable.getId())) {
             coreDatasetTable.setId(IDUtils.snowID());
-            coreDatasetTableMapper.insert(coreDatasetTable);
+            coreDatasetTableRepository.saveAndFlush(coreDatasetTable);
         } else {
-            coreDatasetTableMapper.updateById(coreDatasetTable);
+            coreDatasetTableRepository.saveAndFlush(coreDatasetTable);
         }
     }
 
     public void save(DatasetTableDTO currentDs) {
         checkNameLength(currentDs.getName());
         checkNameLength(currentDs.getTableName());
-        CoreDatasetTable coreDatasetTable = coreDatasetTableMapper.selectById(currentDs.getId());
+        CoreDatasetTable coreDatasetTable = coreDatasetTableRepository.findById(currentDs.getId()).orElse(null);
         CoreDatasetTable record = new CoreDatasetTable();
         BeanUtils.copyBean(record, currentDs);
         if (ObjectUtils.isEmpty(coreDatasetTable)) {
-            coreDatasetTableMapper.insert(record);
+            coreDatasetTableRepository.saveAndFlush(record);
         } else {
-            coreDatasetTableMapper.updateById(record);
+            coreDatasetTableRepository.saveAndFlush(record);
         }
     }
 
     public List<CoreDatasetTable> selectByDatasetGroupId(Long datasetGroupId) {
-        QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
-        wrapper.eq("dataset_group_id", datasetGroupId);
-        return coreDatasetTableMapper.selectList(wrapper);
+        return coreDatasetTableRepository.findByDatasetGroupId(datasetGroupId);
+
     }
 
     public CoreDatasetTable selectById(Long id) {
-        return coreDatasetTableMapper.selectById(id);
+        return coreDatasetTableRepository.findById(id).orElse(null);
     }
 
     public void deleteByDatasetGroupUpdate(Long datasetGroupId, List<Long> ids) {
         if (!CollectionUtils.isEmpty(ids)) {
-            QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
-            wrapper.eq("dataset_group_id", datasetGroupId);
-            wrapper.notIn("id", ids);
-            coreDatasetTableMapper.delete(wrapper);
+            coreDatasetTableRepository.deleteByDatasetGroupIdAndNotInIds(datasetGroupId, ids);
         }
     }
 
     public void deleteByDatasetGroupDelete(Long datasetGroupId) {
-        QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
-        wrapper.eq("dataset_group_id", datasetGroupId);
-        coreDatasetTableMapper.delete(wrapper);
+        coreDatasetTableRepository.deleteByDatasetGroupId(datasetGroupId);
     }
 
     private void checkNameLength(String name) {

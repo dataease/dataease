@@ -1,10 +1,9 @@
 package io.dataease.visualization.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.exception.DEException;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
-import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
+import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataRepository;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
@@ -22,12 +21,10 @@ import java.util.List;
 public class VisualizationTemplateExtendDataManage {
 
     @Resource
-    private VisualizationTemplateExtendDataMapper extendDataMapper;
+    private VisualizationTemplateExtendDataRepository extendDataRepository;
 
     public ChartViewDTO getChartDataInfo(Long viewId, ChartViewDTO view) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("view_id",viewId);
-        List<VisualizationTemplateExtendData> extendDataList = extendDataMapper.selectList(queryWrapper);
+        List<VisualizationTemplateExtendData> extendDataList = extendDataRepository.findByViewId(viewId);
         if (CollectionUtils.isNotEmpty(extendDataList)) {
             try{
                 ChartViewDTO chartViewTemplate = JsonUtil.parseObject(extendDataList.get(0).getViewDetails(),ChartViewDTO.class);

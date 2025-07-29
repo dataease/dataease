@@ -1,6 +1,5 @@
 package io.dataease.map.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.map.dto.GeometryNodeCreator;
 import io.dataease.api.map.vo.AreaNode;
 import io.dataease.api.map.vo.CustomGeoArea;
@@ -12,18 +11,20 @@ import io.dataease.map.bo.AreaBO;
 import io.dataease.map.dao.auto.entity.Area;
 import io.dataease.map.dao.auto.entity.CoreCustomGeoArea;
 import io.dataease.map.dao.auto.entity.CoreCustomGeoSubArea;
-import io.dataease.map.dao.auto.mapper.AreaMapper;
-import io.dataease.map.dao.auto.mapper.CoreCustomGeoAreaMapper;
-import io.dataease.map.dao.auto.mapper.CoreCustomGeoSubAreaMapper;
+import io.dataease.map.dao.auto.mapper.AreaRepository;
+import io.dataease.map.dao.auto.mapper.CoreCustomGeoAreaRepository;
+import io.dataease.map.dao.auto.mapper.CoreCustomGeoSubAreaRepository;
 import io.dataease.map.dao.ext.entity.CoreAreaCustom;
-import io.dataease.map.dao.ext.mapper.CoreAreaCustomMapper;
+import io.dataease.map.dao.ext.mapper.CoreAreaCustomRepository;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,19 +55,19 @@ public class MapManage {
     }
 
     @Resource
-    private AreaMapper areaMapper;
+    private AreaRepository areaRepository;
 
     @Resource
-    private CoreCustomGeoAreaMapper coreCustomGeoAreaMapper;
+    private CoreCustomGeoAreaRepository coreCustomGeoAreaRepository;
 
     @Resource
-    private CoreCustomGeoSubAreaMapper coreCustomGeoSubAreaMapper;
+    private CoreCustomGeoSubAreaRepository coreCustomGeoSubAreaRepository;
 
     @Resource
-    private CoreAreaCustomMapper coreAreaCustomMapper;
+    private CoreAreaCustomRepository coreAreaCustomRepository;
 
     public List<Area> defaultArea() {
-        return areaMapper.selectList(null);
+        return areaRepository.findAll();
     }
 
     private MapManage proxy() {
@@ -77,7 +78,7 @@ public class MapManage {
     public AreaNode getWorldTree() {
         List<Area> areas = proxy().defaultArea();
         List<AreaBO> areaBOS = areas.stream().map(item -> BeanUtils.copyBean(new AreaBO(), item)).collect(Collectors.toList());
-        List<CoreAreaCustom> coreAreaCustoms = coreAreaCustomMapper.selectList(null);
+        List<CoreAreaCustom> coreAreaCustoms = coreAreaCustomRepository.findAll();
         if (CollectionUtils.isNotEmpty(coreAreaCustoms)) {
             List<AreaBO> customBoList = coreAreaCustoms.stream().map(item -> {
                 AreaBO areaBO = BeanUtils.copyBean(new AreaBO(), item);
@@ -144,7 +145,7 @@ public class MapManage {
         }
 
         CoreAreaCustom originData = null;
-        if (ObjectUtils.isNotEmpty(originData = coreAreaCustomMapper.selectById(getDaoGeoCode(code)))) {
+        if (ObjectUtils.isNotEmpty(originData = coreAreaCustomRepository.findById(getDaoGeoCode(code)).orElse(null))) {
             DEException.throwException(String.format("Area code [%s] is already exists for [%s]", code, originData.getName()));
         }
 
@@ -152,7 +153,7 @@ public class MapManage {
         coreAreaCustom.setId(getDaoGeoCode(code));
         coreAreaCustom.setPid(request.getPid());
         coreAreaCustom.setName(request.getName());
-        coreAreaCustomMapper.insert(coreAreaCustom);
+        coreAreaCustomRepository.saveAndFlush(coreAreaCustom);
 
         File geoFile = buildGeoFile(code);
         try {
@@ -170,14 +171,14 @@ public class MapManage {
         if (!StringUtils.startsWith(code, GEO_PREFIX)) {
             DEException.throwException("内置Geometry，禁止删除");
         }
-        CoreAreaCustom coreAreaCustom = coreAreaCustomMapper.selectById(code);
+        CoreAreaCustom coreAreaCustom = coreAreaCustomRepository.findById(code).orElse(null);
         if (ObjectUtils.isEmpty(coreAreaCustom)) {
             DEException.throwException("Geometry code 不存在！");
         }
         List<String> codeResultList = new ArrayList<>();
         codeResultList.add(code);
         childTreeIdList(List.of(code), codeResultList);
-        coreAreaCustomMapper.deleteBatchIds(codeResultList);
+        coreAreaCustomRepository.deleteBatchIds(codeResultList);
         codeResultList.forEach(id -> {
             File file = buildGeoFile(id);
             if (file.exists()) {
@@ -188,22 +189,23 @@ public class MapManage {
 
     @Cacheable(value = CUSTOM_GEO_CACHE, key = "'custom_geo_area'")
     public List<CustomGeoArea> listCustomGeoArea() {
-        return coreCustomGeoAreaMapper.selectList(null).stream().map(o -> BeanUtils.copyBean(new CustomGeoArea(), o)).toList();
+        return coreCustomGeoAreaRepository.findAll().stream().map(o -> BeanUtils.copyBean(new CustomGeoArea(), o)).toList();
     }
 
     public List<CustomGeoSubArea> getCustomGeoArea(String areaId) {
-        var query = new QueryWrapper<CoreCustomGeoSubArea>();
-        query.eq("geo_area_id", areaId);
-        return coreCustomGeoSubAreaMapper.selectList(query).stream().map(o -> BeanUtils.copyBean(new CustomGeoSubArea(), o)).toList();
+        Specification<CoreCustomGeoSubArea> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("geoAreaId"), areaId));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return coreCustomGeoSubAreaRepository.findAll(spec).stream().map(o -> BeanUtils.copyBean(new CustomGeoSubArea(), o)).toList();
     }
 
     @CacheEvict(cacheNames = CUSTOM_GEO_CACHE, key = "'custom_geo_area'")
     @Transactional
     public void deleteCustomGeoArea(String areaId) {
-        coreCustomGeoAreaMapper.deleteById(areaId);
-        var q = new QueryWrapper<CoreCustomGeoSubArea>();
-        q.eq("geo_area_id", areaId);
-        coreCustomGeoSubAreaMapper.delete(q);
+        coreCustomGeoAreaRepository.deleteById(areaId);
+        coreCustomGeoSubAreaRepository.deleteByGeoAreaId(areaId);
     }
 
     @CacheEvict(cacheNames = CUSTOM_GEO_CACHE, key = "'custom_geo_area'")
@@ -211,62 +213,67 @@ public class MapManage {
     public void saveCustomGeoArea(CustomGeoArea geoArea) {
         var coreCustomGeoArea = new CoreCustomGeoArea();
         BeanUtils.copyBean(coreCustomGeoArea, geoArea);
-        var q = new QueryWrapper<CoreCustomGeoArea>();
-        q.eq("name", geoArea.getName());
-        if (StringUtils.isNotBlank(coreCustomGeoArea.getId())) {
-            q.ne("id", coreCustomGeoArea.getId());
-        }
-        var list = coreCustomGeoAreaMapper.selectList(q);
+        Specification<CoreCustomGeoArea> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("name"), geoArea.getName()));
+            if (geoArea.getId() != null && !geoArea.getId().isEmpty()) {
+                predicates.add(cb.notEqual(root.get("id"), geoArea.getId()));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<CoreCustomGeoArea> list = coreCustomGeoAreaRepository.findAll(spec);
         if (CollectionUtils.isNotEmpty(list)) {
             DEException.throwException(Translator.get("i18n_geo_exists"));
             return;
         }
         if (ObjectUtils.isEmpty(coreCustomGeoArea.getId())) {
             coreCustomGeoArea.setId("custom_" + IDUtils.snowID());
-            coreCustomGeoAreaMapper.insert(coreCustomGeoArea);
+            coreCustomGeoAreaRepository.saveAndFlush(coreCustomGeoArea);
         } else {
-            coreCustomGeoAreaMapper.updateById(coreCustomGeoArea);
+            coreCustomGeoAreaRepository.saveAndFlush(coreCustomGeoArea);
         }
     }
 
     @Transactional
     public void deleteCustomGeoSubArea(long areaId) {
-        coreCustomGeoSubAreaMapper.deleteById(areaId);
+        coreCustomGeoSubAreaRepository.deleteById(areaId);
     }
 
     @Transactional
     public void saveCustomGeoSubArea(CustomGeoSubArea customGeoSubArea) {
         var geoSubArea = new CoreCustomGeoSubArea();
         BeanUtils.copyBean(geoSubArea, customGeoSubArea);
-        var q = new QueryWrapper<CoreCustomGeoSubArea>();
-        q.eq("name", customGeoSubArea.getName());
-        q.eq("geo_area_id", customGeoSubArea.getGeoAreaId());
-        if (ObjectUtils.isNotEmpty(customGeoSubArea.getId())) {
-            q.ne("id", customGeoSubArea.getId());
-        }
-        var list = coreCustomGeoSubAreaMapper.selectList(q);
+        Specification<CoreCustomGeoSubArea> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("name"), customGeoSubArea.getName()));
+            predicates.add(cb.equal(root.get("geoAreaId"), customGeoSubArea.getGeoAreaId()));
+            if (customGeoSubArea.getId() != null) {
+                predicates.add(cb.notEqual(root.get("id"), customGeoSubArea.getId()));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        var list = coreCustomGeoSubAreaRepository.findAll(spec);
         if (CollectionUtils.isNotEmpty(list)) {
             DEException.throwException(Translator.get("i18n_geo_sub_exists"));
             return;
         }
         if (ObjectUtils.isEmpty(geoSubArea.getId())) {
             geoSubArea.setId(IDUtils.snowID());
-            coreCustomGeoSubAreaMapper.insert(geoSubArea);
+            coreCustomGeoSubAreaRepository.saveAndFlush(geoSubArea);
         } else {
-            coreCustomGeoSubAreaMapper.updateById(geoSubArea);
+            coreCustomGeoSubAreaRepository.saveAndFlush(geoSubArea);
         }
     }
 
     public List<AreaNode> getCustomGeoSubAreaOptions() {
-        var q = new QueryWrapper<Area>();
-        q.eq("pid", "156");
-        return areaMapper.selectList(q).stream().map(a -> BeanUtils.copyBean(AreaNode.builder().build(), a)).toList();
+        Specification<Area> spec = (root, query, cb) ->
+                cb.equal(root.get("pid"), "156");
+        return areaRepository.findAll(spec).stream().map(a -> BeanUtils.copyBean(AreaNode.builder().build(), a)).toList();
     }
 
     public void childTreeIdList(List<String> pidList, List<String> resultList) {
-        QueryWrapper<CoreAreaCustom> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("pid", pidList);
-        List<CoreAreaCustom> coreAreaCustoms = coreAreaCustomMapper.selectList(queryWrapper);
+        List<CoreAreaCustom> coreAreaCustoms = coreAreaCustomRepository.findAll((root, query, cb) -> root.get("pid").in(pidList));
         if (CollectionUtils.isNotEmpty(coreAreaCustoms)) {
             List<String> codeList = coreAreaCustoms.stream().map(CoreAreaCustom::getId).toList();
             resultList.addAll(codeList);

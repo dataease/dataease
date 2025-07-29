@@ -1,124 +1,54 @@
 package io.dataease.visualization.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-/**
- * <p>
- * 外部参数联动视图字段信息表
- * </p>
- *
- * @author fit2cloud
- * @since 2024-08-21
- */
-@TableName("visualization_outer_params_target_view_info")
-public class VisualizationOuterParamsTargetViewInfo implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
-    @TableId("target_id")
+@Getter
+@Setter
+@Comment("外部参数联动视图字段信息表")
+@Entity
+@Table(name = "visualization_outer_params_target_view_info")
+public class VisualizationOuterParamsTargetViewInfo {
+    @Id
+    @Size(max = 50)
+    @Comment("主键")
+    @Column(name = "target_id", nullable = false, length = 50)
     private String targetId;
 
-    /**
-     * visualization_outer_params_info 表的 ID
-     */
+    @Size(max = 50)
+    @Comment("visualization_outer_params_info 表的 ID")
+    @Column(name = "params_info_id", length = 50)
     private String paramsInfoId;
 
-    /**
-     * 联动视图ID/联动过滤项ID
-     */
+    @Size(max = 50)
+    @Comment("联动视图ID/联动过滤项ID")
+    @Column(name = "target_view_id", length = 50)
     private String targetViewId;
 
-    /**
-     * 联动数据集id/联动过滤组件id
-     */
-    private String targetDsId;
-
-    /**
-     * 联动字段ID
-     */
+    @Size(max = 50)
+    @Comment("联动字段ID")
+    @Column(name = "target_field_id", length = 50)
     private String targetFieldId;
 
-    /**
-     * 复制来源
-     */
+    @Size(max = 255)
+    @Comment("复制来源")
+    @Column(name = "copy_from")
     private String copyFrom;
 
-    /**
-     * 复制来源ID
-     */
+    @Size(max = 50)
+    @Comment("复制来源ID")
+    @Column(name = "copy_id", length = 50)
     private String copyId;
 
-    public String getTargetId() {
-        return targetId;
-    }
+    @Size(max = 50)
+    @Comment("联动数据集id/联动过滤组件id")
+    @Column(name = "target_ds_id", length = 50)
+    private String targetDsId;
 
-    public void setTargetId(String targetId) {
-        this.targetId = targetId;
-    }
-
-    public String getParamsInfoId() {
-        return paramsInfoId;
-    }
-
-    public void setParamsInfoId(String paramsInfoId) {
-        this.paramsInfoId = paramsInfoId;
-    }
-
-    public String getTargetViewId() {
-        return targetViewId;
-    }
-
-    public void setTargetViewId(String targetViewId) {
-        this.targetViewId = targetViewId;
-    }
-
-    public String getTargetDsId() {
-        return targetDsId;
-    }
-
-    public void setTargetDsId(String targetDsId) {
-        this.targetDsId = targetDsId;
-    }
-
-    public String getTargetFieldId() {
-        return targetFieldId;
-    }
-
-    public void setTargetFieldId(String targetFieldId) {
-        this.targetFieldId = targetFieldId;
-    }
-
-    public String getCopyFrom() {
-        return copyFrom;
-    }
-
-    public void setCopyFrom(String copyFrom) {
-        this.copyFrom = copyFrom;
-    }
-
-    public String getCopyId() {
-        return copyId;
-    }
-
-    public void setCopyId(String copyId) {
-        this.copyId = copyId;
-    }
-
-    @Override
-    public String toString() {
-        return "VisualizationOuterParamsTargetViewInfo{" +
-        "targetId = " + targetId +
-        ", paramsInfoId = " + paramsInfoId +
-        ", targetViewId = " + targetViewId +
-        ", targetDsId = " + targetDsId +
-        ", targetFieldId = " + targetFieldId +
-        ", copyFrom = " + copyFrom +
-        ", copyId = " + copyId +
-        "}";
-    }
 }

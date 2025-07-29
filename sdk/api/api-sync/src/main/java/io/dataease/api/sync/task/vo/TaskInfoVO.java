@@ -3,6 +3,8 @@ package io.dataease.api.sync.task.vo;
 import io.dataease.api.sync.task.dto.Source;
 import io.dataease.api.sync.task.dto.Target;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
  * @date 2023/11/28 17:15
  **/
 @Data
+@Getter
+@Setter
 public class TaskInfoVO {
 
     private String id;
@@ -136,5 +140,7 @@ public class TaskInfoVO {
      * 所有内容可编辑
      */
     private boolean editable;
+
+    private Long oid;
 
 }

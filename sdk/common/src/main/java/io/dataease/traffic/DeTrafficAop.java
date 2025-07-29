@@ -2,7 +2,7 @@ package io.dataease.traffic;
 
 import io.dataease.exception.DEException;
 import io.dataease.traffic.dao.entity.CoreApiTraffic;
-import io.dataease.traffic.dao.mapper.CoreApiTrafficMapper;
+import io.dataease.traffic.dao.mapper.CoreApiTrafficRepository;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 public class DeTrafficAop {
 
     @Resource
-    private CoreApiTrafficMapper coreApiTrafficMapper;
+    private CoreApiTrafficRepository coreApiTrafficRepository;
 
     @Value("${dataease.traffic:2}")
     private Integer defaultTraffic;
@@ -41,21 +41,21 @@ public class DeTrafficAop {
         Object result = null;
         boolean access = false;
         try {
-            Integer count = coreApiTrafficMapper.apiCount(api);
+            long count = coreApiTrafficRepository.apiCount(api);
             if (count == 0) {
                 CoreApiTraffic apiTraffic = new CoreApiTraffic();
                 apiTraffic.setId(IDUtils.snowID());
                 apiTraffic.setAlive(1);
                 apiTraffic.setThreshold(value);
                 apiTraffic.setApi(api);
-                coreApiTrafficMapper.insert(apiTraffic);
+                coreApiTrafficRepository.insert(apiTraffic.getId(), apiTraffic.getApi(), apiTraffic.getThreshold());
                 access = true;
                 result = point.proceed();
                 return result;
             }
-            int alive = coreApiTrafficMapper.getAlive(api);
+            int alive = coreApiTrafficRepository.getAlive(api).orElse(-1);
             if (alive < value) {
-                coreApiTrafficMapper.upgrade(api);
+                coreApiTrafficRepository.upgrade(api);
                 access = true;
                 result = point.proceed();
                 return result;
@@ -64,7 +64,7 @@ public class DeTrafficAop {
             LogUtil.error(e.getMessage(), e);
         } finally {
             if (access) {
-                coreApiTrafficMapper.releaseAlive(api);
+                coreApiTrafficRepository.releaseAlive(api);
             }
         }
         DEException.throwException(String.format(errorMsg, api, value));

@@ -2,7 +2,7 @@ package io.dataease.rsa.manage;
 
 import io.dataease.model.RSAModel;
 import io.dataease.rsa.dao.entity.CoreRsa;
-import io.dataease.rsa.dao.mapper.CoreRsaMapper;
+import io.dataease.rsa.dao.mapper.CoreRsaRepository;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.RsaUtils;
 import jakarta.annotation.Resource;
@@ -17,7 +17,7 @@ import static io.dataease.constant.CacheConstant.CommonCacheConstant.RSA_CACHE;
 public class RsaManage {
 
     @Resource
-    private CoreRsaMapper coreRsaMapper;
+    private CoreRsaRepository coreRsaRepository;
 
 
     public void check() {
@@ -36,12 +36,12 @@ public class RsaManage {
         coreRsa.setPrivateKey(model.getPrivateKey());
         coreRsa.setPublicKey(model.getPublicKey());
         coreRsa.setAesKey(model.getAesKey());
-        coreRsaMapper.insert(coreRsa);
+        coreRsaRepository.saveAndFlush(coreRsa);
     }
 
     @Cacheable(value = RSA_CACHE, key = "'-de-'", unless = "#result == null")
     public CoreRsa query() {
-        return coreRsaMapper.selectById(1);
+        return coreRsaRepository.findById(1L).orElse(null);
     }
 
     private RsaManage proxy() {

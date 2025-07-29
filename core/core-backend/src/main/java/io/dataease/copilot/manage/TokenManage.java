@@ -2,7 +2,7 @@ package io.dataease.copilot.manage;
 
 import io.dataease.api.copilot.dto.TokenDTO;
 import io.dataease.copilot.dao.auto.entity.CoreCopilotToken;
-import io.dataease.copilot.dao.auto.mapper.CoreCopilotTokenMapper;
+import io.dataease.copilot.dao.auto.mapper.CoreCopilotTokenRepository;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class TokenManage {
     @Resource
-    private CoreCopilotTokenMapper coreCopilotTokenMapper;
+    private CoreCopilotTokenRepository tokenRepository;
 
     public TokenDTO getToken(boolean valid) {
-        CoreCopilotToken perCopilotToken = coreCopilotTokenMapper.selectById(valid ? 2 : 1);
+        CoreCopilotToken perCopilotToken = tokenRepository.findById(valid ? 2L : 1L).orElse(null) ;
         return transRecord(perCopilotToken);
     }
 
@@ -25,7 +25,7 @@ public class TokenManage {
         record.setId(valid ? 2L : 1L);
         record.setToken(token);
         record.setUpdateTime(System.currentTimeMillis());
-        coreCopilotTokenMapper.updateById(record);
+        tokenRepository.saveAndFlush(record);
     }
 
     private TokenDTO transRecord(CoreCopilotToken perCopilotToken) {

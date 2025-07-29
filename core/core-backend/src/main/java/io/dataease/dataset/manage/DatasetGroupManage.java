@@ -1,17 +1,17 @@
 package io.dataease.dataset.manage;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.OptConstants;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
-import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
+import io.dataease.dao.auto.entity.*;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
 import io.dataease.dataset.dto.DataSetNodeBO;
 import io.dataease.dataset.utils.DatasetUtils;
@@ -33,10 +33,12 @@ import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +54,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class DatasetGroupManage {
     @Resource
-    private CoreDatasetGroupMapper coreDatasetGroupMapper;
+    private CoreDatasetGroupRepository coreDatasetGroupRepository;
     @Resource
     private DatasetSQLManage datasetSQLManage;
     @Resource
@@ -62,11 +64,7 @@ public class DatasetGroupManage {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
-    private PermissionManage permissionManage;
-    @Resource
-    private CoreDataSetExtMapper coreDataSetExtMapper;
-    @Resource
-    private CoreDatasetTableMapper coreDatasetTableMapper;
+    private CoreDatasetTableRepository coreDatasetTableRepository;
     @Resource
     private CoreUserManage coreUserManage;
     @Resource
@@ -75,6 +73,14 @@ public class DatasetGroupManage {
     private RelationApi relationManage;
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
+
+    private final JPAQueryFactory queryFactory;
+
+    @Autowired
+    public DatasetGroupManage(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
+
     private static final String leafType = "dataset";
 
     private Lock lock = new ReentrantLock();
@@ -86,7 +92,7 @@ public class DatasetGroupManage {
             boolean isCreate;
             // 用于重命名获取pid
             if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getPid()) && ObjectUtils.isNotEmpty(datasetGroupInfoDTO.getId())) {
-                CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
+                CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(datasetGroupInfoDTO.getId()).orElse(null);
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
             }
             datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
@@ -153,7 +159,7 @@ public class DatasetGroupManage {
         checkName(datasetGroupInfoDTO);
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
         coreDatasetGroup.setLastUpdateTime(System.currentTimeMillis());
-        coreDatasetGroupMapper.updateById(coreDatasetGroup);
+        coreDatasetGroupRepository.saveAndFlush(coreDatasetGroup);
         coreOptRecentManage.saveOpt(datasetGroupInfoDTO.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.UPDATE);
     }
 
@@ -161,7 +167,7 @@ public class DatasetGroupManage {
     public void innerSave(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         checkName(datasetGroupInfoDTO);
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
-        coreDatasetGroupMapper.insert(coreDatasetGroup);
+        coreDatasetGroupRepository.saveAndFlush(coreDatasetGroup);
         coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.NEW);
     }
 
@@ -177,7 +183,7 @@ public class DatasetGroupManage {
         BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
         datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
         coreDatasetGroup.setLastUpdateTime(time);
-        coreDatasetGroupMapper.updateById(coreDatasetGroup);
+        coreDatasetGroupRepository.saveAndFlush(coreDatasetGroup);
         coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.UPDATE);
         return datasetGroupInfoDTO;
     }
@@ -199,7 +205,7 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", before = false)
     public void delete(Long id) {
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
         if (ObjectUtils.isEmpty(coreDatasetGroup)) {
             DEException.throwException("resource not exist");
         }
@@ -208,13 +214,15 @@ public class DatasetGroupManage {
     }
 
     public void recursionDel(Long id) {
-        coreDatasetGroupMapper.deleteById(id);
+        coreDatasetGroupRepository.deleteById(id);
         datasetTableManage.deleteByDatasetGroupDelete(id);
         datasetTableFieldManage.deleteByDatasetGroupDelete(id);
-
-        QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
-        wrapper.eq("pid", id);
-        List<CoreDatasetGroup> coreDatasetGroups = coreDatasetGroupMapper.selectList(wrapper);
+        Specification<CoreDatasetGroup> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("pid"), id));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<CoreDatasetGroup> coreDatasetGroups = coreDatasetGroupRepository.findAll(spec);
         if (ObjectUtils.isNotEmpty(coreDatasetGroups)) {
             for (CoreDatasetGroup record : coreDatasetGroups) {
                 recursionDel(record.getId());
@@ -225,17 +233,27 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-
-        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
-        if (ObjectUtils.isNotEmpty(request.getLeaf())) {
-            queryWrapper.eq("node_type", request.getLeaf() ? "dataset" : "folder");
-        }
         String info = CommunityUtils.getInfo();
         if (StringUtils.isNotBlank(info)) {
-            queryWrapper.notExists(String.format(info, "core_dataset_group.id"));
+            //TODO CommunityUtils.getInfo
+//            queryWrapper.notExists(String.format(info, "core_dataset_group.id"));
         }
-        queryWrapper.orderByDesc("create_time");
-        List<DataSetNodePO> pos = coreDataSetExtMapper.query(queryWrapper);
+        QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
+        JPAQuery<DataSetNodePO> jpaQuery = queryFactory.select(
+                        Projections.fields(DataSetNodePO.class,
+                                coreDatasetGroup.id,
+                                coreDatasetGroup.name,
+                                coreDatasetGroup.nodeType,
+                                coreDatasetGroup.pid
+                        )
+                )
+                .from(coreDatasetGroup);
+        if (ObjectUtils.isNotEmpty(request.getLeaf()) && !request.getLeaf()) {
+            jpaQuery.where(coreDatasetGroup.nodeType.eq(request.getLeaf() ? "dataset" : "folder"));
+        }
+        jpaQuery.orderBy(coreDatasetGroup.createTime.desc());
+
+        List<DataSetNodePO> pos = jpaQuery.fetch();
         List<DataSetNodeBO> nodes = new ArrayList<>();
         if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         List<DataSetNodeBO> bos = pos.stream().map(this::convert).toList();
@@ -246,7 +264,11 @@ public class DatasetGroupManage {
     }
 
     public DataSetBarVO queryBarInfo(Long id) {
-        DataSetBarVO dataSetBarVO = coreDataSetExtMapper.queryBarInfo(id);
+        DataSetBarVO dataSetBarVO = new DataSetBarVO();
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
+        if (ObjectUtils.isNotEmpty(coreDatasetGroup)) {
+            BeanUtils.copyBean(dataSetBarVO, coreDatasetGroup);
+        }
         // get creator
         String userName = coreUserManage.getUserName(Long.valueOf(dataSetBarVO.getCreateBy()));
         if (StringUtils.isNotBlank(userName)) {
@@ -261,15 +283,13 @@ public class DatasetGroupManage {
     }
 
     private List<DatasourceDTO> getDatasource(Long datasetId) {
-        QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
-        wrapper.eq("dataset_group_id", datasetId);
-        List<CoreDatasetTable> coreDatasetTables = coreDatasetTableMapper.selectList(wrapper);
+        List<CoreDatasetTable> coreDatasetTables = coreDatasetTableRepository.findByDatasetGroupId(datasetId);
         List<Long> ids = new ArrayList<>();
         coreDatasetTables.forEach(ele -> ids.add(ele.getDatasourceId()));
         if (CollectionUtils.isEmpty(ids)) {
             DEException.throwException(Translator.get("i18n_dataset_create_error"));
         }
-        List<DatasourceDTO> datasourceDTOList = coreDatasourceRepository.findInIds(ids).stream().map(ele -> {
+        List<DatasourceDTO> datasourceDTOList = coreDatasourceRepository.findAllById(ids).stream().map(ele -> {
             DatasourceDTO dto = new DatasourceDTO();
             BeanUtils.copyBean(dto, ele);
             dto.setConfiguration(null);
@@ -291,24 +311,27 @@ public class DatasetGroupManage {
 
     public void checkName(DatasetGroupInfoDTO dto) {
         if (!LicenseUtil.licenseValid()) {
-            QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
-            if (ObjectUtils.isNotEmpty(dto.getPid())) {
-                wrapper.eq("pid", dto.getPid());
-            }
-            if (StringUtils.isNotEmpty(dto.getName())) {
-                wrapper.eq("name", dto.getName());
-            }
-            if (ObjectUtils.isNotEmpty(dto.getId())) {
-                wrapper.ne("id", dto.getId());
-            }
-            if (ObjectUtils.isNotEmpty(dto.getLevel())) {
-                wrapper.eq("level", dto.getLevel());
-            }
-            if (ObjectUtils.isNotEmpty(dto.getNodeType())) {
-                wrapper.eq("node_type", dto.getNodeType());
-            }
-            List<CoreDatasetGroup> list = coreDatasetGroupMapper.selectList(wrapper);
-            if (list.size() > 0) {
+            Specification<CoreDatasetGroup> spec = (root, query, cb) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                if (dto.getPid() != null) {
+                    predicates.add(cb.equal(root.get("pid"), dto.getPid()));
+                }
+                if (dto.getName() != null && !dto.getName().isEmpty()) {
+                    predicates.add(cb.equal(root.get("name"), dto.getName()));
+                }
+                if (dto.getId() != null) {
+                    predicates.add(cb.notEqual(root.get("id"), dto.getId()));
+                }
+                if (dto.getLevel() != null) {
+                    predicates.add(cb.equal(root.get("level"), dto.getLevel()));
+                }
+                if (dto.getNodeType() != null) {
+                    predicates.add(cb.equal(root.get("nodeType"), dto.getNodeType()));
+                }
+                return cb.and(predicates.toArray(new Predicate[0]));
+            };
+            List<CoreDatasetGroup> list = coreDatasetGroupRepository.findAll(spec);
+            if (CollectionUtils.isNotEmpty(list)) {
                 DEException.throwException(Translator.get("i18n_ds_name_exists"));
             }
         }
@@ -384,7 +407,7 @@ public class DatasetGroupManage {
     }
 
     public DatasetGroupInfoDTO getForCount(Long id) throws Exception {
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
         if (coreDatasetGroup == null) {
             return null;
         }
@@ -408,7 +431,7 @@ public class DatasetGroupManage {
     }
 
     public DatasetGroupInfoDTO getDetail(Long id) throws Exception {
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
         if (coreDatasetGroup == null) {
             return null;
         }
@@ -446,7 +469,7 @@ public class DatasetGroupManage {
     }
 
     public DatasetGroupInfoDTO getDatasetGroupInfoDTO(Long id, String type) throws Exception {
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
         if (coreDatasetGroup == null) {
             return null;
         }
@@ -499,7 +522,7 @@ public class DatasetGroupManage {
         }
         List<DatasetTableDTO> list = new ArrayList<>();
         for (Long id : ids) {
-            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
             if (coreDatasetGroup == null) {
                 list.add(null);
             } else {
@@ -560,7 +583,7 @@ public class DatasetGroupManage {
     }
 
     private void getParents(Long pid, List<Long> ids) {
-        CoreDatasetGroup parent = coreDatasetGroupMapper.selectById(pid);// 查找父级folder
+        CoreDatasetGroup parent = coreDatasetGroupRepository.findById(pid).orElse(null);// 查找父级folder
         ids.add(parent.getId());
         if (parent.getPid() != null && parent.getPid() != 0) {
             getParents(parent.getPid(), ids);
@@ -568,7 +591,7 @@ public class DatasetGroupManage {
     }
 
     public void geFullName(Long pid, List<String> fullName) {
-        CoreDatasetGroup parent = coreDatasetGroupMapper.selectById(pid);// 查找父级folder
+        CoreDatasetGroup parent = coreDatasetGroupRepository.findById(pid).orElse(null);// 查找父级folder
         if (parent == null) {
             return;
         }
@@ -584,7 +607,7 @@ public class DatasetGroupManage {
     public List<DatasetTableDTO> getDetailWithPerm(List<Long> ids) {
         var result = new ArrayList<DatasetTableDTO>();
         if (CollectionUtils.isNotEmpty(ids)) {
-            var dsList = coreDatasetGroupMapper.selectBatchIds(ids);
+            var dsList = coreDatasetGroupRepository.findAllById(ids);
             if (CollectionUtils.isNotEmpty(dsList)) {
                 dsList.forEach(ds -> {
                     DatasetTableDTO dto = new DatasetTableDTO();
@@ -606,7 +629,7 @@ public class DatasetGroupManage {
     }
 
     public List<DatasetGroupInfoDTO> getAllList() {
-        List<CoreDatasetGroup> coreDatasetGroupList = coreDatasetGroupMapper.selectList(new QueryWrapper<>());
+        List<CoreDatasetGroup> coreDatasetGroupList = coreDatasetGroupRepository.findAll();
         if (CollectionUtils.isEmpty(coreDatasetGroupList)) {
             return new ArrayList<>();
         }

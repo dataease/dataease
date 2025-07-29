@@ -25,4 +25,12 @@ public class ExternalUserVO implements Serializable {
     private String email;
     @Schema(description = "用户电话")
     private String phone;
+
+    public ExternalUserVO(Long uid, String account, String name, String email, String phone) {
+        this.uid = uid;
+        this.account = account;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
 }
