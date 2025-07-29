@@ -107,7 +107,16 @@ export class GroupLineMix extends G2ChartView {
           children: [
             {
               type: 'interval',
-              data: left.data,
+              data: {
+                type: 'inline',
+                value: left.data,
+                transform: [
+                  {
+                    type: 'map',
+                    callback: d => ({ ...d, left: true })
+                  }
+                ]
+              },
               encode: {
                 x: 'field',
                 y: 'value',
@@ -121,7 +130,8 @@ export class GroupLineMix extends G2ChartView {
               },
               scale: {
                 y: {
-                  key: 'left'
+                  key: 'left',
+                  nice: true
                 }
               }
             },
@@ -136,7 +146,8 @@ export class GroupLineMix extends G2ChartView {
               },
               scale: {
                 y: {
-                  key: 'right'
+                  key: 'right',
+                  nice: true
                 }
               },
               axis: {
@@ -573,8 +584,9 @@ export class GroupLineMix extends G2ChartView {
               const formatterCfg =
                 formatterMap[item.quotaList[0].id]?.formatterCfg ?? yAxis[0].formatterCfg
               const value = valueFormatter(item.value, formatterCfg)
-              const color = view.scale.color.map(item.category) ?? item.color
               const name = item.category
+              const colorScale = item.left ? view.scale.color : view.scale.color1
+              const color = colorScale.map(name) ?? item.color
               result.push({ value, color, name })
             })
             const itemsHtml = result
