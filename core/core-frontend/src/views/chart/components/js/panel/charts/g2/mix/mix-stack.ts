@@ -107,7 +107,16 @@ export class StackLineMix extends G2ChartView {
           children: [
             {
               type: 'interval',
-              data: left.data,
+              data: {
+                type: 'inline',
+                value: left.data,
+                transform: [
+                  {
+                    type: 'map',
+                    callback: d => ({ ...d, left: true })
+                  }
+                ]
+              },
               encode: {
                 x: 'field',
                 y: 'value',
@@ -120,7 +129,8 @@ export class StackLineMix extends G2ChartView {
               },
               scale: {
                 y: {
-                  key: 'left'
+                  key: 'left',
+                  nice: true
                 }
               },
               transform: [{ type: 'stackY' }]
@@ -136,7 +146,8 @@ export class StackLineMix extends G2ChartView {
               },
               scale: {
                 y: {
-                  key: 'right'
+                  key: 'right',
+                  nice: true
                 }
               },
               axis: {
@@ -538,7 +549,7 @@ export class StackLineMix extends G2ChartView {
       g2TooltipWrapper.style.zIndex = '9999'
       document.body.appendChild(g2TooltipWrapper)
     }
-    const yAxis = chart.yAxis
+    const { yAxis } = chart
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -573,8 +584,9 @@ export class StackLineMix extends G2ChartView {
               const formatterCfg =
                 formatterMap[item.quotaList[0].id]?.formatterCfg ?? yAxis[0].formatterCfg
               const value = valueFormatter(item.value, formatterCfg)
-              const color = view.scale.color.map(item.category) ?? item.color
+              const colorScale = item.left ? view.scale.color : view.scale.color1
               const name = item.category
+              const color = colorScale.map(name) ?? item.color
               result.push({ value, color, name })
             })
             const itemsHtml = result
