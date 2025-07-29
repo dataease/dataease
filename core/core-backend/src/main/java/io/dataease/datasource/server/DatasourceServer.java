@@ -758,7 +758,6 @@ public class DatasourceServer implements DatasourceApi {
         if (coreDatasource == null) {
             DEException.throwException("无效数据源！");
         }
-        System.out.println(JsonUtil.toJSONString(coreDatasource));
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
