@@ -380,6 +380,51 @@ declare interface ChartBasicStyle {
    * 圆形填充图间距
    */
   circlePadding: number
+  /**
+   * 副值轴透明度
+   */
+  subAlpha: number
+  /**
+   * 副值轴配色方案
+   */
+  subColorScheme: string
+  /**
+   * 副值轴系列颜色
+   */
+  subSeriesColor: {
+    /**
+     * 序列识别id，多指标就是轴id，分组或者堆叠就是类别值
+     */
+    id: string
+    /**
+     * 显示名称
+     */
+    name: string
+    /**
+     * 序列颜色
+     */
+    color: string
+  }[]
+  /**
+   * 副值轴颜色
+   */
+  subColors: string[]
+  /**
+   * 副轴线条宽度
+   */
+  leftLineWidth: number
+  /**
+   * 副轴线条形状
+   */
+  leftLineSymbol: string
+  /**
+   * 副轴折点大小
+   */
+  leftLineSymbolSize: number
+  /**
+   * 副轴平滑折线开关
+   */
+  leftLineSmooth: boolean
 }
 /**
  * 表头属性

@@ -1,6 +1,7 @@
 export default {
   common: {
     empty: ' ',
+    first_item: 'First Item',
     cross_source: 'Cross-source',
     single_source: 'Single-source',
     source_tips:
@@ -2975,6 +2976,7 @@ export default {
       'If the query button is displayed, the chart query will be triggered only after clicking the button. If not displayed, the query is triggered immediately after selecting the query conditions.',
     custom_query_bg_color: 'Custom Query Background Color',
     query_condition_space: 'Query Condition Spacing',
+    query_condition_height: 'Query condition height',
     query_condition_name: 'Query Condition Name',
     condition_left: 'Left Side',
     condition_top: 'Top Side',

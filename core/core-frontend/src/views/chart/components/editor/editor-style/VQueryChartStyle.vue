@@ -236,6 +236,12 @@ const checkItalic = type => {
   chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'italic'
 }
 const initParams = () => {
+  if (!chart.value.customStyle.component.hasOwnProperty('queryConditionHeight')) {
+    chart.value.customStyle.component = {
+      ...chart.value.customStyle.component,
+      queryConditionHeight: 32
+    }
+  }
   if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
     chart.value.customStyle.component = {
       ...chart.value.customStyle.component,
@@ -272,6 +278,16 @@ const onTitleChange = () => {
   element.value.label = chart.value.customStyle.component.title
   element.value.name = chart.value.customStyle.component.title
   chart.value.title = chart.value.customStyle.component.title
+}
+
+const onPlaceholderChange = () => {
+  props.element.propValue.forEach(ele => {
+    if (ele.id === currentPlaceholder.value) {
+      ele.placeholder = currentSearch.value.placeholder
+      ele.queryConditionWidth = currentSearch.value.queryConditionWidth
+    }
+  })
+  snapshotStore.recordSnapshotCacheToMobile('propValue')
 }
 </script>
 
@@ -413,6 +429,19 @@ const onTitleChange = () => {
                 controls-position="right"
               />
             </el-form-item>
+            <el-form-item
+              :effect="themes"
+              class="form-item"
+              :label="t('visualization.query_condition_height')"
+              :class="'form-item-' + themes"
+            >
+              <el-input-number
+                v-model="chart.customStyle.component.queryConditionHeight"
+                :min="32"
+                :effect="themes"
+                controls-position="right"
+              />
+            </el-form-item>
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox
                 :effect="themes"
@@ -478,7 +507,7 @@ const onTitleChange = () => {
             >
               <el-input
                 :effect="themes"
-                @change="handleCurrentPlaceholderChange"
+                @change="onPlaceholderChange"
                 :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
                 v-model.lazy="currentSearch.placeholder"
               />
@@ -493,7 +522,7 @@ const onTitleChange = () => {
                 :effect="themes"
                 :min="100"
                 controls-position="right"
-                @change="handleCurrentPlaceholderChange"
+                @change="onPlaceholderChange"
                 :disabled="!chart.customStyle.component.placeholderShow || !currentPlaceholder"
                 v-model.lazy="currentSearch.queryConditionWidth"
               />

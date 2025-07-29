@@ -16,6 +16,7 @@ import {
   reactive,
   ref,
   toRefs,
+  unref,
   watch,
   computed,
   onMounted,
@@ -91,6 +92,7 @@ const defaultStyle = {
   queryConditionWidth: 227,
   nameboxSpacing: 8,
   queryConditionSpacing: 16,
+  queryConditionHeight: 32,
   btnColor: '#3370ff',
   labelColorBtn: '#ffffff'
 }
@@ -233,6 +235,7 @@ const setCustomStyle = val => {
     queryConditionWidth,
     nameboxSpacing,
     queryConditionSpacing,
+    queryConditionHeight,
     labelColorBtn,
     btnColor,
     placeholderSize,
@@ -266,6 +269,7 @@ const setCustomStyle = val => {
   customStyle.queryConditionWidth = queryConditionWidth ?? 227
   customStyle.nameboxSpacing = nameboxSpacing ?? 8
   customStyle.queryConditionSpacing = queryConditionSpacing ?? 16
+  customStyle.queryConditionHeight = queryConditionHeight ?? 32
   customStyle.labelColorBtn = labelColorBtn || '#ffffff'
   customStyle.labelShow = labelShow ?? true
   customStyle.btnColor = btnColor || '#3370ff'
@@ -471,8 +475,8 @@ const getPlaceholder = computed(() => {
   }
 })
 
-const isConfirmSearch = id => {
-  if (componentWithSure.value) return
+const isConfirmSearch = (id, disabledFirstItem = false) => {
+  if (componentWithSure.value && !disabledFirstItem) return
   queryDataForId(id)
 }
 
@@ -586,10 +590,26 @@ const addCriteriaConfigOut = () => {
   queryConfig.value.setConditionOut()
 }
 
+const reRenderAll = (oldArr, newArr) => {
+  const newArrIds = newArr.map(ele => ele.id)
+  const emitterList = (oldArr || []).reduce((pre, next) => {
+    if (newArrIds.includes(next.id)) return pre
+    const keyList = getKeyList(next)
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
+  if (!emitterList.length) return
+  emitterList.forEach(ele => {
+    emitter.emit(`query-data-${ele}`)
+  })
+}
+
 const delQueryConfig = index => {
+  const com = cloneDeep(unref(list))
   list.value.splice(index, 1)
   element.value.propValue = [...list.value]
   snapshotStore.recordSnapshotCache('delQueryConfig')
+  reRenderAll(com, cloneDeep(unref(list)))
 }
 
 const resetData = () => {
@@ -684,6 +704,10 @@ watch(
 
 const boxWidth = computed(() => {
   return `${customStyle.placeholderSize}px`
+})
+
+const boxHeight = computed(() => {
+  return `${customStyle.queryConditionHeight || 32}px`
 })
 
 const queryData = () => {
@@ -926,6 +950,7 @@ const autoStyle = computed(() => {
       :query-element="element"
       @queryData="queryData"
       ref="queryConfig"
+      @reRenderAll="reRenderAll"
     ></QueryConditionConfiguration>
   </Teleport>
 </template>
@@ -941,6 +966,17 @@ const autoStyle = computed(() => {
   :deep(.ed-select-v2 .ed-select-v2__selection .ed-tag),
   :deep(.select-trigger .ed-select__tags .ed-tag) {
     background-color: v-bind(tagColor);
+  }
+
+  :deep(.ed-input),
+  :deep(.ed-date-editor) {
+    --ed-input-height: v-bind(boxHeight);
+  }
+
+  :deep(.ed-select__wrapper),
+  :deep(.text-search-select .ed-input__wrapper),
+  :deep(.text-search-select .ed-select__wrapper) {
+    height: v-bind(boxHeight);
   }
 
   .ed-button--primary {
@@ -965,7 +1001,8 @@ const autoStyle = computed(() => {
     --ed-tag-font-size: v-bind(boxWidth);
   }
 
-  :deep(.ed-select-v2) {
+  :deep(.ed-select-v2),
+  :deep(.ed-select__wrapper) {
     font-size: v-bind(boxWidth);
   }
 

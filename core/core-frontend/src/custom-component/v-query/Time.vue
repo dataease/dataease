@@ -241,8 +241,13 @@ const calendarChange = val => {
   startWindowTime.value = +new Date(val[0])
 }
 
-const visibleChange = () => {
+const datePicker = ref()
+
+const visibleChange = (visible: boolean) => {
   startWindowTime.value = 0
+  if (!visible) {
+    datePicker.value?.blur()
+  }
 }
 
 const queryTimeType = computed(() => {
@@ -471,6 +476,7 @@ const formatDate = computed(() => {
     :key="config.timeGranularityMultiple"
     :type="config.timeGranularityMultiple"
     :style="selectStyle"
+    ref="datePicker"
     @visible-change="visibleChange"
     :disabled-date="disabledDate"
     @calendar-change="calendarChange"

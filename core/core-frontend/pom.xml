@@ -53,8 +53,8 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v16.15.0</nodeVersion>
-              <npmVersion>8.5.5</npmVersion>
+              <nodeVersion>v23.11.0</nodeVersion>
+              <npmVersion>10.9.2</npmVersion>
             </configuration>
           </execution>
           <!--前端组件有更新需要放开-->

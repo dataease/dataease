@@ -1,6 +1,7 @@
 export default {
   common: {
     empty: '',
+    first_item: '首项',
     cross_source: '跨源',
     single_source: '单源',
     source_tips: '数据集存在跨源情况，请检查其他 SQL 节点的语法，是否确认将类型改为单源?',
@@ -2898,6 +2899,7 @@ export default {
       '如果展示查询按钮，需要点击该按钮后才能触发图表查询；如果不展示查询按钮，选择完查询条件后立即触发图表查询',
     custom_query_bg_color: '自定义查询条件背景',
     query_condition_space: '查询条件间距',
+    query_condition_height: '查询条件高度',
     query_condition_name: '查询条件名称',
     condition_left: '左侧',
     condition_top: '上侧',
@@ -3177,7 +3179,6 @@ export default {
     space_left: '左',
     space_width: '宽',
     space_height: '高',
-    to_top: '置顶',
     down: '下载',
     mobile_style_setting: '样式设置',
     mobile_style_setting_tips: '自定义移动端背景',

@@ -1,6 +1,7 @@
 export default {
   common: {
     empty: '',
+    first_item: '首項',
     cross_source: '跨源',
     single_source: '單源',
     source_tips: '資料集存在跨源情況，請檢查其他 SQL 節點的語法，是否確認將類型改為單源?',
@@ -2891,6 +2892,7 @@ export default {
       '如果展示查詢按鈕，需要點擊該按鈕後才能觸發圖表查詢；如果不展示查詢按鈕，選擇完查詢條件後立即觸發圖表查詢',
     custom_query_bg_color: '自定義查詢條件背景',
     query_condition_space: '查詢條件間距',
+    query_condition_height: '查詢條件高度',
     query_condition_name: '查詢條件名稱',
     condition_left: '左側',
     condition_top: '上側',
