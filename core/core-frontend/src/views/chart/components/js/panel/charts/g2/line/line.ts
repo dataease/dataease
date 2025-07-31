@@ -11,13 +11,14 @@ import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { LINE_AXIS_TYPE, LINE_EDITOR_PROPERTY, LINE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
-import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import { extremumEvt } from '@/views/chart/components/js/extremumUitl'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
+
 /**
  * 折线图
  */
@@ -52,11 +53,11 @@ export class Line extends G2ChartView {
       type: 'q'
     }
   }
+
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
-    const { chart, action, container } = drawOptions
+    const { chart, action, container, scale } = drawOptions
     chart.container = container
     if (!chart.data?.data?.length) {
-      clearExtremum(chart)
       return
     }
     const data = cloneDeep(chart.data.data)
@@ -90,7 +91,7 @@ export class Line extends G2ChartView {
     const newChart = new G2Chart({ container })
     newChart.options(options)
     newChart.on('point:click', action)
-    // extremumEvt(newChart, chart, options, container)
+    extremumEvt(newChart, chart, options, container, scale)
     // configPlotTooltipEvent(chart, newChart)
     return newChart
   }

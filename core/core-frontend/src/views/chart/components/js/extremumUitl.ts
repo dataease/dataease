@@ -1,25 +1,13 @@
-import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { hexToRgba, parseJson } from '@/views/chart/components/js/util'
 import { isEmpty } from 'lodash-es'
-
-export const clearExtremum = chart => {
-  // 清除图表标注
-  const pointElement = document.getElementById(chartPointParentId(chart))
-  if (pointElement) {
-    pointElement.remove()
-    pointElement.parentNode?.removeChild(pointElement)
-  }
-}
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 
 /**
- * 判断给定的RGBA字符串表示的颜色是亮色还是暗色
- * 通过计算RGB颜色值的加权平均值（灰度值），判断颜色的明暗
- * 如果给定的字符串不包含有效的RGBA值，则原样返回该字符串
- *
- * @param rgbaString 一个RGBA颜色字符串，例如 "rgba(255, 255, 255, 1)"
- * @param greyValue 灰度值默认128
- * @returns 如果计算出的灰度值大于等于128，则返回true，表示亮色；否则返回false，表示暗色。
- *          如果rgbaString不包含有效的RGBA值，则返回原字符串
+ * 判断 RGBA 颜色是亮色还是暗色
+ * 使用加权灰度公式：0.299R + 0.587G + 0.114B
+ * @param rgbaString - RGBA 颜色字符串，如 "rgba(255, 255, 255, 1)"
+ * @param greyValue - 判断阈值，默认 128
+ * @returns true 表示亮色，false 表示暗色；无效颜色返回 false
  */
 const isColorLight = (rgbaString: string, greyValue = 128) => {
   const lastRGBA = getRgbaColorLastRgba(rgbaString)
@@ -33,9 +21,10 @@ const isColorLight = (rgbaString: string, greyValue = 128) => {
 }
 
 /**
- * 从给定的rgba颜色字符串中提取最后一个rgba值
- * @param rgbaString 包含一个或多个rgba颜色值的字符串
- * @returns 返回最后一个解析出的rgba对象，如果未找到rgba值，则返回null
+ * 从字符串中提取最后一个 rgba(...) 颜色值
+ * 支持多个 rgba 出现，取最后一个
+ * @param rgbaString - 包含 rgba 的字符串
+ * @returns {r, g, b, a} 对象或 null
  */
 const getRgbaColorLastRgba = (rgbaString: string) => {
   const rgbaPattern = /rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/g
@@ -51,346 +40,222 @@ const getRgbaColorLastRgba = (rgbaString: string) => {
   return lastRGBA
 }
 
-function createExtremumDiv(id, value, formatterCfg, chart) {
-  // 空值不处理
-  if (!value && value != 0) {
-    return
-  }
-  // 装标注的div
-  const parentElement = document.getElementById(chartPointParentId(chart))
-  if (parentElement) {
-    // 标注div
-    const oldElement = document.getElementById(id)
-    if (oldElement) {
-      oldElement.remove()
-      oldElement.parentNode?.removeChild(oldElement)
-    }
-    const div = document.createElement('div')
-    div.id = id
-    div.className = 'child'
-    div.setAttribute(
-      'style',
-      `width: auto;
-        height: auto;
-        border-radius: 2px;
-        position: relative;
-        padding: 4px 5px 4px 5px;
-        display:none;
-        transform: translateX(-50%);
-        opacity: 1;
-        transition: opacity 0.2s ease-in-out;
-        white-space:nowrap;
-        overflow:auto;`
-    )
-    div.textContent = valueFormatter(value, formatterCfg)
-    const span = document.createElement('span')
-    span.setAttribute(
-      'style',
-      `width: 0px;
-        height: 0px;
-        border: 4px solid transparent;
-        border-top-color: red;
-        position: absolute;
-        left: calc(50% - 4px);
-        margin-top:4px;`
-    )
-    div.appendChild(span)
-    parentElement.appendChild(div)
-  }
-}
 /**
- * 没有子类别字段的图表
- * @param chart
+ * 判断图表类型是否支持最值标注（极值标签）
+ * @param chart - 图表配置对象
+ * @returns boolean
  */
-const noChildrenFieldChart = chart => {
-  return ['area', 'bar'].includes(chart.type)
+export const supportExtremumChartType = (chart): boolean => {
+  return ['line', 'area', 'bar', 'bar-group', 'area-stack'].includes(chart.type)
 }
 
 /**
- * 支持最值图表的折线图，面积图，柱状图，分组柱状图
- * @param chart
+ * 极值标签事件处理：添加极值 HTML 标签并调整位置
+ * @param newChart - G2 图表实例
+ * @param chart - 当前图表配置
+ * @param options - G2 图表选项
+ * @param container - 容器 ID
+ * @param scale - 图表缩放配置
+ * @param isSeriesLabel - 是否启用系列级标签配置
  */
-export const supportExtremumChartType = chart => {
-  return ['line', 'area', 'bar', 'bar-group'].includes(chart.type)
-}
+export const extremumEvt = (
+  newChart,
+  chart,
+  options,
+  container,
+  scale = 1,
+  isSeriesLabel = true
+) => {
+  const parent = document.getElementById(container)
+  if (!parent || !supportExtremumChartType(chart)) return
 
-const chartContainerId = chart => {
-  return chart.container + '_'
-}
+  // 清理空 div
+  Array.from(parent.querySelectorAll('div')).forEach(div => {
+    if (div.innerHTML.trim() === '') div.remove()
+  })
 
-const chartPointParentId = chart => {
-  return chart.container + '_point_' + chart.id + '_'
-}
-
-function removeDivsWithPrefix(parentDivId, prefix) {
-  const parentDiv = document.getElementById(parentDivId)
-  if (!parentDiv) {
-    console.error('Parent div not found')
-    return
-  }
-  const childDivs = parentDiv.getElementsByTagName('div')
-  for (let i = childDivs.length - 1; i >= 0; i--) {
-    const div = childDivs[i]
-    if (div.id && div.id.startsWith(prefix)) {
-      div.parentNode.removeChild(div)
-    }
-  }
-}
-
-export const extremumEvt = (newChart, chart, _options, container) => {
-  chart.container = container
-  clearExtremum(chart)
-  if (!supportExtremumChartType(chart)) {
-    return
-  }
   const { label: labelAttr } = parseJson(chart.customAttr)
-  const { yAxis } = parseJson(chart)
-  newChart.once('beforerender', ev => {
-    ev.view.on('beforepaint', () => {
-      newChart.chart.geometries[0]?.beforeMappingData.forEach(i => {
-        i.forEach(item => {
-          delete item._origin.EXTREME
-        })
-        const { minItem, maxItem } = findMinMax(
-          i.filter(item => item?._origin?.value !== null && item?._origin?.value !== undefined)
-        )
-        if (!minItem || !maxItem) {
-          return
+  const showExtremumIds = isSeriesLabel
+    ? (labelAttr.seriesLabelFormatter || []).filter(item => item.showExtremum).map(item => item.id)
+    : []
+
+  // 若未启用极值显示，直接返回
+  if (!(isSeriesLabel ? showExtremumIds.length : labelAttr.showExtremum)) return
+
+  const formatterMap = (labelAttr.seriesLabelFormatter || []).reduce((map, item) => {
+    map[item.id] = item
+    return map
+  }, {})
+
+  // 这里获取 x、y、color 字段
+  // 部分图表传过来的是options包含 children 的数组
+  // 部分图表是children数组中的对象，line or bar
+  const { x: xField, y: yField, color: colorField } = options.encode
+  const chartData = options.children ? options.children : [options]
+
+  // 遍历所有 series，为标签注入 HTML 和样式
+  chartData
+    .filter(item => item.labels?.length)
+    .forEach(item => {
+      item.labels.forEach(label => {
+        const oldPosition = label.position || 'top'
+        label.style = {
+          ...label.style,
+          fill: data => {
+            if (data.extremum) return ''
+            const cfg = isSeriesLabel ? formatterMap[data.quotaList?.[0]?.id] : labelAttr
+            return cfg?.color ?? '#000'
+          },
+          position: data => (data.extremum ? 'top' : oldPosition)
         }
-        let showExtremum = false
-        if (noChildrenFieldChart(chart) || yAxis.length > 1) {
-          const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(
-            d =>
-              (d.chartShowName ? d.chartShowName : d.name === minItem._origin.category) ||
-              (d.chartShowName ? d.chartShowName : d.name === maxItem._origin.category)
-          )
-          showExtremum = seriesLabelFormatter?.showExtremum
-        } else {
-          if (['bar-group'].includes(chart.type)) {
-            showExtremum = labelAttr.showExtremum
-          } else {
-            showExtremum = labelAttr.seriesLabelFormatter[0]?.showExtremum
-          }
-        }
-        if (showExtremum) {
-          minItem._origin.EXTREME = true
-          maxItem._origin.EXTREME = true
-        }
+        label.innerHTML = extremumHtml(chart, yField, isSeriesLabel)
       })
     })
-    newChart.chart.geometries[0].on('afteranimate', () => {
-      createExtremumPoint(chart, ev)
+
+  // 获取 point 大小，用于定位箭头
+  let pointSize = 0
+  options.children
+    ?.filter(item => item.type === 'point')
+    .forEach(item => {
+      pointSize = Math.max(pointSize, item.encode?.size || 0)
+    })
+
+  addExtremumText(newChart, chart, xField, yField, colorField, isSeriesLabel)
+
+  const parentRect = parent.getBoundingClientRect()
+
+  // 渲染后调整极值标签位置，防止溢出
+  newChart.on('afterrender', () => {
+    document.querySelectorAll('.extremum-' + chart.container).forEach(item => {
+      item.style.display = 'block'
+      const itemRect = item.getBoundingClientRect()
+      const transformY = item.offsetHeight + 5
+      const childNode = item.childNodes[1] as HTMLElement
+      // 判断是否顶部溢出
+      if (itemRect.top - itemRect.height < parentRect.top) {
+        const offset = pointSize / scale + (pointSize / scale < 10 ? 9 : 12)
+        item.style.transform = `translate(-50%, ${offset}px)`
+        childNode.style.cssText += 'transform: translateX(-50%) rotate(180deg); top: -5px;'
+      } else {
+        item.style.transform = `translate(-50%, -${transformY}px)`
+      }
+
+      // 判断是否右侧溢出
+      if (itemRect.right > parentRect.right) {
+        const currentLeft = parseFloat(window.getComputedStyle(item).left) || 0
+        const newLeft = currentLeft - (itemRect.right - parentRect.right)
+        item.style.left = `${newLeft}px`
+        // childNode 反向偏移，保持始终指向在数据点上
+        childNode.style.left = itemRect.width / 2 + Math.abs(newLeft) + 'px'
+      }
+      // 判断是否左侧溢出
+      if (itemRect.left < parentRect.left) {
+        const currentLeft = parseFloat(window.getComputedStyle(item).left) || 0
+        const newLeft = currentLeft + (parentRect.left - itemRect.left)
+        item.style.left = `${newLeft}px`
+        // childNode 反向偏移，保持始终指向在数据点上
+        childNode.style.left = itemRect.width / 2 - Math.abs(newLeft) + 'px'
+      }
     })
   })
-  newChart.on('legend-item:click', ev => {
-    const legendHideData = ev.view
-      .getController('legend')
-      .components[0].component.cfg.items.filter(l => l.unchecked)
-    if (legendHideData.length > 0) {
-      legendHideData.forEach(l => {
-        const seriesKey = chartContainerId(chart) + chartPointParentId(chart) + l.id
-        removeDivsWithPrefix(chartPointParentId(chart), seriesKey)
-      })
-    }
-  })
-}
-
-const findMinMax = (data): { minItem; maxItem } => {
-  return data.reduce(
-    ({ minItem, maxItem }, currentItem) => {
-      if (minItem === undefined || currentItem._origin.value < minItem._origin.value) {
-        minItem = currentItem
-      }
-      if (maxItem === undefined || currentItem._origin.value > maxItem._origin.value) {
-        maxItem = currentItem
-      }
-      delete minItem?._origin.EXTREME
-      delete maxItem?._origin.EXTREME
-      return { minItem, maxItem }
-    },
-    { minItem: undefined, maxItem: undefined }
-  )
-}
-export const createExtremumPoint = (chart, ev) => {
-  // 获取标注样式
-  const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
-  const pointSize = basicStyle.lineSymbolSize
-  const { yAxis } = parseJson(chart)
-  clearExtremum(chart)
-  // 创建标注父元素
-  const divParentElement = document.getElementById(chartPointParentId(chart))
-  if (!divParentElement) {
-    const divParent = document.createElement('div')
-    divParent.id = chartPointParentId(chart)
-    divParent.style.position = 'fixed'
-    divParent.style.zIndex = '1'
-    divParent.style.opacity = '0'
-    divParent.style.transition = 'opacity 0.2s ease-in-out'
-    divParent.style.overflow = 'visible'
-    // 将父标注加入到图表中
-    const containerElement = document.getElementById(chart.container)
-    containerElement.insertBefore(divParent, containerElement.firstChild)
-    // 处理最值闪烁的问题
-    let opacity = 0
-    const animate = () => {
-      // 增加不透明度
-      opacity += 0.19
-      if (opacity >= 1) {
-        cancelAnimationFrame(animationFrameId)
-        return
-      }
-      divParent.style.opacity = opacity + ''
-      animationFrameId = requestAnimationFrame(animate)
-    }
-    let animationFrameId = requestAnimationFrame(animate)
-  }
-  let geometriesDataArray = []
-  // 获取数据点
-  const intervalPoint = ev.view
-    .getGeometries()
-    .find((intervalItem: { type: string }) => intervalItem.type === 'interval')
-  if (intervalPoint) {
-    geometriesDataArray = intervalPoint.dataArray
-  }
-  const pointPoint = ev.view
-    .getGeometries()
-    .find((pointItem: { type: string }) => pointItem.type === 'point')
-  if (pointPoint) {
-    geometriesDataArray = pointPoint.dataArray
-  }
-  performChunk(geometriesDataArray, pointObjList => {
-    if (pointObjList && pointObjList.length > 0) {
-      const pointObj = pointObjList[0]
-      const [minItem, maxItem] = pointObjList.filter(i => i._origin.EXTREME)
-      let attr
-      let showExtremum = false
-      if (noChildrenFieldChart(chart) || yAxis.length > 1) {
-        const seriesLabelFormatter = labelAttr.seriesLabelFormatter.find(d =>
-          d.chartShowName
-            ? d.chartShowName === pointObj._origin.category
-            : d.name === pointObj._origin.category
-        )
-        showExtremum = seriesLabelFormatter?.showExtremum
-        attr = seriesLabelFormatter
-      } else {
-        if (['bar-group'].includes(chart.type)) {
-          showExtremum = labelAttr.showExtremum
-        } else {
-          showExtremum = labelAttr.seriesLabelFormatter[0]?.showExtremum
-          attr = labelAttr.seriesLabelFormatter[0]
-        }
-      }
-      const fontSize = attr ? attr.fontSize : labelAttr.fontSize
-      if (!minItem) {
-        return
-      }
-      const maxKey =
-        chartContainerId(chart) +
-        chartPointParentId(chart) +
-        pointObj._origin.category +
-        '_' +
-        (maxItem ? maxItem._origin.value : minItem._origin.value)
-      const minKey =
-        chartContainerId(chart) +
-        chartPointParentId(chart) +
-        pointObj._origin.category +
-        '_' +
-        minItem._origin.value
-      // 最值标注
-      if (showExtremum && labelAttr.show) {
-        if (maxItem) {
-          createExtremumDiv(
-            maxKey,
-            maxItem._origin.value,
-            attr ? attr.formatterCfg : labelAttr.labelFormatter,
-            chart
-          )
-        }
-        createExtremumDiv(
-          minKey,
-          minItem._origin.value,
-          attr ? attr.formatterCfg : labelAttr.labelFormatter,
-          chart
-        )
-        pointObjList.forEach(point => {
-          const pointElement = document.getElementById(
-            chartContainerId(chart) +
-              chartPointParentId(chart) +
-              point._origin.category +
-              '_' +
-              point._origin.value
-          )
-          if (pointElement && point._origin.EXTREME) {
-            pointElement.style.position = 'absolute'
-            const top =
-              (point.y[1] ? point.y[1] : point.y) - (fontSize + (pointSize ? pointSize : 0) + 12)
-            pointElement.style.top = top + 'px'
-            pointElement.style.left = point.x + 'px'
-            pointElement.style.zIndex = '10'
-            pointElement.style.fontSize = fontSize + 'px'
-            pointElement.style.lineHeight = fontSize + 'px'
-            // 渐变颜色时需要获取最后一个rgba的值作为背景
-            const color = point.color.startsWith('#')
-              ? hexToRgba(point.color, basicStyle.alpha / 100)
-              : getRgbaColorLastRgba(point.color)
-            const { r, b, g, a } = color
-            pointElement.style.backgroundColor = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
-            pointElement.style.color = isColorLight(point.color) ? '#000' : '#fff'
-            pointElement.children[0]['style'].borderTopColor =
-              'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
-            pointElement.style.display = 'table'
-            // 显示箭头
-            const childNode = pointElement.childNodes[1]
-            // 最值在数据点下方显示
-            const translateYValue = Math.ceil(point.y + Math.abs(Math.floor(top)) + 6)
-            // 最值dom高度超过50%时，最值dom向下
-            if (top < 0 && (Math.abs(top) / point.y) * 100 >= 50) {
-              pointElement.style.transform = `translateX(-50%) translateY(${translateYValue}px)`
-              childNode.style.marginTop = '-12px'
-              childNode.style.transform = 'rotate(180deg)'
-            } else {
-              childNode.style.display = 'block'
-            }
-          }
-        })
-      } else {
-        removeDivElement(maxKey)
-        removeDivElement(minKey)
-      }
-    }
-  })
-}
-
-function removeDivElement(key) {
-  const element = document.getElementById(key)
-  if (element) {
-    element.remove()
-    element.parentNode?.removeChild(element)
-  }
 }
 
 /**
- * 用于分批处理数据，利用requestIdleCallback在浏览器空闲期间执行任务，避免阻塞主线程
- * @param dataList
- * @param taskHandler
+ * 添加最大值和最小值文本标记
+ * @param newChart - G2 图表实例
+ * @param chart - 当前图表配置
+ * @param x - x 轴字段
+ * @param y - y 轴字段
+ * @param color - 颜色字段
+ * @param isSeriesLabel - 是否启用系列级标签配置
  */
-function performChunk(dataList, taskHandler) {
-  if (typeof dataList === 'number') {
-    dataList = { length: dataList }
-  }
-  if (dataList.length === 0) return
-  let i = 0
-  function _run() {
-    if (i >= dataList.length) return
-    // 请求浏览器空闲期间执行的回调函数
-    requestIdleCallback(idle => {
-      // 在当前空闲期间内尽可能多地处理任务，直到时间耗尽或所有任务处理完毕
-      while (idle.timeRemaining() > 0 && i < dataList.length) {
-        taskHandler(dataList[i], i)
-        i++
+const addExtremumText = (newChart, chart, x, y, color, isSeriesLabel) => {
+  addText(newChart, chart, x, y, color, 'max', isSeriesLabel)
+  addText(newChart, chart, x, y, color, 'min', isSeriesLabel)
+}
+
+/**
+ * 该方法计算图表数据的最大最小值，然后标记为极值（全量数据）
+ * 使用 G2 transform 添加极值
+ * selector: 'max' | 'min'
+ */
+const addText = (newChart, chart, xField, yField, colorField, selector, isSeriesLabel) => {
+  const { label: labelAttr } = parseJson(chart.customAttr)
+  const showExtremumIds = isSeriesLabel
+    ? (labelAttr.seriesLabelFormatter || []).filter(item => item.showExtremum).map(item => item.id)
+    : []
+
+  newChart
+    .text()
+    .encode('x', xField)
+    .encode('y', yField)
+    .encode('color', colorField)
+    .encode('series', colorField)
+    .encode('text', () => '')
+    .transform([{ type: 'selectY', selector }])
+    .style({
+      textAlign: 'center',
+      background: true,
+      backgroundFill: obj => {
+        // 标记极值
+        obj.extremum = isSeriesLabel
+          ? obj.quotaList?.some?.(item => showExtremumIds.includes(item.id))
+          : !!labelAttr.showExtremum
+        return ''
       }
-      _run()
     })
+    .tooltip(false)
+}
+
+/**
+ * 生成极值标签的 HTML 内容
+ */
+const extremumHtml = (chart, yField, isSeriesLabel) => {
+  const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
+  const formatterMap = (labelAttr.seriesLabelFormatter || []).reduce((map, item) => {
+    map[item.id] = item
+    return map
+  }, {})
+
+  return (obj, _, __, d) => {
+    if (!obj.extremum) return ''
+
+    const cfg = isSeriesLabel ? formatterMap[obj.quotaList?.[0]?.id] : labelAttr
+    const formatter = isSeriesLabel ? cfg?.formatterCfg : labelAttr.labelFormatter
+    const fontSize = cfg?.fontSize || 12
+    const rawColor = d.element.__data__.color || '#000'
+    const bgColor = rawColor.startsWith('#')
+      ? hexToRgba(rawColor, basicStyle.alpha / 100)
+      : getRgbaColorLastRgba(rawColor)
+
+    const textColor = isColorLight(rawColor) ? '#000' : '#fff'
+    const textContent = valueFormatter(obj[yField], formatter)
+    const { r, g, b, a } = bgColor
+    const color = `${r},${g},${b},${a}`
+    return `
+      <div class="extremum-${chart.container}" style="
+        display: none;
+        position: relative;
+        font-size: ${fontSize}px;
+        transform: translate(-50%);
+        padding: 4px 5px;
+        border-radius: 2px;
+        color: ${textColor};
+        background: rgba(${color});
+      ">
+        ${textContent}
+        <span style="
+          position: absolute;
+          bottom: -4.9px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0; height: 0;
+          border-top: 5px solid rgba(${color});
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          border-bottom: 0;
+        "></span>
+      </div>
+    `
   }
-  _run()
 }

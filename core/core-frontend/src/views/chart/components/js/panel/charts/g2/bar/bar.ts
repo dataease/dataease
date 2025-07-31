@@ -27,6 +27,7 @@ import {
   Transform,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import { extremumEvt } from '@/views/chart/components/js/extremumUitl'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -87,7 +88,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
   } as ViewSpec
 
   async drawChart(drawOptions: G2DrawOptions<G2Column>): Promise<G2Column> {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, scale } = drawOptions
     chart.container = container
     if (!chart?.data?.data?.length) {
       return
@@ -95,6 +96,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const data = cloneDeep(drawOptions.chart.data?.data)
     const initOptions: ViewSpec = {
       type: 'view',
+      data: {
+        value: data
+      },
       children: [
         {
           ...this.intervalOptions,
@@ -108,6 +112,14 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     newChart.options(options)
     newChart.on('interval:click', action)
     configTooltip(newChart, chart)
+    extremumEvt(
+      newChart,
+      chart,
+      options.children[0],
+      container,
+      scale,
+      this.name === 'bar' || this.name === 'bar-group'
+    )
     return newChart
   }
 
