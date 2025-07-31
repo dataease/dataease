@@ -841,7 +841,6 @@ onMounted(() => {
       const chart = cloneDeep(view.value)
       chart.container =
         'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
-      clearExtremum(chart)
     }
   })
 
