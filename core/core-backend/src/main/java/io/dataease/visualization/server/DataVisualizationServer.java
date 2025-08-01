@@ -231,7 +231,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             result.setWeight(9);
             return result;
         } else {
-            DEException.throwException("资源不存在或已经被删除...");
+            DEException.throwException(Translator.get("i18n_resource_not_exists"));
         }
         return null;
     }
@@ -760,7 +760,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public String findDvType(Long dvId) {
-        return extDataVisualizationMapper.findDvType(dvId);
+        String result = extDataVisualizationMapper.findDvType(dvId);
+        if(StringUtils.isEmpty(result)){
+            DEException.throwException(Translator.get("i18n_resource_not_exists"));
+        }
+        return result;
     }
 
     @Override
