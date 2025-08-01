@@ -1086,7 +1086,7 @@ const clearG2Tooltip = () => {
       :style="{ 'justify-content': titleAlign, 'margin-bottom': marginBottom }"
     >
       <template v-if="!titleEditStatus">
-        <p v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
+        <p class="ellipsis" v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
           {{ view.title }}
         </p>
       </template>
@@ -1327,5 +1327,12 @@ const clearG2Tooltip = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.ellipsis {
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 </style>
