@@ -166,7 +166,9 @@
                             <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                           </el-icon>
                         </div>
-                        <span>{{ baseDatasetInfo.name }}</span>
+                        <span :title="baseDatasetInfo.name" class="ellipsis">{{
+                          baseDatasetInfo.name
+                        }}</span>
                       </div>
                       <div style="flex: 1; margin-left: -16px">
                         <el-select
@@ -253,7 +255,13 @@
                               ></component
                             ></Icon>
                           </div>
-                          <span style="font-size: 12px"> {{ viewInfo.chartName }}</span>
+                          <span
+                            class="ellipsis"
+                            :title="viewInfo.chartName"
+                            style="font-size: 12px"
+                          >
+                            {{ viewInfo.chartName }}</span
+                          >
                         </div>
                       </div>
                     </div>
@@ -1127,5 +1135,12 @@ defineExpose({
   font-size: 14px;
   color: #646a73;
   margin: 3px 0 0 4px;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 220px;
 }
 </style>
