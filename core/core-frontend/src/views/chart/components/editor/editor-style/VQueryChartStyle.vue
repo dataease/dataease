@@ -474,7 +474,7 @@ const onPlaceholderChange = () => {
                   v-model="chart.customStyle.component.placeholderSize"
                   @change="handleCurrentPlaceholderCustomChange"
                   :min="10"
-                  :max="20"
+                  :max="40"
                   :disabled="!chart.customStyle.component.placeholderShow"
                   style="margin-left: 8px"
                   step-strictly
