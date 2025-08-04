@@ -31,6 +31,7 @@ const { curComponent, canvasViewInfo, mobileInPc, batchOptStatus } = storeToRefs
       <picture-group-upload-attr
         :themes="themes"
         :element="curComponent"
+        :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         v-if="!mobileInPc && !batchOptStatus"
       ></picture-group-upload-attr>
       <template v-slot:carousel v-if="!mobileInPc">
@@ -78,6 +79,15 @@ const { curComponent, canvasViewInfo, mobileInPc, batchOptStatus } = storeToRefs
   }
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
+  }
+}
+
+.refresh-area {
+  width: 100%;
+  padding: 0 8px;
+
+  .no-margin-bottom {
+    margin-bottom: 8px;
   }
 }
 </style>

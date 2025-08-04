@@ -59,6 +59,12 @@ const props = defineProps({
     type: String,
     default: 'preview'
   },
+  // 仪表板刷新计时器
+  searchCount: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   view: {
     type: Object as PropType<ChartObj>,
     default() {
@@ -75,10 +81,38 @@ const dataRowNameSelect = ref({})
 const dataRowFiledName = ref([])
 let carouselTimer = null
 const { element, view, showPosition } = toRefs(props)
-
+let innerRefreshTimer = null
+let innerSearchCount = 0
 const isEditMode = computed(
   () => showPosition.value.includes('canvas') && !mobileInPc.value && !fullscreenFlag.value
 )
+
+watch([() => props.searchCount], () => {
+  // 内部计时器启动 忽略外部计时器
+  if (!innerRefreshTimer) {
+    calcData(view.value, () => {
+      // do searchCount
+    })
+  }
+})
+
+// 编辑状态下 不启动刷新
+const buildInnerRefreshTimer = (
+  refreshViewEnable = false,
+  refreshUnit = 'minute',
+  refreshTime = 5
+) => {
+  if (showPosition.value === 'preview' && !innerRefreshTimer && refreshViewEnable) {
+    innerRefreshTimer && clearInterval(innerRefreshTimer)
+    const timerRefreshTime = refreshUnit === 'second' ? refreshTime * 1000 : refreshTime * 60000
+    innerRefreshTimer = setInterval(() => {
+      calcData(view.value, () => {
+        // do innerRefreshTimer
+      })
+      innerSearchCount++
+    }, timerRefreshTime)
+  }
+}
 
 watch(
   () => isEditMode.value,
@@ -255,6 +289,7 @@ onBeforeMount(() => {
     clearInterval(carouselTimer)
     carouselTimer = null
   }
+  buildInnerRefreshTimer()
 })
 
 defineExpose({
