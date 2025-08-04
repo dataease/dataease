@@ -102,6 +102,10 @@ public class CalciteProvider extends Provider {
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
         }
+        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.pg.name())) {
+            Set<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "pg_temp_1", "pg_toast", "pg_toast_temp_1"));
+            return schemas.stream().filter(schema -> !SYSTEM_SCHEMAS.contains(schema)).collect(Collectors.toList());
+        }
         return schemas;
     }
 
@@ -497,8 +501,7 @@ public class CalciteProvider extends Provider {
                     try {
                         Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
 
-                        if (valueObject instanceof String
-                                && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+                        if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                             if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
                                 //转换为数据库的字符集
                                 valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
@@ -559,8 +562,7 @@ public class CalciteProvider extends Provider {
                 for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
                     try {
                         Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
-                        if (valueObject instanceof String
-                                && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+                        if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                             if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
                                 //转换为数据库的字符集
                                 valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
@@ -635,8 +637,7 @@ public class CalciteProvider extends Provider {
                     try {
                         Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
 
-                        if (valueObject instanceof String
-                                && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+                        if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                             if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
                                 //转换为数据库的字符集
                                 valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
@@ -1292,11 +1293,10 @@ public class CalciteProvider extends Provider {
                                    END,
                                CASE
                                    WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval%%' THEN 1
-                        """ + (
-                        datasourceRequest.getDsVersion() > 9 ? """
-                                           WHEN a.attidentity = 'd' THEN 1
-                                           WHEN a.attidentity = 'a' THEN 1
-                                """ : "") + """
+                        """ + (datasourceRequest.getDsVersion() > 9 ? """
+                                   WHEN a.attidentity = 'd' THEN 1
+                                   WHEN a.attidentity = 'a' THEN 1
+                        """ : "") + """
                                    ELSE 0
                                    END
                         FROM pg_class c
@@ -1392,18 +1392,7 @@ public class CalciteProvider extends Provider {
                 }
                 tableSqls.add("select table_name, comments, owner  from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'TABLE'");
                 tableSqls.add("select table_name, comments, owner  from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'VIEW'");
-                tableSqls.add("SELECT \n" +
-                        "    m.mview_name,\n" +
-                        "    c.comments\n" +
-                        "FROM \n" +
-                        "    ALL_MVIEWS m\n" +
-                        "LEFT JOIN \n" +
-                        "    ALL_TAB_COMMENTS c \n" +
-                        "ON \n" +
-                        "    m.owner = c.owner \n" +
-                        "    AND m.mview_name = c.table_name\n" +
-                        "    AND c.table_type = 'MATERIALIZED VIEW'\n" +
-                        "WHERE m.OWNER ='DE_SCHEMA'".replace("DE_SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" + "    m.mview_name,\n" + "    c.comments\n" + "FROM \n" + "    ALL_MVIEWS m\n" + "LEFT JOIN \n" + "    ALL_TAB_COMMENTS c \n" + "ON \n" + "    m.owner = c.owner \n" + "    AND m.mview_name = c.table_name\n" + "    AND c.table_type = 'MATERIALIZED VIEW'\n" + "WHERE m.OWNER ='DE_SCHEMA'".replace("DE_SCHEMA", configuration.getSchema()));
                 break;
             case db2:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
@@ -1426,29 +1415,8 @@ public class CalciteProvider extends Provider {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
                 tableSqls.add("SELECT  \n" + "    relname AS TableName,  \n" + "    obj_description(relfilenode::regclass, 'pg_class') AS TableDescription  \n" + "FROM  \n" + "    pg_class  \n" + "WHERE  \n" + "   relkind in  ('r','p', 'f')  \n" + "    AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'SCHEMA') ".replace("SCHEMA", configuration.getSchema()));
-                tableSqls.add("SELECT \n" +
-                        "    c.relname AS view_name,\n" +
-                        "    COALESCE(d.description, 'No description provided') AS view_description\n" +
-                        "FROM \n" +
-                        "    pg_class c\n" +
-                        "JOIN \n" +
-                        "    pg_namespace n ON c.relnamespace = n.oid\n" +
-                        "LEFT JOIN \n" +
-                        "    pg_description d ON c.oid = d.objoid\n" +
-                        "WHERE \n" +
-                        "    c.relkind = 'v'  \n" +
-                        "    AND n.nspname = 'SCHEMA'".replace("SCHEMA", configuration.getSchema()));
-                tableSqls.add("SELECT \n" +
-                        "    c.relname AS materialized_view_name,\n" +
-                        "    COALESCE(d.description, '') AS view_description\n" +
-                        "FROM \n" +
-                        "    pg_class c\n" +
-                        "JOIN \n" +
-                        "    pg_namespace n ON c.relnamespace = n.oid\n" +
-                        "LEFT JOIN \n" +
-                        "    pg_description d ON c.oid = d.objoid\n" +
-                        "WHERE \n" +
-                        "    c.relkind = 'm' and n.nspname ='SCHEMA';  ".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" + "    c.relname AS view_name,\n" + "    COALESCE(d.description, 'No description provided') AS view_description\n" + "FROM \n" + "    pg_class c\n" + "JOIN \n" + "    pg_namespace n ON c.relnamespace = n.oid\n" + "LEFT JOIN \n" + "    pg_description d ON c.oid = d.objoid\n" + "WHERE \n" + "    c.relkind = 'v'  \n" + "    AND n.nspname = 'SCHEMA'".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" + "    c.relname AS materialized_view_name,\n" + "    COALESCE(d.description, '') AS view_description\n" + "FROM \n" + "    pg_class c\n" + "JOIN \n" + "    pg_namespace n ON c.relnamespace = n.oid\n" + "LEFT JOIN \n" + "    pg_description d ON c.oid = d.objoid\n" + "WHERE \n" + "    c.relkind = 'm' and n.nspname ='SCHEMA';  ".replace("SCHEMA", configuration.getSchema()));
                 break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
