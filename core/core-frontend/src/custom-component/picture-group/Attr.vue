@@ -81,13 +81,4 @@ const { curComponent, canvasViewInfo, mobileInPc, batchOptStatus } = storeToRefs
     justify-content: flex-start;
   }
 }
-
-.refresh-area {
-  width: 100%;
-  padding: 0 8px;
-
-  .no-margin-bottom {
-    margin-bottom: 8px;
-  }
-}
 </style>

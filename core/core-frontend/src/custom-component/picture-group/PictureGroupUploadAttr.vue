@@ -175,7 +175,11 @@ onBeforeUnmount(() => {
       </el-form-item>
     </el-row>
     <el-row v-if="view" class="refresh-area">
-      <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+      <el-form-item
+        style="width: 100%"
+        class="form-item no-margin-bottom"
+        :class="'form-item-' + themes"
+      >
         <el-checkbox
           v-model="view.refreshViewEnable"
           :effect="themes"
@@ -185,7 +189,7 @@ onBeforeUnmount(() => {
           {{ t('visualization.refresh_frequency') }}
         </el-checkbox>
       </el-form-item>
-      <el-row v-if="view.refreshViewEnable">
+      <el-row style="width: 100%" v-if="view.refreshViewEnable">
         <el-form-item
           class="form-item no-margin-bottom select-append"
           :class="'form-item-' + themes"
@@ -380,5 +384,6 @@ onBeforeUnmount(() => {
 
 .refresh-area {
   width: 100%;
+  padding: 0;
 }
 </style>
