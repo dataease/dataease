@@ -777,8 +777,6 @@ const init = viewItem => {
   let checkAllAxisStr =
     JSON.stringify(chartDetails.xAxis) +
     JSON.stringify(chartDetails.xAxisExt) +
-    JSON.stringify(chartDetails.yAxis) +
-    JSON.stringify(chartDetails.yAxisExt) +
     JSON.stringify(chartDetails.drillFields)
   let checkJumpStr
   // 堆叠图的可选参数分两种情况 1.如果有堆叠项 则指标只有第一个可选 2.如果没有堆叠项泽所有指标都可以选
@@ -793,9 +791,10 @@ const init = viewItem => {
       JSON.stringify(chartDetails.drillFields)
     checkJumpStr = checkAllAxisStr
   } else if (chartDetails.type === 'table-pivot') {
-    checkJumpStr = checkAllAxisStr
+    checkJumpStr =
+      checkAllAxisStr + JSON.stringify(chartDetails.yAxis) + JSON.stringify(chartDetails.yAxisExt)
   } else if (chartDetails.type === 'table-info') {
-    checkJumpStr = JSON.stringify(chartDetails.xAxis) + JSON.stringify(chartDetails.drillFields)
+    checkJumpStr = checkAllAxisStr
   } else {
     checkJumpStr = checkAllAxisStr
   }
