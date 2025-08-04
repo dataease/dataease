@@ -274,7 +274,7 @@ public class ChartDataServer implements ChartDataApi {
                             xAxis.addAll(request.getViewInfo().getXAxisExt());
                             xAxis.addAll(request.getViewInfo().getYAxisExt());
                             xAxis.addAll(request.getViewInfo().getExtStack());
-                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(DatasetTableFieldDTO::getName).collect(Collectors.toList()).contains(item)).collect(Collectors.toList()).toArray();
+                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).collect(Collectors.toList()).toArray();
                             details.add(0, header);
                             ViewDetailField[] detailFields = request.getDetailFields();
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
