@@ -25,6 +25,9 @@ public class Mysql extends DatasourceConfiguration {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
                 }
             }
+            if (!getJdbcUrl().startsWith("jdbc:mysql")) {
+                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
+            }
             return getJdbcUrl();
         }
         String jdbcUrl = "";
