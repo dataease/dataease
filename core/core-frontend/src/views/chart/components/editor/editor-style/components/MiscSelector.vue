@@ -57,7 +57,7 @@ const gaugeLiquidYaxisValue = args => {
   const key = type === 'gauge' ? 'gaugeMax' : type === 'liquid' ? 'liquidMax' : null
   if (key) {
     gaugeLiquidYaxisDefaultValue[key] = cloneDeep(max)
-    if (!state.miscForm[key]) {
+    if (state.miscForm[key] === undefined || state.miscForm[key] === null) {
       state.miscForm[key] = gaugeLiquidYaxisDefaultValue[key]
       changeMisc()
     }
