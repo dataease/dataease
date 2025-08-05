@@ -24,6 +24,9 @@ public class Pg extends DatasourceConfiguration {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
                 }
             }
+            if (!getJdbcUrl().startsWith("jdbc:postgresql")) {
+                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
+            }
             return getJdbcUrl();
         }
         String jdbcUrl = "";

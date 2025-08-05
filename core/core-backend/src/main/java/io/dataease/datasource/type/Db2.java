@@ -23,6 +23,9 @@ public class Db2 extends DatasourceConfiguration {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
                 }
             }
+            if (!getJdbcUrl().startsWith("jdbc:db2")) {
+                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
+            }
             return getJdbcUrl();
         }
         if (StringUtils.isEmpty(extraParams.trim())) {
