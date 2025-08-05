@@ -1,5 +1,6 @@
 package io.dataease.datasource.type;
 
+import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,9 @@ public class Mongo extends DatasourceConfiguration {
 
     public String getJdbc() {
         if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+            if (!getJdbcUrl().startsWith("jdbc:mysql")) {
+                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
+            }
             return getJdbcUrl();
         }
         if (StringUtils.isEmpty(extraParams.trim())) {
