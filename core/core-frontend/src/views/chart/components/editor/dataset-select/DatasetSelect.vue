@@ -372,7 +372,14 @@ onMounted(() => {
           </el-main>
           <el-footer v-if="!isDataEaseBi">
             <div class="footer-container">
-              <el-button type="primary" :icon="Plus" link class="add-btn" @click="addDataset">
+              <el-button
+                type="primary"
+                :icon="Plus"
+                link
+                class="add-btn"
+                @click="addDataset"
+                v-permission="sourceType === 'datasource' ? ['datasource'] : ['dataset']"
+              >
                 {{ newSource }}
               </el-button>
             </div>
