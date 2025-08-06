@@ -3106,7 +3106,7 @@ export default {
     required: '必填',
     default_value: '默认值',
     default_value_tips1: '请使用JSON数组格式 示例:',
-    default_value_tips2: '单值 ["name1"], 多值 ["name1","name2"]',
+    default_value_tips2: '单值 ["name1"], 多值 ["name1","name2"]; 绑定SQL自定义参数，不支持多值；',
     default_value_tips3: '请输入参数,如:["name1"]',
     time_year_widget: '年份过滤组件',
     time_month_widget: '年月过滤组件',

@@ -3100,7 +3100,7 @@ export default {
     required: '必填',
     default_value: '預設值',
     default_value_tips1: '請使用JSON數組格式 範例:',
-    default_value_tips2: '單值 ["name1"], 多值 ["name1","name2"]',
+    default_value_tips2: '單值 ["name1"], 多值 ["name1","name2"]; 綁定SQL自定義參數，不支援多值；',
     default_value_tips3: '請輸入參數,如:["name1"]',
     time_year_widget: '年份過濾組件',
     time_month_widget: '年月過濾組件',

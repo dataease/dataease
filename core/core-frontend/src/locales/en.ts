@@ -3186,7 +3186,8 @@ export default {
     required: 'Required',
     default_value: 'Default Value',
     default_value_tips1: 'Please use JSON array format Example:',
-    default_value_tips2: 'Single value ["name1"], Multiple values ["name1","name2"]',
+    default_value_tips2:
+      'Single value ["name1"], multiple values ["name1","name2"]; Bind SQL custom parameters, multiple values not supported;',
     default_value_tips3: 'Please enter parameters, e.g.: ["name1"]',
     time_year_widget: 'Year Filter Widget',
     time_month_widget: 'Month Filter Widget',
