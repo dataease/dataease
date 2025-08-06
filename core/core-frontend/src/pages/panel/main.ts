@@ -47,10 +47,10 @@ const getPrefix = (): string => {
   })
   return prefix
 }
-
+const element = document.createElement('head')
 document.querySelector('head').appendChild = <T extends Node>(node: T) => {
   const newNode = formatterUrl(node, getPrefix())
-  cb(newNode)
+  element.appendChild(newNode)
   return newNode
 }
 import { App, createApp } from 'vue'
