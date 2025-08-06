@@ -1214,6 +1214,9 @@ export const dvMainStore = defineStore('dataVisualization', {
           paramValue = [paramValue]
           operator = 'eq'
         } else if (paramValue && Array.isArray(paramValue)) {
+          if (paramValue.length === 1) {
+            operator = 'eq'
+          }
           paramValueStr = ''
           paramValue.forEach((innerValue, index) => {
             if (index === 0) {
