@@ -323,10 +323,14 @@ export function refreshOtherComponent(dvId, busiFlag) {
             componentData.value[i].propValue = canvasDataResultMap[component.id].propValue
           } else {
             const { top, left, height, width, fontSize } = componentData.value[i].style
+            const { linkageFilters, outerParamsFilters, webParamsFilters } = componentData.value[i]
             canvasDataResultMap[component.id].style.top = top
             canvasDataResultMap[component.id].style.left = left
             canvasDataResultMap[component.id].style.height = height
             canvasDataResultMap[component.id].style.width = width
+            canvasDataResultMap[component.id]['linkageFilters'] = linkageFilters
+            canvasDataResultMap[component.id]['outerParamsFilters'] = outerParamsFilters
+            canvasDataResultMap[component.id]['webParamsFilters'] = webParamsFilters
             if (fontSize) {
               canvasDataResultMap[component.id].style.fontSize = fontSize
             }
