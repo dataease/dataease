@@ -181,6 +181,10 @@ public interface UserApi {
     List<UserItem> allUser(@RequestBody KeywordRequest request);
 
     @Hidden
+    @PostMapping("/admin/bind")
+    void adminBind(@RequestBody AdminBindRequest request);
+
+    @Hidden
     @PostMapping("/bind")
     void bind(@RequestBody UserBindRequest request);
 
