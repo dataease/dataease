@@ -54,7 +54,7 @@ import request from '@/config/axios'
 import { store } from '@/store'
 import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router_2'
 const route = useRoute()
 const { wsCache } = useCache()
 const chartComponent = ref<any>()

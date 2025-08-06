@@ -16,7 +16,7 @@ import { propTypes } from '@/utils/propTypes'
 import { downloadCanvas2 } from '@/utils/imgUtils'
 import { isLink, setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router_2'
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const routeWatch = useRoute()

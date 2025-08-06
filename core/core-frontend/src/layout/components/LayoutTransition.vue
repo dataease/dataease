@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router_2'
 const route = useRoute()
 </script>
 <template>

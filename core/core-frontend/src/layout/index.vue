@@ -7,7 +7,7 @@ import Menu from './components/Menu.vue'
 import Main from './components/Main.vue'
 import CollapseBar from './components/CollapseBar.vue'
 import { ElContainer } from 'element-plus-secondary'
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router_2'
 import { XpackComponent } from '@/components/plugin'
 import { useI18n } from '@/hooks/web/useI18n'
 const route = useRoute()

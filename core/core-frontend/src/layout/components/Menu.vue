@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { ElMenu } from 'element-plus-secondary'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router_2'
 import { isExternal } from '@/utils/validate'
 import { useCache } from '@/hooks/web/useCache'
 import MenuItem from './MenuItem.vue'

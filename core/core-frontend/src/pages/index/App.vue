@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import configGlobal from '@/components/config-global/src/ConfigGlobal.vue'
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router_2'
 import ExportExcel from '@/views/visualized/data/dataset/ExportExcel.vue'
 const route = useRoute()
 const exportExcelRef = ref()
