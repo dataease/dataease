@@ -3048,6 +3048,7 @@ export default {
     external_parameter_settings: '外部参数设置',
     screen_config: '大屏配置',
     screen_adaptor: '缩放方式',
+    screen_adaptor_keep_proportion: '保持比例填充',
     screen_adaptor_width_first: '宽度优先',
     screen_adaptor_height_first: '高度优先',
     screen_adaptor_full: '铺满全屏',

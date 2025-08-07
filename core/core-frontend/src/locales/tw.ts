@@ -3045,6 +3045,7 @@ export default {
     screen_adaptor_width_first: '寬度優先',
     screen_adaptor_height_first: '高度優先',
     screen_adaptor_full: '鋪滿全屏',
+    screen_adaptor_keep_proportion: '保持比例填充',
     screen_adaptor_keep: '不縮放',
     effective_during_preview: '預覽時生效',
     base_config: '基礎配置',

@@ -3131,6 +3131,7 @@ export default {
     screen_adaptor_width_first: 'Width First',
     screen_adaptor_height_first: 'Height First',
     screen_adaptor_full: 'Full Screen',
+    screen_adaptor_keep_proportion: 'Keep Proportion:',
     screen_adaptor_keep: 'No Scaling',
     effective_during_preview: 'Effective during preview',
     base_config: 'Base Configuration',

@@ -26,7 +26,8 @@ const screenAdaptorList = [
   { label: t('visualization.screen_adaptor_width_first'), value: 'widthFirst' },
   { label: t('visualization.screen_adaptor_height_first'), value: 'heightFirst' },
   { label: t('visualization.screen_adaptor_full'), value: 'full' },
-  { label: t('visualization.screen_adaptor_keep'), value: 'keep' }
+  { label: t('visualization.screen_adaptor_keep'), value: 'keep' },
+  { label: t('visualization.screen_adaptor_keep_proportion'), value: 'keepProportion' }
 ]
 const init = () => {
   nextTick(() => {
