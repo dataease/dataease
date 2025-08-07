@@ -27,7 +27,7 @@ import {
   Transform,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
-import { extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -120,6 +120,17 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       scale,
       this.name === 'bar' || this.name === 'bar-group'
     )
+    newChart.afterRender = (c?: any) => {
+      extremumEvt(
+        c,
+        chart,
+        c.options(),
+        container,
+        scale,
+        this.name === 'bar' || this.name === 'bar-group'
+      )
+      c.render()
+    }
     return newChart
   }
 
@@ -136,6 +147,11 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       pre[next.id] = next
       return pre
     }, {})
+    const showExtremumIds = Object.keys(formatterMap).filter(id => formatterMap[id].showExtremum)
+    if (showExtremumIds?.length > 0) {
+      const { x: xField, y: yField, color: colorField } = children[0].encode
+      addExtremumText(children, showExtremumIds, xField, yField, colorField)
+    }
     const position = {
       position: l.position === 'middle' ? 'inside' : l.position,
       textAlign: 'center',
@@ -165,7 +181,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       },
       ...position,
       formatter: (value, data) => {
-        if (data.EXTREME) {
+        if (data.extremum) {
           return ''
         }
         if (!labelAttr.seriesLabelFormatter?.length) {

@@ -12,7 +12,7 @@ import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { LINE_AXIS_TYPE, LINE_EDITOR_PROPERTY, LINE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
-import { extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import { setGradientColor, TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
@@ -94,7 +94,10 @@ export class Area extends G2ChartView {
     // 开始渲染
     newChart.options(options)
     newChart.on('point:click', action)
-    extremumEvt(newChart, chart, options, container, scale, this.name === 'area')
+    newChart.afterRender = (c?: any) => {
+      extremumEvt(c, chart, c.options(), container, scale, this.name === 'area')
+      c.render()
+    }
     // configPlotTooltipEvent(chart, newChart)
     return newChart
   }
@@ -175,12 +178,17 @@ export class Area extends G2ChartView {
       pre[next.id] = next
       return pre
     }, {})
+    const showExtremumIds = Object.keys(formatterMap).filter(id => formatterMap[id].showExtremum)
+    if (showExtremumIds?.length > 0) {
+      const { x: xField, y: yField, color: colorField } = options.encode
+      addExtremumText(options.children, showExtremumIds, xField, yField, colorField)
+    }
     const pointMark: G2Spec = options.children[2]
     const labelOpt = {
       labels: [
         {
           text: d => {
-            if (d.EXTREME) {
+            if (d.extremum) {
               return ''
             }
             if (!labelAttr.seriesLabelFormatter?.length) {
@@ -198,7 +206,7 @@ export class Area extends G2ChartView {
           style: {
             opacity: 1,
             fontSize: d => {
-              if (d.EXTREME) {
+              if (d.extremum) {
                 return 0
               }
               if (!labelAttr.seriesLabelFormatter?.length) {
@@ -214,7 +222,7 @@ export class Area extends G2ChartView {
               return labelCfg.fontSize
             },
             fill: d => {
-              if (d.EXTREME || !labelAttr.seriesLabelFormatter?.length) {
+              if (d.extremum || !labelAttr.seriesLabelFormatter?.length) {
                 return 'black'
               }
               const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
@@ -227,7 +235,7 @@ export class Area extends G2ChartView {
               return color
             },
             position: d => {
-              if (d.EXTREME || !labelAttr.seriesLabelFormatter?.length) {
+              if (d.extremum || !labelAttr.seriesLabelFormatter?.length) {
                 return 'top'
               }
               const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
@@ -238,7 +246,7 @@ export class Area extends G2ChartView {
             }
           },
           textBaseline: d => {
-            if (d.EXTREME || !labelAttr.seriesLabelFormatter?.length) {
+            if (d.extremum || !labelAttr.seriesLabelFormatter?.length) {
               return 'bottom'
             }
             const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
@@ -248,8 +256,8 @@ export class Area extends G2ChartView {
             return labelCfg.position === 'top' ? 'bottom' : 'top'
           },
           transform: labelAttr.fullDisplay
-            ? []
-            : [{ type: 'overlapHide' }, { type: 'exceedAdjust' }],
+            ? [{ type: 'exceedAdjust' }]
+            : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
           fontFamily: chart.fontFamily
         }
       ]
@@ -695,12 +703,16 @@ export class StackArea extends Area {
       return options
     }
     const conditions = getLineConditions(chart)
+    if (labelAttr.showExtremum) {
+      const { x: xField, y: yField, color: colorField } = options.encode
+      addExtremumText(options.children, [], xField, yField, colorField, false)
+    }
     const pointMark: G2Spec = options.children[2]
     const labelOpt = {
       labels: [
         {
           text: d => {
-            if (d.EXTREME || d.value === null) {
+            if (d.extremum || d.value === null) {
               return ''
             }
             return valueFormatter(d.value, labelAttr.labelFormatter)
@@ -708,7 +720,7 @@ export class StackArea extends Area {
           style: {
             opacity: 1,
             fontSize: d => {
-              if (d.EXTREME) {
+              if (d.extremum) {
                 return 0
               }
               return labelAttr.fontSize
@@ -725,8 +737,8 @@ export class StackArea extends Area {
             return labelAttr.position === 'top' ? 'bottom' : 'top'
           },
           transform: labelAttr.fullDisplay
-            ? []
-            : [{ type: 'overlapHide' }, { type: 'exceedAdjust' }],
+            ? [{ type: 'exceedAdjust' }]
+            : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
           fontFamily: chart.fontFamily
         }
       ]

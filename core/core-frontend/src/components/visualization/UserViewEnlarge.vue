@@ -165,7 +165,7 @@ import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWr
 import { computed, h, nextTick, reactive, ref } from 'vue'
 import { toPng } from 'html-to-image'
 import { useI18n } from '@/hooks/web/useI18n'
-import { deepCopy } from '@/utils/utils'
+import { deepCopy, exportPermission } from '@/utils/utils'
 import icon_download_outlined from '@/assets/svg/icon_download_outlined.svg'
 import ChartComponentS2 from '@/views/chart/components/views/components/ChartComponentS2.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -174,16 +174,15 @@ import { storeToRefs } from 'pinia'
 import { RefreshLeft } from '@element-plus/icons-vue'
 import { assign } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { ElMessage, ElButton } from 'element-plus-secondary'
+import { ElButton, ElMessage } from 'element-plus-secondary'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import { getCanvasStyle } from '@/utils/style'
-import { exportPermission } from '@/utils/utils'
 import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
-import { supportExtremumChartType } from '@/views/chart/components/js/extremumUitl'
 import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -428,11 +427,7 @@ const htmlToImage = () => {
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
   useEmitt().emitter.emit('l7-prepare-picture', viewInfo.value.id)
   // 表格和支持最值图表的渲染时间为2000毫秒，其他图表为500毫秒。
-  const renderTime =
-    viewInfo.value.type?.includes('table') ||
-    supportExtremumChartType({ type: viewInfo.value.type })
-      ? 2000
-      : 500
+  const renderTime = viewInfo.value.type?.includes('table') ? 2000 : 500
   setTimeout(() => {
     initWatermark()
     toPng(viewContainer.value)

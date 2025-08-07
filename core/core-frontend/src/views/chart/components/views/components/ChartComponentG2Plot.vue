@@ -362,7 +362,9 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
         action,
         quadrantDefaultBaseline
       })
-      myChart?.render()
+      myChart?.render().then(() => {
+        myChart?.afterRender(myChart)
+      })
       // if (linkageActiveHistory.value) {
       //   linkageActive()
       // }
