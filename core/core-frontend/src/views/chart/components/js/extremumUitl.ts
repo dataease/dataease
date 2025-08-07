@@ -87,12 +87,11 @@ export const extremumEvt = (
     return map
   }, {})
 
-  // 这里获取 x、y、color 字段
+  // 这里获取 y 字段
   // 部分图表传过来的是options包含 children 的数组
   // 部分图表是children数组中的对象，line or bar
-  const { x: xField, y: yField, color: colorField } = options.encode
+  const { y: yField } = options.encode
   const chartData = options.children ? options.children : [options]
-
   // 遍历所有 series，为标签注入 HTML 和样式
   chartData
     .filter(item => item.labels?.length)
@@ -120,26 +119,18 @@ export const extremumEvt = (
       pointSize = Math.max(pointSize, item.encode?.size || 0)
     })
 
-  addExtremumText(newChart, chart, xField, yField, colorField, isSeriesLabel)
-
-  const parentRect = parent.getBoundingClientRect()
-
+  const parentRect = parent?.getBoundingClientRect()
   // 渲染后调整极值标签位置，防止溢出
   newChart.on('afterrender', () => {
     document.querySelectorAll('.extremum-' + chart.container).forEach(item => {
       item.style.display = 'block'
       const itemRect = item.getBoundingClientRect()
-      const transformY = item.offsetHeight + 5
       const childNode = item.childNodes[1] as HTMLElement
       // 判断是否顶部溢出
-      if (itemRect.top - itemRect.height < parentRect.top) {
-        const offset = pointSize / scale + (pointSize / scale < 10 ? 9 : 12)
-        item.style.transform = `translate(-50%, ${offset}px)`
+      if (itemRect.top < parentRect.top) {
+        item.style.transform = `translate(-50%) translateY(${pointSize / scale + 10}px)`
         childNode.style.cssText += 'transform: translateX(-50%) rotate(180deg); top: -5px;'
-      } else {
-        item.style.transform = `translate(-50%, -${transformY}px)`
       }
-
       // 判断是否右侧溢出
       if (itemRect.right > parentRect.right) {
         const currentLeft = parseFloat(window.getComputedStyle(item).left) || 0
@@ -162,16 +153,23 @@ export const extremumEvt = (
 
 /**
  * 添加最大值和最小值文本标记
- * @param newChart - G2 图表实例
- * @param chart - 当前图表配置
+ * @param optionsChildren - 图表配置的子选项数组
+ * @param showExtremumIds - 显示极值的 ID 列表
  * @param x - x 轴字段
  * @param y - y 轴字段
  * @param color - 颜色字段
  * @param isSeriesLabel - 是否启用系列级标签配置
  */
-const addExtremumText = (newChart, chart, x, y, color, isSeriesLabel) => {
-  addText(newChart, chart, x, y, color, 'max', isSeriesLabel)
-  addText(newChart, chart, x, y, color, 'min', isSeriesLabel)
+export const addExtremumText = (
+  optionsChildren,
+  showExtremumIds,
+  x,
+  y,
+  color,
+  isSeriesLabel = true
+) => {
+  addText(optionsChildren, showExtremumIds, x, y, color, 'max', isSeriesLabel)
+  addText(optionsChildren, showExtremumIds, x, y, color, 'min', isSeriesLabel)
 }
 
 /**
@@ -179,32 +177,37 @@ const addExtremumText = (newChart, chart, x, y, color, isSeriesLabel) => {
  * 使用 G2 transform 添加极值
  * selector: 'max' | 'min'
  */
-const addText = (newChart, chart, xField, yField, colorField, selector, isSeriesLabel) => {
-  const { label: labelAttr } = parseJson(chart.customAttr)
-  const showExtremumIds = isSeriesLabel
-    ? (labelAttr.seriesLabelFormatter || []).filter(item => item.showExtremum).map(item => item.id)
-    : []
-
-  newChart
-    .text()
-    .encode('x', xField)
-    .encode('y', yField)
-    .encode('color', colorField)
-    .encode('series', colorField)
-    .encode('text', () => '')
-    .transform([{ type: 'selectY', selector }])
-    .style({
+const addText = (
+  optionsChildren,
+  showExtremumIds,
+  xField,
+  yField,
+  colorField,
+  selector,
+  isSeriesLabel
+) => {
+  optionsChildren.push({
+    type: 'text',
+    encode: {
+      x: xField,
+      y: yField,
+      color: colorField,
+      series: colorField
+    },
+    style: {
       textAlign: 'center',
       background: true,
       backgroundFill: obj => {
         // 标记极值
         obj.extremum = isSeriesLabel
           ? obj.quotaList?.some?.(item => showExtremumIds.includes(item.id))
-          : !!labelAttr.showExtremum
+          : true
         return ''
       }
-    })
-    .tooltip(false)
+    },
+    transform: [{ type: 'selectY', selector }],
+    tooltip: false
+  })
 }
 
 /**
@@ -219,7 +222,6 @@ const extremumHtml = (chart, yField, isSeriesLabel) => {
 
   return (obj, _, __, d) => {
     if (!obj.extremum) return ''
-
     const cfg = isSeriesLabel ? formatterMap[obj.quotaList?.[0]?.id] : labelAttr
     const formatter = isSeriesLabel ? cfg?.formatterCfg : labelAttr.labelFormatter
     const fontSize = cfg?.fontSize || 12
@@ -227,17 +229,15 @@ const extremumHtml = (chart, yField, isSeriesLabel) => {
     const bgColor = rawColor.startsWith('#')
       ? hexToRgba(rawColor, basicStyle.alpha / 100)
       : getRgbaColorLastRgba(rawColor)
-
     const textColor = isColorLight(rawColor) ? '#000' : '#fff'
     const textContent = valueFormatter(obj[yField], formatter)
     const { r, g, b, a } = bgColor
     const color = `${r},${g},${b},${a}`
     return `
       <div class="extremum-${chart.container}" style="
-        display: none;
         position: relative;
         font-size: ${fontSize}px;
-        transform: translate(-50%);
+        transform: translate(-50%, -100%) translateY(-5px);
         padding: 4px 5px;
         border-radius: 2px;
         color: ${textColor};
@@ -246,7 +246,7 @@ const extremumHtml = (chart, yField, isSeriesLabel) => {
         ${textContent}
         <span style="
           position: absolute;
-          bottom: -4.9px;
+          bottom: -4.8px;
           left: 50%;
           transform: translateX(-50%);
           width: 0; height: 0;

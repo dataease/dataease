@@ -10,6 +10,7 @@ import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUti
 import { useI18n } from '@/hooks/web/useI18n'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { addExtremumText } from '@/views/chart/components/js/extremumUitl'
 
 const { t } = useI18n()
 /**
@@ -61,6 +62,10 @@ export class GroupBar extends StackBar {
     if (!labelAttr || !labelAttr.show) return options
 
     const { children } = options
+    if (labelAttr.showExtremum) {
+      const { x: xField, y: yField, color: colorField } = children[0].encode
+      addExtremumText(options.children, [], xField, yField, colorField, false)
+    }
     const position = {
       position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
       textAlign: 'center',
