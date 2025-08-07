@@ -1369,6 +1369,12 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       )
     }
   })
+  const formatterMap = chart.yAxis.reduce((p, n) => {
+    if (n.dataeaseName) {
+      p[n.dataeaseName] = n.formatterCfg
+    }
+    return p
+  }, {})
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -1377,9 +1383,20 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 1)
-        const value = meta?.formatter?.(fieldValue) || fieldValue
         cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        cell.value = isNumeric(value) ? parseFloat(value) : value
+        const value = meta?.formatter?.(fieldValue) || fieldValue
+        if (typeof value === 'number') {
+          cell.value = value
+        } else if (typeof value === 'string') {
+          const formatterCfg = formatterMap?.[dataCellMeta.valueField]
+          const result = extractNumber(value, formatterCfg)
+          if (typeof result === 'string') {
+            cell.value = result
+          } else {
+            cell.value = result.value
+            cell.numFmt = result.numFmt
+          }
+        }
       }
     }
   }
@@ -1540,6 +1557,12 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, writeColIndex + width - 1)
     }
   })
+  const formatterMap = chart.yAxis.reduce((p, n) => {
+    if (n.dataeaseName) {
+      p[n.dataeaseName] = n.formatterCfg
+    }
+    return p
+  }, {})
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -1550,7 +1573,18 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 2)
         const value = meta?.formatter?.(fieldValue) || fieldValue
         cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        cell.value = isNumeric(value) ? parseFloat(value) : value
+        if (typeof value === 'number') {
+          cell.value = value
+        } else if (typeof value === 'string') {
+          const formatterCfg = formatterMap?.[dataCellMeta.valueField]
+          const result = extractNumber(value, formatterCfg)
+          if (typeof result === 'string') {
+            cell.value = result
+          } else {
+            cell.value = result.value
+            cell.numFmt = result.numFmt
+          }
+        }
       }
     }
   }
@@ -1662,6 +1696,12 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       )
     }
   })
+  const formatterMap = chart.yAxis.reduce((p, n) => {
+    if (n.dataeaseName) {
+      p[n.dataeaseName] = n.formatterCfg
+    }
+    return p
+  }, {})
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -1672,7 +1712,18 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 1 + 1)
         const value = meta?.formatter?.(fieldValue) || fieldValue
         cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        cell.value = isNumeric(value) ? parseFloat(value) : value
+        if (typeof value === 'number') {
+          cell.value = value
+        } else if (typeof value === 'string') {
+          const formatterCfg = formatterMap?.[dataCellMeta.valueField]
+          const result = extractNumber(value, formatterCfg)
+          if (typeof result === 'string') {
+            cell.value = result
+          } else {
+            cell.value = result.value
+            cell.numFmt = result.numFmt
+          }
+        }
       }
     }
   }
@@ -1785,6 +1836,12 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, writeColIndex + width - 1)
     }
   })
+  const formatterMap = chart.yAxis.reduce((p, n) => {
+    if (n.dataeaseName) {
+      p[n.dataeaseName] = n.formatterCfg
+    }
+    return p
+  }, {})
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -1795,7 +1852,18 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
         const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 2)
         const value = meta?.formatter?.(fieldValue) || fieldValue
         cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        cell.value = isNumeric(value) ? parseFloat(value) : value
+        if (typeof value === 'number') {
+          cell.value = value
+        } else if (typeof value === 'string') {
+          const formatterCfg = formatterMap?.[dataCellMeta.valueField]
+          const result = extractNumber(value, formatterCfg)
+          if (typeof result === 'string') {
+            cell.value = result
+          } else {
+            cell.value = result.value
+            cell.numFmt = result.numFmt
+          }
+        }
       }
     }
   }
@@ -1806,9 +1874,112 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
   saveAs(dataBlob, `${chart.title ?? '透视表'}.xlsx`)
 }
 
-
-function isNumeric(value: string): boolean {
-  return /^[+-]?\d+(\.\d+)?$/.test(value)
+function extractNumber(formattedValue: string, formatterCfg: BaseFormatter): {
+  value: number
+  numFmt: string
+} | string {
+  let result = formattedValue
+  if (formatterCfg.type === 'percent') {
+    result = result.slice(0, -1) // 去掉百分号
+    if (formatterCfg.thousandSeparator) {
+      result = result.replace(/,/g, '')
+    }
+    //科学计数法
+    if (result.includes('e')) {
+      const valueArr = result.match(/^[+-]?\d+(\.\d+)?(e[+-]?\d+)?/)
+      if (!valueArr?.length) {
+        return formattedValue
+      }
+      const valueStr = valueArr[0]
+      const value = parseFloat(valueStr)
+      let numFmt = '0.'
+      const number = valueStr.split('e')[0]
+      numFmt += '0'.repeat(number.slice(1).length)
+      numFmt += 'E+0"%"'
+      return {
+        value,
+        numFmt
+      }
+    }
+    const value = parseFloat(result)
+    let numFmt = '#'
+    if (formatterCfg.thousandSeparator) {
+      numFmt += ',#'
+    }
+    if (Math.abs(value) < 1) {
+      numFmt = '0'
+    }
+    if (formatterCfg.decimalCount > 0) {
+      numFmt += `.${'0'.repeat(formatterCfg.decimalCount)}`
+    }
+    numFmt += '"%"'
+    return {
+      value,
+      numFmt
+    }
+  }
+  if (formatterCfg.suffix) {
+    const suffix = formatterCfg.suffix
+    if (result.endsWith(suffix)) {
+      result = result.slice(0, -suffix.length)
+    }
+  }
+  if (formatterCfg.thousandSeparator) {
+    result = result.replace(/,/g, '')
+  }
+  //科学计数法
+  if (result.includes('e')) {
+    const valueArr = result.match(/^[+-]?\d+(\.\d+)?(e[+-]?\d+)?/)
+    if (!valueArr?.length) {
+      return formattedValue
+    }
+    const valueStr = valueArr[0]
+    const value = parseFloat(valueStr)
+    let numFmt = '0.'
+    const number = valueStr.split('e')[0]
+    numFmt += '0'.repeat(number.slice(1).length)
+    numFmt += 'E+0'
+    const suffix = formattedValue.slice(valueStr.length)
+    if (suffix) {
+      numFmt += `"${suffix}"`
+    }
+    return {
+      value,
+      numFmt
+    }
+  }
+  const valueArr = result.match(/^[+-]?\d+(\.\d+)?/)
+  if (!valueArr?.length) {
+    return formattedValue
+  }
+  const valueStr = valueArr[0]
+  const value = parseFloat(valueStr)
+  const unit = result.slice(valueStr.length)
+  let numFmt = '#'
+  if (formatterCfg.thousandSeparator) {
+    numFmt += ',#'
+  }
+  if (Math.abs(value) < 1) {
+    numFmt = '0'
+  }
+  if (formatterCfg.type === 'value') {
+    if (formatterCfg.decimalCount > 0) {
+      numFmt += `.${'0'.repeat(formatterCfg.decimalCount)}`
+    }
+  } else {
+    if (valueStr.indexOf('.') > -1) {
+      const decimalLength = valueStr.split('.')[1].length
+      numFmt += `.${'0'.repeat(decimalLength)}`
+    }
+  }
+  if (unit) {
+    numFmt += `"${unit}"`
+  }
+  numFmt += `"${formatterCfg.suffix}"`
+  return {
+    value,
+    numFmt
+  }
 }
 
 export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
