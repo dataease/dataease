@@ -65,7 +65,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElRow } from 'element-plus-secondary'
+import { ElIcon, ElMessage, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
 import { nextTick, ref, toRefs } from 'vue'
 import draggable from 'vuedraggable'
@@ -76,9 +76,10 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import circlePackingOrigin from '@/assets/svg/circle-packing-origin.svg'
 import bulletGraphOrigin from '@/assets/svg/bullet-graph-origin.svg'
 import { syncViewTitle } from '@/utils/canvasUtils'
+import { useI18n } from '@/hooks/web/useI18n'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
-
+const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
@@ -136,6 +137,10 @@ const closeEditComponentName = () => {
     return
   }
   if (inputName.value.trim() === curEditComponent.name) {
+    return
+  }
+  if (inputName.value.length < 1 || inputName.value.length > 64) {
+    ElMessage.warning(t('components.length_1_64_characters'))
     return
   }
   curEditComponent.name = inputName.value

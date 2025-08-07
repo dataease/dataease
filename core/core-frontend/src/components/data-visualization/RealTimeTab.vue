@@ -5,7 +5,7 @@ import dvExpandRight from '@/assets/svg/dv-expand-right.svg'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElRow } from 'element-plus-secondary'
+import { ElIcon, ElMessage, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
 import { nextTick, ref, toRefs } from 'vue'
 import draggable from 'vuedraggable'
@@ -13,11 +13,12 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import RealTimeGroup from '@/components/data-visualization/RealTimeGroup.vue'
 import eventBus from '@/utils/eventBus'
 import { syncViewTitle } from '@/utils/canvasUtils'
+import { useI18n } from '@/hooks/web/useI18n'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const composeStore = composeStoreWithOut()
-
+const { t } = useI18n()
 const { areaData } = storeToRefs(composeStore)
 
 const { curTabName } = storeToRefs(dvMainStore)
@@ -67,6 +68,10 @@ const closeEditComponentName = () => {
     return
   }
   if (inputName.value.trim() === curEditComponent.title) {
+    return
+  }
+  if (inputName.value.length < 1 || inputName.value.length > 64) {
+    ElMessage.warning(t('components.length_1_64_characters'))
     return
   }
   curEditComponent.title = inputName.value
