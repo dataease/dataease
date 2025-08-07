@@ -70,7 +70,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElRow, ElSwitch } from 'element-plus-secondary'
+import { ElIcon, ElMessage, ElRow, ElSwitch } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
 import { computed, nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
@@ -220,6 +220,10 @@ const closeEditComponentName = () => {
     return
   }
   if (inputName.value.trim() === curEditComponent.name) {
+    return
+  }
+  if (inputName.value.length < 1 || inputName.value.length > 64) {
+    ElMessage.warning(t('components.length_1_64_characters'))
     return
   }
   curEditComponent.name = inputName.value
