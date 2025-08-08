@@ -749,7 +749,7 @@ const dialogInit = viewItem => {
 const initCurFilterFieldArray = componentDataCheck => {
   componentDataCheck.forEach(componentItem => {
     if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
-      componentItem.propValue.forEach(filterItem => {
+      componentItem.propValue?.forEach(filterItem => {
         if (filterItem.checkedFields.includes(state.viewId)) {
           state.linkJumpCurFilterFieldArray.push({
             id: filterItem.id,
@@ -761,7 +761,7 @@ const initCurFilterFieldArray = componentDataCheck => {
     } else if (componentItem.component === 'Group') {
       initCurFilterFieldArray(componentItem.propValue)
     } else if (componentItem.component === 'DeTabs') {
-      componentItem.propValue.forEach(tabItem => {
+      componentItem.propValue?.forEach(tabItem => {
         initCurFilterFieldArray(tabItem.componentData)
       })
     }
@@ -958,7 +958,7 @@ const getPanelViewList = dvId => {
     // 增加过滤组件匹配
     JSON.parse(rsp.data.bashComponentData).forEach(componentItem => {
       if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
-        componentItem.propValue.forEach(filterItem => {
+        componentItem.propValue?.forEach(filterItem => {
           state.currentLinkPanelViewArray.push({
             id: filterItem.id,
             type: 'filter',

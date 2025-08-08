@@ -176,7 +176,7 @@ export const useFilter = (curComponentId: string, firstLoad = false) => {
 
       list.forEach(element => {
         if (element.innerType === 'DeTabs') {
-          element.propValue.forEach(itx => {
+          element.propValue?.forEach(itx => {
             const elementArr = itx.componentData.filter(
               item =>
                 item.innerType === 'VQuery' &&
@@ -187,9 +187,9 @@ export const useFilter = (curComponentId: string, firstLoad = false) => {
         }
       })
 
-      ele.propValue.forEach(element => {
+      ele.propValue?.forEach(element => {
         if (element.innerType === 'DeTabs') {
-          element.propValue.forEach(itx => {
+          element.propValue?.forEach(itx => {
             const elementArr = itx.componentData.filter(
               item =>
                 item.innerType === 'VQuery' &&
@@ -202,7 +202,7 @@ export const useFilter = (curComponentId: string, firstLoad = false) => {
     }
 
     if (ele.innerType === 'DeTabs') {
-      ele.propValue.forEach(itx => {
+      ele.propValue?.forEach(itx => {
         itx.componentData.forEach(v => {
           if (v.component === 'Group') {
             const listGroup = v.propValue.filter(
@@ -314,7 +314,7 @@ const duplicateRemoval = arr => {
 export const searchQuery = (queryComponentList, filter, curComponentId, firstLoad) => {
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
-      ele.propValue.forEach(item => {
+      ele.propValue?.forEach(item => {
         let shouldSearch = false
         const relationshipChartIndex = []
         const ids = Array(5).fill(1)

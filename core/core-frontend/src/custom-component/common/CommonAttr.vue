@@ -77,7 +77,10 @@ const containerRef = ref()
 const containerWidth = ref()
 
 const borderSettingShow = computed(() => {
-  return !!element.value.style['borderStyle']
+  return (
+    !!element.value.style['borderStyle'] &&
+    !['DeDecoration', 'DynamicBackground'].includes(element.value.component)
+  )
 })
 
 // 暂时关闭
@@ -90,30 +93,45 @@ const eventsShow = computed(() => {
 })
 
 const carouselShow = computed(() => {
-  return element.value.component === 'DeTabs' && element.value.carousel && !mobileInPc.value
+  return (
+    ['DeTabs', 'DeScreen'].includes(element.value.component) &&
+    element.value.carousel &&
+    !mobileInPc.value
+  )
 })
 
 const backgroundCustomShow = computed(() => {
   return (
     dashboardActive.value ||
     (!dashboardActive.value &&
-      !['CanvasBoard', 'CanvasIcon', 'CircleShape', 'RectShape'].includes(element.value.component))
+      ![
+        'CanvasBoard',
+        'CanvasIcon',
+        'CircleShape',
+        'RectShape',
+        'DeDecoration',
+        'DynamicBackground'
+      ].includes(element.value.component))
   )
 })
 
 const titleBackgroundShow = computed(
-  () => ['DeTabs'].includes(element.value.component) && element.value.titleBackground
+  () => ['DeTabs', 'DeScreen'].includes(element.value.component) && element.value.titleBackground
 )
 
 const tabTitleShow = computed(() => {
-  return element.value && element.value.style && element.value.component === 'DeTabs'
+  return (
+    element.value && element.value.style && ['DeTabs', 'DeScreen'].includes(element.value.component)
+  )
 })
 
 const styleShow = computed(() => {
   return (
     element.value &&
     element.value.style &&
-    element.value.component !== 'DeTabs' &&
+    !['DeDecoration', 'DynamicBackground', 'DeTabs', 'DeScreen'].includes(
+      element.value.component
+    ) &&
     Object.keys(element.value.style).length > 0
   )
 })

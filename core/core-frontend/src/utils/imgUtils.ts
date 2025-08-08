@@ -159,7 +159,7 @@ export function dataURLToBlob(dataUrl) {
 }
 
 function findStaticSourceInner(componentDataInfo, staticResource) {
-  componentDataInfo.forEach(item => {
+  componentDataInfo?.forEach(item => {
     if (
       typeof item.commonBackground.outerImage === 'string' &&
       item.commonBackground.outerImage.indexOf('static-resource') > -1
@@ -186,7 +186,7 @@ function findStaticSourceInner(componentDataInfo, staticResource) {
     } else if (item.component === 'Group') {
       findStaticSourceInner(item.propValue, staticResource)
     } else if (item.component === 'DeTabs') {
-      item.propValue.forEach(tabItem => {
+      item.propValue?.forEach(tabItem => {
         findStaticSourceInner(tabItem.componentData, staticResource)
       })
     }

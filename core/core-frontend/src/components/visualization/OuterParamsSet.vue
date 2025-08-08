@@ -511,14 +511,14 @@ const initParams = async () => {
     if (componentItem.component === 'VQuery') {
       state.baseFilterInfo.push(componentItem)
     } else if (componentItem.component === 'Group') {
-      componentItem.propValue.forEach(groupItem => {
+      componentItem.propValue?.forEach(groupItem => {
         if (groupItem.component === 'VQuery') {
           state.baseFilterInfo.push(groupItem)
         }
       })
     } else if (componentItem.component === 'DeTabs') {
-      componentItem.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+      componentItem.propValue?.forEach(tabItem => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (tabComponent.component === 'VQuery') {
             state.baseFilterInfo.push(tabComponent)
           }
@@ -714,7 +714,7 @@ const getPanelViewList = dvId => {
     // 增加过滤组件匹配
     componentData.value.forEach(componentItem => {
       if (componentItem.component === 'VQuery') {
-        componentItem.propValue.forEach(filterItem => {
+        componentItem.propValue?.forEach(filterItem => {
           state.currentLinkPanelViewArray.push({
             id: filterItem.id,
             type: 'filter',

@@ -97,7 +97,7 @@ const dfsComponentData = () => {
   )
   componentData.value.forEach(ele => {
     if (ele.innerType === 'DeTabs') {
-      ele.propValue.forEach(itx => {
+      ele.propValue?.forEach(itx => {
         arr = [
           ...arr,
           ...itx.componentData.filter(
@@ -123,9 +123,9 @@ const dfsComponentData = () => {
           com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
         )
       ]
-      ele.propValue.forEach(element => {
+      ele.propValue?.forEach(element => {
         if (element.innerType === 'DeTabs') {
-          element.propValue.forEach(itx => {
+          element.propValue?.forEach(itx => {
             arr = [
               ...arr,
               ...itx.componentData.filter(

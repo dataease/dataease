@@ -8,7 +8,7 @@ export default function defaultConditionTrans(canvasInfo) {
   // 获取所有查询条件
   componentDataArray.forEach(item => {
     if (item.component === 'VQuery') {
-      item.propValue.forEach(filterItem => {
+      item.propValue?.forEach(filterItem => {
         componentMap[filterItem.id] = item
       })
       Array.prototype.push.apply(allFilter, item.propValue)

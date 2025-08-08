@@ -81,7 +81,7 @@ export const layerStore = defineStore('layer', {
       if (targetComponent) {
         targetComponent.isShow = true
         if (targetComponent.component == 'Group') {
-          targetComponent.propValue.forEach(item => {
+          targetComponent.propValue?.forEach(item => {
             if (item.innerType?.indexOf('table') !== -1) {
               setTimeout(() => {
                 useEmitt().emitter.emit('renderChart-' + item.id)

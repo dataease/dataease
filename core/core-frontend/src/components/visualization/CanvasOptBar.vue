@@ -70,14 +70,14 @@ const existLinkage = computed(() => {
           linkageFiltersCount++
         }
       } else if (item.component === 'Group') {
-        item.propValue.forEach(groupItem => {
+        item.propValue?.forEach(groupItem => {
           if (groupItem.linkageFilters && groupItem.linkageFilters.length > 0) {
             linkageFiltersCount++
           }
         })
       } else if (item.component === 'DeTabs') {
-        item.propValue.forEach(tabItem => {
-          tabItem.componentData.forEach(tabComponent => {
+        item.propValue?.forEach(tabItem => {
+          tabItem.componentData?.forEach(tabComponent => {
             if (tabComponent.linkageFilters && tabComponent.linkageFilters.length > 0) {
               linkageFiltersCount++
             }

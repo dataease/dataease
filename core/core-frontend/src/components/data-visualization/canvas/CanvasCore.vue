@@ -496,7 +496,7 @@ const createGroup = () => {
   areaDataLocal.forEach(component => {
     let style = { left: 0, top: 0, right: 0, bottom: 0 }
     if (component.component == 'Group') {
-      component.propValue.forEach(item => {
+      component.propValue?.forEach(item => {
         const rectInfo = _$(`#shape-id-${item.id}`).getBoundingClientRect()
         style.left = rectInfo.left - editorX.value
         style.top = rectInfo.top - editorY.value

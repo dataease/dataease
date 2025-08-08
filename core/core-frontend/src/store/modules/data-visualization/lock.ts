@@ -10,7 +10,7 @@ export const lockStore = defineStore('lock', {
     lock(optComponent = curComponent.value) {
       optComponent.isLock = true
       if (optComponent.component === 'Group') {
-        optComponent.propValue.forEach(component => {
+        optComponent.propValue?.forEach(component => {
           component.isLock = true
         })
       }
@@ -19,7 +19,7 @@ export const lockStore = defineStore('lock', {
     unlock(optComponent = curComponent.value) {
       optComponent.isLock = false
       if (optComponent.component === 'Group') {
-        optComponent.propValue.forEach(component => {
+        optComponent.propValue?.forEach(component => {
           component.isLock = false
         })
       }

@@ -941,7 +941,7 @@ export default {
     data_source_table: '資料來源表',
     auth_method: '認證方式',
     passwd: '使用者名稱密碼',
-    kerbers_info: '請確保krb5.Conf、Keytab Key，已新增至路徑：/opt/dataease3.0/conf',
+    kerbers_info: '請確保krb5.Conf、Keytab Key，已新增至路徑：/opt/dataease2.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     please_select_left: '請從左邊選擇',
@@ -1349,6 +1349,7 @@ export default {
     table_title_fontsize: '表頭字體大小',
     table_item_fontsize: '表格字體大小',
     table_header_bg: '表頭背景',
+    table_header_row_bg: '表頭/行背景',
     table_item_bg: '表格背景',
     table_header_font_color: '表頭字型',
     table_item_font_color: '表格字型',
@@ -2032,7 +2033,9 @@ export default {
     quota_position_row: '行頭展示',
     quota_col_label: '指標列名',
     table_grand_total_label: '總計別名',
-    table_field_total_label: '字段別名'
+    table_field_total_label: '字段別名',
+    table_row_header_freeze: '行頭凍結',
+    value_formatter_total_out_percent: '顯示佔比'
   },
   dataset: {
     field_value: '欄位值',
@@ -2048,7 +2051,7 @@ export default {
     select_year: '選擇年',
     sql_variable_limit_1: '1、SQL 變數只能在WHERE 條件中使用',
     sql_variable_limit_2:
-      "2、範例:select * from table_name where col_name1='${'{'}param_name1{'}'}' and col_name2 in (${'{'}param_name2{'}'})",
+      "2、範例: select * from table where $DE_PARAM{'{'} name = substring('$[PARAM1]',1,5){'}'} and $DE_PARAM{'{'} name in ($[PARAM2]) {'}'}",
     select_month: '選擇月',
     select_date: '選擇日期',
     select_time: '選擇時間',
@@ -2715,7 +2718,8 @@ export default {
       no_children_text: '沒有子節點',
       no_options_text: '沒有可用選項',
       no_results_text: '沒有符合的結果'
-    }
+    },
+    char_count_limit: '不能超過{count}字元'
   },
   sql_variable: {
     variable_mgm: '參數設定'
@@ -2822,6 +2826,15 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    select_resource: '請選擇{0}',
+    change_screen_page: '更換{0}',
+    new_screen_page: '新建分頁',
+    screen_page: '分頁',
+    color_setting: '配色{0}',
+    decoration_name: '裝飾{0}',
+    decoration: '裝飾',
+    dynamic_background_name: '動圖{0}',
+    dynamic_background: '動圖',
     support_query: '僅可新增查詢元件',
     publish_update_tips: '有更新',
     filter_freeze_tips: '已存在置頂查詢組件，確定切換該組件？',
@@ -3036,6 +3049,7 @@ export default {
     screen_adaptor_width_first: '寬度優先',
     screen_adaptor_height_first: '高度優先',
     screen_adaptor_full: '鋪滿全屏',
+    screen_adaptor_keep_proportion: '保持比例填充',
     screen_adaptor_keep: '不縮放',
     effective_during_preview: '預覽時生效',
     base_config: '基礎配置',
@@ -3091,7 +3105,7 @@ export default {
     required: '必填',
     default_value: '預設值',
     default_value_tips1: '請使用JSON數組格式 範例:',
-    default_value_tips2: '單值 ["name1"], 多值 ["name1","name2"]',
+    default_value_tips2: '單值 ["name1"], 多值 ["name1","name2"]; 綁定SQL自定義參數，不支援多值；',
     default_value_tips3: '請輸入參數,如:["name1"]',
     time_year_widget: '年份過濾組件',
     time_month_widget: '年月過濾組件',
@@ -3174,7 +3188,6 @@ export default {
     space_left: '左',
     space_width: '寬',
     space_height: '高',
-    to_top: '置顶',
     down: '下載',
     mobile_style_setting: '樣式設置',
     mobile_style_setting_tips: '自定義移動端背景',
@@ -3210,8 +3223,7 @@ export default {
     template_preview: '預覽模板',
     apply: '應用',
     apply_this_template: '應用此模板',
-    market_network_tips:
-      '查看模板市場模板需要服務器與模板市場(https://templates.dataease.cn)連通，請檢查網絡...',
+    market_network_tips: '查看模板市場模板需要服務器與模板市場({0})連通，請檢查網絡...',
     enter_name_tips: '請輸入儀表板名稱',
     apply_template: '應用模板',
     style_template: '樣式模板',
@@ -3341,7 +3353,6 @@ export default {
     template: '模板',
     category: '分類',
     all_org: '所有組織',
-    custom: '自定義',
     import_template: '匯入模板',
     copy_template: '復用模板',
     upload_template: '上傳模板',
@@ -3736,7 +3747,7 @@ export default {
     data_source_table: '資料來源表',
     auth_method: '認證方式',
     passwd: '使用者名稱密碼',
-    kerbers_info: '請確保krb5.Conf、Keytab Key，已新增至路徑：/opt/dataease3.0/conf',
+    kerbers_info: '請確保krb5.Conf、Keytab Key，已新增至路徑：/opt/dataease2.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     data_base: '資料庫名稱',
@@ -3999,7 +4010,11 @@ export default {
     dynamic_partition_enable: '動態分區',
     time_end: '結束',
     es_query_param_formatter_error: '查詢參數格式錯誤，請輸入正確的JSON格式，請檢查',
-    show_task_id: '查看任務ID'
+    show_task_id: '查看任務ID',
+    offset: '偏移量',
+    offset_tip: '偏移量，負數為前向偏移，正數為後向偏移',
+    millisecond: '毫秒',
+    units: '單位'
   },
   watermark: {
     support_params: '目前支援的參數：',

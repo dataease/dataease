@@ -187,7 +187,7 @@ const queryList = computed(() => {
       arr.push(com)
     }
     if ('DeTabs' === com.innerType) {
-      com.propValue.forEach(itx => {
+      com.propValue?.forEach(itx => {
         arr = [...itx.componentData.filter(item => item.innerType === 'VQuery'), ...arr]
       })
     }
@@ -413,8 +413,8 @@ const batchDelete = () => {
       eventBus.emit('removeMatrixItemById-' + component.canvasId, component.id)
     }
     if (component.component === 'DeTabs') {
-      component.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+      component.propValue?.forEach(tabItem => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (curBatchOptComponents.value.includes(tabComponent.id)) {
             eventBus.emit('removeMatrixItemById-' + tabComponent.canvasId, tabComponent.id)
           }
@@ -434,8 +434,8 @@ const batchCopy = () => {
       multiplexingComponents[component.id] = component
     }
     if (component.component === 'DeTabs') {
-      component.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+      component.propValue?.forEach(tabItem => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (curBatchOptComponents.value.includes(tabComponent.id)) {
             multiplexingComponents[tabComponent.id] = tabComponent
           }
@@ -657,7 +657,7 @@ const userGroupShow = ref(false)
             themes="light"
             show-split-line
             is-label
-            :base-width="115"
+            :base-width="215"
             :icon-name="dvMoreCom"
             :title="t('visualization.more')"
           >

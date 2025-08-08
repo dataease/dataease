@@ -355,7 +355,7 @@ const getKeyList = next => {
 }
 
 const fillRequireVal = arr => {
-  element.value.propValue.forEach(next => {
+  element.value.propValue?.forEach(next => {
     if (arr.some(itx => next.checkedFields.includes(itx)) && next.required) {
       if (next.displayType === '8') {
         const { conditionValueF, conditionValueS, conditionType } = next
@@ -498,7 +498,7 @@ onBeforeUnmount(() => {
 const updateQueryCriteria = () => {
   if (dvMainStore.mobileInPc && !isMobile()) return
   Array.isArray(element.value.propValue) &&
-    element.value.propValue.forEach(ele => {
+    element.value.propValue?.forEach(ele => {
       if (ele.auto) {
         const componentInfo = {
           datasetId: ele.dataset.id,

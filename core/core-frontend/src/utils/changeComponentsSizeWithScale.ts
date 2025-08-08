@@ -31,7 +31,7 @@ export function changeSizeWithScale(scale) {
 }
 
 function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
-  componentDataCopy.forEach(component => {
+  componentDataCopy?.forEach(component => {
     Object.keys(component.style).forEach(key => {
       if (needToChangeDirectionAttrs.width.includes(key)) {
         // 根据原来的比例获取样式原来的尺寸
@@ -55,9 +55,9 @@ function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
     if (['Group'].includes(component.component)) {
       groupSizeStyleAdaptor(component)
       const parentStyle = component.style
-      component.propValue.forEach(componentInner => {
+      component.propValue?.forEach(componentInner => {
         if (['DeTabs'].includes(componentInner.component)) {
-          componentInner.propValue.forEach(tabItem => {
+          componentInner.propValue?.forEach(tabItem => {
             changeComponentsSizeWithScaleCircle(tabItem.componentData, scale)
           })
         } else {
@@ -65,7 +65,7 @@ function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
         }
       })
     } else if (['DeTabs'].includes(component.component)) {
-      component.propValue.forEach(tabItem => {
+      component.propValue?.forEach(tabItem => {
         changeComponentsSizeWithScaleCircle(tabItem.componentData, scale)
       })
     }

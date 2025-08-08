@@ -434,7 +434,7 @@ const fullScreenPreview = () => {
           </component-group>
           <component-group
             is-label
-            :base-width="215"
+            :base-width="315"
             :icon-name="dvMoreCom"
             :title="t('visualization.more')"
           >

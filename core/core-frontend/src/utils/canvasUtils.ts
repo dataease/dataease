@@ -70,7 +70,7 @@ export function findNewComponent(componentName, innerType, staticMap?) {
   componentList.forEach(comp => {
     if (comp.component === componentName || comp.component === innerType) {
       newComponent = cloneDeep(comp)
-      if (newComponent.component === 'DeTabs') {
+      if (['DeTabs', 'DeScreen'].includes(newComponent.component)) {
         newComponent.propValue[0].name = guid()
         newComponent['titleBackground'] = deepCopy(COMMON_TAB_TITLE_BACKGROUND)
       }
@@ -132,7 +132,7 @@ function matrixAdaptor(componentItem) {
     })
   } else if (componentItem.component === 'DeTabs') {
     componentItem.propValue?.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+      tabItem.componentData?.forEach(tabComponent => {
         matrixAdaptor(tabComponent)
       })
     })
@@ -230,7 +230,7 @@ export function historyItemAdaptor(
     componentItem.style.fontWeight = componentItem.style.fontWeight || 'normal'
     componentItem.style.textDecoration = componentItem.style.textDecoration || 'none'
     componentItem.propValue?.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+      tabItem.componentData?.forEach(tabComponent => {
         historyItemAdaptor(tabComponent, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)
       })
     })
@@ -417,18 +417,20 @@ export async function initCanvasData(dvId, params, callBack) {
     dvId,
     params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
-      dvMainStore.setComponentData(canvasDataResult)
-      dvMainStore.setCanvasStyle(canvasStyleResult)
-      dvMainStore.updateCurDvInfo(dvInfo)
-      dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
-      // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
-        dvMainStore.setNowPanelTrackInfo(rsp.data)
-      })
-      // 刷新跳转信息
-      queryVisualizationJumpInfo(dvInfo.id, params.resourceTable).then(rsp => {
-        dvMainStore.setNowPanelJumpInfo(rsp.data)
-      })
+      if (!params.onlyPreview) {
+        dvMainStore.setComponentData(canvasDataResult)
+        dvMainStore.setCanvasStyle(canvasStyleResult)
+        dvMainStore.updateCurDvInfo(dvInfo)
+        dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
+        // 刷新联动信息
+        getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
+          dvMainStore.setNowPanelTrackInfo(rsp.data)
+        })
+        // 刷新跳转信息
+        queryVisualizationJumpInfo(dvInfo.id, params.resourceTable).then(rsp => {
+          dvMainStore.setNowPanelJumpInfo(rsp.data)
+        })
+      }
       callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
   )
@@ -515,7 +517,7 @@ export function initCanvasDataMobile(dvId, params, callBack) {
         ele.commonBackground = mCommonBackground || commonBackground
         if (ele.component === 'DeTabs') {
           ele.propValue?.forEach(tabItem => {
-            tabItem.componentData.forEach(tabComponent => {
+            tabItem.componentData?.forEach(tabComponent => {
               tabComponent.style = tabComponent.mStyle || tabComponent.style
               tabComponent.propValue = tabComponent.mPropValue || tabComponent.propValue
               tabComponent.events = tabComponent.mEvents || tabComponent.events
@@ -600,7 +602,7 @@ export async function canvasSaveWithParams(params, callBack) {
       })
     } else if (item.component === 'DeTabs') {
       item.propValue?.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+        tabItem.componentData?.forEach(tabComponent => {
           tabComponent.linkageFilters = []
         })
       })
@@ -693,7 +695,7 @@ export function checkJoinGroup(item) {
   if (item.component === 'DeTabs') {
     let result = true
     item.propValue?.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+      tabItem.componentData?.forEach(tabComponent => {
         if (tabComponent.component === 'Group') {
           result = false
         }
@@ -760,7 +762,7 @@ export function canvasIdMapCheck(item, pItem, pathMap) {
   pathMap[item.id] = pItem
   if (item.component === 'DeTabs') {
     item.propValue?.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+      tabItem.componentData?.forEach(tabComponent => {
         canvasIdMapCheck(tabComponent, item, pathMap)
       })
     })
@@ -842,7 +844,7 @@ export function findAllViewsId(componentData, idArray) {
       })
     } else if (item.component === 'DeTabs') {
       item.propValue?.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+        tabItem.componentData?.forEach(tabComponent => {
           idArray.push(tabComponent.id)
         })
       })
@@ -1024,7 +1026,7 @@ export function findComponentById(componentId) {
       })
     } else if (item.component === 'DeTabs') {
       item.propValue?.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (tabComponent.id === componentId) {
             result = tabComponent
           }
