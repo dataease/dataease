@@ -41,7 +41,7 @@ export const getCurInfoById = curComponentId => {
       if (component.component === 'DeTabs') {
         component.propValue.forEach((tabItem, tabIndex) => {
           curTabIndex = tabIndex
-          tabItem.componentData.forEach((tabComponent, subIndex) => {
+          tabItem.componentData?.forEach((tabComponent, subIndex) => {
             if (curComponentId === tabComponent.id) {
               curIndex = subIndex
               targetComponent = tabComponent

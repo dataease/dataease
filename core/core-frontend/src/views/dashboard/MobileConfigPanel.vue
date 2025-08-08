@@ -154,7 +154,7 @@ const hanedleMessage = event => {
         }
         if (ele.component === 'DeTabs') {
           ele.propValue.forEach(tabItem => {
-            tabItem.componentData.forEach(tabComponent => {
+            tabItem.componentData?.forEach(tabComponent => {
               const {
                 style: tStyle,
                 propValue: tPropValue,

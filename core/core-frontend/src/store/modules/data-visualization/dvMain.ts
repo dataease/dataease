@@ -624,7 +624,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           })
         } else if (item.component === 'DeTabs') {
           item.propValue.forEach(tabItem => {
-            tabItem.componentData.forEach(tabComponent => {
+            tabItem.componentData?.forEach(tabComponent => {
               this.clearTargetViewLinkage(viewId, tabComponent)
             })
           })
@@ -872,7 +872,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             })
           } else if (component.component === 'DeTabs') {
             component.propValue.forEach(tabItem => {
-              tabItem.componentData.forEach(tabComponent => {
+              tabItem.componentData?.forEach(tabComponent => {
                 if (this.curBatchOptComponents.includes(tabComponent.id)) {
                   if (propertyInfo.custom === 'commonBackground') {
                     tabComponent.commonBackground = deepCopy(
@@ -905,7 +905,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           })
         } else if (component.component === 'DeTabs') {
           component.propValue.forEach(tabItem => {
-            tabItem.componentData.forEach(tabComponent => {
+            tabItem.componentData?.forEach(tabComponent => {
               if (this.curBatchOptComponents.includes(tabComponent.id)) {
                 tabComponent.commonBackground = deepCopy(newBackground)
               }
@@ -1045,7 +1045,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             })
           } else if (element.component === 'DeTabs') {
             element.propValue?.forEach(tabItem => {
-              tabItem.componentData.forEach((tabComponent, index) => {
+              tabItem.componentData?.forEach((tabComponent, index) => {
                 this.trackFilterCursor(
                   tabComponent,
                   checkQDList,
@@ -1078,7 +1078,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             })
           } else if (element.component === 'DeTabs') {
             element.propValue?.forEach(tabItem => {
-              tabItem.componentData.forEach((tabComponent, index) => {
+              tabItem.componentData?.forEach((tabComponent, index) => {
                 this.trackWebFilterCursor(tabComponent, params)
                 tabItem.componentData[index] = tabComponent
               })
@@ -1157,7 +1157,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             })
           } else if (element.component === 'DeTabs') {
             element.propValue?.forEach(tabItem => {
-              tabItem.componentData.forEach((tabComponent, index) => {
+              tabItem.componentData?.forEach((tabComponent, index) => {
                 this.trackOuterFilterCursor(
                   tabComponent,
                   params,
@@ -1509,7 +1509,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           })
         } else if (item.component === 'DeTabs') {
           item.propValue.forEach(tabItem => {
-            tabItem.componentData.forEach(tabComponent => {
+            tabItem.componentData?.forEach(tabComponent => {
               if (tabComponent.linkageFilters && tabComponent.linkageFilters.length > 0) {
                 tabComponent.linkageFilters.splice(0, tabComponent.linkageFilters.length)
                 useEmitt().emitter.emit('query-data-' + tabComponent.id)

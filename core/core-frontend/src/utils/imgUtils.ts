@@ -159,7 +159,7 @@ export function dataURLToBlob(dataUrl) {
 }
 
 function findStaticSourceInner(componentDataInfo, staticResource) {
-  componentDataInfo.forEach(item => {
+  componentDataInfo?.forEach(item => {
     if (
       typeof item.commonBackground.outerImage === 'string' &&
       item.commonBackground.outerImage.indexOf('static-resource') > -1

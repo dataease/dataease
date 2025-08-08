@@ -8,8 +8,8 @@ const { componentData } = storeToRefs(dvMainStore)
 export function checkJoinGroup(item) {
   if (item.component === 'DeTabs') {
     let result = true
-    item.propValue.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+    item.propValue?.forEach(tabItem => {
+      tabItem.componentData?.forEach(tabComponent => {
         if (tabComponent.component === 'Group') {
           result = false
         }
@@ -75,8 +75,8 @@ export function itemCanvasPathCheck(item, checkType) {
 export function canvasIdMapCheck(item, pItem, pathMap) {
   pathMap[item.id] = pItem
   if (item.component === 'DeTabs') {
-    item.propValue.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+    item.propValue?.forEach(tabItem => {
+      tabItem.componentData?.forEach(tabComponent => {
         canvasIdMapCheck(tabComponent, item, pathMap)
       })
     })

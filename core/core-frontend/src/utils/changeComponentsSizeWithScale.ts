@@ -31,7 +31,7 @@ export function changeSizeWithScale(scale) {
 }
 
 function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
-  componentDataCopy.forEach(component => {
+  componentDataCopy?.forEach(component => {
     Object.keys(component.style).forEach(key => {
       if (needToChangeDirectionAttrs.width.includes(key)) {
         // 根据原来的比例获取样式原来的尺寸

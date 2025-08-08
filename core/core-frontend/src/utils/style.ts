@@ -264,8 +264,8 @@ function dataVTabSizeStyleAdaptor(tabComponent) {
     parentStyleAdaptor.height = parentStyleAdaptor.height - offset
   }
 
-  tabComponent.propValue.forEach(tabItem => {
-    tabItem.componentData.forEach(tabComponent => {
+  tabComponent.propValue?.forEach(tabItem => {
+    tabItem.componentData?.forEach(tabComponent => {
       groupItemStyleAdaptor(tabComponent, parentStyleAdaptor)
       if (['Group'].includes(tabComponent.component)) {
         groupSizeStyleAdaptor(tabComponent)
@@ -286,8 +286,8 @@ export function groupItemStyleAdaptor(component, parentStyle) {
 
 export function groupStyleRevertBatch(groupComponent, parentStyle) {
   if (groupComponent.component === 'DeTabs') {
-    groupComponent.propValue.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+    groupComponent.propValue?.forEach(tabItem => {
+      tabItem.componentData?.forEach(tabComponent => {
         groupStyleRevert(tabComponent, parentStyle)
       })
     })
@@ -299,8 +299,8 @@ export function tabInnerStyleRevert(tabOuterComponent) {
     width: tabOuterComponent.style.width,
     height: tabOuterComponent.style.height - (tabOuterComponent.style.showTabTitle ? 46 : 0)
   }
-  tabOuterComponent.propValue.forEach(tabItem => {
-    tabItem.componentData.forEach(tabComponent => {
+  tabOuterComponent.propValue?.forEach(tabItem => {
+    tabItem.componentData?.forEach(tabComponent => {
       groupStyleRevert(tabComponent, parentStyle)
     })
   })

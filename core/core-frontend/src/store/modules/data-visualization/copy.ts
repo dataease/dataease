@@ -225,7 +225,7 @@ function deepCopyHelper(data, idMap) {
   // 深度拷贝Tab
   if (result.component === 'DeTabs') {
     result.propValue.forEach(tabItem => {
-      tabItem.componentData.forEach((tabComponent, i) => {
+      tabItem.componentData?.forEach((tabComponent, i) => {
         tabItem.componentData[i] = deepCopyHelper(tabComponent, idMap)
         // 对Tab的深度复制需要更换新组件的canvasId (tabsId--tabName)
         tabItem.componentData[i].canvasId = result.id + '--' + tabItem.name

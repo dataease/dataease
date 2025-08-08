@@ -482,8 +482,8 @@ export function adaptTitleFontFamilyAll(fontFamily) {
         }
       })
     } else if (item.component === 'DeTabs') {
-      item.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+      item.propValue?.forEach(tabItem => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (tabComponent.component === 'UserView') {
             const viewDetails = dvMainStore.canvasViewInfo[tabComponent.id]
             adaptTitleFontFamily(fontFamily, viewDetails)
@@ -550,8 +550,8 @@ export function adaptCurThemeCommonStyle(component) {
       component.style.headFontColor = DARK_THEME_COLOR_MAIN
       component.style.headFontActiveColor = DARK_THEME_COLOR_MAIN
     }
-    component.propValue.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+    component.propValue?.forEach(tabItem => {
+      tabItem.componentData?.forEach(tabComponent => {
         adaptCurThemeCommonStyle(tabComponent)
       })
     })

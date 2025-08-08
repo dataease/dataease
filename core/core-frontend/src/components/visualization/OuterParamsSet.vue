@@ -510,7 +510,7 @@ const initParams = async () => {
       })
     } else if (componentItem.component === 'DeTabs') {
       componentItem.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (tabComponent.component === 'VQuery') {
             state.baseFilterInfo.push(tabComponent)
           }

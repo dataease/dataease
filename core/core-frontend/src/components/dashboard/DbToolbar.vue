@@ -385,8 +385,8 @@ const batchDelete = () => {
       eventBus.emit('removeMatrixItemById-' + component.canvasId, component.id)
     }
     if (component.component === 'DeTabs') {
-      component.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+      component.propValue?.forEach(tabItem => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (curBatchOptComponents.value.includes(tabComponent.id)) {
             eventBus.emit('removeMatrixItemById-' + tabComponent.canvasId, tabComponent.id)
           }
@@ -406,8 +406,8 @@ const batchCopy = () => {
       multiplexingComponents[component.id] = component
     }
     if (component.component === 'DeTabs') {
-      component.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+      component.propValue?.forEach(tabItem => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (curBatchOptComponents.value.includes(tabComponent.id)) {
             multiplexingComponents[tabComponent.id] = tabComponent
           }
