@@ -202,7 +202,11 @@ onMounted(async () => {
       downloadH2(type)
     }
   })
-  await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
+  console.info('Preview Canvas init')
+  if (!props.outerId) {
+    await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
+  }
+  console.info('Preview Canvas Promise End')
   let dvId = props.outerId || embeddedStore.dvId || router.currentRoute.value.query.dvId
   if (router.currentRoute.value.query.jumpInfoParam && router.currentRoute.value.query.dvId) {
     dvId = router.currentRoute.value.query.dvId
