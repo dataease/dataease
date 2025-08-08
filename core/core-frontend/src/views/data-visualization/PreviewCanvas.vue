@@ -52,8 +52,8 @@ const props = defineProps({
     default: false
   },
   outerId: {
-    type: Boolean,
-    default: false
+    type: String,
+    required: false
   },
   ticketArgs: propTypes.string.def(null)
 })

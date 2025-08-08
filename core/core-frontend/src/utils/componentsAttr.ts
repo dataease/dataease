@@ -5,6 +5,7 @@ import PictureAttr from '@/custom-component/picture/Attr.vue'
 import CanvasBoardAttr from '@/custom-component/canvas-board/Attr.vue'
 import CanvasIconAttr from '@/custom-component/canvas-icon/Attr.vue'
 import DeTabsAttr from '@/custom-component/de-tabs/Attr.vue'
+import DeScreenAttr from '@/custom-component/de-screen/Attr.vue'
 import DeGraphicalAttr from '@/custom-component/de-graphical/Attr.vue'
 import CircleShapeAttr from '@/custom-component/circle-shape/Attr.vue'
 import RectShapeAttr from '@/custom-component/rect-shape/Attr.vue'
@@ -36,7 +37,8 @@ export const componentsMap = {
   DeStreamMediaAttr: DeStreamMediaAttr,
   ScrollTextAttr: ScrollTextAttr,
   PopAreaAttr: PopAreaAttr,
-  PictureGroupAttr: PictureGroupAttr
+  PictureGroupAttr: PictureGroupAttr,
+  DeScreenAttr: DeScreenAttr
 }
 
 export function findComponentAttr(component) {
