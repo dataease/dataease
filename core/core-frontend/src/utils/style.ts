@@ -264,8 +264,8 @@ function dataVTabSizeStyleAdaptor(tabComponent) {
     parentStyleAdaptor.height = parentStyleAdaptor.height - offset
   }
 
-  tabComponent.propValue.forEach(tabItem => {
-    tabItem.componentData.forEach(tabComponent => {
+  tabComponent.propValue?.forEach(tabItem => {
+    tabItem.componentData?.forEach(tabComponent => {
       groupItemStyleAdaptor(tabComponent, parentStyleAdaptor)
       if (['Group'].includes(tabComponent.component)) {
         groupSizeStyleAdaptor(tabComponent)
