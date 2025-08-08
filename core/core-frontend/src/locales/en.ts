@@ -2907,6 +2907,10 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    select_resource: 'Select {0}',
+    change_screen_page: 'Change {0}',
+    new_screen_page: 'New page',
+    screen_page: 'Page',
     color_setting: 'Color{0}',
     decoration_name: 'Decoration {0}',
     decoration: 'Decoration',

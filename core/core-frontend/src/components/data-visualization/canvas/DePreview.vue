@@ -182,9 +182,8 @@ const canvasStyle = computed(() => {
       style['margin'] = 'auto'
     } else if (canvasStyleData.value?.screenAdaptor === 'keepProportion') {
       style['aspect-ratio'] = canvasStyleData.value?.width / canvasStyleData.value?.height
-      style['height'] = canvasStyleData.value?.height + 'px'
-      style['width'] = canvasStyleData.value?.width + 'px'
-      style['margin'] = 'auto'
+      style['height'] = 'auto'
+      style['width'] = 'auto'
     } else {
       style['height'] = dashboardActive.value
         ? downloadStatus.value

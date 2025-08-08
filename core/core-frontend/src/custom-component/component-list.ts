@@ -630,6 +630,42 @@ const list = [
       verticalAlign: 'middle',
       scrollSpeed: 0
     }
+  },
+  {
+    component: 'DeScreen',
+    name: t('visualization.screen_page'),
+    label: t('visualization.screen_page'),
+    propValue: [
+      {
+        name: 'screen',
+        title: t('visualization.new_screen_page'),
+        screenId: null,
+        closable: true
+      }
+    ],
+    icon: 'tab-screen',
+    innerType: '',
+    editing: false,
+    canvasActive: false,
+    x: 1,
+    y: 1,
+    sizeX: 36,
+    sizeY: 14,
+    style: {
+      width: 600,
+      height: 300,
+      fontSize: 16,
+      activeFontSize: 18,
+      headHorizontalPosition: 'left',
+      headFontColor: '#000000',
+      headFontActiveColor: '#000000',
+      titleHide: false,
+      showTabTitle: true,
+      // #13540
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+      textDecoration: 'none'
+    }
   }
 ]
 
@@ -656,7 +692,7 @@ export function findNewComponentFromList(
         COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]
       )
       newComponent.innerType = innerType
-      if (comp.component === 'DeTabs') {
+      if (['DeTabs', 'DeScreen'].includes(comp.component)) {
         newComponent.propValue[0].name = guid()
         newComponent['titleBackground'] = deepCopy(COMMON_TAB_TITLE_BACKGROUND)
       }

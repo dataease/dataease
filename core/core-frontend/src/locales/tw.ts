@@ -2826,6 +2826,10 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    select_resource: '請選擇{0}',
+    change_screen_page: '更換{0}',
+    new_screen_page: '新建分頁',
+    screen_page: '分頁',
     color_setting: '配色{0}',
     decoration_name: '裝飾{0}',
     decoration: '裝飾',

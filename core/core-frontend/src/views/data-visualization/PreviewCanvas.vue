@@ -52,6 +52,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  outerId: {
+    type: Boolean,
+    default: false
+  },
   ticketArgs: propTypes.string.def(null)
 })
 
@@ -120,7 +124,11 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
 
   await initCanvasData(
     dvId,
-    { busiFlag: dvType, resourceTable: state.editPreview ? 'snapshot' : 'core' },
+    {
+      busiFlag: dvType,
+      resourceTable: state.editPreview ? 'snapshot' : 'core',
+      onlyPreview: !!props.outerId
+    },
     async function ({
       canvasDataResult,
       canvasStyleResult,
@@ -196,7 +204,7 @@ onMounted(async () => {
     }
   })
   await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
-  let dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+  let dvId = props.outerId || embeddedStore.dvId || router.currentRoute.value.query.dvId
   if (router.currentRoute.value.query.jumpInfoParam && router.currentRoute.value.query.dvId) {
     dvId = router.currentRoute.value.query.dvId
   }

@@ -2832,6 +2832,10 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    select_resource: '请选择{0}',
+    change_screen_page: '更换{0}',
+    new_screen_page: '新建分页',
+    screen_page: '分页',
     color_setting: '配色{0}',
     decoration_name: '装饰{0}',
     decoration: '装饰',

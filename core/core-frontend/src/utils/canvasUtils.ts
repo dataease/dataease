@@ -70,7 +70,7 @@ export function findNewComponent(componentName, innerType, staticMap?) {
   componentList.forEach(comp => {
     if (comp.component === componentName || comp.component === innerType) {
       newComponent = cloneDeep(comp)
-      if (newComponent.component === 'DeTabs') {
+      if (['DeTabs', 'DeScreen'].includes(newComponent.component)) {
         newComponent.propValue[0].name = guid()
         newComponent['titleBackground'] = deepCopy(COMMON_TAB_TITLE_BACKGROUND)
       }
@@ -410,18 +410,20 @@ export async function initCanvasData(dvId, params, callBack) {
     dvId,
     params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
-      dvMainStore.setComponentData(canvasDataResult)
-      dvMainStore.setCanvasStyle(canvasStyleResult)
-      dvMainStore.updateCurDvInfo(dvInfo)
-      dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
-      // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
-        dvMainStore.setNowPanelTrackInfo(rsp.data)
-      })
-      // 刷新跳转信息
-      queryVisualizationJumpInfo(dvInfo.id, params.resourceTable).then(rsp => {
-        dvMainStore.setNowPanelJumpInfo(rsp.data)
-      })
+      if (!params.onlyPreview) {
+        dvMainStore.setComponentData(canvasDataResult)
+        dvMainStore.setCanvasStyle(canvasStyleResult)
+        dvMainStore.updateCurDvInfo(dvInfo)
+        dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
+        // 刷新联动信息
+        getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
+          dvMainStore.setNowPanelTrackInfo(rsp.data)
+        })
+        // 刷新跳转信息
+        queryVisualizationJumpInfo(dvInfo.id, params.resourceTable).then(rsp => {
+          dvMainStore.setNowPanelJumpInfo(rsp.data)
+        })
+      }
       callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
   )

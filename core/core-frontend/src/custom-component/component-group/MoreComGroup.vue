@@ -5,6 +5,7 @@ import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
 import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
 import { useI18n } from '@/hooks/web/useI18n'
+import dvTabScreen from '@/assets/svg/dv-tab-screen.svg'
 const { t } = useI18n()
 const props = defineProps({
   propValue: {
@@ -58,6 +59,13 @@ const handleDragEnd = e => {
       :label="t('visualization.web')"
       drag-info="DeFrame&DeFrame"
       v-on:click="newComponent('DeFrame')"
+    ></drag-component>
+    <drag-component
+      :themes="themes"
+      :icon="dvTabScreen"
+      :label="$t('visualization.screen_page')"
+      drag-info="DeScreen&DeScreen"
+      v-on:click="newComponent('DeScreen', 'DeScreen')"
     ></drag-component>
   </div>
 </template>

@@ -31,6 +31,8 @@ import GroupArea from '@/custom-component/group-area/Component.vue'
 import GroupAreaAttr from '@/custom-component/group-area/Attr.vue'
 import DeFrame from '@/custom-component/de-frame/ComponentFrame.vue'
 import DeFrameAttr from '@/custom-component/de-frame/Attr.vue'
+import DeScreen from '@/custom-component/de-screen/Component.vue'
+import DeScreenAttr from '@/custom-component/de-screen//Attr.vue'
 import DeVideo from '@/custom-component/de-video/Component.vue'
 import DeVideoAttr from '@/custom-component/de-video/Attr.vue'
 import DeStreamMedia from '@/custom-component/de-stream-media/Component.vue'
@@ -84,7 +86,9 @@ export const componentsMap = {
   PictureGroup: PictureGroup,
   PictureGroupAttr: PictureGroupAttr,
   DeDecoration: DeDecoration,
-  DeDecorationAttr: DeDecorationAttr
+  DeDecorationAttr: DeDecorationAttr,
+  DeScreen: DeScreen,
+  DeScreenAttr: DeScreenAttr
 }
 
 export default function findComponent(key) {

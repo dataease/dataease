@@ -620,7 +620,7 @@ const initOpenHandler = newWindow => {
             themes="light"
             show-split-line
             is-label
-            :base-width="115"
+            :base-width="215"
             :icon-name="dvMoreCom"
             :title="t('visualization.more')"
           >

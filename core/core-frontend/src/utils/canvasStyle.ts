@@ -542,7 +542,7 @@ export function adaptCurThemeCommonStyle(component) {
     component.propValue.forEach(groupItem => {
       adaptCurThemeCommonStyle(groupItem)
     })
-  } else if (component.component === 'DeTabs') {
+  } else if (['DeTabs', 'DeScreen'].includes(component.component)) {
     if (dvMainStore.canvasStyleData.dashboard.themeColor === 'light') {
       component.style.headFontColor = LIGHT_THEME_COLOR_MAIN
       component.style.headFontActiveColor = LIGHT_THEME_COLOR_MAIN
