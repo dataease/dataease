@@ -234,7 +234,7 @@ export function getCanvasStyle(canvasStyleData, canvasId = 'canvas-main') {
 
 export function createGroupStyle(groupComponent) {
   const parentStyle = groupComponent.style
-  groupComponent.propValue.forEach(component => {
+  groupComponent.propValue?.forEach(component => {
     // 分组计算逻辑
     // 1.groupStyle记录left top width height 在出现分组缩放的时候进行等比例变更（缩放来源有两种a.整个大屏的缩放 b.分组尺寸的调整）
     // 2.component 内部进行位移或者尺寸的变更 要同步到这个比例中
@@ -264,8 +264,8 @@ function dataVTabSizeStyleAdaptor(tabComponent) {
     parentStyleAdaptor.height = parentStyleAdaptor.height - offset
   }
 
-  tabComponent.propValue.forEach(tabItem => {
-    tabItem.componentData.forEach(tabComponent => {
+  tabComponent.propValue?.forEach(tabItem => {
+    tabItem.componentData?.forEach(tabComponent => {
       groupItemStyleAdaptor(tabComponent, parentStyleAdaptor)
       if (['Group'].includes(tabComponent.component)) {
         groupSizeStyleAdaptor(tabComponent)
@@ -286,8 +286,8 @@ export function groupItemStyleAdaptor(component, parentStyle) {
 
 export function groupStyleRevertBatch(groupComponent, parentStyle) {
   if (groupComponent.component === 'DeTabs') {
-    groupComponent.propValue.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+    groupComponent.propValue?.forEach(tabItem => {
+      tabItem.componentData?.forEach(tabComponent => {
         groupStyleRevert(tabComponent, parentStyle)
       })
     })
@@ -299,8 +299,8 @@ export function tabInnerStyleRevert(tabOuterComponent) {
     width: tabOuterComponent.style.width,
     height: tabOuterComponent.style.height - (tabOuterComponent.style.showTabTitle ? 46 : 0)
   }
-  tabOuterComponent.propValue.forEach(tabItem => {
-    tabItem.componentData.forEach(tabComponent => {
+  tabOuterComponent.propValue?.forEach(tabItem => {
+    tabItem.componentData?.forEach(tabComponent => {
       groupStyleRevert(tabComponent, parentStyle)
     })
   })
@@ -317,7 +317,7 @@ export function groupStyleRevert(innerComponent, parentStyle) {
 export function groupSizeStyleAdaptor(groupComponent) {
   if (groupComponent.component === 'Group') {
     const parentStyle = groupComponent.style
-    groupComponent.propValue.forEach(component => {
+    groupComponent.propValue?.forEach(component => {
       groupItemStyleAdaptor(component, parentStyle)
     })
   } else {

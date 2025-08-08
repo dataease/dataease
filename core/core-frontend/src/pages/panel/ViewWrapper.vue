@@ -132,7 +132,7 @@ onBeforeMount(async () => {
             return false
           })
         } else if (ele.component === 'DeTabs') {
-          ele.propValue.forEach(tabItem => {
+          ele.propValue?.forEach(tabItem => {
             return (tabItem.componentData || []).some(itx => {
               if (itx.id === chartId) {
                 config.value = itx

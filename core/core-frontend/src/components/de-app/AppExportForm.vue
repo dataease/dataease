@@ -148,7 +148,7 @@ const gatherAppInfo = (viewIds, dsIds, componentDataCheck) => {
     } else if (item.component === 'Group') {
       gatherAppInfo(viewIds, dsIds, item.propValue)
     } else if (item.component === 'DeTabs') {
-      item.propValue.forEach(tabItem => {
+      item.propValue?.forEach(tabItem => {
         gatherAppInfo(viewIds, dsIds, tabItem.componentData)
       })
     }

@@ -414,7 +414,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             component.canvasId.includes(componentItem.id) &&
             componentItem.component == 'DeTabs'
           ) {
-            componentItem.propValue.forEach(tabItem => {
+            componentItem.propValue?.forEach(tabItem => {
               if (component.canvasId.includes(tabItem.name)) {
                 tabItem.componentData.push(component)
               }
@@ -562,7 +562,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           } else if (component.component === 'Group') {
             this.deleteComponentById(componentId, component.propValue || [])
           } else if (component.innerType === 'DeTabs') {
-            component.propValue.forEach(ele => {
+            component.propValue?.forEach(ele => {
               this.deleteComponentById(componentId, ele.componentData || [])
             })
           }
@@ -617,12 +617,12 @@ export const dvMainStore = defineStore('dataVisualization', {
         if (item.component === 'UserView' && item.innerType != 'VQuery') {
           this.clearTargetViewLinkage(viewId, item)
         } else if (item.component === 'Group') {
-          item.propValue.forEach(groupItem => {
+          item.propValue?.forEach(groupItem => {
             this.clearTargetViewLinkage(viewId, groupItem)
           })
         } else if (item.component === 'DeTabs') {
-          item.propValue.forEach(tabItem => {
-            tabItem.componentData.forEach(tabComponent => {
+          item.propValue?.forEach(tabItem => {
+            tabItem.componentData?.forEach(tabComponent => {
               this.clearTargetViewLinkage(viewId, tabComponent)
             })
           })
@@ -856,7 +856,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             }
           }
           if (component.component === 'Group') {
-            component.propValue.forEach(groupItem => {
+            component.propValue?.forEach(groupItem => {
               if (this.curBatchOptComponents.includes(groupItem.id)) {
                 if (propertyInfo.custom === 'commonBackground') {
                   groupItem.commonBackground = deepCopy(this.batchOptComponentInfo.commonBackground)
@@ -869,8 +869,8 @@ export const dvMainStore = defineStore('dataVisualization', {
               }
             })
           } else if (component.component === 'DeTabs') {
-            component.propValue.forEach(tabItem => {
-              tabItem.componentData.forEach(tabComponent => {
+            component.propValue?.forEach(tabItem => {
+              tabItem.componentData?.forEach(tabComponent => {
                 if (this.curBatchOptComponents.includes(tabComponent.id)) {
                   if (propertyInfo.custom === 'commonBackground') {
                     tabComponent.commonBackground = deepCopy(
@@ -896,14 +896,14 @@ export const dvMainStore = defineStore('dataVisualization', {
             component.commonBackground = deepCopy(newBackground)
           }
         } else if (component.component === 'Group') {
-          component.propValue.forEach(groupItem => {
+          component.propValue?.forEach(groupItem => {
             if (this.curBatchOptComponents.includes(groupItem.id)) {
               groupItem.commonBackground = deepCopy(newBackground)
             }
           })
         } else if (component.component === 'DeTabs') {
-          component.propValue.forEach(tabItem => {
-            tabItem.componentData.forEach(tabComponent => {
+          component.propValue?.forEach(tabItem => {
+            tabItem.componentData?.forEach(tabComponent => {
               if (this.curBatchOptComponents.includes(tabComponent.id)) {
                 tabComponent.commonBackground = deepCopy(newBackground)
               }
@@ -1043,7 +1043,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             })
           } else if (element.component === 'DeTabs') {
             element.propValue?.forEach(tabItem => {
-              tabItem.componentData.forEach((tabComponent, index) => {
+              tabItem.componentData?.forEach((tabComponent, index) => {
                 this.trackFilterCursor(
                   tabComponent,
                   checkQDList,
@@ -1076,7 +1076,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             })
           } else if (element.component === 'DeTabs') {
             element.propValue?.forEach(tabItem => {
-              tabItem.componentData.forEach((tabComponent, index) => {
+              tabItem.componentData?.forEach((tabComponent, index) => {
                 this.trackWebFilterCursor(tabComponent, params)
                 tabItem.componentData[index] = tabComponent
               })
@@ -1155,7 +1155,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             })
           } else if (element.component === 'DeTabs') {
             element.propValue?.forEach(tabItem => {
-              tabItem.componentData.forEach((tabComponent, index) => {
+              tabItem.componentData?.forEach((tabComponent, index) => {
                 this.trackOuterFilterCursor(
                   tabComponent,
                   params,
@@ -1496,15 +1496,15 @@ export const dvMainStore = defineStore('dataVisualization', {
             useEmitt().emitter.emit('query-data-' + item.id)
           }
         } else if (item.component === 'Group') {
-          item.propValue.forEach(groupItem => {
+          item.propValue?.forEach(groupItem => {
             if (groupItem.linkageFilters && groupItem.linkageFilters.length > 0) {
               groupItem.linkageFilters.splice(0, groupItem.linkageFilters.length)
               useEmitt().emitter.emit('query-data-' + groupItem.id)
             }
           })
         } else if (item.component === 'DeTabs') {
-          item.propValue.forEach(tabItem => {
-            tabItem.componentData.forEach(tabComponent => {
+          item.propValue?.forEach(tabItem => {
+            tabItem.componentData?.forEach(tabComponent => {
               if (tabComponent.linkageFilters && tabComponent.linkageFilters.length > 0) {
                 tabComponent.linkageFilters.splice(0, tabComponent.linkageFilters.length)
                 useEmitt().emitter.emit('query-data-' + tabComponent.id)

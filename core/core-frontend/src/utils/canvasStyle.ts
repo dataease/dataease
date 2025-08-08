@@ -476,7 +476,7 @@ export function adaptTitleFontFamilyAll(fontFamily) {
       adaptTitleFontFamily(fontFamily, viewDetails)
       useEmitt().emitter.emit('renderChart-' + item.id, viewDetails)
     } else if (item.component === 'Group') {
-      item.propValue.forEach(groupItem => {
+      item.propValue?.forEach(groupItem => {
         if (groupItem.component === 'UserView') {
           const viewDetails = dvMainStore.canvasViewInfo[groupItem.id]
           adaptTitleFontFamily(fontFamily, viewDetails)
@@ -484,8 +484,8 @@ export function adaptTitleFontFamilyAll(fontFamily) {
         }
       })
     } else if (item.component === 'DeTabs') {
-      item.propValue.forEach(tabItem => {
-        tabItem.componentData.forEach(tabComponent => {
+      item.propValue?.forEach(tabItem => {
+        tabItem.componentData?.forEach(tabComponent => {
           if (tabComponent.component === 'UserView') {
             const viewDetails = dvMainStore.canvasViewInfo[tabComponent.id]
             adaptTitleFontFamily(fontFamily, viewDetails)
@@ -532,10 +532,10 @@ export function adaptCurThemeCommonStyle(component) {
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
     // 图表-Begin
   } else if (component.component === 'Group') {
-    component.propValue.forEach(groupItem => {
+    component.propValue?.forEach(groupItem => {
       adaptCurThemeCommonStyle(groupItem)
     })
-  } else if (component.component === 'DeTabs') {
+  } else if (['DeTabs', 'DeScreen'].includes(component.component)) {
     if (dvMainStore.canvasStyleData.dashboard.themeColor === 'light') {
       component.style.headFontColor = LIGHT_THEME_COLOR_MAIN
       component.style.headFontActiveColor = LIGHT_THEME_COLOR_MAIN
@@ -543,8 +543,8 @@ export function adaptCurThemeCommonStyle(component) {
       component.style.headFontColor = DARK_THEME_COLOR_MAIN
       component.style.headFontActiveColor = DARK_THEME_COLOR_MAIN
     }
-    component.propValue.forEach(tabItem => {
-      tabItem.componentData.forEach(tabComponent => {
+    component.propValue?.forEach(tabItem => {
+      tabItem.componentData?.forEach(tabComponent => {
         adaptCurThemeCommonStyle(tabComponent)
       })
     })

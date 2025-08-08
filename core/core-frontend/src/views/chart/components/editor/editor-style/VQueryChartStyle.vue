@@ -281,7 +281,7 @@ const onTitleChange = () => {
 }
 
 const onPlaceholderChange = () => {
-  props.element.propValue.forEach(ele => {
+  props.element.propValue?.forEach(ele => {
     if (ele.id === currentPlaceholder.value) {
       ele.placeholder = currentSearch.value.placeholder
       ele.queryConditionWidth = currentSearch.value.queryConditionWidth

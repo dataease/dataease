@@ -397,7 +397,7 @@ const queryList = computed(() => {
       arr.push(com)
     }
     if ('DeTabs' === com.innerType) {
-      com.propValue.forEach(itx => {
+      com.propValue?.forEach(itx => {
         arr = [...itx.componentData.filter(item => item.innerType === 'VQuery'), ...arr]
       })
     }

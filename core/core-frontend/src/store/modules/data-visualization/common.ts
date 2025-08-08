@@ -30,7 +30,7 @@ export const getCurInfoById = curComponentId => {
         targetComponent = component
       }
       if (component.component === 'Group') {
-        component.propValue.forEach((subComponent, subIndex) => {
+        component.propValue?.forEach((subComponent, subIndex) => {
           if (curComponentId === subComponent.id) {
             curIndex = subIndex
             targetComponent = subComponent
@@ -39,9 +39,9 @@ export const getCurInfoById = curComponentId => {
         })
       }
       if (component.component === 'DeTabs') {
-        component.propValue.forEach((tabItem, tabIndex) => {
+        component.propValue?.forEach((tabItem, tabIndex) => {
           curTabIndex = tabIndex
-          tabItem.componentData.forEach((tabComponent, subIndex) => {
+          tabItem.componentData?.forEach((tabComponent, subIndex) => {
             if (curComponentId === tabComponent.id) {
               curIndex = subIndex
               targetComponent = tabComponent

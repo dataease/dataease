@@ -18,6 +18,7 @@ import DeStreamMedia from '@/custom-component/de-stream-media/Component.vue'
 import ScrollText from '@/custom-component/scroll-text/Component.vue'
 import PopArea from '@/custom-component/pop-area/Component.vue'
 import PictureGroup from '@/custom-component/picture-group/Component.vue'
+import DeScreen from '@/custom-component/de-screen/Component.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -38,7 +39,8 @@ export const componentsMap = {
   DeStreamMedia: DeStreamMedia,
   ScrollText: ScrollText,
   PopArea: PopArea,
-  PictureGroup: PictureGroup
+  PictureGroup: PictureGroup,
+  DeScreen: DeScreen
 }
 
 export default function findComponent(key) {

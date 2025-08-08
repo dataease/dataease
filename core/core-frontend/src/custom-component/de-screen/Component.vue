@@ -12,7 +12,7 @@
     ref="tabComponentRef"
   >
     <de-custom-tab
-      v-model="editableTabsValue"
+      v-model="element.editableTabsValue"
       @tab-add="addTab"
       :addable="isEditMode"
       :font-color="fontColor"
@@ -61,11 +61,11 @@
                     </span>
                     <template #dropdown>
                       <el-dropdown-menu :style="{ 'font-family': fontFamily }">
+                        <el-dropdown-item :command="beforeHandleCommand('changeScreen', tabItem)">
+                          {{ t('visualization.change_screen_page', [screenType]) }}
+                        </el-dropdown-item>
                         <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
                           {{ t('visualization.edit_title') }}
-                        </el-dropdown-item>
-                        <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
-                          {{ t('visualization.copy') }}
                         </el-dropdown-item>
                         <el-dropdown-item
                           v-if="element.propValue.length > 1"
@@ -87,36 +87,29 @@
         :key="tabItem.name + '-content'"
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
-        v-for="(tabItem, index) in element.propValue"
-        :class="{ 'switch-hidden': editableTabsValue !== tabItem.name }"
+        v-for="tabItem in element.propValue"
+        :class="{ 'switch-hidden': element.editableTabsValue !== tabItem.name }"
       >
-        <de-canvas
-          v-if="isEdit && !mobileInPc"
-          :ref="'tabCanvas_' + index"
-          :component-data="tabItem.componentData"
-          :canvas-style-data="canvasStyleData"
-          :canvas-view-info="canvasViewInfo"
-          :canvas-id="element.id + '--' + tabItem.name"
-          :class="moveActive ? 'canvas-move-in' : ''"
-          :canvas-position="'tab'"
-          :canvas-active="editableTabsValue === tabItem.name"
-          :font-family="fontFamily"
-        ></de-canvas>
-        <de-preview
-          v-else
+        <PreviewCanvas
+          v-if="tabItem.screenId"
+          :outer-id="tabItem.screenId"
           :ref="'dashboardPreview'"
-          :dv-info="dvInfo"
-          :cur-gap="curPreviewGap"
-          :component-data="tabItem.componentData"
-          :canvas-style-data="{}"
-          :canvas-view-info="canvasViewInfo"
-          :canvas-id="element.id + '--' + tabItem.name"
-          :preview-active="editableTabsValue === tabItem.name"
-          :show-position="showPosition"
-          :outer-scale="scale"
-          :font-family="fontFamily"
-          :outer-search-count="searchCount"
-        ></de-preview>
+        ></PreviewCanvas>
+        <div v-else class="chose-screen">
+          <span
+            ><el-button
+              @click="selectDashboard(tabItem.screenId)"
+              text
+              style="font-family: inherit; color: #646a73"
+              icon="Plus"
+              >{{
+                dvInfo.type === 'dataV'
+                  ? t('visualization.select_target_screen_tips')
+                  : t('visualization.select_target_dashboard_tips')
+              }}</el-button
+            ></span
+          >
+        </div>
       </div>
     </de-custom-tab>
     <el-dialog
@@ -140,6 +133,10 @@
         </span>
       </template>
     </el-dialog>
+    <SelectScreenDialog
+      ref="selectScreenDialogRef"
+      @selectConfirm="selectNewScreen"
+    ></SelectScreenDialog>
   </div>
 </template>
 
@@ -154,20 +151,13 @@ import {
   reactive,
   ref,
   toRefs,
-  watch,
-  defineAsyncComponent
+  watch
 } from 'vue'
-import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
-import {
-  canvasChangeAdaptor,
-  findComponentIndexById,
-  findComponentIndexByIdWithFilterHidden,
-  isDashboard
-} from '@/utils/canvasUtils'
+import { canvasChangeAdaptor, findComponentIndexById, isDashboard } from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
@@ -176,13 +166,17 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Board from '@/components/de-board/Board.vue'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+import { debounce } from 'lodash-es'
+import PreviewCanvas from '@/views/data-visualization/PreviewCanvas.vue'
+import SelectScreenDialog from '@/custom-component/de-screen/SelectScreenDialog.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
 let carouselTimer = null
 const { t } = useI18n()
-
+const selectScreenDialogRef = ref(null)
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -242,9 +236,9 @@ const {
   searchCount
 } = toRefs(props)
 
-const DePreview = defineAsyncComponent(
-  () => import('@/components/data-visualization/canvas/DePreview.vue')
-)
+const screenType =
+  dvInfo.value.type === 'dataV' ? t('work_branch.big_data_screen') : t('work_branch.dashboard')
+
 const titleBackgroundActiveSvgInner = computed(() => {
   return element.value.titleBackground.active.innerImage.replace('board/', '').replace('.svg', '')
 })
@@ -257,7 +251,7 @@ const svgInnerInActiveEnable = itemName => {
   const { backgroundImageEnable, backgroundType, innerImage } =
     element.value.titleBackground.inActive
   return (
-    editableTabsValue.value !== itemName &&
+    element.value.editableTabsValue !== itemName &&
     !element.value.titleBackground.multiply &&
     element.value.titleBackground?.enable &&
     backgroundImageEnable &&
@@ -269,12 +263,29 @@ const svgInnerInActiveEnable = itemName => {
 const svgInnerActiveEnable = itemName => {
   const { backgroundImageEnable, backgroundType, innerImage } = element.value.titleBackground.active
   return (
-    (editableTabsValue.value === itemName || element.value.titleBackground.multiply) &&
+    (element.value.editableTabsValue === itemName || element.value.titleBackground.multiply) &&
     element.value.titleBackground?.enable &&
     backgroundImageEnable &&
     backgroundType === 'innerImage' &&
     typeof innerImage === 'string'
   )
+}
+
+// tooltips 轮播会影响tab 展示
+const viewToolTipsChange = () => {
+  element.value.propValue?.forEach(tabItem => {
+    const tMethod =
+      element.value.editableTabsValue === tabItem.name
+        ? ChartCarouselTooltip.resume
+        : ChartCarouselTooltip.paused
+    tabItem.componentData?.forEach(componentItem => {
+      tMethod(componentItem.id)
+      if (componentItem.component === 'Group')
+        componentItem.propValue.forEach(groupItem => {
+          tMethod(groupItem.id)
+        })
+    })
+  })
 }
 
 const handleMouseEnter = () => {
@@ -290,10 +301,10 @@ const state = reactive({
   textarea: '',
   dialogVisible: false,
   tabShow: true,
-  hoverFlag: false
+  hoverFlag: false,
+  panelList: []
 })
 const tabsAreaScroll = ref(false)
-const editableTabsValue = ref(null)
 
 // 无边框
 const noBorderColor = ref('none')
@@ -345,12 +356,12 @@ function addTab() {
   const newName = guid()
   const newTab = {
     name: newName,
-    title: t('visualization.new_tab'),
-    componentData: [],
+    title: t('visualization.new_screen_page'),
+    screenId: null,
     closable: true
   }
   element.value.propValue.push(newTab)
-  editableTabsValue.value = newTab.name
+  element.value.editableTabsValue = newTab.name
   snapshotStore.recordSnapshotCache('addTab')
 }
 
@@ -362,7 +373,7 @@ function deleteCur(param) {
       element.value.propValue.splice(len, 1)
       const activeIndex =
         (len - 1 + element.value.propValue.length) % element.value.propValue.length
-      editableTabsValue.value = element.value.propValue[activeIndex].name
+      element.value.editableTabsValue = element.value.propValue[activeIndex].name
       state.tabShow = false
       nextTick(() => {
         state.tabShow = true
@@ -399,6 +410,9 @@ function handleCommand(command) {
       copyCur(command.param)
       snapshotStore.recordSnapshotCache('copyCur')
       break
+    case 'changeScreen':
+      selectDashboard(command.param.screenId)
+      break
   }
 }
 
@@ -415,8 +429,8 @@ const reloadLinkage = () => {
 }
 
 const componentMoveIn = component => {
-  element.value.propValue?.forEach((tabItem, index) => {
-    if (editableTabsValue.value === tabItem.name) {
+  element.value.propValue.forEach((tabItem, index) => {
+    if (element.value.editableTabsValue === tabItem.name) {
       //获取主画布当前组件的index
       if (isDashboard()) {
         eventBus.emit('removeMatrixItemById-canvas-main', component.id)
@@ -531,7 +545,7 @@ const backgroundStyle = backgroundParams => {
 
 const titleStyle = itemName => {
   let style = {}
-  if (editableTabsValue.value === itemName) {
+  if (element.value.editableTabsValue === itemName) {
     style = {
       textDecoration: element.value.style.textDecoration,
       fontStyle: element.value.style.fontStyle,
@@ -610,10 +624,28 @@ const titleValid = computed(() => {
   return !!state.textarea && !!state.textarea.trim()
 })
 
+const viewToolTipsChangeDebounce = debounce(() => {
+  viewToolTipsChange()
+}, 500)
+
+const selectDashboard = screenId => {
+  // do selected
+  const params = { screenId: screenId, dvType: dvInfo.value.type }
+  selectScreenDialogRef.value.init(params)
+}
+
+watch(
+  () => scale.value,
+  () => {
+    viewToolTipsChangeDebounce()
+  }
+)
+
 watch(
   () => element.value,
   () => {
     calcTabLength()
+    viewToolTipsChangeDebounce()
   },
   { deep: true }
 )
@@ -622,6 +654,19 @@ const reShow = () => {
   state.tabShow = false
   nextTick(() => {
     state.tabShow = true
+  })
+}
+
+const selectNewScreen = screenId => {
+  element.value.propValue.forEach(tabItem => {
+    if (element.value.editableTabsValue === tabItem.name) {
+      tabItem.screenId = null
+      nextTick(() => {
+        //获取主画布当前组件的index
+        tabItem.screenId = screenId
+        snapshotStore.recordSnapshotCache('selectNewScreen')
+      })
+    }
   })
 }
 
@@ -646,17 +691,17 @@ const initCarousel = () => {
           const nowIndex = switchCount % element.value.propValue.length
           switchCount++
           nextTick(() => {
-            editableTabsValue.value = element.value.propValue[nowIndex].name
+            element.value.editableTabsValue = element.value.propValue[nowIndex].name
           })
         }
       }, switchTime)
     }
   }
 }
-
 onMounted(() => {
+  document.addEventListener('visibilitychange', viewToolTipsChange)
   if (element.value.propValue.length > 0) {
-    editableTabsValue.value = element.value.propValue[0].name
+    element.value.editableTabsValue = element.value.propValue[0].name
   }
   calcTabLength()
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
@@ -664,14 +709,17 @@ onMounted(() => {
     eventBus.on('onTabMoveOut-' + element.value.id, componentMoveOut)
     eventBus.on('onTabSortChange-' + element.value.id, reShow)
   }
-
   currentInstance = getCurrentInstance()
   initCarousel()
   nextTick(() => {
     groupSizeStyleAdaptor(element.value)
   })
+  setTimeout(() => {
+    viewToolTipsChange()
+  }, 1000)
 })
 onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', viewToolTipsChange)
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
     eventBus.off('onTabMoveIn-' + element.value.id, componentMoveIn)
     eventBus.off('onTabMoveOut-' + element.value.id, componentMoveOut)
@@ -758,5 +806,14 @@ onBeforeMount(() => {
   :deep(.ed-dropdown) {
     vertical-align: middle !important;
   }
+}
+
+.chose-screen {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  color: #5370af;
+  align-items: center;
+  justify-content: center;
 }
 </style>
