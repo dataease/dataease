@@ -48,6 +48,7 @@ const getPrefix = (): string => {
   return prefix
 }
 const element = document.createElement('head')
+document.body.appendChild(element)
 document.querySelector('head').appendChild = <T extends Node>(node: T) => {
   const newNode = formatterUrl(node, getPrefix())
   element.appendChild(newNode)
