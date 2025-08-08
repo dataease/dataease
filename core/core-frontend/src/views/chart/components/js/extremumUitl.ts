@@ -87,7 +87,7 @@ function createExtremumDiv(id, value, formatterCfg, chart) {
     span.setAttribute(
       'style',
       `width: 0px;
-        height: 0px;
+        height: 12px;
         border: 4px solid transparent;
         border-top-color: red;
         position: absolute;
@@ -346,7 +346,7 @@ export const createExtremumPoint = (chart, ev) => {
             // 最值dom高度超过50%时，最值dom向下
             if (top < 0 && (Math.abs(top) / point.y) * 100 >= 50) {
               pointElement.style.transform = `translateX(-50%) translateY(${translateYValue}px)`
-              childNode.style.marginTop = '-12px'
+              childNode.style.marginTop = '-16px'
               childNode.style.transform = 'rotate(180deg)'
             } else {
               childNode.style.display = 'block'
@@ -370,6 +370,28 @@ function removeDivElement(key) {
 }
 
 /**
+ * 当浏览器不支持requestIdleCallback时，使用setTimeout模拟
+ * 该模拟函数会在浏览器空闲时执行回调函数，避免阻塞主线程
+ * 模拟的回调函数会在16毫秒后执行，模拟浏览器的空闲时间
+ * 该模拟函数会返回一个定时器ID，可以用来取消定时器
+ * @param cb 回调函数，接收一个IdleDeadline对象作为参数
+ * @returns 返回一个定时器ID，可以用来取消定时器
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback
+ */
+if (typeof window.requestIdleCallback !== 'function') {
+  window.requestIdleCallback = function (cb: IdleRequestCallback): number {
+    return window.setTimeout(() => {
+      cb({
+        timeRemaining: () => Math.max(0, 50 - (Date.now() % 50)),
+        didTimeout: false
+      })
+    }, 16)
+  }
+  window.cancelIdleCallback = function (id: number) {
+    clearTimeout(id)
+  }
+}
+/**
  * 用于分批处理数据，利用requestIdleCallback在浏览器空闲期间执行任务，避免阻塞主线程
  * @param dataList
  * @param taskHandler
@@ -383,14 +405,16 @@ function performChunk(dataList, taskHandler) {
   function _run() {
     if (i >= dataList.length) return
     // 请求浏览器空闲期间执行的回调函数
-    requestIdleCallback(idle => {
-      // 在当前空闲期间内尽可能多地处理任务，直到时间耗尽或所有任务处理完毕
-      while (idle.timeRemaining() > 0 && i < dataList.length) {
-        taskHandler(dataList[i], i)
-        i++
-      }
-      _run()
-    })
+    if (typeof window.requestIdleCallback == 'function') {
+      requestIdleCallback(idle => {
+        // 在当前空闲期间内尽可能多地处理任务，直到时间耗尽或所有任务处理完毕
+        while (idle.timeRemaining() > 0 && i < dataList.length) {
+          taskHandler(dataList[i], i)
+          i++
+        }
+        _run()
+      })
+    }
   }
   _run()
 }
