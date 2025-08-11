@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Component
@@ -64,6 +65,15 @@ public class CoreVisualizationExportManage {
 
         String componentsJson = visualization.getComponentData();
         List<Map<String, Object>> components = JsonUtil.parseList(componentsJson, tokenType);
+        components = components.stream().flatMap(item -> {
+            if (ObjectUtils.isNotEmpty(item.get("innerType")) && StringUtils.equalsIgnoreCase(item.get("innerType").toString(), "DeTabs")) {
+                if (ObjectUtils.isNotEmpty(item.get("propValue"))) {
+                    List<Map<String, Object>> deTabs = (List<Map<String, Object>>) item.get("propValue");
+                    return deTabs.stream().flatMap(tab -> ((List<Map<String, Object>>) tab.get("componentData")).stream());
+                }
+            }
+            return Stream.of(item);
+        }).toList();
         List<Long> idList = components.stream().filter(c -> ObjectUtils.isNotEmpty(c.get("id"))).map(component -> Long.parseLong(component.get("id").toString())).toList();
 
         if (CollectionUtils.isNotEmpty(viewIdList)) {
