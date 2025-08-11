@@ -1445,7 +1445,7 @@ const validate = () => {
       if (!ele.defaultValueCheck) return false
       if (
         (Array.isArray(ele.defaultValue) && !ele.defaultValue.length) ||
-        (!Array.isArray(ele.defaultValue) && isNaN(ele.defaultValue))
+        (!Array.isArray(ele.defaultValue) && ['', undefined, null].includes(ele.defaultValue))
       ) {
         ElMessage.error(t('report.filter.title'))
         return true
@@ -1925,13 +1925,17 @@ const getOptions = (id, component) => {
 const handleSortChange = () => {
   handleFieldChange()
   curComponent.value.sortList = []
-  resetSort()
+  if (sortComputed.value) {
+    curComponent.value.sort = ''
+  }
 }
 
 const resetSort = () => {
   if (sortComputed.value) {
     curComponent.value.sort = ''
   }
+  if (!curComponent.value.defaultValueCheck) return
+  curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
 }
 
 const customSortFilterRef = ref()
