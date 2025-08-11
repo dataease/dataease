@@ -262,7 +262,6 @@ public class ChartDataServer implements ChartDataApi {
                         if ((details.size() + extractPageSize) > sheetLimit || i == chartViewDTO.getTotalPage()) {
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
-                            Object[] header = request.getHeader();
                             request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                             request.getViewInfo().setYAxis(request.getViewInfo().getYAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                             request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
@@ -274,7 +273,7 @@ public class ChartDataServer implements ChartDataApi {
                             xAxis.addAll(request.getViewInfo().getXAxisExt());
                             xAxis.addAll(request.getViewInfo().getYAxisExt());
                             xAxis.addAll(request.getViewInfo().getExtStack());
-                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).collect(Collectors.toList()).toArray();
+                            Object[] header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).collect(Collectors.toList()).toArray();
                             details.add(0, header);
                             ViewDetailField[] detailFields = request.getDetailFields();
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
@@ -347,6 +346,7 @@ public class ChartDataServer implements ChartDataApi {
         xAxis.addAll(viewInfo.getDrillFields());
         TableHeader tableHeader = null;
         Integer totalDepth = 0;
+        List<CellRangeAddress> mergeConfig = new ArrayList<>();
         if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-normal", "table-info")) {
             for (ChartViewFieldDTO xAxi : xAxis) {
                 if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
@@ -373,6 +373,22 @@ public class ChartDataServer implements ChartDataApi {
                     }
                     for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
                         setWidth(column, 1);
+                    }
+                }
+            }
+            if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
+                Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
+                Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
+                if (mergeCells != null && mergeCells) {
+                    var quotaIndex = 0;
+                    for (int i = 0; i < viewInfo.getXAxis().size(); i++) {
+                        if ("q".equalsIgnoreCase(viewInfo.getXAxis().get(i).getGroupType())) {
+                            quotaIndex = i;
+                            break;
+                        }
+                    }
+                    if (quotaIndex >= 1 && details.size() > 1) {
+                        mergeConfig = getMergeConfig(details.subList(1, details.size()), quotaIndex - 1, totalDepth == 0 ? 1 : totalDepth);
                     }
                 }
             }
@@ -522,7 +538,45 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 }
             }
+            if (CollectionUtils.isNotEmpty(mergeConfig)) {
+                mergeConfig.forEach(detailsSheet::addMergedRegion);
+            }
         }
+    }
+
+    private static List<CellRangeAddress> getMergeConfig(List<Object[]> data, int colIndex, int offsetHeight) {
+        var result = new ArrayList<CellRangeAddress>();
+        var preRange = new ArrayList<Integer[]>();
+        var initRange = new Integer[]{0, data.size() - 1};
+        preRange.add(initRange);
+        for (int curColIndex = 0; curColIndex <= colIndex; curColIndex++) {
+            var curRange = new ArrayList<Integer[]>();
+            for (int preRangeIndex = 0; preRangeIndex < preRange.size(); preRangeIndex++) {
+                var preRowRange = preRange.get(preRangeIndex);
+                var start = preRowRange[0];
+                var end = preRowRange[1];
+                var lastColValue = data.get(start)[curColIndex].toString();
+                var lastRowIndex = start;
+                for (Integer curRowIndex = start + 1; curRowIndex <= end; curRowIndex++) {
+                    var curRow = data.get(curRowIndex);
+                    var curColValue = curRow[curColIndex].toString();
+                    if (!StringUtils.equals(lastColValue, curColValue) && (curRowIndex - lastRowIndex > 1)) {
+                        curRange.add(new Integer[]{lastRowIndex, curRowIndex - 1});
+                        result.add(new CellRangeAddress(lastRowIndex + offsetHeight, curRowIndex + offsetHeight - 1, curColIndex, curColIndex));
+                    }
+                    if (curRowIndex.equals(end) && curColValue.equals(lastColValue) && curRowIndex - lastRowIndex > 0) {
+                        curRange.add(new Integer[]{lastRowIndex, curRowIndex});
+                        result.add(new CellRangeAddress(lastRowIndex + offsetHeight, curRowIndex + offsetHeight, curColIndex, curColIndex));
+                    }
+                    if (!StringUtils.equals(lastColValue, curColValue)) {
+                        lastColValue = curColValue;
+                        lastRowIndex = curRowIndex;
+                    }
+                }
+            }
+            preRange = curRange;
+        }
+        return result;
     }
 
     private static boolean validateHeaderGroup(TableHeader header, List<ChartViewFieldDTO> fields) {
