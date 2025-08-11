@@ -1784,6 +1784,10 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     if (!tooltipCtl) {
       return
     }
+    const tooltipInstance = ChartCarouselTooltip.getInstanceByContainer(chart.container)
+    if (tooltipInstance && tooltipInstance.hasParentWithSwitchHidden(plot.chart.ele)) {
+      return
+    }
     // 处理 tooltip 与下拉菜单的显示冲突问题
     const viewTrackBarElement = document.getElementById('view-track-bar-' + chart.id)
     const event = plot.chart.interactions.tooltip?.context?.event

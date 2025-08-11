@@ -270,7 +270,8 @@ class ChartCarouselTooltip {
       this.chart.customAttr?.tooltip?.show &&
       this.chart.customAttr?.tooltip?.carousel?.enable &&
       this.values.length > 0 &&
-      this.chartIsVisible
+      this.chartIsVisible &&
+      !this.hasParentWithSwitchHidden(this.plot.chart.ele)
     )
   }
 
@@ -435,6 +436,21 @@ class ChartCarouselTooltip {
   }
 
   /**
+   * 判断元素是否有父元素包含 'switch-hidden' 类
+   * @param element
+   */
+  public hasParentWithSwitchHidden(element: HTMLElement) {
+    let parent = element.parentElement
+    while (parent) {
+      if (parent.classList.contains('switch-hidden')) {
+        return true
+      }
+      parent = parent.parentElement
+    }
+    return false
+  }
+
+  /**
    *  绑定事件监听
    *  */
   private bindEventListeners() {
@@ -475,8 +491,11 @@ class ChartCarouselTooltip {
     // 定义鼠标滚轮事件处理函数
     const handleMouseWheel = this.debounce(() => {
       CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
-        instance.paused()
-        instance.resume()
+        // 如果元素有父元素不包含 'switch-hidden' 类，则继续轮播
+        if (!this.hasParentWithSwitchHidden(instance.plot.chart.ele)) {
+          instance.paused()
+          instance.resume()
+        }
       })
     }, 50)
     // 定义 touchmove 事件处理函数（移动端）
