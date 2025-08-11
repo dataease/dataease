@@ -28,7 +28,7 @@ const contentShow = ref(true)
 const loading = ref(false)
 const axiosFinished = ref(true)
 const showFoot = ref(false)
-
+const showSlogan = ref(true)
 const loginLogoUrl = ref(null)
 const msg = ref(null)
 const loginImageUrl = ref(null)
@@ -176,6 +176,9 @@ const loadArrearance = () => {
   if (appearanceStore.getLogin) {
     loginLogoUrl.value = appearanceStore.getLogin
   }
+  if (appearanceStore.getShowSlogan) {
+    showSlogan.value = appearanceStore.getShowSlogan === 'true'
+  }
   if (appearanceStore.getSlogan) {
     slogan.value = appearanceStore.getSlogan
   }
@@ -288,7 +291,7 @@ onMounted(async () => {
               </Icon>
               <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="" />
             </div>
-            <div class="login-welcome">
+            <div v-if="showSlogan" class="login-welcome">
               {{ slogan || t('system.available_to_everyone') }}
             </div>
             <div class="login-form">

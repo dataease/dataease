@@ -538,6 +538,7 @@ export default {
     website_name: 'Website name',
     web_page_tab: 'Platform name displayed on web page tab',
     under_product_logo: 'Slogan under product logo',
+    slogan_content: 'Slogan content',
     footer: 'Footer',
     footer_content: 'Footer content',
     platform_settings: 'Platform settings',

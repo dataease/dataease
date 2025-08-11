@@ -523,6 +523,7 @@ export default {
     website_name: '网站名称',
     web_page_tab: '显示在网页 Tab 的平台名称',
     under_product_logo: '产品 Logo 下的 Slogan',
+    slogan_content: 'Slogan 内容',
     footer: '页脚',
     footer_content: '页脚内容',
     platform_settings: '平台设置',
