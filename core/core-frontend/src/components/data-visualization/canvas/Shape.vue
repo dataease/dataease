@@ -737,7 +737,7 @@ const handleMouseDownOnPoint = (point, e) => {
   // 获取画布位移信息
   const editorRectInfo = editorMap.value[canvasId.value]?.getBoundingClientRect()
   if (!editorRectInfo) {
-    reutrn
+    return
   }
   // 获取 point 与实际拖动基准点的差值
   const pointRect = e.target.getBoundingClientRect()
