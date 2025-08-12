@@ -82,13 +82,16 @@ export const layerStore = defineStore('layer', {
         targetComponent.isShow = true
         if (targetComponent.component == 'Group') {
           targetComponent.propValue.forEach(item => {
-            if (item.innerType?.indexOf('table') !== -1) {
+            if (item.innerType?.indexOf('table') !== -1 || item?.innerType?.indexOf('map') !== -1) {
               setTimeout(() => {
                 useEmitt().emitter.emit('renderChart-' + item.id)
               }, 400)
             }
           })
-        } else if (targetComponent?.innerType?.indexOf('table') !== -1) {
+        } else if (
+          targetComponent?.innerType?.indexOf('table') !== -1 ||
+          targetComponent?.innerType?.indexOf('map') !== -1
+        ) {
           setTimeout(() => {
             useEmitt().emitter.emit('renderChart-' + curComponent.value.id)
           }, 400)
