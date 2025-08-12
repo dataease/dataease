@@ -283,7 +283,7 @@ public class ChartViewThresholdManage {
                 DatasetTableFieldDTO fieldDTO = fieldMap.get(id);
                 if (ObjectUtils.isEmpty(fieldDTO)) continue;
                 String fieldDTOName = fieldDTO.getName();
-                String dataeaseName = fieldDTO.getDataeaseName();
+                /*String dataeaseName = fieldDTO.getDataeaseName();
                 String replacement = null;
                 if (fieldDTO.getDeType().equals(DeTypeConstants.DE_FLOAT) || fieldDTO.getDeType().equals(DeTypeConstants.DE_INT)) {
                     List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : stripTrailingZeros2String(row.get(dataeaseName))).collect(Collectors.toList());
@@ -294,7 +294,8 @@ public class ChartViewThresholdManage {
                 }
 
                 // 替换文本
-                matcher.appendReplacement(sb, replacement);
+                matcher.appendReplacement(sb, replacement);*/
+                matcher.appendReplacement(sb, fieldDTOName);
             }
             matcher.appendTail(sb);
 
