@@ -691,7 +691,7 @@ const canvas2Picture = (pictureData, online) => {
   imgDom.style['z-index'] = '2'
   imgDom.classList.add('prepare-picture-img')
   imgDom.src = pictureData
-  mapDom.appendChild(imgDom)
+  mapDom?.appendChild(imgDom)
 }
 const preparePicture = id => {
   if (id !== curView?.id) {

@@ -225,6 +225,9 @@ export const composeStore = defineStore('compose', {
     decompose() {
       const canvasId = curComponent.value.canvasId
       const editor = this.editorMap[canvasId]
+      if (!editor) {
+        return
+      }
       const parentStyle = { ...curComponent.value.style }
       const components = curComponent.value.propValue
       const editorRect = editor.getBoundingClientRect()
