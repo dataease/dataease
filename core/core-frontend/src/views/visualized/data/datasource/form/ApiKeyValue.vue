@@ -124,7 +124,7 @@ const timeFunLists = [
             <el-icon class="drag handle">
               <Icon name="icon_drag_outlined"><icon_drag_outlined class="svg-icon" /></Icon>
             </el-icon>
-            <el-col :span="activeName === 'params' ? 8 : 6" v-if="!unShowSelect">
+            <el-col :span="6" v-if="!unShowSelect">
               <el-input
                 v-if="!suggestions"
                 v-model="element.name"
@@ -143,7 +143,7 @@ const timeFunLists = [
                 show-word-limit
               />
             </el-col>
-            <el-col :span="3" v-if="activeName === 'table'">
+            <el-col :span="3">
               <el-select v-model="element.nameType" @change="changeNameType(element)">
                 <el-option
                   v-for="item in options"
@@ -164,17 +164,10 @@ const timeFunLists = [
               />
             </el-col>
 
-            <el-col :span="activeName === 'params' ? 7 : 6">
-              <el-input
-                v-if="!needMock && activeName === 'params'"
-                v-model="element.value"
-                :disabled="isReadOnly"
-                :placeholder="unShowSelect ? t('common.description') : valueText"
-                show-word-limit
-              />
+            <el-col :span="6">
               <el-select
                 v-model="element.value"
-                v-if="!needMock && activeName === 'table' && element.nameType === 'params'"
+                v-if="!needMock && element.nameType === 'params'"
                 style="width: 100%"
               >
                 <el-option
@@ -186,7 +179,7 @@ const timeFunLists = [
               </el-select>
               <el-select
                 v-model="element.value"
-                v-if="!needMock && activeName === 'table' && element.nameType === 'timeFun'"
+                v-if="!needMock && element.nameType === 'timeFun'"
                 style="width: 100%"
               >
                 <el-option
@@ -198,12 +191,7 @@ const timeFunLists = [
               </el-select>
 
               <el-input
-                v-if="
-                  !needMock &&
-                  activeName === 'table' &&
-                  element.nameType !== 'params' &&
-                  element.nameType !== 'timeFun'
-                "
+                v-if="!needMock && element.nameType !== 'params' && element.nameType !== 'timeFun'"
                 v-model="element.value"
                 :disabled="isReadOnly"
                 :placeholder="

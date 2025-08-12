@@ -216,7 +216,7 @@ const initApiItem = (
     jsName.value = getPluginStatic()
   }
   valueList.value = []
-  if (val.type !== 'params' && paramsList) {
+  if (paramsList) {
     for (let i = 0; i < paramsList.length; i++) {
       valueList.value = valueList.value.concat(paramsList[i].fields)
     }
