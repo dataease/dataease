@@ -196,7 +196,7 @@ const timeFunLists = [
                 show-word-limit
               />
             </el-col>
-            <el-col :span="3" v-if="activeName === 'table'">
+            <el-col :span="3">
               <el-select v-model="element.nameType" @change="changeNameType(element)">
                 <el-option
                   v-for="item in options"
@@ -207,19 +207,9 @@ const timeFunLists = [
               </el-select>
             </el-col>
             <el-col v-if="element.type !== 'file'" :span="6">
-              <el-input
-                v-if="activeName === 'params'"
-                v-model="element.value"
-                :disabled="isReadOnly"
-                class="input-with-autocomplete"
-                :placeholder="valueText"
-                value-key="name"
-                highlight-first-item
-              />
-
               <el-select
                 v-model="element.value"
-                v-if="!needMock && activeName === 'table' && element.nameType === 'params'"
+                v-if="!needMock && element.nameType === 'params'"
                 style="width: 100%"
               >
                 <el-option
@@ -231,7 +221,7 @@ const timeFunLists = [
               </el-select>
               <el-select
                 v-model="element.value"
-                v-if="!needMock && activeName === 'table' && element.nameType === 'timeFun'"
+                v-if="!needMock && element.nameType === 'timeFun'"
                 style="width: 100%"
               >
                 <el-option
@@ -243,7 +233,7 @@ const timeFunLists = [
               </el-select>
               <el-select
                 v-model="element.value"
-                v-if="!needMock && activeName === 'table' && element.nameType === 'pageParams'"
+                v-if="!needMock && element.nameType === 'pageParams'"
                 style="width: 100%"
               >
                 <el-option
@@ -255,7 +245,6 @@ const timeFunLists = [
               </el-select>
               <el-input
                 v-if="
-                  activeName === 'table' &&
                   element.nameType !== 'params' &&
                   element.nameType !== 'timeFun' &&
                   element.nameType !== 'pageParams'
@@ -273,7 +262,7 @@ const timeFunLists = [
               />
             </el-col>
 
-            <el-col :span="activeName === 'params' ? 10 : 7">
+            <el-col :span="7">
               <el-input
                 v-model="element.description"
                 maxlength="200"
