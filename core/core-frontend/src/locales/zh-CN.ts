@@ -1934,7 +1934,7 @@ export default {
     group_name: '分组名称',
     merge_group: '合并分组',
     table_header_group_config_tip: '字段的增删，位置变动，显隐修改都会导致分组失效',
-    group_name_edit_tip: '分组名称长度为 1-20 个字符',
+    group_name_edit_tip: '分组名称长度为 1-50 个字符',
     group_name_error_tip: '请输入正确的分组名称',
     merge_cells: '合并单元格',
     length_limit: '长度限制',

@@ -306,9 +306,9 @@ const renderTable = (chart: ChartObj) => {
           inputPlaceholder: t('chart.group_name_edit_tip'),
           inputValue: cellMeta.name,
           inputErrorMessage: t('chart.group_name_error_tip'),
-          // 正则校验，长度 1-20
+          // 正则校验，长度 1-50
           inputValidator: val => {
-            if (val?.length < 1 || val?.length > 20) {
+            if (val?.length < 1 || val?.length > 50) {
               return t('chart.group_name_error_tip')
             }
             return true
@@ -398,9 +398,9 @@ const renderTable = (chart: ChartObj) => {
           inputPlaceholder: t('chart.group_name_edit_tip'),
           inputErrorMessage: t('chart.group_name_error_tip'),
           inputValue: t('chart.group'),
-          // 正则校验，长度 1-20
+          // 正则校验，长度 1-50
           inputValidator: val => {
-            if (val?.length < 1 || val?.length > 20) {
+            if (val?.length < 1 || val?.length > 50) {
               return t('chart.group_name_error_tip')
             }
             return true

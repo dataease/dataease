@@ -1929,7 +1929,7 @@ export default {
     group_name: '分組名稱',
     merge_group: '合併分組',
     table_header_group_config_tip: '字段的增刪，位置變動，顯隱修改都會導致分組失效',
-    group_name_edit_tip: '分組名稱長度為 1-20 個字符',
+    group_name_edit_tip: '分組名稱長度為 1-50 個字符',
     group_name_error_tip: '請輸入正確的分組名稱',
     merge_cells: '合併儲存格',
     length_limit: '長度限制',
