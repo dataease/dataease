@@ -27,6 +27,8 @@ public class ChartViewFieldDTO extends ChartViewFieldBaseDTO implements Serializ
 
     private boolean hide;
 
+    private String groupType;
+
     /**
      * 字段来源
      */

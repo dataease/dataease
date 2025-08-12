@@ -370,7 +370,10 @@ const pointClickTrans = () => {
   }
 }
 
-const touchAction = callback => {
+const touchAction = (callback, fieldId) => {
+  if (fieldId) {
+    state.curActionId = fieldId
+  }
   if (!trackMenu.value.length) {
     callback?.()
   }

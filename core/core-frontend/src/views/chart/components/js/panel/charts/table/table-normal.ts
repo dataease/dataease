@@ -129,7 +129,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
             formatCfg = formatterItem
           }
           return valueFormatter(value, formatCfg)
-        }
+        },
+        id: ele.id
       })
     })
     const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)

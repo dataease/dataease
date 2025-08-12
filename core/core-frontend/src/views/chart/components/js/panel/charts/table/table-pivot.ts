@@ -174,7 +174,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           } else {
             return valueFormatter(value, formatterItem)
           }
-        }
+        },
+        id: ele.id
       })
     })
 

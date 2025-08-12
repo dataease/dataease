@@ -162,7 +162,14 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
             this.showTooltip(s2Instance, event, meta)
           }
         }
-        touchAction(callback)
+        const cell = s2Instance.getCell(shape)
+        const cellMeta = cell?.getMeta()
+        let fieldId
+        if (cellMeta) {
+          const field = find(meta, item => item.field === cellMeta.valueField)
+          fieldId = field?.id
+        }
+        touchAction(callback, fieldId)
       })
     })
   }
