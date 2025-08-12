@@ -694,6 +694,9 @@ eventBus.on('tabSort', tabSort)
 </template>
 
 <style lang="less">
+body {
+  overflow: hidden;
+}
 .preview-layout-container {
 }
 
