@@ -783,6 +783,11 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           fontStyle: cornerFontStyle,
           fontWeight: cornerFontWeight
         }
+      },
+      dataCell: {
+        bolderText: {
+          fontWeight: 'bold'
+        }
       }
     }
     merge(theme, pivotTheme)
