@@ -193,7 +193,7 @@ public class ChartViewThresholdManage {
                 }
                 String timeText = "";
                 if (StringUtils.containsIgnoreCase(format, "HH")) {
-                    timeText = " " + time;
+                    timeText = " (" + time + ")";
                 }
                 return count + " " + unitText + suffixText + timeText;
             } else {
