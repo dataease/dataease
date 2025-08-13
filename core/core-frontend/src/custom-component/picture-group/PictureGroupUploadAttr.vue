@@ -3,7 +3,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
+import { ElIcon } from 'element-plus-secondary'
 import { ref, onMounted, onBeforeUnmount, watch, PropType } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
@@ -37,7 +37,7 @@ const props = defineProps({
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { element, view } = toRefs(props)
+const { element } = toRefs(props)
 
 const { curComponent } = storeToRefs(dvMainStore)
 
@@ -100,14 +100,6 @@ watch(
     init()
   }
 )
-
-const onRefreshChange = val => {
-  onStyleChange()
-  if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {
-    ElMessage.error(t('chart.only_input_number'))
-    return
-  }
-}
 
 onMounted(() => {
   init()
@@ -173,53 +165,6 @@ onBeforeUnmount(() => {
           }}</el-radio>
         </el-radio-group>
       </el-form-item>
-    </el-row>
-    <el-row v-if="view" class="refresh-area">
-      <el-form-item
-        style="width: 100%"
-        class="form-item no-margin-bottom"
-        :class="'form-item-' + themes"
-      >
-        <el-checkbox
-          v-model="view.refreshViewEnable"
-          :effect="themes"
-          size="small"
-          @change="onStyleChange()"
-        >
-          {{ t('visualization.refresh_frequency') }}
-        </el-checkbox>
-      </el-form-item>
-      <el-row style="width: 100%" v-if="view.refreshViewEnable">
-        <el-form-item
-          class="form-item no-margin-bottom select-append"
-          :class="'form-item-' + themes"
-        >
-          <el-input
-            v-model.number="view.refreshTime"
-            :effect="themes"
-            :class="[themes === 'dark' && 'dv-dark']"
-            size="small"
-            :min="1"
-            :max="3600"
-            :disabled="!view.refreshViewEnable"
-            @change="onRefreshChange"
-          >
-            <template #append>
-              <el-select
-                v-model="view.refreshUnit"
-                :effect="themes"
-                size="small"
-                placeholder="Select"
-                style="width: 80px"
-                @change="onStyleChange()"
-              >
-                <el-option :effect="themes" :label="t('visualization.minute')" :value="'minute'" />
-                <el-option :effect="themes" :label="t('visualization.second')" :value="'second'" />
-              </el-select>
-            </template>
-          </el-input>
-        </el-form-item>
-      </el-row>
     </el-row>
   </el-collapse-item>
 </template>
@@ -380,10 +325,5 @@ onBeforeUnmount(() => {
   &:first-child {
     border-top: none !important;
   }
-}
-
-.refresh-area {
-  width: 100%;
-  padding: 0;
 }
 </style>
