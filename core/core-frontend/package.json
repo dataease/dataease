@@ -39,7 +39,7 @@
     "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",
     "js-base64": "^3.7.5",
-    "jsencrypt": "^3.3.2",
+    "jsencrypt": "3.3.2",
     "jspdf": "^3.0.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
