@@ -419,5 +419,6 @@ tinymce.addI18n('zh_CN', {
   "Cut column": "\u526a\u5207\u5217",
   "Copy column": "\u590d\u5236\u5217",
   "Paste column before": "\u7c98\u8d34\u5230\u524d\u65b9",
-  "Paste column after": "\u7c98\u8d34\u5230\u540e\u65b9"
+  "Paste column after": "\u7c98\u8d34\u5230\u540e\u65b9",
+  "Alternative description": "\u66ff\u4ee3\u63cf\u8ff0"
 });
