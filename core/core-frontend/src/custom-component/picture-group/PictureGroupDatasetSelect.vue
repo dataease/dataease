@@ -1,11 +1,25 @@
 <script setup lang="ts">
-import { nextTick, PropType, reactive, toRefs } from 'vue'
+import { nextTick, PropType, reactive, ref, toRefs } from 'vue'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getFieldByDQ } from '@/api/chart'
+import { ElMessage } from 'element-plus-secondary'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { useI18n } from '@/hooks/web/useI18n'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useAppStoreWithOut } from '@/store/modules/app'
+import { useRouter } from 'vue-router'
+import { useCache } from '@/hooks/web/useCache'
+import { XpackComponent } from '@/components/plugin'
 const snapshotStore = snapshotStoreWithOut()
+const dvMainStore = dvMainStoreWithOut()
+const { t } = useI18n()
+const embeddedStore = useEmbedded()
+const appStore = useAppStoreWithOut()
+const router = useRouter()
+const { wsCache } = useCache('localStorage')
 
 const props = defineProps({
   themes: {
@@ -43,6 +57,30 @@ const onDatasetUpdate = () => {
     }
   })
 }
+
+const addDsWindow = () => {
+  if (!dvMainStore.dvInfo.id) {
+    ElMessage.warning(t('visualization.save_page_tips'))
+    return
+  }
+  const path =
+    embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded-form' : '/dataset-form'
+  let routeData = router.resolve(path)
+  const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
+  const newWindow = window.open(routeData.href, openType)
+  initOpenHandler(newWindow)
+}
+
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
 </script>
 
 <template>
@@ -54,8 +92,10 @@ const onDatasetUpdate = () => {
     :themes="themes"
     :disabled="!view.senior.threshold.enable"
     @on-dataset-change="onDatasetUpdate"
+    @add-ds-window="addDsWindow"
     :state-obj="state"
   />
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>
