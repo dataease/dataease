@@ -377,6 +377,7 @@ const newWindowFromDiv = ref(false)
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
+  document.body.style.overflow = 'hidden'
   dvMainStore.setCurComponent({ component: null, index: null })
   snapshotStore.initSnapShot()
   if (window.location.hash.includes('#/dvCanvas')) {
@@ -466,6 +467,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  document.body.style.overflow = ''
   window.removeEventListener('storage', eventCheck)
   window.removeEventListener('blur', releaseAttachKey)
   eventBus.off('handleNew', handleNew)
@@ -688,9 +690,6 @@ eventBus.on('tabSort', tabSort)
 </template>
 
 <style lang="less">
-body {
-  overflow: hidden;
-}
 .preview-layout-container {
 }
 

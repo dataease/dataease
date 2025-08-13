@@ -181,6 +181,7 @@ const initLocalCanvasData = callBack => {
   )
 }
 onMounted(async () => {
+  document.body.style.overflow = 'hidden'
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setHiddenListStatus(false)
   snapshotStore.initSnapShot()
@@ -318,6 +319,7 @@ const doRecoverToPublished = () => {
 }
 
 onUnmounted(() => {
+  document.body.style.overflow = ''
   window.removeEventListener('storage', eventCheck)
   window.removeEventListener('message', winMsgHandle)
 })
