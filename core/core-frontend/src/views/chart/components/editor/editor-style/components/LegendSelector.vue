@@ -103,6 +103,18 @@ const changeMisc = prop => {
 }
 
 const legendSort = ref()
+const sortAxis = computed(() => {
+  if (props.chart.type === 'line') {
+    return 'xAxisExt'
+  }
+  return 'extStack'
+})
+const legendSortDisabled = computed(() => {
+  if (props.chart?.type === 'line') {
+    return !props.chart.xAxisExt?.length
+  }
+  return !props.chart?.extStack?.length
+})
 const init = () => {
   legendSort.value?.blur()
   const chart = JSON.parse(JSON.stringify(props.chart))
@@ -234,7 +246,11 @@ const getMapCustomRange = index => {
 const customSort = []
 const changeLegendSort = sort => {
   if (sort === 'custom') {
-    state.customSortField = cloneDeep(props.chart.xAxisExt?.[0])
+    if (props.chart.type === 'line') {
+      state.customSortField = cloneDeep(props.chart.xAxisExt?.[0])
+    } else {
+      state.customSortField = cloneDeep(props.chart.extStack?.[0])
+    }
     if (!state.customSortField) {
       return
     }
@@ -718,7 +734,7 @@ onMounted(() => {
         v-model="state.legendForm.sort"
         size="small"
         :effect="themes"
-        :disabled="!chart.xAxisExt?.length"
+        :disabled="legendSortDisabled"
         ref="legendSort"
         @change="changeLegendSort"
       >
@@ -744,7 +760,7 @@ onMounted(() => {
     class="dialog-css custom_sort_dialog"
   >
     <custom-sort-edit
-      field-type="xAxisExt"
+      :field-type="sortAxis"
       :chart="chart"
       :field="state.customSortField"
       :origin-sort-list="state.legendForm.customSort"
