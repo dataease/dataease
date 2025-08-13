@@ -9,7 +9,7 @@ const permissionStore = usePermissionStoreWithOut()
 const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 
-export const logoutHandler = (justClean?: boolean) => {
+export const logoutHandler = (justClean?: boolean, save_platform_status = false) => {
   userStore.clear()
   userStore.$reset()
   permissionStore.clear()
@@ -25,6 +25,9 @@ export const logoutHandler = (justClean?: boolean) => {
   let pathname = window.location.pathname
   if (pathname) {
     if (pathname.includes('oidcbi/')) {
+      if (save_platform_status) {
+        return
+      }
       pathname = pathname.replace('oidcbi/', '')
       if (pathname.includes('mobile.html')) {
         pathname = pathname.replace('mobile.html', '')
@@ -33,6 +36,9 @@ export const logoutHandler = (justClean?: boolean) => {
       window.location.href = pathname + '/oidcbi/oidc/logout'
       return
     } else if (pathname.includes('casbi/')) {
+      if (save_platform_status) {
+        return
+      }
       pathname = pathname.replace('casbi/', '')
       if (pathname.includes('mobile.html')) {
         pathname = pathname.replace('mobile.html', '')
