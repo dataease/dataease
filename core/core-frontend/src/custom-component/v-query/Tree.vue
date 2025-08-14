@@ -13,6 +13,10 @@ import {
 } from 'vue'
 import { cloneDeep, debounce } from 'lodash-es'
 import { getFieldTree } from '@/api/dataset'
+import colorFunctions from 'less/lib/less/functions/color.js'
+import colorTree from 'less/lib/less/tree/color.js'
+import { colorStringToHex } from '@/utils/color'
+
 interface SelectConfig {
   selectValue: any
   defaultMapValue: any
@@ -35,6 +39,7 @@ interface SelectConfig {
   multiple: boolean
 }
 
+const customStyle: any = inject('$custom-style-filter')
 const props = defineProps({
   config: {
     type: Object as PropType<SelectConfig>,
@@ -272,6 +277,22 @@ const getCustomWidth = () => {
 const selectStyle = computed(() => {
   return props.isConfig ? {} : { width: getCustomWidth() + 'px' }
 })
+
+const tagColor = computed(() => {
+  if (
+    !customStyle ||
+    ['#FFFFFF', 'rgba(255, 255, 255, 1)', 'rgb(255, 255, 255)'].includes(customStyle.background)
+  )
+    return ''
+  if (customStyle.background === '#131C42') return 'rgb(38, 53, 82)'
+  const hexColor = customStyle.background.startsWith('#')
+    ? customStyle.background
+    : colorStringToHex(customStyle.background)
+
+  return colorFunctions
+    .mix(new colorTree('ffffff'), new colorTree(hexColor.substr(1)), { value: 20 })
+    .toRGB()
+})
 </script>
 
 <template>
@@ -290,6 +311,7 @@ const selectStyle = computed(() => {
     :filter-node-method="filterMethod"
     :showWholePath="showWholePath"
     collapse-tags-tooltip
+    :tagColor="tagColor"
     :key="'multipleTree' + getCustomWidth()"
     filterable
     :style="selectStyle"
