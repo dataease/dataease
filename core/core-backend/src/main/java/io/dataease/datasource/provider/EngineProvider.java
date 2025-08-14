@@ -14,17 +14,17 @@ import java.util.List;
 public abstract class EngineProvider {
     public abstract String createView(String name, String viewSQL);
 
-    public abstract String dropTable(String name);
+    public abstract String dropTable(String name, CoreDeEngine engine);
 
     public abstract boolean needCheckExistTable();
 
     public abstract String dropView(String name);
 
-    public abstract String replaceTable(String name);
+    public abstract String replaceTable(String name, CoreDeEngine engine);
 
     public abstract String createTableSql(String name, List<TableField> tableFields, CoreDeEngine engine);
 
-    public abstract String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields);
+    public abstract String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields, CoreDeEngine engine);
 
 
 }

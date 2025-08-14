@@ -32,7 +32,7 @@ public class OracleEngineProvider extends EngineProvider {
     }
 
     @Override
-    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields) {
+    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields, CoreDeEngine engine) {
         String engineTableName;
         switch (extractType) {
             case all_scope:
@@ -86,7 +86,7 @@ public class OracleEngineProvider extends EngineProvider {
 
 
     @Override
-    public String dropTable(String name) {
+    public String dropTable(String name, CoreDeEngine engine) {
         return "DROP TABLE  \"" + name + "\"";
     }
 
@@ -96,7 +96,7 @@ public class OracleEngineProvider extends EngineProvider {
     }
 
     @Override
-    public String replaceTable(String name) {
+    public String replaceTable(String name, CoreDeEngine engine) {
         String replaceTableSql = "rename  \"FROM_TABLE\" to \"FROM_TABLE_tmp\";  rename \"TO_TABLE\" to \"FROM_TABLE\"; rename \"FROM_TABLE_tmp\" to \"TO_TABLE\"".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
         String dropTableSql = "DROP TABLE   \"TABLE_NAME\"".replace("TABLE_NAME", TableUtils.tmpName(name));
         return replaceTableSql + ";" + dropTableSql;

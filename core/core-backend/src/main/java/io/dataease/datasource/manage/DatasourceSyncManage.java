@@ -277,7 +277,7 @@ public class DatasourceSyncManage {
             totalPage = dataList.size() / pageNumber;
         }
         for (int page = 1; page <= totalPage; page++) {
-            engineRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.API.name(), datasourceRequest.getTable(), extractType, dataList, page, pageNumber, tableFields));
+            engineRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.API.name(), datasourceRequest.getTable(), extractType, dataList, page, pageNumber, tableFields, engine));
             calciteProvider.exec(engineRequest);
         }
     }
@@ -300,7 +300,7 @@ public class DatasourceSyncManage {
             totalPage = dataList.size() / pageNumber;
         }
         for (int page = 1; page <= totalPage; page++) {
-            engineRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.Excel.name(), datasourceRequest.getTable(), extractType, dataList, page, pageNumber, tableFields));
+            engineRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.Excel.name(), datasourceRequest.getTable(), extractType, dataList, page, pageNumber, tableFields, engine));
             calciteProvider.exec(engineRequest);
         }
     }
@@ -310,7 +310,7 @@ public class DatasourceSyncManage {
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
-        String[] replaceTableSql = engineProvider.replaceTable(tableName).split(";");
+        String[] replaceTableSql = engineProvider.replaceTable(tableName, engine).split(";");
         for (int i = 0; i < replaceTableSql.length; i++) {
             if (StringUtils.isNotEmpty(replaceTableSql[i])) {
                 engineRequest.setQuery(replaceTableSql[i]);
@@ -344,7 +344,7 @@ public class DatasourceSyncManage {
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
-        engineRequest.setQuery(engineProvider.dropTable(tableName));
+        engineRequest.setQuery(engineProvider.dropTable(tableName, engine));
         if (engineProvider.needCheckExistTable()) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             DatasourceDTO datasourceDTO = new DatasourceDTO();
@@ -353,7 +353,7 @@ public class DatasourceSyncManage {
             if (calciteProvider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
                 calciteProvider.exec(engineRequest);
             }
-        }else {
+        } else {
             calciteProvider.exec(engineRequest);
         }
     }

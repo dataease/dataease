@@ -25,7 +25,7 @@ public class H2EngineProvider extends EngineProvider {
     }
 
     @Override
-    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields) {
+    public String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields, CoreDeEngine engine) {
         String engineTableName;
         switch (extractType) {
             case all_scope:
@@ -66,7 +66,7 @@ public class H2EngineProvider extends EngineProvider {
 
 
     @Override
-    public String dropTable(String name) {
+    public String dropTable(String name, CoreDeEngine engine) {
         return "DROP TABLE IF EXISTS `" + name + "`";
     }
 
@@ -81,7 +81,7 @@ public class H2EngineProvider extends EngineProvider {
     }
 
     @Override
-    public String replaceTable(String name) {
+    public String replaceTable(String name, CoreDeEngine engine) {
         return "ALTER TABLE `FROM_TABLE` rename to `FROM_TABLE_tmp`; ALTER TABLE `TO_TABLE` rename to `FROM_TABLE`; DROP TABLE IF EXISTS `FROM_TABLE_tmp`;".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
     }
 

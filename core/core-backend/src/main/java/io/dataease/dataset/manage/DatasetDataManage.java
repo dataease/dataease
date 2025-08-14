@@ -127,7 +127,7 @@ public class DatasetDataManage {
                 Map map = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Map.class);
                 if (!datasourceRequest.getIsCross()) {
                     if (ObjectUtils.isNotEmpty(map.get("schema"))) {
-                        sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, String.format(format, map.get("schema").toString()) );
+                        sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, String.format(format, map.get("schema").toString()));
                     } else {
                         sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
                     }
@@ -185,6 +185,11 @@ public class DatasetDataManage {
             String sql = TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0";
             // replace schema alias, trans dialect
             sql = Utils.replaceSchemaAlias(sql, datasourceRequest.getDsList());
+
+            Map map = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Map.class);
+            if (ObjectUtils.isNotEmpty(map.get("schema"))) {
+                sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, String.format(format, map.get("schema").toString()));
+            }
             sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             datasourceRequest.setQuery(sql);
             logger.debug("calcite data table field sql: " + datasourceRequest.getQuery());

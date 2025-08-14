@@ -5,10 +5,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
-import io.dataease.datasource.type.H2;
-import io.dataease.datasource.type.Impala;
-import io.dataease.datasource.type.Mysql;
-import io.dataease.datasource.type.Oracle;
+import io.dataease.datasource.type.*;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.utils.*;
@@ -52,6 +49,9 @@ public class EngineServer implements EngineApi {
                 break;
             case "oracle":
                 datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Oracle.class)).toString());
+                break;
+            case "sqlServer":
+                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Sqlserver.class)).toString());
                 break;
         }
         datasourceDTO.setConfiguration(RsaUtils.symmetricEncrypt(datasourceDTO.getConfiguration()));

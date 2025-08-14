@@ -270,6 +270,45 @@ public class EngineManage {
     }
 
 
+    public static class SqlserverJdbcUrlParser implements JdbcUrlParser {
+        private static final Pattern PATTERN = Pattern.compile("jdbc:sqlserver://(.*):(\\d+);(.*)");
+
+        @Override
+        public Map<String, String> parse(String url, Environment env) {
+            Matcher matcher = PATTERN.matcher(url);
+            if (!matcher.find()) return null;
+            Map<String, String> config = new HashMap<>();
+            config.put("host", matcher.group(1));
+            config.put("port", matcher.group(2));
+            if (matcher.groupCount() == 3) {
+                String[] params = matcher.group(3).split(";");
+                String extraParams = "";
+                for (String s : params) {
+                    if (s.startsWith("DatabaseName")) {
+                        config.put("dataBase", s.split("=")[1]);
+                    } else {
+                        if (s.startsWith("currentSchema")) {
+                            config.put("schema", s.split("=")[1]);
+                        }
+                        extraParams = extraParams + s + ";";
+                    }
+                }
+                config.put("extraParams", extraParams);
+            }
+            if (StringUtils.isNotEmpty(env.getProperty("spring.datasource.hikari.schema"))) {
+                config.put("schema", env.getProperty("spring.datasource.hikari.schema"));
+            }
+            if (StringUtils.isNotEmpty(env.getProperty("spring.jpa.properties.hibernate.default_schema"))) {
+                config.put("schema", env.getProperty("spring.jpa.properties.hibernate.default_schema"));
+            }
+            config.put("type", "sqlServer");
+            config.put("username", env.getProperty("spring.datasource.username"));
+            config.put("password", env.getProperty("spring.datasource.password"));
+            return config;
+        }
+    }
+
+
     /**
      * Oracle JDBC URL解析器实现
      * 支持两种格式的Oracle JDBC URL：
@@ -354,6 +393,8 @@ public class EngineManage {
                             parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:postgresql://")) {
                             parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:sqlserver://")) {
+                            parserMap.put("jdbc:sqlserver://", new SqlserverJdbcUrlParser());
                         }
                     }
                 }
