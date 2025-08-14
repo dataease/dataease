@@ -4,6 +4,8 @@
     v-model="state.appApplyDrawer"
     modal-class="de-app-drawer"
     :show-close="false"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
     size="500px"
     direction="rtl"
     z-index="1000"
