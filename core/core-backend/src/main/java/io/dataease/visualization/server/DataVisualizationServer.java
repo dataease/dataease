@@ -165,7 +165,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
-        DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, busiFlag, CommonConstants.RESOURCE_TABLE.SNAPSHOT,DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT));
+        DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, busiFlag, CommonConstants.RESOURCE_TABLE.SNAPSHOT, DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT));
         if (result != null && result.getPid() == -1) {
             return result;
         } else {
@@ -392,14 +392,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         dsGroup.setName(dsGroup.getName() + "-" + UUID.randomUUID().toString());
                     }
                     dsGroupNameSave.add(dsGroup.getName());
-                    if(dsGroup.getIsCross() == null){
-                        if(dsGroup.getUnion() == null){
+                    if (dsGroup.getIsCross() == null) {
+                        if (dsGroup.getUnion() == null) {
                             dsGroup.setUnion(JsonUtil.parseList(dsGroup.getInfo(), new TypeReference<>() {
                             }));
                         }
                         datasetSQLManage.mergeDatasetCrossDefault(dsGroup);
                     }
-                    excelAdaptor(dsGroup,excelTableNamesMap,excelDatasourceId);
+                    excelAdaptor(dsGroup, excelTableNamesMap, excelDatasourceId);
                     datasetGroupManage.innerSave(dsGroup);
                 });
 
@@ -488,24 +488,24 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return newDvId.toString();
     }
 
-    private void excelAdaptor(DatasetGroupInfoDTO dsInfo,Map<String, String> excelTableNamesMap ,List<Long> excelDsId) {
+    private void excelAdaptor(DatasetGroupInfoDTO dsInfo, Map<String, String> excelTableNamesMap, List<Long> excelDsId) {
         List<UnionDTO> unionDTOList = JsonUtil.parseList(dsInfo.getInfo(), new TypeReference<>() {
         });
-        if(CollectionUtils.isNotEmpty(excelDsId) && MapUtils.isNotEmpty(excelTableNamesMap)){
-            for(UnionDTO unionDTO : unionDTOList) {
-                DatasetTableDTO tableDTO =unionDTO.getCurrentDs();
-                if(excelDsId.contains(tableDTO.getDatasourceId())){
+        if (CollectionUtils.isNotEmpty(excelDsId) && MapUtils.isNotEmpty(excelTableNamesMap)) {
+            for (UnionDTO unionDTO : unionDTOList) {
+                DatasetTableDTO tableDTO = unionDTO.getCurrentDs();
+                if (excelDsId.contains(tableDTO.getDatasourceId())) {
                     DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(tableDTO.getInfo(), DatasetTableInfoDTO.class);
                     String s = new String(Base64.getDecoder().decode(infoDTO.getSql()));
                     excelTableNamesMap.forEach((key, value) -> {
                         infoDTO.setSql(Base64.getEncoder().encodeToString(s.replaceAll(key, value).getBytes()));
                     });
-                    tableDTO.setInfo((String)JsonUtil.toJSONString(infoDTO));
+                    tableDTO.setInfo((String) JsonUtil.toJSONString(infoDTO));
                 }
 
             }
         }
-        dsInfo.setInfo((String)JsonUtil.toJSONString(unionDTOList));
+        dsInfo.setInfo((String) JsonUtil.toJSONString(unionDTOList));
     }
 
     @Override
@@ -761,7 +761,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public String findDvType(Long dvId) {
         String result = extDataVisualizationMapper.findDvType(dvId);
-        if(StringUtils.isEmpty(result)){
+        if (StringUtils.isEmpty(result)) {
             DEException.throwException(Translator.get("i18n_resource_not_exists"));
         }
         return result;
@@ -939,7 +939,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (CollectionUtils.isEmpty(datasourceVOInfo)) {
             DEException.throwException("当前不存在数据源无法导出");
         } else if (datasourceVOInfo.stream()
-                .anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()))) {
+                .anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()) || DatasourceConfiguration.DatasourceType.APILark.name().equals(datasource.getType()))) {
             DEException.throwException(Translator.get("i18n_app_error_no_api"));
         }
 
