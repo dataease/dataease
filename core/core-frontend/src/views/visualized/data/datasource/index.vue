@@ -797,8 +797,12 @@ const handleCopy = async data => {
       fileName,
       size,
       description,
-      lastSyncTime
+      lastSyncTime,
+      enableDataFill
     } = res.data
+    let arr = pluginDs.value.filter(ele => {
+      return ele.type == res.data.type
+    })
     if (configuration) {
       configuration = JSON.parse(symmetricDecrypt(configuration, symmetricKey.value))
     }
@@ -824,7 +828,10 @@ const handleCopy = async data => {
       syncSetting,
       apiConfiguration: apiConfigurationStr,
       paramsConfiguration: paramsStr,
-      lastSyncTime
+      lastSyncTime,
+      enableDataFill,
+      isPlugin: arr && arr.length > 0,
+      staticMap: arr[0]?.staticMap
     })
     datasource.id = ''
     datasource.copy = true
