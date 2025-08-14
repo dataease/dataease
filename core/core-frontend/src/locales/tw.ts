@@ -2846,7 +2846,7 @@ export default {
     publish_tips1: '發佈後可查看',
     publish_tips2: '發佈後可{0}',
     cancel_publish_tips: '取消發佈成功',
-    resource_not_published: '資源未發佈',
+    resource_not_published: '该資源未發佈',
     re_publish: '重新發佈',
     published_success: '發佈成功',
     cancel_publish: '取消發佈',

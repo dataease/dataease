@@ -2852,7 +2852,7 @@ export default {
     publish_tips1: '发布后可查看',
     publish_tips2: '发布后可{0}',
     cancel_publish_tips: '取消发布成功',
-    resource_not_published: '资源未发布',
+    resource_not_published: '该资源未发布',
     re_publish: '重新发布',
     published_success: '发布成功',
     cancel_publish: '取消发布',
