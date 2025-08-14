@@ -31,6 +31,9 @@ export function changeSizeWithScale(scale) {
 }
 
 function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
+  if (!componentDataCopy || !Array.isArray(componentDataCopy)) {
+    return
+  }
   componentDataCopy?.forEach(component => {
     Object.keys(component.style).forEach(key => {
       if (needToChangeDirectionAttrs.width.includes(key)) {
