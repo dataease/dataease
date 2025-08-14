@@ -513,6 +513,17 @@ const quotaItemRemove = item => {
 const isFilterActive = computed(() => {
   return !!view.value.customFilter?.items?.length
 })
+const isFilterInvalid = computed(() => {
+  if (!view.value.customFilter?.items?.length) {
+    return false
+  }
+  if (!view.value.tableId) {
+    return false
+  }
+  const item = view.value.customFilter.items[0]
+  const valid = allFields.value.some(f => f.id === item.fieldId)
+  return !valid
+})
 
 const drillItemChange = () => {
   recordSnapshotInfo('calcData')
@@ -3157,7 +3168,11 @@ const deleteChartFieldItem = id => {
                           <div
                             class="tree-btn"
                             v-if="isFilterActive || themes === 'dark'"
-                            :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
+                            :class="{
+                              'tree-btn--dark': themes === 'dark',
+                              active: isFilterActive,
+                              invalid: isFilterInvalid
+                            }"
                             @click="openTreeFilter"
                           >
                             <el-icon style="margin-right: 2px; font-size: 12px">
@@ -4677,6 +4692,11 @@ span {
       &.active {
         color: #3370ff;
         border-color: #3370ff;
+      }
+
+      &.invalid {
+        color: red !important;
+        border-color: red !important;
       }
     }
 
