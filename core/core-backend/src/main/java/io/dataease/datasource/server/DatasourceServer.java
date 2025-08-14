@@ -31,11 +31,13 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.datasource.type.Oracle;
+import io.dataease.datasource.type.Sqlserver;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.provider.Provider;
+import io.dataease.extensions.datasource.vo.Configuration;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.i18n.Translator;
@@ -1102,7 +1104,17 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
             return null;
         }
-        String sql = "SELECT * FROM `" + tableName + "`";
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
+
+        Configuration configuration = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Configuration.class);
+        String schema = StringUtils.isNotEmpty(configuration.getSchema()) ? configuration.getSchema() + "." : "";
+        String sql = "SELECT * FROM " + schema + tableName;
+        Provider provider = ProviderFactory.getDefaultProvider();
+        Map<Long, DatasourceSchemaDTO> dsMap = new HashMap<>();
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+        dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
+        sql = provider.transSqlDialect(sql, dsMap);
         sql = new String(Base64.getEncoder().encode(sql.getBytes()));
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
         previewSqlDTO.setSql(sql);
@@ -1363,7 +1375,7 @@ public class DatasourceServer implements DatasourceApi {
             if (hidePw) {
                 Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
                 provider.hidePW(datasourceDTO);
-            }else {
+            } else {
                 switch (datasourceDTO.getType()) {
                     case "mysql":
                         datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class)).toString());
@@ -1373,6 +1385,9 @@ public class DatasourceServer implements DatasourceApi {
                         break;
                     case "oracle":
                         datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Oracle.class)).toString());
+                        break;
+                    case "sqlServer":
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Sqlserver.class)).toString());
                         break;
                 }
             }

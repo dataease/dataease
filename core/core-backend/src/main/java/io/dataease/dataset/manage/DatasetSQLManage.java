@@ -537,7 +537,12 @@ public class DatasetSQLManage {
             }
         } else {
             CoreDatasource coreDatasource = engineManage.getDeEngine();
-            schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
+            Map map = JsonUtil.parseObject(coreDatasource.getConfiguration(), Map.class);
+            if (!isCross && ObjectUtils.isNotEmpty(map.get("schema"))) {
+                schemaAlias = (String) map.get("schema");
+            } else {
+                schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
+            }
             if (!dsMap.containsKey(coreDatasource.getId())) {
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
                 BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
