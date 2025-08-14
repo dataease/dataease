@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import iconSetting from '@/assets/svg/icon_organization_outlined.svg'
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router_2'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { computed } from 'vue'
 

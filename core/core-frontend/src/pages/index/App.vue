@@ -2,7 +2,7 @@
 import { ref, defineAsyncComponent, nextTick } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import configGlobal from '@/components/config-global/src/ConfigGlobal.vue'
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router_2'
 const route = useRoute()
 const exportExcelRef = ref()
 const exportExcelRefShow = ref(false)

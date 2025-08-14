@@ -75,7 +75,7 @@ htmlStream.pipe(parserStream).on('finish', () => {
   eleArr.forEach((ele) => {
     produceTag(ele.attributes, ele.name)
   })
-  document.documentElement.insertBefore(head, document.querySelector('head'))`
+  document.documentElement.insertBefore(head, document.querySelector('body'))`
 
   fs.writeFile(`../dist/js/div_import_${suffix}.js`, templateJs, err => {
   })
