@@ -35,6 +35,7 @@ import {
   DEFAULT_LEGEND_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { Group } from '@antv/g-canvas'
+import { getItemsOfView } from '@antv/g2/lib/interaction/action/active-region'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -117,6 +118,36 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
             data: e.target.attrs.data
           }
         })
+      })
+    }
+    // 只处理条形图，分组和堆叠的阴影部分没有子维度信息
+    if (this.name === 'bar-horizontal' && options.tooltip) {
+      newChart.on('plot:click', e => {
+        if (e.target?.cfg?.renderer !== 'canvas') {
+          return
+        }
+        const activeRegion = e.view.backgroundGroup.cfg.children.find(
+          i => i.cfg.name === 'active-region'
+        )
+        if (activeRegion?.cfg.visible) {
+          const items = getItemsOfView(
+            e.view,
+            { x: e.x, y: e.y },
+            e.view.getController('tooltip').getTooltipCfg()
+          )
+          if (items?.length) {
+            const datum = items[0].data
+            if (datum && datum.field) {
+              action({
+                x: e.x,
+                y: e.y,
+                data: {
+                  data: datum
+                }
+              })
+            }
+          }
+        }
       })
     }
     configPlotTooltipEvent(chart, newChart)

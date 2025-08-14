@@ -37,6 +37,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { clearExtremum, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 import { Group } from '@antv/g-canvas'
+import { getItemsOfView } from '@antv/g2/lib/interaction/action/active-region'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -101,6 +102,36 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     const { Column: ColumnClass } = await import('@antv/g2plot/esm/plots/column')
     newChart = new ColumnClass(container, options)
     newChart.on('interval:click', action)
+    // 只处理柱状图，分组和堆叠的阴影部分没有子维度信息
+    if (this.name === 'bar' && options.tooltip) {
+      newChart.on('plot:click', e => {
+        if (e.target?.cfg?.renderer !== 'canvas') {
+          return
+        }
+        const activeRegion = e.view.backgroundGroup.cfg.children.find(
+          i => i.cfg.name === 'active-region'
+        )
+        if (activeRegion?.cfg.visible) {
+          const items = getItemsOfView(
+            e.view,
+            { x: e.x, y: e.y },
+            e.view.getController('tooltip').getTooltipCfg()
+          )
+          if (items?.length) {
+            const datum = items[0].data
+            if (datum && datum.field) {
+              action({
+                x: e.x,
+                y: e.y,
+                data: {
+                  data: datum
+                }
+              })
+            }
+          }
+        }
+      })
+    }
     extremumEvt(newChart, chart, options, container)
     configPlotTooltipEvent(chart, newChart)
     return newChart
