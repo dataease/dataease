@@ -10,7 +10,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router_2'
 import { useCache } from '@/hooks/web/useCache'
 import { XpackComponent } from '@/components/plugin'
 const snapshotStore = snapshotStoreWithOut()
