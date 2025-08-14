@@ -1874,7 +1874,7 @@ export default {
     end_point: 'Ending point',
     line: 'Line',
     map_style: 'Map style',
-    map_style_url: 'Map style URL',
+    map_style_url: 'Map style URL/ID',
     map_pitch: 'Pitch',
     map_rotation: 'Rotation',
     map_style_normal: 'Standard',

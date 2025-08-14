@@ -1831,7 +1831,7 @@ export default {
     end_point: '终点经纬度',
     line: '线条',
     map_style: '地图风格',
-    map_style_url: '地图风格 URL',
+    map_style_url: '地图风格 URL 或 ID',
     map_pitch: '倾角',
     map_rotation: '旋转',
     map_style_normal: '标准',
