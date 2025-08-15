@@ -103,7 +103,7 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
   tableCell: {
     tableItemBgColor: '#FFFFFF',
     tableFontColor: '#000000',
-    tableItemSubBgColor: '#EEEEEE'
+    tableItemSubBgColor: '#1E90FF'
   }
 }
 
@@ -154,7 +154,7 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
   tableCell: {
     tableItemBgColor: '#131E42',
     tableFontColor: '#ffffff',
-    tableItemSubBgColor: '#EEEEEE'
+    tableItemSubBgColor: '#1E90FF'
   }
 }
 
