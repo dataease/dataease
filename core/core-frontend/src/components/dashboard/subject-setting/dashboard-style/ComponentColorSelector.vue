@@ -103,8 +103,20 @@
                 />
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item :label="t('chart.stripe')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm['tableCell']['tableItemSubBgColor']"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  show-alpha
+                  :effect="themes"
+                  @change="changeColorCase('tableItemSubBgColor')"
+                />
+              </el-form-item>
+            </el-col>
             <el-col :span="12">
               <el-form-item :label="t('chart.table_header_font_color')" class="form-item">
                 <el-color-picker
