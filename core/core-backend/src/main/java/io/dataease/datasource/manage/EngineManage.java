@@ -46,7 +46,7 @@ public class EngineManage {
     private DataSourceManage dataSourceManage;
     @Resource
     private DatasourceServer datasourceServer;
-    @Value("${dataease.path.engine:jdbc:h2:/opt/dataease2.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE}")
+    @Value("${dataease.path.engine:jdbc:h2:/opt/dataease3.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE}")
     private String engineUrl;
 
     @Resource

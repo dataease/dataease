@@ -114,7 +114,7 @@ public class ExportCenterManage implements BaseExportApi {
 
 
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
-    @Value("${dataease.path.exportData:/opt/dataease2.0/data/exportData/}")
+    @Value("${dataease.path.exportData:/opt/dataease3.0/data/exportData/}")
     private String exportData_path;
     @Resource
     private VisualizationWatermarkRepository visualizationWatermarkRepository;
