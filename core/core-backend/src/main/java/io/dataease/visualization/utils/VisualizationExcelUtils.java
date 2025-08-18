@@ -26,9 +26,9 @@ public class VisualizationExcelUtils {
 
     public static String getBaseRoot() {
         if (ModelUtils.isDesktop()) {
-            return ConfigUtils.getConfig("dataease.path.report", "/opt/dataease2.0/data/report/");
+            return ConfigUtils.getConfig("dataease.path.report", "/opt/dataease3.0/data/report/");
         } else {
-            return "/opt/dataease2.0/data/report/";
+            return "/opt/dataease3.0/data/report/";
         }
     }
 

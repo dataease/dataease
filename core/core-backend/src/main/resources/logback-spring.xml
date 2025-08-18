@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="true">
-    <springProperty scope="context" name="logPath" source="logging.file.path" defaultValue="/opt/dataease2.0/logs/core"/>
+    <springProperty scope="context" name="logPath" source="logging.file.path" defaultValue="/opt/dataease3.0/logs/core"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <immediateFlush>true</immediateFlush>

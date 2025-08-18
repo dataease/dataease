@@ -45,9 +45,9 @@ public class ExcelUtils {
 
     public static String getExcelPath() {
         if (ModelUtils.isDesktop()) {
-            return ConfigUtils.getConfig("dataease.path.excel", "/opt/dataease2.0/data/excel/");
+            return ConfigUtils.getConfig("dataease.path.excel", "/opt/dataease3.0/data/excel/");
         } else {
-            return "/opt/dataease2.0/data/excel/";
+            return "/opt/dataease3.0/data/excel/";
         }
     }
 
