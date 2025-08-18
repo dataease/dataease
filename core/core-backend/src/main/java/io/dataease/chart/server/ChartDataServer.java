@@ -380,15 +380,15 @@ public class ChartDataServer implements ChartDataApi {
                 Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
                 Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
                 if (mergeCells != null && mergeCells) {
-                    var quotaIndex = 0;
+                    var mergeIndex = viewInfo.getXAxis().size();
                     for (int i = 0; i < viewInfo.getXAxis().size(); i++) {
                         if ("q".equalsIgnoreCase(viewInfo.getXAxis().get(i).getGroupType())) {
-                            quotaIndex = i;
+                            mergeIndex = i;
                             break;
                         }
                     }
-                    if (quotaIndex >= 1 && details.size() > 1) {
-                        mergeConfig = getMergeConfig(details.subList(1, details.size()), quotaIndex - 1, totalDepth == 0 ? 1 : totalDepth);
+                    if (mergeIndex >= 1 && details.size() > 1) {
+                        mergeConfig = getMergeConfig(details.subList(1, details.size()), mergeIndex - 1, totalDepth == 0 ? 1 : totalDepth);
                     }
                 }
             }
