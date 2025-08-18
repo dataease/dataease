@@ -349,6 +349,14 @@ const handleFieldIdChange = (val: EnumValue) => {
     })
     .finally(() => {
       loading.value = false
+      if (disabledFirstItem.value) {
+        time = setTimeout(() => {
+          clearTimeout(time)
+          setDefaultValueFirstItem()
+        }, 300)
+        return
+      }
+
       if (config.value.defaultValueCheck && !isFromRemote.value) {
         selectValue.value = Array.isArray(config.value.defaultValue)
           ? [...config.value.defaultValue]
@@ -368,6 +376,7 @@ const handleFieldIdChange = (val: EnumValue) => {
         config.value.mapValue = setDefaultMapValue(
           Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
         )
+
         if (shouldReSearch) {
           queryDataForId(config.value.id)
         }
@@ -376,14 +385,6 @@ const handleFieldIdChange = (val: EnumValue) => {
           ? [...selectValue.value]
           : selectValue.value
       }
-
-      if (disabledFirstItem.value) {
-        time = setTimeout(() => {
-          clearTimeout(time)
-          setDefaultValueFirstItem()
-        }, 300)
-      }
-
       isFromRemote.value = false
     })
 }
