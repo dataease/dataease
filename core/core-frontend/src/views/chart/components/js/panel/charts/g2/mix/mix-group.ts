@@ -92,6 +92,8 @@ export class GroupLineMix extends G2ChartView {
     }
     const [left] = cloneDeep(chart.data?.left?.data)
     const [right] = cloneDeep(chart.data?.right?.data)
+    const leftData = left?.data || []
+    const rightData = right?.data || []
 
     // options
     const initOptions: G2Spec = {
@@ -109,7 +111,7 @@ export class GroupLineMix extends G2ChartView {
               type: 'interval',
               data: {
                 type: 'inline',
-                value: left.data,
+                value: leftData,
                 transform: [
                   {
                     type: 'map',
@@ -137,7 +139,7 @@ export class GroupLineMix extends G2ChartView {
             },
             {
               type: 'line',
-              data: right.data,
+              data: rightData,
               encode: {
                 x: 'field',
                 y: 'value',
@@ -161,7 +163,7 @@ export class GroupLineMix extends G2ChartView {
             },
             {
               type: 'point',
-              data: right.data,
+              data: rightData,
               encode: {
                 x: 'field',
                 y: 'value',
@@ -181,8 +183,8 @@ export class GroupLineMix extends G2ChartView {
     const newChart = new G2Chart({ container })
     const options = this.setupOptions(chart, initOptions, {
       chartObj: newChart,
-      leftData: left.data,
-      rightData: right.data
+      leftData,
+      rightData
     })
 
     newChart.on('point:click', action)
