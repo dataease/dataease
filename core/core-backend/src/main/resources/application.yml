@@ -34,7 +34,7 @@ mybatis:
     map-underscore-to-camel-case: true
 logging:
   file:
-    path: /opt/dataease2.0/logs/dataease
+    path: /Users/darthvader/dataease-logs
 # sql日志生产环境注释掉
 #mybatis-plus:
 #  configuration:
