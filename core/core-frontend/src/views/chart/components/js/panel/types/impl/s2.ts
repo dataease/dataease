@@ -23,7 +23,7 @@ import {
   getStyle,
   handleTableEmptyStrategy
 } from '@/views/chart/components/js/panel/common/common_table'
-import '@antv/s2/dist/style.min.css'
+import '@antv/s2/dist/s2.min.css'
 import { find } from 'lodash-es'
 
 declare interface PageInfo {
@@ -92,7 +92,7 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
         break
       case 'rowCell':
       case 'colCell':
-        content = meta.label
+        content = meta.field
         field = find(metaConfig, item => item.field === content)
         if (field) {
           content = field.name
