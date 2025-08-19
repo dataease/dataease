@@ -81,7 +81,8 @@ export class ColumnLineMix extends G2ChartView {
     }
     const [left] = cloneDeep(chart.data?.left?.data)
     const [right] = cloneDeep(chart.data?.right?.data)
-
+    const leftData = left?.data || []
+    const rightData = right?.data || []
     // options
     const initOptions: G2Spec = {
       type: 'view',
@@ -91,7 +92,7 @@ export class ColumnLineMix extends G2ChartView {
           type: 'interval',
           data: {
             type: 'inline',
-            value: left.data,
+            value: leftData,
             transform: [
               {
                 type: 'map',
@@ -121,7 +122,7 @@ export class ColumnLineMix extends G2ChartView {
         },
         {
           type: 'line',
-          data: right.data,
+          data: rightData,
           encode: {
             x: 'field',
             y: 'value',
@@ -142,7 +143,7 @@ export class ColumnLineMix extends G2ChartView {
         },
         {
           type: 'point',
-          data: right.data,
+          data: rightData,
           encode: {
             x: 'field',
             y: 'value',
