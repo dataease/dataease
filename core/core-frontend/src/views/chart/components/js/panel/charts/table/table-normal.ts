@@ -140,35 +140,39 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
-      width: containerDom.getBoundingClientRect().width,
+      width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
-      showSeriesNumber: tableHeader.showIndex,
+      seriesNumber: {
+        enable: tableHeader.showIndex,
+        text: tableHeader.indexLabel ?? t('chart.index')
+      },
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom,
-        renderTooltip: sheet => new SortTooltip(sheet)
+        render: sheet => new SortTooltip(sheet)
       },
       interaction: {
         hoverHighlight: !(basicStyle.showHoverStyle === false),
         scrollbarPosition: newData.length
           ? ScrollbarPositionType.CONTENT
           : ScrollbarPositionType.CANVAS
-      }
+      },
+      frozen: {}
     }
     // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
     // 行列冻结
     if (tableCell.tableFreeze) {
-      s2Options.frozenColCount = tableCell.tableColumnFreezeHead ?? 0
-      s2Options.frozenRowCount = tableCell.tableRowFreezeHead ?? 0
+      s2Options.frozen.colCount = tableCell.tableColumnFreezeHead ?? 0
+      s2Options.frozen.rowCount = tableCell.tableRowFreezeHead ?? 0
     }
     // tooltip
     this.configTooltip(chart, s2Options)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (tableHeader.showTableHeader === false) {
-      s2Options.style.colCfg.height = 1
+      s2Options.style.colCell.height = 1
       if (tableCell.showHorizonBorder === false) {
-        s2Options.style.colCfg.height = 0
+        s2Options.style.colCell.height = 0
       }
       s2Options.interaction.resize = {
         colCellVertical: false
@@ -191,20 +195,20 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // 自适应铺满
     if (basicStyle.tableColumnMode === 'adapt') {
       newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
-        newChart.store.set('lastLayoutResult', newChart.facet.layoutResult)
+        newChart.store.set('lastLayoutResult', newChart.facet.getLayoutResult())
       })
       newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (ev: LayoutResult) => {
         const lastLayoutResult = newChart.store.get('lastLayoutResult') as LayoutResult
         if (lastLayoutResult) {
           // 拖动表头 resize
-          const widthByFieldValue = newChart.options.style?.colCfg?.widthByFieldValue
+          const widthByField = newChart.options.style?.colCell?.widthByField
           const lastLayoutWidthMap: Record<string, number> =
             lastLayoutResult?.colLeafNodes.reduce((p, n) => {
-              p[n.value] = widthByFieldValue?.[n.value] ?? n.width
+              p[n.field] = widthByField?.[n.field] ?? n.width
               return p
             }, {}) || {}
           const totalWidth = ev.colLeafNodes.reduce((p, n) => {
-            n.width = lastLayoutWidthMap[n.value] || n.width
+            n.width = lastLayoutWidthMap[n.field] || n.width
             n.x = p
             return p + n.width
           }, 0)
@@ -212,7 +216,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
-        const containerWidth = containerDom.getBoundingClientRect().width
+        const containerWidth = containerDom.offsetWidth
         const scale = containerWidth / ev.colsHierarchy.width
         if (scale <= 1) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
@@ -230,9 +234,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
         }, 0)
         if (totalWidth > containerWidth) {
           // 从最后一列减掉
-          ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - containerWidth
+          const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
+          lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
         }
-        ev.colsHierarchy.width = containerWidth
+        ev.colsHierarchy.width = containerWidth - 1
       })
     }
     configEmptyDataStyle(newChart, basicStyle, newData, container)
@@ -290,19 +295,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
     s2DataConfig: S2DataConfig
   ) {
     const { tableHeader, basicStyle } = parseJson(chart.customAttr)
-    // 开启序号之后，第一列就是序号列，修改 label 即可
-    if (s2Options.showSeriesNumber) {
-      let indexLabel = tableHeader.indexLabel
-      if (!indexLabel) {
-        indexLabel = ''
-      }
-      s2Options.layoutCoordinate = (_, __, col) => {
-        if (col.colIndex === 0 && col.rowIndex === 0) {
-          col.label = indexLabel
-          col.value = indexLabel
-        }
-      }
-    }
     const { showSummary, summaryLabel } = basicStyle
     const data = s2DataConfig.data
     const { xAxis, yAxis } = chart
@@ -310,13 +302,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
       // 设置汇总行高度和表头一致
       const heightByField = {}
       heightByField[data.length] = tableHeader.tableTitleHeight
-      s2Options.style.rowCfg = { heightByField }
+      s2Options.style.rowCell = { heightByField }
       // 计算汇总加入到数据里，冻结最后一行
-      s2Options.frozenTrailingRowCount = 1
+      s2Options.frozen.trailingRowCount = 1
       const summaryObj = getSummaryRow(data, yAxis, basicStyle.seriesSummary) as any
       data.push(summaryObj)
     }
-    s2Options.dataCell = viewMeta => {
+    s2Options.dataCell = (viewMeta, sheet) => {
       // 总计行处理
       if (showSummary && viewMeta.rowIndex === data.length - 1) {
         if (viewMeta.colIndex === 0) {
@@ -324,12 +316,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
             viewMeta.fieldValue = summaryLabel ?? t('chart.total_show')
           }
         }
-        return new SummaryCell(viewMeta, viewMeta?.spreadsheet)
+        return new SummaryCell(viewMeta, sheet)
       }
-      if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
+      if (viewMeta.colIndex === 0 && s2Options.seriesNumber?.enable) {
         viewMeta.fieldValue = pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
       }
-      return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
+      return new CustomDataCell(viewMeta, sheet)
     }
   }
 

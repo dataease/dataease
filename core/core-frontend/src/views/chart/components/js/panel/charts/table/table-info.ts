@@ -6,8 +6,9 @@ import {
   S2Theme,
   ScrollbarPositionType,
   TableColCell,
-  TableSheet,
-  ViewMeta
+  TableDataCell,
+  ViewMeta,
+  TableSheet
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
@@ -18,9 +19,7 @@ import { filter, isEqual, isNumber, merge } from 'lodash-es'
 import {
   copyContent,
   CustomDataCell,
-  CustomTableColCell,
   getRowIndex,
-  calculateHeaderHeight,
   SortTooltip,
   summaryRowStyle,
   configEmptyDataStyle,
@@ -33,8 +32,8 @@ import {
 
 const { t } = useI18n()
 
-class ImageCell extends CustomDataCell {
-  protected drawTextShape(): void {
+class ImageCell extends TableDataCell {
+  drawTextShape(): void {
     drawImage.apply(this)
   }
 }
@@ -167,20 +166,24 @@ export class TableInfo extends S2ChartView<TableSheet> {
 
     // options
     const s2Options: S2Options = {
-      width: containerDom.getBoundingClientRect().width,
+      width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
-      showSeriesNumber: tableHeader.showIndex,
+      seriesNumber: {
+        enable: tableHeader.showIndex,
+        text: tableHeader.indexLabel ?? t('chart.index')
+      },
       conditions: this.configConditions(chart),
       tooltip: {
         getContainer: () => containerDom,
-        renderTooltip: sheet => new SortTooltip(sheet)
+        render: sheet => new SortTooltip(sheet)
       },
       interaction: {
         hoverHighlight: !(basicStyle.showHoverStyle === false),
         scrollbarPosition: newData.length
           ? ScrollbarPositionType.CONTENT
           : ScrollbarPositionType.CANVAS
-      }
+      },
+      frozen: {}
     }
     s2Options.style = this.configStyle(chart, s2DataConfig)
     // 自适应列宽模式下，URL 字段的宽度固定为 120
@@ -188,14 +191,14 @@ export class TableInfo extends S2ChartView<TableSheet> {
       const urlFields = fields.filter(
         field => field.deType === 7 && !axisMap[field.dataeaseName]?.hide
       )
-      s2Options.style.colCfg.widthByFieldValue = urlFields?.reduce((p, n) => {
-        p[n.chartShowName ?? n.name] = 120
+      s2Options.style.colCell.widthByField = urlFields?.reduce((p, n) => {
+        p[n.dataeaseName] = 120
         return p
       }, {})
     }
     if (tableCell.tableFreeze && !tableCell.mergeCells) {
-      s2Options.frozenColCount = tableCell.tableColumnFreezeHead ?? 0
-      s2Options.frozenRowCount = tableCell.tableRowFreezeHead ?? 0
+      s2Options.frozen.colCount = tableCell.tableColumnFreezeHead ?? 0
+      s2Options.frozen.rowCount = tableCell.tableRowFreezeHead ?? 0
     }
     // tooltip
     this.configTooltip(chart, s2Options)
@@ -203,9 +206,9 @@ export class TableInfo extends S2ChartView<TableSheet> {
     this.configMergeCells(chart, s2Options, s2DataConfig)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (tableHeader.showTableHeader === false) {
-      s2Options.style.colCfg.height = 1
+      s2Options.style.colCell.height = 1
       if (tableCell.showHorizonBorder === false) {
-        s2Options.style.colCfg.height = 0
+        s2Options.style.colCell.height = 0
       }
       s2Options.interaction.resize = {
         colCellVertical: false
@@ -218,63 +221,46 @@ export class TableInfo extends S2ChartView<TableSheet> {
       // header interaction
       chart.container = container
       this.configHeaderInteraction(chart, s2Options)
-      s2Options.colCell = (node, sheet, config) => {
-        // 配置文本自动换行参数
-        node.autoWrap = tableCell.mergeCells ? false : basicStyle.autoWrap
-        node.maxLines = basicStyle.maxLines
-        return new CustomTableColCell(node, sheet, config)
-      }
     }
     // 序列号和总计行
     this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
+    // 开启自动换行
+    if (basicStyle.autoWrap && !tableCell.mergeCells) {
+      const autoWrapStyle = {
+        maxLines: basicStyle.maxLines,
+        wordWrap: true,
+        textOverflow: 'ellipsis'
+      }
+      s2Options.style.dataCell = {
+        ...s2Options.style.dataCell,
+        ...autoWrapStyle
+      }
+      s2Options.style.colCell = {
+        ...s2Options.style.colCell,
+        ...autoWrapStyle
+      }
+    }
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     // 总计紧贴在单元格后面
     summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
-    // 开启自动换行
-    if (basicStyle.autoWrap && !tableCell.mergeCells) {
-      // 调整表头宽度时，计算表头高度
-      newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, info => {
-        calculateHeaderHeight(info, newChart, tableHeader, basicStyle, null)
-      })
-      newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (ev: LayoutResult) => {
-        const maxHeight = newChart.store.get('autoCalcHeight') as number
-        if (maxHeight) {
-          // 更新列的高度
-          ev.colLeafNodes.forEach(n => (n.height = maxHeight))
-          ev.colsHierarchy.height = maxHeight
-          newChart.store.set('autoCalcHeight', undefined)
-        } else {
-          if (ev.colLeafNodes?.length) {
-            const { value, width } = ev.colLeafNodes[0]
-            calculateHeaderHeight(
-              { info: { meta: { value }, resizedWidth: width } },
-              newChart,
-              tableHeader,
-              basicStyle,
-              ev
-            )
-          }
-        }
-      })
-    }
     // 自适应铺满
     if (basicStyle.tableColumnMode === 'adapt') {
       newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
-        newChart.store.set('lastLayoutResult', newChart.facet.layoutResult)
+        newChart.store.set('lastLayoutResult', newChart.facet.getLayoutResult())
       })
       newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (ev: LayoutResult) => {
         const lastLayoutResult = newChart.store.get('lastLayoutResult') as LayoutResult
         if (lastLayoutResult) {
           // 拖动表头 resize
-          const widthByFieldValue = newChart.options.style?.colCfg?.widthByFieldValue
+          const widthByField = newChart.options.style?.colCell?.widthByField
           const lastLayoutWidthMap: Record<string, number> =
             lastLayoutResult?.colLeafNodes.reduce((p, n) => {
-              p[n.value] = widthByFieldValue?.[n.value] ?? n.width
+              p[n.field] = widthByField?.[n.field] ?? n.width
               return p
             }, {}) || {}
           const totalWidth = ev.colLeafNodes.reduce((p, n) => {
-            n.width = lastLayoutWidthMap[n.value] || n.width
+            n.width = lastLayoutWidthMap[n.field] || n.width
             n.x = p
             return p + n.width
           }, 0)
@@ -296,7 +282,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
         const totalWidthWithImg = ev.colLeafNodes.reduce((p, n) => {
           return p + (urlFields.includes(n.field) ? 120 : n.width)
         }, 0)
-        const containerWidth = containerDom.getBoundingClientRect().width
+        const containerWidth = containerDom.offsetWidth
         if (containerWidth <= totalWidthWithImg) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
           ev.colLeafNodes.reduce((p, n) => {
@@ -325,9 +311,10 @@ export class TableInfo extends S2ChartView<TableSheet> {
           }
         })
         if (totalWidth > containerWidth) {
-          ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - containerWidth
+          const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
+          lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
         }
-        ev.colsHierarchy.width = containerWidth
+        ev.colsHierarchy.width = containerWidth - 1
       })
     }
     // 空数据时表格样式
@@ -452,19 +439,6 @@ export class TableInfo extends S2ChartView<TableSheet> {
   ) {
     const { tableHeader, basicStyle, tableCell } = parseJson(chart.customAttr)
     const fields = chart.data?.fields ?? []
-    // 开启序号之后，第一列就是序号列，修改 label 即可
-    if (s2Options.showSeriesNumber) {
-      let indexLabel = tableHeader.indexLabel
-      if (!indexLabel) {
-        indexLabel = ''
-      }
-      s2Options.layoutCoordinate = (_, __, col) => {
-        if (col.colIndex === 0 && col.rowIndex === 0) {
-          col.label = indexLabel
-          col.value = indexLabel
-        }
-      }
-    }
     const { showSummary, summaryLabel } = basicStyle
     const data = s2DataConfig.data
     const xAxis = chart.xAxis
@@ -472,14 +446,14 @@ export class TableInfo extends S2ChartView<TableSheet> {
       // 设置汇总行高度和表头一致
       const heightByField = {}
       heightByField[data.length] = tableHeader.tableTitleHeight
-      s2Options.style.rowCfg = { heightByField }
+      s2Options.style.rowCell = { heightByField }
       // 计算汇总加入到数据里，冻结最后一行
-      s2Options.frozenTrailingRowCount = 1
+      s2Options.frozen.trailingRowCount = 1
       const axis = filter(xAxis, axis => [2, 3, 4].includes(axis.deType))
       const summaryObj = getSummaryRow(data, axis, basicStyle.seriesSummary) as any
       data.push(summaryObj)
     }
-    s2Options.dataCell = viewMeta => {
+    s2Options.dataCell = (viewMeta, sheet) => {
       // 总计行处理
       if (showSummary && viewMeta.rowIndex === data.length - 1) {
         if (viewMeta.colIndex === 0) {
@@ -492,13 +466,13 @@ export class TableInfo extends S2ChartView<TableSheet> {
             }
           }
         }
-        return new SummaryCell(viewMeta, viewMeta?.spreadsheet)
+        return new SummaryCell(viewMeta, sheet)
       }
       const field = fields.find(f => f.dataeaseName === viewMeta.valueField)
       if (field?.deType === 7 && chart.showPosition !== 'dialog') {
-        return new ImageCell(viewMeta, viewMeta?.spreadsheet)
+        return new ImageCell(viewMeta, sheet)
       }
-      if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
+      if (viewMeta.colIndex === 0 && s2Options.seriesNumber.enable) {
         if (tableCell.mergeCells) {
           viewMeta.fieldValue = getRowIndex(s2Options.mergedCellsInfo, viewMeta)
         } else {
@@ -506,10 +480,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
             pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
         }
       }
-      // 配置文本自动换行参数
-      viewMeta.autoWrap = tableCell.mergeCells ? false : basicStyle.autoWrap
-      viewMeta.maxLines = basicStyle.maxLines
-      return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
+      return new CustomDataCell(viewMeta, sheet)
     }
   }
 

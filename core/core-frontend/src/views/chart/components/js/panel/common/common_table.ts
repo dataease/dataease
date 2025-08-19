@@ -37,7 +37,7 @@ import {
   setTooltipContainerStyle,
   SHAPE_STYLE_MAP,
   SpreadSheet,
-  Style,
+  S2Style,
   TableColCell,
   TableDataCell,
   updateShapeAttr,
@@ -65,6 +65,7 @@ import Exceljs from 'exceljs'
 import {saveAs} from 'file-saver'
 import {ElMessage} from 'element-plus-secondary'
 import {useI18n} from '@/hooks/web/useI18n'
+import { Image as GImage } from '@antv/g'
 
 const {t: i18nt} = useI18n()
 
@@ -487,16 +488,16 @@ export function getCustomTheme(chart: Chart): S2Theme {
   return theme
 }
 
-export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
-  const style: Style = {}
+export function getStyle(chart: Chart, dataConfig: S2DataConfig): S2Style {
+  const style: S2Style = {}
   let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
     customAttr = parseJson(chart.customAttr)
     const {basicStyle, tableHeader, tableCell} = customAttr
-    style.colCfg = {
+    style.colCell = {
       height: tableHeader.tableTitleHeight
     }
-    style.cellCfg = {
+    style.dataCell = {
       height: tableCell.tableItemHeight
     }
     switch (basicStyle.tableColumnMode) {
@@ -524,13 +525,19 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
           }
         }
         // 铺满
-        const totalWidthPercent = dataConfig.meta?.reduce((p, n) => {
+        let fieldCount = dataConfig.meta.length
+        let totalWidthPercent = dataConfig.meta?.reduce((p, n) => {
           return p + (fieldMap[n.field]?.width ?? 10)
         }, 0)
+        if (customAttr.tableHeader.showIndex) {
+          const indexWidth = fieldMap[SERIES_NUMBER_FIELD]?.width ?? 10
+          totalWidthPercent += indexWidth
+          fieldCount += 1
+        }
         const fullFilled = parseInt(totalWidthPercent.toFixed(0)) === 100
         const widthArr = []
-        style.colCfg.width = node => {
-          const width = node.spreadsheet.container.cfg.el.getBoundingClientRect().width
+        style.colCell.width = node => {
+          const width = node.spreadsheet.container.context.config.container.offsetWidth
           if (!basicStyle.tableFieldWidth?.length) {
             const fieldsSize = chart.data.fields.length
             const columnCount = tableHeader.showIndex ? fieldsSize + 1 : fieldsSize
@@ -542,7 +549,7 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
             : baseWidth * 10
           const resultWidth = parseInt(tmpWidth.toFixed(0))
           if (fullFilled) {
-            if (widthArr.length === dataConfig.meta.length - 1) {
+            if (widthArr.length === fieldCount - 1) {
               const curTotalWidth = widthArr.reduce((p, n) => {
                 return p + n
               }, 0)
@@ -550,6 +557,9 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
               widthArr.splice(0)
               if (restWidth < resultWidth) {
                 return restWidth
+              }
+              if (restWidth === resultWidth) {
+                return restWidth - 1
               }
             } else {
               widthArr.push(resultWidth)
@@ -560,13 +570,13 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
         break
       }
       case 'custom': {
-        style.colCfg.width = basicStyle.tableColumnWidth
+        style.colCell.width = basicStyle.tableColumnWidth
         break
       }
       // 查看详情用，均分铺满
       default: {
         delete style.layoutWidthType
-        style.colCfg.width = node => {
+        style.colCell.width = node => {
           const width = node.spreadsheet.container.cfg.el.offsetWidth
           const fieldsSize = node.spreadsheet.dataCfg.meta.length
           if (!fieldsSize) {
@@ -904,8 +914,7 @@ export class SortTooltip extends BaseTooltip {
   }
 
   showSortTooltip(showOptions) {
-    const {position, options, meta, event} = showOptions
-    const {enterable} = getTooltipDefaultOptions(options)
+    const {position, meta, event} = showOptions
     const {autoAdjustBoundary, adjustPosition} = this.spreadsheet.options.tooltip || {}
     this.visible = true
     this.options = showOptions
@@ -936,7 +945,7 @@ export class SortTooltip extends BaseTooltip {
       style: {
         left: `${this.position?.x}px`,
         top: `${this.position?.y}px`,
-        pointerEvents: enterable ? 'all' : 'none',
+        pointerEvents: 'all',
         zIndex: 9999,
         position: 'absolute',
         color: 'black',
@@ -977,20 +986,20 @@ export function configHeaderInteraction(chart: Chart, option: S2Options) {
   option.customSVGIcons = [
     {
       name: `customSortDefault${randomSuffix}`,
-      svg: sortDefault
+      src: sortDefault
     },
     {
       name: `customSortUp${randomSuffix}`,
-      svg: sortUp
+      src: sortUp
     },
     {
       name: `customSortDown${randomSuffix}`,
-      svg: sortDown
+      src: sortDown
     }
   ]
   option.headerActionIcons = [
     {
-      iconNames: [
+      icons: [
         `customSortDefault${randomSuffix}`,
         `customSortUp${randomSuffix}`,
         `customSortDown${randomSuffix}`
@@ -1019,6 +1028,7 @@ export function configHeaderInteraction(chart: Chart, option: S2Options) {
             y: event.clientY
           },
           event,
+          iconName: props.name,
           ...props
         })
         const parent = document.getElementById(chart.container)
@@ -1206,7 +1216,7 @@ function getTooltipPosition(event) {
 }
 
 export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
-  const {layoutResult} = instance.facet
+  const layoutResult = instance.facet.getLayoutResult()
   const {meta, fields} = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
   const colLength = fields?.columns?.length || 0
@@ -1362,7 +1372,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
-      const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
+      const dataCellMeta = instance.facet.getCellMeta(rowIndex, colIndex)
       const {fieldValue} = dataCellMeta
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
@@ -1381,7 +1391,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
 }
 
 export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: ChartObj) {
-  const {layoutResult} = instance.facet
+  const layoutResult = instance.facet.getLayoutResult()
   const {meta, fields} = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
   const colNums = layoutResult.colLeafNodes.length + rowLength
@@ -1533,7 +1543,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
-      const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
+      const dataCellMeta = instance.facet.getCellMeta(rowIndex, colIndex)
       const {fieldValue} = dataCellMeta
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
@@ -1552,7 +1562,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
 }
 
 export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
-  const layoutResult = instance.facet.layoutResult
+  const layoutResult = instance.facet.getLayoutResult()
   if (layoutResult.colLeafNodes.length + 1 > 16384) {
     ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
     return
@@ -1655,7 +1665,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
-      const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
+      const dataCellMeta = instance.facet.getCellMeta(rowIndex, colIndex)
       const {fieldValue} = dataCellMeta
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
@@ -1674,7 +1684,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
 }
 
 export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: ChartObj) {
-  const layoutResult = instance.facet.layoutResult
+  const layoutResult = instance.facet.getLayoutResult()
   if (layoutResult.colLeafNodes.length + 1 > 16384) {
     ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
     return
@@ -1780,7 +1790,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
-      const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
+      const dataCellMeta = instance.facet.getCellMeta(rowIndex, colIndex)
       const {fieldValue} = dataCellMeta
       if (fieldValue === 0 || fieldValue) {
         const meta = metaMap[dataCellMeta.valueField]
@@ -1826,8 +1836,8 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
   const {mergeCells} = parseJson(chart.customAttr).tableCell
   const {showIndex} = parseJson(chart.customAttr).tableHeader
   if (mergeCells) {
-    options.frozenColCount = 0
-    options.frozenRowCount = 0
+    options.frozen.colCount = 0
+    options.frozen.rowCount = 0
     const fields = chart.data.fields || []
     const fieldsMap =
       fields.reduce((p, n) => {
@@ -1937,8 +1947,7 @@ class CustomMergedCell extends MergedCell {
     this.backgroundShape = renderPolygon(this, {
       points: allPoints,
       stroke: cellTheme.horizontalBorderColor,
-      fill,
-      lineHeight: cellTheme.horizontalBorderWidth
+      fill
     })
   }
 
@@ -1966,222 +1975,6 @@ export class CustomDataCell extends TableDataCell {
     })
   }
 
-  /**
-   * 重写绘制文本内容的方法
-   * @protected
-   */
-  protected drawTextShape() {
-    if (this.meta.autoWrap) {
-      drawTextShape(this, false)
-    } else {
-      super.drawTextShape()
-    }
-  }
-}
-
-export class CustomTableColCell extends TableColCell {
-  /**
-   * 重写是为了表头文本内容的换行
-   * @protected
-   */
-  protected drawTextShape() {
-    if (this.meta.autoWrap) {
-      drawTextShape(this, true)
-    } else {
-      super.drawTextShape()
-    }
-  }
-}
-
-/**
- * 绘制文本 换行
- * @param cell
- * @param isHeader
- */
-const drawTextShape = (cell, isHeader) => {
-  // 换行符
-  const lineBreak = '\n'
-  // 省略号
-  const ellipsis = '...'
-  // 用户配置的最大行数
-  const maxLines = cell.meta.maxLines ?? 1
-  const {
-    options: {placeholder}
-  } = cell.spreadsheet
-  const emptyPlaceholder = getEmptyPlaceholder(this, placeholder)
-  // 单元格文本
-  const {formattedValue} = cell.getFormattedFieldValue()
-  // 获取文本样式
-  const textStyle = cell.getTextStyle()
-  // 宽度能放几个字符，就放几个，放不下就换行
-  let wrapText = getWrapText(
-    formattedValue ? formattedValue?.toString() : emptyPlaceholder,
-    textStyle,
-    cell.meta.width,
-    cell.spreadsheet
-  )
-  const lines = wrapText.split(lineBreak)
-  let extraStyleFontSize = textStyle.fontSize
-  // 不是表头，处理文本高度和换行
-  if (!isHeader) {
-    const textHeight = getWrapTextHeight(
-      wrapText.replaceAll(lineBreak, ''),
-      textStyle,
-      cell.spreadsheet,
-      maxLines
-    )
-    const lineCountInCell = Math.floor(cell.meta.height / textHeight)
-    const wrapTextArr = lines.slice(0, lineCountInCell)
-
-    // 根据行数调整换行后的文本内容
-    wrapText = lineCountInCell < 1 ? ellipsis : wrapTextArr.join(lineBreak) || ellipsis
-    const resultWrapArr = wrapText.split(lineBreak)
-    // 控制最大行数
-    if (
-      !wrapText.endsWith(ellipsis) &&
-      (lines.length > maxLines || lines.length > lineCountInCell)
-    ) {
-      // 第一行的字符个数
-      const firstLineStrNumber = resultWrapArr[0].length
-      const temp = resultWrapArr.slice(0, Math.min(maxLines, lineCountInCell))
-      // 修改最后一行的字符,按照第一行字符个数-1，修改最后一行的字符为...
-      temp[temp.length - 1] = temp[temp.length - 1].slice(0, firstLineStrNumber - 1) + ellipsis
-      wrapText = temp.join(lineBreak)
-    }
-    if (wrapText === ellipsis) {
-      extraStyleFontSize = 12
-    }
-  } else {
-    const resultWrapArr = wrapText.split(lineBreak)
-    // 控制最大行数
-    if (lines.length > maxLines) {
-      const temp = resultWrapArr.slice(0, maxLines)
-      // 第一行的字符个数
-      const firstLineStrNumber = resultWrapArr[0].length
-      // 修改最后一行的字符
-      temp[temp.length - 1] = temp[temp.length - 1].slice(0, firstLineStrNumber - 1) + ellipsis
-      wrapText = temp.join(lineBreak)
-    }
-  }
-  // 设置最终文本和其宽度
-  cell.actualText = wrapText
-  cell.actualTextWidth = cell.spreadsheet.measureTextWidth(wrapText, textStyle)
-
-  // 获取文本位置并渲染文本
-  const position = cell.getTextPosition()
-  // 绘制文本
-  cell.textShape = renderText(cell, [cell.textShape], position.x, position.y, wrapText, textStyle, {
-    fontSize: extraStyleFontSize
-  })
-
-  // 将文本形状添加到形状数组
-  cell.textShapes.push(cell.textShape)
-}
-
-/**
- * 计算表头高度
- * @param info 单元格信息
- * @param newChart
- * @param tableHeader 表头配置
- * @param basicStyle 表格基础样式
- * @param layoutResult
- */
-export const calculateHeaderHeight = (info, newChart, tableHeader, basicStyle, layoutResult) => {
-  if (tableHeader.showTableHeader === false) return
-  const ev = layoutResult || newChart.facet.layoutResult
-  const maxLines = basicStyle.maxLines ?? 1
-  const textStyle = {...newChart.theme.cornerCell.text}
-  const sourceText = info.info.meta.value
-  let maxHeight = getWrapTextHeight(
-    getWrapText(sourceText, textStyle, info.info.resizedWidth, ev.spreadsheet),
-    textStyle,
-    ev.spreadsheet,
-    maxLines
-  )
-
-  // 获取最大高度的列，排除当前列
-  const maxHeightCol = ev.colLeafNodes
-    .filter(n => n.colIndex !== info.info.meta.colIndex)
-    .reduce(
-      (maxHeightNode, currentNode) => {
-        const wrapTextHeight = getWrapTextHeight(
-          getWrapText(currentNode.value, textStyle, currentNode.width, currentNode.spreadsheet),
-          textStyle,
-          currentNode.spreadsheet,
-          maxLines
-        )
-        return wrapTextHeight > maxHeightNode.height
-          ? {height: wrapTextHeight, colIndex: currentNode.colIndex}
-          : maxHeightNode
-      },
-      {height: 0}
-    )
-
-  // 使用最大高度
-  maxHeight = Math.max(maxHeight, maxHeightCol.height) + textStyle.fontSize + 10.5
-
-  if (layoutResult) {
-    if (basicStyle.tableColumnMode === 'adapt') maxHeight -= textStyle.fontSize - 2
-    ev.colLeafNodes.forEach(n => (n.height = maxHeight))
-    ev.colsHierarchy.height = maxHeight
-  }
-
-  newChart.store.set('autoCalcHeight', maxHeight)
-}
-
-/**
- * 获取换行文本
- * 累加字符串单个字符的宽度，超过单元格宽度时，添加换行
- * @param sourceText
- * @param textStyle
- * @param cellWidth
- * @param spreadsheet
- */
-const getWrapText = (sourceText, textStyle, cellWidth, spreadsheet) => {
-  if (!sourceText && sourceText !== 0) return ''
-  sourceText = sourceText.toString().trim()
-  const getTextWidth = text => spreadsheet.measureTextWidthRoughly(text, textStyle)
-
-  let resultWrapText = ''
-  let restText = ''
-  let restTextWidth = 0
-  for (let i = 0; i < sourceText.length; i++) {
-    const char = sourceText[i]
-    const charWidth = getTextWidth(char)
-    restTextWidth += charWidth
-    restText += char
-    // 中文时，需要单元格宽度减去16个文字宽度，否则会超出单元格宽度
-    const cWidth = char.charCodeAt(0) >= 128 ? 12 : 8
-    // 添加换行
-    if (restTextWidth >= cellWidth - textStyle.fontSize - cWidth) {
-      // 最后一个字符不添加换行符
-      resultWrapText += restText + (i !== sourceText.length - 1 ? '\n' : '')
-      restText = ''
-      restTextWidth = 0
-    }
-  }
-
-  resultWrapText += restText
-  return resultWrapText
-}
-/**
- * 计算文本行高
- * @param wrapText
- * @param textStyle
- * @param spreadsheet
- * @param maxLines 最大行数
- */
-const getWrapTextHeight = (wrapText, textStyle, spreadsheet, maxLines) => {
-  // 行内最高
-  let maxHeight = 0
-  // 获取最高字符的高度
-  for (const char of wrapText) {
-    const h = textStyle.fontSize / (char.charCodeAt(0) >= 128 ? 5 : 2.5)
-    maxHeight = Math.max(maxHeight, spreadsheet.measureTextHeight(char, textStyle) + h)
-  }
-  // 行数
-  const lines = wrapText.split('\n').length
-  return Math.min(lines, maxLines) * maxHeight
 }
 
 export function getSummaryRow(data, axis, sumCon = []) {
@@ -2266,9 +2059,9 @@ export const summaryRowStyle = (newChart, newData, tableCell, tableHeader, showS
     const totalHeight =
       tableHeader.tableTitleHeight * headerAndSummaryHeight +
       tableCell.tableItemHeight * (newData.length - 1)
-    if (totalHeight < newChart.container.cfg.height) {
+    if (totalHeight < newChart.container.context.config.height) {
       newChart.options.height =
-        totalHeight < newChart.container.cfg.height - 8 ? totalHeight + 8 : totalHeight
+        totalHeight < newChart.container.context.config.height - 8 ? totalHeight + 8 : totalHeight
     }
   })
 }
@@ -2281,8 +2074,8 @@ export class SummaryCell extends CustomDataCell {
   }
 
   getBackgroundColor() {
-    const {backgroundColor, backgroundColorOpacity} = this.theme.colCell.cell
-    return {backgroundColor, backgroundColorOpacity}
+    const {backgroundColor, backgroundColorOpacity, } = this.theme.colCell.cell
+    return {backgroundColor, backgroundColorOpacity, intelligentReverseTextColor: false}
   }
 }
 
@@ -2362,20 +2155,20 @@ export function drawImage() {
   img.src = fieldValue as string
   img.setAttribute('crossOrigin', 'anonymous')
   img.onload = () => {
-    !this.cfg.children && (this.cfg.children = [])
+    this.children?.length && this.removeChildren()
     const {width: imgWidth, height: imgHeight} = img
     const ratio = Math.max(imgWidth / width, imgHeight / height)
     // 不铺满，部分留白
     const imgShowWidth = (imgWidth / ratio) * 0.8
     const imgShowHeight = (imgHeight / ratio) * 0.8
-    this.textShape = this.addShape('image', {
-      attrs: {
+    this.appendChild(new GImage({
+      style: {
         x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
         y: y + (imgShowHeight < height ? (height - imgShowHeight) / 2 : 0),
         width: imgShowWidth,
         height: imgShowHeight,
-        img
+        src: img
       }
-    })
+    }))
   }
 }

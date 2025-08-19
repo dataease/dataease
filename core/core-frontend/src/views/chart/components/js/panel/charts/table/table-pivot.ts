@@ -25,6 +25,7 @@ import { isNumber, keys, maxBy, merge, minBy, some, isEmpty, get } from 'lodash-
 import { copyContent, CustomDataCell } from '../../common/common_table'
 import Decimal from 'decimal.js'
 import { DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
+import { Text } from '@antv/g'
 
 type DataItem = Record<string, any>
 
@@ -383,7 +384,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         getContainer: () => containerDom
       },
       hierarchyType: basicStyle.tableLayoutMode ?? 'grid',
-      dataSet: spreadSheet => new CustomPivotDataset(spreadSheet),
+      // dataSet: spreadSheet => new CustomPivotDataset(spreadSheet),
       interaction: {
         hoverHighlight: !(basicStyle.showHoverStyle === false)
       },
@@ -398,16 +399,16 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       const { defaultExpandLevel } = basicStyle
       if (isNumber(defaultExpandLevel)) {
         if (defaultExpandLevel >= chart.xAxis.length) {
-          s2Options.style.rowExpandDepth = defaultExpandLevel
+          s2Options.style.rowCell.expandDepth = defaultExpandLevel
         } else {
-          s2Options.style.rowExpandDepth = defaultExpandLevel - 2
+          s2Options.style.rowCell.expandDepth = defaultExpandLevel - 2
         }
       }
       if (defaultExpandLevel === 'all') {
-        s2Options.style.rowExpandDepth = chart.xAxis.length
+        s2Options.style.rowCell.expandDepth = chart.xAxis.length
       }
       if (!defaultExpandLevel) {
-        s2Options.style.hierarchyCollapse = true
+        s2Options.style.rowCell.collapseAll = true
       }
     }
     // 列汇总别名
@@ -458,29 +459,29 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     // 自适应铺满
     if (basicStyle.tableColumnMode === 'adapt') {
       s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
-        s2.store.set('lastLayoutResult', s2.facet.layoutResult)
+        s2.store.set('lastLayoutResult', s2.facet.getLayoutResult())
       })
       // 平铺模式行头resize
       s2.on(S2Event.LAYOUT_RESIZE_ROW_WIDTH, () => {
-        s2.store.set('lastLayoutResult', s2.facet.layoutResult)
+        s2.store.set('lastLayoutResult', s2.facet.getLayoutResult())
       })
       // 树形模式行头resize
       s2.on(S2Event.LAYOUT_RESIZE_TREE_WIDTH, () => {
-        s2.store.set('lastLayoutResult', s2.facet.layoutResult)
+        s2.store.set('lastLayoutResult', s2.facet.getLayoutResult())
       })
       s2.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (ev: LayoutResult) => {
         const lastLayoutResult = s2.store.get('lastLayoutResult') as LayoutResult
         if (lastLayoutResult) {
           // 拖动 col 表头 resize
-          const colWidthByFieldValue = s2.options.style?.colCfg?.widthByFieldValue
+          const colWidthByField = s2.options.style?.colCell?.widthByField
           // 平铺模式拖动 row 表头 resize
-          const rowWidthByField = s2.options.style?.rowCfg?.widthByField
+          const rowWidthByField = s2.options.style?.rowCell?.widthByField
           // 树形模式拖动 row 表头 resize
           const treeRowWidth =
-            s2.options.style?.treeRowsWidth || lastLayoutResult.rowsHierarchy.width
+            s2.options.style?.rowCell.treeWidth || lastLayoutResult.rowsHierarchy.width
           const colWidthMap =
             lastLayoutResult.colLeafNodes.reduce((p, n) => {
-              p[n.id] = colWidthByFieldValue?.[n.value] ?? n.width
+              p[n.id] = colWidthByField?.[n.field] ?? n.width
               return p
             }, {}) || {}
           const totalColWidth = ev.colLeafNodes.reduce((p, n) => {
@@ -536,7 +537,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           s2.store.set('lastLayoutResult', undefined)
           return
         }
-        const containerWidth = containerDom.getBoundingClientRect().width
+        const containerWidth = containerDom.offsetWidth
         const scale = containerWidth / (ev.colsHierarchy.width + ev.rowsHierarchy.width)
         if (scale <= 1) {
           return
@@ -1228,21 +1229,22 @@ class EmptyDataCell extends MergedCell {
     this.meta.fieldValue = ' '
     super.drawTextShape()
     const { rowHeader, columnHeader } = this.spreadsheet.facet
-    const offsetX = columnHeader.getConfig().viewportWidth / 2
-    const offsetY = rowHeader.getConfig().viewportHeight / 2
+    const offsetX = columnHeader.style.viewportWidth / 2
+    const offsetY = rowHeader.style.viewportHeight / 2
     const style = this.getTextStyle()
-    const config = {
-      attrs: {
-        ...style,
-        x: offsetX,
-        y: offsetY,
-        text: t('data_set.no_data'),
-        opacity: 1,
-        textAlign: 'center',
-        textBaseline: 'middle'
-      }
-    }
-    this.addShape('text', config)
+    this.appendChild(
+      new Text({
+        style: {
+          ...style,
+          x: offsetX,
+          y: offsetY,
+          text: t('data_set.no_data'),
+          opacity: 1,
+          textAlign: 'center',
+          textBaseline: 'middle'
+        }
+      })
+    )
   }
 
   protected drawBackgroundShape(): void {
@@ -1277,7 +1279,7 @@ function configEmptyDataStyle(instance: PivotSheet, data: any[]) {
     return
   }
   instance.on(S2Event.LAYOUT_AFTER_RENDER, () => {
-    const { colLeafNodes, rowLeafNodes } = instance.facet?.layoutResult || {}
+    const { colLeafNodes, rowLeafNodes } = instance.facet?.getLayoutResult() || {}
     if (!colLeafNodes?.length || !rowLeafNodes?.length) {
       return
     }

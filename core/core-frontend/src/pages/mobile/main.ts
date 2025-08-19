@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import '@/style/index.less'
 import 'normalize.css/normalize.css'
-import '@antv/s2/dist/style.min.css'
+import '@antv/s2/dist/s2.min.css'
 import App from './App.vue'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
