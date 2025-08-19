@@ -726,6 +726,7 @@ export default {
           this.colorForm.seriesColors.length
         )
       }
+    }
   }
 }
 </script>
