@@ -264,17 +264,7 @@ export class GroupLineMix extends G2ChartView {
         }
       }
     }
-    merge(leftLineMark, leftColorScale, {
-      scale: {
-        series: {
-          type: 'ordinal',
-          independent: true,
-          domain: leftCat,
-          range: leftRange,
-          relations: leftRelations
-        }
-      }
-    })
+    merge(leftLineMark, leftColorScale)
     merge(leftPointMark, leftColorScale)
     merge(leftLineMark, {
       style: {
@@ -345,17 +335,7 @@ export class GroupLineMix extends G2ChartView {
         }
       }
     }
-    merge(lineMark, rightColorScale, {
-      scale: {
-        series: {
-          type: 'ordinal',
-          independent: true,
-          domain: rightCat,
-          range: rightRange,
-          relations: rightRelations
-        }
-      }
-    })
+    merge(lineMark, rightColorScale)
     merge(pointMark, rightColorScale)
     merge(lineMark, {
       style: {
