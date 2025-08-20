@@ -304,17 +304,7 @@ export class StackLineMix extends G2ChartView {
         }
       }
     }
-    merge(lineMark, rightColorScale, {
-      scale: {
-        series: {
-          type: 'ordinal',
-          independent: true,
-          domain: rightCat,
-          range: rightRange,
-          relations: rightRelations
-        }
-      }
-    })
+    merge(lineMark, rightColorScale)
     merge(pointMark, rightColorScale)
     merge(intervalMark, {
       style: {
