@@ -263,7 +263,11 @@ public class CoreVisualizationManage {
 
     @XpackInteract(value = "perFilterManage", recursion = true, invalid = true)
     public PageResult<VisualizationResourceVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
-        Page<VisualizationResourceVO> visualizationResourcePOPageIPage = proxy().queryVisualizationPage(pageNum, pageSize, request).map(po -> {
+        Page<VisualizationResourcePO> poPage = proxy().queryVisualizationPage(pageNum, pageSize, request);
+        if(poPage == null || poPage.getSize() == 0){
+            return new PageResult<>();
+        }
+        Page<VisualizationResourceVO> visualizationResourcePOPageIPage = poPage.map(po -> {
             return new VisualizationResourceVO(
                     po.getId(), po.getResourceId(), po.getName(),
                     po.getType(), String.valueOf(po.getCreator()), String.valueOf(po.getLastEditor()), po.getLastEditTime(),
