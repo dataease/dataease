@@ -546,8 +546,20 @@ const handleContextMenu = event => {
   const offsetY = rect.top
 
   // 计算鼠标相对于最外层 div 的坐标
-  const left = mouseX - offsetX
+  let left = mouseX - offsetX
   let top = mouseY - offsetY
+
+  const curDomId = event.currentTarget?.id
+  if (curDomId) {
+    const curDomSplitParams = curDomId.split('-')
+    if (curDomSplitParams.length > 1 && curDomSplitParams[1] !== 'canvas') {
+      const tabDom = document.getElementById(`shape-id-${curDomSplitParams[1]}`)
+      if (tabDom) {
+        left = left + tabDom.offsetLeft
+        top = top + tabDom.offsetTop
+      }
+    }
+  }
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
     if (
