@@ -4,7 +4,7 @@
     <el-button :effect="themes" @click="onCancelConfig">{{ t('chart.cancel') }}</el-button>
     <el-button type="primary" @click="onConfigChange">{{ t('chart.confirm') }}</el-button>
   </div>
-  <div :id="menuGroupId" class="group-menu"></div>
+  <div :id="menuGroupId" class="group-menu" ref="groupMenu"></div>
 </template>
 
 <script setup lang="ts">
@@ -12,24 +12,25 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   BaseTooltip,
-  ColumnNode,
   S2DataConfig,
   S2Event,
   S2Options,
   TableSheet,
   TooltipShowOptions,
   ColCell,
-  Node
+  Node,
+  RowColumnClick
 } from '@antv/s2'
 import { ElMessageBox } from 'element-plus-secondary'
 import { cloneDeep, debounce, isEqual, isNumber } from 'lodash-es'
-import { computed, nextTick, onMounted, onUnmounted, PropType } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, PropType, ref } from 'vue'
 import { uuid } from 'vue-uuid'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   getColumns,
   getCustomTheme,
-  getLeafNodes
+  getLeafNodes,
+  mapKeyToField
 } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
@@ -53,12 +54,8 @@ const onCancelConfig = () => {
 }
 
 const onConfigChange = () => {
-  const allAxis = props.chart.xAxis
-    ?.map(axis => axis.hide !== true && axis.dataeaseName)
-    .filter(i => i)
-  const { fields, meta } = s2.dataCfg
-  const groupMeta = meta.filter(item => !allAxis.includes(item.field))
-  emits('onConfigChange', { columns: fields.columns, meta: groupMeta })
+  const { fields } = s2.dataCfg
+  emits('onConfigChange', { columns: fields.columns })
 }
 
 const init = () => {
@@ -67,24 +64,44 @@ const init = () => {
   const { headerGroupConfig } = chart.customAttr.tableHeader
   const showColumns = []
   xAxis?.forEach(axis => {
-    axis.hide !== true && showColumns.push({ key: axis.dataeaseName })
+    axis.hide !== true &&
+      showColumns.push({ field: axis.dataeaseName, title: axis.chartShowName ?? axis.name })
   })
   if (!showColumns.length) {
     return
   }
   if (headerGroupConfig?.columns?.length) {
-    const allAxis = showColumns.map(item => item.key)
+    // 处理历史数据
+    if (headerGroupConfig.columns[0].key) {
+      mapKeyToField(headerGroupConfig.columns)
+      const nameFieldMap = showColumns.reduce((pre, cur) => {
+        pre[cur.field] = cur.title
+        return pre
+      }, {})
+      if (!headerGroupConfig.meta?.length) {
+        headerGroupConfig.meta.forEach(item => {
+          nameFieldMap[item.field] = item.name
+        })
+        delete headerGroupConfig.meta
+      }
+      setupColumnTitle(headerGroupConfig.columns, nameFieldMap)
+    }
+    const allAxis = showColumns.map(item => item.field)
     const leafNodes = getLeafNodes(headerGroupConfig.columns)
-    const leafKeys = leafNodes.map(item => item.key)
+    const leafKeys = leafNodes.map(item => item.field)
+    const { columns } = headerGroupConfig
     if (!isEqual(allAxis, leafKeys)) {
-      const { columns, meta } = headerGroupConfig
       columns.splice(0, columns.length, ...showColumns)
-      meta.splice(0, meta.length)
+    } else {
+      const nameMap = showColumns.reduce((pre, cur) => {
+        pre[cur.field] = cur.title
+        return pre
+      }, {})
+      setupColumnTitle(columns, nameMap)
     }
   } else {
     chart.customAttr.tableHeader.headerGroupConfig = {
-      columns: [...showColumns],
-      meta: []
+      columns: [...showColumns]
     }
   }
   nextTick(() => {
@@ -97,6 +114,7 @@ const menuGroupId = computed(() => {
 const containerId = computed(() => {
   return 'table-container-' + props.chart.id
 })
+const groupMenu = ref<HTMLDivElement>()
 let s2: TableSheet
 const renderTable = (chart: ChartObj) => {
   const data = dvMainStore.getViewDataDetails(chart.id)
@@ -106,7 +124,7 @@ const renderTable = (chart: ChartObj) => {
     realData = data.tableRow.slice(0, 10)
   }
   const { headerGroupConfig } = chart.customAttr.tableHeader
-  const meta = [...headerGroupConfig.meta]
+  const meta = []
   const columns = headerGroupConfig.columns
   const axisMap = chart.xAxis.reduce((pre, cur) => {
     pre[cur.dataeaseName] = cur
@@ -120,7 +138,6 @@ const renderTable = (chart: ChartObj) => {
       }
       meta.push({
         field: ele.dataeaseName,
-        name: ele.chartShowName ?? ele.name,
         formatter: function (value) {
           if (!f) {
             return value
@@ -139,15 +156,6 @@ const renderTable = (chart: ChartObj) => {
         }
       })
     })
-  } else {
-    chart.xAxis?.forEach(axis => {
-      if (axis.hide !== true) {
-        meta.push({
-          field: axis.dataeaseName,
-          name: axis.chartShowName ?? axis.name
-        })
-      }
-    })
   }
   // // data config
   const s2DataConfig: S2DataConfig = {
@@ -159,11 +167,12 @@ const renderTable = (chart: ChartObj) => {
   }
   // options
   const s2Options: S2Options = {
-    width: containerDom.getBoundingClientRect().width,
+    width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     tooltip: {
+      enable: false,
       getContainer: () => containerDom,
-      renderTooltip: sheet => new GroupMenu(sheet),
+      render: sheet => new GroupMenu(sheet),
       style: {
         position: 'absolute',
         borderRadius: '4px'
@@ -176,19 +185,16 @@ const renderTable = (chart: ChartObj) => {
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
   const theme = getCustomTheme(chart)
   s2.setTheme(theme)
-  const groupMenuContainer = document.getElementById(menuGroupId.value)
   s2.on(S2Event.COL_CELL_CONTEXT_MENU, e => {
-    e.preventDefault()
     const curColumns = s2.dataCfg.fields.columns as Array<ColumnNode>
-    const curMeta = s2.dataCfg.meta
-    const activeCells = s2.interaction.getActiveCells()
-    const colKeys = activeCells?.map(cell => cell.getMeta().field)
-    const activeColumns = getColumns(colKeys, curColumns)
+    const activeCells = s2.interaction.getActiveColCells()
+    const activeColFields = activeCells?.map(cell => cell.getMeta().field)
+    const activeColumns = getColumns(activeColFields, curColumns)
     const curCell = s2.getCell(e.target)
-    groupMenuContainer.innerText = ''
+    groupMenu.value.innerText = ''
     // 右键点击的目标单元格不在已选的单元格中，清空已选单元格，隐藏菜单
     if (activeColumns?.length) {
-      const index = activeColumns.findIndex(cell => cell.key === curCell.getMeta().field)
+      const index = activeColumns.findIndex(cell => cell.field === curCell.getMeta().field)
       if (index === -1) {
         s2.interaction.clearState()
         s2.hideTooltip()
@@ -198,41 +204,35 @@ const renderTable = (chart: ChartObj) => {
     //只有一个cell，并且colIndex为-1，那就是组合的，显示取消分组按钮和重命名按钮
     if (activeColumns?.length === 1 && curCell.getMeta().colIndex === -1) {
       s2.interaction.clearState()
-      s2.interaction.selectHeaderCell({ cell: curCell })
+      s2.interaction.selectCell(curCell, { animate: false })
       const cancelBtn = document.createElement('span')
-      groupMenuContainer.appendChild(cancelBtn)
+      groupMenu.value.appendChild(cancelBtn)
       cancelBtn.innerText = t('chart.cancel_group')
       cancelBtn.onclick = () => {
         s2.hideTooltip()
         const parent = curCell.getMeta().parent
         if (parent?.id === 'root') {
-          const startIndex = curColumns.findIndex(cell => cell.key === curCell.getMeta().field)
+          const startIndex = curColumns.findIndex(cell => cell.field === curCell.getMeta().field)
           const [curCol] = getColumns([curCell.getMeta().field], curColumns)
           curColumns.splice(startIndex, 1, ...curCol.children)
-          const index = curMeta.findIndex(meta => meta.field === curCell.getMeta().field)
-          curMeta.splice(index, 1)
           s2.setDataCfg({
             fields: {
               columns: curColumns
-            },
-            meta: curMeta
+            }
           })
           s2.render(true)
         } else {
           const [parentColumn] = getColumns([parent.field], curColumns)
           if (parentColumn) {
             const startIndex = parentColumn.children?.findIndex(
-              cell => cell.key === curCell.getMeta().field
+              cell => cell.field === curCell.getMeta().field
             )
             const [curCol] = getColumns([curCell.getMeta().field], parentColumn.children)
             parentColumn.children?.splice(startIndex, 1, ...curCol.children)
-            const index = curMeta.findIndex(meta => meta.field === curCell.getMeta().field)
-            curMeta.splice(index, 1)
             s2.setDataCfg({
               fields: {
                 columns: curColumns
-              },
-              meta: curMeta
+              }
             })
             s2.render(true)
           }
@@ -240,7 +240,7 @@ const renderTable = (chart: ChartObj) => {
         s2.interaction.clearState()
       }
       const cancelAllBtn = document.createElement('span')
-      groupMenuContainer.appendChild(cancelAllBtn)
+      groupMenu.value.appendChild(cancelAllBtn)
       cancelAllBtn.innerText = t('chart.cancel_all_group')
       cancelAllBtn.onclick = () => {
         s2.hideTooltip()
@@ -248,15 +248,12 @@ const renderTable = (chart: ChartObj) => {
         if (parent?.id === 'root') {
           const [curCol] = getColumns([curCell.getMeta().field], curColumns)
           const leafNodes = getLeafNodes(curCol.children)
-          const startIndex = curColumns.findIndex(cell => cell.key === curCell.getMeta().field)
+          const startIndex = curColumns.findIndex(cell => cell.field === curCell.getMeta().field)
           curColumns.splice(startIndex, 1, ...leafNodes)
-          const noneLeafNodes = getNonLeafNodes([curCol])
-          const newMeta = curMeta.filter(meta => !noneLeafNodes.includes(meta.field))
           s2.setDataCfg({
             fields: {
               columns: curColumns
-            },
-            meta: newMeta
+            }
           })
           s2.render(true)
         } else {
@@ -265,16 +262,13 @@ const renderTable = (chart: ChartObj) => {
             const [curCol] = getColumns([curCell.getMeta().field], parentColumn.children)
             const leafNodes = getLeafNodes(curCol.children)
             const startIndex = parentColumn.children?.findIndex(
-              cell => cell.key === curCell.getMeta().field
+              cell => cell.field === curCell.getMeta().field
             )
             parentColumn.children?.splice(startIndex, 1, ...leafNodes)
-            const noneLeafNodes = getNonLeafNodes([curCol])
-            const newMeta = curMeta.filter(meta => !noneLeafNodes.includes(meta.field))
             s2.setDataCfg({
               fields: {
                 columns: curColumns
-              },
-              meta: newMeta
+              }
             })
             s2.render(true)
           }
@@ -282,18 +276,18 @@ const renderTable = (chart: ChartObj) => {
         s2.interaction.clearState()
       }
       const renameBtn = document.createElement('span')
-      groupMenuContainer.appendChild(renameBtn)
+      groupMenu.value.appendChild(renameBtn)
       renameBtn.innerText = t('chart.rename')
       renameBtn.onclick = () => {
         s2.hideTooltip()
-        const cellMeta = curMeta.find(meta => meta.field === curCell.getMeta().field)
+        const [curColumn] = getColumns([curCell.getMeta().field], curColumns)
         ElMessageBox.prompt('', t('chart.group_name'), {
           confirmButtonText: t('chart.confirm'),
           cancelButtonText: t('chart.cancel'),
           showClose: false,
           showInput: true,
           inputPlaceholder: t('chart.group_name_edit_tip'),
-          inputValue: cellMeta.name,
+          inputValue: curColumn.title,
           inputErrorMessage: t('chart.group_name_error_tip'),
           // 正则校验，长度 1-20
           inputValidator: val => {
@@ -304,9 +298,9 @@ const renderTable = (chart: ChartObj) => {
           }
         })
           .then(res => {
-            cellMeta.name = res.value
+            curColumn.title = res.value
             s2.setDataCfg({
-              meta: curMeta
+              columns: curColumns
             })
             s2.render(true)
           })
@@ -319,7 +313,7 @@ const renderTable = (chart: ChartObj) => {
           x: e.x,
           y: e.y
         },
-        content: groupMenuContainer
+        content: groupMenu.value
       })
       return
     }
@@ -343,7 +337,7 @@ const renderTable = (chart: ChartObj) => {
       // 分组的节点
       if (parent.colIndex !== -1) {
         activeColumns.forEach(cell => {
-          const index = parent.children.findIndex(item => item.getMeta().field === cell.key)
+          const index = parent.children.findIndex(item => item.getMeta().field === cell.field)
           if (index < startIndex || startIndex === -1) {
             startIndex = index
           }
@@ -353,7 +347,7 @@ const renderTable = (chart: ChartObj) => {
         })
       } else {
         activeColumns.forEach(cell => {
-          const index = parent.children.findIndex(item => item.key === cell.key)
+          const index = parent.children.findIndex(item => item.field === cell.field)
           if (index < startIndex || startIndex === -1) {
             startIndex = index
           }
@@ -375,7 +369,7 @@ const renderTable = (chart: ChartObj) => {
         return
       }
       const mergeBtn = document.createElement('span')
-      groupMenuContainer.appendChild(mergeBtn)
+      groupMenu.value.appendChild(mergeBtn)
       mergeBtn.innerText = t('chart.merge_group')
       mergeBtn.onclick = () => {
         s2.hideTooltip()
@@ -397,38 +391,30 @@ const renderTable = (chart: ChartObj) => {
         })
           .then(res => {
             if (parent?.id === 'root') {
-              const newKey = uuid.v4()
+              const newField = uuid.v4()
               curColumns?.splice(startIndex, endIndex - startIndex + 1, {
-                key: newKey,
-                children: totalColumns
-              })
-              curMeta.push({
-                field: newKey,
-                name: res.value
+                field: newField,
+                children: totalColumns,
+                title: res.value
               })
               s2.setDataCfg({
                 fields: {
                   columns: curColumns
-                },
-                meta: curMeta
+                }
               })
               s2.render(true)
             } else {
               const [parentColumn] = getColumns([parent.field], curColumns)
-              const newKey = uuid.v4()
+              const newField = uuid.v4()
               parentColumn.children?.splice(startIndex, endIndex - startIndex + 1, {
-                key: newKey,
-                children: totalColumns
-              })
-              curMeta.push({
-                field: newKey,
-                name: res.value
+                field: newField,
+                children: totalColumns,
+                title: res.value
               })
               s2.setDataCfg({
                 fields: {
                   columns: curColumns
-                },
-                meta: curMeta
+                }
               })
               s2.render(true)
             }
@@ -443,14 +429,14 @@ const renderTable = (chart: ChartObj) => {
           x: e.x,
           y: e.y
         },
-        content: groupMenuContainer
+        content: groupMenu.value
       })
       return
     }
   })
   s2.on(S2Event.COL_CELL_CLICK, e => {
     const lastCell = s2.store.get('lastClickedCell') as ColCell
-    const originEvent = e.originalEvent as MouseEvent
+    const originEvent = e.originalEvent as unknown as MouseEvent
     if (!lastCell || !(originEvent?.ctrlKey || originEvent?.metaKey || originEvent?.shiftKey)) {
       const cell = s2.getCell(e.target)
       s2.store.set('lastClickedCell', cell)
@@ -466,25 +452,39 @@ const renderTable = (chart: ChartObj) => {
       const lastMeta = lastCell.getMeta()
       const curMeta = curCell.getMeta()
       if (
-        lastMeta.key === curMeta.key ||
+        lastMeta.field === curMeta.field ||
         lastMeta.level !== curMeta.level ||
         lastMeta.parent !== curMeta.parent
       ) {
         return
       }
       const parent = curMeta.parent as Node
-      const lastIndex = parent.children.findIndex(item => item.key === lastMeta.key)
-      const curIndex = parent.children.findIndex(item => item.key === curMeta.key)
+      const lastIndex = parent.children.findIndex(item => item.field === lastMeta.field)
+      const curIndex = parent.children.findIndex(item => item.field === curMeta.field)
       const startIndex = Math.min(lastIndex, curIndex)
       const endIndex = Math.max(lastIndex, curIndex)
       const activeCells = parent.children.slice(startIndex, endIndex + 1)
       s2.interaction.clearState()
       activeCells.forEach(cell => {
-        s2.interaction.selectHeaderCell({ cell: cell.belongsCell, isMultiSelection: true })
+        s2.interaction.changeCell({ cell: cell.belongsCell, isMultiSelection: true })
       })
     }
   })
-  s2.render()
+  s2.render().then(() => {
+    s2.getCanvasElement().addEventListener('contextmenu', e => {
+      e.preventDefault()
+    })
+    // 处理右键不触发行列头的 click 事件，不然会清空选中状态
+    const rowCelCLick = s2.interaction.interactions.get('rowColumnClick') as RowColumnClick
+    const originClickHandler = rowCelCLick['handleRowColClick']
+    const hookedClickHandler = e => {
+      if (e.button === 2) {
+        return
+      }
+      originClickHandler.call(rowCelCLick, e)
+    }
+    rowCelCLick['handleRowColClick'] = hookedClickHandler
+  })
 }
 
 const getNonLeafNodes = (tree: Array<ColumnNode>): string[] => {
@@ -493,7 +493,7 @@ const getNonLeafNodes = (tree: Array<ColumnNode>): string[] => {
   const inorderTraversal = (node: ColumnNode) => {
     // 如果有子节点，则为非叶子节点
     if (node.children?.length > 0) {
-      result.push(node.key)
+      result.push(node.field)
 
       // 递归处理子节点
       for (let i = 0; i < node.children.length; i++) {
@@ -527,6 +527,22 @@ const getTreesMaxDepth = (nodes: Array<ColumnNode>): number => {
   return Math.max(...rootDepths)
 }
 
+const setupColumnTitle = (nodes: Array<ColumnNode>, nameMap: Record<string, string>) => {
+  nodes.forEach(node => {
+    if (node.children) {
+      node.children.forEach(child => {
+        if (nameMap[child.field]) {
+          child.title = nameMap[child.field]
+        }
+      })
+      setupColumnTitle(node.children as Array<ColumnNode>, nameMap)
+    } else {
+      if (nameMap[node.field]) {
+        node.title = nameMap[node.field]
+      }
+    }
+  })
+}
 const resize = debounce((width, height) => {
   if (s2) {
     s2.changeSheetSize(width, height)
