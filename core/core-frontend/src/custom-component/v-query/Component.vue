@@ -361,16 +361,20 @@ const fillRequireVal = arr => {
         const { conditionValueF, conditionValueS, conditionType } = next
         if (conditionType === 0 && conditionValueF === '') {
           next.conditionValueF = next.defaultConditionValueF
-        } else if (conditionValueF === '' || conditionValueS === '') {
-          next.conditionValueF = next.defaultConditionValueF
-          next.conditionValueS = next.defaultConditionValueS
+        } else {
+          if (conditionValueF === '') {
+            next.conditionValueF = next.defaultConditionValueF
+          }
+          if (conditionValueS === '') {
+            next.conditionValueS = next.defaultConditionValueS
+          }
         }
       } else if (next.displayType === '22') {
-        if (
-          (next.numValueStart !== 0 && !next.numValueStart) ||
-          (next.numValueEnd !== 0 && !next.numValueEnd)
-        ) {
+        if (next.numValueStart !== 0 && !next.numValueStart) {
           next.numValueStart = next.defaultNumValueStart
+        }
+
+        if (next.numValueEnd !== 0 && !next.numValueEnd) {
           next.numValueEnd = next.defaultNumValueEnd
         }
       } else if (
