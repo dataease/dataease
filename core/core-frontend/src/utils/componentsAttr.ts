@@ -9,6 +9,7 @@ import DeScreenAttr from '@/custom-component/de-screen/Attr.vue'
 import DeGraphicalAttr from '@/custom-component/de-graphical/Attr.vue'
 import CircleShapeAttr from '@/custom-component/circle-shape/Attr.vue'
 import RectShapeAttr from '@/custom-component/rect-shape/Attr.vue'
+import DeDecorationAttr from '@/custom-component/de-decoration/Attr.vue'
 import SvgTriangleAttr from '@/custom-component/svgs/svg-triangle/Attr.vue'
 import DeTimeClockAttr from '@/custom-component/de-time-clock/Attr.vue'
 import GroupAreaAttr from '@/custom-component/group-area/Attr.vue'
@@ -29,6 +30,7 @@ export const componentsMap = {
   DeGraphicalAttr: DeGraphicalAttr,
   CircleShapeAttr: CircleShapeAttr,
   RectShapeAttr: RectShapeAttr,
+  DeDecorationAttr: DeDecorationAttr,
   SvgTriangleAttr: SvgTriangleAttr,
   DeTimeClockAttr: DeTimeClockAttr,
   GroupAreaAttr: GroupAreaAttr,

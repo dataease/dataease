@@ -245,7 +245,8 @@ export const commonAttr = {
     'videoLinks',
     'streamLinks',
     'carouselInfo',
-    'events'
+    'events',
+    'decoration_style'
   ], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
@@ -489,6 +490,38 @@ const list = [
       width: 600,
       height: 300,
       color: 'rgb(255, 255, 255,1)',
+      backdropFilter: 'blur(0px)'
+    }
+  },
+  {
+    component: 'DeDecoration',
+    name: t('visualization.decoration'),
+    label: t('visualization.decoration'),
+    propValue: '&nbsp;',
+    icon: 'dv_decoration',
+    style: {
+      width: 400,
+      height: 300,
+      color0: '#298e73',
+      color1: '#2862b7',
+      color2: '#2862b7',
+      dur: 6,
+      reverse: false,
+      borderActive: false,
+      backdropFilter: 'blur(0px)'
+    }
+  },
+  {
+    component: 'DynamicBackground',
+    name: t('visualization.dynamic_background'),
+    label: t('visualization.dynamic_background'),
+    propValue: '&nbsp;',
+    icon: 'dv_dynamic_background',
+    style: {
+      width: 400,
+      height: 300,
+      backgroundColor: 'rgba(236,231,231,0.1)',
+      borderActive: false,
       backdropFilter: 'blur(0px)'
     }
   },

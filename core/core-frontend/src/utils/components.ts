@@ -19,6 +19,7 @@ import ScrollText from '@/custom-component/scroll-text/Component.vue'
 import PopArea from '@/custom-component/pop-area/Component.vue'
 import PictureGroup from '@/custom-component/picture-group/Component.vue'
 import DeScreen from '@/custom-component/de-screen/Component.vue'
+import DeDecoration from '@/custom-component/de-decoration/Component.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -31,6 +32,7 @@ export const componentsMap = {
   DeGraphical: DeGraphical,
   CircleShape: CircleShape,
   RectShape: RectShape,
+  DeDecoration: DeDecoration,
   SvgTriangle: SvgTriangle,
   DeTimeClock: DeTimeClock,
   GroupArea: GroupArea,
