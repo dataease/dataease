@@ -97,6 +97,10 @@ public abstract class Provider {
 
     }
 
+    public void execDDL(DatasourceRequest datasourceRequest) throws Exception {
+
+    }
+
     public ExecuteResult executeUpdate(DatasourceRequest datasourceRequest, String autoIncrementPkName) {
         return new ExecuteResult();
     }

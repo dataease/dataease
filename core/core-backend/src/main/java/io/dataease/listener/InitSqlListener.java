@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -71,7 +72,7 @@ public class InitSqlListener implements ApplicationRunner {
         deStandaloneVersion.setScript("V" + sqlBlock.getVersion().getVersion() + "__ddl.sql");
         deStandaloneVersion.setChecksum(0);
         deStandaloneVersion.setInstalledBy("system");
-        deStandaloneVersion.setInstalledOn(Instant.now());
+        deStandaloneVersion.setInstalledOn(LocalDateTime.now());
         deStandaloneVersion.setExecutionTime(Integer.valueOf((int) (System.currentTimeMillis() - time)));
         deStandaloneVersion.setSuccess(true);
         deStandaloneVersionRepository.saveAndFlush(deStandaloneVersion);
