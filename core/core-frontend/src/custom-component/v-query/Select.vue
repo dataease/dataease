@@ -578,7 +578,10 @@ const setOptions = (num: number) => {
         (valueSource || []).map(ele => {
           return {
             label: `${ele}`,
-            value: `${ele}`
+            value: `${ele}`,
+            checked: Array.isArray(selectValue.value)
+              ? selectValue.value.includes(ele)
+              : selectValue.value === ele
           }
         })
       )
