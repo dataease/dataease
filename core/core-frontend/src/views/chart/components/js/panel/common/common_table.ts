@@ -2136,10 +2136,31 @@ export const getLeafNodes = (tree: Array<ColumnNode>): ColumnNode[] => {
   return result
 }
 
-export const getColumns = (fields, cols: Array<ColumnNode>) => {
+
+export const mapKeyToField = (nodes: Array<ColumnNode>) => {
+  nodes.forEach(node => {
+    if (node.children) {
+      node.children.forEach(child => {
+        if (child.key) {
+          // 如果有 key 字段，则将其映射到 field 字段
+          child.field = child.key
+          delete child.key
+        }
+      })
+      mapKeyToField(node.children as Array<ColumnNode>)
+    } else {
+      if (node.key) {
+        node.field = node.key
+        delete node.key
+      }
+    }
+  })
+}
+
+export const getColumns = (fields, cols: Array<ColumnNode>): Array<ColumnNode> => {
   const result = []
   for (let i = 0; i < cols.length; i++) {
-    if (fields.includes(cols[i].key)) {
+    if (fields.includes(cols[i].field)) {
       result.push(cols[i])
     }
     if (cols[i].children?.length) {

@@ -518,8 +518,10 @@ declare interface ChartTableHeaderAttr {
     columns: Columns
     /**
      * 分组名称
+     * @deprecated since version 3.0.0
+     * @description move to columns
      */
-    meta: {
+    meta?: {
       /**
        * 字段id
        */
@@ -1378,7 +1380,13 @@ declare interface ConversionTagAtt {
 }
 
 declare interface ColumnNode {
-  key: string
+  /**
+   * @deprecated since version 3.0.0
+   * @alias field
+   */
+  key?: string
+  field: string
+  title: string
   children?: Columns
 }
 
