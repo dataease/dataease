@@ -182,7 +182,6 @@ const getCascadeFieldId = () => {
   cascade.value.forEach(ele => {
     let condition = null
     ele.forEach(item => {
-      // eslint-disable-next-line
       const [_, queryId, fieldId] = item.datasetId.split('--')
       if (queryId === config.value.id && condition) {
         if (item.fieldId) {
@@ -579,7 +578,10 @@ const setOptions = (num: number) => {
         (valueSource || []).map(ele => {
           return {
             label: `${ele}`,
-            value: `${ele}`
+            value: `${ele}`,
+            checked: Array.isArray(selectValue.value)
+              ? selectValue.value.includes(ele)
+              : selectValue.value === ele
           }
         })
       )
