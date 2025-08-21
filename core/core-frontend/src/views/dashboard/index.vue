@@ -21,6 +21,7 @@ import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
 import { decompressionPre, initCanvasData, onInitReady } from '@/utils/canvasUtils'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
+import ViewEditor from '@/views/chart/components/editor/index.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
 import { cloneDeep } from 'lodash-es'
@@ -85,8 +86,6 @@ const initDataset = () => {
     state.datasetTree = (res as unknown as Tree[]) || []
   })
 }
-const ViewEditor = defineAsyncComponent(() => import('@/views/chart/components/editor/index.vue'))
-
 const ChartStyleBatchSet = defineAsyncComponent(
   () => import('@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue')
 )
