@@ -57,6 +57,8 @@ public interface ExtDataVisualizationMapper {
 
     void deleteViewsBatch(@Param("ids") Set<Long> ids,@Param("resourceTable") String resourceTable);
 
+    void deleteUselessViewsBatchSnapshot(@Param("ids") List<Long> ids,@Param("dvId") Long dvId);
+
     UserFormVO queryInnerUserInfo(@Param("id") Long id);
 
     void snapshotDataV(@Param("dvId") Long dvId);

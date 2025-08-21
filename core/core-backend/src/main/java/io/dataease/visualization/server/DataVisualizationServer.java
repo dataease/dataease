@@ -594,6 +594,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setStatus(request.getStatus());
         coreVisualizationManage.innerEdit(visualizationInfo);
         if (CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()) {
+            List<Long> viewIds = this.getEnabledViewIds(dvId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+            extDataVisualizationMapper.deleteUselessViewsBatchSnapshot(viewIds,dvId);
             coreVisualizationManage.removeDvCore(dvId);
             coreVisualizationManage.dvRestore(dvId);
             chartViewManege.publishThreshold(dvId, request.getActiveViewIds());

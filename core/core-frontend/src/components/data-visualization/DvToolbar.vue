@@ -331,9 +331,12 @@ const publishStatusChange = status => {
     type: 'dataV'
   }).then(() => {
     dvMainStore.updateDvInfoCall(status)
-    status
-      ? ElMessage.success(t('visualization.published_success'))
-      : ElMessage.success(t('visualization.cancel_publish_tips'))
+    if (status) {
+      ElMessage.success(t('visualization.published_success'))
+      snapshotStore.initSnapShot()
+    } else {
+      ElMessage.success(t('visualization.cancel_publish_tips'))
+    }
   })
 }
 

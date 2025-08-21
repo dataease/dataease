@@ -498,6 +498,20 @@
             </foreach>
     </delete>
 
+    <delete id="deleteUselessViewsBatchSnapshot">
+        DELETE
+        FROM
+        snapshot_core_chart_view ccv
+        WHERE
+            ccv.scene_id = #{dvId}
+            <if test="ids != null and ids.size() > 0">
+                 and ccv.id not in
+                 <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+                    #{id}
+                 </foreach>
+            </if>
+    </delete>
+
      <select id="queryInnerUserInfo" resultType="io.dataease.api.permissions.user.vo.UserFormVO">
             select id,account,name from per_user where id =  #{id}
      </select>
