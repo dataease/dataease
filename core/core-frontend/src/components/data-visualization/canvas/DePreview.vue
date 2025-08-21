@@ -572,6 +572,7 @@ defineExpose({
           :key="index"
           :config="item"
           :style="getShapeItemShowStyle(item)"
+          :cur-style="getShapeItemShowStyle(item)"
           :show-position="showPosition"
           :search-count="curSearchCount"
           :scale="mobileInPc && isDashboard() ? 100 : scaleMin"
