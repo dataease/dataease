@@ -65,8 +65,7 @@ const { element, view, scale } = toRefs(props)
 const { t } = useI18n()
 const vQueryRef = ref()
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap, editMode } =
-  storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap } = storeToRefs(dvMainStore)
 const canEdit = ref(false)
 const queryConfig = ref()
 const defaultStyle = {
@@ -99,9 +98,6 @@ const defaultStyle = {
 }
 const customStyle = reactive({ ...defaultStyle })
 const snapshotStore = snapshotStoreWithOut()
-const userAgent = navigator.userAgent.toLowerCase()
-// 判断是否为飞书内置浏览器
-const isFeiShu = /lark/i.test(userAgent)
 
 const btnStyle = computed(() => {
   const style = {
@@ -359,22 +355,26 @@ const getKeyList = next => {
 }
 
 const fillRequireVal = arr => {
-  element.value.propValue.forEach(next => {
+  element.value.propValue?.forEach(next => {
     if (arr.some(itx => next.checkedFields.includes(itx)) && next.required) {
       if (next.displayType === '8') {
         const { conditionValueF, conditionValueS, conditionType } = next
         if (conditionType === 0 && conditionValueF === '') {
           next.conditionValueF = next.defaultConditionValueF
-        } else if (conditionValueF === '' || conditionValueS === '') {
-          next.conditionValueF = next.defaultConditionValueF
-          next.conditionValueS = next.defaultConditionValueS
+        } else {
+          if (conditionValueF === '') {
+            next.conditionValueF = next.defaultConditionValueF
+          }
+          if (conditionValueS === '') {
+            next.conditionValueS = next.defaultConditionValueS
+          }
         }
       } else if (next.displayType === '22') {
-        if (
-          (next.numValueStart !== 0 && !next.numValueStart) ||
-          (next.numValueEnd !== 0 && !next.numValueEnd)
-        ) {
+        if (next.numValueStart !== 0 && !next.numValueStart) {
           next.numValueStart = next.defaultNumValueStart
+        }
+
+        if (next.numValueEnd !== 0 && !next.numValueEnd) {
           next.numValueEnd = next.defaultNumValueEnd
         }
       } else if (
@@ -502,7 +502,7 @@ onBeforeUnmount(() => {
 const updateQueryCriteria = () => {
   if (dvMainStore.mobileInPc && !isMobile()) return
   Array.isArray(element.value.propValue) &&
-    element.value.propValue.forEach(ele => {
+    element.value.propValue?.forEach(ele => {
       if (ele.auto) {
         const componentInfo = {
           datasetId: ele.dataset.id,
@@ -827,7 +827,7 @@ const marginRight = computed<CSSProperties>(() => {
 })
 
 const autoStyle = computed(() => {
-  if (isISOMobile() || isFeiShu) {
+  if (isISOMobile()) {
     return {
       position: 'absolute',
       height: 100 / scale.value + '%!important',
@@ -856,7 +856,7 @@ const autoStyle = computed(() => {
         <div class="container flex-align-center">
           {{ t('v_query.here_or_click') }}
           <el-button
-            :disabled="showPosition === 'preview' || mobileInPc || editMode === 'preview'"
+            :disabled="showPosition === 'preview' || mobileInPc"
             @click="addCriteriaConfigOut"
             style="font-family: inherit"
             text
@@ -890,9 +890,7 @@ const autoStyle = computed(() => {
               </div>
               <div
                 class="label-wrapper-tooltip"
-                v-if="
-                  showPosition !== 'preview' && !dvMainStore.mobileInPc && editMode !== 'preview'
-                "
+                v-if="showPosition !== 'preview' && !dvMainStore.mobileInPc"
               >
                 <el-tooltip
                   effect="dark"
