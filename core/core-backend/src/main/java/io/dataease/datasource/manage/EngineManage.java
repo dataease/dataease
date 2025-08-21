@@ -308,6 +308,27 @@ public class EngineManage {
         }
     }
 
+    public static class DmJdbcUrlParser implements JdbcUrlParser {
+        private static final Pattern PATTERN = Pattern.compile("jdbc:dm://(.*):(\\d+)(.*)");
+
+        @Override
+        public Map<String, String> parse(String url, Environment env) {
+            Matcher matcher = PATTERN.matcher(url);
+            if (!matcher.find()) return null;
+            Map<String, String> config = new HashMap<>();
+            config.put("host", matcher.group(1));
+            config.put("port", matcher.group(2));
+            config.put("schema", env.getProperty("spring.jpa.properties.hibernate.default_schema"));
+
+            if (matcher.groupCount() == 3) {
+                config.put("extraParams", matcher.group(3).startsWith("/") ? matcher.group(3).substring(1) : matcher.group(3));
+            }
+            config.put("type", "dm");
+            config.put("username", env.getProperty("spring.datasource.username"));
+            config.put("password", env.getProperty("spring.datasource.password"));
+            return config;
+        }
+    }
 
     /**
      * Oracle JDBC URL解析器实现
@@ -395,6 +416,8 @@ public class EngineManage {
                             parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:sqlserver://")) {
                             parserMap.put("jdbc:sqlserver://", new SqlserverJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:dm://")) {
+                            parserMap.put("jdbc:dm://", new DmJdbcUrlParser());
                         }
                     }
                 }

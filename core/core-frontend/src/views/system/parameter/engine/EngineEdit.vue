@@ -362,7 +362,11 @@ defineExpose({
           type="number"
         />
       </el-form-item>
-      <el-form-item :label="t('datasource.data_base')" prop="configuration.dataBase">
+      <el-form-item
+        :label="t('datasource.data_base')"
+        prop="configuration.dataBase"
+        v-if="nodeInfo.type !== 'dm'"
+      >
         <el-input
           v-model="nodeInfo.configuration.dataBase"
           :placeholder="t('datasource.please_input_data_base')"
@@ -386,7 +390,7 @@ defineExpose({
         />
       </el-form-item>
       <el-form-item
-        v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(nodeInfo.type)"
+        v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2', 'dm'].includes(nodeInfo.type)"
         class="schema-label"
         :prop="showSchema ? '' : 'configuration.schema'"
       >

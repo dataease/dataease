@@ -8,9 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -50,7 +50,7 @@ public class DeStandaloneVersion {
 
     @NotNull
     @Column(name = "installed_on", nullable = false)
-    private Instant installedOn;
+    private LocalDateTime installedOn;
 
     @NotNull
     @Column(name = "execution_time", nullable = false)

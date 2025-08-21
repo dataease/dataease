@@ -1110,7 +1110,7 @@ public class DatasourceServer implements DatasourceApi {
         Configuration configuration = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Configuration.class);
         String schema = StringUtils.isNotEmpty(configuration.getSchema()) ? configuration.getSchema() + "." : "";
         String sql = "SELECT * FROM " + schema + tableName;
-        Provider provider = ProviderFactory.getDefaultProvider();
+        Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
         Map<Long, DatasourceSchemaDTO> dsMap = new HashMap<>();
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);

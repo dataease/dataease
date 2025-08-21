@@ -24,6 +24,11 @@
             <version>${guava.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.dm</groupId>
+            <artifactId>DmDialect</artifactId>
+            <version>6</version>
+        </dependency>
+        <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-base</artifactId>
             <version>${dataease.version}</version>

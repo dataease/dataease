@@ -8,7 +8,6 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.*;
-import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
 import io.dataease.exception.DEException;
@@ -16,6 +15,8 @@ import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.TableField;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.job.schedule.ExtractDataJob;
 import io.dataease.job.schedule.ScheduleManager;
@@ -47,8 +48,6 @@ public class DatasourceSyncManage {
     private DatasourceTaskServer datasourceTaskServer;
     @Resource
     private ScheduleManager scheduleManager;
-    @Resource
-    private CalciteProvider calciteProvider;
     @Resource
     private DatasourceServer datasourceServer;
 
@@ -262,12 +261,15 @@ public class DatasourceSyncManage {
         }
     }
 
-    private void extractApiData(DatasourceRequest datasourceRequest, DatasourceServer.UpdateType extractType, List<TableField> tableFields) throws Exception {
-        Map<String, Object> result = (Map<String, Object>) datasourceServer.invokeMethod(datasourceRequest.getDatasource().getType(), "fetchApiResultField", DatasourceRequest.class, datasourceRequest);
+    private void extractApiData(DatasourceRequest request, DatasourceServer.UpdateType extractType, List<TableField> tableFields) throws Exception {
+        Map<String, Object> result = (Map<String, Object>) datasourceServer.invokeMethod(request.getDatasource().getType(), "fetchApiResultField", DatasourceRequest.class, request);
         List<String[]> dataList = (List<String[]>) result.get("dataList");
         CoreDeEngine engine = engineManage.info();
-        EngineRequest engineRequest = new EngineRequest();
-        engineRequest.setEngine(engine);
+        Provider provider = ProviderFactory.getProvider(engine.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        DatasourceDTO coreDatasource = new DatasourceDTO();
+        BeanUtils.copyBean(coreDatasource, engine);
+        datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         int pageNumber = 1000; //一次插入 1000条
         int totalPage;
@@ -277,19 +279,22 @@ public class DatasourceSyncManage {
             totalPage = dataList.size() / pageNumber;
         }
         for (int page = 1; page <= totalPage; page++) {
-            engineRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.API.name(), datasourceRequest.getTable(), extractType, dataList, page, pageNumber, tableFields, engine));
-            calciteProvider.exec(engineRequest);
+            datasourceRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.API.name(), request.getTable(), extractType, dataList, page, pageNumber, tableFields, engine));
+            provider.execDDL(datasourceRequest);
         }
     }
 
-    private void extractExcelData(DatasourceRequest datasourceRequest, DatasourceServer.UpdateType extractType, List<TableField> tableFields) throws Exception {
+    private void extractExcelData(DatasourceRequest request, DatasourceServer.UpdateType extractType, List<TableField> tableFields) throws Exception {
         ExcelUtils excelUtils = new ExcelUtils();
-        List<String[]> dataList = excelUtils.fetchDataList(datasourceRequest);
+        List<String[]> dataList = excelUtils.fetchDataList(request);
         CoreDeEngine engine = engineManage.info();
-        EngineRequest engineRequest = new EngineRequest();
-        engineRequest.setEngine(engine);
+        Provider provider = ProviderFactory.getProvider(engine.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        DatasourceDTO coreDatasource = new DatasourceDTO();
+        BeanUtils.copyBean(coreDatasource, engine);
+        datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
-        int pageNumber = 1000; //一次插入 1000条
+        int pageNumber = 1000;
         if (engine.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.oracle.name())) {
             pageNumber = 1;
         }
@@ -300,61 +305,63 @@ public class DatasourceSyncManage {
             totalPage = dataList.size() / pageNumber;
         }
         for (int page = 1; page <= totalPage; page++) {
-            engineRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.Excel.name(), datasourceRequest.getTable(), extractType, dataList, page, pageNumber, tableFields, engine));
-            calciteProvider.exec(engineRequest);
+            datasourceRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.Excel.name(), request.getTable(), extractType, dataList, page, pageNumber, tableFields, engine));
+            System.out.println(datasourceRequest.getQuery());
+            provider.execDDL(datasourceRequest);
         }
     }
 
     private void replaceTable(String tableName) throws Exception {
         CoreDeEngine engine = engineManage.info();
-        EngineRequest engineRequest = new EngineRequest();
-        engineRequest.setEngine(engine);
+        Provider provider = ProviderFactory.getProvider(engine.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        DatasourceDTO coreDatasource = new DatasourceDTO();
+        BeanUtils.copyBean(coreDatasource, engine);
+        datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         String[] replaceTableSql = engineProvider.replaceTable(tableName, engine).split(";");
         for (int i = 0; i < replaceTableSql.length; i++) {
             if (StringUtils.isNotEmpty(replaceTableSql[i])) {
-                engineRequest.setQuery(replaceTableSql[i]);
-                calciteProvider.exec(engineRequest);
+                datasourceRequest.setQuery(replaceTableSql[i]);
+                provider.execDDL(datasourceRequest);
             }
         }
     }
 
     public void createEngineTable(String tableName, List<TableField> tableFields) throws Exception {
         CoreDeEngine engine = engineManage.info();
-        EngineRequest engineRequest = new EngineRequest();
-        engineRequest.setEngine(engine);
+        Provider provider = ProviderFactory.getProvider(engine.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        DatasourceDTO coreDatasource = new DatasourceDTO();
+        BeanUtils.copyBean(coreDatasource, engine);
+        datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
-        engineRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
+        datasourceRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
         if (engineProvider.needCheckExistTable()) {
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            DatasourceDTO datasourceDTO = new DatasourceDTO();
-            BeanUtils.copyBean(datasourceDTO, engine);
-            datasourceRequest.setDatasource(datasourceDTO);
-            if (!calciteProvider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
-                calciteProvider.exec(engineRequest);
+            if (!provider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
+                provider.execDDL(datasourceRequest);
             }
         } else {
-            calciteProvider.exec(engineRequest);
+            provider.execDDL(datasourceRequest);
         }
 
     }
 
     public void dropEngineTable(String tableName) throws Exception {
         CoreDeEngine engine = engineManage.info();
-        EngineRequest engineRequest = new EngineRequest();
-        engineRequest.setEngine(engine);
+        Provider provider = ProviderFactory.getProvider(engine.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        DatasourceDTO coreDatasource = new DatasourceDTO();
+        BeanUtils.copyBean(coreDatasource, engine);
+        datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
-        engineRequest.setQuery(engineProvider.dropTable(tableName, engine));
+        datasourceRequest.setQuery(engineProvider.dropTable(tableName, engine));
         if (engineProvider.needCheckExistTable()) {
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            DatasourceDTO datasourceDTO = new DatasourceDTO();
-            BeanUtils.copyBean(datasourceDTO, engine);
-            datasourceRequest.setDatasource(datasourceDTO);
-            if (calciteProvider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
-                calciteProvider.exec(engineRequest);
+            if (provider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
+                provider.execDDL(datasourceRequest);
             }
         } else {
-            calciteProvider.exec(engineRequest);
+            provider.execDDL(datasourceRequest);
         }
     }
 
