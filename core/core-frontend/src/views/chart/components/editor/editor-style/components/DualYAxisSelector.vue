@@ -5,7 +5,7 @@ import {
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 import DualYAxisSelectorInner from './DualYAxisSelectorInner.vue'
 
 const { t } = useI18n()
@@ -59,15 +59,15 @@ const init = () => {
       customStyle = JSON.parse(chart.customStyle)
     }
     if (customStyle.yAxis) {
-      state.axisForm = cloneDeep(customStyle.yAxis)
+      state.axisForm = defaultsDeep(cloneDeep(customStyle.yAxis), DEFAULT_YAXIS_STYLE)
       state.axisForm.position = 'left'
     }
 
     if (customStyle.yAxisExt) {
-      state.subAxisForm = cloneDeep(customStyle.yAxisExt)
+      state.subAxisForm = defaultsDeep(cloneDeep(customStyle.yAxisExt), DEFAULT_YAXIS_EXT_STYLE)
+      state.subAxisForm.position = 'right'
+      state.subAxisForm.show = state.axisForm.show
     }
-    state.subAxisForm.position = 'right'
-    state.subAxisForm.show = state.axisForm.show
     if (chart.type === 'bidirectional-bar') {
       state.axisForm.position = customStyle.yAxis.position
       state.subAxisForm.position = customStyle.yAxisExt.position

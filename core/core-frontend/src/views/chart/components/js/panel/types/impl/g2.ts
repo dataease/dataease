@@ -104,6 +104,7 @@ export abstract class G2ChartView<
       gridLineDash = [1, 2]
     }
     const axisOption = {
+      tick: axis.axisLabel.show && axis.axisLabel.showTick !== false,
       position: axis.position,
       title: axis.nameShow === false ? false : isEmpty(axis.name) ? false : axis.name,
       titleFontSize: axis.fontSize,

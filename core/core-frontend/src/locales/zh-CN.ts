@@ -1455,6 +1455,7 @@ export default {
     axis_type_dashed: '虚线',
     axis_type_dotted: '点',
     axis_label_show: '标签显示',
+    axis_tick_show: '刻度显示',
     axis_label_color: '标签颜色',
     axis_label_fontsize: '标签大小',
     text_style: '字体样式',
