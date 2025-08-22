@@ -92,9 +92,9 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
         break
       case 'rowCell':
       case 'colCell':
-        content = meta.field
-        field = find(metaConfig, item => item.field === content)
-        if (field) {
+        content = meta.value
+        field = metaConfig.find(item => item.field === content)
+        if (field?.name) {
           content = field.name
         }
         break

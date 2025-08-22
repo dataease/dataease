@@ -2157,6 +2157,23 @@ export const mapKeyToField = (nodes: Array<ColumnNode>) => {
   })
 }
 
+export const setupColumnTitle = (nodes: Array<ColumnNode>, nameMap: Record<string, string>) => {
+  nodes.forEach(node => {
+    if (node.children) {
+      node.children.forEach(child => {
+        if (nameMap[child.field]) {
+          child.title = nameMap[child.field]
+        }
+      })
+      setupColumnTitle(node.children as Array<ColumnNode>, nameMap)
+    } else {
+      if (nameMap[node.field]) {
+        node.title = nameMap[node.field]
+      }
+    }
+  })
+}
+
 export const getColumns = (fields, cols: Array<ColumnNode>): Array<ColumnNode> => {
   const result = []
   for (let i = 0; i < cols.length; i++) {

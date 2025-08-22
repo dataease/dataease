@@ -477,8 +477,7 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   isColBolder: true,
   headerGroup: false,
   headerGroupConfig: {
-    columns: [],
-    meta: []
+    columns: []
   }
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {

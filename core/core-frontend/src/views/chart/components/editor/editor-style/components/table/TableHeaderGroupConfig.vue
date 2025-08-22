@@ -30,7 +30,8 @@ import {
   getColumns,
   getCustomTheme,
   getLeafNodes,
-  mapKeyToField
+  mapKeyToField,
+  setupColumnTitle
 } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
@@ -487,27 +488,6 @@ const renderTable = (chart: ChartObj) => {
   })
 }
 
-const getNonLeafNodes = (tree: Array<ColumnNode>): string[] => {
-  const result: string[] = []
-
-  const inorderTraversal = (node: ColumnNode) => {
-    // 如果有子节点，则为非叶子节点
-    if (node.children?.length > 0) {
-      result.push(node.field)
-
-      // 递归处理子节点
-      for (let i = 0; i < node.children.length; i++) {
-        inorderTraversal(node.children[i] as ColumnNode)
-      }
-    }
-  }
-
-  // 遍历树中所有节点
-  tree.forEach(node => inorderTraversal(node))
-
-  return result
-}
-
 const getTreesMaxDepth = (nodes: Array<ColumnNode>): number => {
   if (!nodes?.length) {
     return 0
@@ -527,22 +507,6 @@ const getTreesMaxDepth = (nodes: Array<ColumnNode>): number => {
   return Math.max(...rootDepths)
 }
 
-const setupColumnTitle = (nodes: Array<ColumnNode>, nameMap: Record<string, string>) => {
-  nodes.forEach(node => {
-    if (node.children) {
-      node.children.forEach(child => {
-        if (nameMap[child.field]) {
-          child.title = nameMap[child.field]
-        }
-      })
-      setupColumnTitle(node.children as Array<ColumnNode>, nameMap)
-    } else {
-      if (nameMap[node.field]) {
-        node.title = nameMap[node.field]
-      }
-    }
-  })
-}
 const resize = debounce((width, height) => {
   if (s2) {
     s2.changeSheetSize(width, height)
