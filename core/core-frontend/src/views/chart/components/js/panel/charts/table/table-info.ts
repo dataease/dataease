@@ -27,7 +27,9 @@ import {
   getColumns,
   drawImage,
   getSummaryRow,
-  SummaryCell
+  SummaryCell,
+  mapKeyToField,
+  setupColumnTitle
 } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
@@ -110,10 +112,9 @@ export class TableInfo extends S2ChartView<TableSheet> {
       if (f?.hide === true) {
         return
       }
-      columns.push(ele.dataeaseName)
+      columns.push({ field: ele.dataeaseName, title: ele.chartShowName ?? ele.name })
       meta.push({
         field: ele.dataeaseName,
-        name: ele.chartShowName ?? ele.name,
         formatter: function (value) {
           if (!f) {
             return value
@@ -138,18 +139,32 @@ export class TableInfo extends S2ChartView<TableSheet> {
     if (headerGroup && showTableHeader !== false) {
       const { headerGroupConfig } = tableHeader
       if (headerGroupConfig?.columns?.length) {
-        const allKeys = columns.map(c => drillFieldMap[c] || c)
+        // 存量配置转换
+        if (headerGroupConfig.columns[0].key) {
+          mapKeyToField(headerGroupConfig.columns as unknown as ColumnNode[])
+        }
+        const nameMap =
+          chart.xAxis?.reduce((pre, cur) => {
+            pre[cur.dataeaseName] = cur.name
+            return pre
+          }, {}) || {}
+        if (headerGroupConfig.meta?.length) {
+          headerGroupConfig.meta.forEach(m => {
+            nameMap[m.field] = m.name
+          })
+        }
+        setupColumnTitle(headerGroupConfig.columns as unknown as ColumnNode[], nameMap)
+        const allKeys = columns.map(c => drillFieldMap[c] || c.field)
         const leafNodes = getLeafNodes(headerGroupConfig.columns as ColumnNode[])
-        const leafKeys = leafNodes.map(c => c.key)
+        const leafKeys = leafNodes.map(c => c.field)
         if (isEqual(leafKeys, allKeys)) {
           if (Object.keys(drillFieldMap).length) {
             const originField = Object.values(drillFieldMap)[0]
             const drillField = Object.keys(drillFieldMap)[0]
             const [drillCol] = getColumns([originField], headerGroupConfig.columns as ColumnNode[])
-            drillCol.key = drillField
+            drillCol.field = drillField
           }
           columns.splice(0, columns.length, ...headerGroupConfig.columns)
-          meta.push(...headerGroupConfig.meta)
         }
       }
     }
