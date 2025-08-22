@@ -386,7 +386,11 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       hierarchyType: basicStyle.tableLayoutMode ?? 'grid',
       // dataSet: spreadSheet => new CustomPivotDataset(spreadSheet),
       interaction: {
-        hoverHighlight: !(basicStyle.showHoverStyle === false)
+        hoverHighlight: !(basicStyle.showHoverStyle === false),
+        resize: {
+          rowResizeType: 'all',
+          colResizeType: 'all'
+        }
       },
       dataCell: meta => {
         return new CustomDataCell(meta, meta.spreadsheet)
