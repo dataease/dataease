@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface SnapshotVisualizationLinkageRepository extends JpaRepository<SnapshotVisualizationLinkage, Long>, JpaSpecificationExecutor<SnapshotVisualizationLinkage> {
 
-    @EntityGraph(attributePaths = {"linkageFields"})
+//    @EntityGraph(attributePaths = {"linkageFields"})
     List<SnapshotVisualizationLinkage> findByDvIdAndSourceViewId(Long dvId, Long sourceViewId);
 
 }
