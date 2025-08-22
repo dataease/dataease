@@ -217,6 +217,10 @@ declare interface AxisLabel {
    * 长度限制
    */
   lengthLimit: number
+  /**
+   * 刻度显示
+   */
+  showTick: boolean
 }
 /**
  * 轴线条设置

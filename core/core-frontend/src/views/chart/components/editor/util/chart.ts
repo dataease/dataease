@@ -638,7 +638,8 @@ export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
     fontSize: 12,
     rotate: 0,
     formatter: '{value}',
-    lengthLimit: 10
+    lengthLimit: 10,
+    showTick: true
   },
   axisLine: {
     show: true,
@@ -685,7 +686,8 @@ export const DEFAULT_YAXIS_STYLE: ChartAxisStyle = {
     fontSize: 12,
     rotate: 0,
     formatter: '{value}',
-    lengthLimit: 10
+    lengthLimit: 10,
+    showTick: true
   },
   axisLine: {
     show: false,
@@ -730,7 +732,9 @@ export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
     color: '#333333',
     fontSize: 12,
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    lengthLimit: 10,
+    showTick: true
   },
   axisLine: {
     show: false,
@@ -762,7 +766,8 @@ export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
     suffix: '',
     decimalCount: 2,
     thousandSeparator: true
-  }
+  },
+  nameShow: false
 }
 export const DEFAULT_BACKGROUND_COLOR = {
   color: '#ffffff',

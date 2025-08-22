@@ -434,6 +434,17 @@ onMounted(() => {
     </el-form-item>
     <div style="padding-left: 22px" v-if="showProperty('axisLabel')">
       <div style="flex: 1">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            :effect="props.themes"
+            :disabled="!state.axisForm.axisLabel.show"
+            v-model="state.axisForm.axisLabel.showTick"
+            size="small"
+            @change="changeAxisStyle('axisLabel.showTick')"
+          >
+            {{ t('chart.axis_tick_show') }}
+          </el-checkbox>
+        </el-form-item>
         <div style="display: flex">
           <el-form-item
             class="form-item"

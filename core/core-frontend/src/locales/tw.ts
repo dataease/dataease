@@ -1450,6 +1450,7 @@ export default {
     axis_type_dashed: '虛線',
     axis_type_dotted: '點',
     axis_label_show: '標籤顯示',
+    axis_tick_show: '刻度顯示',
     axis_label_color: '標籤顏色',
     axis_label_fontsize: '標籤大小',
     text_style: '字體樣式',

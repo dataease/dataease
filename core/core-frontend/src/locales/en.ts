@@ -1491,6 +1491,7 @@ export default {
     axis_label_show: 'Label display',
     axis_label_color: 'Label color',
     axis_label_fontsize: 'Label size',
+    axis_tick_show: 'Show tick',
     text_style: 'Font style',
     bolder: 'Bold',
     change_ds: 'Change Dataset',
