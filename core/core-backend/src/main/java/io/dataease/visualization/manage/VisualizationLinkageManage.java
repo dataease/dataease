@@ -323,15 +323,27 @@ public class VisualizationLinkageManage {
     public List<LinkageInfoDTO> getPanelAllLinkageInfo(Long dvId) {
         // 1. 查询符合条件的联动信息
         List<VisualizationLinkage> linkages = linkageRepository.findByDvIdAndLinkageActive(dvId, true);
-
         // 2. 创建分组Map
         Map<String, List<String>> groupedResults = new HashMap<>();
+        List<Long> sourceViewIds = linkages.stream()
+                .map(VisualizationLinkage::getSourceViewId)
+                .toList();
+        List<Long> linkageIds = linkages.stream()
+                .map(VisualizationLinkage::getId)
+                .toList();
+        List<Long> sourceViewIdsActive = coreChartViewRepository.findIdsByIdInAndLinkageActive(sourceViewIds,true);
 
+        List<VisualizationLinkageField> linkageFields = linkageFieldRepository.findByLinkageIdIn(linkageIds);
+        Map<Long, List<VisualizationLinkageField>> groupedLinkageFields = linkageFields.stream()
+                .collect(Collectors.groupingBy(
+                        VisualizationLinkageField::getLinkageId,
+                        Collectors.toList()
+                ));
         // 3. 填充分组数据
         linkages.stream()
-                .filter(linkage -> linkage.getSourceView() != null && linkage.getSourceView().getLinkageActive())
+                .filter(linkage -> sourceViewIdsActive.contains(linkage.getSourceViewId()))
                 .forEach(linkage -> {
-                    linkage.getLinkageFields().stream()
+                    groupedLinkageFields.get(linkage.getId()).stream()
                             .filter(field -> field.getId() != null)
                             .forEach(field -> {
                                 String sourceKey = linkage.getSourceViewId() + "#" + field.getSourceField();
