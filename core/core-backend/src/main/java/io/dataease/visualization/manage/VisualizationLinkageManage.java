@@ -190,13 +190,11 @@ public class VisualizationLinkageManage {
 
         // 2. 获取联动信息
         List<SnapshotVisualizationLinkage> linkages = snapshotLinkageRepository.findByDvIdAndSourceViewId(dvId, sourceViewId);
-
         // 3. 获取联动字段信息
         List<Long> linkageIds = linkages.stream()
                 .map(SnapshotVisualizationLinkage::getId)
                 .collect(Collectors.toList());
         List<SnapshotVisualizationLinkageField> linkageFields = snapshotVisualizationLinkageFieldRepository.findByLinkageIdIn(linkageIds);
-
         // 4. 构建结果
         return targetViews.stream().map(targetView -> {
             VisualizationLinkageDTO dto = new VisualizationLinkageDTO();
@@ -232,7 +230,7 @@ public class VisualizationLinkageManage {
 
             // 设置目标视图字段
             if (targetView.getTableId() != null) {
-                List<DatasetTableFieldDTO> fields = coreDatasetTableFieldRepository.findByDatasetTableId(targetView.getTableId())
+                List<DatasetTableFieldDTO> fields = coreDatasetTableFieldRepository.findByDatasetGroupId(targetView.getTableId())
                         .stream()
                         .map(field -> {
                             DatasetTableFieldDTO fieldDto = new DatasetTableFieldDTO();
@@ -246,7 +244,6 @@ public class VisualizationLinkageManage {
                         .collect(Collectors.toList());
                 dto.setTargetViewFields(fields);
             }
-
             return dto;
         }).collect(Collectors.toList());
     }
