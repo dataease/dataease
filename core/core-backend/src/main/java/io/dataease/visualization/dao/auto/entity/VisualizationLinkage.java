@@ -65,11 +65,5 @@ public class VisualizationLinkage {
     @Column(name = "copy_id")
     private Long copyId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_view_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private CoreChartView sourceView;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<VisualizationLinkageField> linkageFields;
 
 }
