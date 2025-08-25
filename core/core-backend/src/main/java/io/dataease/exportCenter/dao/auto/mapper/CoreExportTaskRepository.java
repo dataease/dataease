@@ -1,6 +1,6 @@
 package io.dataease.exportCenter.dao.auto.mapper;
 
-import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
+import io.dataease.dao.auto.entity.CoreExportTask;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
