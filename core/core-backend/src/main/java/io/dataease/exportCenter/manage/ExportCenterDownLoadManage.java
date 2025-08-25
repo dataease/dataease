@@ -9,18 +9,20 @@ import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
 import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataRequest;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.chart.server.ChartDataServer;
 import io.dataease.commons.utils.ExcelWatermarkUtils;
 import io.dataease.constant.DeTypeConstants;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
+import io.dataease.dao.auto.entity.CoreChartView;
+import io.dataease.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.manage.*;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.sql.SQLProvider;
@@ -30,8 +32,8 @@ import io.dataease.engine.trans.Table2SQLObj;
 import io.dataease.engine.trans.WhereTree2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
-import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
-import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskMapper;
+import io.dataease.dao.auto.entity.CoreExportTask;
+import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskRepository;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -50,8 +52,7 @@ import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
-import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
+import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
 import io.dataease.visualization.dto.WatermarkContentDTO;
 import io.dataease.websocket.WsMessage;
 import io.dataease.websocket.WsService;
@@ -86,10 +87,6 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class ExportCenterDownLoadManage {
     @Resource
-    private CoreExportTaskMapper exportTaskMapper;
-    @Resource
-    private CoreChartViewMapper coreChartViewMapper;
-    @Resource
     private PermissionManage permissionManage;
     @Autowired
     private WsService wsService;
@@ -102,10 +99,6 @@ public class ExportCenterDownLoadManage {
 
     @Value("${dataease.path.exportData:/opt/dataease2.0/data/exportData/}")
     private String exportData_path;
-    @Resource
-    private VisualizationWatermarkMapper watermarkMapper;
-    @Resource
-    private ExtDataVisualizationMapper visualizationMapper;
     @Value("${dataease.export.page.size:50000}")
     private Integer extractPageSize;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
@@ -115,16 +108,22 @@ public class ExportCenterDownLoadManage {
     @Resource
     private ChartDataServer chartDataServer;
     @Resource
-    private CoreDatasetGroupMapper coreDatasetGroupMapper;
+    private VisualizationWatermarkRepository watermarkRepository;
     @Resource
     private DatasetSQLManage datasetSQLManage;
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
     private DatasetDataManage datasetDataManage;
+    @Resource
+    private CoreExportTaskRepository coreExportTaskRepository;
     private final Long sheetLimit = 1000000L;
     @Autowired(required = false)
     private DataFillingApi dataFillingApi = null;
+    @Resource
+    private CoreChartViewRepository coreChartViewRepository;
+    @Resource
+    private CoreDatasetGroupRepository coreDatasetGroupRepository;
 
     private DataFillingApi getDataFillingApi() {
         return dataFillingApi;
@@ -145,7 +144,7 @@ public class ExportCenterDownLoadManage {
             if (entry.getValue().isDone()) {
                 iterator.remove();
                 try {
-                    CoreExportTask exportTask = exportTaskMapper.selectById(entry.getKey());
+                    CoreExportTask exportTask = coreExportTaskRepository.findById(entry.getKey()).orElse(null);
                     ExportTaskDTO exportTaskDTO = new ExportTaskDTO();
                     BeanUtils.copyBean(exportTaskDTO, exportTask);
                     setExportFromName(exportTaskDTO);
@@ -159,10 +158,10 @@ public class ExportCenterDownLoadManage {
 
     private void setExportFromName(ExportTaskDTO exportTaskDTO) {
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
-            exportTaskDTO.setExportFromName(coreChartViewMapper.selectById(exportTaskDTO.getExportFrom()).getTitle());
+            exportTaskDTO.setExportFromName(coreChartViewRepository.findById(exportTaskDTO.getExportFrom()).orElse(new CoreChartView()).getTitle());
         }
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("dataset")) {
-            exportTaskDTO.setExportFromName(coreDatasetGroupMapper.selectById(exportTaskDTO.getExportFrom()).getName());
+            exportTaskDTO.setExportFromName(coreDatasetGroupRepository.findById(exportTaskDTO.getExportFrom()).orElse(new CoreDatasetGroup()).getName());
         }
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("data_filling")) {
             exportTaskDTO.setExportFromName(getDataFillingApi().get(exportTaskDTO.getExportFrom()).getName());
@@ -182,7 +181,7 @@ public class ExportCenterDownLoadManage {
             AuthUtils.setUser(tokenUserBO);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
-                exportTaskMapper.updateById(exportTask);
+                coreExportTaskRepository.saveAndFlush(exportTask);
                 getDataFillingApi().writeExcel(dataPath + "/" + exportTask.getId() + ".xlsx", new DataFillFormTableDataRequest().setId(exportTask.getExportFrom()).setWithoutLogs(true), exportTask.getUserId(), Long.parseLong(request.get("org").toString()));
                 exportTask.setExportProgress("100");
                 exportTask.setExportStatus("SUCCESS");
@@ -193,7 +192,7 @@ public class ExportCenterDownLoadManage {
                 LogUtil.error("Failed to export data", e);
                 exportTask.setExportStatus("FAILED");
             } finally {
-                exportTaskMapper.updateById(exportTask);
+                coreExportTaskRepository.saveAndFlush(exportTask);
             }
         });
         Running_Task.put(exportTask.getId(), future);
@@ -203,7 +202,10 @@ public class ExportCenterDownLoadManage {
     public void startDatasetTask(CoreExportTask exportTask, DataSetExportRequest request) {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
-        boolean isCreated = directory.mkdir();
+        // 如果父目录不存在，则递归创建
+        if (!directory.exists()) {
+            boolean isCreated = directory.mkdirs(); // 创建所有必要的父目录
+        }
 
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
@@ -211,8 +213,8 @@ public class ExportCenterDownLoadManage {
             AuthUtils.setUser(tokenUserBO);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
-                exportTaskMapper.updateById(exportTask);
-                CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(exportTask.getExportFrom());
+                coreExportTaskRepository.saveAndFlush(exportTask);
+                CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(exportTask.getExportFrom()).orElse(null);
                 if (coreDatasetGroup == null) {
                     throw new Exception("Not found dataset group: " + exportTask.getExportFrom());
                 }
@@ -403,7 +405,7 @@ public class ExportCenterDownLoadManage {
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format((exportRogress + exportRogress2) * 100);
                         exportTask.setExportProgress(formattedResult);
-                        exportTaskMapper.updateById(exportTask);
+                        coreExportTaskRepository.saveAndFlush(exportTask);
                     }
                 }
                 this.addWatermarkTools(wb);
@@ -421,7 +423,7 @@ public class ExportCenterDownLoadManage {
                 exportTask.setMsg(e.getMessage());
                 exportTask.setExportStatus("FAILED");
             } finally {
-                exportTaskMapper.updateById(exportTask);
+                coreExportTaskRepository.saveAndFlush(exportTask);
             }
         });
         Running_Task.put(exportTask.getId(), future);
@@ -448,7 +450,7 @@ public class ExportCenterDownLoadManage {
             AuthUtils.setUser(tokenUserBO);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
-                exportTaskMapper.updateById(exportTask);
+                coreExportTaskRepository.saveAndFlush(exportTask);
                 Workbook wb = new SXSSFWorkbook();
                 CellStyle cellStyle = wb.createCellStyle();
                 Font font = wb.createFont();
@@ -484,17 +486,18 @@ public class ExportCenterDownLoadManage {
                             xAxis.addAll(request.getViewInfo().getXAxisExt());
                             xAxis.addAll(request.getViewInfo().getYAxisExt());
                             xAxis.addAll(request.getViewInfo().getExtStack());
-                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(DatasetTableFieldDTO::getName).collect(Collectors.toList()).contains(item)).collect(Collectors.toList()).toArray();
+                            xAxis.addAll(request.getViewInfo().getDrillFields());
+                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).toArray();
                             details.add(0, header);
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
                             exportTask.setExportStatus("IN_PROGRESS");
-                            double exportRogress = (double) (i / (chartViewDTO.getTotalPage() + 1));
+                            double exportProgress = (double) (i / (chartViewDTO.getTotalPage() + 1));
                             DecimalFormat df = new DecimalFormat("#.##");
-                            String formattedResult = df.format((exportRogress) * 100);
+                            String formattedResult = df.format((exportProgress) * 100);
                             exportTask.setExportProgress(formattedResult);
-                            exportTaskMapper.updateById(exportTask);
+                            coreExportTaskRepository.saveAndFlush(exportTask);
                         }
                     }
                 } else {
@@ -515,7 +518,7 @@ public class ExportCenterDownLoadManage {
                 LogUtil.error("Failed to export data", e);
                 exportTask.setExportStatus("FAILED");
             } finally {
-                exportTaskMapper.updateById(exportTask);
+                coreExportTaskRepository.saveAndFlush(exportTask);
             }
         });
         Running_Task.put(exportTask.getId(), future);
@@ -590,10 +593,10 @@ public class ExportCenterDownLoadManage {
     }
 
     public void addWatermarkTools(Workbook wb) {
-        VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
+        VisualizationWatermark watermark = watermarkRepository.findById("system_default").orElse(null);
         WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
         if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
-            UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(AuthUtils.getUser().getUserId());
+            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(AuthUtils.getUser().getUserId());
             // 在主逻辑中添加水印
             int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
             for (Sheet sheet : wb) {
@@ -627,7 +630,7 @@ public class ExportCenterDownLoadManage {
     public void downloadDataset(DataSetExportRequest request, HttpServletResponse response) throws Exception {
         OutputStream outputStream = response.getOutputStream();
         try {
-            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(request.getId());
+            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(request.getId()).orElse(null);
             if (coreDatasetGroup == null) {
                 throw new Exception("Not found dataset group: " + request.getFilename());
             }
