@@ -26,7 +26,6 @@ public interface VisualizationLinkageRepository extends JpaRepository<Visualizat
 
     List<VisualizationLinkage> findByDvIdAndSourceViewId(Long dvId, Long sourceViewId);
 
-    @EntityGraph(attributePaths = {"sourceView", "linkageFields"})
     List<VisualizationLinkage> findByDvIdAndLinkageActive(Long dvId, Boolean linkageActive);
 
 }
