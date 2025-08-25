@@ -4,27 +4,138 @@ import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.vo.DataSQLBotAssistantVO;
 import io.dataease.api.dataset.vo.SQLBotAssistanTable;
 import io.dataease.api.dataset.vo.SQLBotAssistantField;
+import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
+import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
+import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
+import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeRequest;
+import io.dataease.api.permissions.role.api.RoleApi;
+import io.dataease.api.permissions.role.dto.RoleRequest;
+import io.dataease.api.permissions.role.vo.RoleVO;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.dataset.dao.ext.mapper.DataSetAssistantMapper;
+import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.manage.EngineManage;
 import io.dataease.extensions.datasource.vo.Configuration;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import io.dataease.home.manage.DeIndexManage;
+import io.dataease.utils.AuthUtils;
+import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class DatasetSQLBotManage {
 
     @Resource
+    private DeIndexManage deIndexManage;
+
+    @Resource
     private DataSetAssistantMapper dataSetAssistantMapper;
+
+    @Resource
+    private EngineManage engineManage;
+
+    @Resource
+    private Environment environment;
+
+    private Map<Long, List<DataSetColumnPermissionsDTO>> getColPermission(Long uid, List<Long> roleIds) {
+        ColumnPermissionsApi columnPermissionsApi = CommonBeanFactory.getBean(ColumnPermissionsApi.class);
+        Objects.requireNonNull(columnPermissionsApi);
+
+        DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO = new DataSetColumnPermissionsDTO();
+        dataSetColumnPermissionsDTO.setAuthTargetId(uid);
+        dataSetColumnPermissionsDTO.setAuthTargetType("user");
+        dataSetColumnPermissionsDTO.setEnable(true);
+        List<DataSetColumnPermissionsDTO> dataSetColumnPermissionsDTOS = columnPermissionsApi.list(dataSetColumnPermissionsDTO);
+
+        if (CollectionUtils.isNotEmpty(roleIds)) {
+            dataSetColumnPermissionsDTO.setAuthTargetId(null);
+            dataSetColumnPermissionsDTO.setAuthTargetIds(roleIds);
+            dataSetColumnPermissionsDTO.setAuthTargetType("role");
+            List<DataSetColumnPermissionsDTO> roleDataSetColumnPermissionsDTOS = columnPermissionsApi.list(dataSetColumnPermissionsDTO);
+            if (CollectionUtils.isNotEmpty(roleDataSetColumnPermissionsDTOS)) {
+                dataSetColumnPermissionsDTOS.addAll(roleDataSetColumnPermissionsDTOS);
+            }
+        }
+        if (CollectionUtils.isEmpty(dataSetColumnPermissionsDTOS)) {
+            return null;
+        }
+        return dataSetColumnPermissionsDTOS.stream().collect(Collectors.groupingBy(DataSetColumnPermissionsDTO::getDatasetId));
+    }
+
+    private Map<Long, List<DataSetRowPermissionsTreeDTO>> getRowPermission(Long uid, List<Long> roleIds) {
+        RowPermissionsApi rowPermissionsApi = CommonBeanFactory.getBean(RowPermissionsApi.class);
+        Objects.requireNonNull(rowPermissionsApi);
+
+        DatasetRowPermissionsTreeRequest request = new DatasetRowPermissionsTreeRequest();
+        request.setEnable(true);
+
+        request.setAuthTargetId(uid);
+        request.setAuthTargetType("user");
+        List<DataSetRowPermissionsTreeDTO> permissionsTreeDTOS = rowPermissionsApi.list(request);
+
+        if (ObjectUtils.isNotEmpty(roleIds)) {
+            request.setAuthTargetId(null);
+            request.setAuthTargetIds(roleIds);
+            request.setAuthTargetType("role");
+            List<DataSetRowPermissionsTreeDTO> rolePermissionDTOS = rowPermissionsApi.list(request);
+            if (CollectionUtils.isNotEmpty(rolePermissionDTOS)) {
+                permissionsTreeDTOS.addAll(rolePermissionDTOS);
+            }
+        }
+        if (CollectionUtils.isEmpty(permissionsTreeDTOS)) {
+            return null;
+        }
+        return permissionsTreeDTOS.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
+    }
 
 
     public List<DataSQLBotAssistantVO> getDatasourceList(List<Long> ids) {
-        List<Map<String, Object>> list = dataSetAssistantMapper.query();
+        TokenUserBO user = Objects.requireNonNull(AuthUtils.getUser());
+        Long oid = user.getDefaultOid();
+        Long uid = user.getUserId();
+        List<Long> roleIds = null;
+        Map<Long, List<DataSetColumnPermissionsDTO>> colPermissionMap = null;
+        Map<Long, List<DataSetRowPermissionsTreeDTO>> rowPermissionMap = null;
+        Boolean model = deIndexManage.xpackModel();
+        List<Map<String, Object>> list = null;
+        boolean isAdmin = uid == 1;
+        if (ObjectUtils.isEmpty(model)) {
+            if (!isAdmin) {
+                return null;
+            }
+            list = dataSetAssistantMapper.queryAll();
+        } else if (!model) {
+            if (!isAdmin) {
+                return null;
+            }
+            list = dataSetAssistantMapper.queryCommunity();
+        } else {
+            boolean isRootRole = isAdmin;
+            if (!isAdmin) {
+                RoleRequest request = new RoleRequest();
+                request.setUid(uid);
+                List<RoleVO> roleVOS = Objects.requireNonNull(CommonBeanFactory.getBean(RoleApi.class)).selectedForUser(request);
+                isRootRole = roleVOS.stream().anyMatch(RoleVO::isRoot);
+                /*roleIds = roleVOS.stream().map(RoleVO::getId).toList();
+
+                colPermissionMap = getColPermission(uid, roleIds);
+                rowPermissionMap = getRowPermission(uid, roleIds);*/
+            }
+            list = dataSetAssistantMapper.queryEnterprise(oid, uid, isRootRole);
+        }
+
 
         List<DataSQLBotAssistantVO> result = new ArrayList<>();
         Map<String, DataSQLBotAssistantVO> dsFlagMap = new HashMap<>();
@@ -80,8 +191,23 @@ public class DatasetSQLBotManage {
         if (ObjectUtils.isEmpty(dsConfig) || StringUtils.isBlank(dsConfig.toString())) {
             return null;
         }
-        String config_json = EncryptUtils.aesDecrypt(dsConfig.toString()).toString();
-        Configuration config = JsonUtil.parseObject(config_json, Configuration.class);
+        String dsHost = environment.getProperty("dataease.dsHost", String.class);
+        if (StringUtils.isBlank(dsHost)) {
+            dsHost = environment.getProperty("dataease.dataease-servers", String.class);
+        }
+        String dsType = row.get("ds_type").toString();
+        Configuration config = null;
+        if (dsType.contains(DatasourceConfiguration.DatasourceType.Excel.name()) || dsType.contains(DatasourceConfiguration.DatasourceType.API.name())) {
+            CoreDatasource deEngine = engineManage.getDeEngine();
+            String config_json = EncryptUtils.aesDecrypt(deEngine.getConfiguration()).toString();
+            config = JsonUtil.parseObject(config_json, Configuration.class);
+            if (StringUtils.isNotBlank(dsHost) && ObjectUtils.isNotEmpty(config)) {
+                config.setHost(dsHost);
+            }
+        } else {
+            String config_json = EncryptUtils.aesDecrypt(dsConfig.toString()).toString();
+            config = JsonUtil.parseObject(config_json, Configuration.class);
+        }
         DataSQLBotAssistantVO vo = new DataSQLBotAssistantVO();
         vo.setDataBase(config.getDataBase());
         vo.setExtraParams(config.getExtraParams());
@@ -89,7 +215,7 @@ public class DatasetSQLBotManage {
         vo.setPort(config.getPort());
         vo.setName(row.get("ds_name").toString());
         vo.setComment(ObjectUtils.isEmpty(row.get("ds_desc")) ? vo.getName() : row.get("ds_desc").toString());
-        vo.setType(row.get("ds_type").toString());
+        vo.setType(dsType);
         vo.setSchema(config.getSchema());
         vo.setUser(config.getUsername());
         vo.setPassword(config.getPassword());
@@ -100,6 +226,7 @@ public class DatasetSQLBotManage {
         SQLBotAssistanTable table = new SQLBotAssistanTable();
         table.setName(row.get("table_name").toString());
         table.setComment(row.get("dataset_name").toString());
+
         Object infoObj = null;
         if (ObjectUtils.isNotEmpty(infoObj = row.get("info"))) {
             String info = infoObj.toString();
