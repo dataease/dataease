@@ -364,6 +364,45 @@ public class VisualizationLinkageManage {
     }
 
     public List<LinkageInfoDTO> getPanelAllLinkageInfoSnapshot(Long dvId) {
-        return null;
+        // 1. 查询符合条件的联动信息
+        List<SnapshotVisualizationLinkage> linkages = snapshotLinkageRepository.findByDvIdAndLinkageActive(dvId, true);
+        // 2. 创建分组Map
+        Map<String, List<String>> groupedResults = new HashMap<>();
+        List<Long> sourceViewIds = linkages.stream()
+                .map(SnapshotVisualizationLinkage::getSourceViewId)
+                .toList();
+        List<Long> linkageIds = linkages.stream()
+                .map(SnapshotVisualizationLinkage::getId)
+                .toList();
+        List<Long> sourceViewIdsActive = snapshotCoreChartViewRepository.findIdsByIdInAndLinkageActive(sourceViewIds,true);
+
+        List<SnapshotVisualizationLinkageField> linkageFields = snapshotVisualizationLinkageFieldRepository.findByLinkageIdIn(linkageIds);
+        Map<Long, List<SnapshotVisualizationLinkageField>> groupedLinkageFields = linkageFields.stream()
+                .collect(Collectors.groupingBy(
+                        SnapshotVisualizationLinkageField::getLinkageId,
+                        Collectors.toList()
+                ));
+        // 3. 填充分组数据
+        linkages.stream()
+                .filter(linkage -> sourceViewIdsActive.contains(linkage.getSourceViewId()))
+                .forEach(linkage -> {
+                    groupedLinkageFields.get(linkage.getId()).stream()
+                            .filter(field -> field.getId() != null)
+                            .forEach(field -> {
+                                String sourceKey = linkage.getSourceViewId() + "#" + field.getSourceField();
+                                String targetValue = linkage.getTargetViewId() + "#" + field.getTargetField();
+                                groupedResults.computeIfAbsent(sourceKey, k -> new ArrayList<>()).add(targetValue);
+                            });
+                });
+
+        // 4. 转换为 LinkageInfoDTO 列表
+        return groupedResults.entrySet().stream()
+                .map(entry -> {
+                    LinkageInfoDTO dto = new LinkageInfoDTO();
+                    dto.setSourceInfo(entry.getKey());
+                    dto.setTargetInfoList(entry.getValue());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }

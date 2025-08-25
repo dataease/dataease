@@ -2,9 +2,11 @@ package io.dataease.visualization.dao.auto.mapper;
 
 
 import io.dataease.visualization.dao.auto.entity.SnapshotCoreChartView;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -40,4 +42,7 @@ public interface SnapshotCoreChartViewRepository extends JpaRepository<SnapshotC
     }
 
     List<SnapshotCoreChartView> findByIdInAndTypeNot(List<Long> ids, String type);
+
+    @Query("SELECT c.id as id FROM SnapshotCoreChartView c WHERE c.id IN :ids AND c.linkageActive = :linkageActive")
+    List<Long> findIdsByIdInAndLinkageActive(@Param("ids") List<Long> ids, @Param("linkageActive") Boolean linkageActive);
 }
