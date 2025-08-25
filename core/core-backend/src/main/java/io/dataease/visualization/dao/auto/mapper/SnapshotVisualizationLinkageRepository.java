@@ -2,6 +2,7 @@ package io.dataease.visualization.dao.auto.mapper;
 
 
 import io.dataease.visualization.dao.auto.entity.SnapshotVisualizationLinkage;
+import io.dataease.visualization.dao.auto.entity.VisualizationLinkage;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -14,4 +15,5 @@ public interface SnapshotVisualizationLinkageRepository extends JpaRepository<Sn
 //    @EntityGraph(attributePaths = {"linkageFields"})
     List<SnapshotVisualizationLinkage> findByDvIdAndSourceViewId(Long dvId, Long sourceViewId);
 
+    List<SnapshotVisualizationLinkage> findByDvIdAndLinkageActive(Long dvId, Boolean linkageActive);
 }
