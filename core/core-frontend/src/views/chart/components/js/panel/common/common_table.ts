@@ -1272,7 +1272,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
     const writeRowIndex = rowIndex + 1 + colLength + 1
     const writeColIndex = node.level + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
-    cell.value = node.label
+    cell.value = node.value
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
     if (writeColIndex < maxColIndex) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, maxColIndex)
@@ -1297,7 +1297,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
     const height = notLeafNodeHeightMap[node.id]
     const writeRowIndex = rowIndex + colLength + 1
     const mergeColCount = node.children[0].level - node.level
-    const value = node.label
+    const value = node.value
     const cell = worksheet.getCell(writeRowIndex, node.level + 1)
     cell.value = value
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
@@ -1327,7 +1327,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + 1 + rowLength
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
-    let value = node.label
+    let value = node.value
     if (node.field === '$$extra$$' && metaMap[value]?.name) {
       value = metaMap[value].name
     }
@@ -1355,7 +1355,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
     const width = notLeafNodeWidthMap[node.id]
     const writeRowIndex = node.level + 1
     const mergeRowCount = node.children[0].level - node.level
-    const value = node.label
+    const value = node.value
     const writeColIndex = colIndex + rowLength
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     cell.value = value
@@ -1447,7 +1447,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     const writeRowIndex = rowIndex + 3
     const writeColIndex = node.level + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
-    let value = node.label
+    let value = node.value
     if (node.field === '$$extra$$' && metaMap[value]?.name) {
       value = metaMap[value].name
     }
@@ -1474,7 +1474,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     const writeRowIndex = rowIndex + 2
     const mergeColCount = node.children[0].level - node.level
     const cell = worksheet.getCell(writeRowIndex, node.level + 1)
-    cell.value = node.label
+    cell.value = node.value
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
     if (mergeColCount > 1 || height > 1) {
       worksheet.mergeCells(
@@ -1502,7 +1502,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + rowLength + 2
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
-    const value = node.label
+    const value = node.value
     cell.value = value
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
     if (writeRowIndex < maxColHeight) {
@@ -1526,7 +1526,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     const colIndex = getNodeStartColIndex(node)
     const width = notLeafNodeWidthMap[node.id]
     const writeRowIndex = node.level + 1
-    const value = node.label
+    const value = node.value
     const writeColIndex = colIndex + rowLength + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
     cell.value = value
@@ -1600,7 +1600,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
   const {rowLeafNodes} = layoutResult
   rowLeafNodes.forEach((node, index) => {
     const cell = worksheet.getCell(maxColHeight + index + 1, 1)
-    cell.value = repeat('  ', node.level) + node.label
+    cell.value = repeat('  ', node.level) + node.value
     cell.alignment = {vertical: 'middle', horizontal: 'left'}
     cell.border = {
       right: {style: 'thick', color: {argb: '00000000'}}
@@ -1620,7 +1620,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + 1 + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
-    let value = node.label
+    let value = node.value
     if (node.field === '$$extra$$' && metaMap[value]?.name) {
       value = metaMap[value].name
     }
@@ -1651,7 +1651,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
     const mergeRowCount = node.children[0].level - node.level
     const writeColIndex = colIndex + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
-    cell.value = node.label
+    cell.value = node.value
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
     if (mergeRowCount > 1 || width > 1) {
       worksheet.mergeCells(
@@ -1726,7 +1726,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
   const {rowLeafNodes} = layoutResult
   rowLeafNodes.forEach((node, index) => {
     const cell = worksheet.getCell(maxColHeight + index + 1, 1)
-    let value = node.label
+    let value = node.value
     if (node.field === '$$extra$$' && metaMap[value]?.name) {
       value = metaMap[value].name
     }
@@ -1750,7 +1750,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + 2
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
-    cell.value = node.label
+    cell.value = node.value
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
     if (writeRowIndex < maxColHeight) {
       worksheet.mergeCells(writeRowIndex, writeColIndex, maxColHeight, writeColIndex)
@@ -1776,7 +1776,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
     const writeRowIndex = node.level + 1
     const writeColIndex = colIndex + 1
     const cell = worksheet.getCell(writeRowIndex, writeColIndex)
-    cell.value = node.label
+    cell.value = node.value
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
     if (width > 1) {
       worksheet.mergeCells(

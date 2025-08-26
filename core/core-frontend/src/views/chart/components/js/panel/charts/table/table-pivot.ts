@@ -21,7 +21,7 @@ import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
-import { isNumber, keys, maxBy, merge, minBy, some, isEmpty, get } from 'lodash-es'
+import { isNumber, keys, maxBy, merge, minBy, some, isEmpty, get, defaultsDeep } from 'lodash-es'
 import { copyContent, CustomDataCell } from '../../common/common_table'
 import Decimal from 'decimal.js'
 import { DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
@@ -403,7 +403,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       }
     }
     // options
-    s2Options.style = this.configStyle(chart, s2DataConfig)
+    s2Options.style = defaultsDeep(this.configStyle(chart, s2DataConfig), { rowCell: {} })
     // 默认展开层级
     if (basicStyle.tableLayoutMode === 'tree') {
       const { defaultExpandLevel } = basicStyle
