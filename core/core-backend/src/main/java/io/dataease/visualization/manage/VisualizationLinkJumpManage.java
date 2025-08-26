@@ -228,7 +228,6 @@ public class VisualizationLinkJumpManage {
     }
 
 
-
     public List<VisualizationLinkJumpDTO> queryWithDvId(Long dvId, Long uid, Boolean isDesktop) {
         return buildLinkJumpQuery(dvId, uid, isDesktop, false).fetch();
     }
@@ -240,7 +239,7 @@ public class VisualizationLinkJumpManage {
     public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId, Long uid, Boolean isDesktop) {
         QSnapshotCoreChartView qChartView = QSnapshotCoreChartView.snapshotCoreChartView;
         QSnapshotVisualizationLinkJump qJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
-        VisualizationLinkJumpDTO  result =  queryFactory
+        VisualizationLinkJumpDTO result = queryFactory
                 .select(Projections.bean(VisualizationLinkJumpDTO.class,
                         qChartView.id.as("sourceViewId"),
                         qJump.id,
@@ -251,15 +250,13 @@ public class VisualizationLinkJumpManage {
                 .from(qChartView)
                 .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId).and(qJump.sourceDvId.eq(dvId)))
                 .where(qChartView.id.eq(viewId)).fetchFirst();
-        if(result != null){
-            result.setLinkJumpInfoArray(getLinkJumpInfoSnapshot(result.getId(),result.getSourceViewId(),uid,isDesktop));
-
+        if (result != null) {
+            result.setLinkJumpInfoArray(getLinkJumpInfoSnapshot(result.getId() == null?-1:result.getId(), result.getSourceViewId(), uid, isDesktop));
         }
-
-        return null;
+        return result;
     }
 
-    private List<VisualizationLinkJumpInfoExtendDTO> queryBaseLinkJumpInfoSnapshot(Long id,  Long sourceViewId, Long uid, boolean isDesktop) {
+    private List<VisualizationLinkJumpInfoExtendDTO> queryBaseLinkJumpInfoSnapshot(Long id, Long sourceViewId, Long uid, boolean isDesktop) {
         QSnapshotCoreChartView ccv = QSnapshotCoreChartView.snapshotCoreChartView;
         QCoreDatasetTableField cdtf = QCoreDatasetTableField.coreDatasetTableField;
         QSnapshotVisualizationLinkJump vlj = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
@@ -311,7 +308,7 @@ public class VisualizationLinkJumpManage {
                             .and(vlji.targetDvId.eq(xpackShare.resourceId))
             );
             // 重新构建select包含publicJumpId
-            query.select(Projections.bean(VisualizationLinkJumpInfoDTO.class,
+            query.select(Projections.bean(VisualizationLinkJumpInfoExtendDTO.class,
                     cdtf.id.as("sourceFieldId"),
                     cdtf.deType.as("sourceDeType"),
                     cdtf.name.as("sourceFieldName"),
@@ -339,13 +336,7 @@ public class VisualizationLinkJumpManage {
             ));
         }
         query.where(ccv.id.eq(sourceViewId).and(ccv.type.ne("VQuery")));
-        // 动态排序
-        if (!isDesktop) {
-            query.orderBy(Expressions.stringTemplate("CONVERT({0} USING gbk)", cdtf.name).asc());
-        } else {
-            query.orderBy(cdtf.name.asc());
-        }
-
+        query.orderBy(cdtf.name.asc());
         return query.fetch();
     }
 
@@ -408,7 +399,7 @@ public class VisualizationLinkJumpManage {
 
     private JPAQuery<VisualizationLinkJumpDTO> buildLinkJumpQuery(Long dvId, Long uid, Boolean isDesktop, boolean isSnapshot) {
 
-        if(isSnapshot){
+        if (isSnapshot) {
             QSnapshotCoreChartView qChartView = QSnapshotCoreChartView.snapshotCoreChartView;
             QSnapshotVisualizationLinkJump qJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
             return queryFactory
@@ -423,7 +414,7 @@ public class VisualizationLinkJumpManage {
                     .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId))
                     .where(qJump.sourceDvId.eq(dvId))
                     .where(qChartView.jumpActive.eq(true));
-        }else{
+        } else {
             QCoreChartView qChartView = QCoreChartView.coreChartView;
             QVisualizationLinkJump qJump = QVisualizationLinkJump.visualizationLinkJump;
 
