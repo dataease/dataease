@@ -377,6 +377,12 @@ export class TableInfo extends S2ChartView<TableSheet> {
     newChart.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(newChart, event, meta))
     // touch
     this.configTouchEvent(newChart, drawOption, meta)
+    // right click
+    newChart.once(S2Event.LAYOUT_AFTER_RENDER, () => {
+      newChart.getCanvasElement().addEventListener('contextmenu', e => {
+        e.preventDefault()
+      })
+    })
     // theme
     const customTheme = this.configTheme(chart)
     newChart.setThemeCfg({ theme: customTheme })
