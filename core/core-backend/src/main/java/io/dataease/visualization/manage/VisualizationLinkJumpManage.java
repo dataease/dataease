@@ -245,7 +245,9 @@ public class VisualizationLinkJumpManage {
                         qJump.id,
                         Expressions.asNumber(dvId).as("sourceDvId"),
                         qJump.linkJumpInfo,
-                        Expressions.asBoolean(qJump.checked).as("checked")
+                        Expressions.cases()
+                                .when(qJump.checked.isNull()).then(false)
+                                .otherwise(qJump.checked).as("checked")
                 ))
                 .from(qChartView)
                 .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId).and(qJump.sourceDvId.eq(dvId)))
@@ -408,7 +410,9 @@ public class VisualizationLinkJumpManage {
                             qJump.id,
                             Expressions.asNumber(dvId).as("sourceDvId"),
                             qJump.linkJumpInfo,
-                            qJump.checked
+                            Expressions.cases()
+                                    .when(qJump.checked.isNull()).then(false)
+                                    .otherwise(qJump.checked).as("checked")
                     ))
                     .from(qChartView)
                     .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId))
@@ -424,7 +428,9 @@ public class VisualizationLinkJumpManage {
                             qJump.id,
                             Expressions.asNumber(dvId).as("sourceDvId"),
                             qJump.linkJumpInfo,
-                            qJump.checked
+                            Expressions.cases()
+                                    .when(qJump.checked.isNull()).then(false)
+                                    .otherwise(qJump.checked).as("checked")
                     ))
                     .from(qChartView)
                     .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId))
