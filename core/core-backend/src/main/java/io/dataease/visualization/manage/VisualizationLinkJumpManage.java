@@ -1,13 +1,19 @@
 package io.dataease.visualization.manage;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Coalesce;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpInfoDTO;
+import io.dataease.api.visualization.dto.VisualizationLinkJumpInfoExtendDTO;
+import io.dataease.api.visualization.vo.VisualizationLinkJumpTargetViewInfoVO;
 import io.dataease.dao.auto.entity.QCoreChartView;
+import io.dataease.dao.auto.entity.QCoreDatasetTableField;
+import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.share.dao.auto.entity.QXpackShare;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpInfoRepository;
@@ -16,9 +22,8 @@ import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpTargetView
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -233,7 +238,172 @@ public class VisualizationLinkJumpManage {
     }
 
     public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId, Long uid, Boolean isDesktop) {
+        QSnapshotCoreChartView qChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+        QSnapshotVisualizationLinkJump qJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
+        VisualizationLinkJumpDTO  result =  queryFactory
+                .select(Projections.bean(VisualizationLinkJumpDTO.class,
+                        qChartView.id.as("sourceViewId"),
+                        qJump.id,
+                        Expressions.asNumber(dvId).as("sourceDvId"),
+                        qJump.linkJumpInfo,
+                        Expressions.asBoolean(qJump.checked).as("checked")
+                ))
+                .from(qChartView)
+                .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId).and(qJump.sourceDvId.eq(dvId)))
+                .where(qChartView.id.eq(viewId)).fetchFirst();
+        if(result != null){
+            result.setLinkJumpInfoArray(getLinkJumpInfoSnapshot(result.getId(),result.getSourceViewId(),uid,isDesktop));
+
+        }
+
         return null;
+    }
+
+    private List<VisualizationLinkJumpInfoExtendDTO> queryBaseLinkJumpInfoSnapshot(Long id,  Long sourceViewId, Long uid, boolean isDesktop) {
+        QSnapshotCoreChartView ccv = QSnapshotCoreChartView.snapshotCoreChartView;
+        QCoreDatasetTableField cdtf = QCoreDatasetTableField.coreDatasetTableField;
+        QSnapshotVisualizationLinkJump vlj = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
+        QSnapshotVisualizationLinkJumpInfo vlji = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
+        QDataVisualizationInfo dvi = QDataVisualizationInfo.dataVisualizationInfo;
+        QSnapshotVisualizationLinkJumpTargetViewInfo vljtvi = QSnapshotVisualizationLinkJumpTargetViewInfo.snapshotVisualizationLinkJumpTargetViewInfo;
+        QXpackShare xpackShare = QXpackShare.xpackShare;
+        QSnapshotVisualizationOuterParamsInfo vopi = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
+
+        // 构建查询，直接返回VisualizationLinkJumpInfoDTO
+        JPAQuery<VisualizationLinkJumpInfoExtendDTO> query = queryFactory
+                .select(Projections.bean(VisualizationLinkJumpInfoExtendDTO.class,
+                        cdtf.id.as("sourceFieldId"),
+                        cdtf.deType.as("sourceDeType"),
+                        cdtf.name.as("sourceFieldName"),
+                        vlji.id,
+                        vlji.linkJumpId,
+                        vlji.linkType,
+                        vlji.jumpType,
+                        vlji.windowSize,
+                        vlji.targetDvId,
+                        dvi.type.as("targetDvType"),
+                        vlji.content,
+                        Expressions.cases()
+                                .when(vlji.checked.isNull()).then(false)
+                                .otherwise(vlji.checked).as("checked"),
+                        Expressions.cases()
+                                .when(vlji.attachParams.isNull()).then(false)
+                                .otherwise(vlji.attachParams).as("attachParams"),
+                        vljtvi.targetId,
+                        vljtvi.targetViewId,
+                        vljtvi.targetFieldId,
+                        vljtvi.targetType,
+                        vljtvi.sourceFieldActiveId,
+                        vopi.paramName.as("outerParamsName")
+                ))
+                .from(ccv)
+                .leftJoin(cdtf).on(ccv.tableId.eq(cdtf.datasetGroupId))
+                .leftJoin(vlj).on(ccv.id.eq(vlj.sourceViewId).and(vlj.id.eq(id)))
+                .leftJoin(vlji).on(vlj.id.eq(vlji.linkJumpId).and(cdtf.id.eq(vlji.sourceFieldId)))
+                .leftJoin(dvi).on(vlji.targetDvId.eq(dvi.id))
+                .leftJoin(vljtvi).on(vlji.id.eq(vljtvi.linkJumpInfoId))
+                .leftJoin(vopi).on(vopi.paramsInfoId.eq(vljtvi.targetViewId));
+
+        // 动态添加 xpack_share 连接和字段（非桌面版）
+        if (!isDesktop) {
+            query.leftJoin(xpackShare).on(
+                    xpackShare.creator.eq(uid)
+                            .and(vlji.targetDvId.eq(xpackShare.resourceId))
+            );
+            // 重新构建select包含publicJumpId
+            query.select(Projections.bean(VisualizationLinkJumpInfoDTO.class,
+                    cdtf.id.as("sourceFieldId"),
+                    cdtf.deType.as("sourceDeType"),
+                    cdtf.name.as("sourceFieldName"),
+                    vlji.id,
+                    vlji.linkJumpId,
+                    vlji.linkType,
+                    vlji.jumpType,
+                    vlji.windowSize,
+                    vlji.targetDvId,
+                    dvi.type.as("targetDvType"),
+                    vlji.content,
+                    Expressions.cases()
+                            .when(vlji.checked.isNull()).then(false)
+                            .otherwise(vlji.checked).as("checked"),
+                    Expressions.cases()
+                            .when(vlji.attachParams.isNull()).then(false)
+                            .otherwise(vlji.attachParams).as("attachParams"),
+                    vljtvi.targetId,
+                    vljtvi.targetViewId,
+                    vljtvi.targetFieldId,
+                    vljtvi.targetType,
+                    vljtvi.sourceFieldActiveId,
+                    vopi.paramName.as("outerParamsName"),
+                    xpackShare.uuid.as("publicJumpId")
+            ));
+        }
+        query.where(ccv.id.eq(sourceViewId).and(ccv.type.ne("VQuery")));
+        // 动态排序
+        if (!isDesktop) {
+            query.orderBy(Expressions.stringTemplate("CONVERT({0} USING gbk)", cdtf.name).asc());
+        } else {
+            query.orderBy(cdtf.name.asc());
+        }
+
+        return query.fetch();
+    }
+
+    private List<VisualizationLinkJumpInfoDTO> aggregateTargetViewInfo(List<VisualizationLinkJumpInfoExtendDTO> baseResults) {
+        // 使用分组键：targetDvType + sourceFieldId + sourceDeType + sourceFieldName + publicJumpId
+        Map<String, VisualizationLinkJumpInfoDTO> groupMap = new LinkedHashMap<>();
+
+        for (VisualizationLinkJumpInfoExtendDTO dto : baseResults) {
+            // 构建分组键
+            String groupKey = buildGroupKey(dto);
+            // 获取或创建聚合后的DTO
+            VisualizationLinkJumpInfoDTO aggregatedDto = groupMap.computeIfAbsent(groupKey, k -> {
+                VisualizationLinkJumpInfoDTO newDto = new VisualizationLinkJumpInfoDTO();
+                // 复制基本字段
+                newDto.setId(dto.getId());
+                newDto.setLinkJumpId(dto.getLinkJumpId());
+                newDto.setLinkType(dto.getLinkType());
+                newDto.setJumpType(dto.getJumpType());
+                newDto.setWindowSize(dto.getWindowSize());
+                newDto.setTargetDvId(dto.getTargetDvId());
+                newDto.setTargetDvType(dto.getTargetDvType());
+                newDto.setContent(dto.getContent());
+                newDto.setChecked(dto.getChecked());
+                newDto.setAttachParams(dto.getAttachParams());
+                newDto.setSourceFieldId(dto.getSourceFieldId());
+                newDto.setSourceDeType(dto.getSourceDeType());
+                newDto.setSourceFieldName(dto.getSourceFieldName());
+                newDto.setPublicJumpId(dto.getPublicJumpId());
+                newDto.setTargetViewInfoList(new ArrayList<>());
+                return newDto;
+            });
+
+            // 添加目标视图信息到集合中（如果存在目标视图信息）
+            if (dto.getTargetId() != null || dto.getTargetViewId() != null) {
+                VisualizationLinkJumpTargetViewInfoVO targetViewInfo = new VisualizationLinkJumpTargetViewInfoVO();
+                targetViewInfo.setTargetId(dto.getTargetId());
+                targetViewInfo.setTargetViewId(dto.getTargetViewId());
+                targetViewInfo.setTargetFieldId(dto.getTargetFieldId());
+                targetViewInfo.setTargetType(dto.getTargetType());
+                targetViewInfo.setSourceFieldActiveId(dto.getSourceFieldActiveId());
+                targetViewInfo.setOuterParamsName(dto.getOuterParamsName());
+
+                aggregatedDto.getTargetViewInfoList().add(targetViewInfo);
+            }
+        }
+
+        // 返回分组聚合后的DTO列表
+        return new ArrayList<>(groupMap.values());
+    }
+
+    private String buildGroupKey(VisualizationLinkJumpInfoExtendDTO dto) {
+        return String.format("%s_%s_%s_%s_%s",
+                dto.getTargetDvType() != null ? dto.getTargetDvType() : "",
+                dto.getSourceFieldId() != null ? dto.getSourceFieldId() : "",
+                dto.getSourceDeType() != null ? dto.getSourceDeType() : "",
+                dto.getSourceFieldName() != null ? dto.getSourceFieldName() : "",
+                dto.getPublicJumpId() != null ? dto.getPublicJumpId() : ""
+        );
     }
 
     private JPAQuery<VisualizationLinkJumpDTO> buildLinkJumpQuery(Long dvId, Long uid, Boolean isDesktop, boolean isSnapshot) {
@@ -278,8 +448,11 @@ public class VisualizationLinkJumpManage {
         return buildLinkJumpInfoQuery(jumpId, sourceViewId, uid, isDesktop, false).fetch();
     }
 
-    public List<VisualizationLinkJumpInfoDTO> getLinkJumpInfoSnapshot(String jumpId, Long sourceViewId, Long uid, Boolean isDesktop) {
-        return buildLinkJumpInfoQuery(jumpId, sourceViewId, uid, isDesktop, true).fetch();
+    public List<VisualizationLinkJumpInfoDTO> getLinkJumpInfoSnapshot(Long id, Long sourceViewId, Long uid, boolean isDesktop) {
+        // 查询所有基础数据
+        List<VisualizationLinkJumpInfoExtendDTO> baseResults = queryBaseLinkJumpInfoSnapshot(id, sourceViewId, uid, isDesktop);
+        // 按照指定字段分组并聚合targetViewInfoList
+        return aggregateTargetViewInfo(baseResults);
     }
 
     private JPAQuery<VisualizationLinkJumpInfoDTO> buildLinkJumpInfoQuery(String jumpId, Long sourceViewId, Long uid, Boolean isDesktop, boolean isSnapshot) {
