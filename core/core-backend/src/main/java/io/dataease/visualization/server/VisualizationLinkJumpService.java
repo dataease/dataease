@@ -222,7 +222,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
                             coreDatasetTableField.deType.as("deType")
                     )).from(coreChartView)
                     .leftJoin(coreDatasetTableField).on(coreChartView.tableId.eq(coreDatasetTableField.datasetGroupId))
-                    .innerJoin(dataVisualizationInfo).on(coreChartView.sceneId.eq(Long.valueOf(dataVisualizationInfo.id.toString())))
+                    .innerJoin(dataVisualizationInfo).on(coreChartView.sceneId.eq(dataVisualizationInfo.id))
                     .where(coreChartView.sceneId.eq(dvId))
                     .where(coreChartView.type.ne("VQuery"))
                     .where(coreChartView.tableId.isNotNull())
