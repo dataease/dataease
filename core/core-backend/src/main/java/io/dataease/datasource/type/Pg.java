@@ -37,7 +37,7 @@ public class Pg extends DatasourceConfiguration {
                         .replace("PORT", getLPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim());
             } else {
-                jdbcUrl = "jdbc:postgresql://HOSTNAME:PORT/DATABASE?currentSchema=SCHEMA"
+                jdbcUrl = "jdbc:postgresql://HOSTNAME:PORT/DATABASE?currentSchema=\"SCHEMA\""
                         .replace("HOSTNAME", getLHost().trim())
                         .replace("PORT", getLPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim())
