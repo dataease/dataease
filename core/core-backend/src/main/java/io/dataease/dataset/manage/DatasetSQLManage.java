@@ -386,7 +386,7 @@ public class DatasetSQLManage {
         }
     }
 
-    private DsTypeDTO getDatasourceType(Map<Long, DatasourceSchemaDTO> dsMap, Long datasourceId) {
+    public DsTypeDTO getDatasourceType(Map<Long, DatasourceSchemaDTO> dsMap, Long datasourceId) {
         DatasourceSchemaDTO datasourceSchemaDTO = dsMap.get(datasourceId);
         String type;
         if (datasourceSchemaDTO == null) {
