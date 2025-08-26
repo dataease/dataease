@@ -14,6 +14,7 @@ import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.manage.DatasetDataManage;
+import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
@@ -110,6 +111,8 @@ public class DatasourceServer implements DatasourceApi {
     private ScheduleManager scheduleManager;
     @Resource
     private CoreUserManage coreUserManage;
+    @Resource
+    private DatasetSQLManage datasetSQLManage;
     @Autowired(required = false)
     private PluginManageApi pluginManage;
     @Autowired(required = false)
@@ -1109,11 +1112,12 @@ public class DatasourceServer implements DatasourceApi {
 
         Configuration configuration = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Configuration.class);
         String schema = StringUtils.isNotEmpty(configuration.getSchema()) ? configuration.getSchema() + "." : "";
-        String sql = "SELECT * FROM " + schema + tableName;
-        Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
         Map<Long, DatasourceSchemaDTO> dsMap = new HashMap<>();
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
+        DsTypeDTO datasourceType = datasetSQLManage.getDatasourceType(dsMap, datasourceSchemaDTO.getId());
+        String sql = "SELECT * FROM " + schema + datasourceType.getPrefix() + tableName + datasourceType.getSuffix();
+        Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
         sql = provider.transSqlDialect(sql, dsMap);
         sql = new String(Base64.getEncoder().encode(sql.getBytes()));
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
