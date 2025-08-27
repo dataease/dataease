@@ -127,6 +127,14 @@ public interface DataSetAssistantMapper {
         cdtf.name as field_show_name,
         cdtf.description as field_desc,
         cdtf.dataease_name,
+        cdtf.field_short_name,
+        cdtf.group_type,
+        cdtf.de_type,
+        cdtf.de_extract_type,
+        cdtf.ext_field,
+        cdtf.date_format,
+        cdtf.date_format_type,
+        cdtf.params,
         cdtf.type as field_type
     FROM `core_dataset_table` cdt
     INNER JOIN `core_datasource` cd ON cdt.datasource_id = cd.id 

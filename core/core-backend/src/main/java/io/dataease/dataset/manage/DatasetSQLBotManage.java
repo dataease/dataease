@@ -26,6 +26,7 @@ import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
@@ -111,6 +112,7 @@ public class DatasetSQLBotManage {
         Boolean model = deIndexManage.xpackModel();
         List<Map<String, Object>> list = null;
         boolean isAdmin = uid == 1;
+        boolean withColsOrRowsPermission = false;
         if (ObjectUtils.isEmpty(model)) {
             if (!isAdmin) {
                 return null;
@@ -128,10 +130,11 @@ public class DatasetSQLBotManage {
                 request.setUid(uid);
                 List<RoleVO> roleVOS = Objects.requireNonNull(CommonBeanFactory.getBean(RoleApi.class)).selectedForUser(request);
                 isRootRole = roleVOS.stream().anyMatch(RoleVO::isRoot);
-                /*roleIds = roleVOS.stream().map(RoleVO::getId).toList();
+                roleIds = roleVOS.stream().map(RoleVO::getId).toList();
 
                 colPermissionMap = getColPermission(uid, roleIds);
-                rowPermissionMap = getRowPermission(uid, roleIds);*/
+                rowPermissionMap = getRowPermission(uid, roleIds);
+                withColsOrRowsPermission = MapUtils.isNotEmpty(colPermissionMap) || MapUtils.isNotEmpty(rowPermissionMap);
             }
             list = dataSetAssistantMapper.queryEnterprise(oid, uid, isRootRole);
         }
@@ -173,8 +176,28 @@ public class DatasetSQLBotManage {
                 table.getFields().add(field);
             }
         }
+        /*if (withColsOrRowsPermission) {
+            result = filterPermissions(result, list, colPermissionMap, rowPermissionMap);
+        }*/
         LogUtil.info("sqlbot ds api result: {}", result);
         return result;
+    }
+
+    private List<DataSQLBotAssistantVO> filterPermissions(
+            List<DataSQLBotAssistantVO> vos,
+            List<Map<String, Object>> list,
+            Map<Long, List<DataSetColumnPermissionsDTO>> colPermissionMap,
+            Map<Long, List<DataSetRowPermissionsTreeDTO>> rowPermissionMap
+        ) {
+        if (CollectionUtils.isEmpty(vos)) {
+            return vos;
+        }
+        vos.forEach(vo -> {
+            List<SQLBotAssistanTable> tables = vo.getTables();
+            tables.forEach(table -> {
+            });
+        });
+        return null;
     }
 
     private SQLBotAssistantField buildField(Map<String, Object> row) {
