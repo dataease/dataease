@@ -76,13 +76,18 @@ function check_and_prepare_env_params() {
    fi
    set +a
 
-   read available_disk <<< $(df -H --output=avail ${DE_BASE} | tail -1)
-   available_disk=${available_disk%?}
-   available_disk=${available_disk%.*}
-   if [[ $available_disk -lt 20 ]];then
-      log_content "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 20G 可能无法正常启动!\033[0m"
-   fi
-}
+   read available_disk <<< $(df -H --output=avail "${DE_BASE}" | tail -1)
+   disk_num=${available_disk%[KMGTP]}
+   disk_unit=${available_disk##*[0-9.]}
+   case $disk_unit in
+     K) disk_gb=$(echo "$disk_num/1024/1024" | bc) ;;
+     M) disk_gb=$(echo "$disk_num/1024" | bc) ;;
+     G) disk_gb=${disk_num%.*} ;;
+     T) disk_gb=$(echo "$disk_num*1024" | bc) ;;
+     *) disk_gb=${disk_num%.*} ;;
+   esac
+   [[ $disk_gb -lt 20 ]] && log_content "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 20G 可能无法正常启动!\033[0m"
+   }
 
 function set_run_base_path() {
    log_title "设置运行目录"
