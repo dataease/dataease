@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import logo from '@/assets/svg/logo.svg'
 import copilot from '@/assets/svg/copilot.svg'
+import logo_sqlbot from '@/assets/svg/logo_sqlbot.svg'
 import msgNotice from '@/assets/svg/icon_notification_outlined.svg'
 import dvAi from '@/assets/svg/dv-ai.svg'
 import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
@@ -24,6 +25,7 @@ import { findBaseParams } from '@/api/aiComponent'
 import AiTips from '@/layout/components/AiTips.vue'
 import CopilotCom from '@/layout/components/Copilot.vue'
 import DesktopSetting from './DesktopSetting.vue'
+import request from '@/config/axios'
 
 const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
@@ -45,7 +47,10 @@ const { t } = useI18n()
 const handleCopilotClick = () => {
   push('/copilot/index')
 }
-
+const handleSQLBotClick = () => {
+  push('/sqlbot/index')
+}
+const sqlbotEnabled = ref(false)
 const desktop = isDesktop()
 const activeIndex = computed(() => {
   if (route.path.includes('system')) {
@@ -116,8 +121,17 @@ const copilotConfirm = () => {
   showOverlayCopilot.value = false
 }
 const badgeCount = ref('0')
-
+const loadSqlbotInfo = () => {
+  const url = '/sysParameter/sqlbot'
+  request.get({ url }).then(res => {
+    if (res && res.data) {
+      const { domain, id, enabled, valid } = res.data
+      sqlbotEnabled.value = domain && id && enabled && valid
+    }
+  })
+}
 onMounted(() => {
+  loadSqlbotInfo()
   initShowSystem()
   initShowToolbox()
   initShowMsg()
@@ -146,6 +160,11 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
+      <el-tooltip effect="dark" content="SQLBot" placement="bottom">
+        <el-icon style="margin: 0 10px" class="ai-icon copilot-icon" v-if="sqlbotEnabled">
+          <Icon name="copilot"><logo_sqlbot @click="handleSQLBotClick" class="svg-icon" /></Icon>
+        </el-icon>
+      </el-tooltip>
       <el-tooltip effect="dark" content="Copilot" placement="bottom">
         <el-icon
           style="margin: 0 10px"

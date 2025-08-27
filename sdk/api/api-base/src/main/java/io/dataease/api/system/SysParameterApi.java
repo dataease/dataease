@@ -2,6 +2,8 @@ package io.dataease.api.system;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.system.request.OnlineMapEditor;
+import io.dataease.api.system.request.SQLBotConfigCreator;
+import io.dataease.api.system.vo.SQLBotConfigVO;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -69,4 +71,13 @@ public interface SysParameterApi {
     @GetMapping("/i18nOptions")
     @Operation(summary = "查询自定义国际化选项")
     Map<String, String> i18nOptions();
+
+    @GetMapping("/sqlbot")
+    @Operation(summary = "查询sqlbot嵌入配置")
+    SQLBotConfigVO sqlBotConfig();
+
+    @PostMapping("/sqlbot")
+    @Operation(summary = "查询sqlbot嵌入配置")
+    void saveSqlBotConfig(@RequestBody SQLBotConfigCreator configVO);
+
 }

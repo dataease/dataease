@@ -2,6 +2,8 @@ package io.dataease.system.server;
 
 import io.dataease.api.system.SysParameterApi;
 import io.dataease.api.system.request.OnlineMapEditor;
+import io.dataease.api.system.request.SQLBotConfigCreator;
+import io.dataease.api.system.vo.SQLBotConfigVO;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
 import io.dataease.constant.StaticResourceConstants;
@@ -9,12 +11,14 @@ import io.dataease.constant.XpackSettingConstants;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.SysParameterManage;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,4 +125,30 @@ public class SysParameterServer implements SysParameterApi {
         return result;
     }
 
+    @Override
+    public SQLBotConfigVO sqlBotConfig() {
+        String key = "sqlbot.";
+        List<CoreSysSetting> coreSysSettings = sysParameterManage.groupList(key);
+        if (CollectionUtils.isNotEmpty(coreSysSettings)) {
+            SQLBotConfigVO vo = new SQLBotConfigVO();
+            coreSysSettings.forEach(sysSetting -> {
+                if (sysSetting.getPkey().equalsIgnoreCase(key + "domain")) {
+                    vo.setDomain(sysSetting.getPval());
+                } else if (sysSetting.getPkey().equalsIgnoreCase(key + "id")) {
+                    vo.setId(sysSetting.getPval());
+                } else if (sysSetting.getPkey().equalsIgnoreCase(key + "enabled")) {
+                    vo.setEnabled(StringUtils.isNotBlank(sysSetting.getPval()) && StringUtils.equalsIgnoreCase(sysSetting.getPval(), "true"));
+                } else if (sysSetting.getPkey().equalsIgnoreCase(key + "valid")) {
+                    vo.setValid(StringUtils.isNotBlank(sysSetting.getPval()) && StringUtils.equalsIgnoreCase(sysSetting.getPval(), "true"));
+                }
+            });
+            return vo;
+        }
+        return null;
+    }
+
+    @Override
+    public void saveSqlBotConfig(SQLBotConfigCreator creator) {
+        sysParameterManage.saveSqlBotConfig(creator);
+    }
 }

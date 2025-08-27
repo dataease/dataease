@@ -2,6 +2,8 @@ package io.dataease.system.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.system.request.OnlineMapEditor;
+import io.dataease.api.system.request.SQLBotConfigCreator;
+import io.dataease.api.system.vo.SQLBotConfigVO;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
 import io.dataease.datasource.server.DatasourceServer;
@@ -184,6 +186,48 @@ public class SysParameterManage {
         datasourceServer.addJob(sysSettings);
     }
 
+    public void saveSqlBotConfig(SQLBotConfigCreator configVO) {
+        List<CoreSysSetting> configList = new ArrayList<>();
+        String key = "sqlbot.";
+        CoreSysSetting domainVo = new CoreSysSetting();
+        domainVo.setPkey(key + "domain");
+        domainVo.setPval(configVO.getDomain());
+        domainVo.setType("text");
+        domainVo.setSort(0);
+        domainVo.setId(IDUtils.snowID());
+        configList.add(domainVo);
+
+        CoreSysSetting idVo = new CoreSysSetting();
+        idVo.setPkey(key + "id");
+        idVo.setPval(configVO.getId());
+        idVo.setType("text");
+        idVo.setSort(0);
+        idVo.setId(IDUtils.snowID());
+        configList.add(idVo);
+
+        CoreSysSetting enabledVo = new CoreSysSetting();
+        enabledVo.setPkey(key + "enabled");
+        enabledVo.setPval(configVO.getEnabled().toString());
+        enabledVo.setType("text");
+        enabledVo.setSort(0);
+        enabledVo.setId(IDUtils.snowID());
+        configList.add(enabledVo);
+
+        CoreSysSetting validVo = new CoreSysSetting();
+        validVo.setPkey(key + "valid");
+        validVo.setPval(configVO.getValid().toString());
+        validVo.setType("text");
+        validVo.setSort(0);
+        validVo.setId(IDUtils.snowID());
+        configList.add(validVo);
+
+
+        QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
+        queryWrapper.likeRight("pkey", key);
+        coreSysSettingMapper.delete(queryWrapper);
+
+        extCoreSysSettingMapper.saveBatch(configList);
+    }
 
     @XpackInteract(value = "perSetting", before = false)
     @Transactional
