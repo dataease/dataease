@@ -1,7 +1,7 @@
 <template>
   <div
     id="dataease-v2-embedded-sqlbot"
-    v-loading="loadig"
+    v-loading="loading"
     class="dataease-v2-embedded-sqlbot"
   ></div>
 </template>
@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
 import request from '@/config/axios'
-const loadig = ref(true)
+const loading = ref(true)
 const state = reactive({
   domain: '',
   id: '',
@@ -66,7 +66,7 @@ const mountedEmbeddedPage = () => {
         embeddedId: state.id,
         online: true
       })
-      loadig.value = false
+      loading.value = false
     }
   }, 2000)
 }
