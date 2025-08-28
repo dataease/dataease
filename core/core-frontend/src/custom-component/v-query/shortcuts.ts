@@ -32,6 +32,24 @@ function getLastEnd(val = 'month' as ManipulateTypeWithQuarter) {
   )
 }
 
+function getNextStart(val = 'month' as ManipulateTypeWithQuarter) {
+  return new Date(
+    dayjs()
+      .add(1, val as QUnitType)
+      .startOf(val)
+      .format('YYYY/MM/DD HH:mm:ss')
+  )
+}
+
+function getNextEnd(val = 'month' as ManipulateTypeWithQuarter) {
+  return new Date(
+    dayjs()
+      .add(1, val as QUnitType)
+      .endOf(val)
+      .format('YYYY/MM/DD HH:mm:ss')
+  )
+}
+
 // eslint-disable-next-line
 let callback: Function = () => {}
 const shortcuts = [
@@ -104,6 +122,42 @@ const shortcuts = [
     onClick: ({ emit }) => {
       const startTime = getLastStart('year')
       const endTime = getLastEnd('year')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
+    }
+  },
+  {
+    text: 'common.next_week',
+    onClick: ({ emit }) => {
+      const startTime = getNextStart('week')
+      const endTime = getNextEnd('week')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
+    }
+  },
+  {
+    text: 'common.next_month',
+    onClick: ({ emit }) => {
+      const startTime = getNextStart('month')
+      const endTime = getNextEnd('month')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
+    }
+  },
+  {
+    text: 'common.next_quarter',
+    onClick: ({ emit }) => {
+      const startTime = getNextStart('quarter')
+      const endTime = getNextEnd('quarter')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
+    }
+  },
+  {
+    text: 'common.next_year',
+    onClick: ({ emit }) => {
+      const startTime = getNextStart('year')
+      const endTime = getNextEnd('year')
       if (callback([startTime, endTime])) return
       emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
