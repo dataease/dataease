@@ -24,7 +24,12 @@ const settingList = reactive([
     sort: 3
   }
 ])
-const info = ref({})
+const info = ref({
+  id: '',
+  domain: '',
+  enabled: false,
+  valid: false
+})
 const mappingArray = ['domain', 'id']
 const search = () => {
   const url = '/sysParameter/sqlbot'
@@ -40,7 +45,7 @@ const search = () => {
   })
 }
 
-const switchEnableApi = enable => {
+const switchEnableApi = () => {
   const param = { ...info.value }
   request.post({ url: '/sysParameter/sqlbot', data: param })
 }
@@ -54,14 +59,7 @@ const validate = () => {
 }
 const save = () => {
   const param = { ...info.value }
-  const method = request.post({ url: '/sysParameter/sqlbot', data: param })
-  method
-    .then(res => {
-      console.log(res)
-    })
-    .catch(() => {
-      console.log(res)
-    })
+  request.post({ url: '/sysParameter/sqlbot', data: param })
 }
 
 const validateHandler = () => {
@@ -75,7 +73,7 @@ const validateHandler = () => {
       ElMessage.success(t('datasource.validate_success'))
     })
     .catch(() => {
-      info.value.enable = false
+      info.value.enabled = false
       info.value.valid = false
       save()
     })
@@ -99,7 +97,7 @@ search()
           </div>
         </div>
         <div v-if="existInfo" class="platform-setting-head-right">
-          <el-switch class="status-switch" v-model="info.valid" @change="switchEnableApi" />
+          <el-switch class="status-switch" v-model="info.enabled" @change="switchEnableApi" />
         </div>
         <div v-else class="platform-setting-head-right-btn">
           <el-button type="primary" @click="edit">{{ t('system.access') }}</el-button>
