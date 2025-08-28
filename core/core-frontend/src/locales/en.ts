@@ -1,5 +1,16 @@
 export default {
   common: {
+    next_week: 'Next week',
+    next_month: 'Next month',
+    next_quarter: 'Next quarter',
+    next_year: 'Next year',
+    sqlbot_settings: 'SQLBot Settings',
+    third_party_embed: 'Third-party embed',
+    application_id: 'Application ID',
+    sqlbot_server_url: 'SQLBot server URL',
+    enter_the_url: 'Please enter the URL',
+    the_application_id: 'Please enter the application ID',
+    embed: 'Embed',
     empty: ' ',
     first_item: 'First Item',
     cross_source: 'Cross-source',

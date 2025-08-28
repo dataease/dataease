@@ -1,5 +1,16 @@
 export default {
   common: {
+    next_week: '下週',
+    next_month: '下個月',
+    next_quarter: '下季',
+    next_year: '明年',
+    sqlbot_settings: 'SQLBot 設定',
+    third_party_embed: '第三方嵌入',
+    application_id: '應用程式 ID',
+    sqlbot_server_url: 'SQLBot 伺服器 URL',
+    enter_the_url: '請輸入 URL',
+    the_application_id: '請輸入應用程式 ID',
+    embed: '嵌入',
     empty: '',
     first_item: '首項',
     cross_source: '跨源',
