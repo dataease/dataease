@@ -20,10 +20,7 @@ import io.dataease.datasource.manage.EngineManage;
 import io.dataease.extensions.datasource.vo.Configuration;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.home.manage.DeIndexManage;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.CommonBeanFactory;
-import io.dataease.utils.JsonUtil;
-import io.dataease.utils.LogUtil;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -32,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,6 +47,21 @@ public class DatasetSQLBotManage {
 
     @Resource
     private Environment environment;
+
+    private String aesKey = "y5txe1mRmS_JpOrUzFzHEu-kIQn3lf7l";
+    private String aesIv = "sqlbot_em_aes_iv";
+
+    private String aesEncrypt(String text) {
+        String iv = aesIv;
+        int len = iv.length();
+        if (len > 16) {
+            iv = iv.substring(0, 16);
+        }
+        if (len < 16) {
+            iv = String.format("%-" + (16 - len) + "s", iv).replace(' ', '0');
+        }
+        return AesUtils.aesEncrypt(text, aesKey, iv);
+    }
 
     private Map<Long, List<DataSetColumnPermissionsDTO>> getColPermission(Long uid, List<Long> roleIds) {
         ColumnPermissionsApi columnPermissionsApi = CommonBeanFactory.getBean(ColumnPermissionsApi.class);
@@ -188,7 +201,7 @@ public class DatasetSQLBotManage {
             List<Map<String, Object>> list,
             Map<Long, List<DataSetColumnPermissionsDTO>> colPermissionMap,
             Map<Long, List<DataSetRowPermissionsTreeDTO>> rowPermissionMap
-        ) {
+    ) {
         if (CollectionUtils.isEmpty(vos)) {
             return vos;
         }
@@ -242,7 +255,26 @@ public class DatasetSQLBotManage {
         vo.setSchema(config.getSchema());
         vo.setUser(config.getUsername());
         vo.setPassword(config.getPassword());
+        aesVO(vo);
         return vo;
+    }
+
+    private void aesVO(DataSQLBotAssistantVO vo) {
+        if (StringUtils.isNotBlank(vo.getHost())) {
+            vo.setHost(aesEncrypt(vo.getHost()));
+        }
+        if (ObjectUtils.isNotEmpty(vo.getUser())) {
+            vo.setUser(aesEncrypt(vo.getUser()));
+        }
+        if (ObjectUtils.isNotEmpty(vo.getPassword())) {
+            vo.setPassword(aesEncrypt(vo.getPassword()));
+        }
+        if (ObjectUtils.isNotEmpty(vo.getDataBase())) {
+            vo.setDataBase(aesEncrypt(vo.getDataBase()));
+        }
+        if (ObjectUtils.isNotEmpty(vo.getSchema())) {
+            vo.setSchema(aesEncrypt(vo.getSchema()));
+        }
     }
 
     private SQLBotAssistanTable buildTable(Map<String, Object> row) {
