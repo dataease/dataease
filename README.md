@@ -11,7 +11,7 @@
 <hr/>
 
 
-注：DataEase v1.18.20 将于 2024 年 6 月份发布，这将是 V1 版本的最后一个功能版本，后续仅针对安全漏洞进行修复。
+注：DataEase V1 社区版已停止维护，详情请查看：https://dataease.io/docs/v1/lifecycle/
 
 
 ## 什么是 DataEase？
