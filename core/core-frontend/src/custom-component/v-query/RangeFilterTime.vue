@@ -621,6 +621,9 @@ watch(
         padding-left: 112px;
         justify-content: flex-end;
         align-items: center;
+        .ed-input-number {
+          width: auto;
+        }
         &.range {
           padding-left: 0px;
           width: 308px;
