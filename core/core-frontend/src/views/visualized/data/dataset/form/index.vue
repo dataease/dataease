@@ -1357,7 +1357,7 @@ const getSqlResultHeight = () => {
 const getDatasource = (weight?: number) => {
   getDatasourceList(weight).then(res => {
     const _list = (res as unknown as DataSource[]) || []
-    if (_list && _list.length > 0 && _list[0].id === '0') {
+    if (_list && _list.length > 0 && _list[0].id === '0' && _list[0].children?.length) {
       state.dataSourceList = dfsChild(_list[0].children)
     } else {
       state.dataSourceList = dfsChild(_list)
