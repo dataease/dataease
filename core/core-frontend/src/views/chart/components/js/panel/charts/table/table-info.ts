@@ -329,7 +329,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
           const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
           lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
         }
-        ev.colsHierarchy.width = containerWidth - 1
+        ev.colsHierarchy.width = containerWidth - 2
       })
     }
     // 空数据时表格样式
