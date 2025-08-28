@@ -15,6 +15,7 @@
         jsname="L21lbnUvc2V0dGluZy9lbWFpbC9pbmRleA=="
         v-if="activeName === 'email'"
       />
+      <third-party v-if="activeName === 'third_party'" />
     </div>
   </div>
   <xpack-component jsname="L2NvbXBvbmVudC9tZW51LWhhbmRsZXIvRW1haWxIYW5kbGVy" @loaded="addTable" />
@@ -25,6 +26,7 @@ import { ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import MapSetting from './map/MapSetting.vue'
 import BasicInfo from './basic/BasicInfo.vue'
+import ThirdParty from './third-party/index.vue'
 import EngineInfo from '@/views/system/parameter/engine/EngineInfo.vue'
 import { XpackComponent } from '@/components/plugin'
 /* import EmailInfo from './email/EmailInfo.vue' */
@@ -33,7 +35,11 @@ const { t } = useI18n()
 const tabArray = ref([
   { label: t('system.basic_settings'), name: 'basic' },
   { label: t('system.map_settings'), name: 'map' },
-  { label: t('system.engine_settings'), name: 'engine' }
+  { label: t('system.engine_settings'), name: 'engine' },
+  {
+    label: t('common.third_party_embed'),
+    name: 'third_party'
+  }
 ])
 
 const activeName = ref('basic')
