@@ -555,12 +555,22 @@ public class ChartDataServer implements ChartDataApi {
                 var preRowRange = preRange.get(preRangeIndex);
                 var start = preRowRange[0];
                 var end = preRowRange[1];
-                var lastColValue = data.get(start)[curColIndex].toString();
+                var lastColValue = data.get(start)[curColIndex];
+                if (lastColValue != null) {
+                    lastColValue = lastColValue.toString();
+                } else {
+                    lastColValue = "";
+                }
                 var lastRowIndex = start;
                 for (Integer curRowIndex = start + 1; curRowIndex <= end; curRowIndex++) {
                     var curRow = data.get(curRowIndex);
-                    var curColValue = curRow[curColIndex].toString();
-                    if (!StringUtils.equals(lastColValue, curColValue) && (curRowIndex - lastRowIndex > 1)) {
+                    var curColValue = curRow[curColIndex];
+                    if (curColValue != null) {
+                        curColValue = curColValue.toString();
+                    } else {
+                        curColValue = "";
+                    }
+                    if (!StringUtils.equals(lastColValue.toString(), curColValue.toString()) && (curRowIndex - lastRowIndex > 1)) {
                         curRange.add(new Integer[]{lastRowIndex, curRowIndex - 1});
                         result.add(new CellRangeAddress(lastRowIndex + offsetHeight, curRowIndex + offsetHeight - 1, curColIndex, curColIndex));
                     }
@@ -568,7 +578,7 @@ public class ChartDataServer implements ChartDataApi {
                         curRange.add(new Integer[]{lastRowIndex, curRowIndex});
                         result.add(new CellRangeAddress(lastRowIndex + offsetHeight, curRowIndex + offsetHeight, curColIndex, curColIndex));
                     }
-                    if (!StringUtils.equals(lastColValue, curColValue)) {
+                    if (!StringUtils.equals(lastColValue.toString(), curColValue.toString())) {
                         lastColValue = curColValue;
                         lastRowIndex = curRowIndex;
                     }
