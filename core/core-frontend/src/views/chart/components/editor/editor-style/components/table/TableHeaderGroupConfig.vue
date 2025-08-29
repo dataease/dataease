@@ -56,7 +56,7 @@ const onCancelConfig = () => {
 
 const onConfigChange = () => {
   const { fields } = s2.dataCfg
-  emits('onConfigChange', { columns: fields.columns })
+  emits('onConfigChange', { columns: fields.columns, meta: [] })
 }
 
 const init = () => {
@@ -79,7 +79,7 @@ const init = () => {
         pre[cur.field] = cur.title
         return pre
       }, {})
-      if (!headerGroupConfig.meta?.length) {
+      if (headerGroupConfig.meta?.length) {
         headerGroupConfig.meta.forEach(item => {
           nameFieldMap[item.field] = item.name
         })
