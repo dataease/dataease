@@ -26,4 +26,25 @@ public class Target {
     private String remarks;
     private Long incrementOffset;
     private String incrementOffsetUnit;
+
+    public Target() {
+    }
+
+    public Target(Target target) {
+        this.type = target.type;
+        this.createTable = target.createTable;
+        this.fieldList = target.fieldList;
+        this.tableName = target.tableName;
+        this.datasource = target.datasource;
+        this.datasourceId = target.datasourceId;
+        this.targetProperty = target.targetProperty;
+        this.incrementSync = target.incrementSync;
+        this.incrementField = target.incrementField;
+        this.datasourceVersion = target.datasourceVersion;
+        this.faultToleranceRate = target.faultToleranceRate;
+        this.incrementFieldType = target.incrementFieldType;
+        this.remarks = target.remarks;
+        this.incrementOffset = target.incrementOffset;
+        this.incrementOffsetUnit = target.incrementOffsetUnit;
+    }
 }

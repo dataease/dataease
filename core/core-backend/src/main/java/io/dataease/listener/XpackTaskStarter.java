@@ -2,6 +2,7 @@ package io.dataease.listener;
 
 import io.dataease.job.schedule.DeDataFillingTaskExecutor;
 import io.dataease.job.schedule.DeTaskExecutor;
+import io.dataease.job.schedule.DeXpackDataSyncTaskExecutor;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
@@ -20,6 +21,9 @@ public class XpackTaskStarter implements ApplicationRunner {
     @Resource
     private DeDataFillingTaskExecutor deDataFillingTaskExecutor;
 
+    @Resource
+    private DeXpackDataSyncTaskExecutor deXpackDataSyncTaskExecutor;
+
     @Override
     public void run(ApplicationArguments args) {
         try {
@@ -31,6 +35,12 @@ public class XpackTaskStarter implements ApplicationRunner {
         try {
             LicenseUtil.validate();
             deDataFillingTaskExecutor.init();
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e.getCause());
+        }
+        try {
+            LicenseUtil.validate();
+            deXpackDataSyncTaskExecutor.init();
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e.getCause());
         }
