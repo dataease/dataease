@@ -248,64 +248,70 @@ export class Gauge extends G2ChartView {
     const customAttr = parseJson(chart.customAttr)
     const data = chart.data.series[0].data[0]
     const label = customAttr.label
+    if (!label.show) {
+      defaultsDeep(options, {
+        style: {
+          textContent: () => ''
+        }
+      })
+      return options
+    }
     const labelFormatter = label.labelFormatter ?? DEFAULT_LABEL.labelFormatter
-    if (label.show) {
-      let proportionOffsetY = 0
-      if (label.childrenShow) {
-        const labelTitleOption = {
-          style: {
-            textFontSize: label.fontSize,
-            textFill: label.color,
-            textContent: () => {
-              let value
-              if (labelFormatter.type === 'percent') {
-                value = options.data.value.percent
-              } else {
-                value = data
-              }
-              return valueFormatter(value, labelFormatter)
+    let proportionOffsetY = 0
+    if (label.childrenShow) {
+      const labelTitleOption = {
+        style: {
+          textFontSize: label.fontSize,
+          textFill: label.color,
+          textContent: () => {
+            let value
+            if (labelFormatter.type === 'percent') {
+              value = options.data.value.percent
+            } else {
+              value = data
             }
+            return valueFormatter(value, labelFormatter)
           }
         }
-        proportionOffsetY = label.fontSize
-        defaultsDeep(options, labelTitleOption)
       }
-      if (label.proportionSeriesFormatter.show) {
-        const { min, max } = context
-        const proportionFormatter = label.proportionSeriesFormatter
-        const labelProportionOption = {
-          type: 'text',
-          style: {
-            text: () => {
-              const proportionValue = ((parseFloat(data) - min) / (max - min)) * 100
-              return (
-                t('chart.proportion') +
-                '： ' +
-                proportionValue.toFixed(proportionFormatter.formatterCfg.decimalCount) +
-                '%'
-              )
-            },
-            x: '50%',
-            y: '60%',
-            dy: proportionOffsetY,
-            fontSize: proportionFormatter.fontSize,
-            fill: proportionFormatter.color,
-            textAlign: 'center'
-          },
-          tooltip: false
-        }
-        options = {
-          type: 'view',
-          autoFit: true,
-          children: [options, labelProportionOption]
-        }
-      }
+      proportionOffsetY = label.fontSize
+      defaultsDeep(options, labelTitleOption)
     } else {
       defaultsDeep(options, {
         style: {
-          textContent: ''
+          textContent: () => ''
         }
       })
+    }
+    if (label.proportionSeriesFormatter.show) {
+      const { min, max } = context
+      const proportionFormatter = label.proportionSeriesFormatter
+      const labelProportionOption = {
+        type: 'text',
+        style: {
+          text: () => {
+            const proportionValue = ((parseFloat(data) - min) / (max - min)) * 100
+            return (
+              t('chart.proportion') +
+              '： ' +
+              proportionValue.toFixed(proportionFormatter.formatterCfg.decimalCount) +
+              '%'
+            )
+          },
+          x: '50%',
+          y: '60%',
+          dy: proportionOffsetY,
+          fontSize: proportionFormatter.fontSize,
+          fill: proportionFormatter.color,
+          textAlign: 'center'
+        },
+        tooltip: false
+      }
+      options = {
+        type: 'view',
+        autoFit: true,
+        children: [options, labelProportionOption]
+      }
     }
     return options
   }
