@@ -363,7 +363,7 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
         quadrantDefaultBaseline
       })
       myChart?.render().then(() => {
-        myChart?.afterRender(myChart)
+        myChart?.afterRender?.(myChart)
       })
       // if (linkageActiveHistory.value) {
       //   linkageActive()
@@ -754,14 +754,12 @@ let intersectionObserver
 let resizeObserver
 const TOLERANCE = 0.01
 const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
+let g2ResizeTimer: number
 onMounted(() => {
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom
   const preSize = [offsetWidth, offsetHeight]
   resizeObserver = new ResizeObserver(([entry] = []) => {
-    if (!RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
-      return
-    }
     const [size] = entry.borderBoxSize || []
     const widthOffsetPercent = (size.inlineSize - preSize[0]) / preSize[0]
     const heightOffsetPercent = (size.blockSize - preSize[1]) / preSize[1]
@@ -769,7 +767,14 @@ onMounted(() => {
       return
     }
     if (myChart && preSize[1] > 1) {
-      renderChart(curView)
+      if (RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
+        renderChart(curView)
+      } else {
+        g2ResizeTimer && clearTimeout(g2ResizeTimer)
+        g2ResizeTimer = setTimeout(() => {
+          myChart?.forceFit()
+        }, 300)
+      }
     }
     preSize[0] = size.inlineSize
     preSize[1] = size.blockSize
