@@ -240,6 +240,7 @@ public class DatasetSQLBotManage {
             if (StringUtils.isNotBlank(dsHost) && ObjectUtils.isNotEmpty(config)) {
                 config.setHost(dsHost);
             }
+            dsType = deEngine.getType();
         } else {
             String config_json = EncryptUtils.aesDecrypt(dsConfig.toString()).toString();
             config = JsonUtil.parseObject(config_json, Configuration.class);
