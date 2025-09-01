@@ -14,7 +14,14 @@ import java.util.List;
 public class Db2 extends DatasourceConfiguration {
     private String driver = "com.ibm.db2.jcc.DB2Driver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("rmi");
+    private List<String> illegalParameters = Arrays.asList(
+            // 原有参数（如RMI相关）
+            "java.naming.factory.initial", "java.naming.provider.url", "rmi",
+            // 新增：LDAP协议及相关危险参数
+            "ldap://", "ldaps://", "java.naming.factory.object", "java.naming.factory.state",
+            // 其他JDBC危险参数
+            "autoDeserialize", "connectionProperties", "initSQL"
+    );
 
     public String getJdbc() {
         if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
