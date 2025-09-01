@@ -11,6 +11,7 @@ public class SysVariableValueDto {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sysVariableId;
     private String value;
+    private String valueDesc;
     private String begin;
     private String end;
 }
