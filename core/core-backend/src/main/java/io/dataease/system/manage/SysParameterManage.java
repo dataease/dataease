@@ -3,7 +3,6 @@ package io.dataease.system.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.system.request.OnlineMapEditor;
 import io.dataease.api.system.request.SQLBotConfigCreator;
-import io.dataease.api.system.vo.SQLBotConfigVO;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
 import io.dataease.datasource.server.DatasourceServer;

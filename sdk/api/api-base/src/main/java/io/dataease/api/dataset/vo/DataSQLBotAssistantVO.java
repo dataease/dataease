@@ -15,7 +15,7 @@ public class DataSQLBotAssistantVO implements Serializable {
 
     private String host;
 
-    private int port;
+    private Integer port;
 
     private String dataBase;
 
