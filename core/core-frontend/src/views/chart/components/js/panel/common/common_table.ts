@@ -1878,6 +1878,9 @@ function extractNumber(formattedValue: string, formatterCfg: BaseFormatter): {
   value: number
   numFmt: string
 } | string {
+  if (!formatterCfg) {
+    return formattedValue
+  }
   let result = formattedValue
   if (formatterCfg.type === 'percent') {
     result = result.slice(0, -1) // 去掉百分号
