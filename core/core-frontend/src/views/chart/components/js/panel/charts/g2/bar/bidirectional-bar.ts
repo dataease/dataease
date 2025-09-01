@@ -872,6 +872,24 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     return options
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.customStyle.yAxis = {
+      ...chart.customStyle.yAxis,
+      position: 'left'
+    }
+    chart.customStyle.yAxisExt = {
+      ...chart.customStyle.yAxisExt,
+      position: 'left',
+      splitLine: chart.customStyle.yAxis.splitLine
+    }
+    chart.customAttr.label = {
+      ...chart.customAttr.label,
+      position: 'right'
+    }
+    chart.customAttr.basicStyle.layout = 'horizontal'
+    return chart
+  }
+
   protected setupOptions(chart: Chart, options: G2Spec) {
     return flow(
       this.configBasicStyle,
