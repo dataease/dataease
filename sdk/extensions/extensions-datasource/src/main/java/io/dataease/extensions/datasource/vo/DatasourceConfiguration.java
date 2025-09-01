@@ -13,7 +13,6 @@ public class DatasourceConfiguration extends Configuration {
     static public enum DatasourceType {
         folder("folder", "folder", "folder", null, null, 25),
         API("API", "API", "API", "`", "`", 15),
-        APILark("APILark", "APILark", "APILark", "`", "`", 17),
         Excel("Excel", "Excel", "LOCALFILE", "`", "`", 16),
         ExcelRemote("ExcelRemote", "ExcelRemote", "LOCALFILE", "`", "`", 29),
         mysql("mysql", "Mysql", "OLTP", "`", "`", 27),

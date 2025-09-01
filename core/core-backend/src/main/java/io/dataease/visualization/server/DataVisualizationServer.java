@@ -451,8 +451,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
         }
         // 文件夹走默认发布 非文件夹默认未发布
-        visualizationInfo.setStatus(DataVisualizationConstants.NODE_TYPE.FOLDER.equals(visualizationInfo.getNodeType())
-                ? CommonConstants.DV_STATUS.PUBLISHED : CommonConstants.DV_STATUS.UNPUBLISHED);
+        visualizationInfo.setStatus(DataVisualizationConstants.NODE_TYPE.FOLDER.equals(visualizationInfo.getNodeType()) ? CommonConstants.DV_STATUS.PUBLISHED : CommonConstants.DV_STATUS.UNPUBLISHED);
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
         request.setId(newDvId);
         // 还原ID信息
@@ -594,8 +593,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setStatus(request.getStatus());
         coreVisualizationManage.innerEdit(visualizationInfo);
         if (CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()) {
-            List<Long> viewIds = this.getEnabledViewIds(dvId,CommonConstants.RESOURCE_TABLE.SNAPSHOT);
-            extDataVisualizationMapper.deleteUselessViewsBatchSnapshot(viewIds,dvId);
+            List<Long> viewIds = this.getEnabledViewIds(dvId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
+            extDataVisualizationMapper.deleteUselessViewsBatchSnapshot(viewIds, dvId);
             coreVisualizationManage.removeDvCore(dvId);
             coreVisualizationManage.dvRestore(dvId);
             chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
@@ -940,8 +939,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         if (CollectionUtils.isEmpty(datasourceVOInfo)) {
             DEException.throwException("当前不存在数据源无法导出");
-        } else if (datasourceVOInfo.stream()
-                .anyMatch(datasource -> DatasourceConfiguration.DatasourceType.API.name().equals(datasource.getType()) || DatasourceConfiguration.DatasourceType.APILark.name().equals(datasource.getType()))) {
+        } else if (datasourceVOInfo.stream().anyMatch(datasource -> datasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()))) {
             DEException.throwException(Translator.get("i18n_app_error_no_api"));
         }
 
@@ -1027,8 +1025,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<CoreChartView> views = extChartViewMapper.selectListCustom(dvId, resourceTable);
         if (CollectionUtils.isNotEmpty(views) && dvInfo != null) {
             String componentData = dvInfo.getComponentData();
-            result = views.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).map(CoreChartView::getId)
-                    .collect(Collectors.toList());
+            result = views.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).map(CoreChartView::getId).collect(Collectors.toList());
 
         }
         return result;
