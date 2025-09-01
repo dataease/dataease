@@ -1446,6 +1446,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   queryParams = paramValue.map(number => String(number))
                 }
                 filterItem.defaultValueCheck = true
+                filterItem.defaultValueFirstItem = false
                 filterItem.timeType = 'fixed'
                 if (['0', '2'].includes(filterItem.displayType)) {
                   const { optionValueSource, field, displayId } = filterItem
