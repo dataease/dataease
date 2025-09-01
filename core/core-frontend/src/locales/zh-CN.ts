@@ -661,6 +661,7 @@ export default {
     add_variable_value: '添加变量值',
     search_variable_value: '搜索变量值',
     variable_value: '变量值',
+    variable_desc: '描述',
     set_variable_value: '设置变量值',
     the_minimum_value: '请输入最小值',
     the_maximum_value: '请输入最大值',

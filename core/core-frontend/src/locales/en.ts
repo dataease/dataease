@@ -787,6 +787,7 @@ export default {
     than_end_time: ', Cannot be greater than the end time:',
     variable: 'Variable',
     variable_value: 'Variable value',
+    variable_desc: 'Describe',
     enter_a_value: 'Please enter a value',
     contact_the_administrator: 'If the execution fails, please contact the administrator',
     data_import_successful: 'Import data successfully',

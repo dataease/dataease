@@ -760,6 +760,7 @@ export default {
     than_end_time: '，不能大於結束時間：',
     variable: '變數',
     variable_value: '變數值',
+    variable_desc: '描述',
     enter_a_value: '請輸入數值',
     contact_the_administrator: '執行失敗請聯絡管理員',
     data_import_successful: '導入資料成功',
