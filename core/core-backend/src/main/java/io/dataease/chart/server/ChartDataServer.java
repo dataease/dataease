@@ -257,24 +257,23 @@ public class ChartDataServer implements ChartDataApi {
                     ChartViewDTO chartViewDTO = findExcelData(request);
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
                         request.getViewInfo().getChartExtRequest().setGoPage(i);
+                        request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                        request.getViewInfo().setYAxis(request.getViewInfo().getYAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                        request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                        request.getViewInfo().setYAxisExt(request.getViewInfo().getYAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
+                        request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                         findExcelData(request);
                         details.addAll(request.getDetails());
                         if ((details.size() + extractPageSize) > sheetLimit || i == chartViewDTO.getTotalPage()) {
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
-                            Object[] header = request.getHeader();
-                            request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                            request.getViewInfo().setYAxis(request.getViewInfo().getYAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                            request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                            request.getViewInfo().setYAxisExt(request.getViewInfo().getYAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                            request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                             List<ChartViewFieldDTO> xAxis = new ArrayList<>();
                             xAxis.addAll(request.getViewInfo().getXAxis());
                             xAxis.addAll(request.getViewInfo().getYAxis());
                             xAxis.addAll(request.getViewInfo().getXAxisExt());
                             xAxis.addAll(request.getViewInfo().getYAxisExt());
                             xAxis.addAll(request.getViewInfo().getExtStack());
-                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).collect(Collectors.toList()).toArray();
+                            Object[] header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).collect(Collectors.toList()).toArray();
                             details.add(0, header);
                             ViewDetailField[] detailFields = request.getDetailFields();
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
@@ -344,9 +343,11 @@ public class ChartDataServer implements ChartDataApi {
         xAxis.addAll(viewInfo.getXAxisExt());
         xAxis.addAll(viewInfo.getYAxisExt());
         xAxis.addAll(viewInfo.getExtStack());
+        xAxis.addAll(viewInfo.getDrillFields());
         TableHeader tableHeader = null;
         Integer totalDepth = 0;
-        if (viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) {
+        List<CellRangeAddress> mergeConfig = new ArrayList<>();
+        if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-normal", "table-info")) {
             for (ChartViewFieldDTO xAxi : xAxis) {
                 if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
                     CellStyle formatterCellStyle = createCellStyle(wb, xAxi.getFormatterCfg(), null);
@@ -358,13 +359,37 @@ public class ChartDataServer implements ChartDataApi {
 
             Map<String, Object> customAttr = viewInfo.getCustomAttr();
             Map<String, Object> tableHeaderMap = (Map<String, Object>) customAttr.get("tableHeader");
-            if (tableHeaderMap.get("headerGroup") != null && Boolean.valueOf(tableHeaderMap.get("headerGroup").toString())) {
-                tableHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
-                for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
-                    totalDepth = Math.max(totalDepth, getDepth(column, 1));
+            if (tableHeaderMap.get("headerGroup") != null && Boolean.parseBoolean(tableHeaderMap.get("headerGroup").toString())) {
+                var tmpHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
+                // 校验字段数量和顺序
+                var allAxis = new ArrayList<>(viewInfo.getXAxis().stream().filter(x -> !x.isHide()).toList());
+                if (StringUtils.equalsIgnoreCase(viewInfo.getType(), "table-normal")) {
+                    allAxis.addAll(viewInfo.getYAxis().stream().filter(x -> !x.isHide()).toList());
                 }
-                for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
-                    setWidth(column, 1);
+                if (validateHeaderGroup(tmpHeader, allAxis)) {
+                    tableHeader = tmpHeader;
+                    for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
+                        totalDepth = Math.max(totalDepth, getDepth(column, 1));
+                    }
+                    for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
+                        setWidth(column, 1);
+                    }
+                }
+            }
+            if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
+                Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
+                Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
+                if (mergeCells != null && mergeCells) {
+                    var mergeIndex = viewInfo.getXAxis().size();
+                    for (int i = 0; i < viewInfo.getXAxis().size(); i++) {
+                        if ("q".equalsIgnoreCase(viewInfo.getXAxis().get(i).getGroupType())) {
+                            mergeIndex = i;
+                            break;
+                        }
+                    }
+                    if (mergeIndex >= 1 && details.size() > 1) {
+                        mergeConfig = getMergeConfig(details.subList(1, details.size()), mergeIndex - 1, totalDepth == 0 ? 1 : totalDepth);
+                    }
                 }
             }
         }
@@ -513,9 +538,90 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 }
             }
+            if (CollectionUtils.isNotEmpty(mergeConfig)) {
+                mergeConfig.forEach(detailsSheet::addMergedRegion);
+            }
         }
     }
 
+    private static List<CellRangeAddress> getMergeConfig(List<Object[]> data, int colIndex, int offsetHeight) {
+        var result = new ArrayList<CellRangeAddress>();
+        var preRange = new ArrayList<Integer[]>();
+        var initRange = new Integer[]{0, data.size() - 1};
+        preRange.add(initRange);
+        for (int curColIndex = 0; curColIndex <= colIndex; curColIndex++) {
+            var curRange = new ArrayList<Integer[]>();
+            for (int preRangeIndex = 0; preRangeIndex < preRange.size(); preRangeIndex++) {
+                var preRowRange = preRange.get(preRangeIndex);
+                var start = preRowRange[0];
+                var end = preRowRange[1];
+                var lastColValue = data.get(start)[curColIndex];
+                if (lastColValue != null) {
+                    lastColValue = lastColValue.toString();
+                } else {
+                    lastColValue = "";
+                }
+                var lastRowIndex = start;
+                for (Integer curRowIndex = start + 1; curRowIndex <= end; curRowIndex++) {
+                    var curRow = data.get(curRowIndex);
+                    var curColValue = curRow[curColIndex];
+                    if (curColValue != null) {
+                        curColValue = curColValue.toString();
+                    } else {
+                        curColValue = "";
+                    }
+                    if (!StringUtils.equals(lastColValue.toString(), curColValue.toString()) && (curRowIndex - lastRowIndex > 1)) {
+                        curRange.add(new Integer[]{lastRowIndex, curRowIndex - 1});
+                        result.add(new CellRangeAddress(lastRowIndex + offsetHeight, curRowIndex + offsetHeight - 1, curColIndex, curColIndex));
+                    }
+                    if (curRowIndex.equals(end) && curColValue.equals(lastColValue) && curRowIndex - lastRowIndex > 0) {
+                        curRange.add(new Integer[]{lastRowIndex, curRowIndex});
+                        result.add(new CellRangeAddress(lastRowIndex + offsetHeight, curRowIndex + offsetHeight, curColIndex, curColIndex));
+                    }
+                    if (!StringUtils.equals(lastColValue.toString(), curColValue.toString())) {
+                        lastColValue = curColValue;
+                        lastRowIndex = curRowIndex;
+                    }
+                }
+            }
+            preRange = curRange;
+        }
+        return result;
+    }
+
+    private static boolean validateHeaderGroup(TableHeader header, List<ChartViewFieldDTO> fields) {
+        if (header == null) {
+            return false;
+        }
+        var columns = header.getHeaderGroupConfig().getColumns();
+        if (CollectionUtils.isEmpty(columns)) {
+            return false;
+        }
+        var leafColumn = getHeaderLeafColumn(columns);
+        if (CollectionUtils.isEmpty(leafColumn) || leafColumn.size() != fields.size()) {
+            return false;
+        }
+        for (int i = 0; i < leafColumn.size(); i++) {
+            var a = leafColumn.get(i);
+            var b = fields.get(i).getDataeaseName();
+            if (!StringUtils.equals(a, b)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<String> getHeaderLeafColumn(List<TableHeader.ColumnInfo> columns) {
+        var result = new ArrayList<String>();
+        for (TableHeader.ColumnInfo column : columns) {
+            if (CollectionUtils.isEmpty(column.getChildren())) {
+                result.add(column.getKey());
+            } else {
+                result.addAll(getHeaderLeafColumn(column.getChildren()));
+            }
+        }
+        return result;
+    }
 
     private static Integer getDepth(TableHeader.ColumnInfo column, Integer parentDepth) {
         if (org.springframework.util.CollectionUtils.isEmpty(column.getChildren())) {
@@ -580,7 +686,7 @@ public class ChartDataServer implements ChartDataApi {
     private static String getDeFieldName(List<ChartViewFieldDTO> xAxis, String key) {
         for (ChartViewFieldDTO xAxi : xAxis) {
             if (xAxi.getDataeaseName().equals(key)) {
-                return xAxi.getName();
+                return StringUtils.isNotBlank(xAxi.getChartShowName()) ? xAxi.getChartShowName() : xAxi.getName();
             }
         }
         return "";
