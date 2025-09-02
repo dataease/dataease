@@ -625,14 +625,14 @@ export class StackLineMix extends G2ChartView {
       defaultsDeep(view, axisHide)
       return options
     }
-    let lineLineDash = undefined
+    let lineLineDash = [0, 0]
     if (xAxis.axisLine.lineStyle.style === 'dashed') {
       lineLineDash = [10, 8]
     }
     if (xAxis.axisLine.lineStyle.style === 'dotted') {
       lineLineDash = [1, 2]
     }
-    let gridLineDash = undefined
+    let gridLineDash = [0, 0]
     if (xAxis.splitLine.lineStyle.style === 'dashed') {
       gridLineDash = [10, 8]
     }
