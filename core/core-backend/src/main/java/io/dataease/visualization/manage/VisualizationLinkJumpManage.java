@@ -16,9 +16,7 @@ import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.share.dao.auto.entity.QXpackShare;
 import io.dataease.visualization.dao.auto.entity.*;
-import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpInfoRepository;
-import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpRepository;
-import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpTargetViewInfoRepository;
+import io.dataease.visualization.dao.auto.mapper.*;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +39,13 @@ public class VisualizationLinkJumpManage {
 
     @Resource
     private VisualizationLinkJumpTargetViewInfoRepository visualizationLinkJumpTargetViewInfoRepository;
+    @Resource
+    private SnapshotVisualizationLinkJumpTargetViewInfoRepository snapshotVisualizationLinkJumpTargetViewInfoRepository;
+    @Resource
+    private SnapshotVisualizationLinkJumpRepository snapshotVisualizationLinkJumpRepository;
+    @Resource
+    private SnapshotVisualizationLinkJumpInfoRepository snapshotVisualizationLinkJumpInfoRepository;
+
     private final QXpackShare qXpackShare = QXpackShare.xpackShare;
 
     public void copyLinkJump(Long copyId) {
@@ -459,14 +464,14 @@ public class VisualizationLinkJumpManage {
     }
 
     public void deleteJumpTargetViewInfoSnapshot(Long dvId, Long viewId) {
-
+        snapshotVisualizationLinkJumpTargetViewInfoRepository.deleteBySourceDvIdAndViewId(dvId,viewId);
     }
 
     public void deleteJumpInfoSnapshot(Long dvId, Long viewId) {
-
+        snapshotVisualizationLinkJumpInfoRepository.deleteBySourceDvIdAndViewId(dvId,viewId);
     }
 
     public void deleteJumpSnapshot(Long dvId, Long viewId) {
-
+        snapshotVisualizationLinkJumpRepository.deleteBySourceDvIdAndSourceViewId(dvId,viewId);
     }
 }

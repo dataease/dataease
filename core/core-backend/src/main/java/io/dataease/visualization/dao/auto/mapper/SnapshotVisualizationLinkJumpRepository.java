@@ -5,6 +5,7 @@ import io.dataease.visualization.dao.auto.entity.SnapshotVisualizationLinkJump;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -22,5 +23,9 @@ public interface SnapshotVisualizationLinkJumpRepository extends JpaRepository<S
             deleteAll(jumps);
         }
     }
+
+    @Modifying
+    @Transactional
+    void deleteBySourceDvIdAndSourceViewId(Long dvId, Long viewId);
 
 }
