@@ -355,7 +355,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     if (xAxis.axisLine.lineStyle.style === 'dotted') {
       lineLineDash = [1, 2]
     }
-    let gridLineDash = undefined
+    let gridLineDash = [1, 0]
     if (xAxis.splitLine.lineStyle.style === 'dashed') {
       gridLineDash = [10, 8]
     }
