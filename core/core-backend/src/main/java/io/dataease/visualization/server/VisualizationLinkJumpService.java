@@ -1,5 +1,6 @@
 package io.dataease.visualization.server;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -210,25 +211,53 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             QCoreChartView coreChartView = QCoreChartView.coreChartView;
             QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
             QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
-            result = queryFactory.select(Projections.fields(VisualizationViewTableVO.class,
-                            coreChartView.id.as("id"),
-                            coreChartView.title.as("title"),
-                            coreChartView.type.as("type"),
-                            coreChartView.sceneId.as("dvId"),
-                            coreDatasetTableField.id.as("fieldId"),
-                            coreDatasetTableField.originName.as("originName"),
-                            coreDatasetTableField.name.as("fieldName"),
-                            coreDatasetTableField.type.as("fieldType"),
-                            coreDatasetTableField.deType.as("deType")
-                    )).from(coreChartView)
+            List<Tuple> tuples = queryFactory
+                    .select(
+                            coreChartView.id,
+                            coreChartView.title,
+                            coreChartView.type,
+                            coreChartView.sceneId,
+                            coreDatasetTableField.id,
+                            coreDatasetTableField.originName,
+                            coreDatasetTableField.name,
+                            coreDatasetTableField.type,
+                            coreDatasetTableField.deType
+                    )
+                    .from(coreChartView)
                     .leftJoin(coreDatasetTableField).on(coreChartView.tableId.eq(coreDatasetTableField.datasetGroupId))
                     .innerJoin(dataVisualizationInfo).on(coreChartView.sceneId.eq(dataVisualizationInfo.id))
                     .where(coreChartView.sceneId.eq(dvId))
                     .where(coreChartView.type.ne("VQuery"))
                     .where(coreChartView.tableId.isNotNull())
                     .where(dataVisualizationInfo.id.eq(dvId))
-                    .where(dataVisualizationInfo.componentData.contains(coreChartView.id.toString())).fetch();
+                    .fetch();
+            Map<Long, VisualizationViewTableVO> resultMap = new LinkedHashMap<>();
 
+
+            for (Tuple tuple : tuples) {
+                Long viewId = tuple.get(coreChartView.id);
+                VisualizationViewTableVO vo = resultMap.computeIfAbsent(viewId, k -> {
+                    VisualizationViewTableVO newVo = new VisualizationViewTableVO();
+                    newVo.setId(viewId);
+                    newVo.setTitle(tuple.get(coreChartView.title));
+                    newVo.setType(tuple.get(coreChartView.type));
+                    newVo.setDvId(tuple.get(coreChartView.sceneId));
+                    newVo.setTableFields(new ArrayList<>());
+                    return newVo;
+                });
+
+                // 添加字段信息
+                if (tuple.get(coreDatasetTableField.id) != null) {
+                    DatasetTableFieldDTO fieldDto = new DatasetTableFieldDTO();
+                    fieldDto.setId(tuple.get(coreDatasetTableField.id));
+                    fieldDto.setOriginName(tuple.get(coreDatasetTableField.originName));
+                    fieldDto.setName(tuple.get(coreDatasetTableField.name));
+                    fieldDto.setType(tuple.get(coreDatasetTableField.type));
+                    fieldDto.setDeType(tuple.get(coreDatasetTableField.deType));
+                    vo.getTableFields().add(fieldDto);
+                }
+            }
+            result = new ArrayList<>(resultMap.values());
             componentData = dvInfo.getComponentData();
 
             QVisualizationOuterParamsInfo visualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
