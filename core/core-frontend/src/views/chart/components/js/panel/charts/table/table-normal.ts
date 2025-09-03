@@ -140,7 +140,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
-      width: containerDom.offsetWidth,
+      width: containerDom.getBoundingClientRect().width,
       height: containerDom.offsetHeight,
       seriesNumber: {
         enable: tableHeader.showIndex,
@@ -216,7 +216,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
-        const containerWidth = containerDom.offsetWidth
+        const containerWidth = containerDom.getBoundingClientRect().width - 1
         const scale = containerWidth / ev.colsHierarchy.width
         if (scale <= 1) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
@@ -232,12 +232,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
           n.x = p
           return p + n.width
         }, 0)
+        // 从最后一列减掉
+        const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
         if (totalWidth > containerWidth) {
-          // 从最后一列减掉
-          const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
           lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
         }
-        ev.colsHierarchy.width = containerWidth - 1
+        ev.colsHierarchy.width = lastNode.x + lastNode.width
       })
     }
     configEmptyDataStyle(newChart, basicStyle, newData, container)
