@@ -22,7 +22,9 @@ public class H2 extends DatasourceConfiguration {
                 DEException.throwException("Has illegal parameter: " + jdbc);
             }
         }
-
+        if (!getJdbcUrl().startsWith("jdbc:h2")) {
+            DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
+        }
         return jdbc;
     }
 
