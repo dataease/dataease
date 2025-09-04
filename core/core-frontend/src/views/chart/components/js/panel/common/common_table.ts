@@ -59,7 +59,8 @@ import {
   repeat,
   sumBy,
   size,
-  sum
+  sum,
+  isNumber
 } from 'lodash-es'
 import { createVNode, render } from 'vue'
 import TableTooltip from '@/views/chart/components/editor/common/TableTooltip.vue'
@@ -68,7 +69,6 @@ import { saveAs } from 'file-saver'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import Decimal from 'decimal.js'
-
 
 const { t: i18nt } = useI18n()
 
@@ -1874,10 +1874,15 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
   saveAs(dataBlob, `${chart.title ?? '透视表'}.xlsx`)
 }
 
-function extractNumber(formattedValue: string, formatterCfg: BaseFormatter): {
-  value: number
-  numFmt: string
-} | string {
+function extractNumber(
+  formattedValue: string,
+  formatterCfg: BaseFormatter
+):
+  | {
+      value: number
+      numFmt: string
+    }
+  | string {
   if (!formatterCfg) {
     return formattedValue
   }
@@ -2255,9 +2260,9 @@ const drawTextShape = (cell, isHeader) => {
   cell.actualTextWidth = cell.spreadsheet.measureTextWidth(wrapText, textStyle)
 
   // 获取文本位置并渲染文本
-  const position = cell.getTextPosition()
+  const { x, y } = cell.getTextAndIconPosition()?.text || cell.getTextPosition()
   // 绘制文本
-  cell.textShape = renderText(cell, [cell.textShape], position.x, position.y, wrapText, textStyle, {
+  cell.textShape = renderText(cell, [cell.textShape], x, y, wrapText, textStyle, {
     fontSize: extraStyleFontSize
   })
 
@@ -2312,8 +2317,6 @@ export const calculateHeaderHeight = (info, newChart, tableHeader, basicStyle, l
     ev.colLeafNodes.forEach(n => (n.height = maxHeight))
     ev.colsHierarchy.height = maxHeight
   }
-
-  newChart.store.set('autoCalcHeight', maxHeight)
 }
 
 /**
@@ -2450,7 +2453,10 @@ export function getSummaryRow(data, axis, sumCon = []) {
           })
           // 计算方差（平方差的平均值）
           const variance = squaredDeviations.reduce((acc, val) => acc.plus(val), new Decimal(0))
-          summaryObj[a] = variance.dividedBy(data.length - 1).sqrt().toNumber() // 计算总体标准差
+          summaryObj[a] = variance
+            .dividedBy(data.length - 1)
+            .sqrt()
+            .toNumber() // 计算总体标准差
         }
         break
     }
@@ -2459,7 +2465,6 @@ export function getSummaryRow(data, axis, sumCon = []) {
   // 返回汇总结果对象
   return summaryObj
 }
-
 
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
@@ -2568,7 +2573,6 @@ export function drawImage() {
   }
 }
 
-
 export function calcTreeWidth(node) {
   if (!node.children?.length) {
     return node.width
@@ -2614,4 +2618,123 @@ export function summaryRowStyle(newChart, newData, tableCell, tableHeader, showS
         totalHeight < newChart.container.cfg.height - 8 ? totalHeight + 8 : totalHeight
     }
   })
+}
+
+/**
+ * 计算分组表头高度
+ * @param newChart
+ * @param tableHeader
+ * @param basicStyle
+ */
+export const calculateGroupHeaderHeight = (newChart, tableHeader, basicStyle) => {
+  let maxGroupHeight = 0
+  // 获取分组名字最长的列
+  const maxNameMeta = newChart.dataCfg?.meta
+    ?.filter(item => !item.field.startsWith('f_'))
+    ?.reduce((max, cur) => (cur.name.length > (max?.name.length ?? 0) ? cur : max), null)
+  if (maxNameMeta) {
+    let colWidth = basicStyle.tableColumnWidth
+    const maxNameColumn = findNodeByKey(newChart.dataCfg.fields.columns, maxNameMeta.field)
+    const maxNameColumns = []
+    if (maxNameColumn) {
+      maxNameColumns.push(maxNameColumn)
+    }
+    const { resizedWidth, meta } = newChart.store.get('resizeColWidthInfo') || {
+      resizedWidth: 0,
+      width: 0
+    }
+    const leafKeys = getLeafKeys(maxNameColumns)
+    if (basicStyle.tableFieldWidth.length > 0) {
+      colWidth = 0
+      const fieldWidth = basicStyle.tableFieldWidth
+      // fieldWidth中对象的key在leafKeys时，对fieldWidth中对象的width求和
+      fieldWidth.forEach(fw => {
+        // 调整单元格宽度时，排除掉当前调整的列，使用调整后的宽度
+        if (
+          leafKeys.filter(key => meta?.key !== key).includes(fw.fieldId) &&
+          isNumber(fw.width) &&
+          fw.width > 0
+        ) {
+          colWidth += fw.width
+        }
+      })
+    }
+    if (basicStyle.tableColumnMode === 'custom') {
+      colWidth = basicStyle.tableColumnWidth * (leafKeys.length === 0 ? 1 : leafKeys.length) || 100
+    } else {
+      colWidth =
+        (newChart.facet?.cfg?.width ? newChart.facet.cfg.width : newChart.options.width) *
+        (colWidth / 100)
+    }
+    // 计算分组表头的高度
+    if (colWidth > 0) {
+      colWidth = colWidth + resizedWidth
+      const nodeHeight = calculateGroupHeaderMaxTextHeight(
+        { info: { name: maxNameMeta.name, resizedWidth: colWidth } },
+        newChart,
+        tableHeader,
+        basicStyle,
+        null
+      )
+      maxGroupHeight = Math.max(maxGroupHeight, nodeHeight)
+    }
+    if (maxGroupHeight > 0) {
+      newChart.options.style.colCfg.height = maxGroupHeight
+    }
+  }
+}
+
+// 获取最里层的叶子节点
+const getLeafKeys = (columns: any[]): string[] => {
+  const keys: string[] = []
+  columns.forEach(col => {
+    if (col && typeof col === 'object' && Array.isArray(col.children) && col.children.length > 0) {
+      keys.push(...getLeafKeys(col.children))
+    } else if (col && typeof col === 'object' && col.key) {
+      keys.push(col.key)
+    }
+  })
+  return keys
+}
+// 根据 key 查找节点
+const findNodeByKey = (columns: any[], key: string): any | null => {
+  for (const col of columns) {
+    if (col.key === key) return col
+    if (col.children) {
+      const found = findNodeByKey(col.children, key)
+      if (found) return found
+    }
+  }
+  return null
+}
+
+/**
+ * 计算分组表头最大文本高度
+ * @param info
+ * @param newChart
+ * @param tableHeader
+ * @param basicStyle
+ * @param _layoutResult
+ */
+const calculateGroupHeaderMaxTextHeight = (
+  info,
+  newChart,
+  tableHeader,
+  basicStyle,
+  _layoutResult
+) => {
+  if (tableHeader.showTableHeader === false) return
+  const maxLines = basicStyle.maxLines ?? 1
+  const textStyle = { ...newChart.theme.cornerCell.text, fontSize: tableHeader.tableTitleFontSize }
+  const sourceText = info.info.name
+  return (
+    getWrapTextHeight(
+      getWrapText(sourceText, textStyle, info.info.resizedWidth, newChart),
+      textStyle,
+      newChart,
+      maxLines
+    ) +
+    textStyle.fontSize +
+    10.5
+  )
 }
