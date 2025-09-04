@@ -339,8 +339,14 @@ const onWrapperClick = e => {
           } else {
             window.open(url, '_blank')
           }
+          if (inMobile.value) {
+            window.location.reload()
+          }
         } else {
           initOpenHandler(window.open(url, jumpType))
+          if (inMobile.value) {
+            window.location.reload()
+          }
         }
       } catch (e) {
         console.warn('url 格式错误:' + url)
