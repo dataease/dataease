@@ -429,6 +429,9 @@ const windowsJump = (url, jumpType, size = 'middle') => {
       }
     } else {
       newWindow = window.open(url, jumpType)
+      if (inMobile.value) {
+        window.location.reload()
+      }
     }
     initOpenHandler(newWindow)
   } catch (e) {
