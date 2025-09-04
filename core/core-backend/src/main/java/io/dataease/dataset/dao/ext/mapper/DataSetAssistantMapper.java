@@ -1,5 +1,6 @@
 package io.dataease.dataset.dao.ext.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -32,9 +33,10 @@ public interface DataSetAssistantMapper {
             left join `core_dataset_table_field` cdtf on cdtf.dataset_table_id = cdt.id
             left join `core_dataset_group` cdg on cdg.id =  cdt.dataset_group_id
             where  cdg.is_cross != 1 and (cd.STATUS IS NULL OR cd.STATUS != 'Error')
+            ${ew.customSqlSegment}
             """
     )
-    List<Map<String, Object>> queryAll();
+    List<Map<String, Object>> queryAll(@Param("ew") QueryWrapper queryWrapper);
 
     @Select("""
     WITH user_ds_permissions AS (
@@ -69,8 +71,9 @@ public interface DataSetAssistantMapper {
     INNER JOIN `core_dataset_table_field` cdtf ON cdtf.dataset_table_id = cdt.id
     where not exists( select 1 from user_ds_permissions ds_p where cd.id = ds_p.resource_id )
     and not exists( select 1 from user_dg_permissions dg_p where cdg.id = dg_p.resource_id )
+    ${ew.customSqlSegment}
     """)
-    List<Map<String, Object>> queryCommunity();
+    List<Map<String, Object>> queryCommunity(@Param("ew") QueryWrapper queryWrapper);
 
 
 
@@ -144,9 +147,10 @@ public interface DataSetAssistantMapper {
     INNER JOIN `core_dataset_table_field` cdtf ON cdtf.dataset_table_id = cdt.id
     INNER JOIN user_ds_permissions ds_p ON cd.id = ds_p.resource_id
     INNER JOIN user_dg_permissions dg_p ON cdg.id = dg_p.resource_id
+    ${ew.customSqlSegment}
     </script>
 """)
-    List<Map<String, Object>> queryEnterprise(@Param("oid") Long oid, @Param("uid") Long uid, @Param("orgAdmin") Boolean orgAdmin);
+    List<Map<String, Object>> queryEnterprise(@Param("oid") Long oid, @Param("uid") Long uid, @Param("orgAdmin") Boolean orgAdmin, @Param("ew") QueryWrapper queryWrapper);
 
 
 }

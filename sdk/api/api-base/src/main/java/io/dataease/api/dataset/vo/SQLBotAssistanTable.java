@@ -1,5 +1,6 @@
 package io.dataease.api.dataset.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,5 +14,8 @@ public class SQLBotAssistanTable implements Serializable {
     private String rule;
     private String sql;
     private List<SQLBotAssistantField> fields = new ArrayList<>();
+
+    @JsonIgnore
+    private Long datasetGroupId;
 
 }

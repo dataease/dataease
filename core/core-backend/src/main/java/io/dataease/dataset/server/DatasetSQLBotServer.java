@@ -16,7 +16,7 @@ public class DatasetSQLBotServer implements DataAssistantApi {
     @Resource
     private DatasetSQLBotManage datasetSQLBotManage;
     @Override
-    public List<DataSQLBotAssistantVO> getDatasourceList() {
-        return datasetSQLBotManage.getDatasourceList(null);
+    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId) {
+        return datasetSQLBotManage.getDatasourceList(dsId, datasetId);
     }
 }
