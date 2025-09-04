@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onMounted, reactive } from 'vue'
+import { onMounted, onUnmounted, reactive } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router/mobile'
 import { initCanvasDataMobile, initCanvasData } from '@/utils/canvasUtils'
@@ -152,6 +152,7 @@ onMounted(async () => {
   }
   dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
+  window.addEventListener('popstate', handlePopState)
 })
 
 const initBrowserTimer = () => {
@@ -163,6 +164,14 @@ const initBrowserTimer = () => {
     }, browserRefreshTime)
   }
 }
+
+const handlePopState = () => {
+  window.location.reload()
+}
+
+onUnmounted(() => {
+  window.removeEventListener('popstate', handlePopState)
+})
 
 defineExpose({
   loadCanvasDataAsync
