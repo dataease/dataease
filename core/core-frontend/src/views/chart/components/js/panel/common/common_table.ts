@@ -1079,7 +1079,7 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
   const selectState = s2Instance.interaction.getState()
   let content = ''
   // 多选
-  if (selectState.stateName === InteractionStateName.SELECTED) {
+  if (selectState.stateName === InteractionStateName.DATA_CELL_BRUSH_SELECTED) {
     const {cells} = selectState
     if (!cells?.length) {
       return
@@ -1100,7 +1100,7 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
       return
     }
     const brushSelection = s2Instance.interaction.interactions.get(
-      InteractionName.BRUSH_SELECTION
+      InteractionName.DATA_CELL_BRUSH_SELECTION
     ) as DataCellBrushSelection
     const selectedCells: TableDataCell[] = brushSelection.getScrollBrushRangeCells(cells)
     selectedCells.sort((a, b) => {
