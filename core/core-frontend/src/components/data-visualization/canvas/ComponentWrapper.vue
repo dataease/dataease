@@ -181,7 +181,7 @@ const handleInnerMouseDown = e => {
       ['popEdit', 'preview'].includes(showPosition.value)) ||
     dvMainStore.mobileInPc
   ) {
-    onClick(e)
+    onClick()
     if (e.target?.className?.includes('ed-input__inner')) return
     e?.stopPropagation()
     e?.preventDefault()
@@ -348,12 +348,12 @@ const onWrapperClick = e => {
           } else {
             window.open(url, '_blank')
           }
-          if (inMobile.value) {
+          if (isMobile()) {
             window.location.reload()
           }
         } else {
           initOpenHandler(window.open(url, jumpType))
-          if (inMobile.value) {
+          if (isMobile()) {
             window.location.reload()
           }
         }
