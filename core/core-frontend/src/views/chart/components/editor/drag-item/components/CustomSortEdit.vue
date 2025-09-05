@@ -70,9 +70,11 @@ const init = () => {
         })
         strArr.unshift(...tmp)
       }
-      state.sortList = strArr.map(ele => {
-        return transStr2Obj(ele)
-      })
+      state.sortList = strArr
+        .filter(ele => ele?.trim())
+        .map(ele => {
+          return transStr2Obj(ele)
+        })
       onUpdate()
       loading.value = false
     })
