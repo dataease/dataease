@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import iconSetting from '@/assets/svg/icon-setting.svg'
-import copilot from '@/assets/svg/copilot.svg'
 import LangSelector from '@/layout/components/LangSelector.vue'
 import { useRouter } from 'vue-router_2'
 import TopDesktopCard from './TopDesktopCard.vue'
@@ -45,10 +44,6 @@ const initAiBase = async () => {
       aiBaseUrl.value = null
     }
   })
-}
-
-const handleCopilotClick = () => {
-  push('/copilot/index')
 }
 
 const handleAiClick = () => {
@@ -107,14 +102,6 @@ onMounted(() => {
             :cardInfo="{
               icon: dvAi,
               name: $t('commons.assistant')
-            }"
-          ></TopDesktopCard>
-          <TopDesktopCard
-            v-if="appearanceStore.getShowCopilot"
-            @openBlank="handleCopilotClick"
-            :cardInfo="{
-              icon: copilot,
-              name: 'Copilot'
             }"
           ></TopDesktopCard>
         </div>

@@ -147,9 +147,6 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     getShowAi(): boolean {
       return isBtnShow(this.showAi)
     },
-    getShowCopilot(): boolean {
-      return isBtnShow(this.showCopilot)
-    },
     getShowDoc(): boolean {
       return isBtnShow(this.showDoc)
     },
