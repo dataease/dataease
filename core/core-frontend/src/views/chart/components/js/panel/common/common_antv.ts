@@ -1747,6 +1747,14 @@ function calculateTooltipPosition(chart, isCarousel, tooltipCtl, chartElement, e
     return { x: event.clientX, y: event.clientY }
   }
 }
+const getChartElements = chart => {
+  return (
+    document.getElementById('container-viewDialog-' + chart.id + '-common') ||
+    document.getElementById('container-preview-' + chart.id + '-common') ||
+    document.getElementById('enlarge-inner-content-' + chart.id) ||
+    document.getElementById('shape-id-' + chart.id)
+  )
+}
 export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>(
   chart: Chart,
   plot: P
@@ -1758,11 +1766,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
   }
   // 图表容器，用于计算 tooltip 的位置
   // 获取图表元素，优先顺序：放大 > 预览 > 公共连接页面 > 默认
-  const chartElement =
-    document.getElementById('container-viewDialog-' + chart.id + '-common') ||
-    document.getElementById('container-preview-' + chart.id + '-common') ||
-    document.getElementById('enlarge-inner-content-' + chart.id) ||
-    document.getElementById('shape-id-' + chart.id)
+  let chartElement = getChartElements(chart)
   // 是否是放大弹窗
   const enlargeElement = chartElement?.id.includes('viewDialog')
   // 轮播时tooltip的zIndex
@@ -1822,14 +1826,8 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     plot.chart.getOptions().tooltip.follow = false
     tooltipCtl.title = Math.random().toString()
     // 当显示提示为事件触发时，使用event的client坐标，否则使用tooltipCtl.point 数据点的位置，在图表中，需要加上图表在绘制区的位置
-    const { x, y } = calculateTooltipPosition(
-      chart,
-      isCarousel,
-      tooltipCtl,
-      chartElement,
-      event,
-      enlargeElement
-    )
+    chartElement = getChartElements(chart)
+    const { x, y } = calculateTooltipPosition(chart, isCarousel, tooltipCtl, chartElement, event)
     plot.chart.getTheme().components.tooltip.x = x
     plot.chart.getTheme().components.tooltip.y = y
   })

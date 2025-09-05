@@ -326,6 +326,7 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   nextTick(() => {
     initWatermark()
     ChartCarouselTooltip.paused()
+    useEmitt().emitter.emit('showEnlargeDialog', true)
   })
 }
 
@@ -425,7 +426,7 @@ const openMessageLoading = cb => {
 const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
 const htmlToImage = () => {
   downLoading.value = mapChartTypes.includes(viewInfo.value.type) ? false : true
-  useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+  useEmitt().emitter.emit('renderChart-viewDialog-' + viewInfo.value.id)
   useEmitt().emitter.emit('l7-prepare-picture', viewInfo.value.id)
   // 表格和支持最值图表的渲染时间为2000毫秒，其他图表为500毫秒。
   const renderTime =
@@ -443,14 +444,14 @@ const htmlToImage = () => {
         a.href = dataUrl
         a.click()
         useEmitt().emitter.emit('l7-unprepare-picture', viewInfo.value.id)
-        useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+        useEmitt().emitter.emit('renderChart-viewDialog-' + viewInfo.value.id)
         initWatermark()
       })
       .catch(error => {
         downLoading.value = false
         initWatermark()
         useEmitt().emitter.emit('l7-unprepare-picture', viewInfo.value.id)
-        useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+        useEmitt().emitter.emit('renderChart-viewDialog-' + viewInfo.value.id)
         console.error('oops, something went wrong!', error)
       })
   }, renderTime)
@@ -460,6 +461,7 @@ const initWatermark = () => {
   activeWatermarkCheckUser('enlarge-inner-content', 'canvas-main', state.scale)
 }
 const handleClose = () => {
+  useEmitt().emitter.emit('showEnlargeDialog', false)
   ChartCarouselTooltip.closeEnlargeDialogDestroy(viewInfo.value.id)
 }
 defineExpose({

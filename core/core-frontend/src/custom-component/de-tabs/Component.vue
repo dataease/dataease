@@ -173,6 +173,7 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import Board from '@/components/de-board/Board.vue'
 import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 import { debounce } from 'lodash-es'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
@@ -695,6 +696,16 @@ onMounted(() => {
   setTimeout(() => {
     viewToolTipsChange()
   }, 1000)
+  useEmitt({
+    name: 'showEnlargeDialog',
+    callback: show => {
+      if (show) {
+        carouselTimer && clearInterval(carouselTimer)
+      } else {
+        initCarousel()
+      }
+    }
+  })
 })
 onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', viewToolTipsChange)

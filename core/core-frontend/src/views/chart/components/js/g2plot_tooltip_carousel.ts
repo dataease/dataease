@@ -456,38 +456,49 @@ class ChartCarouselTooltip {
   private bindEventListeners() {
     // 定义图表元素ID前缀数组
     // 图表在不同的显示页面可能有不同的ID前缀
-    const chartElementIds = ['enlarge-inner-content-', 'enlarge-inner-shape-']
+    const chartElementIds = ['container-canvas-%s-common']
     let chartElement = null
 
+    const sprintf = (fmt: string, ...args: unknown[]) => {
+      let i = 0
+      return fmt.replace(/%s/g, () => String(args[i++]))
+    }
     // 查找图表元素
     for (const idPrefix of chartElementIds) {
-      chartElement = document.getElementById(idPrefix + this.chart.id)
+      chartElement = document.getElementById(sprintf(idPrefix, this.chart.id))
       if (chartElement) break
     }
-
     // 绑定鼠标进入和离开事件
-    chartElement?.addEventListener('mouseenter', () => this.paused())
-    chartElement?.addEventListener('mouseleave', ev => {
-      setTimeout(() => {
-        // 获取鼠标位置
-        const mouseX = ev.clientX
-        const mouseY = ev.clientY
-        // 获取div的边界信息
-        const rect = chartElement.getBoundingClientRect()
-        // 判断鼠标位置是否在div内
-        const isInside =
-          mouseX >= rect.left + 10 &&
-          mouseX <= rect.right - 10 &&
-          mouseY >= rect.top + 10 &&
-          mouseY <= rect.bottom - 10
-        console.log(isInside)
-        if (!isInside) {
-          this.paused()
-          this.resume()
-        }
-      }, 300)
-    })
-
+    const addMouseEvent = el => {
+      el?.addEventListener('mouseenter', () => this.paused())
+      el?.addEventListener('mouseleave', ev => {
+        setTimeout(() => {
+          // 获取鼠标位置
+          const mouseX = ev.clientX
+          const mouseY = ev.clientY
+          // 获取div的边界信息
+          const rect = el.getBoundingClientRect()
+          // 判断鼠标位置是否在div内
+          const isInside =
+            mouseX >= rect.left + 10 &&
+            mouseX <= rect.right - 10 &&
+            mouseY >= rect.top + 10 &&
+            mouseY <= rect.bottom - 10
+          console.log(isInside)
+          if (!isInside) {
+            this.paused()
+            this.resume()
+          }
+        }, 300)
+      })
+    }
+    addMouseEvent(chartElement)
+    const showViewDialog = document.getElementById(
+      'container-viewDialog-' + this.chart.id + '-common'
+    )
+    if (showViewDialog && this.chart.container?.startsWith('container-viewDialog-')) {
+      addMouseEvent(showViewDialog)
+    }
     // 定义鼠标滚轮事件处理函数
     const handleMouseWheel = this.debounce(() => {
       CAROUSEL_MANAGER_INSTANCES?.forEach(instance => {
