@@ -160,7 +160,9 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
         content: {
           style: {
             fontSize: label.fontSize.toString() + 'px',
-            color: label.color
+            color: label.color,
+            lineHeight: '"unset"',
+            overflow: 'visible'
           },
           formatter: () => {
             return valueFormatter(originVal, labelFormatter)
