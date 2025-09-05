@@ -23,7 +23,6 @@ const DashboardPanel = defineAsyncComponent(
   () => import('@/views/dashboard/DashboardPreviewShow.vue')
 )
 
-const Copilot = defineAsyncComponent(() => import('@/views/copilot/index.vue'))
 const TemplateManage = defineAsyncComponent(() => import('@/views/template/indexInject.vue'))
 
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
@@ -49,7 +48,6 @@ const componentMap = {
   DashboardPanel,
   DatasetEditor,
   DashboardEmpty,
-  Copilot,
   TemplateManage
 }
 
