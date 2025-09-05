@@ -1,40 +1,63 @@
 package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
+import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSQLBotAssistantVO;
 import io.dataease.api.dataset.vo.SQLBotAssistanTable;
 import io.dataease.api.dataset.vo.SQLBotAssistantField;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
-import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
-import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeRequest;
 import io.dataease.api.permissions.role.api.RoleApi;
 import io.dataease.api.permissions.role.dto.RoleRequest;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.constant.ColumnPermissionConstants;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.ext.mapper.DataSetAssistantMapper;
+import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.manage.EngineManage;
+import io.dataease.engine.constant.ExtFieldConstant;
+import io.dataease.engine.sql.SQLProvider;
+import io.dataease.engine.trans.Field2SQLObj;
+import io.dataease.engine.trans.Order2SQLObj;
+import io.dataease.engine.trans.Table2SQLObj;
+import io.dataease.engine.trans.WhereTree2Str;
+import io.dataease.engine.utils.Utils;
+import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
+import io.dataease.extensions.datasource.model.SQLMeta;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.Configuration;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.ColumnPermissions;
+import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeItem;
+import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.home.manage.DeIndexManage;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
 
 @Component
 public class DatasetSQLBotManage {
@@ -55,6 +78,12 @@ public class DatasetSQLBotManage {
 
     @Resource
     private PermissionManage permissionManage;
+
+    @Resource
+    private DatasetSQLManage datasetSQLManage;
+
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
 
     @Value("${dataease.sqlbot.encrypt:false}")
     private boolean encryptEnabled;
@@ -102,29 +131,8 @@ public class DatasetSQLBotManage {
     }
 
     private Map<Long, List<DataSetRowPermissionsTreeDTO>> getRowPermission(Long uid, List<Long> roleIds) {
-        RowPermissionsApi rowPermissionsApi = CommonBeanFactory.getBean(RowPermissionsApi.class);
-        Objects.requireNonNull(rowPermissionsApi);
-
-        DatasetRowPermissionsTreeRequest request = new DatasetRowPermissionsTreeRequest();
-        request.setEnable(true);
-
-        request.setAuthTargetId(uid);
-        request.setAuthTargetType("user");
-        List<DataSetRowPermissionsTreeDTO> permissionsTreeDTOS = rowPermissionsApi.list(request);
-
-        if (ObjectUtils.isNotEmpty(roleIds)) {
-            request.setAuthTargetId(null);
-            request.setAuthTargetIds(roleIds);
-            request.setAuthTargetType("role");
-            List<DataSetRowPermissionsTreeDTO> rolePermissionDTOS = rowPermissionsApi.list(request);
-            if (CollectionUtils.isNotEmpty(rolePermissionDTOS)) {
-                permissionsTreeDTOS.addAll(rolePermissionDTOS);
-            }
-        }
-        if (CollectionUtils.isEmpty(permissionsTreeDTOS)) {
-            return null;
-        }
-        return permissionsTreeDTOS.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
+        List<DataSetRowPermissionsTreeDTO> datasetRowPermissions = permissionManage.getRowPermissionsTree(null, uid);
+        return datasetRowPermissions.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
     }
 
 
@@ -138,7 +146,6 @@ public class DatasetSQLBotManage {
         Boolean model = deIndexManage.xpackModel();
         List<Map<String, Object>> list = null;
         boolean isAdmin = uid == 1;
-        boolean withColsOrRowsPermission = false;
         QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(datasetId)) {
             queryWrapper.eq("cdg.id", datasetId);
@@ -165,9 +172,8 @@ public class DatasetSQLBotManage {
                 isRootRole = roleVOS.stream().anyMatch(RoleVO::isRoot);
                 roleIds = roleVOS.stream().map(RoleVO::getId).toList();
 
-                /*colPermissionMap = getColPermission(uid, roleIds);
+                colPermissionMap = getColPermission(uid, roleIds);
                 rowPermissionMap = getRowPermission(uid, roleIds);
-                withColsOrRowsPermission = MapUtils.isNotEmpty(colPermissionMap) || MapUtils.isNotEmpty(rowPermissionMap);*/
             }
             list = dataSetAssistantMapper.queryEnterprise(oid, uid, isRootRole, queryWrapper);
         }
@@ -180,7 +186,7 @@ public class DatasetSQLBotManage {
         deEngine = engineManage.getDeEngine();
         for (Map<String, Object> row : list) {
             // build ds
-            String datasourceId = row.get("datasource_id").toString();
+            String datasourceId = row.get("cd_id").toString();
             DataSQLBotAssistantVO vo = dsFlagMap.get(datasourceId);
             if (ObjectUtils.isEmpty(vo)) {
                 vo = buildDs(row);
@@ -190,7 +196,7 @@ public class DatasetSQLBotManage {
                 result.add(vo);
             }
             // build table
-            String tableId = row.get("id").toString();
+            String tableId = row.get("cdg_id").toString();
             SQLBotAssistanTable table = tableFlagMap.get(tableId);
             if (ObjectUtils.isEmpty(table)) {
                 table = buildTable(row);
@@ -200,7 +206,7 @@ public class DatasetSQLBotManage {
                 vo.getTables().add(table);
             }
             // build field
-            String fieldId = row.get("field_id").toString();
+            String fieldId = row.get("cdtf_id").toString();
             SQLBotAssistantField field = fieldFlagMap.get(fieldId);
             if (ObjectUtils.isEmpty(field)) {
                 field = buildField(row);
@@ -208,71 +214,200 @@ public class DatasetSQLBotManage {
                     continue;
                 fieldFlagMap.put(fieldId, field);
                 table.getFields().add(field);
+                if (field.isNeedTransform()) {
+                    table.setNeedTransform(true);
+                }
             }
         }
-        /*if (withColsOrRowsPermission) {
-            result = filterPermissions(result, list, colPermissionMap, rowPermissionMap);
-        }*/
+        filterPermissions(result, list, colPermissionMap, rowPermissionMap);
         LogUtil.info("sqlbot ds api result: {}", result);
         return result;
     }
 
-    private List<DataSQLBotAssistantVO> filterPermissions(
+    public void buildFieldName(Map<String, Object> sqlMap, List<DatasetTableFieldDTO> fields) {
+        // 获取内层union sql和字段
+        List<DatasetTableFieldDTO> unionFields = (List<DatasetTableFieldDTO>) sqlMap.get("field");
+        for (DatasetTableFieldDTO datasetTableFieldDTO : fields) {
+            if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
+                for (DatasetTableFieldDTO fieldDTO : unionFields) {
+                    if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId())
+                            && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
+                        datasetTableFieldDTO.setDataeaseName(fieldDTO.getDataeaseName());
+                        datasetTableFieldDTO.setFieldShortName(fieldDTO.getFieldShortName());
+                    }
+                }
+            }
+            if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
+                datasetTableFieldDTO.setDataeaseName(dataeaseName);
+                datasetTableFieldDTO.setFieldShortName(dataeaseName);
+                datasetTableFieldDTO.setDeExtractType(datasetTableFieldDTO.getDeType());
+            }
+            if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_GROUP)) {
+                String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
+                datasetTableFieldDTO.setDataeaseName(dataeaseName);
+                datasetTableFieldDTO.setFieldShortName(dataeaseName);
+                datasetTableFieldDTO.setDeExtractType(0);
+                datasetTableFieldDTO.setDeType(0);
+                datasetTableFieldDTO.setGroupType("d");
+            }
+        }
+    }
+
+    public void getField(DatasetRowPermissionsTreeObj tree, Map<Long, DatasetTableFieldDTO> fieldMap) {
+        if (ObjectUtils.isNotEmpty(tree)) {
+            if (ObjectUtils.isNotEmpty(tree.getItems())) {
+                for (DatasetRowPermissionsTreeItem item : tree.getItems()) {
+                    if (ObjectUtils.isNotEmpty(item)) {
+                        if (StringUtils.equalsIgnoreCase(item.getType(), "item") || ObjectUtils.isEmpty(item.getSubTree())) {
+                            item.setField(fieldMap.get(item.getFieldId()));
+                        } else if (StringUtils.equalsIgnoreCase(item.getType(), "tree") || (ObjectUtils.isNotEmpty(item.getSubTree()) && StringUtils.isNotEmpty(item.getSubTree().getLogic()))) {
+                            getField(item.getSubTree(), fieldMap);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void rebuildTable(SQLBotAssistanTable table, List<DataSetColumnPermissionsDTO> columnPermissionsDTOS, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
+        Map<String, Object> rowData = table.getRowData();
+        CoreDatasetGroup coreDatasetGroup = BeanUtils.mapToBean(rowData, CoreDatasetGroup.class);
+
+        DatasetGroupInfoDTO datasetGroupInfoDTO = new DatasetGroupInfoDTO();
+        BeanUtils.copyBean(datasetGroupInfoDTO, coreDatasetGroup);
+
+        datasetGroupInfoDTO.setUnionSql(null);
+        List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
+        });
+        datasetGroupInfoDTO.setUnion(unionDTOList);
+
+        List<SQLBotAssistantField> sqlbotFields = table.getFields();
+
+        List<DatasetTableFieldDTO> dsFields = sqlbotFields.stream().map(field -> {
+            Map<String, Object> fieldRowData = field.getRowData();
+            DatasetTableFieldDTO fieldDTO = BeanUtils.mapToBean(fieldRowData, DatasetTableFieldDTO.class);
+            fieldDTO.setFieldShortName(fieldDTO.getDataeaseName());
+            return fieldDTO;
+        }).collect(Collectors.toList());
+
+        datasetGroupInfoDTO.setAllFields(dsFields);
+        Map<Long, DatasetTableFieldDTO> fieldMap = dsFields.stream().collect(Collectors.toMap(DatasetTableFieldDTO::getId, Function.identity()));
+        if (CollectionUtils.isNotEmpty(rowPermissionsTree)) {
+            rowPermissionsTree.forEach(treeDTO -> {
+                DatasetRowPermissionsTreeObj tree = treeDTO.getTree();
+                getField(tree, fieldMap);
+            });
+        }
+
+        Map<String, Object> sqlMap = null;
+        try {
+            sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        String sql = (String) sqlMap.get("sql");
+
+        // 获取allFields
+        List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
+        if (ObjectUtils.isEmpty(fields)) {
+            DEException.throwException(Translator.get("i18n_no_fields"));
+        }
+
+        List<DatasetTableFieldDTO> originFields = new ArrayList<>(fields);
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(columnPermissionsDTOS)) {
+            List<ColumnPermissionItem> columnPermissionItems = new ArrayList<>();
+            for (DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO : columnPermissionsDTOS) {
+                ColumnPermissions columnPermissions = JsonUtil.parseObject(dataSetColumnPermissionsDTO.getPermissions(), ColumnPermissions.class);
+                if (!columnPermissions.getEnable()) {
+                    continue;
+                }
+                if (StringUtils.equalsAnyIgnoreCase(dataSetColumnPermissionsDTO.getAuthTargetType(), "user", "role")) {
+                    columnPermissionItems.addAll(columnPermissions.getColumns().stream().filter(columnPermissionItem -> columnPermissionItem.getSelected()).collect(Collectors.toList()));
+                }
+            }
+            fields = fields.stream().filter(field -> {
+                List<ColumnPermissionItem> fieldColumnPermissionItems = columnPermissionItems.stream().filter(columnPermissionItem -> columnPermissionItem.getId().equals(field.getId())).collect(Collectors.toList());
+                if (CollectionUtils.isEmpty(fieldColumnPermissionItems)) {
+                    return true;
+                }
+                return fieldColumnPermissionItems.stream().map(ColumnPermissionItem::getOpt).toList().contains(ColumnPermissionConstants.Desensitization);
+            }).collect(Collectors.toList());
+            // fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+            if (ObjectUtils.isEmpty(fields)) {
+                DEException.throwException(Translator.get("i18n_no_column_permission"));
+            }
+        }
+        buildFieldName(sqlMap, originFields);
+        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean needOrder = Utils.isNeedOrder(dsList);
+        sql = Utils.replaceSchemaAlias(sql, dsMap);
+        Provider provider = ProviderFactory.getProvider(dsList.getFirst());
+
+        // build query sql
+        SQLMeta sqlMeta = new SQLMeta();
+        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", false);
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, false, dsMap, Utils.getParams(fields), null, pluginManage, true);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, false, dsMap, Utils.getParams(fields), null, pluginManage);
+        Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, false, dsMap, Utils.getParams(fields), null, pluginManage);
+        String querySQL;
+        querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, false);
+        querySQL = provider.rebuildSQL(querySQL, sqlMeta, false, dsMap);
+        table.setSql(querySQL);
+    }
+
+    private void filterPermissions(
             List<DataSQLBotAssistantVO> vos,
             List<Map<String, Object>> list,
             Map<Long, List<DataSetColumnPermissionsDTO>> colPermissionMap,
             Map<Long, List<DataSetRowPermissionsTreeDTO>> rowPermissionMap
     ) {
         if (CollectionUtils.isEmpty(vos)) {
-            return vos;
+            return;
         }
         vos.forEach(vo -> {
             List<SQLBotAssistanTable> tables = vo.getTables();
             tables.forEach(table -> {
                 Long datasetGroupId = table.getDatasetGroupId();
-                List<DataSetColumnPermissionsDTO> dataSetColumnPermissionsDTOS = colPermissionMap.get(datasetGroupId);
-
-                List<ColumnPermissionItem> columnPermissionItems = new ArrayList<>();
-
-                for (DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO : dataSetColumnPermissionsDTOS) {
-                    ColumnPermissions columnPermissions = JsonUtil.parseObject(dataSetColumnPermissionsDTO.getPermissions(), ColumnPermissions.class);
-                    if (!columnPermissions.getEnable()) {
-                        continue;
-                    }
-                    if (StringUtils.equalsAnyIgnoreCase(dataSetColumnPermissionsDTO.getAuthTargetType(), "user", "role")) {
-                        columnPermissionItems.addAll(columnPermissions.getColumns().stream().filter(columnPermissionItem -> columnPermissionItem.getSelected()).collect(Collectors.toList()));
-                    }
+                List<DataSetColumnPermissionsDTO> columnPermissionsDTOS = ObjectUtils.isEmpty(colPermissionMap) ? null : colPermissionMap.get(datasetGroupId);
+                List<DataSetRowPermissionsTreeDTO> rowPermissionsTreeDTOS = ObjectUtils.isEmpty(rowPermissionMap) ? null : rowPermissionMap.get(datasetGroupId);
+                if (table.isNeedTransform() || ObjectUtils.isNotEmpty(columnPermissionsDTOS) || ObjectUtils.isNotEmpty(rowPermissionsTreeDTOS)) {
+                    rebuildTable(table, columnPermissionsDTOS, rowPermissionsTreeDTOS);
                 }
-                List<SQLBotAssistantField> filterFields = table.getFields().stream().filter(field -> {
-                    List<ColumnPermissionItem> fieldColumnPermissionItems = columnPermissionItems.stream().filter(columnPermissionItem -> columnPermissionItem.getId().equals(field.getFieldId())).collect(Collectors.toList());
-                    if (CollectionUtils.isEmpty(fieldColumnPermissionItems)) {
-                        return true;
-                    }
-                    return fieldColumnPermissionItems.stream().map(ColumnPermissionItem::getOpt).toList().contains(ColumnPermissionConstants.Desensitization);
-                }).collect(Collectors.toList());
-                table.setFields(filterFields);
             });
         });
-        return vos;
     }
 
     private SQLBotAssistantField buildField(Map<String, Object> row) {
         SQLBotAssistantField field = new SQLBotAssistantField();
-        if (ObjectUtils.isNotEmpty(row.get("field_id"))) {
-            field.setFieldId(Long.parseLong(row.get("field_id").toString()));
+        if (ObjectUtils.isNotEmpty(row.get("cdtf_id"))) {
+            field.setFieldId(Long.parseLong(row.get("cdtf_id").toString()));
         }
-        if (ObjectUtils.isNotEmpty(row.get("dataease_name"))) {
-            field.setDataeaseName(row.get("dataease_name").toString());
+        if (ObjectUtils.isNotEmpty(row.get("cdtf_dataease_name"))) {
+            field.setDataeaseName(row.get("cdtf_dataease_name").toString());
         }
-        field.setName(row.get("origin_name").toString());
-        field.setType(row.get("field_type").toString());
-        field.setComment(row.get("field_show_name").toString());
+        field.setName(row.get("cdtf_origin_name").toString());
+        field.setType(row.get("cdtf_type").toString());
+        field.setComment(row.get("cdtf_name").toString());
+        if (ObjectUtils.isNotEmpty(row.get("cdtf_ext_field")) && !row.get("cdtf_ext_field").equals(0)) {
+            field.setNeedTransform(true);
+        }
+        Map<String, Object> fieldRowData = buildRowData(row, 3);
+        fieldRowData.put("datasource_id", Long.parseLong(row.get("cd_id").toString()));
+        fieldRowData.put("dataset_group_id", row.get("cdg_id"));
+        fieldRowData.put("dataset_table_id", row.get("cdt_id"));
+        field.setRowData(fieldRowData);
         return field;
     }
 
 
     private DataSQLBotAssistantVO buildDs(Map<String, Object> row) {
-        Object dsConfig = row.get("ds_config");
+        Object dsConfig = row.get("cd_configuration");
         if (ObjectUtils.isEmpty(dsConfig) || StringUtils.isBlank(dsConfig.toString())) {
             return null;
         }
@@ -280,7 +415,7 @@ public class DatasetSQLBotManage {
         if (StringUtils.isBlank(dsHost)) {
             dsHost = environment.getProperty("dataease.dataease-servers", String.class);
         }
-        String dsType = row.get("ds_type").toString();
+        String dsType = row.get("cd_type").toString();
         Configuration config = null;
         if (dsType.contains(DatasourceConfiguration.DatasourceType.Excel.name()) || dsType.contains(DatasourceConfiguration.DatasourceType.API.name())) {
             String config_json = EncryptUtils.aesDecrypt(deEngine.getConfiguration()).toString();
@@ -298,16 +433,29 @@ public class DatasetSQLBotManage {
         vo.setExtraParams(config.getExtraParams());
         vo.setHost(config.getHost());
         vo.setPort(config.getPort());
-        vo.setName(row.get("ds_name").toString());
-        vo.setComment(ObjectUtils.isEmpty(row.get("ds_desc")) ? vo.getName() : row.get("ds_desc").toString());
+        vo.setName(row.get("cd_name").toString());
+        vo.setComment(ObjectUtils.isEmpty(row.get("cd_description")) ? vo.getName() : row.get("cd_description").toString());
         vo.setType(dsType);
         vo.setSchema(config.getSchema());
         vo.setUser(config.getUsername());
         vo.setPassword(config.getPassword());
+        vo.setRowData(buildRowData(row, 0));
         if (encryptEnabled) {
             aesVO(vo);
         }
         return vo;
+    }
+
+    private Map<String, Object> buildRowData(Map<String, Object> row, int level) {
+        String[] levels = {"cd_", "cdg_", "cdt_", "cdtf_"};
+        String alias = levels[level];
+        Map<String, Object> filteredMap = new HashMap<>();
+        row.forEach((key, value) -> {
+            if (key.startsWith(alias)) {
+                filteredMap.put(key.substring(alias.length()), value);
+            }
+        });
+        return filteredMap;
     }
 
     private void aesVO(DataSQLBotAssistantVO vo) {
@@ -330,21 +478,25 @@ public class DatasetSQLBotManage {
 
     private SQLBotAssistanTable buildTable(Map<String, Object> row) {
         SQLBotAssistanTable table = new SQLBotAssistanTable();
-        table.setName(row.get("table_name").toString());
-        table.setComment(row.get("dataset_name").toString());
-        if (ObjectUtils.isNotEmpty(row.get("dataset_group_id"))) {
-            table.setDatasetGroupId(Long.parseLong(row.get("dataset_group_id").toString()));
-        }
+        table.setName(row.get("cdg_name").toString());
+        table.setComment(row.get("cdg_name").toString());
+        table.setDatasetGroupId(Long.parseLong(row.get("cdg_id").toString()));
 
         Object infoObj = null;
-        if (ObjectUtils.isNotEmpty(infoObj = row.get("info"))) {
+        if (ObjectUtils.isNotEmpty(infoObj = row.get("cdt_info"))) {
             String info = infoObj.toString();
             DatasetTableInfoDTO tableInfoDTO = JsonUtil.parseObject(info, DatasetTableInfoDTO.class);
             if (StringUtils.isNotBlank(tableInfoDTO.getSql())) {
                 String sql = new String(Base64.getDecoder().decode(tableInfoDTO.getSql()));
                 table.setSql(sql);
             }
+            if (StringUtils.isNotBlank(tableInfoDTO.getTable())) {
+                table.setName(tableInfoDTO.getTable());
+            }
         }
+        Map<String, Object> tableRowData = buildRowData(row, 1);
+        tableRowData.put("datasource_id", Long.parseLong(row.get("cd_id").toString()));
+        table.setRowData(tableRowData);
         return table;
     }
 

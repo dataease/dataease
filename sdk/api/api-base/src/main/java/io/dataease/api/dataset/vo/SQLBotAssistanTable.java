@@ -6,6 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class SQLBotAssistanTable implements Serializable {
@@ -17,5 +18,11 @@ public class SQLBotAssistanTable implements Serializable {
 
     @JsonIgnore
     private Long datasetGroupId;
+    @JsonIgnore
+    private boolean needTransform;
+    @JsonIgnore
+    private boolean needPermission;
+    @JsonIgnore
+    private Map<String, Object> rowData;
 
 }

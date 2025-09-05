@@ -2,10 +2,12 @@ package io.dataease.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BeanUtils {
 
@@ -76,5 +78,65 @@ public class BeanUtils {
             fieldNames.add(field.getName());
         }
         return fieldNames;
+    }
+
+    private static String underscoreToCamel(String underscore) {
+        StringBuilder result = new StringBuilder();
+        String[] parts = underscore.split("_");
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            if (part.isEmpty()) continue;
+            if (i == 0) {
+                result.append(part);
+            } else {
+                result.append(Character.toUpperCase(part.charAt(0)))
+                        .append(part.substring(1).toLowerCase());
+            }
+        }
+        return result.toString();
+    }
+
+
+    public static <T> T mapToBean(Map<String, Object> map, Class<T> clazz) {
+        try {
+            T bean = clazz.getDeclaredConstructor().newInstance();
+            PropertyDescriptor[] descriptors = org.springframework.beans.BeanUtils.getPropertyDescriptors(clazz);
+
+            for (PropertyDescriptor descriptor : descriptors) {
+                String propertyName = descriptor.getName();
+                if ("class".equals(propertyName)) continue;
+
+                // 查找Map中对应的key（支持驼峰和下划线）
+                Object value = findValueInMap(map, propertyName);
+                if (value != null && descriptor.getWriteMethod() != null) {
+                    descriptor.getWriteMethod().invoke(bean, value);
+                }
+            }
+            return bean;
+        } catch (Exception e) {
+            throw new RuntimeException("Map转Bean失败", e);
+        }
+    }
+
+    private static Object findValueInMap(Map<String, Object> map, String propertyName) {
+        Object value = map.get(propertyName);
+        if (value != null) return value;
+
+        String underscore = camelToUnderscore(propertyName);
+        value = map.get(underscore);
+        if (value != null) return value;
+
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String camelKey = underscoreToCamel(entry.getKey());
+            if (propertyName.equals(camelKey)) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    private static String camelToUnderscore(String camel) {
+        return camel.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
     }
 }

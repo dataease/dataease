@@ -138,8 +138,10 @@ public class PermissionManage {
         // 获取当前数据集下，当前用户、角色、组织所有的行权限（非白名单，非禁用）
         List<DataSetRowPermissionsTreeDTO> records = rowPermissionsTree(datasetId, user);
         // 构建权限tree中的field，如果field不存在，置为null
-        for (DataSetRowPermissionsTreeDTO record : records) {
-            getField(record.getTree());
+        if (ObjectUtils.isNotEmpty(datasetId)) {
+            for (DataSetRowPermissionsTreeDTO record : records) {
+                getField(record.getTree());
+            }
         }
         return records;
     }
@@ -154,7 +156,9 @@ public class PermissionManage {
         UserFormVO userEntity = getRowPermissionsApi().getUserById(userId);
         List<Long> roleIds = userEntity.getRoleIds().stream().map(x -> Long.valueOf(x)).collect(Collectors.toList());
         DatasetRowPermissionsTreeRequest dataSetRowPermissionsDTO = new DatasetRowPermissionsTreeRequest();
-        dataSetRowPermissionsDTO.setDatasetId(datasetId);
+        if (ObjectUtils.isNotEmpty(datasetId)) {
+            dataSetRowPermissionsDTO.setDatasetId(datasetId);
+        }
         dataSetRowPermissionsDTO.setEnable(true);
 
         if (ObjectUtils.isNotEmpty(userId)) {

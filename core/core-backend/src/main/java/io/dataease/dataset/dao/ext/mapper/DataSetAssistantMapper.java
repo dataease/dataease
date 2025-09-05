@@ -14,24 +14,49 @@ public interface DataSetAssistantMapper {
     @Select(
     """
             select
-            cdt.id, cdt.datasource_id, cdt.table_name, cdt.info,
-            cdg.name as dataset_name,
-            cd.name as ds_name,
-            cd.description as ds_desc,
-            cd.type as ds_type,
-            cd.configuration as ds_config,
+            cd.id as cd_id,
+            cd.name as cd_name,
+            cd.description as cd_description,
+            cd.type as cd_type,
+            cd.configuration as cd_configuration,
             
-            cdtf.id as field_id,
-            cdtf.origin_name,
-            cdtf.name as field_show_name,
-            cdtf.description as field_desc,
-            cdtf.dataease_name,
-            cdtf.type as field_type
+            cdg.id as cdg_id, 
+            cdg.name as cdg_name,
+            cdg.type as cdg_type,
+            cdg.mode as cdg_model,
+            cdg.info as cdg_info,
+            cdg.union_sql as cdg_union_sql,
+            cdg.is_cross as cdg_is_cross,
             
-            from `core_dataset_table` cdt
-            left join `core_datasource` cd on  cdt.datasource_id = cd.id
-            left join `core_dataset_table_field` cdtf on cdtf.dataset_table_id = cdt.id
-            left join `core_dataset_group` cdg on cdg.id =  cdt.dataset_group_id
+            cdt.id as cdt_id,
+            cdt.table_name as cdt_table_name,
+            cdt.type as cdt_type,
+            cdt.info as cdt_info,
+            cdt.sql_variable_details as cdt_sql_variable_details,
+            
+            cdtf.id as cdtf_id,
+            cdtf.origin_name as cdtf_origin_name,
+            cdtf.name as cdtf_name,
+            cdtf.description as cdtf_description,
+            cdtf.dataease_name as cdtf_dataease_name,
+            cdtf.field_short_name as cdtf_field_short_name,
+            cdtf.group_list as cdtf_group_list,
+            cdtf.other_group as cdtf_other_group,
+            cdtf.group_type as cdtf_group_type,
+            cdtf.type as cdtf_type,
+            cdtf.de_type as cdtf_de_type,
+            cdtf.de_extract_type as cdtf_de_extract_type,
+            cdtf.ext_field as cdtf_ext_field,
+            cdtf.checked as cdtf_checked,
+            cdtf.accuracy as cdtf_accuracy,
+            cdtf.date_format as cdtf_date_format,
+            cdtf.date_format_type as cdtf_date_format_type,
+            cdtf.params as cdtf_params
+            
+            from `core_dataset_group` cdg
+            left join `core_dataset_table` cdt on cdg.id =  cdt.dataset_group_id
+            left join `core_dataset_table_field` cdtf on cdtf.dataset_group_id = cdg.id
+            inner join `core_datasource` cd on cdt.datasource_id = cd.id
             where  cdg.is_cross != 1 and (cd.STATUS IS NULL OR cd.STATUS != 'Error')
             ${ew.customSqlSegment}
             """
@@ -52,23 +77,49 @@ public interface DataSetAssistantMapper {
         ) temp
     )
     SELECT
-        cdt.id, cdt.datasource_id, cdt.table_name, cdt.info,
-        cdg.name as dataset_name,
-        cd.name as ds_name,
-        cd.description as ds_desc,
-        cd.type as ds_type,
-        cd.configuration as ds_config,
-        cdtf.id as field_id,
-        cdtf.origin_name,
-        cdtf.name as field_show_name,
-        cdtf.description as field_desc,
-        cdtf.dataease_name,
-        cdtf.type as field_type
+        cd.id as cd_id,
+        cd.name as cd_name,
+        cd.description as cd_description,
+        cd.type as cd_type,
+        cd.configuration as cd_configuration,
+        
+        cdg.id as cdg_id, 
+        cdg.name as cdg_name,
+        cdg.type as cdg_type,
+        cdg.mode as cdg_model,
+        cdg.info as cdg_info,
+        cdg.union_sql as cdg_union_sql,
+        cdg.is_cross as cdg_is_cross,
+        
+        cdt.id as cdt_id,
+        cdt.table_name as cdt_table_name,
+        cdt.type as cdt_type,
+        cdt.info as cdt_info,
+        cdt.sql_variable_details as cdt_sql_variable_details,
+        
+        cdtf.id as cdtf_id,
+        cdtf.origin_name as cdtf_origin_name,
+        cdtf.name as cdtf_name,
+        cdtf.description as cdtf_description,
+        cdtf.dataease_name as cdtf_dataease_name,
+        cdtf.field_short_name as cdtf_field_short_name,
+        cdtf.group_list as cdtf_group_list,
+        cdtf.other_group as cdtf_other_group,
+        cdtf.group_type as cdtf_group_type,
+        cdtf.type as cdtf_type,
+        cdtf.de_type as cdtf_de_type,
+        cdtf.de_extract_type as cdtf_de_extract_type,
+        cdtf.ext_field as cdtf_ext_field,
+        cdtf.checked as cdtf_checked,
+        cdtf.accuracy as cdtf_accuracy,
+        cdtf.date_format as cdtf_date_format,
+        cdtf.date_format_type as cdtf_date_format_type,
+        cdtf.params as cdtf_params
     FROM `core_dataset_table` cdt
     INNER JOIN `core_datasource` cd ON cdt.datasource_id = cd.id and (cd.STATUS IS NULL OR cd.STATUS != 'Error')
     INNER JOIN `core_dataset_group` cdg ON cdg.id = cdt.dataset_group_id
         AND cdg.is_cross != 1
-    INNER JOIN `core_dataset_table_field` cdtf ON cdtf.dataset_table_id = cdt.id
+    INNER JOIN `core_dataset_table_field` cdtf ON cdtf.dataset_group_id = cdg.id
     where not exists( select 1 from user_ds_permissions ds_p where cd.id = ds_p.resource_id )
     and not exists( select 1 from user_dg_permissions dg_p where cdg.id = dg_p.resource_id )
     ${ew.customSqlSegment}
@@ -118,33 +169,50 @@ public interface DataSetAssistantMapper {
         </choose>
     )
     SELECT
-        cdt.id, cdt.datasource_id, cdt.table_name, cdt.info,
-        cdg.id as dataset_group_id,
-        cdg.name as dataset_name,
-        cd.name as ds_name,
-        cd.description as ds_desc,
-        cd.type as ds_type,
-        cd.configuration as ds_config,
-        cdtf.id as field_id,
-        cdtf.origin_name,
-        cdtf.name as field_show_name,
-        cdtf.description as field_desc,
-        cdtf.dataease_name,
-        cdtf.field_short_name,
-        cdtf.group_type,
-        cdtf.de_type,
-        cdtf.de_extract_type,
-        cdtf.ext_field,
-        cdtf.date_format,
-        cdtf.date_format_type,
-        cdtf.params,
-        cdtf.type as field_type
+        cd.id as cd_id,
+        cd.name as cd_name,
+        cd.description as cd_description,
+        cd.type as cd_type,
+        cd.configuration as cd_configuration,
+        
+        cdg.id as cdg_id, 
+        cdg.name as cdg_name,
+        cdg.type as cdg_type,
+        cdg.mode as cdg_model,
+        cdg.info as cdg_info,
+        cdg.union_sql as cdg_union_sql,
+        cdg.is_cross as cdg_is_cross,
+        
+        cdt.id as cdt_id,
+        cdt.table_name as cdt_table_name,
+        cdt.type as cdt_type,
+        cdt.info as cdt_info,
+        cdt.sql_variable_details as cdt_sql_variable_details,
+        
+        cdtf.id as cdtf_id,
+        cdtf.origin_name as cdtf_origin_name,
+        cdtf.name as cdtf_name,
+        cdtf.description as cdtf_description,
+        cdtf.dataease_name as cdtf_dataease_name,
+        cdtf.field_short_name as cdtf_field_short_name,
+        cdtf.group_list as cdtf_group_list,
+        cdtf.other_group as cdtf_other_group,
+        cdtf.group_type as cdtf_group_type,
+        cdtf.type as cdtf_type,
+        cdtf.de_type as cdtf_de_type,
+        cdtf.de_extract_type as cdtf_de_extract_type,
+        cdtf.ext_field as cdtf_ext_field,
+        cdtf.checked as cdtf_checked,
+        cdtf.accuracy as cdtf_accuracy,
+        cdtf.date_format as cdtf_date_format,
+        cdtf.date_format_type as cdtf_date_format_type,
+        cdtf.params as cdtf_params
     FROM `core_dataset_table` cdt
     INNER JOIN `core_datasource` cd ON cdt.datasource_id = cd.id 
         AND (cd.STATUS IS NULL OR cd.STATUS != 'Error')
     INNER JOIN `core_dataset_group` cdg ON cdg.id = cdt.dataset_group_id
         AND cdg.is_cross != 1
-    INNER JOIN `core_dataset_table_field` cdtf ON cdtf.dataset_table_id = cdt.id
+    INNER JOIN `core_dataset_table_field` cdtf ON cdtf.dataset_group_id = cdg.id
     INNER JOIN user_ds_permissions ds_p ON cd.id = ds_p.resource_id
     INNER JOIN user_dg_permissions dg_p ON cdg.id = dg_p.resource_id
     ${ew.customSqlSegment}
