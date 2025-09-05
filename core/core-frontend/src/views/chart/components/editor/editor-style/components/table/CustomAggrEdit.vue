@@ -77,7 +77,7 @@ const setFieldForm = () => {
 
 const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   let name2Id = originName
-  const nameIdMap = state.quotaData.reduce((pre, next) => {
+  const nameIdMap = [...quotaDataList].reduce((pre, next) => {
     pre[next[from]] = next[to]
     return pre
   }, {})
