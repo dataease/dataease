@@ -2048,7 +2048,8 @@ export default {
     table_grand_total_label: '總計別名',
     table_field_total_label: '字段別名',
     table_row_header_freeze: '行頭凍結',
-    value_formatter_total_out_percent: '顯示佔比'
+    value_formatter_total_out_percent: '顯示佔比',
+    enable_slider_tip: '開啟縮略軸後，輪播提示將會失效'
   },
   dataset: {
     field_value: '欄位值',

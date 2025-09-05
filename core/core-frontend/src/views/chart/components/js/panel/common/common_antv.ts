@@ -1703,6 +1703,12 @@ export function getTooltipContainer(id) {
  * @param chart
  */
 function configCarouselTooltip(plot, chart) {
+  const senior = parseJson(chart.senior)
+  if (senior.functionCfg) {
+    if (senior.functionCfg.sliderShow) {
+      return
+    }
+  }
   const start = isSupport(chart.type) && !document.getElementById('multiplexingDrawer')
   if (start) {
     // 启用轮播

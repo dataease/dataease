@@ -2054,7 +2054,8 @@ export default {
     table_grand_total_label: '总计别名',
     table_field_total_label: '字段别名',
     table_row_header_freeze: '行头冻结',
-    value_formatter_total_out_percent: '显示占比'
+    value_formatter_total_out_percent: '显示占比',
+    enable_slider_tip: '开启缩略轴后，轮播提示将会失效'
   },
   dataset: {
     field_value: '字段值',
