@@ -1,9 +1,5 @@
 package io.dataease.listener.sql;
 
-import io.dataease.copilot.dao.auto.entity.CoreCopilotConfig;
-import io.dataease.copilot.dao.auto.entity.CoreCopilotToken;
-import io.dataease.copilot.dao.auto.mapper.CoreCopilotConfigRepository;
-import io.dataease.copilot.dao.auto.mapper.CoreCopilotTokenRepository;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
 import io.dataease.initSql.Version;
@@ -25,10 +21,6 @@ public class CoreSqlBlockV2_10 implements CoreSqlBlock {
 
     @Resource
     private CoreSysStartupJobRepository coreSysStartupJobRepository;
-    @Resource
-    private CoreCopilotTokenRepository coreCopilotTokenRepository;
-    @Resource
-    private CoreCopilotConfigRepository coreCopilotConfigRepository;
     @Resource
     private CoreFontRepository coreFontRepository;
     @Resource

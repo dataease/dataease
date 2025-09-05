@@ -1,9 +1,5 @@
 package io.dataease.listener.sql;
 
-import io.dataease.copilot.dao.auto.entity.CoreCopilotConfig;
-import io.dataease.copilot.dao.auto.entity.CoreCopilotToken;
-import io.dataease.copilot.dao.auto.mapper.CoreCopilotConfigRepository;
-import io.dataease.copilot.dao.auto.mapper.CoreCopilotTokenRepository;
 import io.dataease.initSql.Version;
 import io.dataease.startup.dao.auto.entity.CoreSysStartupJob;
 import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobRepository;
@@ -18,10 +14,6 @@ public class CoreSqlBlockV2_9 implements CoreSqlBlock {
 
     @Resource
     private CoreSysStartupJobRepository coreSysStartupJobRepository;
-    @Resource
-    private CoreCopilotTokenRepository coreCopilotTokenRepository;
-    @Resource
-    private CoreCopilotConfigRepository coreCopilotConfigRepository;
     @Resource
     private CoreSysSettingRepository coreSysSettingRepository;
     @Resource
@@ -39,29 +31,6 @@ public class CoreSqlBlockV2_9 implements CoreSqlBlock {
         coreSysStartupJob.setName("chartFilterMerge");
         coreSysStartupJob.setStatus("ready");
         coreSysStartupJobRepository.saveAndFlush(coreSysStartupJob);
-
-        CoreCopilotToken copilotToken1 = new CoreCopilotToken();
-        copilotToken1.setId(1L);
-        copilotToken1.setType("free");
-        copilotToken1.setToken(null);
-        copilotToken1.setUpdateTime(null);
-
-        CoreCopilotToken copilotToken2 = new CoreCopilotToken();
-        copilotToken2.setId(2L);
-        copilotToken2.setType("license");
-        copilotToken2.setToken(null);
-        copilotToken2.setUpdateTime(null);
-        coreCopilotTokenRepository.saveAndFlush(copilotToken1);
-        coreCopilotTokenRepository.saveAndFlush(copilotToken2);
-
-
-        CoreCopilotConfig coreCopilotConfig = new CoreCopilotConfig();
-        coreCopilotConfig.setId(1L);
-        coreCopilotConfig.setCopilotUrl("https://copilot.dataease.cn");
-        coreCopilotConfig.setUsername("xlab");
-        coreCopilotConfig.setPwd("Q2Fsb25nQDIwMTU=");
-        coreCopilotConfigRepository.saveAndFlush(coreCopilotConfig);
-
 
         coreSysSettingRepository.findById(3L).ifPresent(setting -> {
             setting.setPkey("ai.baseUrl");
