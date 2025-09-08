@@ -99,7 +99,6 @@ const formQuotaConfirm = () => {
     if (val) {
       if (!formQuota.id) {
         formQuota.id = `params_${guid()}`
-        formQuota.originName = formQuota.name
       }
       const q = cloneDeep(unref(formQuota))
       fieldForm.params = [q]
