@@ -3,6 +3,7 @@ package io.dataease.api.xpack.dataFilling.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 
 @Data
 @Accessors(chain = true)
+@NoArgsConstructor
 public class DfCommitLog implements Serializable {
 
     @Serial
@@ -21,8 +23,7 @@ public class DfCommitLog implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long formId;
 
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long dataId;
+    private String dataId;
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long pid;
@@ -39,4 +40,27 @@ public class DfCommitLog implements Serializable {
     private Long commitTime;
 
     private Integer count;
+
+    public DfCommitLog(Long id, Long formId, String dataId, Integer operate, Long commitBy, Long commitTime, Integer count, String committer) {
+        this.id = id;
+        this.formId = formId;
+        this.dataId = dataId;
+        this.operate = operate;
+        this.commitBy = commitBy;
+        this.commitTime = commitTime;
+        this.count = count;
+        this.committer = committer;
+    }
+
+    public DfCommitLog(Long id, Long formId, String dataId, Long pid, Integer operate, Long commitBy, String committer, Long commitTime, Integer count) {
+        this.id = id;
+        this.formId = formId;
+        this.dataId = dataId;
+        this.pid = pid;
+        this.operate = operate;
+        this.commitBy = commitBy;
+        this.committer = committer;
+        this.commitTime = commitTime;
+        this.count = count;
+    }
 }

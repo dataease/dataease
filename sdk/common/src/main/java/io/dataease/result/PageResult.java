@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public class PageResult<T> {
     /**
      * 数据
      */
-    private List<T> records;
+    private List<T> records = Collections.emptyList();
     /**
      * 总数
      */

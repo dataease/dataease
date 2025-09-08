@@ -87,6 +87,6 @@ public class CoreDatasource {
     @ColumnDefault("0")
     @Comment("启用数据填报功能")
     @Column(name = "enable_data_fill")
-    private Byte enableDataFill;
+    private Boolean enableDataFill;
 
 }
