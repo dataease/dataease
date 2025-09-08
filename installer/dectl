@@ -329,6 +329,12 @@ function clear_logs() {
    echo "清理完毕"
 }
 function backup() {
+   # 检查当前目录是否在 DataEase 安装目录或其子目录下
+   if [[ "$(pwd)" == "$DE_RUNNING_BASE" || "$(pwd)" == "$DE_RUNNING_BASE"/* ]]; then
+      echo -e "\033[31m当前目录为 DataEase 安装目录，请切换到其他目录后再执行备份操作！\033[0m"
+      exit 1
+   fi
+
    need_stop=0
    if [[ -z $1 ]];then
       echo "如需备份 DataEase 数据，建议您先停止 DataEase 服务，以保证备份数据的完整性。"
