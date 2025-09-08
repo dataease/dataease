@@ -124,6 +124,10 @@ public class DatasetSQLManage {
     }
 
     public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO, ChartExtRequest chartExtRequest) throws Exception {
+        return getUnionSQLForEdit(dataTableInfoDTO, chartExtRequest, null);
+    }
+
+    public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO, ChartExtRequest chartExtRequest, CoreDatasource coreDatasource) throws Exception {
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
@@ -146,7 +150,7 @@ public class DatasetSQLManage {
             if (dsMap.containsKey(datasetTable.getDatasourceId())) {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
-                schema = putObj2Map(dsMap, datasetTable, isCross);
+                schema = putObj2Map(dsMap, datasetTable, isCross, coreDatasource);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i, filterParameters(chartExtRequest, currentDs.getId()), chartExtRequest == null, isCross, dsMap);
             if (i == 0) {
@@ -491,24 +495,29 @@ public class DatasetSQLManage {
     }
 
     public String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, boolean isCross) {
+        return putObj2Map(dsMap, ds, isCross, null);
+    }
+    public String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, boolean isCross, CoreDatasource coreDatasource) {
         // 通过datasource id校验数据源权限
-        BusiPerCheckDTO dto = new BusiPerCheckDTO();
-        dto.setId(ds.getDatasourceId());
-        dto.setAuthEnum(AuthEnum.READ);
-        boolean checked = corePermissionManage.checkAuth(dto);
-        if (!checked) {
-            DEException.throwException(Translator.get("i18n_no_datasource_permission"));
+        if (ObjectUtils.isEmpty(coreDatasource)) {
+            BusiPerCheckDTO dto = new BusiPerCheckDTO();
+            dto.setId(ds.getDatasourceId());
+            dto.setAuthEnum(AuthEnum.READ);
+            boolean checked = corePermissionManage.checkAuth(dto);
+            if (!checked) {
+                DEException.throwException(Translator.get("i18n_no_datasource_permission"));
+            }
         }
-
-
         String schemaAlias;
         if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.DB) || StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.SQL)) {
-            CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(ds.getDatasourceId());
-            if (coreDatasource == null) {
-                DEException.throwException(Translator.get("i18n_dataset_ds_error") + ",ID:" + ds.getDatasourceId());
-            }
-            if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
-                coreDatasource = engineManage.getDeEngine();
+            if (ObjectUtils.isEmpty(coreDatasource)) {
+                coreDatasource = dataSourceManage.getCoreDatasource(ds.getDatasourceId());
+                if (coreDatasource == null) {
+                    DEException.throwException(Translator.get("i18n_dataset_ds_error") + ",ID:" + ds.getDatasourceId());
+                }
+                if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
+                    coreDatasource = engineManage.getDeEngine();
+                }
             }
 
             Map map = JsonUtil.parseObject(coreDatasource.getConfiguration(), Map.class);
@@ -525,7 +534,9 @@ public class DatasetSQLManage {
                 dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
             }
         } else if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.Es)) {
-            CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(ds.getDatasourceId());
+            if (ObjectUtils.isEmpty(coreDatasource)) {
+                coreDatasource = dataSourceManage.getCoreDatasource(ds.getDatasourceId());
+            }
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(coreDatasource.getId())) {
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
@@ -534,7 +545,9 @@ public class DatasetSQLManage {
                 dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
             }
         } else {
-            CoreDatasource coreDatasource = engineManage.getDeEngine();
+            if (ObjectUtils.isEmpty(coreDatasource)) {
+                coreDatasource = engineManage.getDeEngine();
+            }
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(coreDatasource.getId())) {
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();

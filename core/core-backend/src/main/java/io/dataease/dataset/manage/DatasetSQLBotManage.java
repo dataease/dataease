@@ -31,8 +31,10 @@ import io.dataease.engine.trans.WhereTree2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
+import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.FieldGroupDTO;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
@@ -270,7 +272,11 @@ public class DatasetSQLBotManage {
         }
     }
 
-    private void rebuildTable(SQLBotAssistanTable table, List<DataSetColumnPermissionsDTO> columnPermissionsDTOS, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
+    TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
+    };
+    TypeReference<List<CalParam>> typeToken = new TypeReference<>() {
+    };
+    private void rebuildTable(SQLBotAssistanTable table, List<DataSetColumnPermissionsDTO> columnPermissionsDTOS, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,  Map<String, Object> dsRowData) {
         Map<String, Object> rowData = table.getRowData();
         CoreDatasetGroup coreDatasetGroup = BeanUtils.mapToBean(rowData, CoreDatasetGroup.class);
 
@@ -287,6 +293,12 @@ public class DatasetSQLBotManage {
         List<DatasetTableFieldDTO> dsFields = sqlbotFields.stream().map(field -> {
             Map<String, Object> fieldRowData = field.getRowData();
             DatasetTableFieldDTO fieldDTO = BeanUtils.mapToBean(fieldRowData, DatasetTableFieldDTO.class);
+            if (ObjectUtils.isNotEmpty(fieldRowData.get("group_list"))) {
+                fieldDTO.setGroupList(JsonUtil.parseList(fieldRowData.get("group_list").toString(), groupTokenType));
+            }
+            if (ObjectUtils.isNotEmpty(fieldRowData.get("params"))) {
+                fieldDTO.setParams(JsonUtil.parseList(fieldRowData.get("params").toString(), typeToken));
+            }
             fieldDTO.setFieldShortName(fieldDTO.getDataeaseName());
             return fieldDTO;
         }).collect(Collectors.toList());
@@ -301,8 +313,16 @@ public class DatasetSQLBotManage {
         }
 
         Map<String, Object> sqlMap = null;
+        CoreDatasource coreDatasource = null;
+        String dsType = dsRowData.get("type").toString();
+        Configuration config = null;
+        if (dsType.contains(DatasourceConfiguration.DatasourceType.Excel.name()) || dsType.contains(DatasourceConfiguration.DatasourceType.API.name())) {
+            coreDatasource = deEngine;
+        } else {
+            coreDatasource = BeanUtils.mapToBean(dsRowData, CoreDatasource.class);
+        }
         try {
-            sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+            sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null, coreDatasource);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -357,7 +377,7 @@ public class DatasetSQLBotManage {
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, false, dsMap, Utils.getParams(fields), null, pluginManage);
         String querySQL;
         querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, false);
-        querySQL = provider.rebuildSQL(querySQL, sqlMeta, false, dsMap);
+        querySQL = provider.rebuildSQL(querySQL, sqlMeta, false, dsMap, true);
         table.setSql(querySQL);
     }
 
@@ -371,13 +391,18 @@ public class DatasetSQLBotManage {
             return;
         }
         vos.forEach(vo -> {
+            Map<String, Object> dsRowData = vo.getRowData();
             List<SQLBotAssistanTable> tables = vo.getTables();
             tables.forEach(table -> {
                 Long datasetGroupId = table.getDatasetGroupId();
                 List<DataSetColumnPermissionsDTO> columnPermissionsDTOS = ObjectUtils.isEmpty(colPermissionMap) ? null : colPermissionMap.get(datasetGroupId);
                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTreeDTOS = ObjectUtils.isEmpty(rowPermissionMap) ? null : rowPermissionMap.get(datasetGroupId);
                 if (table.isNeedTransform() || ObjectUtils.isNotEmpty(columnPermissionsDTOS) || ObjectUtils.isNotEmpty(rowPermissionsTreeDTOS)) {
-                    rebuildTable(table, columnPermissionsDTOS, rowPermissionsTreeDTOS);
+                    try {
+                        rebuildTable(table, columnPermissionsDTOS, rowPermissionsTreeDTOS, dsRowData);
+                    } catch (Exception e) {
+                        LogUtil.error(e);
+                    }
                 }
             });
         });
@@ -416,16 +441,17 @@ public class DatasetSQLBotManage {
             dsHost = environment.getProperty("dataease.dataease-servers", String.class);
         }
         String dsType = row.get("cd_type").toString();
+        String config_json = null;
         Configuration config = null;
         if (dsType.contains(DatasourceConfiguration.DatasourceType.Excel.name()) || dsType.contains(DatasourceConfiguration.DatasourceType.API.name())) {
-            String config_json = EncryptUtils.aesDecrypt(deEngine.getConfiguration()).toString();
+            config_json = EncryptUtils.aesDecrypt(deEngine.getConfiguration()).toString();
             config = JsonUtil.parseObject(config_json, Configuration.class);
             if (StringUtils.isNotBlank(dsHost) && ObjectUtils.isNotEmpty(config)) {
                 config.setHost(dsHost);
             }
             dsType = deEngine.getType();
         } else {
-            String config_json = EncryptUtils.aesDecrypt(dsConfig.toString()).toString();
+            config_json = EncryptUtils.aesDecrypt(dsConfig.toString()).toString();
             config = JsonUtil.parseObject(config_json, Configuration.class);
         }
         DataSQLBotAssistantVO vo = new DataSQLBotAssistantVO();
@@ -439,7 +465,10 @@ public class DatasetSQLBotManage {
         vo.setSchema(config.getSchema());
         vo.setUser(config.getUsername());
         vo.setPassword(config.getPassword());
-        vo.setRowData(buildRowData(row, 0));
+        row.put("cd_configuration", config_json);
+        Map<String, Object> rowData = buildRowData(row, 0);
+        rowData.put("id", Long.parseLong(row.get("cd_id").toString()));
+        vo.setRowData(rowData);
         if (encryptEnabled) {
             aesVO(vo);
         }
