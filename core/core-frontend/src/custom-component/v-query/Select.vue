@@ -224,7 +224,7 @@ const handleValueChange = () => {
     setCascadeValueBack(config.value.mapValue)
     emitCascade()
     nextTick(() => {
-      isConfirmSearch(config.value.id, disabledFirstItem.value)
+      isConfirmSearch(config.value.id)
     })
     return
   }
@@ -401,7 +401,32 @@ watch(
 const setDefaultValueFirstItem = () => {
   if (!options.value.length) return
   selectValue.value = options.value[0].value
-  handleValueChange()
+  const value = Array.isArray(selectValue.value) ? [...selectValue.value] : selectValue.value
+  if (!props.isConfig) {
+    config.value.selectValue = Array.isArray(selectValue.value)
+      ? [...selectValue.value]
+      : selectValue.value
+    config.value.mapValue = setDefaultMapValue(
+      Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+    )
+    setCascadeValueBack(config.value.mapValue)
+    emitCascade()
+    nextTick(() => {
+      isConfirmSearch(config.value.id, true)
+    })
+    return
+  }
+
+  setCascadeDefault(emitCascadeConfig())
+
+  config.value.defaultValue = value
+  config.value.mapValue = setDefaultMapValue(
+    Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+  )
+  config.value.defaultMapValue = setDefaultMapValue(
+    Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+  )
+  setCascadeValueBack(config.value.mapValue)
 }
 
 watch(
