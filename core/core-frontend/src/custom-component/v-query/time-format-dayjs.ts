@@ -20,7 +20,7 @@ function getAround(val = 'month' as ManipulateType, type = 'add', num = 0) {
   if (val === 'week') {
     return new Date(dayjs().endOf('week').add(1, 'day').endOf('day').format('YYYY/MM/DD HH:mm:ss'))
   }
-  return new Date(dayjs()[type](num, val).startOf('day').format('YYYY/MM/DD HH:mm:ss'))
+  return new Date(dayjs()[type](num, val).endOf('day').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getThisWeek(): [Date, Date] {
