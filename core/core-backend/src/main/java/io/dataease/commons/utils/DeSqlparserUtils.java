@@ -42,10 +42,10 @@ public class DeSqlparserUtils {
     private List<SqlVariableDetails> defaultsSqlVariableDetails = new ArrayList<>();
 
     public String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage, UserFormVO userEntity) {
-        DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
-        if (StringUtils.isEmpty(sql)) {
-            DEException.throwException(Translator.get("i18n_sql_not_empty"));
-        }
+//        DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
+//        if (StringUtils.isEmpty(sql)) {
+//            DEException.throwException(Translator.get("i18n_sql_not_empty"));
+//        }
         this.userEntity = userEntity;
         sql = sql.trim();
         if (sql.endsWith(";")) {
@@ -64,6 +64,9 @@ public class DeSqlparserUtils {
             Matcher m = p.matcher(sqlItemWithParam);
             while (m.find()) {
                 String sqlVariable = m.group();
+                if(sqlVariable.substring(2, sqlVariable.length() - 1).trim().isEmpty()){
+                    DEException.throwException(Translator.get("i18n_sql_variable_name_empty"));
+                }
                 boolean replaceParamItem = false;
                 SqlVariableDetails defaultsSqlVariableDetail = null;
                 for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
@@ -141,42 +144,42 @@ public class DeSqlparserUtils {
             }
         }
 
-        try {
-            if (!isCross) {
-                Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
-                DatasourceSchemaDTO value = next.getValue();
-
-                String prefix = "";
-                String suffix = "";
-                if (Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList().contains(value.getType())) {
-                    DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(value.getType());
-                    prefix = datasourceType.getPrefix();
-                    suffix = datasourceType.getSuffix();
-                } else {
-                    if (LicenseUtil.licenseValid()) {
-                        List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
-                        List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), value.getType())).toList();
-                        if (ObjectUtils.isNotEmpty(list)) {
-                            XpackPluginsDatasourceVO first = list.getFirst();
-                            prefix = first.getPrefix();
-                            suffix = first.getSuffix();
-                        } else {
-                            DEException.throwException("当前数据源插件不存在");
-                        }
-                    }
-                }
-
-                Pattern patternCross = Pattern.compile("(`.*?`)");
-                Matcher matcherCross = patternCross.matcher(sql);
-                while (matcherCross.find()) {
-                    String group = matcherCross.group();
-                    String info = group.substring(1, group.length() - 1);
-                    sql = sql.replaceAll(group, prefix + info + suffix);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if (!isCross) {
+//                Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+//                DatasourceSchemaDTO value = next.getValue();
+//
+//                String prefix = "";
+//                String suffix = "";
+//                if (Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList().contains(value.getType())) {
+//                    DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(value.getType());
+//                    prefix = datasourceType.getPrefix();
+//                    suffix = datasourceType.getSuffix();
+//                } else {
+//                    if (LicenseUtil.licenseValid()) {
+//                        List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
+//                        List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), value.getType())).toList();
+//                        if (ObjectUtils.isNotEmpty(list)) {
+//                            XpackPluginsDatasourceVO first = list.getFirst();
+//                            prefix = first.getPrefix();
+//                            suffix = first.getSuffix();
+//                        } else {
+//                            DEException.throwException("当前数据源插件不存在");
+//                        }
+//                    }
+//                }
+//
+//                Pattern patternCross = Pattern.compile("(`.*?`)");
+//                Matcher matcherCross = patternCross.matcher(sql);
+//                while (matcherCross.find()) {
+//                    String group = matcherCross.group();
+//                    String info = group.substring(1, group.length() - 1);
+//                    sql = sql.replaceAll(group, prefix + info + suffix);
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         return sql;
     }
 
