@@ -178,7 +178,9 @@ public class ExportCenterDownLoadManage {
         boolean isCreated = directory.mkdir();
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            coreExportTaskRepository.saveAndFlush(exportTask);
             AuthUtils.setUser(tokenUserBO);
+            coreExportTaskRepository.saveAndFlush(exportTask);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 coreExportTaskRepository.saveAndFlush(exportTask);
@@ -209,9 +211,11 @@ public class ExportCenterDownLoadManage {
 
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            coreExportTaskRepository.saveAndFlush(exportTask);
             LicenseUtil.validate();
             AuthUtils.setUser(tokenUserBO);
             try {
+                coreExportTaskRepository.saveAndFlush(exportTask);
                 exportTask.setExportStatus("IN_PROGRESS");
                 coreExportTaskRepository.saveAndFlush(exportTask);
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(exportTask.getExportFrom()).orElse(null);
@@ -446,6 +450,7 @@ public class ExportCenterDownLoadManage {
         boolean isCreated = directory.mkdir();
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            coreExportTaskRepository.saveAndFlush(exportTask);
             LicenseUtil.validate();
             AuthUtils.setUser(tokenUserBO);
             try {

@@ -138,7 +138,6 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportProgress("0");
         exportTask.setExportMachineName(hostName());
         exportTask.setExportTime(System.currentTimeMillis());
-        coreExportTaskRepository.saveAndFlush(exportTask);
         FileUtils.deleteDirectoryRecursively(exportData_path + id);
         if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
             ChartExcelRequest request = JsonUtil.parseObject(exportTask.getParams(), ChartExcelRequest.class);
@@ -251,7 +250,6 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportTime(System.currentTimeMillis());
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
-        coreExportTaskRepository.saveAndFlush(exportTask);
         if (busiFlag.equalsIgnoreCase("dashboard")) {
             exportCenterDownLoadManage.startPanelViewTask(exportTask, request);
         } else {
@@ -272,7 +270,6 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportTime(System.currentTimeMillis());
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
-        coreExportTaskRepository.saveAndFlush(exportTask);
         exportCenterDownLoadManage.startDatasetTask(exportTask, request);
     }
 
@@ -290,7 +287,6 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportTime(System.currentTimeMillis());
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
-        coreExportTaskRepository.saveAndFlush(exportTask);
         if (StringUtils.equals(exportFromType, "data_filling")) {
             exportCenterDownLoadManage.startDataFillingTask(exportTask, request);
         }
