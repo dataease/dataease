@@ -1,5 +1,6 @@
 package io.dataease.template.manage;
 
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -373,8 +374,7 @@ public class TemplateCenterManage {
         QVisualizationTemplate vt = QVisualizationTemplate.visualizationTemplate;
         QVisualizationTemplateCategoryMap vtcm = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
 
-        JPAQuery<TemplateManageDTO> query = queryFactory.select(Projections.fields(
-                TemplateManageDTO.class,
+        List<Expression<?>> fields = Arrays.asList(
                 vt.id,
                 vt.name,
                 vt.pid,
@@ -384,16 +384,25 @@ public class TemplateCenterManage {
                 vt.createBy,
                 vt.createTime,
                 vt.templateType,
-                vt.snapshot,
-                request.getWithBlobs().equals("Y") ? vt.templateStyle : Expressions.nullExpression(),
-                request.getWithBlobs().equals("Y") ? vt.templateData : Expressions.nullExpression(),
-                request.getWithBlobs().equals("Y") ? vt.dynamicData : Expressions.nullExpression()
-        ))
+                vt.snapshot
+        );
+
+        // 根据条件添加字段
+        List<Expression<?>> allFields = new ArrayList<>(fields);
+        if ("Y".equals(request.getWithBlobs())) {
+            allFields.add(vt.templateStyle);
+            allFields.add(vt.templateData);
+            allFields.add(vt.dynamicData);
+        }
+
+        JPAQuery<TemplateManageDTO> query = queryFactory.select(Projections.fields(
+                        TemplateManageDTO.class,
+                        allFields.toArray(new Expression[0])
+                ))
                 .from(vt)
                 .leftJoin(vtcm).on(vt.id.eq(vtcm.templateId))
                 .where(vtcm.categoryId.eq(request.getCategoryId()))
                 .orderBy(vt.createTime.desc());
-
-        return  query.fetch();
+        return query.fetch();
     }
 }
