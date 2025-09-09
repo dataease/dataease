@@ -221,11 +221,8 @@ const saveSqlNode = (val: SqlNode, cb) => {
       unionFields: [],
       currentDsFields: []
     })
-    state.visualNode.confirm = true
     if (!state.nodeList.length) {
       state.visualNode.tableName = tableName
-      state.nodeList.push(state.visualNode)
-      currentNode.value = state.nodeList[0]
       getTableField({
         datasourceId,
         id: id,
@@ -234,6 +231,9 @@ const saveSqlNode = (val: SqlNode, cb) => {
         type: 'sql',
         isCross: isCross.value
       }).then(res => {
+        state.visualNode.confirm = true
+        state.nodeList.push(state.visualNode)
+        currentNode.value = state.nodeList[0]
         nodeField.value = res as unknown as Field[]
         nodeField.value.forEach(ele => {
           ele.checked = true
@@ -241,8 +241,20 @@ const saveSqlNode = (val: SqlNode, cb) => {
         state.nodeList[0].currentDsFields = cloneDeep(res)
         cb?.()
         confirmEditUnion()
+        confirm()
       })
-      confirm()
+    } else {
+      getTableField({
+        datasourceId,
+        id: id,
+        info: state.visualNode.info,
+        tableName,
+        type: 'sql',
+        isCross: isCross.value
+      }).then(() => {
+        state.visualNode.confirm = true
+        cb?.()
+      })
     }
     return
   }
