@@ -98,7 +98,7 @@ const DeResourceGroupOpt = defineAsyncComponent(
   () => import('@/views/common/DeResourceGroupOpt.vue')
 )
 
-const DeAppApply = defineAsyncComponent(() => import('@/views/common/DeAppApply.vue'))
+import DeAppApply from '@/views/common/DeAppApply.vue'
 
 const multiplexingRef = ref(null)
 const fullScreeRef = ref(null)
