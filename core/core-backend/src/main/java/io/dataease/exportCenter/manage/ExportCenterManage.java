@@ -59,7 +59,7 @@ public class ExportCenterManage implements BaseExportApi {
     private ExportCenterDownLoadManage exportCenterDownLoadManage;
     @Resource
     private SysParameterManage sysParameterManage;
-    @Value("${dataease.path.exportData:/opt/dataease2.0/data/exportData/}")
+    @Value("${dataease.path.exportData:/opt/dataease3.0/data/exportData/}")
     private String exportData_path;
     @Resource
     private VisualizationWatermarkRepository visualizationWatermarkRepository;

@@ -97,7 +97,7 @@ public class ExportCenterDownLoadManage {
     @Value("${dataease.export.max.size:10}")
     private int max;
 
-    @Value("${dataease.path.exportData:/opt/dataease2.0/data/exportData/}")
+    @Value("${dataease.path.exportData:/opt/dataease3.0/data/exportData/}")
     private String exportData_path;
     @Value("${dataease.export.page.size:50000}")
     private Integer extractPageSize;
