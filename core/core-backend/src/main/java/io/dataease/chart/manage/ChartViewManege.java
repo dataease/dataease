@@ -303,7 +303,12 @@ public class ChartViewManege {
     }
 
     public void copyField(Long id, Long chartId) {
-        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldRepository.findById(id).orElse(null);
+        CoreDatasetTableField old = coreDatasetTableFieldRepository.findById(id).orElse(null);
+        if (old == null) {
+            return;
+        }
+        CoreDatasetTableField coreDatasetTableField = new CoreDatasetTableField();
+        BeanUtils.copyBean(coreDatasetTableField, old);
         List<CoreDatasetTableField> coreDatasetTableFields = coreDatasetTableFieldRepository.findByDatasetGroupId(coreDatasetTableField.getDatasetGroupId());
 
         HashMap<String, String> map = new HashMap<>();
@@ -608,7 +613,7 @@ public class ChartViewManege {
             List<SnapshotCoreChartView> newViews = sourceViews.stream()
                     .map(source -> {
                         SnapshotCoreChartView newView = new SnapshotCoreChartView();
-                        BeanUtils.copyBean(newView,source);
+                        BeanUtils.copyBean(newView, source);
                         newView.setId(source.getId() + copyId);
                         newView.setSceneId(newDvId);
                         newView.setCopyId(copyId);
@@ -618,14 +623,14 @@ public class ChartViewManege {
 
             // 3. 批量保存
             snapshotCoreChartViewRepository.saveAll(newViews);
-        }else{
+        } else {
             // 1. 查询源数据
             List<CoreChartView> sourceViews = coreChartViewRepository.findBySceneId(sourceDvId);
             // 2. 创建新记录
             List<CoreChartView> newViews = sourceViews.stream()
                     .map(source -> {
                         CoreChartView newView = new CoreChartView();
-                        BeanUtils.copyBean(newView,source);
+                        BeanUtils.copyBean(newView, source);
                         newView.setId(source.getId() + copyId);
                         newView.setSceneId(newDvId);
                         newView.setCopyId(copyId);
