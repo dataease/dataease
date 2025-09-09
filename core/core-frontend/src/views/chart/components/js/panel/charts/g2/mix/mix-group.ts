@@ -258,7 +258,7 @@ export class GroupLineMix extends G2ChartView {
     merge(intervalMark, leftColorScale)
     const rightCat = []
     if (!extBubble?.length) {
-      rightCat.push(yAxisExt[0]?.chartShowName ?? yAxisExt[0]?.name)
+      yAxisExt?.length && rightCat.push(yAxisExt[0]?.chartShowName ?? yAxisExt[0]?.name)
     } else {
       const { rightData } = context
       rightData.forEach(
