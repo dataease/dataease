@@ -18,6 +18,7 @@ import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
+import io.dataease.commons.utils.EntityConverter;
 import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
 import io.dataease.dao.auto.entity.*;
@@ -922,27 +923,28 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         if (!CollectionUtils.isEmpty(dsIds)) {
             QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
-            datasetGroupVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetGroupVO.class)).from(coreDatasetGroup).where(coreDatasetGroup.id.in(dsIds)).fetch();
+            datasetGroupVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasetGroup).where(coreDatasetGroup.id.in(dsIds)).fetch(),AppCoreDatasetGroupVO.class);
 
             QCoreDatasetTable coreDatasetTable = QCoreDatasetTable.coreDatasetTable;
-            datasetTableVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetTableVO.class)).from(coreDatasetTable).where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
+            datasetTableVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasetTable).where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch(),AppCoreDatasetTableVO.class);
 
             QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
-            datasetTableFieldVOInfo = queryFactory.select(Projections.fields(AppCoreDatasetTableFieldVO.class)).from(coreDatasetTableField)
-                    .where(coreDatasetTableField.datasetGroupId.in(dsIds)).fetch();
+            datasetTableFieldVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasetTableField)
+                    .where(coreDatasetTableField.datasetGroupId.in(dsIds)).fetch(),AppCoreDatasetTableFieldVO.class);
 
             QCoreDatasourceTask coreDatasourceTask = QCoreDatasourceTask.coreDatasourceTask;
             QCoreDatasource coreDatasource = QCoreDatasource.coreDatasource;
 
-            datasourceVOInfo = queryFactory.select(Projections.fields(AppCoreDatasourceVO.class)).from(coreDatasource)
-                    .innerJoin(coreDatasetTable).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
-                    .where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch();
+            datasourceVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasource)
+                    .innerJoin(coreDatasetTable).on(coreDatasetTable.datasourceId.eq(coreDatasource.id))
+                    .where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch(),AppCoreDatasourceVO.class);
 
-            datasourceTaskVOInfo = queryFactory.select(Projections.fields(AppCoreDatasourceTaskVO.class)).from(coreDatasourceTask)
+            datasourceTaskVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasourceTask)
                     .innerJoin(coreDatasource).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
                     .innerJoin(coreDatasetTable).on(coreDatasetTable.datasourceId.eq(coreDatasource.id))
                     .where(coreDatasetTable.datasetGroupId.in(dsIds))
-                    .fetch();
+                    .fetch(),AppCoreDatasourceTaskVO.class);
+
 
         }
 
@@ -960,10 +962,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         QVisualizationLinkageField visualizationLinkageField = QVisualizationLinkageField.visualizationLinkageField;
         QVisualizationLinkage visualizationLinkage = QVisualizationLinkage.visualizationLinkage;
-        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = queryFactory.select(Projections.fields(VisualizationLinkageFieldVO.class)).from(visualizationLinkageField)
-                .innerJoin(visualizationLinkage).on(visualizationLinkageField.linkageId.eq(visualizationLinkage.id))
-                .where(visualizationLinkage.dvId.eq(dvId)).fetch();
 
+        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = EntityConverter.convertList(queryFactory.selectFrom(visualizationLinkageField)
+                .innerJoin(visualizationLinkage).on(visualizationLinkageField.linkageId.eq(visualizationLinkage.id))
+                .where(visualizationLinkage.dvId.eq(dvId)).fetch(),VisualizationLinkageFieldVO.class);
 
         List<VisualizationLinkJumpVO> linkJumpVOInfo = visualizationLinkJumpRepository.findBySourceDvId(dvId).stream().map(item -> {
             VisualizationLinkJumpVO linkJumpVO = BeanUtils.copyBean(new VisualizationLinkJumpVO(), item);
@@ -972,18 +974,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         QVisualizationLinkJumpInfo visualizationLinkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
         QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
-        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = queryFactory.select(Projections.fields(VisualizationLinkJumpInfoVO.class)).from(visualizationLinkJumpInfo)
-                .innerJoin(visualizationLinkJump).on(visualizationLinkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
-                .where(visualizationLinkJump.sourceDvId.eq(dvId)).fetch();
 
+        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = EntityConverter.convertList(queryFactory.selectFrom(visualizationLinkJumpInfo)
+                .innerJoin(visualizationLinkJump).on(visualizationLinkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
+                .where(visualizationLinkJump.sourceDvId.eq(dvId)).fetch(),VisualizationLinkJumpInfoVO.class);
 
         QVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
-
-        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = queryFactory.select(Projections.fields(VisualizationLinkJumpTargetViewInfoVO.class)).from(visualizationLinkJumpTargetViewInfo)
+        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = EntityConverter.convertList(queryFactory.selectFrom(visualizationLinkJumpTargetViewInfo)
                 .innerJoin(visualizationLinkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(visualizationLinkJumpInfo.id))
                 .innerJoin(visualizationLinkJump).on(visualizationLinkJump.id.eq(visualizationLinkJumpInfo.linkJumpId))
                 .where(visualizationLinkJump.sourceDvId.eq(dvId))
-                .fetch();
+                .fetch(),VisualizationLinkJumpTargetViewInfoVO.class);
+
 
 
         return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo, datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo, linkJumpVOInfo, linkJumpInfoVOInfo, listJumpTargetViewInfoVO, linkageVOInfo, linkageFieldVOInfo);
