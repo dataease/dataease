@@ -44,6 +44,7 @@ defineProps({
   opacity: 0.4;
   z-index: 2;
 }
+
 .view-panel-mask {
   height: 100%;
   width: 178px;
@@ -56,6 +57,7 @@ defineProps({
   cursor: not-allowed;
   pointer-events: none;
 }
+
 .view-panel-mask-inner {
   top: 51px;
   left: 6px;
@@ -79,14 +81,16 @@ defineProps({
   box-shadow: none !important;
   border: 0 !important;
   background: var(--ed-color-primary) !important;
-  inset: 0 auto auto -5px !important;
+
   .ed-popper__arrow::before {
     border: 1px solid var(--ed-color-primary) !important;
     background: var(--ed-color-primary) !important;
   }
 }
+
 .template-popper-tips-content {
   color: rgba(255, 255, 255, 1);
+
   .content {
     font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
