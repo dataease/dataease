@@ -245,8 +245,10 @@ onMounted(async () => {
       }
     }
   }
-  sql = Base64.decode(sqlNode.value.sql)
-  codeCom.value = myCm.value.codeComInit(setNameIdTrans('id', 'name', sql), true)
+  codeCom.value = myCm.value.codeComInit(
+    setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)),
+    true
+  )
 })
 
 onBeforeUnmount(() => {
@@ -364,7 +366,7 @@ const setFlag = () => {
 }
 let sql = ''
 
-const save = (cb?: () => void) => {
+const save = () => {
   if (!sqlNode.value.tableName.trim()) {
     ElMessage.error(t('data_set.cannot_be_empty'))
     return
@@ -385,10 +387,11 @@ const save = (cb?: () => void) => {
       sql: Base64.encode(sql),
       sqlVariableDetails: JSON.stringify(state.variables)
     },
-    cb
+    () => {
+      ElMessage.success(t('common.save_success'))
+    }
   )
   changeFlag = false
-  ElMessage.success(t('common.save_success'))
 }
 
 const close = () => {
@@ -403,6 +406,7 @@ const close = () => {
 
 const handleClose = () => {
   let sqlNew = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString())
+
   if (changeFlag || sql !== sqlNew || !sqlNew.trim()) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
@@ -427,7 +431,7 @@ const getSQLPreview = () => {
   dataPreviewLoading.value = true
   getPreviewSql({
     isCross: isCross.value,
-    sql: Base64.encode((sql = setNameIdTrans('name', 'id', codeCom.value.state.doc.toString()))),
+    sql: Base64.encode(setNameIdTrans('name', 'id', codeCom.value.state.doc.toString())),
     datasourceId: sqlNode.value.datasourceId,
     sqlVariableDetails: JSON.stringify(state.variables)
   })
@@ -622,7 +626,7 @@ const mousedownDrag = () => {
         </template>
         {{ t('auth.sysParams') }}
       </el-button>
-      <el-button :disabled="!changeFlagCode" @click="save(() => {})" type="primary">
+      <el-button :disabled="!changeFlagCode" @click="save" type="primary">
         {{ t('data_set.save') }}</el-button
       >
       <el-divider direction="vertical" />

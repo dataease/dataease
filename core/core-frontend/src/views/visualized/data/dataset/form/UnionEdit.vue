@@ -43,7 +43,7 @@ const parentField = ref<Field[]>([])
 const nodeField = ref<Field[]>([])
 const node = reactive<Node>(cloneDeep(defaultNode))
 const parent = reactive<Node>(cloneDeep(defaultNode))
-
+const loading = ref(false)
 const props = defineProps({
   editArr: {
     type: Array,
@@ -82,16 +82,23 @@ const getParams = (obj: Node) => {
   )
 }
 const getFields = async () => {
-  const [n, p] = props.editArr as Node[]
-  const [nr, pr] = await Promise.all([getTableField(getParams(n)), getTableField(getParams(p))])
-  parentField.value = pr as unknown as Field[]
-  parentField.value.forEach(ele => {
-    ele.checked = p.currentDsFields.map(ele => ele.originName).includes(ele.originName)
-  })
-  nodeField.value = nr as unknown as Field[]
-  nodeField.value.forEach(ele => {
-    ele.checked = n.currentDsFields.map(ele => ele.originName).includes(ele.originName)
-  })
+  try {
+    loading.value = true
+    const [n, p] = props.editArr as Node[]
+    const [nr, pr] = await Promise.all([getTableField(getParams(n)), getTableField(getParams(p))])
+    loading.value = false
+    parentField.value = pr as unknown as Field[]
+    parentField.value.forEach(ele => {
+      ele.checked = p.currentDsFields.map(ele => ele.originName).includes(ele.originName)
+    })
+    nodeField.value = nr as unknown as Field[]
+    nodeField.value.forEach(ele => {
+      ele.checked = n.currentDsFields.map(ele => ele.originName).includes(ele.originName)
+    })
+  } catch (error) {
+    loading.value = false
+    console.error(error)
+  }
 }
 
 defineExpose({
@@ -105,7 +112,7 @@ defineExpose({
 <template>
   <div style="height: 100%; overflow-y: auto">
     <div class="field-style">
-      <div class="fields" v-loading="!parentField.length">
+      <div class="fields" v-loading="loading">
         <p :title="parent.tableName">
           {{ parent.tableName }}
         </p>
@@ -116,7 +123,7 @@ defineExpose({
           @checkedFields="changeParentFields"
         />
       </div>
-      <div class="fields" v-loading="!nodeField.length">
+      <div class="fields" v-loading="loading">
         <p :title="node.tableName">
           {{ node.tableName }}
         </p>
