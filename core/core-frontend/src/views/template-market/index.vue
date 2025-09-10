@@ -175,7 +175,7 @@
           </div>
         </el-row>
         <el-row v-show="!state.networkStatus" class="template-empty">
-          111 {{ t('visualization.market_network_tips', [state.baseUrl]) }}
+          {{ t('visualization.market_network_tips', [state.baseUrl]) }}
         </el-row>
       </el-row>
     </el-row>
