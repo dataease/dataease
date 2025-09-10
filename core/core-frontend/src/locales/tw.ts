@@ -4114,7 +4114,8 @@ export default {
       retrying: '失敗重試',
       retrying_rate: '重試間隔（分鐘）',
       please_input_positive_int: '請輸入 {0} 正整數',
-      rate: '發送頻率'
+      rate: '發送頻率',
+      ext_wait_time: '額外等待時間（秒）'
     },
     filter: {
       title: '設置查詢組件默認值',
