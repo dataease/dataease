@@ -46,7 +46,7 @@ public class ReportCreator implements Serializable {
     private List<String> larkGroupList;
     private List<String> larksuiteGroupList;
 
-    private Integer extWaitTime;
+    private Integer extWaitTime = 0;
 
     private Integer rateType;
 
