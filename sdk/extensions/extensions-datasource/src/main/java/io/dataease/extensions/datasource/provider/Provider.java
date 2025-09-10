@@ -140,6 +140,7 @@ public abstract class Provider {
     }
 
     public String transSqlDialect(String sql, Map<Long, DatasourceSchemaDTO> dsMap) throws DEException {
+        logger.debug("calcite data preview sql: " + sql);
         DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
         try (ConnectionObj connection = getConnection(value)) {
             // 获取数据库version
@@ -154,6 +155,7 @@ public abstract class Provider {
             }
             return dialect;
         } catch (Exception e) {
+            e.printStackTrace();
             DEException.throwException(e.getMessage());
         }
         return null;
