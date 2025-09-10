@@ -11,6 +11,8 @@ const dingtalkForm = ref<FormInstance>()
 interface DingtalkForm {
   id?: string
   domain?: string
+  valid?: boolean
+  enabled?: boolean
 }
 const state = reactive({
   form: reactive<DingtalkForm>({
@@ -18,7 +20,7 @@ const state = reactive({
     domain: null
   })
 })
-const validateUrl = (rule, value, callback) => {
+const validateUrl = (_, value, callback) => {
   const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/)
   if (!reg.test(value)) {
     callback(new Error(t('system.incorrect_please_re_enter')))
@@ -44,10 +46,12 @@ const rule = reactive<FormRules>({
   ]
 })
 
-const edit = row => {
+const edit = ({ id, domain, valid, enabled }) => {
   state.form = {
-    id: row.id,
-    domain: row.domain
+    id,
+    domain,
+    valid,
+    enabled
   }
   dialogVisible.value = true
 }
@@ -117,7 +121,7 @@ const validateHandler = () => {
       ElMessage.success(t('datasource.validate_success'))
     })
     .catch(() => {
-      state.form.enable = false
+      state.form.enabled = false
       state.form.valid = false
       save()
     })
