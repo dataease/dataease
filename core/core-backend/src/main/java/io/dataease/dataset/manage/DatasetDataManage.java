@@ -418,6 +418,7 @@ public class DatasetDataManage {
             sqlLogDTO.setSpend(sqlLogDTO.getEndTime() - sqlLogDTO.getStartTime());
             sqlLogDTO.setStatus("Completed");
         } catch (Exception e) {
+            e.printStackTrace();
             sqlLogDTO.setStatus("Error");
             DEException.throwException(e.getMessage());
         } finally {
@@ -506,8 +507,10 @@ public class DatasetDataManage {
             } else {
                 sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0);
             }
+            logger.debug("calcite data preview sql: " + sql);
             sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             // replace placeholder
+            logger.debug("calcite data preview sql: " + sql);
             sql = provider.replaceTablePlaceHolder(sql, originSql);
         }
 
