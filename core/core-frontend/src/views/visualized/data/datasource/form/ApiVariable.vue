@@ -214,9 +214,9 @@ const timeFunLists = [
               >
                 <el-option
                   v-for="item in valueList"
-                  :key="item.originName"
+                  :key="item.name"
                   :label="item.name"
-                  :value="item.originName"
+                  :value="item.name"
                 />
               </el-select>
               <el-select
@@ -226,7 +226,7 @@ const timeFunLists = [
               >
                 <el-option
                   v-for="item in timeFunLists"
-                  :key="item.originName"
+                  :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 />
