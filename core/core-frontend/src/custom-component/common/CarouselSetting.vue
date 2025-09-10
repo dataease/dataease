@@ -75,6 +75,9 @@ const handleInput = value => {
               <div v-if="element.innerType === 'picture-group'">
                 {{ t('visualization.carousel_tips2') }}
               </div>
+              <div v-else>
+                {{ t('visualization.carousel_tips') }}
+              </div>
             </template>
             <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
               <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
