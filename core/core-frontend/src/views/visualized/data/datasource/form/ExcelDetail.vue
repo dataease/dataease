@@ -363,6 +363,17 @@ const handleResize = debounce(() => {
   isResize.value = false
   nextTick(() => {
     isResize.value = true
+    if (currentMode.value === 'select') {
+      nextTick(() => {
+        initMultipleTable.value = true
+        for (let i = 0; i < columns.value.length; i++) {
+          if (columns.value[i].checked) {
+            multipleTable?.value?.toggleRowSelection(columns.value[i], true)
+          }
+        }
+        initMultipleTable.value = false
+      })
+    }
   })
 }, 500)
 onMounted(() => {
@@ -890,6 +901,9 @@ defineExpose({
     .info-table {
       width: 100%;
       height: calc(100% - 200px);
+      .ed-select--light .ed-select__prefix:after {
+        display: none;
+      }
       &.info-table_height {
         height: calc(100% - 379px);
       }
