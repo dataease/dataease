@@ -29,6 +29,12 @@
     hide-head
     :setting-data="templateListTime"
   />
+  <!--    数据填报      -->
+  <XpackComponent
+    style="padding: 0 24px 8px"
+    :nodeInfo="xPackInfo"
+    jsname="L2NvbXBvbmVudC9kYXRhLWZpbGxpbmcvRGF0YXNvdXJjZURhdGFGaWxsaW5nSW5mbw=="
+  />
 </template>
 
 <script lang="ts" setup>
@@ -44,6 +50,7 @@ import { getDeEngine } from '@/api/datasource'
 import request from '@/config/axios'
 import { querySymmetricKey } from '@/api/login'
 import { symmetricDecrypt } from '@/utils/encryption'
+import { XpackComponent } from '@/components/plugin'
 const { t } = useI18n()
 const typeMap = dsTypes.reduce((pre, next) => {
   pre[next.type] = next.name
@@ -55,10 +62,13 @@ const infoTemplate = ref()
 const infoTemplateTime = ref()
 const templateList = ref<SettingRecord[]>([])
 const templateListTime = ref<SettingRecord[]>([])
+const xPackInfo = ref({ enableDataFill: false, type: undefined })
 const getEngine = () => {
   querySymmetricKey().then(response => {
     getDeEngine().then(res => {
       let { id, type, configuration } = res.data
+      xPackInfo.value.enableDataFill = !!res.data.enableDataFill
+      xPackInfo.value.type = type
       if (configuration) {
         configuration = JSON.parse(symmetricDecrypt(configuration, response.data))
       }

@@ -7,11 +7,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ * 数据引擎
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-18
+ * @since 2025-09-10
  */
 @TableName("core_de_engine")
 public class CoreDeEngine implements Serializable {
@@ -63,6 +63,11 @@ public class CoreDeEngine implements Serializable {
      * 状态
      */
     private String status;
+
+    /**
+     * 启用数据填报功能
+     */
+    private Boolean enableDataFill;
 
     public Long getId() {
         return id;
@@ -136,6 +141,14 @@ public class CoreDeEngine implements Serializable {
         this.status = status;
     }
 
+    public Boolean getEnableDataFill() {
+        return enableDataFill;
+    }
+
+    public void setEnableDataFill(Boolean enableDataFill) {
+        this.enableDataFill = enableDataFill;
+    }
+
     @Override
     public String toString() {
         return "CoreDeEngine{" +
@@ -148,6 +161,7 @@ public class CoreDeEngine implements Serializable {
         ", updateTime = " + updateTime +
         ", createBy = " + createBy +
         ", status = " + status +
+        ", enableDataFill = " + enableDataFill +
         "}";
     }
 }
