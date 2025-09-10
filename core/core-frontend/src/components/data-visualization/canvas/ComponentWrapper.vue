@@ -321,7 +321,7 @@ const onWrapperClickCur = e => {
 }
 
 const onWrapperClick = e => {
-  if (eventEnable.value) {
+  if (eventEnable.value && !['edit-preview'].includes(showPosition.value)) {
     if (config.value.events.type === 'showHidden') {
       // 打开弹框区域
       nextTick(() => {
