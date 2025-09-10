@@ -156,7 +156,7 @@ const dataVKeepRadio = computed(() => {
 
 // 仪表板是否跟随宽度缩放 非全屏 full 都需要保持宽高比例
 const dashboardScaleWithWidth = computed(() => {
-  return isDashboard() && screenAdaptor.value === 'withWidth'
+  return isDashboard() && canvasStyleData.value?.dashboardAdaptor === 'withWidth'
 })
 const isReport = computed(() => {
   return !!router.currentRoute.value.query?.report
