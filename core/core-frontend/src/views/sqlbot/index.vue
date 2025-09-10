@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import request from '@/config/axios'
 const loading = ref(true)
 const state = reactive({
@@ -16,6 +16,8 @@ const state = reactive({
   enabled: false,
   valid: false
 })
+const sqlbotExist = ref(false)
+const timer = ref()
 
 const loadSqlbotInfo = () => {
   const url = '/sysParameter/sqlbot'
@@ -60,19 +62,36 @@ const loadSqlbotPage = () => {
 }
 
 const mountedEmbeddedPage = () => {
-  setTimeout(() => {
+  if (sqlbotExist.value) {
+    return
+  }
+  const tempTimer = setTimeout(() => {
     if (window['sqlbot_embedded_handler']) {
       window['sqlbot_embedded_handler'].mounted('#dataease-v2-embedded-sqlbot', {
         embeddedId: state.id,
         online: true
       })
       loading.value = false
+      sqlbotExist.value = true
+      if (tempTimer) {
+        clearTimeout(tempTimer)
+      }
     }
   }, 2000)
 }
 
 onMounted(() => {
   loadSqlbotInfo()
+  timer.value = setInterval(() => {
+    loadSqlbotInfo()
+  }, 30000)
+})
+
+onUnmounted(() => {
+  if (timer.value) {
+    clearInterval(timer.value)
+    timer.value = null
+  }
 })
 </script>
 

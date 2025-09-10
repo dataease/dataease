@@ -436,7 +436,7 @@ public class DatasetSQLBotManage {
         if (ObjectUtils.isEmpty(dsConfig) || StringUtils.isBlank(dsConfig.toString())) {
             return null;
         }
-        String dsHost = environment.getProperty("dataease.dsHost", String.class);
+        String dsHost = environment.getProperty("dataease.ds-host", String.class);
         if (StringUtils.isBlank(dsHost)) {
             dsHost = environment.getProperty("dataease.dataease-servers", String.class);
         }
