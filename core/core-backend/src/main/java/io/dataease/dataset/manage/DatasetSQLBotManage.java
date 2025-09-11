@@ -101,7 +101,7 @@ public class DatasetSQLBotManage {
             iv = iv.substring(0, 16);
         }
         if (len < 16) {
-            iv = String.format("%-" + (16 - len) + "s", iv).replace(' ', '0');
+            iv = String.format("%-16s", iv).replace(' ', '0');
         }
         return AesUtils.aesEncrypt(text, aesKey, iv);
     }
