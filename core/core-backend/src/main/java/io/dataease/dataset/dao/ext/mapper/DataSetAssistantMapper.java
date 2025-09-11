@@ -132,7 +132,11 @@ public interface DataSetAssistantMapper {
     <script>
     WITH user_ds_permissions AS (
         <choose>
-            <when test="!orgAdmin">
+            <when test="orgAdmin">
+                SELECT id as resource_id FROM per_busi_resource 
+                WHERE org_id = #{oid} AND rt_id = 4
+            </when>
+            <otherwise>
                 SELECT DISTINCT resource_id
                 FROM (
                     SELECT resource_id FROM per_auth_busi_user
@@ -142,16 +146,16 @@ public interface DataSetAssistantMapper {
                     INNER JOIN per_user_role b ON a.rid = b.rid
                     WHERE b.oid = #{oid} AND b.uid = #{uid} AND a.resource_type = 4
                 ) temp
-            </when>
-            <otherwise>
-                SELECT id as resource_id FROM per_busi_resource 
-                WHERE org_id = #{oid} AND rt_id = 4
             </otherwise>
         </choose>
     ),
     user_dg_permissions AS (
         <choose>
-            <when test="!orgAdmin">
+            <when test="orgAdmin">
+                SELECT id as resource_id FROM per_busi_resource 
+                WHERE org_id = #{oid} AND rt_id = 3
+            </when>
+            <otherwise>
                 SELECT DISTINCT resource_id
                 FROM (
                     SELECT resource_id FROM per_auth_busi_user
@@ -161,10 +165,6 @@ public interface DataSetAssistantMapper {
                     INNER JOIN per_user_role b ON a.rid = b.rid
                     WHERE b.oid = #{oid} AND b.uid = #{uid} AND a.resource_type = 3
                 ) temp
-            </when>
-            <otherwise>
-                SELECT id as resource_id FROM per_busi_resource 
-                WHERE org_id = #{oid} AND rt_id = 3
             </otherwise>
         </choose>
     )
@@ -218,7 +218,9 @@ public interface DataSetAssistantMapper {
     ${ew.customSqlSegment}
     </script>
 """)
-    List<Map<String, Object>> queryEnterprise(@Param("oid") Long oid, @Param("uid") Long uid, @Param("orgAdmin") Boolean orgAdmin, @Param("ew") QueryWrapper queryWrapper);
+    List<Map<String, Object>> queryEnterprise(@Param("oid") Long oid, @Param("uid") Long uid, @Param("orgAdmin") boolean orgAdmin, @Param("ew") QueryWrapper queryWrapper);
 
 
+    @Select("select pr.id, pr.readonly, pr.pid from per_user_role pur left join per_role pr on pur.rid = pr.id where pur.uid = #{uid} and pur.oid = #{oid} ")
+    List<Map<String, Object>> roleInfoByUid(@Param("uid") Long uid, @Param("oid") Long oid);
 }

@@ -11,9 +11,6 @@ import io.dataease.api.dataset.vo.SQLBotAssistantField;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
-import io.dataease.api.permissions.role.api.RoleApi;
-import io.dataease.api.permissions.role.dto.RoleRequest;
-import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.constant.ColumnPermissionConstants;
@@ -170,12 +167,13 @@ public class DatasetSQLBotManage {
         } else {
             boolean isRootRole = isAdmin;
             if (!isAdmin) {
-                RoleRequest request = new RoleRequest();
-                request.setUid(uid);
-                List<RoleVO> roleVOS = Objects.requireNonNull(CommonBeanFactory.getBean(RoleApi.class)).selectedForUser(request);
-                isRootRole = roleVOS.stream().anyMatch(RoleVO::isRoot);
-                roleIds = roleVOS.stream().map(RoleVO::getId).toList();
-
+                List<Map<String, Object>> roleMapList = dataSetAssistantMapper.roleInfoByUid(uid, oid);
+                if (CollectionUtils.isNotEmpty(roleMapList)) {
+                    isRootRole = roleMapList.stream().anyMatch(item -> ObjectUtils.isNotEmpty(item.get("pid")) && (Integer.parseInt(item.get("pid").toString())) == 0);
+                    roleIds = roleMapList.stream().map(item -> Long.parseLong(item.get("id").toString())).distinct().collect(Collectors.toList());
+                } else {
+                    roleIds = new ArrayList<>();
+                }
                 colPermissionMap = getColPermission(uid, roleIds);
                 rowPermissionMap = getRowPermission(uid, roleIds);
             }
@@ -282,7 +280,8 @@ public class DatasetSQLBotManage {
     };
     TypeReference<List<CalParam>> typeToken = new TypeReference<>() {
     };
-    private void rebuildTable(SQLBotAssistanTable table, List<DataSetColumnPermissionsDTO> columnPermissionsDTOS, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,  Map<String, Object> dsRowData) {
+
+    private void rebuildTable(SQLBotAssistanTable table, List<DataSetColumnPermissionsDTO> columnPermissionsDTOS, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, Map<String, Object> dsRowData) {
         Map<String, Object> rowData = table.getRowData();
         CoreDatasetGroup coreDatasetGroup = BeanUtils.mapToBean(rowData, CoreDatasetGroup.class);
 
