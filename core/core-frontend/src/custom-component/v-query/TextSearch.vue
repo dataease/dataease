@@ -109,7 +109,10 @@ const lineWidth = computed(() => {
   return { width: getCustomWidth() - 15 + 'px', background: customStyle.border }
 })
 
-const handleKeyEnter = () => {
+const handleKeyEnter = ($event: any = {}) => {
+  if ($event?.isComposing) {
+    return
+  }
   handleValueChange()
 }
 
@@ -140,7 +143,7 @@ const handleInnerMouseDown = e => {
         :style="selectStyle"
         :placeholder="placeholderText"
         @blur="handleValueChange"
-        @keydown.enter="handleKeyEnter"
+        @keydown.enter.exact.prevent="($event: any) => handleKeyEnter($event)"
         class="condition-value-input"
         v-model="config.conditionValueF"
       />
@@ -165,7 +168,7 @@ const handleInnerMouseDown = e => {
         :style="selectStyle"
         @blur="handleValueChange"
         :placeholder="placeholderText"
-        @keydown.enter="handleKeyEnter"
+        @keydown.enter.exact.prevent="($event: any) => handleKeyEnter($event)"
         class="condition-value-input"
         v-model="config.conditionValueS"
       />
