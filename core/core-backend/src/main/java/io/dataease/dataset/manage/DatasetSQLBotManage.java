@@ -169,7 +169,8 @@ public class DatasetSQLBotManage {
             if (!isAdmin) {
                 List<Map<String, Object>> roleMapList = dataSetAssistantMapper.roleInfoByUid(uid, oid);
                 if (CollectionUtils.isNotEmpty(roleMapList)) {
-                    isRootRole = roleMapList.stream().anyMatch(item -> ObjectUtils.isNotEmpty(item.get("pid")) && (Integer.parseInt(item.get("pid").toString())) == 0);
+                    Long rootPid = 0L;
+                    isRootRole = roleMapList.stream().anyMatch(item -> ObjectUtils.isNotEmpty(item.get("pid")) && rootPid.equals(Long.parseLong(item.get("pid").toString())));
                     roleIds = roleMapList.stream().map(item -> Long.parseLong(item.get("id").toString())).distinct().collect(Collectors.toList());
                 } else {
                     roleIds = new ArrayList<>();
