@@ -139,7 +139,7 @@ public class ExtWhere2Str {
                 String whereName = "";
                 if (request.getIsTree()) {
                     if (StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType()) && whereNameList.size() == 1) {
-                        whereNameList.add("");
+                        whereNameList.add("''");
                     }
                     whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
                 } else {
