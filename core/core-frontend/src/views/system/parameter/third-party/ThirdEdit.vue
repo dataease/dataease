@@ -110,19 +110,27 @@ const closeLoading = () => {
   loadingInstance.value?.close()
 }
 
-const validateHandler = () => {
+const validateHandlerOnly = () => {
   let url = `${
     state.form.domain.endsWith('/') ? state.form.domain : state.form.domain + '/'
   }api/v1/system/assistant/info/${state.form.id}`
   fetch(url)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      return response.json()
+    })
     .then(() => {
       state.form.valid = true
       ElMessage.success(t('datasource.validate_success'))
     })
     .catch(() => {
+      ElMessage.error(t('data_source.verification_failed'))
       state.form.enabled = false
       state.form.valid = false
+    })
+    .finally(() => {
       save()
     })
 }
@@ -158,7 +166,7 @@ defineExpose({
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="resetForm(dingtalkForm)">{{ t('common.cancel') }}</el-button>
-        <el-button :disabled="!state.form.id || !state.form.domain" @click="validateHandler">
+        <el-button :disabled="!state.form.id || !state.form.domain" @click="validateHandlerOnly">
           {{ t('commons.validate') }}
         </el-button>
         <el-button type="primary" @click="submitForm(dingtalkForm)">
