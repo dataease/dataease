@@ -439,7 +439,7 @@ onBeforeUnmount(() => {
 })
 
 const userViewEnlargeOpen = (opt, item) => {
-  userViewEnlargeRef.value.dialogInit(
+  userViewEnlargeRef.value?.dialogInit(
     canvasStyleData.value,
     canvasViewInfo.value[item.id],
     item,
