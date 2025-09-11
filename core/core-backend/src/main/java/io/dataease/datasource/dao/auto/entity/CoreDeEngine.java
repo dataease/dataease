@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
 @Getter
@@ -58,4 +59,8 @@ public class CoreDeEngine {
     @Column(name = "status", length = 45)
     private String status;
 
+    @ColumnDefault("1")
+    @Comment("启用数据填报功能")
+    @Column(name = "enable_data_fill")
+    private Boolean enableDataFill;
 }
