@@ -68,8 +68,8 @@
           <span v-else-if="item.pkey.includes('basic.dsIntervalTime')">
             <span>{{ item.pval + ' ' + executeTime + t('common.every_exec') }}</span>
           </span>
-          <span v-else>
-            <span>{{ item.pval }}</span>
+          <template v-else>
+            <span style="word-break: break-all">{{ item.pval }}</span>
             <el-tooltip
               v-if="props.copyList.includes(item.pkey)"
               effect="dark"
@@ -82,7 +82,7 @@
                 </template>
               </el-button>
             </el-tooltip>
-          </span>
+          </template>
         </div>
       </div>
     </div>
