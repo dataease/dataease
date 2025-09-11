@@ -7,7 +7,6 @@ import { cloneDeep, defaultsDeep, filter, find } from 'lodash-es'
 
 const dvMainStore = dvMainStoreWithOut()
 import { storeToRefs } from 'pinia'
-const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const props = defineProps({
