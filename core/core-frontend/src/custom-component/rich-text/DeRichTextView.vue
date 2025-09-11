@@ -8,7 +8,6 @@
     @click="onClick"
     :style="richTextStyle"
   >
-    ---language=={{ language }}
     <chart-error v-if="isError" :err-msg="errMsg" />
     <Editor
       v-if="editShow && !isError"
