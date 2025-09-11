@@ -2228,6 +2228,8 @@ const timeGranularityMultipleChange = (val: string) => {
     curComponent.value.relativeToCurrentRange = relativeToCurrentListRange.value[0]?.value
   }
 
+  if (curComponent.value.timeRange) return
+
   curComponent.value.timeRange = {
     intervalType: 'none',
     dynamicWindow: false,
