@@ -94,6 +94,8 @@ public class DatasetSQLBotManage {
     private String aesKey;
     @Value("${dataease.sqlbot.aes-iv:sqlbot_em_aes_iv}")
     private String aesIv;
+    @Value("${dataease.sqlbot.log:false}")
+    private boolean sqlbotApiLog;
 
     private String aesEncrypt(String text) {
         String iv = aesIv;
@@ -179,7 +181,9 @@ public class DatasetSQLBotManage {
             }
             list = dataSetAssistantMapper.queryEnterprise(oid, uid, isRootRole, queryWrapper);
         }
-
+        if (sqlbotApiLog) {
+            LogUtil.info("sqlbot ds api list: {}", list);
+        }
 
         List<DataSQLBotAssistantVO> result = new ArrayList<>();
         Map<String, DataSQLBotAssistantVO> dsFlagMap = new HashMap<>();
@@ -222,7 +226,9 @@ public class DatasetSQLBotManage {
             }
         }
         filterPermissions(result, list, colPermissionMap, rowPermissionMap);
-        LogUtil.info("sqlbot ds api result: {}", result);
+        if (sqlbotApiLog) {
+            LogUtil.info("sqlbot ds api result: {}", result);
+        }
         return result;
     }
 
