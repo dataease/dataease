@@ -67,14 +67,22 @@ const validateHandler = () => {
     info.value.domain.endsWith('/') ? info.value.domain : info.value.domain + '/'
   }api/v1/system/assistant/info/${info.value.id}`
   fetch(url)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      return response.json()
+    })
     .then(() => {
       info.value.valid = true
       ElMessage.success(t('datasource.validate_success'))
     })
     .catch(() => {
+      ElMessage.error(t('data_source.verification_failed'))
       info.value.enabled = false
       info.value.valid = false
+    })
+    .finally(() => {
       save()
     })
 }
