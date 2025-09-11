@@ -2836,6 +2836,15 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    select_resource: '請選擇{0}',
+    change_screen_page: '更換{0}',
+    new_screen_page: '新建分頁',
+    screen_page: '分頁',
+    color_setting: '配色{0}',
+    decoration_name: '裝飾{0}',
+    decoration: '裝飾',
+    dynamic_background_name: '動圖{0}',
+    dynamic_background: '動圖',
     support_query: '僅可新增查詢元件',
     publish_update_tips: '有更新',
     filter_freeze_tips: '已存在置頂查詢組件，確定切換該組件？',

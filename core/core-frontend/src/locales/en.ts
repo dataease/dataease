@@ -2917,6 +2917,15 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    select_resource: 'Select {0}',
+    change_screen_page: 'Change {0}',
+    new_screen_page: 'New page',
+    screen_page: 'Page',
+    color_setting: 'Color{0}',
+    decoration_name: 'Decoration {0}',
+    decoration: 'Decoration',
+    dynamic_background_name: 'Animated {0}',
+    dynamic_background: 'Animated Image',
     support_query: 'Only query components can be added',
     publish_update_tips: 'Update available',
     filter_freeze_tips:

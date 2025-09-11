@@ -2842,6 +2842,15 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    select_resource: '请选择{0}',
+    change_screen_page: '更换{0}',
+    new_screen_page: '新建分页',
+    screen_page: '分页',
+    color_setting: '配色{0}',
+    decoration_name: '装饰{0}',
+    decoration: '装饰',
+    dynamic_background_name: '背景{0}',
+    dynamic_background: '动图',
     support_query: '仅支持添加查询组件',
     publish_update_tips: '有更新',
     filter_freeze_tips: '已存在置顶查询组件,确定切换该组件？',
