@@ -605,7 +605,7 @@ const setOptions = (num: number) => {
             label: `${ele}`,
             value: `${ele}`,
             checked: Array.isArray(selectValue.value)
-              ? selectValue.value.includes(ele)
+              ? selectValue.value.includes(`${ele}`)
               : selectValue.value === ele
           }
         })
