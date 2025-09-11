@@ -63,7 +63,7 @@ public interface UserApi {
     @Operation(summary = "创建")
     @DePermit("m:read")
     @PostMapping("/create")
-    void create(@RequestBody UserCreator creator);
+    Long create(@RequestBody UserCreator creator);
 
     @Operation(summary = "创建第三方用户")
     @DePermit("m:read")
