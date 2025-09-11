@@ -3350,36 +3350,38 @@ defineExpose({
                       </el-button>
                     </template>
                     <div class="manual-input-container">
-                      <div class="title">{{ t('auth.manual_input') }}</div>
-                      <div class="select-value">
-                        <span> {{ t('data_fill.form.option_value') }} </span>
-                        <div :key="index" v-for="(_, index) in valueSource" class="select-item">
-                          <el-input
-                            maxlength="64"
-                            v-if="curComponent.displayType === '2'"
-                            @blur="weightlessness"
-                            v-model.number="valueSource[index]"
-                          ></el-input>
-                          <el-input
-                            maxlength="64"
-                            v-else
-                            @blur="weightlessness"
-                            v-model="valueSource[index]"
-                          ></el-input>
-                          <el-button
-                            v-if="valueSource.length !== 1"
-                            @click="valueSource.splice(index, 1)"
-                            class="value"
-                            text
-                          >
-                            <template #icon>
-                              <Icon name="icon_delete-trash_outlined"
-                                ><icon_deleteTrash_outlined class="svg-icon"
-                              /></Icon>
-                            </template>
-                          </el-button>
+                      <el-scrollbar>
+                        <div class="title">{{ t('auth.manual_input') }}</div>
+                        <div class="select-value">
+                          <span> {{ t('data_fill.form.option_value') }} </span>
+                          <div :key="index" v-for="(_, index) in valueSource" class="select-item">
+                            <el-input
+                              maxlength="64"
+                              v-if="curComponent.displayType === '2'"
+                              @blur="weightlessness"
+                              v-model.number="valueSource[index]"
+                            ></el-input>
+                            <el-input
+                              maxlength="64"
+                              v-else
+                              @blur="weightlessness"
+                              v-model="valueSource[index]"
+                            ></el-input>
+                            <el-button
+                              v-if="valueSource.length !== 1"
+                              @click="valueSource.splice(index, 1)"
+                              class="value"
+                              text
+                            >
+                              <template #icon>
+                                <Icon name="icon_delete-trash_outlined"
+                                  ><icon_deleteTrash_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </div>
                         </div>
-                      </div>
+                      </el-scrollbar>
                       <div class="add-btn">
                         <el-button @click="valueSource.push('')" text>
                           <template #icon>
@@ -4137,7 +4139,6 @@ defineExpose({
     .select-value {
       padding-left: 16px;
       max-height: 246px;
-      overflow-y: auto;
       .value {
         color: #646a73;
         margin-left: 6px;
