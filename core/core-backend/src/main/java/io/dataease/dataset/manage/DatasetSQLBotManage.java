@@ -105,7 +105,8 @@ public class DatasetSQLBotManage {
         }
         return AesUtils.aesEncrypt(text, aesKey, iv);
     }
-
+    TypeReference<List<Long>> listTypeReference = new TypeReference<List<Long>>() {
+    };
     private Map<Long, List<DataSetColumnPermissionsDTO>> getColPermission(Long uid, List<Long> roleIds) {
         ColumnPermissionsApi columnPermissionsApi = CommonBeanFactory.getBean(ColumnPermissionsApi.class);
         Objects.requireNonNull(columnPermissionsApi);
@@ -122,7 +123,14 @@ public class DatasetSQLBotManage {
             dataSetColumnPermissionsDTO.setAuthTargetType("role");
             List<DataSetColumnPermissionsDTO> roleDataSetColumnPermissionsDTOS = columnPermissionsApi.list(dataSetColumnPermissionsDTO);
             if (CollectionUtils.isNotEmpty(roleDataSetColumnPermissionsDTOS)) {
-                dataSetColumnPermissionsDTOS.addAll(roleDataSetColumnPermissionsDTOS);
+                for (DataSetColumnPermissionsDTO dto :roleDataSetColumnPermissionsDTOS) {
+                    List<Long> userIdList = JsonUtil.parseList(dto.getWhiteListUser(), listTypeReference);
+                    if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(uid)) {
+                       //  roleColumnPermissionsDTOS.add(columnPermissionsDTO);
+                        dataSetColumnPermissionsDTOS.add(dto);
+                    }
+                }
+                // dataSetColumnPermissionsDTOS.addAll(roleDataSetColumnPermissionsDTOS);
             }
         }
         if (CollectionUtils.isEmpty(dataSetColumnPermissionsDTOS)) {
