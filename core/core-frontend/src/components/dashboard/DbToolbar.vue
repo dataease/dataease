@@ -86,19 +86,10 @@ const MultiplexingCanvas = defineAsyncComponent(
   () => import('@/views/common/MultiplexingCanvas.vue')
 )
 
-const OuterParamsSet = defineAsyncComponent(
-  () => import('@/components/visualization/OuterParamsSet.vue')
-)
-
-const UserViewGroup = defineAsyncComponent(
-  () => import('@/custom-component/component-group/UserViewGroup.vue')
-)
-
-const DeResourceGroupOpt = defineAsyncComponent(
-  () => import('@/views/common/DeResourceGroupOpt.vue')
-)
-
+import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
+import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
+import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 
 const multiplexingRef = ref(null)
 const fullScreeRef = ref(null)
