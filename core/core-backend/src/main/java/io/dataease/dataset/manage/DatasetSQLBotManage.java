@@ -538,7 +538,7 @@ public class DatasetSQLBotManage {
                 String sql = new String(Base64.getDecoder().decode(tableInfoDTO.getSql()));
                 table.setSql(sql);
             }
-            if (StringUtils.isNotBlank(tableInfoDTO.getTable())) {
+            if (StringUtils.isBlank(tableInfoDTO.getSql()) && StringUtils.isNotBlank(tableInfoDTO.getTable())) {
                 table.setName(tableInfoDTO.getTable());
             }
         }
