@@ -9,6 +9,9 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import request from '@/config/axios'
+import { useUserStoreWithOut } from '@/store/modules/user'
+
+const userStore = useUserStoreWithOut()
 const loading = ref(true)
 const state = reactive({
   domain: '',
@@ -69,7 +72,8 @@ const mountedEmbeddedPage = () => {
     if (window['sqlbot_embedded_handler']) {
       window['sqlbot_embedded_handler'].mounted('#dataease-v2-embedded-sqlbot', {
         embeddedId: state.id,
-        online: true
+        online: true,
+        userFlag: userStore.getUid
       })
       loading.value = false
       sqlbotExist.value = true
