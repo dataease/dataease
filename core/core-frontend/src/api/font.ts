@@ -8,8 +8,8 @@ export interface Font {
   isBuiltin?: boolean
 }
 
-export const list = (data = {}) => {
-  return request.post({ url: '/typeface/listFont', data }).then(res => {
+export const list = () => {
+  return request.get({ url: '/typeface/listFont' }).then(res => {
     return res?.data
   })
 }
