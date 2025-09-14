@@ -3,8 +3,8 @@ package io.dataease.font.server;
 import io.dataease.api.font.api.FontApi;
 import io.dataease.api.font.dto.FontDto;
 import io.dataease.exception.DEException;
-import io.dataease.font.manage.FontManage;
 import jakarta.annotation.Resource;
+import io.dataease.font.manage.FontManage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,8 +20,8 @@ public class FontServer implements FontApi {
     private FontManage fontManage;
 
     @Override
-    public List<FontDto> list() {
-        return fontManage.list();
+    public List<FontDto> list(FontDto fontDto) {
+        return fontManage.list(fontDto);
     }
 
     @Override
