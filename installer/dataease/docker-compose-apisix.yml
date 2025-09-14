@@ -13,7 +13,7 @@ services:
       dataease-network:
 
   apisix:
-    image: registry.cn-qingdao.aliyuncs.com/dataease/apisix:3.13.0-debian
+    image: registry.cn-qingdao.aliyuncs.com/dataease/apisix:3.6.0-debian
     container_name: apisix
     environment:
       - TZ=Asia/Shanghai
