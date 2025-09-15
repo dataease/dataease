@@ -412,8 +412,7 @@ public class DatasetSQLBotManage {
         querySQL = provider.rebuildSQL(querySQL, sqlMeta, false, dsMap, true);
         for (int i = 0; i < sqlMeta.getXFields().size(); i++) {
             SQLObj fieldObj = sqlMeta.getXFields().get(i);
-            DatasetTableFieldDTO fieldDTO = fields.get(i);
-            if (fieldObj.getFieldAlias().endsWith("_" + String.valueOf(i) + '`')) {
+            if (fieldObj.getFieldAlias().endsWith("_" + i + '`')) {
                 table.getFields().get(i).setName(fieldObj.getFieldAlias().substring(1, fieldObj.getFieldAlias().length() - 1));
             }
         }
