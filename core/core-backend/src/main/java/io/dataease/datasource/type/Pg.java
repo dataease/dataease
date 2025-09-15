@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Data
 @Component("pg")
@@ -57,5 +58,11 @@ public class Pg extends DatasourceConfiguration {
             }
         }
         return jdbcUrl;
+    }
+
+    private static final Pattern DB_NAME_PATTERN = Pattern.compile("//[^/]+/([^?]+)");
+    @Override
+    protected Pattern getDatabasePattern() {
+        return DB_NAME_PATTERN;
     }
 }

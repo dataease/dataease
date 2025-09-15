@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import static java.awt.SystemColor.info;
 
 @Data
 @Component("redshift")
@@ -39,5 +43,23 @@ public class Redshift extends DatasourceConfiguration {
             }
         }
         return jdbcUrl;
+    }
+
+    private static final Pattern DB_NAME_PATTERN = Pattern.compile("//[^/]+/([^?]+)");
+
+    @Override
+    protected Pattern getDatabasePattern() {
+        return DB_NAME_PATTERN;
+    }
+
+    @Override
+    protected void convertParameters() {
+        Map<String, String> parameters = getParameters();
+        if (parameters.containsKey("UID")) {
+            setUsername(parameters.get("UID"));
+        }
+        if (parameters.containsKey("PWD")) {
+            setPassword(parameters.get("PWD"));
+        }
     }
 }

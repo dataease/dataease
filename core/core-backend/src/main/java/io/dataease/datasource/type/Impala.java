@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Data
 @Component("impala")
@@ -59,5 +60,29 @@ public class Impala extends DatasourceConfiguration {
             }
         }
         return jdbcUrl;
+    }
+
+    private static final Pattern DB_NAME_PATTERN = Pattern.compile("//[^/]+/([^?;]+)");
+
+    @Override
+    protected Pattern getDatabasePattern() {
+        return DB_NAME_PATTERN;
+    }
+
+
+    @Override
+    protected void parseParameters(String jdbcUrl) {
+        if (jdbcUrl.contains(";")) {
+            String[] parts = jdbcUrl.split(";");
+            for (int i = 1; i < parts.length; i++) {
+                String[] keyValue = parts[i].split("=", 2);
+                if (keyValue.length == 2) {
+                    getParameters().put(keyValue[0], keyValue[1]);
+                }
+            }
+            if (getParameters().containsKey("AuthMech")) {
+                getParameters().put("authentication", getParameters().get("AuthMech"));
+            }
+        }
     }
 }

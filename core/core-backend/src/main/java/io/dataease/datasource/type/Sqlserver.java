@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Data
 @Component("sqlServer")
@@ -36,5 +37,12 @@ public class Sqlserver extends DatasourceConfiguration {
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
         }
+    }
+
+    private static final Pattern DB_NAME_PATTERN = Pattern.compile(";databaseName=([^;]+)");
+
+    @Override
+    protected Pattern getDatabasePattern() {
+        return DB_NAME_PATTERN;
     }
 }

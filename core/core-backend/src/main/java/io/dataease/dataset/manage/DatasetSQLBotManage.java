@@ -472,6 +472,7 @@ public class DatasetSQLBotManage {
         } else {
             config_json = EncryptUtils.aesDecrypt(dsConfig.toString()).toString();
             config = JsonUtil.parseObject(config_json, Configuration.class);
+            config.convertJdbcUrl();
         }
         DataSQLBotAssistantVO vo = new DataSQLBotAssistantVO();
         vo.setDataBase(config.getDataBase());

@@ -6,6 +6,9 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Data
 @Component("oracle")
 public class Oracle extends DatasourceConfiguration {
@@ -29,6 +32,21 @@ public class Oracle extends DatasourceConfiguration {
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
+        }
+    }
+
+    private static final Pattern SERVICE_PATTERN = Pattern.compile(":@//[^/]+/([^?]+)");
+    private static final Pattern SID_PATTERN = Pattern.compile(":@[^:]+:(\\d+):([^?]+)");
+    @Override
+    protected void convertDatabase(String jdbcUrl) {
+        Matcher serviceMatcher = SERVICE_PATTERN.matcher(jdbcUrl);
+        if (serviceMatcher.find()) {
+            setDataBase(serviceMatcher.group(1));
+        } else {
+            Matcher sidMatcher = SID_PATTERN.matcher(jdbcUrl);
+            if (sidMatcher.find()) {
+                setDataBase(sidMatcher.group(2));
+            }
         }
     }
 }
