@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 public class SQLBotAssistanTable implements Serializable {
@@ -24,5 +25,6 @@ public class SQLBotAssistanTable implements Serializable {
     private boolean needPermission;
     @JsonIgnore
     private Map<String, Object> rowData;
-
+    @JsonIgnore
+    private Set<Long> tableIds;
 }

@@ -40,6 +40,7 @@ public class Field2SQLObj {
         }
 
         if (ObjectUtils.isNotEmpty(fields)) {
+            Set<String> aliasSet = new HashSet<>();
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableFieldDTO x = fields.get(i);
                 String originField;
@@ -86,6 +87,10 @@ public class Field2SQLObj {
                     if (ObjectUtils.isNotEmpty(x.getExtField()) && !x.getExtField().equals(ExtFieldConstant.EXT_NORMAL) && StringUtils.isNotBlank(x.getName())) {
                         fieldAlias = x.getName();
                     }
+                    if (aliasSet.contains(fieldAlias)) {
+                        fieldAlias += ('_' + String.valueOf(i));
+                    }
+                    aliasSet.add(fieldAlias);
                     fieldAlias = String.format(FIELD_DOT_FIX, fieldAlias);
                 }
                 // 处理横轴字段
