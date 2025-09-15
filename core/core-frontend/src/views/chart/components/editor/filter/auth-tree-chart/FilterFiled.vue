@@ -1084,9 +1084,9 @@ const emits = defineEmits(['update:item', 'del'])
           line-height: 26px;
           border-radius: 4px;
           padding: 0 4px;
-          color: #3370ff;
+          color: var(--ed-color-primary, #3370ff);
           &:hover {
-            background-color: #3370ff1a;
+            background-color: var(--ed-color-primary-1a, #3370ff1a);
           }
         }
       }

@@ -1559,13 +1559,13 @@ const mousedownDrag = () => {
       }
 
       &:focus {
-        background: #3370ff1a;
-        color: #3370ff;
+        background: var(--ed-color-primary-1a, #3370ff1a);
+        color: var(--ed-color-primary, #3370ff);
       }
 
       &:focus:hover {
-        color: #3370ff;
-        background: #3370ff33;
+        color: var(--ed-color-primary, #3370ff);
+        background: var(--ed-color-primary-33, #3370ff33);
       }
     }
   }

@@ -74,6 +74,23 @@ const save = () => {
     })
 }
 
+const saveClose = () => {
+  const param = { ...state.form }
+  const method = request.post({ url: '/sysParameter/sqlbot', data: param })
+  showLoading()
+  method
+    .then(res => {
+      if (!res.msg) {
+        ElMessage.success(t('common.save_success'))
+        emits('saved')
+      }
+      closeLoading()
+    })
+    .catch(() => {
+      closeLoading()
+    })
+}
+
 const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -131,7 +148,7 @@ const validateHandlerOnly = () => {
       state.form.valid = false
     })
     .finally(() => {
-      save()
+      saveClose()
     })
 }
 
