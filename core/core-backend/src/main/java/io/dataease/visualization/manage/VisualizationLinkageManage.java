@@ -301,7 +301,10 @@ public class VisualizationLinkageManage {
 
             // 设置目标视图字段
             if (targetView.getTableId() != null) {
-                List<DatasetTableFieldDTO> fields = coreDatasetTableFieldRepository.findByDatasetTableId(targetView.getTableId())
+                List<DatasetTableFieldDTO> fields = Optional.ofNullable(
+                                coreDatasetTableFieldRepository.findByDatasetTableId(targetView.getTableId())
+                        )
+                        .orElse(Collections.emptyList())
                         .stream()
                         .map(field -> {
                             DatasetTableFieldDTO fieldDto = new DatasetTableFieldDTO();
@@ -343,7 +346,7 @@ public class VisualizationLinkageManage {
         linkages.stream()
                 .filter(linkage -> sourceViewIdsActive.contains(linkage.getSourceViewId()))
                 .forEach(linkage -> {
-                    groupedLinkageFields.get(linkage.getId()).stream()
+                    groupedLinkageFields.getOrDefault(linkage.getId(), Collections.emptyList()).stream()
                             .filter(field -> field.getId() != null)
                             .forEach(field -> {
                                 String sourceKey = linkage.getSourceViewId() + "#" + field.getSourceField();
@@ -386,7 +389,7 @@ public class VisualizationLinkageManage {
         linkages.stream()
                 .filter(linkage -> sourceViewIdsActive.contains(linkage.getSourceViewId()))
                 .forEach(linkage -> {
-                    groupedLinkageFields.get(linkage.getId()).stream()
+                    groupedLinkageFields.getOrDefault(linkage.getId(), Collections.emptyList()).stream()
                             .filter(field -> field.getId() != null)
                             .forEach(field -> {
                                 String sourceKey = linkage.getSourceViewId() + "#" + field.getSourceField();
