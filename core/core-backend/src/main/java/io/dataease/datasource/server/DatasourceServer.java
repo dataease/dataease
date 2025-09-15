@@ -594,8 +594,7 @@ public class DatasourceServer implements DatasourceApi {
             if (types.isEmpty()) {
                 return list;
             } else {
-                Specification<CoreDatasource> findInTypesSpec = (root, query, cb) ->
-                        root.get("type").in(types);
+                Specification<CoreDatasource> findInTypesSpec = (root, query, cb) -> root.get("type").in(types);
                 dsList = coreDatasourceRepository.findAll(findInTypesSpec);
             }
         }
@@ -708,8 +707,7 @@ public class DatasourceServer implements DatasourceApi {
         }
 
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
-            Specification<CoreDatasource> findByPidSpec = (root, query, cb) ->
-                    cb.equal(root.get("pid"), datasourceId);
+            Specification<CoreDatasource> findByPidSpec = (root, query, cb) -> cb.equal(root.get("pid"), datasourceId);
             List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll(findByPidSpec);
             if (ObjectUtils.isNotEmpty(coreDatasources)) {
                 for (CoreDatasource record : coreDatasources) {
@@ -746,10 +744,7 @@ public class DatasourceServer implements DatasourceApi {
             default:
                 cron = "0 0/minute * *  * ? *".replace("minute", interval.toString());
         }
-        scheduleManager.addOrUpdateCronJob(new JobKey("Datasource", "check_status"),
-                new TriggerKey("Datasource", "check_status"),
-                CheckDsStatusJob.class,
-                cron, new Date(System.currentTimeMillis()), null, new JobDataMap());
+        scheduleManager.addOrUpdateCronJob(new JobKey("Datasource", "check_status"), new TriggerKey("Datasource", "check_status"), CheckDsStatusJob.class, cron, new Date(System.currentTimeMillis()), null, new JobDataMap());
     }
 
     @Override
@@ -1195,9 +1190,12 @@ public class DatasourceServer implements DatasourceApi {
                 syncDsIds.add(datasource.getId());
                 commonThreadPool.addTask(() -> {
                     try {
+                        LogUtil.info("Begin to check ds status: " + datasource.getName());
                         LicenseUtil.validate();
                         validate(datasource);
+                        LogUtil.info("Finish to check ds status: " + datasource.getName());
                     } catch (Exception e) {
+                        LogUtil.info("Error to check ds status: " + datasource.getName() + ", error message: " + e.getMessage());
                     } finally {
                         syncDsIds.removeIf(id -> id.equals(datasource.getId()));
                     }
@@ -1225,8 +1223,7 @@ public class DatasourceServer implements DatasourceApi {
     private void doUpdate() {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateRepository.findAll();
         Timestamp currentTimestamp = databaseTimeManage.getCurrentDatabaseTime();
-        List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
-                .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > currentTimestamp.getTime()).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > currentTimestamp.getTime()).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
 
         List<CoreDatasource> datasources = coreDatasourceRepository.findByTaskStatus(TaskStatus.UnderExecution.name());
 
@@ -1449,10 +1446,7 @@ public class DatasourceServer implements DatasourceApi {
         String configuration = coreDatasource.getConfiguration();
         DatasourceConfiguration config = null;
         String host = null;
-        if (StringUtils.isBlank(configuration)
-                || StringUtils.equalsIgnoreCase("[]", configuration)
-                || ObjectUtils.isEmpty(config = JsonUtil.parseObject(configuration, DatasourceConfiguration.class))
-                || StringUtils.isBlank(host = config.getHost())) {
+        if (StringUtils.isBlank(configuration) || StringUtils.equalsIgnoreCase("[]", configuration) || ObjectUtils.isEmpty(config = JsonUtil.parseObject(configuration, DatasourceConfiguration.class)) || StringUtils.isBlank(host = config.getHost())) {
             return vo;
         }
         vo.setHost(host);
