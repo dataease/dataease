@@ -18,6 +18,7 @@ import io.dataease.share.dao.auto.entity.QXpackShare;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -234,11 +235,11 @@ public class VisualizationLinkJumpManage {
 
 
     public List<VisualizationLinkJumpDTO> queryWithDvId(Long dvId, Long uid, Boolean isDesktop) {
-        return buildLinkJumpQuery(dvId, uid, isDesktop, false).fetch();
+        return buildLinkJumpQuery(dvId, uid, isDesktop, false);
     }
 
     public List<VisualizationLinkJumpDTO> queryWithDvIdSnapshot(Long dvId, Long uid, Boolean isDesktop) {
-        return buildLinkJumpQuery(dvId, uid, isDesktop, true).fetch();
+        return buildLinkJumpQuery(dvId, uid, isDesktop, true);
     }
 
     public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId, Long uid, Boolean isDesktop) {
@@ -258,7 +259,7 @@ public class VisualizationLinkJumpManage {
                 .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId).and(qJump.sourceDvId.eq(dvId)))
                 .where(qChartView.id.eq(viewId)).fetchFirst();
         if (result != null) {
-            result.setLinkJumpInfoArray(getLinkJumpInfoSnapshot(result.getId() == null?-1:result.getId(), result.getSourceViewId(), uid, isDesktop));
+            result.setLinkJumpInfoArray(getLinkJumpInfoSnapshot(result.getId() == null ? -1 : result.getId(), result.getSourceViewId(), uid, isDesktop));
         }
         return result;
     }
@@ -404,12 +405,12 @@ public class VisualizationLinkJumpManage {
         );
     }
 
-    private JPAQuery<VisualizationLinkJumpDTO> buildLinkJumpQuery(Long dvId, Long uid, Boolean isDesktop, boolean isSnapshot) {
+    private List<VisualizationLinkJumpDTO> buildLinkJumpQuery(Long dvId, Long uid, Boolean isDesktop, boolean isSnapshot) {
 
         if (isSnapshot) {
             QSnapshotCoreChartView qChartView = QSnapshotCoreChartView.snapshotCoreChartView;
             QSnapshotVisualizationLinkJump qJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
-            return queryFactory
+            List<VisualizationLinkJumpDTO> result = queryFactory
                     .select(Projections.bean(VisualizationLinkJumpDTO.class,
                             qChartView.id.as("sourceViewId"),
                             qJump.id,
@@ -422,7 +423,13 @@ public class VisualizationLinkJumpManage {
                     .from(qChartView)
                     .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId))
                     .where(qJump.sourceDvId.eq(dvId))
-                    .where(qChartView.jumpActive.eq(true));
+                    .where(qChartView.jumpActive.eq(true)).fetch();
+            if (CollectionUtils.isNotEmpty(result)) {
+                result.stream().forEach(item -> {
+                    item.setLinkJumpInfoArray(getLinkJumpInfoSnapshot(item.getId() == null ? -1 : item.getId(), item.getSourceViewId(), uid, isDesktop));
+                });
+            }
+            return result;
         } else {
             QCoreChartView qChartView = QCoreChartView.coreChartView;
             QVisualizationLinkJump qJump = QVisualizationLinkJump.visualizationLinkJump;
@@ -440,7 +447,7 @@ public class VisualizationLinkJumpManage {
                     .from(qChartView)
                     .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId))
                     .where(qJump.sourceDvId.eq(dvId))
-                    .where(qChartView.jumpActive.eq(true));
+                    .where(qChartView.jumpActive.eq(true)).fetch();
         }
 
 
@@ -464,14 +471,14 @@ public class VisualizationLinkJumpManage {
     }
 
     public void deleteJumpTargetViewInfoSnapshot(Long dvId, Long viewId) {
-        snapshotVisualizationLinkJumpTargetViewInfoRepository.deleteBySourceDvIdAndViewId(dvId,viewId);
+        snapshotVisualizationLinkJumpTargetViewInfoRepository.deleteBySourceDvIdAndViewId(dvId, viewId);
     }
 
     public void deleteJumpInfoSnapshot(Long dvId, Long viewId) {
-        snapshotVisualizationLinkJumpInfoRepository.deleteBySourceDvIdAndViewId(dvId,viewId);
+        snapshotVisualizationLinkJumpInfoRepository.deleteBySourceDvIdAndViewId(dvId, viewId);
     }
 
     public void deleteJumpSnapshot(Long dvId, Long viewId) {
-        snapshotVisualizationLinkJumpRepository.deleteBySourceDvIdAndSourceViewId(dvId,viewId);
+        snapshotVisualizationLinkJumpRepository.deleteBySourceDvIdAndSourceViewId(dvId, viewId);
     }
 }
