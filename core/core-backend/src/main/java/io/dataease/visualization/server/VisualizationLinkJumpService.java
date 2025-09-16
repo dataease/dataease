@@ -150,54 +150,74 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     public VisualizationLinkJumpBaseResponse queryTargetVisualizationJumpInfo(VisualizationLinkJumpBaseRequest request) {
         List<VisualizationLinkJumpDTO> result = null;
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
-            QSnapshotVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QSnapshotVisualizationLinkJumpTargetViewInfo.snapshotVisualizationLinkJumpTargetViewInfo;
-            QSnapshotVisualizationLinkJumpInfo linkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
-            QSnapshotVisualizationLinkJump visualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
+            QSnapshotVisualizationLinkJumpTargetViewInfo jtvi = QSnapshotVisualizationLinkJumpTargetViewInfo.snapshotVisualizationLinkJumpTargetViewInfo;
+            QSnapshotVisualizationLinkJumpInfo lji = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
+            QSnapshotVisualizationLinkJump lj = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
 
             JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
                             Projections.fields(VisualizationLinkJumpDTO.class,
-                                    visualizationLinkJump.sourceViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.sourceFieldActiveId.stringValue()).as("sourceInfo"),
-                                    visualizationLinkJumpTargetViewInfo.targetViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.targetFieldId.stringValue()).as("targetInfo")
+                                    lj.sourceViewId.stringValue().concat("#").concat(jtvi.sourceFieldActiveId.stringValue()).as("sourceInfo"),
+                                    jtvi.targetViewId.stringValue().concat("#").concat(jtvi.targetFieldId.stringValue()).as("targetInfo")
                             ))
-                    .from(visualizationLinkJumpTargetViewInfo)
-                    .leftJoin(linkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(linkJumpInfo.id))
-                    .leftJoin(visualizationLinkJump).on(linkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
-                    .where(linkJumpInfo.checked.eq(true))
-                    .where(visualizationLinkJump.sourceDvId.eq(request.getSourceDvId()))
-                    .where(visualizationLinkJump.sourceViewId.eq(request.getSourceViewId()))
-                    .where(linkJumpInfo.targetDvId.eq(request.getTargetDvId()));
+                    .from(jtvi)
+                    .leftJoin(lji).on(jtvi.linkJumpInfoId.eq(lji.id))
+                    .leftJoin(lj).on(lji.linkJumpId.eq(lj.id))
+                    .where(lji.checked.eq(true))
+                    .where(lj.sourceDvId.eq(request.getSourceDvId()))
+                    .where(lj.sourceViewId.eq(request.getSourceViewId()))
+                    .where(lji.targetDvId.eq(request.getTargetDvId()));
 
             if (request.getSourceFieldId() != null) {
-                jpaQuery.where(linkJumpInfo.sourceFieldId.eq(request.getSourceFieldId()));
+                jpaQuery.where(lji.sourceFieldId.eq(request.getSourceFieldId()));
             }
             result = jpaQuery.fetch();
 
 
         } else {
-            QVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
-            QVisualizationLinkJumpInfo linkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
-            QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
+            QVisualizationLinkJumpTargetViewInfo jtvi = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
+            QVisualizationLinkJumpInfo lji = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
+            QVisualizationLinkJump lj = QVisualizationLinkJump.visualizationLinkJump;
 
             JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
                             Projections.fields(VisualizationLinkJumpDTO.class,
-                                    visualizationLinkJump.sourceViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.sourceFieldActiveId.stringValue()).as("sourceInfo"),
-                                    visualizationLinkJumpTargetViewInfo.targetViewId.stringValue().concat("#").concat(visualizationLinkJumpTargetViewInfo.targetFieldId.stringValue()).as("targetInfo")
+                                    lj.sourceViewId.stringValue().concat("#").concat(jtvi.sourceFieldActiveId.stringValue()).as("sourceInfo"),
+                                    jtvi.targetViewId.stringValue().concat("#").concat(jtvi.targetFieldId.stringValue()).as("targetInfo")
                             ))
-                    .from(visualizationLinkJumpTargetViewInfo)
-                    .leftJoin(linkJumpInfo).on(visualizationLinkJumpTargetViewInfo.linkJumpInfoId.eq(linkJumpInfo.id))
-                    .leftJoin(visualizationLinkJump).on(linkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
-                    .where(linkJumpInfo.checked.eq(true))
-                    .where(visualizationLinkJump.sourceDvId.eq(request.getSourceDvId()))
-                    .where(visualizationLinkJump.sourceViewId.eq(request.getSourceViewId()))
-                    .where(linkJumpInfo.targetDvId.eq(request.getTargetDvId()));
+                    .from(jtvi)
+                    .leftJoin(lji).on(jtvi.linkJumpInfoId.eq(lji.id))
+                    .leftJoin(lj).on(lji.linkJumpId.eq(lj.id))
+                    .where(lji.checked.eq(true))
+                    .where(lj.sourceDvId.eq(request.getSourceDvId()))
+                    .where(lj.sourceViewId.eq(request.getSourceViewId()))
+                    .where(lji.targetDvId.eq(request.getTargetDvId()));
 
             if (request.getSourceFieldId() != null) {
-                jpaQuery.where(linkJumpInfo.sourceFieldId.eq(request.getSourceFieldId()));
+                jpaQuery.where(lji.sourceFieldId.eq(request.getSourceFieldId()));
             }
             result = jpaQuery.fetch();
 
         }
-        return new VisualizationLinkJumpBaseResponse(null, Optional.ofNullable(result).orElse(new ArrayList<>()).stream().filter(item -> StringUtils.isNotEmpty(item.getSourceInfo())).collect(Collectors.toMap(VisualizationLinkJumpDTO::getSourceInfo, VisualizationLinkJumpDTO::getTargetInfoList)));
+        // 按sourceInfo分组聚合targetInfo
+        Map<String, List<String>> groupedResults = result.stream()
+                .collect(Collectors.groupingBy(
+                        VisualizationLinkJumpDTO::getSourceInfo,
+                        Collectors.mapping(
+                                VisualizationLinkJumpDTO::getTargetInfo,
+                                Collectors.toList()
+                        )
+                ));
+
+        // 创建新的VisualizationLinkJumpDTO列表，每个包含sourceInfo和对应的targetInfo列表
+        List<VisualizationLinkJumpDTO> aggregatedResult = groupedResults.entrySet().stream()
+                .map(entry -> {
+                    VisualizationLinkJumpDTO dto = new VisualizationLinkJumpDTO();
+                    dto.setSourceInfo(entry.getKey());
+                    dto.setTargetInfoList(entry.getValue());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return new VisualizationLinkJumpBaseResponse(null, Optional.ofNullable(aggregatedResult).orElse(new ArrayList<>()).stream().filter(item -> StringUtils.isNotEmpty(item.getSourceInfo())).collect(Collectors.toMap(VisualizationLinkJumpDTO::getSourceInfo, VisualizationLinkJumpDTO::getTargetInfoList)));
     }
 
     @Override
