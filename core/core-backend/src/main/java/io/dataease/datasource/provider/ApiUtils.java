@@ -106,7 +106,7 @@ public class ApiUtils {
                     cursor = JsonPath.read(response, apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPath()).toString();
                 } catch (Exception e) {
                 }
-                while (cursor != null) {
+                while (StringUtils.isNotEmpty(cursor)) {
                     apiDefinition.getRequest().getPage().getRequestData().get(0).setParameterDefaultValue(cursor);
                     response = execHttpRequest(false, apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
                     dataList.addAll(fetchResult(response, apiDefinition));
