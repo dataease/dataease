@@ -1825,24 +1825,26 @@ const getMenuList = (val: boolean) => {
       width="840px"
       top="60px"
     >
-      <el-row :gutter="24">
-        <el-col :span="12">
-          <p class="table-name">
-            {{ t('datasource.table_name') }}
-          </p>
-          <p class="table-value">
-            {{ dsTableDetail.tableName }}
-          </p>
-        </el-col>
-        <el-col :span="12">
-          <p class="table-name">
-            {{ t('datasource.table_description') }}
-          </p>
-          <p class="table-value">
-            {{ dsTableDetail.name || '-' }}
-          </p>
-        </el-col>
-      </el-row>
+      <div style="overflow: hidden">
+        <el-row :gutter="24">
+          <el-col :span="12">
+            <p class="table-name">
+              {{ t('datasource.table_name') }}
+            </p>
+            <p class="table-value">
+              {{ dsTableDetail.tableName }}
+            </p>
+          </el-col>
+          <el-col :span="12">
+            <p class="table-name">
+              {{ t('datasource.table_description') }}
+            </p>
+            <p class="table-value">
+              {{ dsTableDetail.name || '-' }}
+            </p>
+          </el-col>
+        </el-row>
+      </div>
       <el-scrollbar>
         <el-table
           v-loading="dsTableDataLoading"
@@ -2323,7 +2325,7 @@ const getMenuList = (val: boolean) => {
 }
 
 .custom-tree-node {
-  width: calc(100% - 30px);
+  width: calc(100% - 34px);
   display: flex;
   align-items: center;
   box-sizing: content-box;

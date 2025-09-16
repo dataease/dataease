@@ -853,7 +853,7 @@ defineExpose({
                   <span
                     :title="scope.row.originName"
                     class="ellipsis"
-                    style="display: inline-block; max-width: 80px"
+                    style="display: inline-block; max-width: 80px; line-height: 16px"
                     >{{ scope.row.originName }}</span
                   >
                 </el-checkbox>
