@@ -1246,3 +1246,13 @@ export const hexToRgba = (hex, alpha = 1) => {
   // 返回 RGBA 格式
   return `rgba(${r}, ${g}, ${b}, ${a})`
 }
+
+export const randomString = (length: number): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let result = ''
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length)
+    result += chars[randomIndex]
+  }
+  return result
+}
