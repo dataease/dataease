@@ -17,6 +17,8 @@ public class VisualizationLinkJumpDTO extends VisualizationLinkJumpVO {
     //仪表板可以跳转图表信息 sourceViewId#
     private String sourceInfo;
 
+    private String targetInfo;
+
     private List<String> targetInfoList;
 
     private List<VisualizationLinkJumpInfoDTO> linkJumpInfoArray = new ArrayList<>();
