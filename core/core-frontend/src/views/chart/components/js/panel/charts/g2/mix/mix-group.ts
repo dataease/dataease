@@ -1,5 +1,5 @@
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import { flow, hexColorToRGBA, parseJson, randomString } from '@/views/chart/components/js/util'
 import { cloneDeep, defaultsDeep, isEmpty, merge, random } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -748,16 +748,6 @@ export class GroupLineMix extends G2ChartView {
     return options
   }
 
-  private randomString(length: number): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    let result = ''
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * chars.length)
-      result += chars[randomIndex]
-    }
-    return result
-  }
-
   protected configAssistLine(chart: Chart, options: G2Spec): G2Spec {
     const { assistLineCfg } = parseJson(chart.senior)
     if (!assistLineCfg.enable || !assistLineCfg.assistLine?.length) {
@@ -792,7 +782,7 @@ export class GroupLineMix extends G2ChartView {
     const yAxisExtFormatterCfg =
       yAxisExt.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
     const view = options.children.find(c => c.key === 'chart')
-    const randomAssistColorScale = this.randomString(6)
+    const randomAssistColorScale = randomString(6)
     splitLineData.forEach((lineData, index) => {
       if (lineData.length) {
         const assistLineMark: G2Spec = {

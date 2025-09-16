@@ -5,9 +5,10 @@ import {
   getLineLabelColorByCondition,
   hexColorToRGBA,
   parseJson,
+  randomString,
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
-import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
+import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { LINE_AXIS_TYPE, LINE_EDITOR_PROPERTY, LINE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -15,6 +16,7 @@ import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
 import { extremumEvt, addExtremumText } from '@/views/chart/components/js/extremumUitl'
+import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -53,6 +55,8 @@ export class Line extends G2ChartView {
       type: 'q'
     }
   }
+
+  EMPTY_MARKER = () => []
 
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
     const { chart, action, container, scale } = drawOptions
@@ -553,31 +557,14 @@ export class Line extends G2ChartView {
     })
     chart.data.dynamicAssistLines?.forEach(item => {
       if (dynamicFields.includes(item.fieldId)) {
-        lineData.push(item)
-      }
-    })
-    let max, min
-    options.data.value.forEach(item => {
-      const value = item.value
-      if (value === null || value === undefined) {
-        return
-      }
-      if (max === undefined || value > max) {
-        max = value
-      }
-      if (min === undefined || value < min) {
-        min = value
+        lineData.push({ ...item, value: parseFloat(item.value) })
       }
     })
     if (lineData.length) {
+      const randomAssistColorScale = randomString(6)
       const assistLineMark: G2Spec = {
         type: 'lineY',
-        encode: { y: 'value' },
-        scale: {
-          y: {
-            domain: [min, max]
-          }
-        },
+        encode: { y: 'value', color: () => randomAssistColorScale },
         data: lineData,
         style: {
           stroke: d => d.color,
@@ -603,6 +590,27 @@ export class Line extends G2ChartView {
         ]
       }
       options.children.push(assistLineMark)
+      if (options.legend?.color) {
+        const colorLegend = options.legend.color
+        if (!Symbols.has('empty')) {
+          registerSymbol('empty', this.EMPTY_MARKER)
+        }
+        const originMarker = colorLegend.itemMarker
+        merge(colorLegend, {
+          itemMarker: d => {
+            if (d === randomAssistColorScale || d.id === randomAssistColorScale) {
+              return 'empty'
+            }
+            return originMarker
+          },
+          itemLabelText: d => {
+            if (d.id === randomAssistColorScale) {
+              return ''
+            }
+            return d.id
+          }
+        })
+      }
     }
     return options
   }
@@ -740,5 +748,6 @@ export class Line extends G2ChartView {
 
   constructor(name = 'line') {
     super(name, DEFAULT_DATA)
+    this.EMPTY_MARKER.style = []
   }
 }
