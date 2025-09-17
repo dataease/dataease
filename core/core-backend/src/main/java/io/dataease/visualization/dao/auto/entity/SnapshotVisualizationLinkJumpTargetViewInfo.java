@@ -31,12 +31,12 @@ public class SnapshotVisualizationLinkJumpTargetViewInfo {
     @Size(max = 50)
     @Comment("目标图表ID")
     @Column(name = "target_view_id", length = 50)
-    private String targetViewId;
+    private Long targetViewId;
 
     @Size(max = 50)
     @Comment("目标字段ID")
     @Column(name = "target_field_id", length = 50)
-    private String targetFieldId;
+    private Long targetFieldId;
 
     @Comment("复制来源")
     @Column(name = "copy_from")

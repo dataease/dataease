@@ -1,6 +1,9 @@
 package io.dataease.api.visualization.vo;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import java.io.Serializable;
 
 /**
@@ -18,12 +21,14 @@ public class VisualizationOuterParamsVO implements Serializable {
     /**
      * 主键
      */
-    private String paramsId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long paramsId;
 
     /**
      * 可视化资源ID
      */
-    private String visualizationId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long visualizationId;
 
     /**
      * 是否启用外部参数标识（1-是，0-否）
@@ -56,19 +61,19 @@ public class VisualizationOuterParamsVO implements Serializable {
     private String defaultValue;
 
 
-    public String getParamsId() {
+    public Long getParamsId() {
         return paramsId;
     }
 
-    public void setParamsId(String paramsId) {
+    public void setParamsId(Long paramsId) {
         this.paramsId = paramsId;
     }
 
-    public String getVisualizationId() {
+    public Long getVisualizationId() {
         return visualizationId;
     }
 
-    public void setVisualizationId(String visualizationId) {
+    public void setVisualizationId(Long visualizationId) {
         this.visualizationId = visualizationId;
     }
 

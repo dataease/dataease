@@ -12,10 +12,10 @@ import java.util.List;
 public interface VisualizationOuterParamsRepository extends JpaRepository<VisualizationOuterParams, Long>, JpaSpecificationExecutor<VisualizationOuterParams> {
 
 
-    List<VisualizationOuterParams> findByVisualizationId(String visualizationId);
+    List<VisualizationOuterParams> findByVisualizationId(Long visualizationId);
 
     @Transactional
-    default void deleteByVisualizationId(String visualizationId) {
+    default void deleteByVisualizationId(Long visualizationId) {
         Specification<VisualizationOuterParams> spec = (root, query, cb) ->
                 cb.equal(root.get("visualizationId"), visualizationId);
         List<VisualizationOuterParams> paramsList = findAll(spec);

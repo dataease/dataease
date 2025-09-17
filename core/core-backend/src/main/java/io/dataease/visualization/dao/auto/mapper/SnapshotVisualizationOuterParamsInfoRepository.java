@@ -13,7 +13,7 @@ import java.util.List;
 public interface SnapshotVisualizationOuterParamsInfoRepository extends JpaRepository<SnapshotVisualizationOuterParamsInfo, Long>, JpaSpecificationExecutor<SnapshotVisualizationOuterParamsInfo> {
 
     @Transactional
-    default void deleteByParamsIds(List<String> paramsIds) {
+    default void deleteByParamsIds(List<Long> paramsIds) {
         Specification<SnapshotVisualizationOuterParamsInfo> spec = (root, query, cb) ->
                 cb.and(cb.in(root.get("paramsId")).value(paramsIds));
         List<SnapshotVisualizationOuterParamsInfo> entities = findAll(spec);

@@ -15,7 +15,7 @@ public interface VisualizationOuterParamsApi {
 
     @GetMapping("/queryWithVisualizationId/{dvId}")
     @Operation(summary = "查询")
-    VisualizationOuterParamsDTO queryWithVisualizationId(@PathVariable("dvId") String dvId);
+    VisualizationOuterParamsDTO queryWithVisualizationId(@PathVariable("dvId") Long dvId);
 
     @PostMapping("/updateOuterParamsSet")
     @Operation(summary = "更新")
@@ -23,9 +23,9 @@ public interface VisualizationOuterParamsApi {
 
     @GetMapping("/getOuterParamsInfo/{dvId}")
     @Operation(summary = "查询基础信息")
-    VisualizationOuterParamsBaseResponse getOuterParamsInfo(@PathVariable("dvId") String dvId);
+    VisualizationOuterParamsBaseResponse getOuterParamsInfo(@PathVariable("dvId") Long dvId);
 
     @GetMapping("/queryDsWithVisualizationId/{dvId}")
     @Operation(summary = "查询涉及数据集基础信息")
-    List<CoreDatasetGroupVO> queryDsWithVisualizationId(@PathVariable("dvId") String dvId);
+    List<CoreDatasetGroupVO> queryDsWithVisualizationId(@PathVariable("dvId") Long dvId);
 }

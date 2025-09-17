@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,12 +22,14 @@ public class VisualizationOuterParamsInfoVO implements Serializable {
     /**
      * 主键
      */
-    private String paramsInfoId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long paramsInfoId;
 
     /**
      * visualization_outer_params 表的 ID
      */
-    private String paramsId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long paramsId;
 
     /**
      * 参数名
